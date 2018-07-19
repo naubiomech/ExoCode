@@ -194,6 +194,7 @@ void loop()
 {
   /***************Ankle CODE********************/
   while (bluetooth.available() == 0) {
+    //    stream=1;
     if ((stream == 1))                                   //Waits to give Assistance until the Start button has been pushed on the MATLAB GUI
     {
       switch (R_state)
@@ -202,13 +203,15 @@ void loop()
           if ((fsr(fsr_sense_Long) > (fsr_thresh_long * fsr_cal_Long)) && (fsr(fsr_sense_Short) < (fsr_thresh * fsr_cal_Short)))
           {
             digitalWrite(13, LOW);
-            PID_Setpoint = Setpoint_earlyStance;
+            Old_PID_Setpoint = PID_Setpoint;
+            New_PID_Setpoint = Setpoint_earlyStance;
             R_state = 2;
           }
           if ((fsr(fsr_sense_Long) > ((fsr_thresh_long) * fsr_cal_Long) && (fsr(fsr_sense_Short) > fsr_thresh * fsr_cal_Short)))
           {
             digitalWrite(13, HIGH);
-            PID_Setpoint = Setpoint_Ankle;
+            Old_PID_Setpoint = PID_Setpoint;
+            New_PID_Setpoint = Setpoint_Ankle;
             R_state = 3;
           }
           break;
@@ -216,13 +219,16 @@ void loop()
           if ((fsr(fsr_sense_Long) > (fsr_thresh_long * fsr_cal_Long) && (fsr(fsr_sense_Short) > fsr_thresh * fsr_cal_Short)))
           {
             digitalWrite(13, HIGH);
-            PID_Setpoint = Setpoint_Ankle;
+            Old_PID_Setpoint = PID_Setpoint;
+            New_PID_Setpoint = Setpoint_Ankle;
             R_state = 3;
           }
           if ((fsr(fsr_sense_Long) < (fsr_thresh_long * fsr_cal_Long)) && (fsr(fsr_sense_Short) < (fsr_thresh * fsr_cal_Short)))
           {
             digitalWrite(13, LOW);
-            PID_Setpoint = 0;//-3;  //Dorsiflexion for MAriah in Swing, otherwise should be 0
+            Old_PID_Setpoint = PID_Setpoint;
+            New_PID_Setpoint = 0;
+            //            PID_Setpoint = 0;//-3;  //Dorsiflexion for MAriah in Swing, otherwise should be 0
             R_state = 1;
           }
           break;
@@ -230,13 +236,48 @@ void loop()
           if ((fsr(fsr_sense_Long) < (fsr_thresh_long * fsr_cal_Long)) && (fsr(fsr_sense_Short) < (fsr_thresh * fsr_cal_Short)))
           {
             digitalWrite(13, LOW);
-            PID_Setpoint = 0;//-3; //Dorsiflexion for MAriah in Swing, otherwise should be 0
+            Old_PID_Setpoint = PID_Setpoint;
+            New_PID_Setpoint = 0;
+            //            PID_Setpoint = 0;//-3; //Dorsiflexion for MAriah in Swing, otherwise should be 0
             R_state = 1;
           }
           break;
       }
-    }
-  }
+
+
+      if (sigm_flag) {
+        if ((abs(New_PID_Setpoint - PID_Setpoint) > 0.5) && (sigm_done)) {
+          //if (1) {
+          sigm_done = false;
+          n_iter = 0;
+          N_step = round((1 / (Ts * exp_mult)) * 10);
+
+          if ((N_step % 2)) {
+            N_step++;
+          }
+        }
+
+        if (n_iter < N_step) {
+
+          PID_Setpoint = Change_PID_Setpoint_Sigm(New_PID_Setpoint, PID_Setpoint, Old_PID_Setpoint, Ts, exp_mult, n_iter, N_step);
+          n_iter++;
+        }
+        if (n_iter >= N_step) {
+          sigm_done = true;
+        }
+      }// end if sigm
+
+      Serial.print(R_state);
+      Serial.print(",");
+      Serial.print(New_PID_Setpoint);
+      Serial.print(",");
+      Serial.println(PID_Setpoint);
+      delay(15);
+
+
+
+    }// end stream
+  }// end bluetooth
   //====================================================================================================================
   //====================================================================================================================
   //====================================================================================================================
