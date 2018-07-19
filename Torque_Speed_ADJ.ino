@@ -1,3 +1,10 @@
+// Adjust the FRS threshold in order to avoid noise
+// Adjust the speed as a function of the average time of 4 steps
+// Adjust the speed at each step
+// Adjust both speed and torque ad each step
+
+
+
 ////--------------------------------------------------------
 //
 //double Adj_FSR_th(int R_state_l, int R_state_old_l, steps* p_steps_l, double FSR_th_l, double New_PID_Setpoint_l, double ref_old_l) {
@@ -54,61 +61,7 @@
 //}
 //
 //
-////--------------------------------------------------------
-//
-//double Adj_N3_speed(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l, double N3_step) {
-//
-//  // every 4 steps compare them and adjust FSR_th
-//  // it has be done starting from the first and only after FSR Calibration
-//
-//
-//  if ((R_state_l == 3) && (R_state_old_l == 1 || R_state_old_l == 2) && (p_steps->flag_1_step == false))
-//  {
-//    //  Serial.println("first if");
-//    //    double tcal_time = millis();
-//    p_steps_l->flag_1_step = true;
-//  }
-//
-//  if (p_steps_l->flag_1_step) {
-//
-//    // Identify changements in the states and hence a step
-//
-//    if ((R_state_old_l == 3) && (R_state_l == 1 || R_state_l == 2)) {
-//      p_steps_l->flag_1_step = false;
-//
-//      (p_steps_l->n_steps)++;
-//
-//      Serial.print(" Old_PID_set = ");
-//      Serial.println(Old_PID_Setpoint);
-//      Serial.print(" sum torque_val ");
-//      Serial.println(p_steps->torque_val);
-//
-//      p_steps_l->torque_val += PID_Setpoint;
-//
-//      if (((p_steps_l->n_steps) % 4) == 0) {
-//        p_steps->torque_val_average = p_steps_l->torque_val / 4;
-//        p_steps_l->torque_val = 0;
-//        Serial.print(" Error ");
-//        Serial.println(fabs(fabs(Setpoint_Ankle) - fabs(p_steps->torque_val_average)));
-//
-//
-//        if (fabs(fabs(Setpoint_Ankle) - fabs(p_steps->torque_val_average)) >= 0.1)
-//        {
-//          Serial.print(" NOT ENOUGH ");
-//          //
-//          N3_l = N3_l - N3_step;
-//          if (N3_l < 4) N3_l = 4;
-//        } // end if Old PID Setpoint
-//
-//        Serial.print("N3 = ");
-//        Serial.println(N3_l);
-//      }//end if 4 steps
-//    }//end if R old 3
-//  }// end if flag
-//
-//  return N3_l;
-//}
-//
+
 ////---------------------------------------------------------------------------
 //
 //
@@ -444,10 +397,14 @@
 //
 ////--------------------------------
 
-double Adj_N3_speed_with_voltage_every_step(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l, double* p_Setpoint_Ankle_l) {
+double Torque_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l, double* p_Setpoint_Ankle_l) {
 
-  // every step compare them and adjust FSR_th
-  // it has be done starting from the first and only after FSR Calibration
+  // Speed adjustment -> as a function of the plantar time the smoothing parameters are updated in order to modify the shaping of the torque to the new step time.
+  // It considers the average time of 4 steps. There's a filter of step_time_length on the plantarflexion time in order to cut the noise
+  // The faster you go the more N3 decreases
+
+  // Torque adjustment -> as a function of the voltage measured the torque set point is modified, the faster you go probably the bigger you hit the floor and hence
+  // the voltage increases. It modifies the setpoint at each step.
 
 
   // if you transit from state 1 to state 3 dorsiflexion is completed and start plantarflexion
@@ -456,26 +413,63 @@ double Adj_N3_speed_with_voltage_every_step(int R_state_l, int R_state_old_l, st
     p_steps_l->plant_time = millis(); // start the plantarflexion
     p_steps_l->dorsi_time = millis() - (p_steps_l->dorsi_time); // calculate the dorsiflexion
 
-    if (p_steps_l->dorsi_time <= 30) p_steps_l->dorsi_time = 30;
+    if (p_steps_l->dorsi_time <= step_time_length / 4) // if <50ms probably it is noise
+      //    p_steps_l->dorsi_time = 30;
+    { Serial.print(" Dorsi Time<50 probably noise ");
+      Serial.println(p_steps_l->dorsi_time);
+      return N3_l;
+    }
 
-    p_steps_l->flag_1_step = true;
-//    Serial.print(" Dorsi time ");
-//    Serial.println(p_steps_l->dorsi_time);
+    p_steps_l->flag_1_step = true; // Start a step
+    //    Serial.print(" Dorsi time ");
+    //    Serial.println(p_steps_l->dorsi_time);
 
-
+    // If you want to adjust the torque and hence torque_adj = 1
     if (p_steps_l->torque_adj) //HERE YOU SHOULD TAKE THE PEAK VALUE DURING THE PLANTARFLEXION!!! MAYBE YOU CAN USE THE LAST STEP AS REFERENCE
     {
 
-      //          Setpoint_Ankle = ((p_steps_l->curr_voltage) / (p_steps_l->voltage_ref * 0.9)) * p_steps_l->Setpoint;
-      if (((p_steps_l->curr_voltage) - (p_steps_l->voltage_ref * 0.9)) > 0)
-        *p_Setpoint_Ankle_l = fabs((p_steps_l->curr_voltage) - (p_steps_l->voltage_ref * 0.9)) * 1 + p_steps_l->Setpoint;
+      // If you're pushing more your voltage should increase and hence it should be bigger than the reference level
+      //      if (((p_steps_l->curr_voltage) - (p_steps_l->voltage_ref * (p_steps_l->fsr_percent_thresh_Toe))) > 0)
+      //        *p_Setpoint_Ankle_l = fabs((p_steps_l->curr_voltage) - (p_steps_l->voltage_ref * (p_steps_l->fsr_percent_thresh_Toe))) * 1 + p_steps_l->Setpoint;
+
+      if (p_steps_l->plant_time <= step_time_length)
+        //      p_steps_l->plant_time = 16;
+      { Serial.print(" Plant Time<200 probably noise ");
+        Serial.println(p_steps_l->plant_time);
+        p_steps_l->flag_1_step = false;
+        return N3_l;
+      }
+
+      // if you're going use the time as reference to increase also the torque
+      *p_Setpoint_Ankle_l = (p_steps_l->Setpoint )* (fabs(p_steps_l->plant_mean_base / p_steps_l->plant_mean));
+      Serial.print(" Mean ");
+      Serial.print(p_steps_l->plant_mean_base);
+      Serial.print(" , Current ");
+      Serial.println(p_steps_l->plant_mean);
+      Serial.print(" Set ");
+      Serial.print(p_steps_l->Setpoint);
+      Serial.print(" , % ");
+      Serial.println(fabs(p_steps_l->plant_mean_base / p_steps_l->plant_mean));
+      Serial.print(" Res ");
+      Serial.println((p_steps_l->Setpoint )* (fabs(p_steps_l->plant_mean_base / p_steps_l->plant_mean)));
+      Serial.print(" Actual ");
+      Serial.println(*p_Setpoint_Ankle_l);
+      
+
+      if (fabs(*p_Setpoint_Ankle_l) <= fabs(p_steps_l->Setpoint * 0.5)) {
+        *p_Setpoint_Ankle_l = p_steps_l->Setpoint * 0.5;
+      }
+      if (fabs(*p_Setpoint_Ankle_l) >= fabs(p_steps_l->Setpoint * 1.5)) {
+        *p_Setpoint_Ankle_l = p_steps_l->Setpoint * 1.5;
+      }
+
 
     }// end if torque_adj
 
 
   }
 
-  if (p_steps_l->flag_1_step) {
+  if (p_steps_l->flag_1_step) { // If a step has started
     // Identifying changes in the states I can identify a step
     // if you transit from 3 to 1 plantar flexion is completed and start dorsiflexion
     if ((R_state_old_l == 3) && (R_state_l == 1 || R_state_l == 2)) {
@@ -485,7 +479,7 @@ double Adj_N3_speed_with_voltage_every_step(int R_state_l, int R_state_old_l, st
       // start dorsiflexion
       p_steps_l->dorsi_time = millis();
 
-      if (p_steps_l->flag_N3_adjustment_time) {
+      if (p_steps_l->flag_N3_adjustment_time) { // If you wanted to adjust the smoothing as a function of the speed
         // check for the first step in order to see if everything started properly
         if (p_steps_l->n_steps == 1) {
           Serial.println(" N3 Adj activated");
@@ -495,12 +489,20 @@ double Adj_N3_speed_with_voltage_every_step(int R_state_l, int R_state_old_l, st
 
       // calculate plantarflexion
       p_steps_l->plant_time = millis() - (p_steps_l->plant_time);
-      if (p_steps_l->plant_time <= 16) p_steps_l->plant_time = 16;
+      if (p_steps_l->plant_time <= step_time_length)
+        //      p_steps_l->plant_time = 16;
+      { Serial.print(" Plant Time<200 probably noise ");
+        Serial.println(p_steps_l->plant_time);
+        p_steps_l->flag_1_step = false;
+        return N3_l;
+      }
+
       p_steps_l->flag_1_step = false; // you have provided one step
+
       Serial.print(" Plant Time = ");
       Serial.println(p_steps_l->plant_time);
 
-      if (p_steps_l->count_steps >= 2) { //avoid the first step just to be sure
+      if (p_steps_l->count_steps >= 2) { // avoid the first step just to be sure
 
         // this is the time window of the filter for the dorsiflexion
         if (p_steps_l->count_steps - 2 >= 4) {
@@ -546,54 +548,45 @@ double Adj_N3_speed_with_voltage_every_step(int R_state_l, int R_state_old_l, st
 
       // print the last 4 results
       Serial.println();
-//      for (int i = 0; i < 4; i++)
-//      {
-//        Serial.print("Dorsi ");
-//        Serial.print(p_steps_l->four_step_dorsi_time[i]);
-//        Serial.print(" ");
-//      }
-//      Serial.println(" ");
-//      for (int i = 0; i < 4; i++)
-//      {
-//        Serial.print("Plant ");
-//        Serial.print(p_steps_l->four_step_plant_time[i]);
-//        Serial.print(" ");
-//      }
-//      Serial.println(" ");
-//      Serial.print(" mean = ");
-//      Serial.println(p_steps_l->plant_mean);
+      //      for (int i = 0; i < 4; i++)
+      //      {
+      //        Serial.print("Dorsi ");
+      //        Serial.print(p_steps_l->four_step_dorsi_time[i]);
+      //        Serial.print(" ");
+      //      }
+      //      Serial.println(" ");
+      //      for (int i = 0; i < 4; i++)
+      //      {
+      //        Serial.print("Plant ");
+      //        Serial.print(p_steps_l->four_step_plant_time[i]);
+      //        Serial.print(" ");
+      //      }
+      //      Serial.println(" ");
+      //      Serial.print(" mean = ");
+      //      Serial.println(p_steps_l->plant_mean);
       if (p_steps_l->flag_N3_adjustment_time) {
         N3_l = round((p_steps_l->plant_mean) * p_steps_l->perc_l);
         if (N3_l <= 4) N3_l = 4;
         if (N3_l >= 500) N3_l = 500;
-        //
-        //        if (p_steps_l->torque_adj)
-        //        {
-        //
-        //          //          Setpoint_Ankle = ((p_steps_l->curr_voltage) / (p_steps_l->voltage_ref * 0.9)) * p_steps_l->Setpoint;
-        //if (((p_steps_l->curr_voltage)-(p_steps_l->voltage_ref*0.9))>0)
-        //          Setpoint_Ankle = fabs((p_steps_l->curr_voltage) - (p_steps_l->voltage_ref * 0.9))*1 + p_steps_l->Setpoint;
-        //
-        //        }// end if torque_adj
       }
 
-//      Serial.print(" N3 = ");
-//      Serial.println(N3_l);
-//
-//      Serial.print(" volt curr ref = ");
-//
-//      Serial.print((p_steps_l->curr_voltage));
-//      Serial.print(",");
-//      Serial.print((p_steps_l->voltage_ref * 0.9));
-//
-//
-//      Serial.print(" Trq = ");
-//      Serial.println(*p_Setpoint_Ankle_l);
+      Serial.print(" N3 = ");
+      Serial.println(N3_l);
+      //
+      //      Serial.print(" volt curr ref = ");
+      //
+      //      Serial.print((p_steps_l->curr_voltage));
+      //      Serial.print(",");
+      //      Serial.print((p_steps_l->voltage_ref * 0.9));
+      //
+      //
+      Serial.print(" Trq = ");
+      Serial.println(*p_Setpoint_Ankle_l);
 
     }//end if R old 3 i.e. finish plantarflexion
   }// end if flag_1_step
 
-
+  // For the torque adjustment take the baseline in time, even if we use the voltage this data can be useful
   if (p_steps_l->flag_take_baseline) {
     p_steps_l->dorsi_mean_base = 0;
     p_steps_l->plant_mean_base = 0;

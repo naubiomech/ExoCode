@@ -1,3 +1,5 @@
+// Functions to check the memory values and to read them
+
 int check_torque_bias(int address_torque_l) 
 {
   byte value = EEPROM.read(address_torque_l);

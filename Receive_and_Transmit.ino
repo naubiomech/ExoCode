@@ -1,3 +1,8 @@
+// Peek is the variable used to identify the message received by matlab
+// To understand the commands see the file .......... in the folder
+
+
+
 void receive_and_transmit()
 {
 
@@ -28,7 +33,7 @@ void receive_and_transmit()
     L_activate_in_3_steps = 1;
     L_num_3_steps = 0;
     L_1st_step = 1;
-    L_start_step=0;
+    L_start_step = 0;
   }
   if (Peek == 'f')                                                  //If MATLAB sent the character F
   { //MATLAB wants to write a new Torque Value
@@ -41,7 +46,7 @@ void receive_and_transmit()
     R_activate_in_3_steps = 1;
     R_num_3_steps = 0;
     R_1st_step = 1;
-    R_start_step=0;
+    R_start_step = 0;
   }
   if (Peek  == 'E')                                                 //If MATLAB sent the character E
   {
@@ -464,6 +469,7 @@ void receive_and_transmit()
     delay(10);
     recieveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
     memcpy(&fsr_percent_thresh_Left_Toe, &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+    L_p_steps->fsr_percent_thresh_Toe = fsr_percent_thresh_Left_Toe;
     Serial.print("Setting the fsr_percent_thresh_Left_Toe: ");
     Serial.println(fsr_percent_thresh_Left_Toe);
     KF_LL = store_KF_LL;
@@ -480,6 +486,7 @@ void receive_and_transmit()
     delay(10);
     recieveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
     memcpy(&fsr_percent_thresh_Right_Toe, &holdon, 8);
+    R_p_steps->fsr_percent_thresh_Toe = fsr_percent_thresh_Right_Toe;
     KF_LL = store_KF_LL;
     KF_RL = store_KF_RL;//Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
     Serial.print("Setting the fsr_percent_thresh_Rigth_Toe: ");
@@ -519,11 +526,90 @@ void receive_and_transmit()
     KF_LL = store_KF_LL;
     KF_RL = store_KF_RL;
   }//end if
-  
-  if (Peek == 'C'){ // Clear the buffer
-while(bluetooth.available()>0) bluetooth.read(); 
-Serial.println("Buffer Clean");
+
+  if (Peek == 'C') { // Clear the buffer
+    while (bluetooth.available() > 0) bluetooth.read();
+    Serial.println("Buffer Clean");
   }
+
+  if (Peek == 'T')
+  { //Matlab wants to set FSR
+    double store_KF_LL = KF_LL;
+    double store_KF_RL = KF_RL;
+    KF_LL = 0;
+    KF_RL = 0;
+    garbage = bluetooth.read();
+    //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+    Serial.print("Stop Left N3 adj, come back to: ");
+    L_p_steps->count_steps = 0;
+    L_p_steps->n_steps = 0;
+    L_p_steps->flag_1_step = false;
+    L_p_steps->flag_take_average = false;
+    L_p_steps->flag_N3_adjustment_time = false;
+    L_p_steps->flag_take_baseline = false;
+    L_p_steps->torque_adj = false;
+    N3_LL = N3;
+    Serial.println(N3_LL);
+    KF_LL = store_KF_LL;
+    KF_RL = store_KF_RL;
+  }//end if
+
+  if (Peek == 't')
+  { //Matlab wants to set FSR
+    double store_KF_LL = KF_LL;
+    double store_KF_RL = KF_RL;
+    KF_LL = 0;
+    KF_RL = 0;
+    garbage = bluetooth.read();
+    //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+    Serial.print("Stop Right N3 adj, come back to: ");
+
+    R_p_steps->count_steps = 0;
+    R_p_steps->n_steps = 0;
+    R_p_steps->flag_1_step = false;
+    R_p_steps->flag_take_average = false;
+    R_p_steps->flag_N3_adjustment_time = false;
+    R_p_steps->flag_take_baseline = false;
+    R_p_steps->torque_adj = false;
+    N3_RL = N3;
+    Serial.println(N3_LL);
+    KF_LL = store_KF_LL;
+    KF_RL = store_KF_RL;
+  }//end if
+
+    if (Peek == 'I')
+  { //Matlab wants to set FSR
+    double store_KF_LL = KF_LL;
+    double store_KF_RL = KF_RL;
+    KF_LL = 0;
+    KF_RL = 0;
+    garbage = bluetooth.read();
+    //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+    Serial.print("Stop Left TRQ adj, come back to: ");
+    *p_Setpoint_Ankle_LL = L_p_steps->Setpoint;
+    L_p_steps->torque_adj = false;
+
+    Serial.println(*p_Setpoint_Ankle_LL );
+    KF_LL = store_KF_LL;
+    KF_RL = store_KF_RL;
+  }//end if
+
+      if (Peek == 'i')
+  { //Matlab wants to set FSR
+    double store_KF_LL = KF_LL;
+    double store_KF_RL = KF_RL;
+    KF_LL = 0;
+    KF_RL = 0;
+    garbage = bluetooth.read();
+    //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+    Serial.print("Stop Right TRQ adj, come back to: ");
+    *p_Setpoint_Ankle_RL = R_p_steps->Setpoint;
+    R_p_steps->torque_adj = false;
+
+    Serial.println(*p_Setpoint_Ankle_RL);
+    KF_LL = store_KF_LL;
+    KF_RL = store_KF_RL;
+  }//end if
 
   Peek = 0;
 }

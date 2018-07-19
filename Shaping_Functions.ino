@@ -1,69 +1,3 @@
-double Change_PID_Setpoint_Trapz(double New_PID_Setpoint_l, double Current_PID_Setpoint, double Old_PID_Setpoint_l, double n_step)
-{
-  double step_value = (New_PID_Setpoint_l - Old_PID_Setpoint_l) / n_step;
-  if (fabs(New_PID_Setpoint_l - Current_PID_Setpoint) <= 0.01)
-  {
-    Current_PID_Setpoint = New_PID_Setpoint_l;
-  }
-  else
-  {
-    Current_PID_Setpoint += step_value;
-  }
-  return Current_PID_Setpoint;
-}
-
-//-------------------------
-
-double Calc_KF(double New_PID_Setpoint_l, int test)
-{
-  double KF = 1;
-  if (test == 1)
-  {
-    if (New_PID_Setpoint_l >= 0 && New_PID_Setpoint_l <= 5)
-    {
-      KF = 1.1;
-    }
-    else
-    {
-      KF = 1.2;
-    }
-  }
-  else
-  {
-    if (New_PID_Setpoint_l <= -2)
-    {
-      KF = 1.2;
-    }
-    else
-    {
-      if (New_PID_Setpoint_l > -2 && New_PID_Setpoint_l <= 0)
-      {
-        KF = 1.1 - 0.05 * New_PID_Setpoint_l;
-      }
-      else
-      {
-        if (New_PID_Setpoint_l > 0 && New_PID_Setpoint_l <= 5)
-        {
-          KF = 1.1;
-        }
-        else
-        {
-          if (New_PID_Setpoint_l > 5 && New_PID_Setpoint_l <= 7)
-          {
-            KF = 1.1 + 0.05 * (New_PID_Setpoint_l - 5);
-          }
-          else
-          {
-            KF = 1.2;
-          }
-        }
-      }
-    }// end if New Pid <=-2
-  }// end if test
-  return KF;
-}
-
-//------------------------------------------------------
 //Calc Sigmoid function and apply to the New point
 
 
@@ -81,7 +15,7 @@ double Change_PID_Setpoint_Sigm(double New_PID_Setpoint_l, double Current_PID_Se
   return Current_PID_Setpoint;
 }
 
-void PID_Curve_RL()
+void PID_Sigm_Curve_RL()
 {
   sig_time_RL = millis();                                                        //Start time for sig
   if (sig_time_RL - sig_time_old_RL > 1)
@@ -124,7 +58,7 @@ void PID_Curve_RL()
   }
 }
 
-void PID_Curve_LL()
+void PID_Sigm_Curve_LL()
 {
   sig_time_LL = millis();                                                        //Start time for sig
   if (sig_time_LL - sig_time_old_LL > 1)

@@ -1,3 +1,5 @@
+// Calibrate the torque sensors, FSR sensors and get the torque and FSR voltage
+
 void torque_calibration() 
 {
   long tcal_time = millis();
@@ -55,7 +57,7 @@ void FSR_calibration()
       fsr_Left_Heel_thresh = Curr_Left_Heel;
     }
   }
-
+//Update structure with the threshold
   L_p_steps->voltage_ref = fsr_Left_Toe_thresh;
   R_p_steps->voltage_ref = fsr_Right_Toe_thresh;
 }
