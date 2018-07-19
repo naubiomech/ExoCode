@@ -4,7 +4,7 @@ void state_machine_LL()
   {
     case 1: //Swing
       // This flag enables the "set to zero" procedure for the left ankle.
-      // When you're for at least 3 seconds in the same state, the torque reference is set to zero 
+      // When you're for at least 3 seconds in the same state, the torque reference is set to zero
       if (L_set_2_zero == 1) {
         L_set_2_zero = 0;
         One_time_L_set_2_zero = 1;
@@ -17,7 +17,30 @@ void state_machine_LL()
         {
           sigm_done_LL = true;
           Old_PID_Setpoint_LL = PID_Setpoint_LL;
-          New_PID_Setpoint_LL = Setpoint_Ankle_LL * L_coef_in_3_steps; //L_coef_in_3_steps goes from 0 to 1 as a function of the step that you perform
+//                    New_PID_Setpoint_LL = Setpoint_Ankle_LL * L_coef_in_3_steps; //L_coef_in_3_steps goes from 0 to 1 as a function of the step that you perform
+
+          if (Previous_Setpoint_Ankle_LL <= Setpoint_Ankle_LL) {
+
+            New_PID_Setpoint_LL = Previous_Setpoint_Ankle_LL + (Setpoint_Ankle_LL - Previous_Setpoint_Ankle_LL) * L_coef_in_3_steps;
+//            Serial.println("Old>=Pid");
+//            Serial.print("Old ");
+//            Serial.print(Previous_Setpoint_Ankle_LL);
+//            Serial.print(" , ");
+//            Serial.print("New ");
+//            Serial.println(New_PID_Setpoint_LL);
+            
+
+          } else {
+
+            New_PID_Setpoint_LL = Previous_Setpoint_Ankle_LL - (Previous_Setpoint_Ankle_LL - Setpoint_Ankle_LL) * L_coef_in_3_steps;
+//            Serial.println("Old<Pid");
+//            Serial.print("Old ");
+//            Serial.print(Previous_Setpoint_Ankle_LL);
+//            Serial.print(" , ");
+//            Serial.print("New ");
+//            Serial.println(New_PID_Setpoint_LL);
+          }
+
           L_state_old = L_state;
           L_state = 3;
           state_count_LL_13 = 0;
@@ -34,7 +57,7 @@ void state_machine_LL()
         New_PID_Setpoint_LL = 0;
         One_time_L_set_2_zero = 0;
       }
-      
+
       if ((fsr(fsr_sense_Left_Toe) < (fsr_percent_thresh_Left_Toe * fsr_Left_Toe_thresh)))
       {
         state_count_LL_31++;

@@ -31,7 +31,8 @@ void receive_and_transmit()
       store_KF_RL = KF_RL;
       KF_LL = 0;
       KF_RL = 0;
-      receiveVals(8);                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
+      receiveVals(8);
+      Previous_Setpoint_Ankle_LL = Setpoint_Ankle_LL; //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&Setpoint_Ankle_LL, &holdon, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       Setpoint_Ankle_LL = abs(Setpoint_Ankle_LL);                     //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
       //Recieved the large data chunk chopped into bytes, a roundabout way was needed
@@ -50,6 +51,7 @@ void receive_and_transmit()
       KF_LL = 0;
       KF_RL = 0;
       receiveVals(8);                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
+      Previous_Setpoint_Ankle_RL = Setpoint_Ankle_RL;
       memcpy(&Setpoint_Ankle_RL, &holdon, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       Setpoint_Ankle_RL = -abs(Setpoint_Ankle_RL);                    //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
       //Recieved the large data chunk chopped into bytes, a roundabout way was needed
@@ -108,27 +110,27 @@ void receive_and_transmit()
       break;
 
     case 'L':
-      
+
       FSR_CAL_FLAG = 1;
-      
-//      
-//      store_KF_LL = KF_LL;
-//      store_KF_RL = KF_RL;
-//      KF_LL = 0;
-//      KF_RL = 0;
-//      
-//      
-//      FSR_calibration();
-//      write_FSR_values(address_FSR_LL, fsr_Left_Heel_thresh);
-//      write_FSR_values((address_FSR_LL + sizeof(double) + sizeof(char)), fsr_Left_Toe_thresh);
-//      write_FSR_values(address_FSR_RL, fsr_Right_Heel_thresh);
-//      write_FSR_values((address_FSR_RL + sizeof(double) + sizeof(char)), fsr_Right_Toe_thresh);
-//
-//      L_p_steps->voltage_ref = fsr_Left_Toe_thresh;
-//      R_p_steps->voltage_ref = fsr_Right_Toe_thresh;
-//
-//      KF_LL = store_KF_LL;
-//      KF_RL = store_KF_RL;
+
+      //
+      //      store_KF_LL = KF_LL;
+      //      store_KF_RL = KF_RL;
+      //      KF_LL = 0;
+      //      KF_RL = 0;
+      //
+      //
+      //      FSR_calibration();
+      //      write_FSR_values(address_FSR_LL, fsr_Left_Heel_thresh);
+      //      write_FSR_values((address_FSR_LL + sizeof(double) + sizeof(char)), fsr_Left_Toe_thresh);
+      //      write_FSR_values(address_FSR_RL, fsr_Right_Heel_thresh);
+      //      write_FSR_values((address_FSR_RL + sizeof(double) + sizeof(char)), fsr_Right_Toe_thresh);
+      //
+      //      L_p_steps->voltage_ref = fsr_Left_Toe_thresh;
+      //      R_p_steps->voltage_ref = fsr_Right_Toe_thresh;
+      //
+      //      KF_LL = store_KF_LL;
+      //      KF_RL = store_KF_RL;
       break;
 
     case 'M':

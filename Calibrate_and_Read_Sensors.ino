@@ -14,13 +14,10 @@ void torque_calibration()
   }
   Tcal_LL = (Tcal_LL / torq_cal_count) * (3.3 / 4096);                         // Averages torque over a second
   Tcal_RL = (Tcal_RL / torq_cal_count) * (3.3 / 4096);                         // Averages torque over a second
-
 }
 
 void FSR_calibration()
 {
-
-
   if (FSR_FIRST_Cycle) {
     FSR_FIRST_Cycle = 0;
 

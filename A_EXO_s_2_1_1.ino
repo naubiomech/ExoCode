@@ -178,16 +178,16 @@ void callback()
   }
 }
 
-//
-//const int dim_FSR = 200;
-//double FSR_Average_LL_array[dim_FSR];
-//double FSR_Average_RL_array[dim_FSR];
-//double * p_FSR_Array_LL = &FSR_Average_LL_array[0];
-//double * p_FSR_Array_RL = &FSR_Average_RL_array[0];
-//double Curr_FSR_LL;
-//double Curr_FSR_RL;
-//double FSR_Average_LL;
-//double FSR_Average_RL;
+
+const int dim_FSR = 200;
+double FSR_Average_LL_array[dim_FSR];
+double FSR_Average_RL_array[dim_FSR];
+double * p_FSR_Array_LL = &FSR_Average_LL_array[0];
+double * p_FSR_Array_RL = &FSR_Average_RL_array[0];
+double Curr_FSR_LL;
+double Curr_FSR_RL;
+double FSR_Average_LL;
+double FSR_Average_RL;
 
 
 void loop()

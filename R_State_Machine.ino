@@ -14,7 +14,30 @@ void state_machine_RL() //For the comments on this file see the L_State_Machine
         {
           sigm_done_RL = true;
           Old_PID_Setpoint_RL = PID_Setpoint_RL;
-          New_PID_Setpoint_RL = Setpoint_Ankle_RL * R_coef_in_3_steps;
+//          New_PID_Setpoint_RL = Setpoint_Ankle_RL * R_coef_in_3_steps;
+
+          if (Previous_Setpoint_Ankle_RL <= Setpoint_Ankle_LL) {
+
+            New_PID_Setpoint_RL = Previous_Setpoint_Ankle_RL + (Setpoint_Ankle_RL - Previous_Setpoint_Ankle_RL) * R_coef_in_3_steps;
+//            Serial.println("Old>=Pid");
+//            Serial.print("Old ");
+//            Serial.print(Previous_Setpoint_Ankle_RL);
+//            Serial.print(" , ");
+//            Serial.print("New ");
+//            Serial.println(New_PID_Setpoint_RL);
+            
+
+          } else {
+
+            New_PID_Setpoint_RL = Previous_Setpoint_Ankle_RL - (Previous_Setpoint_Ankle_RL - Setpoint_Ankle_RL) * R_coef_in_3_steps;
+//            Serial.println("Old<Pid");
+//            Serial.print("Old ");
+//            Serial.print(Previous_Setpoint_Ankle_RL);
+//            Serial.print(" , ");
+//            Serial.print("New ");
+//            Serial.println(New_PID_Setpoint_RL);
+          }
+          
           R_state_old = R_state;
           R_state = 3;
           state_count_RL_13 = 0;

@@ -39,6 +39,9 @@ PID PID_RL(&Input_RL, &Output_RL, &PID_Setpoint_RL, kp_RL, ki_RL, kd_RL, DIRECT)
 double Setpoint_Ankle_RL = 0;
 double Setpoint_Ankle_LL = 0;
 
+double Previous_Setpoint_Ankle_LL;
+double Previous_Setpoint_Ankle_RL;
+
 // Pointers to easily work on the setpoint
 double*p_Setpoint_Ankle_LL = &Setpoint_Ankle_LL;
 double*p_Setpoint_Ankle_RL = &Setpoint_Ankle_RL;
