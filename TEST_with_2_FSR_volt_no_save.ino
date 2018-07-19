@@ -46,8 +46,8 @@ double doubleFSR = 0;
 int intFSR = 0;
 double fsr_cal_Long = 0;
 double fsr_cal_Short = 0;
-double fsr_thresh_long = .8;
-double fsr_thresh = .8;
+double fsr_thresh_long = .9;
+double fsr_thresh = .9;
 
 int flag = 0;
 float filterVal = .8;
@@ -55,7 +55,7 @@ double smoothedVal = 0;
 
 int Vol_LL;
 const unsigned int motor_LL = A14;                                     //analogwrite pin
-double kp = 300;
+double kp = 1000;
 double ki = 0;
 double kd = 0;
 
@@ -65,8 +65,8 @@ int i = 0;
 int j = 0;
 
 
-int dim = 3;
-double Tarray[3] = {0};
+const int dim = 3;
+double Tarray[dim] = {0};
 double *TarrayPoint = &Tarray[0];
 double Average = 0;
 
@@ -83,7 +83,7 @@ const unsigned int zero = 1540;                                       //whatever
 const unsigned int which_leg_pin = 15;
 
 
-#include <PID_v1.h>                                                  //Includes the PID library so we can utilize PID control
+#include <PID_v2.h>                                                  //Includes the PID library so we can utilize PID control
 int PID_sample_time = 1;                                             //PID operates at 1000Hz, calling at a freq of 1 ms.
 double PID_Setpoint, Input_LL, Output_LL;                             //Initializes the parameters for the PID controll
 PID PID_LL(&Input_LL, &Output_LL, &PID_Setpoint, kp, ki, kd, DIRECT); //Sets up PID for the right leg
@@ -145,11 +145,28 @@ SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an 
 
 double sig_time = 0;
 double sig_time_old = 0;
+double KF = 1;
+int callback_time = 0;
+int n_cycles_to_matlab = 0;
 
 void setup()
 {
   //  t_ref.every(1,sigm_callback);
-  Timer1.initialize(1000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
+  callback_time = 1000;
+
+  if (callback_time == 1000) {
+    n_cycles_to_matlab = 10;
+  }
+  else {
+    if (callback_time == 2000) {
+      n_cycles_to_matlab = 5;
+    }
+    else {
+      n_cycles_to_matlab = 10;
+    }
+  }
+
+  Timer1.initialize(callback_time);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
   Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
   Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
 
@@ -181,7 +198,7 @@ void setup()
   double  tcal_time = millis();                                       //ignores the time it took to execute all previous code when calibratin
   int  count = 0;                                                    //Starts count for calibration at 0
   digitalWrite(13, HIGH);
-  while (millis() - tcal_time < 1000)
+  while (millis() - tcal_time < 500)
   { //Calibrates the LL for a total time of 1 second,
     Tcal_LL += analogRead(A4);                                        //Sums the torque read in and sums it with all previous red values
     count ++;                                                         //Increments count
@@ -189,7 +206,7 @@ void setup()
   Tcal_LL = (Tcal_LL / count) * (3.3 / 4096);
 
   tcal_time = millis();
-  while (millis() - tcal_time < 5000)
+  while (millis() - tcal_time < 500)
   {
     fsrLongCurrent = fsr(fsr_sense_Long);
     fsrShortCurrent = fsr(fsr_sense_Short);
@@ -213,14 +230,19 @@ void callback()
 {
   if ((stream == 1))
   {
-    if (streamTimerCount == 10)
+    if (streamTimerCount == n_cycles_to_matlab)
     {
       bluetooth.println(Average);
-            bluetooth.println(R_state);
-      bluetooth.println(PID_Setpoint);//new add I wanna see also the setpoint that I require
+      bluetooth.println(R_state);//
+      bluetooth.println(PID_Setpoint);
+      // Here I add also the Voltage value
+      bluetooth.println(fsr(fsr_sense_Short));
+
       streamTimerCount = 0;
     }
     streamTimerCount++;
+    
+//    dim=1;
 
     for (int j = dim; j >= 0; j--)                    //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
     { // there are the number of spaces in the memory space minus 2 actions taht need to be taken
@@ -230,17 +252,34 @@ void callback()
     *(TarrayPoint) = T_act_LL;
     int i = 0;
     Average = 0;
+    
+    // take the sum
     for (i = 0; i < dim; i++)
     {
-      Average = Average + *(TarrayPoint + i);
+      Average += *(TarrayPoint + i);
     }
+    //calc the average
     Average = Average / dim;
 
-    pid(Average);
+//        Average=T_act_LL;
+        pid(Average);
+        
+
   }
 }
 
 int R_state_old = 1;
+
+int  state_count_32 = 0;
+int  state_count_31 = 0;
+int  state_count_21 = 0;
+int  state_count_23 = 0;
+int  state_count_13 = 0;
+int  state_count_12 = 0;
+
+double N3 = 250;
+double N2 = 4;
+double N1 = 4;
 
 void loop()
 {
@@ -250,63 +289,54 @@ void loop()
     //    stream=1;
     if ((stream == 1))                                   //Waits to give Assistance until the Start button has been pushed on the MATLAB GUI
     {
+
+
       switch (R_state)
       {
         case 1: //Swing
-          if ((fsr(fsr_sense_Long) > (fsr_thresh_long * fsr_cal_Long)) && (fsr(fsr_sense_Short) < (fsr_thresh * fsr_cal_Short)))
-          {
-            digitalWrite(13, LOW);
-            sigm_done = true;
-            Old_PID_Setpoint = PID_Setpoint;
-            //            New_PID_Setpoint = Setpoint_earlyStance;
-            New_PID_Setpoint = Setpoint_earlyStance * 0;
-            R_state_old = R_state;
-            R_state = 2;
-          }
-          if ((fsr(fsr_sense_Long) > ((fsr_thresh_long) * fsr_cal_Long) && (fsr(fsr_sense_Short) > fsr_thresh * fsr_cal_Short)))
-          {
-            digitalWrite(13, HIGH);
-            sigm_done = true;
-            Old_PID_Setpoint = PID_Setpoint;
-            New_PID_Setpoint = Setpoint_Ankle;
-            R_state_old = R_state;
-            R_state = 3;
-          }
-          break;
-        case 2: // early Stance
-          if ((fsr(fsr_sense_Long) > (fsr_thresh_long * fsr_cal_Long) && (fsr(fsr_sense_Short) > fsr_thresh * fsr_cal_Short)))
-          {
-            digitalWrite(13, HIGH);
-            sigm_done = true;
-            Old_PID_Setpoint = PID_Setpoint;
-            New_PID_Setpoint = Setpoint_Ankle;
-            R_state_old = R_state;
-            R_state = 3;
-          }
-          if ((fsr(fsr_sense_Long) < (fsr_thresh_long * fsr_cal_Long)) && (fsr(fsr_sense_Short) < (fsr_thresh * fsr_cal_Short)))
-          {
-            digitalWrite(13, LOW);
-            sigm_done = true;
-            Old_PID_Setpoint = PID_Setpoint;
-            R_state_old = R_state;
-            New_PID_Setpoint = 0;
-            //            PID_Setpoint = 0;//-3;  //Dorsiflexion for MAriah in Swing, otherwise should be 0
-            R_state = 1;
+          if ((fsr(fsr_sense_Short) > fsr_thresh * fsr_cal_Short)) //&& (fsr(fsr_sense_Long) < (fsr_thresh_long * fsr_cal_Long)))
+          { state_count_13++;
+            if (state_count_13 == 4) {
+              digitalWrite(13, HIGH);
+              sigm_done = true;
+              Old_PID_Setpoint = PID_Setpoint;
+              New_PID_Setpoint = Setpoint_Ankle;
+              R_state_old = R_state;
+              R_state = 3;
+              state_count_32 = 0;
+              state_count_31 = 0;
+              state_count_21 = 0;
+              state_count_23 = 0;
+              state_count_13 = 0;
+              state_count_12 = 0;
+            }
           }
           break;
         case 3: //Late Stance
-          if ((fsr(fsr_sense_Long) < (fsr_thresh_long * fsr_cal_Long)) && (fsr(fsr_sense_Short) < (fsr_thresh * fsr_cal_Short)))
-          {
-            digitalWrite(13, LOW);
-            sigm_done = true;
-            Old_PID_Setpoint = PID_Setpoint;
-            R_state_old = R_state;
-            New_PID_Setpoint = 0;
-            //            PID_Setpoint = 0;//-3; //Dorsiflexion for MAriah in Swing, otherwise should be 0
-            R_state = 1;
+          if ((fsr(fsr_sense_Short) < (fsr_thresh * fsr_cal_Short)))
+          { state_count_31++;
+            if (state_count_31 == 4) {
+              digitalWrite(13, LOW);
+              sigm_done = true;
+              Old_PID_Setpoint = PID_Setpoint;
+              R_state_old = R_state;
+              New_PID_Setpoint = 0;
+              //            PID_Setpoint = 0;//-3; //Dorsiflexion for MAriah in Swing, otherwise should be 0
+              R_state = 1;
+              state_count_32 = 0;
+              state_count_31 = 0;
+              state_count_21 = 0;
+              state_count_23 = 0;
+              state_count_13 = 0;
+              state_count_12 = 0;
+            }
           }
+
           break;
-      }
+
+          //-----------------------------
+
+      }//end if stream==1
       sig_time = millis();
       if (sig_time - sig_time_old > 1) {
         sig_time_old = sig_time;
@@ -318,13 +348,13 @@ void loop()
             n_iter = 0;
 
             if (R_state == 3) {
-              N_step = 100;//12*10;
+              N_step = N3;//12 * 10;
             }
             else if (R_state == 2) {
-              N_step = 4;//6*10;
+              N_step = N2;//6 * 10;
             }
             else if (R_state == 1) {
-              N_step = 4;
+              N_step = N1;
             }
 
             exp_mult = round((10 / Ts) / (N_step - 1));
@@ -341,12 +371,12 @@ void loop()
           }
         }// end if sigm
       }
-      Serial.print(R_state);
-      Serial.print(",");
-      Serial.print(New_PID_Setpoint);
-      Serial.print(",");
-      Serial.println(PID_Setpoint);
-      delay(5);
+      //      Serial.print(R_state);
+      //      Serial.print(",");
+      //      Serial.print(New_PID_Setpoint);
+      //      Serial.print(",");
+      //      Serial.println(PID_Setpoint);
+      //      delay(5);
 
 
 
@@ -378,7 +408,8 @@ void loop()
     digitalWrite(onoff, HIGH);                    //The GUI user is ready to start the trial so Motor is enabled
     bluetooth.println(0);
     bluetooth.println(0);
-    bluetooth.println(0);
+    bluetooth.println(0); // this has been added to plot also the set point
+    bluetooth.println(0);// this has been added to plot the voltage
     stream = 1;                                   //and the torque data is allowed to be streamed
     streamTimerCount = 0;
     digitalWrite(13, HIGH);
@@ -405,6 +436,9 @@ void loop()
     Tcal_LL = (Tcal_LL / count) * (3.3 / 4096);    // Averages torque over a second
 
     write_torque_bias(address_torque, Tcal_LL);
+
+    //Here I send the torque
+    //    bluetooth.println(Tcal_LL);
 
   }
   if (Peek == 'K')                                 //If MATLAB sent the character K, then it wants to know what the current PID Parameters are
@@ -435,10 +469,18 @@ void loop()
     }
     write_FSR_values(address_FSR, fsr_cal_Long);
 
+    //Here I send the FSR value
+    //        bluetooth.println(fsr_thresh_long *fsr_cal_Long);
+
     write_FSR_values((address_FSR + sizeof(double) + sizeof(char)), fsr_cal_Short);
+
+    //Here I send the FSR value
+    //    bluetooth.println(fsr_thresh *fsr_cal_Short);
+
   }
   if (Peek == 'M')                                 //If MATLAB Sent the character M, then it wants to write new PID parameters
-  {
+  { double store_KF = KF;
+    KF = 0;
     garbage = bluetooth.read();
     recieveVals(24);                               //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
     //MATLAB Sent Kp, then Kd, then Ki.
@@ -446,6 +488,7 @@ void loop()
     memcpy(&kd, holdOnPoint + 8, 8);               //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
     memcpy(&ki, holdOnPoint + 16, 8);              //Recieved the large data chunk chopped into bytes, a roundabout way was needed
     PID_LL.SetTunings(kp, ki, kd);
+    KF = store_KF;
   }
   if (Peek == 'N')                                 //If MATLAB sent the character N, it wants to check that the Arduino is behaving
   {
@@ -473,7 +516,10 @@ void loop()
     garbage = bluetooth.read();
     if (check_torque_bias(address_torque)) {
       //      garbage = bluetooth.read();
+
+      Tcal_LL = read_torque_bias(address_torque);
       bluetooth.println('y');
+      //      bluetooth.println(Tcal_LL);
       Serial.println("Torque y");
     } else {
       //      garbage = bluetooth.read();
@@ -483,7 +529,13 @@ void loop()
     //  read_torque_bias(int address_torque_l)
     if ((check_FSR_values(address_FSR)) && (check_FSR_values(address_FSR + sizeof(double) + 1))) {
       //      garbage = bluetooth.read();
+      fsr_cal_Long = read_FSR_values(address_FSR);
+      fsr_cal_Short = read_FSR_values(address_FSR + sizeof(double) + 1);
+
+
       bluetooth.println('y');
+      //      bluetooth.println(fsr_thresh_long *fsr_cal_Long);
+      //      bluetooth.println(fsr_thresh *fsr_cal_Short);
       Serial.println("FSR y");
     } else {
       //      garbage = bluetooth.read();
@@ -518,6 +570,80 @@ void loop()
     Serial.println(Peek);
     Serial.println("Exit Clear");
   }// end if clean memory
+
+  if (Peek == '_')
+  { //Matlab wants to set KF
+    garbage = bluetooth.read();
+    delay(10);
+    recieveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+    memcpy(&KF, &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+    Serial.print("Setting the KF: ");
+    Serial.println(KF);
+  }//end if set KF
+
+  if (Peek == '`')
+  { //Matlab wants to check KF
+    garbage = bluetooth.read();
+    Serial.print("Checking the KF: ");
+    Serial.println(KF);
+    bluetooth.println(KF);
+  }//end if set KF
+
+  if (Peek == ')')                                 //If MATLAB Sent the character M, then it wants to write new PID parameters
+  {
+    double store_KF = KF;
+    KF = 0;
+    garbage = bluetooth.read();
+    recieveVals(24);                               //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
+    //MATLAB Sent N1 N2 and then N3 Paramenters for smoothing (see change pid setpoint)
+    memcpy(&N1, holdOnPoint, 8);                   //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+    memcpy(&N2, holdOnPoint + 8, 8);               //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
+    memcpy(&N3, holdOnPoint + 16, 8);              //Recieved the large data chunk chopped into bytes, a roundabout way was needed
+    Serial.print("Setting Smoothing parameters - N1: ");
+    Serial.print(N1);
+    Serial.print(", N2 ");
+    Serial.print(N2);
+    Serial.print(", N3 ");
+    Serial.println(N3);
+    KF = store_KF;
+  }
+
+  if (Peek == '(')                                 //If MATLAB Sent the character M, then it wants to write new PID parameters
+  {
+    garbage = bluetooth.read();
+    bluetooth.println(N1);
+    bluetooth.println(N2);
+    bluetooth.println(N3);
+    Serial.print("Checking Smoothing parameters - N1: ");
+    Serial.print(N1);
+    Serial.print(", N2 ");
+    Serial.print(N2);
+    Serial.print(", N3 ");
+    Serial.println(N3);
+  }
+
+  if (Peek == '#')
+  { //Matlab wants to set FSR
+    garbage = bluetooth.read();
+    delay(10);
+    recieveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+    memcpy(&fsr_thresh, &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+    Serial.print("Setting the fsr_thresh: ");
+    Serial.println(fsr_thresh);
+  }//end if set KF
+
+  if (Peek == 'J')
+  { //Matlab wants to check FSR
+//    Serial.print("1 - Checking the fsr_thresh: ");
+//    Serial.println(fsr_thresh);
+    garbage = bluetooth.read();
+//    Serial.print("2 - Checking the fsr_thresh: ");
+//    Serial.println(fsr_thresh);
+    bluetooth.println(fsr_thresh);
+        Serial.print("Checking the fsr_thresh: ");
+    Serial.println(fsr_thresh);
+
+  }//end if set KF
 
 
 
