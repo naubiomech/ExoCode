@@ -92,14 +92,63 @@ double Setpoint_Ankle = 0;
 double Setpoint_earlyStance = .25 * Setpoint_Ankle;
 #include "TimerOne.h"
 
+#include "Timer.h"
+
+//Timer t_ref;
+
 #include <SoftwareSerial.h>                                          //Includes the SoftwareSerial library to be able to use the bluetooth Serial Communication
 int bluetoothTx = 0;                                                 // TX-O pin of bluetooth mate, Teensy D0
 int bluetoothRx = 1;                                                 // RX-I pin of bluetooth mate, Teensy D1
 SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an object named bluetooth to act as a serial port
 
+//
+//void sigm_callback(){
+//        if (sigm_flag) {
+//        if ((abs(New_PID_Setpoint - PID_Setpoint) > 0.1) && (sigm_done)) {
+//          //if (1) {
+//          sigm_done = false;
+//          n_iter = 0;
+//
+//          if (R_state == 3) {
+//            N_step = 12;
+//          }
+//          else if (R_state == 2) {
+//            N_step = 6;
+//          }
+//          else if (R_state == 1) {
+//            N_step = 4;
+//          }
+//
+//          exp_mult = round((10 / Ts) / (N_step - 1));
+//
+//        }// end if sigm_done
+//
+//        if (n_iter < N_step) {
+//
+//          PID_Setpoint = Change_PID_Setpoint_Sigm(New_PID_Setpoint, PID_Setpoint, Old_PID_Setpoint, Ts, exp_mult, n_iter, N_step);
+//          n_iter++;
+//        }
+//        if (n_iter >= N_step) {
+//          sigm_done = true;
+//        }
+//
+//      Serial.print(R_state);
+//      Serial.print(",");
+//      Serial.print(New_PID_Setpoint);
+//      Serial.print(",");
+//      Serial.println(PID_Setpoint);
+//
+//      }// end if sigm
+//
+//
+//  }
+
+double sig_time = 0;
+double sig_time_old = 0;
+
 void setup()
 {
-
+  //  t_ref.every(1,sigm_callback);
   Timer1.initialize(1000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
   Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
   Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
@@ -194,6 +243,7 @@ int R_state_old = 1;
 
 void loop()
 {
+  //  t_ref.update();
   /***************Ankle CODE********************/
   while (bluetooth.available() == 0) {
     //    stream=1;
@@ -255,53 +305,40 @@ void loop()
           }
           break;
       }
+      sig_time = millis();
+      if (sig_time - sig_time_old > 1) {
+        sig_time_old = sig_time;
 
+        if (sigm_flag) {
+          if ((abs(New_PID_Setpoint - PID_Setpoint) > 0.1) && (sigm_done)) {
+            //if (1) {
+            sigm_done = false;
+            n_iter = 0;
 
-      if (sigm_flag) {
-        if ((abs(New_PID_Setpoint - PID_Setpoint) > 0.1) && (sigm_done)) {
-          //if (1) {
-          sigm_done = false;
-          n_iter = 0;
+            if (R_state == 3) {
+              N_step = 12;
+            }
+            else if (R_state == 2) {
+              N_step = 6;
+            }
+            else if (R_state == 1) {
+              N_step = 4;
+            }
 
-          //          if ((R_state_old == 1)&&(R_state == 3))
-          //
-          //          elseif ((R_state_old == 3)&&(R_state == 1))
-          //
-          //          elseif ((R_state_old == 1)&&(R_state == 2))
-          //          elseif ((R_state_old == 1)&&(R_state == 2))
-          //
-          if (R_state == 3) {
-            N_step = 12;
+            exp_mult = round((10 / Ts) / (N_step - 1));
+
+          }// end if sigm_done
+
+          if (n_iter < N_step) {
+
+            PID_Setpoint = Change_PID_Setpoint_Sigm(New_PID_Setpoint, PID_Setpoint, Old_PID_Setpoint, Ts, exp_mult, n_iter, N_step);
+            n_iter++;
           }
-          else if (R_state == 2) {
-            N_step = 6;
+          if (n_iter >= N_step) {
+            sigm_done = true;
           }
-          else if (R_state == 1) {
-            N_step = 4;
-          }
-
-          exp_mult = round((10 / Ts) / (N_step - 1));
-
-          //          N_step = round((1 / (Ts * exp_mult)) * 10);
-          //
-          //          if ((N_step % 2)) {
-          //            N_step++;
-          //          }
-
-
-
-        }// end if sigm_done
-
-        if (n_iter < N_step) {
-
-          PID_Setpoint = Change_PID_Setpoint_Sigm(New_PID_Setpoint, PID_Setpoint, Old_PID_Setpoint, Ts, exp_mult, n_iter, N_step);
-          n_iter++;
-        }
-        if (n_iter >= N_step) {
-          sigm_done = true;
-        }
-      }// end if sigm
-
+        }// end if sigm
+      }
       Serial.print(R_state);
       Serial.print(",");
       Serial.print(New_PID_Setpoint);
