@@ -216,7 +216,8 @@ void callback()
     if (streamTimerCount == 10)
     {
       bluetooth.println(Average);
-      bluetooth.println(R_state);//
+            bluetooth.println(R_state);
+      bluetooth.println(PID_Setpoint);//new add I wanna see also the setpoint that I require
       streamTimerCount = 0;
     }
     streamTimerCount++;
@@ -257,7 +258,8 @@ void loop()
             digitalWrite(13, LOW);
             sigm_done = true;
             Old_PID_Setpoint = PID_Setpoint;
-            New_PID_Setpoint = Setpoint_earlyStance;
+            //            New_PID_Setpoint = Setpoint_earlyStance;
+            New_PID_Setpoint = Setpoint_earlyStance * 0;
             R_state_old = R_state;
             R_state = 2;
           }
@@ -316,10 +318,10 @@ void loop()
             n_iter = 0;
 
             if (R_state == 3) {
-              N_step = 12;
+              N_step = 100;//12*10;
             }
             else if (R_state == 2) {
-              N_step = 6;
+              N_step = 4;//6*10;
             }
             else if (R_state == 1) {
               N_step = 4;
@@ -374,6 +376,7 @@ void loop()
   {
     garbage = bluetooth.read();
     digitalWrite(onoff, HIGH);                    //The GUI user is ready to start the trial so Motor is enabled
+    bluetooth.println(0);
     bluetooth.println(0);
     bluetooth.println(0);
     stream = 1;                                   //and the torque data is allowed to be streamed

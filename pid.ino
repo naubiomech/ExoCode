@@ -4,6 +4,7 @@ void pid(double input) {
   {
     bluetooth.println(input);
     bluetooth.println(9);
+    bluetooth.println(9);
 
 
     digitalWrite(onoff, LOW);
