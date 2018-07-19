@@ -36,7 +36,7 @@
 //
 //      p_steps_l->torque_val += PID_Setpoint;
 //
-//      if (((p_steps_l->n_steps) % 4) == 0) {
+//      if (((p_steps_l->n_steps) // 4) == 0) {
 //        p_steps->torque_val_average = p_steps_l->torque_val / 4;
 //        p_steps_l->torque_val = 0;
 //        Serial.print(" Error ");
@@ -174,7 +174,7 @@
 //      if (p_steps_l->flag_N3_adjustment_time) {
 //
 //
-//        if (((p_steps_l->n_steps) % 4) == 0) {
+//        if (((p_steps_l->n_steps) // 4) == 0) {
 //          p_steps_l->dorsi_mean_old = p_steps_l->dorsi_mean;
 //          p_steps_l->plant_mean_old = p_steps_l->plant_mean;
 //
@@ -448,7 +448,7 @@ double Torque_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_
       Serial.println(p_steps_l->plant_mean);
       Serial.print(" Set ");
       Serial.print(p_steps_l->Setpoint);
-      Serial.print(" , % ");
+      Serial.print(" , // ");
       Serial.println(fabs(p_steps_l->plant_mean_base / p_steps_l->plant_mean));
       Serial.print(" Res ");
       Serial.println((p_steps_l->Setpoint )* (fabs(p_steps_l->plant_mean_base / p_steps_l->plant_mean)));

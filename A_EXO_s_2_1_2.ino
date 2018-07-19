@@ -72,7 +72,7 @@ void setup()
 {
   // set the interrupt
   Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
-  Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
+  Timer1.pwm(9, 512);                // setup pwm on pin 9, 50// duty cycle
   Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
 
   // enable bluetooth
@@ -121,10 +121,16 @@ double Curr_Left_Heel;
 double Curr_Right_Toe;
 double Curr_Right_Heel;
 
+volatile double Trq_Average_LL, Trq_Average_RL;
+
+double start_time_callback, start_time_timer;
 
 void callback()
 {
-
+  start_time_callback = millis();
+  //  Serial.println();
+  //  Serial.print("START of Callback ");
+  //  Serial.println( micros() - start_time_callback);
   if (FSR_CAL_FLAG) {
     //    Serial.println("Going to calib");
 
@@ -133,30 +139,31 @@ void callback()
   }
 
   if (stream == 1)
+    //  if (1)
   {
-
-
-    if (streamTimerCount == 5)
+    if (streamTimerCount >= 5)
     {
+      //            Serial.println("                SEND DATA MESSAGE");
       send_data_message();
       streamTimerCount = 0;
     }
     streamTimerCount++;
 
+
     //Calc the average value of Torque
 
     //Shift the arrays
-    for (int j = dim-1; j >= 0; j--)                    //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
+    for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
     { // there are the number of spaces in the memory space minus 2 actions that need to be taken
       *(TarrayPoint_LL + j) = *(TarrayPoint_LL + j - 1);                //Puts the element in the following memory space into the current memory space
       *(TarrayPoint_RL + j) = *(TarrayPoint_RL + j - 1);
     }
 
     //Get the torques
-    T_act_LL = get_LL_torq();
-    T_act_RL = get_RL_torq();
-    *(TarrayPoint_LL) = T_act_LL;
-    *(TarrayPoint_RL) = T_act_RL;
+    //    *(TarrayPoint_LL) = get_LL_torq(-Tcal_LL);
+    //    *(TarrayPoint_RL) = get_RL_torq(-Tcal_RL);
+    *(TarrayPoint_LL) = get_LL_torq();
+    *(TarrayPoint_RL) = get_RL_torq();
 
     Average_LL = 0;
     Average_RL = 0;
@@ -167,15 +174,57 @@ void callback()
     }
     Average_LL = Average_LL / dim;
     Average_RL = Average_RL / dim;
+    //Serial.println(Average_LL);
+
+    Trq_Average_LL = Average_LL;
+    Trq_Average_RL = Average_RL;
+    //  Serial.println(Trq_Average_LL);
+
+    //    Serial.print("Before PID");
+    //    Serial.println( micros() - start_time_callback);
+    //       start_time_timer = micros();
+
+    //    pid(Average_Trq_LL, 1);
+    //    pid(Average_Trq_RL, 2);
 
     //Apply PID control
     pid(Average_LL, 1);
     pid(Average_RL, 2);
+    //        Serial.print("Time PIDs : ");
+    //    Serial.println(micros() - start_time_timer);
+    //    Serial.print("After PID");
+    //    Serial.println( micros() - start_time_callback);
   }
-  if (bluetooth.available() > 0)
+
+  //  if (bluetooth.available() > 0)
+  //  {
+  //    //    Serial.println("                RECEIVE AND TRANSMIT ");
+  //    receive_and_transmit();       //Recieve and transmit was moved here so it will not interfere with the data message
+  //  }
+
+
+
+  if (stream == 1)
   {
-    receive_and_transmit();       //Recieve and transmit was moved here so it will not interfere with the data message
+    state_machine_LL();  //for LL
+    state_machine_RL();  //for RL
   }
+
+  set_2_zero_if_steady_state();
+  //    Serial.println("LEFT");
+  N3_LL = Torque_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL);
+  //    Serial.println("RIGHT");
+  N3_RL = Torque_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL);
+
+
+
+  if (millis() - start_time_callback >= 1) {
+    Serial.println( millis() - start_time_callback);
+    //    Serial.print("END of Callback at ");
+
+
+  }
+
 }
 
 
@@ -195,30 +244,30 @@ void loop()
 
 
   //      FSR_Average_function(p_FSR, L_p_steps, R_p_steps) ;
-//  for (int j = dim_FSR; j >= 0; j--)                    //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
-//  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-//    *(p_FSR_Array_LL + j) = *(p_FSR_Array_LL + j - 1);                //Puts the element in the following memory space into the current memory space
-//    *(p_FSR_Array_RL + j) = *(p_FSR_Array_RL + j - 1);
-//  }
-//
-//  //Get the FSR
-//  Curr_FSR_LL = fsr(fsr_sense_Left_Toe);
-//  Curr_FSR_RL = fsr(fsr_sense_Right_Toe);
-//  *(p_FSR_Array_LL) = Curr_FSR_LL;
-//  *(p_FSR_Array_RL) = Curr_FSR_RL;
-//
-//  FSR_Average_LL = 0;
-//  FSR_Average_RL = 0;
-//  for (int i = 0; i < dim_FSR; i++)
-//  {
-//    FSR_Average_LL = FSR_Average_LL + *(p_FSR_Array_LL + i);
-//    FSR_Average_RL = FSR_Average_RL + *(p_FSR_Array_RL + i);
-//  }
-//  FSR_Average_LL = FSR_Average_LL / dim_FSR;
-//  FSR_Average_RL = FSR_Average_RL / dim_FSR;
-//
-//  L_p_steps->curr_voltage = FSR_Average_LL;
-//  R_p_steps->curr_voltage = FSR_Average_RL;
+  //  for (int j = dim_FSR; j >= 0; j--)                    //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
+  //  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
+  //    *(p_FSR_Array_LL + j) = *(p_FSR_Array_LL + j - 1);                //Puts the element in the following memory space into the current memory space
+  //    *(p_FSR_Array_RL + j) = *(p_FSR_Array_RL + j - 1);
+  //  }
+  //
+  //  //Get the FSR
+  //  Curr_FSR_LL = fsr(fsr_sense_Left_Toe);
+  //  Curr_FSR_RL = fsr(fsr_sense_Right_Toe);
+  //  *(p_FSR_Array_LL) = Curr_FSR_LL;
+  //  *(p_FSR_Array_RL) = Curr_FSR_RL;
+  //
+  //  FSR_Average_LL = 0;
+  //  FSR_Average_RL = 0;
+  //  for (int i = 0; i < dim_FSR; i++)
+  //  {
+  //    FSR_Average_LL = FSR_Average_LL + *(p_FSR_Array_LL + i);
+  //    FSR_Average_RL = FSR_Average_RL + *(p_FSR_Array_RL + i);
+  //  }
+  //  FSR_Average_LL = FSR_Average_LL / dim_FSR;
+  //  FSR_Average_RL = FSR_Average_RL / dim_FSR;
+  //
+  //  L_p_steps->curr_voltage = FSR_Average_LL;
+  //  R_p_steps->curr_voltage = FSR_Average_RL;
 
   if (stream == 1)
   {
@@ -255,26 +304,56 @@ void loop()
     L_p_steps->perc_l = 0.5;
     R_p_steps->perc_l = 0.5;
 
+
+    // New at 06/4/2018
     L_activate_in_3_steps = 1;
     R_activate_in_3_steps = 1;
+
+    Previous_Setpoint_Ankle_LL = 0;
+    Previous_Setpoint_Ankle_RL = 0;
+    R_coef_in_3_steps = 0;
+    R_num_3_steps = 0;
+    L_coef_in_3_steps = 0;
+    L_num_3_steps = 0;
+
+    R_1st_step = 1;
+    L_1st_step = 1;
+
+    // New at 06/04/2018
+
+
 
   }// End else
 
   if (slowThisDown.check() == 1) // If the time passed is over 1ms is a true statement
   {
-    if (stream == 1)
-    {
-      state_machine_LL();  //for LL
-      state_machine_RL();  //for RL
-    }
+    //      if (bluetooth.available() > 0)
+    //  {
+    //    //    Serial.println("                RECEIVE AND TRANSMIT ");
+    //    receive_and_transmit();       //Recieve and transmit was moved here so it will not interfere with the data message
+    //  }
 
-    set_2_zero_if_steady_state();
-    //    Serial.println("LEFT");
-    N3_LL = Torque_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL);
-    //    Serial.println("RIGHT");
-    N3_RL = Torque_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL);
+    //    if (stream == 1)
+    //    {
+    //      state_machine_LL();  //for LL
+    //      state_machine_RL();  //for RL
+    //    }
+    //
+    //    set_2_zero_if_steady_state();
+    //    //    Serial.println("LEFT");
+    //    N3_LL = Torque_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL);
+    //    //    Serial.println("RIGHT");
+    //    N3_RL = Torque_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL);
     L_p_steps->curr_voltage = fsr(fsr_sense_Left_Toe);
     R_p_steps->curr_voltage = fsr(fsr_sense_Right_Toe);
+
+
+    if (bluetooth.available() > 0)
+    {
+      //    Serial.println("                RECEIVE AND TRANSMIT ");
+      receive_and_transmit();       //Recieve and transmit was moved here so it will not interfere with the data message
+    }
+
     slowThisDown.reset();     //Resets the interval
   }
 }

@@ -27,41 +27,85 @@ void receive_and_transmit()
       break;
 
     case 'F':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       receiveVals(8);
       Previous_Setpoint_Ankle_LL = Setpoint_Ankle_LL; //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&Setpoint_Ankle_LL, &holdon, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-      Setpoint_Ankle_LL = abs(Setpoint_Ankle_LL);                     //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
-      //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-      L_p_steps->Setpoint = Setpoint_Ankle_LL;
-      L_activate_in_3_steps = 1;
-      L_num_3_steps = 0;
-      L_1st_step = 1;
-      L_start_step = 0;
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+
+      // New at 06/4/2018
+      //        Setpoint_Ankle_RL = 0;
+      //        Previous_Setpoint_Ankle_RL = 0;
+      //        R_coef_in_3_steps = 0;
+      //        R_activate_in_3_steps = 1;
+      //        R_1st_step = 1;
+      //        R_num_3_steps = 0;
+      //        R_start_step = 0;
+      if (Setpoint_Ankle_LL < 0) {
+        Setpoint_Ankle_LL = 0;
+        Previous_Setpoint_Ankle_LL = 0;
+        L_coef_in_3_steps = 0;
+        L_activate_in_3_steps = 1;
+        L_1st_step = 1;
+        L_num_3_steps = 0;
+        L_start_step = 0;
+        Serial.println("Left Setpoint Negative, going to zero");
+        // New at 06/04/2018
+      } else {
+        Setpoint_Ankle_LL = abs(Setpoint_Ankle_LL);                     //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
+        //Recieved the large data chunk chopped into bytes, a roundabout way was needed
+        L_p_steps->Setpoint = Setpoint_Ankle_LL;
+        L_activate_in_3_steps = 1;
+        L_num_3_steps = 0;
+        L_1st_step = 1;
+        L_start_step = 0;
+      }
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'f':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       receiveVals(8);                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
       Previous_Setpoint_Ankle_RL = Setpoint_Ankle_RL;
       memcpy(&Setpoint_Ankle_RL, &holdon, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-      Setpoint_Ankle_RL = -abs(Setpoint_Ankle_RL);                    //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
-      //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-      R_p_steps->Setpoint = Setpoint_Ankle_RL;
-      R_activate_in_3_steps = 1;
-      R_num_3_steps = 0;
-      R_1st_step = 1;
-      R_start_step = 0;
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+
+
+      if (Setpoint_Ankle_RL < 0) {
+        // New at 06/4/2018
+        Setpoint_Ankle_RL = 0;
+        Previous_Setpoint_Ankle_RL = 0;
+        R_coef_in_3_steps = 0;
+        R_activate_in_3_steps = 1;
+        R_1st_step = 1;
+        R_num_3_steps = 0;
+        R_start_step = 0;
+
+        //        Setpoint_Ankle_LL = 0;
+        //        Previous_Setpoint_Ankle_LL = 0;
+        //        L_coef_in_3_steps = 0;
+        //        L_activate_in_3_steps = 1;
+        //        L_1st_step = 1;
+        //        L_num_3_steps = 0;
+        //        L_start_step = 0;
+        Serial.println("Right Setpoint Negative, going to zero");
+        // New at 06/04/2018
+      } else {
+        Setpoint_Ankle_RL = -abs(Setpoint_Ankle_RL);                    //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
+        //Recieved the large data chunk chopped into bytes, a roundabout way was needed
+        R_p_steps->Setpoint = Setpoint_Ankle_RL;
+        R_activate_in_3_steps = 1;
+        R_num_3_steps = 0;
+        R_1st_step = 1;
+        R_start_step = 0;
+      }
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'E':
@@ -79,34 +123,44 @@ void receive_and_transmit()
     case 'H':
       //digitalWrite(13, LOW);                                         //The user Wants to Recalibrate all the Sensors
       torque_calibration();
+      Serial.println("write");
       write_torque_bias(address_torque_LL, Tcal_LL);
       write_torque_bias(address_torque_RL, Tcal_RL);
+      Serial.println("Current global value");
+      Serial.println(Tcal_LL);
+      Serial.println(Tcal_RL);
+      Serial.println("read from memory");
+      Tcal_LL = read_torque_bias(address_torque_LL);
+      Tcal_RL = read_torque_bias(address_torque_RL);
+      Serial.println(Tcal_LL);
+      Serial.println(Tcal_RL);
+
       break;
 
     case 'K':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       *(data_to_send_point) = kp_LL;
       *(data_to_send_point + 1) = kd_LL;
       *(data_to_send_point + 2) = ki_LL;
       send_command_message('K', data_to_send_point, 3);     //MATLAB is expecting to recieve the Torque Parameters
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'k':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       *(data_to_send_point) = kp_RL;
       *(data_to_send_point + 1) = kd_RL;
       *(data_to_send_point + 2) = ki_RL;
       send_command_message('k', data_to_send_point, 3);     //MATLAB is expecting to recieve the Torque Parameters
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'L':
@@ -114,10 +168,10 @@ void receive_and_transmit()
       FSR_CAL_FLAG = 1;
 
       //
-      //      store_KF_LL = KF_LL;
-      //      store_KF_RL = KF_RL;
-      //      KF_LL = 0;
-      //      KF_RL = 0;
+      //      // store_KF_LL = KF_LL;
+      //      // store_KF_RL = KF_RL;
+      //      // KF_LL = 0;
+      //      // KF_RL = 0;
       //
       //
       //      FSR_calibration();
@@ -129,38 +183,38 @@ void receive_and_transmit()
       //      L_p_steps->voltage_ref = fsr_Left_Toe_thresh;
       //      R_p_steps->voltage_ref = fsr_Right_Toe_thresh;
       //
-      //      KF_LL = store_KF_LL;
-      //      KF_RL = store_KF_RL;
+      //      // KF_LL = store_KF_LL;
+      //      // KF_RL = store_KF_RL;
       break;
 
     case 'M':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       receiveVals(24);                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
       //MATLAB Sent Kp, then Kd, then Ki.
       memcpy(&kp_LL, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       memcpy(&kd_LL, holdOnPoint + 8, 8);                              //memory space pointed to by the variable kp_L.  Essentially a roundabout way to change a variable value, but since the bluetooth
       memcpy(&ki_LL, holdOnPoint + 16, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
       PID_LL.SetTunings(kp_LL, ki_LL, kd_LL);
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'm':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       receiveVals(24);                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
       //MATLAB Sent Kp, then Kd, then Ki.
       memcpy(&kp_RL, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       memcpy(&kd_RL, holdOnPoint + 8, 8);                              //memory space pointed to by the variable kp_R.  Essentially a roundabout way to change a variable value, but since the bluetooth
       memcpy(&ki_RL, holdOnPoint + 16, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
       PID_RL.SetTunings(kp_RL, ki_RL, kd_RL);
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'N':
@@ -176,6 +230,10 @@ void receive_and_transmit()
       {
         Tcal_LL = read_torque_bias(address_torque_LL);
         Tcal_RL = read_torque_bias(address_torque_RL);
+        Serial.print("Left Force Bias: ");
+        Serial.println(Tcal_LL);
+        Serial.print("Right Force Bias: ");
+        Serial.println(Tcal_RL);
         Tarray_LL[3] = {0};
         Tarray_RL[3] = {0};
         *(data_to_send_point) = 1;
@@ -195,11 +253,16 @@ void receive_and_transmit()
         fsr_Right_Toe_thresh = read_FSR_values(address_FSR_RL + sizeof(double) + 1);
         *(data_to_send_point + 1) = 1;
         //send_command_message('<', data_to_send_point, 0);   //For the Arduino to prove to MATLAB that it is behaving, it will send back the character B
-        Serial.print("Left values: ");
-        Serial.print(fsr_Left_Toe_thresh);
-        Serial.print(", ");
-        Serial.print("Right values: ");
-        Serial.print(fsr_Right_Toe_thresh);
+        Serial.print("Toe Left values: ");
+        Serial.println(fsr_Left_Toe_thresh);
+        //        Serial.print(", ");
+        Serial.print("Toe Right values: ");
+        Serial.println(fsr_Right_Toe_thresh);
+        Serial.print("Heel Left values: ");
+        Serial.println(fsr_Left_Heel_thresh);
+        //        Serial.print(", ");
+        Serial.print("Heel Right values: ");
+        Serial.println(fsr_Right_Heel_thresh);
       }
       else
       {
@@ -286,21 +349,21 @@ void receive_and_transmit()
       break;
 
     case '_':
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&KF_LL, &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-      KF_RL = store_KF_RL;
+      // KF_RL = store_KF_RL;
       break;
 
     case '-':
-      store_KF_LL = KF_LL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       receiveVals(8);
       memcpy(&KF_RL, &holdon, 8);
-      KF_LL = store_KF_LL;
+      // KF_LL = store_KF_LL;
       break;
 
     case'`':
@@ -318,10 +381,10 @@ void receive_and_transmit()
       break;
 
     case')':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       receiveVals(24);                               //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
       //MATLAB Sent N1 N2 and then N3 Paramenters for smoothing (see change pid setpoint)
       memcpy(&N1, holdOnPoint, 8);                   //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
@@ -336,8 +399,8 @@ void receive_and_transmit()
       N2_LL = N2;
       N3_LL = N3;
 
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       Serial.print("Set Smooth ");
       Serial.print(" ");
       Serial.print(N1);
@@ -349,10 +412,10 @@ void receive_and_transmit()
       break;
 
     case '(':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       *(data_to_send_point) = N1;
       *(data_to_send_point + 1) = N2;
       *(data_to_send_point + 2) = N3;
@@ -366,132 +429,132 @@ void receive_and_transmit()
       Serial.print(N3);
       Serial.println();
 
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'P':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       L_p_steps->flag_take_baseline = true;
       Serial.println("Left Freq Baseline ");
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'p':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       R_p_steps->flag_take_baseline = true;
       Serial.println("Right Freq Baseline ");
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'O':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       L_p_steps->flag_N3_adjustment_time = true;
       Serial.println(" Left N3 Adj ");
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
 
     case 'o':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       R_p_steps->flag_N3_adjustment_time = true;
       Serial.println(" Right N3 Adj ");
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'Q':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       *(data_to_send_point) = fsr_percent_thresh_Left_Toe;
       send_command_message('Q', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
       Serial.print("Checking the fsr_percent_thresh_Left_Toe: ");
       Serial.println(fsr_percent_thresh_Left_Toe);
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'q':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       *(data_to_send_point) = fsr_percent_thresh_Right_Toe;
       send_command_message('q', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
       Serial.print("Checking the fsr_percent_thresh_Right_Toe: ");
       Serial.println(fsr_percent_thresh_Right_Toe);
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'R':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&fsr_percent_thresh_Left_Toe, &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       Serial.print("Setting the fsr_percent_thresh_Left_Toe: ");
       Serial.println(fsr_percent_thresh_Left_Toe);
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'r':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&fsr_percent_thresh_Right_Toe, &holdon, 8);
       R_p_steps->fsr_percent_thresh_Toe = fsr_percent_thresh_Right_Toe;
       Serial.print("Setting the fsr_percent_thresh_Rigth_Toe: ");
       Serial.println(fsr_percent_thresh_Right_Toe);
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;//Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;//Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       break;
 
     case 'S':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&(L_p_steps->perc_l), &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       Serial.print("Setting the L_p_steps->perc_l: ");
       Serial.println(L_p_steps->perc_l);
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case's':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&(R_p_steps->perc_l), &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       Serial.print("Setting the R_p_steps->perc_l: ");
       Serial.println(R_p_steps->perc_l);
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'C':
@@ -500,10 +563,10 @@ void receive_and_transmit()
       break;
 
     case 'T':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
 
       L_p_steps->count_steps = 0;
       L_p_steps->n_steps = 0;
@@ -515,15 +578,15 @@ void receive_and_transmit()
       N3_LL = N3;
       Serial.print("Stop Left N3 adj, come back to: ");
       Serial.println(N3_LL);
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 't':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
 
 
       R_p_steps->count_steps = 0;
@@ -536,29 +599,29 @@ void receive_and_transmit()
       N3_RL = N3;
       Serial.print("Stop Right N3 adj, come back to: ");
       Serial.println(N3_RL);
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'I':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
 
       *p_Setpoint_Ankle_LL = L_p_steps->Setpoint;
       L_p_steps->torque_adj = false;
       Serial.print("Stop Left TRQ adj, come back to: ");
       Serial.println(*p_Setpoint_Ankle_LL );
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case 'i':
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       garbage = bluetooth.read();
 
       *p_Setpoint_Ankle_RL = R_p_steps->Setpoint;
@@ -566,8 +629,8 @@ void receive_and_transmit()
 
       Serial.print("Stop Right TRQ adj, come back to: ");
       Serial.println(*p_Setpoint_Ankle_RL);
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
       break;
 
     case '!':

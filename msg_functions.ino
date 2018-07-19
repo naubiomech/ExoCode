@@ -70,7 +70,7 @@ void send_data_message()
 {
   bluetooth.print('S');
   bluetooth.print(',');
-  bluetooth.print(T_act_RL);
+  bluetooth.print(Trq_Average_RL);
   bluetooth.print(',');
   bluetooth.print(R_state);
   bluetooth.print(',');
@@ -79,7 +79,7 @@ void send_data_message()
 //  bluetooth.print(fsr(fsr_sense_Right_Toe));
   bluetooth.print(fsr(fsr_sense_Right_Toe));
   bluetooth.print(',');
-  bluetooth.print(T_act_LL);
+  bluetooth.print(Trq_Average_LL);
   bluetooth.print(',');
   bluetooth.print(L_state);
   bluetooth.print(',');

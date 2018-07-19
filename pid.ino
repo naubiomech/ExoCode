@@ -6,10 +6,10 @@ void pid(double input, int Left_or_Right)
     {
 
 
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       double old_L_state_L = L_state;
       L_state = 9;
       send_data_message();
@@ -26,8 +26,8 @@ void pid(double input, int Left_or_Right)
       stream = 0;
       digitalWrite(13, LOW);
       L_state = old_L_state_L;
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
 
     }
     Input_LL = input;
@@ -48,10 +48,10 @@ void pid(double input, int Left_or_Right)
       //        bluetooth.println(0);//this is fake
       //        bluetooth.println(9);//this is fake
 
-      store_KF_LL = KF_LL;
-      store_KF_RL = KF_RL;
-      KF_LL = 0;
-      KF_RL = 0;
+      // store_KF_LL = KF_LL;
+      // store_KF_RL = KF_RL;
+      // KF_LL = 0;
+      // KF_RL = 0;
       double old_R_state_R = R_state;
       R_state = 9;
       send_data_message();
@@ -59,8 +59,8 @@ void pid(double input, int Left_or_Right)
       stream = 0;
       digitalWrite(13, LOW);
       R_state = old_R_state_R;
-      KF_LL = store_KF_LL;
-      KF_RL = store_KF_RL;
+      // KF_LL = store_KF_LL;
+      // KF_RL = store_KF_RL;
     }
     Input_RL = input;
     PID_RL.Compute_KF(KF_RL);
