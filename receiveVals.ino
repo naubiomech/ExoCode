@@ -1,4 +1,4 @@
-void recieveVals(int bytesExpected) 
+void receiveVals(int bytesExpected) 
 {
   int k = 0;
   while((k <bytesExpected)) 

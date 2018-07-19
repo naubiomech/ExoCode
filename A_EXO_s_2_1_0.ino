@@ -1,12 +1,12 @@
 // This is the code for the Single board Ankle Exoskeleton -> A_EXO_s
 //
-// FSR sensors retrieve the sensor voltage related to the foot pressure. 
+// FSR sensors retrieve the sensor voltage related to the foot pressure.
 // The state machine (Left and Right state machine) identify the participant status depending on the voltage.
 // The torque reference is decided by the user (Matlab GUI) and send as reference to the PID control.
 // The PID control and data tranmission to the GUI are scheduled by an interrupt.
-// 
+//
 // Sensor can be calibrated by the user and/or saved calibration can be loaded to speed up the setup.
-// 
+//
 // The torque reference can be smoothed by sigmoid functions
 // In case of too long steady state the torque reference is set to zero
 // In case of new torque reference the torque amount is provided gradually as function of the steps.
@@ -18,8 +18,8 @@
 // 4 steps = 6N
 // 5 steps = 8N
 // 6 steps = 10N
-// 
-// The torque and the shaping function can be adapted as function of the force pressure/Voltage 
+//
+// The torque and the shaping function can be adapted as function of the force pressure/Voltage
 // and averaged speed/step duration
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
@@ -38,9 +38,12 @@
 #include "Filter_Parameters.h"
 #include "State_Machine_Parameters.h"
 #include "Reference_ADJ.h"
+#include "Messages.h"
+#include <Metro.h> // Include the Metro library
 
+Metro slowThisDown = Metro(1);  // Set the function to be called at no faster a rate than once per millisecond
 
-//To interrupt and to schedule we take advantage of the 
+//To interrupt and to schedule we take advantage of the
 elapsedMillis timeElapsed;
 double startTime = 0;
 int streamTimerCount = 0;
@@ -62,6 +65,8 @@ int bluetoothTx = 0;                                                 // TX-O pin
 int bluetoothRx = 1;                                                 // RX-I pin of bluetooth mate, Teensy D1
 SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an object named bluetooth to act as a serial port
 
+double store_KF_LL = 0;
+double store_KF_RL = 0;
 
 void setup()
 {
@@ -109,43 +114,39 @@ void setup()
 
 }
 
-
+int FSR_FIRST_Cycle = 1;
+int FSR_CAL_FLAG = 0;
+double Curr_Left_Toe;
+double Curr_Left_Heel;
+double Curr_Right_Toe;
+double Curr_Right_Heel;
 
 
 void callback()
 {
 
+  if (FSR_CAL_FLAG) {
+    //    Serial.println("Going to calib");
+
+    FSR_calibration();
+
+  }
+
   if (stream == 1)
   {
-    set_2_zero_if_steady_state();
 
-    //    Serial.println("LEFT");
-    N3_LL = Torque_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL);
-    //    Serial.println("RIGHT");
-    N3_RL = Torque_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL);
 
     if (streamTimerCount == 5)
     {
-      bluetooth.println(Average_RL);
-      bluetooth.println(R_state);
-      bluetooth.println(PID_Setpoint_RL);         //Right Setpoint
-      bluetooth.println(fsr(fsr_sense_Right_Toe));         //Right Voltage/Voltage of FSR
-      bluetooth.println(Average_LL);
-      bluetooth.println(L_state);
-      bluetooth.println(PID_Setpoint_LL);         //Left 9
-      bluetooth.println(fsr(fsr_sense_Left_Toe));         //Left Voltage/Voltage of FSR
+      send_data_message();
       streamTimerCount = 0;
-
-      //Update Current voltage
-      L_p_steps->curr_voltage = fsr(fsr_sense_Left_Toe);
-      R_p_steps->curr_voltage = fsr(fsr_sense_Right_Toe);
     }
     streamTimerCount++;
 
     //Calc the average value of Torque
 
     //Shift the arrays
-    for (int j = dim; j >= 0; j--)                    //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
+    for (int j = dim-1; j >= 0; j--)                    //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
     { // there are the number of spaces in the memory space minus 2 actions that need to be taken
       *(TarrayPoint_LL + j) = *(TarrayPoint_LL + j - 1);                //Puts the element in the following memory space into the current memory space
       *(TarrayPoint_RL + j) = *(TarrayPoint_RL + j - 1);
@@ -171,55 +172,109 @@ void callback()
     pid(Average_LL, 1);
     pid(Average_RL, 2);
   }
+  if (bluetooth.available() > 0)
+  {
+    receive_and_transmit();       //Recieve and transmit was moved here so it will not interfere with the data message
+  }
 }
+
+//
+//const int dim_FSR = 200;
+//double FSR_Average_LL_array[dim_FSR];
+//double FSR_Average_RL_array[dim_FSR];
+//double * p_FSR_Array_LL = &FSR_Average_LL_array[0];
+//double * p_FSR_Array_RL = &FSR_Average_RL_array[0];
+//double Curr_FSR_LL;
+//double Curr_FSR_RL;
+//double FSR_Average_LL;
+//double FSR_Average_RL;
 
 
 void loop()
 {
 
-  while (bluetooth.available() == 0)
+
+  //      FSR_Average_function(p_FSR, L_p_steps, R_p_steps) ;
+//  for (int j = dim_FSR; j >= 0; j--)                    //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
+//  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
+//    *(p_FSR_Array_LL + j) = *(p_FSR_Array_LL + j - 1);                //Puts the element in the following memory space into the current memory space
+//    *(p_FSR_Array_RL + j) = *(p_FSR_Array_RL + j - 1);
+//  }
+//
+//  //Get the FSR
+//  Curr_FSR_LL = fsr(fsr_sense_Left_Toe);
+//  Curr_FSR_RL = fsr(fsr_sense_Right_Toe);
+//  *(p_FSR_Array_LL) = Curr_FSR_LL;
+//  *(p_FSR_Array_RL) = Curr_FSR_RL;
+//
+//  FSR_Average_LL = 0;
+//  FSR_Average_RL = 0;
+//  for (int i = 0; i < dim_FSR; i++)
+//  {
+//    FSR_Average_LL = FSR_Average_LL + *(p_FSR_Array_LL + i);
+//    FSR_Average_RL = FSR_Average_RL + *(p_FSR_Array_RL + i);
+//  }
+//  FSR_Average_LL = FSR_Average_LL / dim_FSR;
+//  FSR_Average_RL = FSR_Average_RL / dim_FSR;
+//
+//  L_p_steps->curr_voltage = FSR_Average_LL;
+//  R_p_steps->curr_voltage = FSR_Average_RL;
+
+  if (stream == 1)
+  {
+    //    state_machine_LL();  //for LL
+    //    state_machine_RL();  //for RL
+  }
+  else
+  {
+    //Reset the starting values
+    L_p_steps->count_steps = 0;
+    L_p_steps->n_steps = 0;
+    L_p_steps->flag_1_step = false;
+    L_p_steps->flag_take_average = false;
+    L_p_steps->flag_N3_adjustment_time = false;
+    L_p_steps->flag_take_baseline = false;
+    L_p_steps->torque_adj = false;
+
+    R_p_steps->count_steps = 0;
+    R_p_steps->n_steps = 0;
+    R_p_steps->flag_1_step = false;
+    R_p_steps->flag_take_average = false;
+    R_p_steps->flag_N3_adjustment_time = false;
+    R_p_steps->flag_take_baseline = false;
+    R_p_steps->torque_adj = false;
+
+    N3_LL = N3;
+    N2_LL = N2;
+    N1_LL = N1;
+
+    N3_RL = N3;
+    N2_RL = N2;
+    N1_RL = N1;
+
+    L_p_steps->perc_l = 0.5;
+    R_p_steps->perc_l = 0.5;
+
+    L_activate_in_3_steps = 1;
+    R_activate_in_3_steps = 1;
+
+  }// End else
+
+  if (slowThisDown.check() == 1) // If the time passed is over 1ms is a true statement
   {
     if (stream == 1)
     {
       state_machine_LL();  //for LL
       state_machine_RL();  //for RL
     }
-    else
-    {
 
-      //Reset the starting values
-      L_p_steps->count_steps = 0;
-      L_p_steps->n_steps = 0;
-      L_p_steps->flag_1_step = false;
-      L_p_steps->flag_take_average = false;
-      L_p_steps->flag_N3_adjustment_time = false;
-      L_p_steps->flag_take_baseline = false;
-      L_p_steps->torque_adj = false;
-
-      R_p_steps->count_steps = 0;
-      R_p_steps->n_steps = 0;
-      R_p_steps->flag_1_step = false;
-      R_p_steps->flag_take_average = false;
-      R_p_steps->flag_N3_adjustment_time = false;
-      R_p_steps->flag_take_baseline = false;
-      R_p_steps->torque_adj = false;
-
-      N3_LL = N3;
-      N2_LL = N2;
-      N1_LL = N1;
-
-      N3_RL = N3;
-      N2_RL = N2;
-      N1_RL = N1;
-
-      L_p_steps->perc_l = 0.5;
-      R_p_steps->perc_l = 0.5;
-
-      L_activate_in_3_steps = 1;
-      R_activate_in_3_steps = 1;
-
-    }
+    set_2_zero_if_steady_state();
+    //    Serial.println("LEFT");
+    N3_LL = Torque_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL);
+    //    Serial.println("RIGHT");
+    N3_RL = Torque_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL);
+    L_p_steps->curr_voltage = fsr(fsr_sense_Left_Toe);
+    R_p_steps->curr_voltage = fsr(fsr_sense_Right_Toe);
+    slowThisDown.reset();     //Resets the interval
   }
-
-  receive_and_transmit();
 }
