@@ -91,13 +91,16 @@ void state_machine_RL()
 
     if ((R_state == 3) && (R_state_old == 1) && (R_start_step == 0)) {
       R_start_step = 1;
+      R_start_time = millis();
     }
 
     if (R_start_step == 1) {
       if ((R_state == 1) && (R_state_old == 3)) {
         R_start_step = 0;
-        R_num_3_steps += 1;
-        Serial.println(R_coef_in_3_steps);
+        if (millis() - R_start_time >= step_time_length) { // if the transition from 3 to 1 lasted more than 0.3 sec it was a step
+          R_num_3_steps += 1;
+          Serial.println(R_coef_in_3_steps);
+        }
       }
     }
 
@@ -108,7 +111,7 @@ void state_machine_RL()
       R_activate_in_3_steps = 0;
       R_1st_step = 1;
       R_num_3_steps = 0;
-      R_start_step=0;
+      R_start_step = 0;
     }
 
 
@@ -219,14 +222,18 @@ void state_machine_LL()
     }
 
     if ((L_state == 3) && (L_state_old == 1) && (L_start_step == 0)) {
+      L_start_time = millis();
       L_start_step = 1;
     }
 
     if (L_start_step == 1) {
       if ((L_state == 1) && (L_state_old == 3)) {
+
         L_start_step = 0;
-        L_num_3_steps += 1;
-        Serial.println(L_coef_in_3_steps);
+        if (millis() - L_start_time >= step_time_length) {
+          L_num_3_steps += 1;
+          Serial.println(L_coef_in_3_steps);
+        }
       }
     }
 

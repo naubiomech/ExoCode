@@ -235,8 +235,10 @@ double L_start_from_1 = 0;
 double L_start_from_3 = 0;
 
 
-double state_counter_th=8;
-
+double state_counter_th = 8;
+double R_start_time = 0;
+double L_start_time = 0;
+double step_time_length = 250;
 
 //---------------------
 
@@ -346,6 +348,10 @@ void callback()
           Serial.println("Change N1");
           L_set_2_zero = 1;
           L_store_N1 = 1;
+          L_activate_in_3_steps = 1;
+          L_num_3_steps = 0;
+          L_1st_step = 1;
+          L_start_step = 0;
         }
 
       } else {
@@ -373,6 +379,10 @@ void callback()
           Serial.println("Change N1");
           R_set_2_zero = 1;
           R_store_N1 = 1;
+          R_activate_in_3_steps = 1;
+          R_num_3_steps = 0;
+          R_1st_step = 1;
+          R_start_step = 0;
         }
       } else {
         R_stateTimerCount++;
@@ -390,14 +400,6 @@ void callback()
 
     if (streamTimerCount == 5)
     {
-      //Bluetooth print here
-      //      Serial.print( (analogRead(A19) * (3.3 / 4096)));
-      //      Serial.print(",");
-      //      Serial.print((analogRead(A19) * (3.3 / 4096)));
-      //      Serial.print(",");
-      //      Serial.print(Tcal_RL);
-      //      Serial.print(",");
-      //      Serial.println(Tcal_LL);
       bluetooth.println(Average_RL);
       bluetooth.println(R_state);
       bluetooth.println(PID_Setpoint_RL);         //Right Setpoint
@@ -410,14 +412,6 @@ void callback()
 
       L_p_steps->curr_voltage = fsr(fsr_sense_Left_Toe);
       R_p_steps->curr_voltage = fsr(fsr_sense_Right_Toe);
-      //Serial.println(fsr(fsr_sense_Left_Toe));
-      //      Serial.println(" ");
-      //      Serial.println(fsr(fsr_sense_Left_Toe));
-      //      Serial.println(fsr_percent_thresh_Left_Toe * fsr_Left_Toe_thresh);
-      //      Serial.print("Check if true ");
-      //      Serial.println(((fsr(fsr_sense_Left_Toe) > fsr_percent_thresh_Left_Toe * fsr_Left_Toe_thresh)));
-      //      Serial.println(L_state);
-
     }
     streamTimerCount++;
     for (int j = dim; j >= 0; j--)                    //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1

@@ -459,8 +459,8 @@ double Adj_N3_speed_with_voltage_every_step(int R_state_l, int R_state_old_l, st
     if (p_steps_l->dorsi_time <= 30) p_steps_l->dorsi_time = 30;
 
     p_steps_l->flag_1_step = true;
-    Serial.print(" Dorsi time ");
-    Serial.println(p_steps_l->dorsi_time);
+//    Serial.print(" Dorsi time ");
+//    Serial.println(p_steps_l->dorsi_time);
 
 
     if (p_steps_l->torque_adj) //HERE YOU SHOULD TAKE THE PEAK VALUE DURING THE PLANTARFLEXION!!! MAYBE YOU CAN USE THE LAST STEP AS REFERENCE
@@ -497,8 +497,8 @@ double Adj_N3_speed_with_voltage_every_step(int R_state_l, int R_state_old_l, st
       p_steps_l->plant_time = millis() - (p_steps_l->plant_time);
       if (p_steps_l->plant_time <= 16) p_steps_l->plant_time = 16;
       p_steps_l->flag_1_step = false; // you have provided one step
-//      Serial.print(" Plant Time = ");
-//      Serial.println(p_steps_l->plant_time);
+      Serial.print(" Plant Time = ");
+      Serial.println(p_steps_l->plant_time);
 
       if (p_steps_l->count_steps >= 2) { //avoid the first step just to be sure
 
