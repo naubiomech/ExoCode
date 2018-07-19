@@ -72,8 +72,7 @@ double L_sign = 1;
 #include "Filter_Parameters.h"
 #include "State_Machine_Parameters.h"
 #include "Reference_ADJ.h"
-#include "Messages.h"
-#include "FSR_Average.h"
+#include "Msg_functions.h"
 #include "Calibrate_and_Read_Sensors.h"
 #include "Proportional_Ctrl.h"
 #include "Auto_KF.h"
@@ -100,7 +99,7 @@ const unsigned int onoff = 22;
 
 // Single board SQuare (big)
 //const unsigned int onoff = 17;                                          //The digital pin connected to the motor on/off swich
-const unsigned int zero = 1540;                                       //whatever the zero value is for the PID analogwrite setup
+const unsigned int zero = 2048;//1540;                                       //whatever the zero value is for the PID analogwrite setup
 const unsigned int which_leg_pin = 15;
 
 // if digital read
@@ -121,6 +120,9 @@ double store_KF_RL = 0;
 
 void setup()
 {
+
+
+
   // set the interrupt
   Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
   Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
@@ -144,9 +146,11 @@ void setup()
   pinMode(onoff, OUTPUT); //Enable disable the motors
   digitalWrite(onoff, LOW);
 
+  //  pinMode(pin_err_LL, INPUT);
+  //  pinMode(pin_err_RL, INPUT);
 
-  pinMode(pin_err_LL, INPUT_PULLUP);
-  pinMode(pin_err_RL, INPUT_PULLUP);
+  pinMode(pin_err_LL, INPUT);
+  pinMode(pin_err_RL, INPUT);
 
   pinMode(A19, INPUT); //enable the torque reading of the left torque sensor
   pinMode(A18, INPUT); //enable the torque reading of the right torque sensor
@@ -180,14 +184,8 @@ void setup()
 
 }
 
-int FSR_FIRST_Cycle = 1;
-int FSR_CAL_FLAG = 0;
-double Curr_Left_Toe;
-double Curr_Left_Heel;
-double Curr_Right_Toe;
-double Curr_Right_Heel;
 
-int Trq_time_volt = 0; // 1 for time 0 for volt 2 for proportional gain
+int Trq_time_volt = 0; // 1 for time 0 for volt 2 for proportional gain 3 for pivot proportional control
 int Old_Trq_time_volt = Trq_time_volt;
 int flag_13 = 1;
 int flag_count = 0;
@@ -206,21 +204,24 @@ volatile double Average_Volt_LL_Heel;
 volatile double Average_Volt_RL_Heel;
 volatile double Average_Trq_LL;
 volatile double Average_Trq_RL;
+volatile double Combined_Average_LL;
+volatile double Combined_Average_RL;
+
+volatile double motor_driver_count_err;
 
 double start_time_callback, start_time_timer;
 
-int flag_enable_catch_error = 1;
-int motor_driver_count_err;
 int time_err_motor;
-
+int flag_enable_catch_error = 1;
 
 bool motor_error = true;
 
-void callback()
+void callback()//executed every 2ms
 {
 
-  //---------------FAULT DETECTION
- motor_error = ((analogRead(pin_err_LL) <= 5) || (analogRead(pin_err_RL) <= 5));
+  //motor_error true I have an error, false I haven't
+
+  motor_error = ((analogRead(pin_err_LL) <= 5) || (analogRead(pin_err_RL) <= 5));
 
   if (stream == 1) {
 
@@ -237,11 +238,11 @@ void callback()
         digitalWrite(onoff, LOW);
       }
 
-      motor_driver_count_err++;// was motor_driver_count_err++;
-      time_err_motor++;// was time_err_motor++;
+      motor_driver_count_err++;
+      time_err_motor++;
 
-//was (time_err_motor >= 4)
-      if (time_err_motor >= 12) {
+//was time_err_motor >= 4
+      if (time_err_motor >= 4) {
         digitalWrite(onoff, HIGH);
         flag_enable_catch_error = 0;
         time_err_motor = 0;
@@ -250,54 +251,31 @@ void callback()
     }// end if flag_enable_catch_error==1;
 
   }//end stream==1
-//  if (digitalRead(pin_err_LL) == LOW && digitalRead(pin_err_RL) == LOW && digitalRead(onoff) == LOW && stream == 1) {
-//    digitalWrite(onoff, HIGH);
-//  }
-//
-//  if (digitalRead(pin_err_LL) == LOW && digitalRead(pin_err_RL) == LOW && flag_enable_catch_error == 0) {
-//    flag_enable_catch_error = 1;
-//  }
-//
-//  if ((digitalRead(pin_err_LL) == HIGH || digitalRead(pin_err_RL) == HIGH ) && (flag_enable_catch_error == 1)) {
-//
-//    if (time_err_motor == 0)
-//      digitalWrite(onoff, LOW);
-//
-//    motor_driver_count_err++;
-//    time_err_motor++;
-//
-//    if (time_err_motor >= 4) {
-//      digitalWrite(onoff, HIGH);
-//      flag_enable_catch_error = 0;
-//      time_err_motor = 0;
-//    }
-//  }
 
-  //---------------FAULT DETECTION
+  //start_time_callback = micros();
 
-  start_time_callback = micros();
   //  start_time_timer = micros();
   //  Update_Averages();
 
-  //-------------------------------
+  //------------------FSR & TRQ AVERAGE-------------
 
-  for (int j = dim_FSR - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
-  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-    *(p_FSR_Array_LL + j) = *(p_FSR_Array_LL + j - 1);                //Puts the element in the following memory space into the current memory space
-    *(p_FSR_Array_RL + j) = *(p_FSR_Array_RL + j - 1);
 
-    *(p_FSR_Array_LL_Heel + j) = *(p_FSR_Array_LL_Heel + j - 1);                //Puts the element in the following memory space into the current memory space
-    *(p_FSR_Array_RL_Heel + j) = *(p_FSR_Array_RL_Heel + j - 1);
-  }
-
-  //Get the FSR
-  //  Curr_FSR_LL = fsr(fsr_sense_Left_Toe);
-  //  Curr_FSR_RL = fsr(fsr_sense_Right_Toe);
-  *(p_FSR_Array_LL) = fsr(fsr_sense_Left_Toe);
-  *(p_FSR_Array_RL) = fsr(fsr_sense_Right_Toe);
-
-  *(p_FSR_Array_LL_Heel) = fsr(fsr_sense_Left_Heel);
-  *(p_FSR_Array_RL_Heel) = fsr(fsr_sense_Right_Heel);
+  // if not filtering the FSR anymore
+  //  for (int j = dim_FSR - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
+  //  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
+  //    *(p_FSR_Array_LL + j) = *(p_FSR_Array_LL + j - 1);                //Puts the element in the following memory space into the current memory space
+  //    *(p_FSR_Array_RL + j) = *(p_FSR_Array_RL + j - 1);
+  //
+  //    *(p_FSR_Array_LL_Heel + j) = *(p_FSR_Array_LL_Heel + j - 1);                //Puts the element in the following memory space into the current memory space
+  //    *(p_FSR_Array_RL_Heel + j) = *(p_FSR_Array_RL_Heel + j - 1);
+  //  }
+  //
+  //  //Get the FSR
+  //  *(p_FSR_Array_LL) = fsr(fsr_sense_Left_Toe);
+  //  *(p_FSR_Array_RL) = fsr(fsr_sense_Right_Toe);
+  //
+  //  *(p_FSR_Array_LL_Heel) = fsr(fsr_sense_Left_Heel);
+  //  *(p_FSR_Array_RL_Heel) = fsr(fsr_sense_Right_Heel);
 
 
   //Calc the average value of Torque
@@ -323,11 +301,11 @@ void callback()
 
   for (int i = 0; i < dim_FSR; i++)
   {
-    FSR_Average_LL = FSR_Average_LL + *(p_FSR_Array_LL + i);
-    FSR_Average_RL = FSR_Average_RL + *(p_FSR_Array_RL + i);
-
-    FSR_Average_LL_Heel = FSR_Average_LL_Heel + *(p_FSR_Array_LL_Heel + i);
-    FSR_Average_RL_Heel = FSR_Average_RL_Heel + *(p_FSR_Array_RL_Heel + i);
+    //    FSR_Average_LL = FSR_Average_LL + *(p_FSR_Array_LL + i);
+    //    FSR_Average_RL = FSR_Average_RL + *(p_FSR_Array_RL + i);
+    //
+    //    FSR_Average_LL_Heel = FSR_Average_LL_Heel + *(p_FSR_Array_LL_Heel + i);
+    //    FSR_Average_RL_Heel = FSR_Average_RL_Heel + *(p_FSR_Array_RL_Heel + i);
 
     if (i < dim)
     {
@@ -337,17 +315,42 @@ void callback()
     }
   }
 
-  Average_Volt_LL = FSR_Average_LL / dim_FSR;
-  Average_Volt_RL = FSR_Average_RL / dim_FSR;
+  //  Average_Volt_LL = FSR_Average_LL / dim_FSR;
+  //  Average_Volt_RL = FSR_Average_RL / dim_FSR;
+  //
+  //  Average_Volt_LL_Heel = FSR_Average_LL_Heel / dim_FSR;
+  //  Average_Volt_RL_Heel = FSR_Average_RL_Heel / dim_FSR;
+  //
+  //  Average_Trq_LL = Average_LL / dim;
+  //  Average_Trq_RL = Average_RL / dim;
+  //
+  //  Combined_Average_LL = (FSR_Average_LL + FSR_Average_LL_Heel) / dim_FSR;
+  //  Combined_Average_RL = (FSR_Average_RL + FSR_Average_RL_Heel) / dim_FSR;
 
-  Average_Volt_LL_Heel = FSR_Average_LL_Heel / dim_FSR;
-  Average_Volt_RL_Heel = FSR_Average_RL_Heel / dim_FSR;
+  // if not filtering the FSR anymore
+  FSR_Average_LL = fsr(fsr_sense_Left_Toe);
+  Average_Volt_LL = FSR_Average_LL;
+
+  FSR_Average_LL_Heel = fsr(fsr_sense_Left_Heel);
+  Average_Volt_LL_Heel = FSR_Average_LL_Heel;
+
+  FSR_Average_RL = fsr(fsr_sense_Right_Toe);
+  Average_Volt_RL = FSR_Average_RL;
+
+  FSR_Average_RL_Heel = fsr(fsr_sense_Right_Heel);
+  Average_Volt_RL_Heel = FSR_Average_RL_Heel;
+
+
+  Combined_Average_LL = (FSR_Average_LL + FSR_Average_LL_Heel);
+  Combined_Average_RL = (FSR_Average_RL + FSR_Average_RL_Heel);
+
 
   Average_Trq_LL = Average_LL / dim;
   Average_Trq_RL = Average_RL / dim;
 
-  L_p_steps->curr_voltage = FSR_Average_LL / dim_FSR;
-  R_p_steps->curr_voltage = FSR_Average_RL / dim_FSR;
+  L_p_steps->curr_voltage = Combined_Average_LL;
+  R_p_steps->curr_voltage = Combined_Average_RL;
+
   L_p_steps->torque_average = Average_LL / dim;
   R_p_steps->torque_average = Average_RL / dim;
 
@@ -360,7 +363,24 @@ void callback()
     //    Serial.println("Going to calib");
 
     FSR_calibration();
+    //    FSR_baseline_FLAG = 1;
+  }
 
+  //  if (FSR_baseline_FLAG_Left) {
+  //
+  //    base_1 = take_baseline(L_state, L_state_old, L_p_steps);
+  //
+  //    if (base_1) {
+  //      Serial.println("Left Baseline token");
+  //      FSR_baseline_FLAG_Left = 0;
+  //    }
+  //  }
+
+  if (FSR_baseline_FLAG_Right) {
+    take_baseline(R_state, R_state_old, R_p_steps, p_FSR_baseline_FLAG_Right);
+  }
+  if (FSR_baseline_FLAG_Left) {
+    take_baseline(L_state, L_state_old, L_p_steps, p_FSR_baseline_FLAG_Left);
   }
 
   //
@@ -395,6 +415,16 @@ void callback()
       //      }
     }
 
+    //    Serial.println(digitalRead(pin_err_LL));
+    //    Serial.println(digitalRead(pin_err_RL));
+
+    //    if (digitalRead(pin_err_LL) == HIGH || digitalRead(pin_err_RL) == HIGH) {
+    //      digitalWrite(onoff, LOW);
+    //      //      delayMicroseconds(1000);
+    //      //      digitalWrite(onoff, HIGH);
+    //      motor_driver_count_err++;
+    //    }
+
     if (streamTimerCount == 1 && flag_auto_KF == 1)
       Auto_KF();
 
@@ -418,23 +448,99 @@ void callback()
     //    start_time_timer = micros();
 
     set_2_zero_if_steady_state();
-    N3_LL = Torque_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL, p_Setpoint_Ankle_LL_Pctrl, Trq_time_volt);
+
+    N3_LL = Ctrl_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL, p_Setpoint_Ankle_LL_Pctrl, Trq_time_volt, L_Prop_Gain, FSR_baseline_FLAG_Left);
     ////        Serial.println("RIGHT");
-    N3_RL = Torque_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL, p_Setpoint_Ankle_RL_Pctrl, Trq_time_volt);
+    N3_RL = Ctrl_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL, p_Setpoint_Ankle_RL_Pctrl, Trq_time_volt, R_Prop_Gain, FSR_baseline_FLAG_Right);
     //    Serial.print("Time other functions : ");
     //    Serial.println(micros() - start_time_timer);
   }
 
-  if (micros() - start_time_callback >= 600) {
-    Serial.println( micros() - start_time_callback);
-  }
-
+  //  if (micros() - start_time_callback >= 600) {
+  //    Serial.println( micros() - start_time_callback);
+  //  }
+  //Serial.println(analogRead(fsr_sense_Left_Heel)+analogRead(fsr_sense_Left_Toe));
+  //Serial.println(analogRead(fsr_sense_Right_Heel)+analogRead(fsr_sense_Right_Toe));
 }// end callback
-
-
+//
+//const unsigned int fsr_sense_Left_Heel = A14;
+//const unsigned int fsr_sense_Left_Toe = A15;
+//const unsigned int fsr_sense_Right_Heel = A12;
+//const unsigned int fsr_sense_Right_Toe = A13;
 void loop()
 {
 
+  //-------- COMMENTED FROM HERE and moved to callback
+  //  for (int j = dim_FSR - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
+  //  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
+  //    *(p_FSR_Array_LL + j) = *(p_FSR_Array_LL + j - 1);                //Puts the element in the following memory space into the current memory space
+  //    *(p_FSR_Array_RL + j) = *(p_FSR_Array_RL + j - 1);
+  //
+  //    *(p_FSR_Array_LL_Heel + j) = *(p_FSR_Array_LL_Heel + j - 1);                //Puts the element in the following memory space into the current memory space
+  //    *(p_FSR_Array_RL_Heel + j) = *(p_FSR_Array_RL_Heel + j - 1);
+  //  }
+  //
+  //  //Get the FSR
+  //  //  Curr_FSR_LL = fsr(fsr_sense_Left_Toe);
+  //  //  Curr_FSR_RL = fsr(fsr_sense_Right_Toe);
+  //  *(p_FSR_Array_LL) = fsr(fsr_sense_Left_Toe);
+  //  *(p_FSR_Array_RL) = fsr(fsr_sense_Right_Toe);
+  //
+  //  *(p_FSR_Array_LL_Heel) = fsr(fsr_sense_Left_Heel);
+  //  *(p_FSR_Array_RL_Heel) = fsr(fsr_sense_Right_Heel);
+  //
+  //
+  //  //Calc the average value of Torque
+  //
+  //  //Shift the arrays
+  //  for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
+  //  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
+  //    *(TarrayPoint_LL + j) = *(TarrayPoint_LL + j - 1);                //Puts the element in the following memory space into the current memory space
+  //    *(TarrayPoint_RL + j) = *(TarrayPoint_RL + j - 1);
+  //  }
+  //
+  //  //Get the torques
+  //  *(TarrayPoint_LL) = get_LL_torq();
+  //  *(TarrayPoint_RL) = get_RL_torq();
+  //
+  //  //  noInterrupts();
+  //  FSR_Average_LL = 0;
+  //  FSR_Average_RL = 0;
+  //  FSR_Average_LL_Heel = 0;
+  //  FSR_Average_RL_Heel = 0;
+  //  Average_LL = 0;
+  //  Average_RL = 0;
+  //
+  //  for (int i = 0; i < dim_FSR; i++)
+  //  {
+  //    FSR_Average_LL = FSR_Average_LL + *(p_FSR_Array_LL + i);
+  //    FSR_Average_RL = FSR_Average_RL + *(p_FSR_Array_RL + i);
+  //
+  //    FSR_Average_LL_Heel = FSR_Average_LL_Heel + *(p_FSR_Array_LL_Heel + i);
+  //    FSR_Average_RL_Heel = FSR_Average_RL_Heel + *(p_FSR_Array_RL_Heel + i);
+  //
+  //    if (i < dim)
+  //    {
+  //      Average_LL =  Average_LL + *(TarrayPoint_LL + i);
+  //      Average_RL =  Average_RL + *(TarrayPoint_RL + i);
+  //      //        Average_RL =  Average_RL + *(TarrayPoint_RL + i);
+  //    }
+  //  }
+  //
+  //  Average_Volt_LL = FSR_Average_LL / dim_FSR;
+  //  Average_Volt_RL = FSR_Average_RL / dim_FSR;
+  //
+  //  Average_Volt_LL_Heel = FSR_Average_LL_Heel / dim_FSR;
+  //  Average_Volt_RL_Heel = FSR_Average_RL_Heel / dim_FSR;
+  //
+  //  Average_Trq_LL = Average_LL / dim;
+  //  Average_Trq_RL = Average_RL / dim;
+  //
+  //  L_p_steps->curr_voltage = FSR_Average_LL / dim_FSR;
+  //  R_p_steps->curr_voltage = FSR_Average_RL / dim_FSR;
+  //  L_p_steps->torque_average = Average_LL / dim;
+  //  R_p_steps->torque_average = Average_RL / dim;
+  //------------ TO HERE
 
 
   if (slowThisDown.check() == 1) // If the time passed is over 1ms is a true statement
@@ -444,6 +550,28 @@ void loop()
     {
       receive_and_transmit();       //Recieve and transmit was moved here so it will not interfere with the data message
     }
+
+    //    if (digitalRead(pin_err_LL) == HIGH || digitalRead(pin_err_RL) == HIGH) {
+    //      if (time_err_motor == 0)
+    //        digitalWrite(onoff, LOW);
+    //
+    //      if (time_err_motor >= 200) {
+    //        digitalWrite(onoff, HIGH);
+    //      }
+    //
+    //      motor_driver_count_err++;
+    //      time_err_motor++;
+    //
+    //      if (time_err_motor >= 300) {
+    //        time_err_motor = 0;
+    //      }
+
+
+    //      delayMicroseconds(1000);
+    //      digitalWrite(onoff, HIGH);
+
+    //    }
+
     slowThisDown.reset();     //Resets the interval
     //    if (millis() - start_time_timer >= 1) {
     //      Serial.print("Time timer : ");
@@ -451,23 +579,25 @@ void loop()
     //    }
   }
 
+
+
   if (stream == 1)
   {
   }
   else
   {
     //Reset the starting values
-    L_p_steps->count_steps = 0;
+    L_p_steps->count_plant = 0;
     L_p_steps->n_steps = 0;
-    L_p_steps->flag_1_step = false;
+    L_p_steps->flag_start_plant = false;
     L_p_steps->flag_take_average = false;
     L_p_steps->flag_N3_adjustment_time = false;
     L_p_steps->flag_take_baseline = false;
     L_p_steps->torque_adj = false;
 
-    R_p_steps->count_steps = 0;
+    R_p_steps->count_plant = 0;
     R_p_steps->n_steps = 0;
-    R_p_steps->flag_1_step = false;
+    R_p_steps->flag_start_plant = false;
     R_p_steps->flag_take_average = false;
     R_p_steps->flag_N3_adjustment_time = false;
     R_p_steps->flag_take_baseline = false;

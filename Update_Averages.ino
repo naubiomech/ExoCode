@@ -1,5 +1,5 @@
-void Update_Averages(){
-  
+void Update_Averages() {
+
   for (int j = dim_FSR - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
     *(p_FSR_Array_LL + j) = *(p_FSR_Array_LL + j - 1);                //Puts the element in the following memory space into the current memory space
@@ -65,9 +65,11 @@ void Update_Averages(){
   Average_Trq_LL = Average_LL / dim;
   Average_Trq_RL = Average_RL / dim;
 
-  L_p_steps->curr_voltage = FSR_Average_LL / dim_FSR;
-  R_p_steps->curr_voltage = FSR_Average_RL / dim_FSR;
+  //  L_p_steps->curr_voltage = FSR_Average_LL / dim_FSR;
+  //  R_p_steps->curr_voltage = FSR_Average_RL / dim_FSR;
+  L_p_steps->curr_voltage = (FSR_Average_LL + FSR_Average_LL_Heel) / dim_FSR;
+  R_p_steps->curr_voltage = (FSR_Average_RL + FSR_Average_RL_Heel) / dim_FSR;
   L_p_steps->torque_average = Average_LL / dim;
   R_p_steps->torque_average = Average_RL / dim;
-  
-  }
+
+}

@@ -34,8 +34,18 @@ double fsr_percent_thresh_Left_Toe = .9;               //if it is "this" percent
 double fsr_percent_thresh_Right_Heel = .9;             //These are the percentage of the threshold values where the code will say
 double fsr_percent_thresh_Right_Toe = .9;              //if it is "this" percent of our calibration/threshold value we are "close enough" to change the state
 
+int FSR_FIRST_Cycle = 1;
+int FSR_CAL_FLAG = 0;
+int FSR_baseline_FLAG_Left = 0;
+int FSR_baseline_FLAG_Right = 0;
+int * p_FSR_baseline_FLAG_Right = &FSR_baseline_FLAG_Right;
+int * p_FSR_baseline_FLAG_Left = &FSR_baseline_FLAG_Left;
 
-int flag_FSR_sensors_10N_40N = 1; // 0 if 10 N FSR or 1 if 40 N FSR
+double Curr_Left_Toe;
+double Curr_Left_Heel;
+double Curr_Right_Toe;
+double Curr_Right_Heel;
 
+double base_1, base_2;
 
-
+double FSR_Sensors_type = 40;

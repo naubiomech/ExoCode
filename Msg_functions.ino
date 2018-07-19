@@ -3,35 +3,73 @@ void send_data_message_wc() //with COP
 {
   bluetooth.print('S');
   bluetooth.print(',');
-  bluetooth.print(R_sign*Average_Trq_RL);
+
+  // RIGHT
+  bluetooth.print(R_sign * Average_Trq_RL);
   bluetooth.print(',');
   bluetooth.print(R_state);
   bluetooth.print(',');
-  bluetooth.print(R_sign*PID_Setpoint_RL);
+  bluetooth.print(R_sign * PID_Setpoint_RL);
   bluetooth.print(',');
   //  bluetooth.print(fsr(fsr_sense_Right_Toe));
   //  bluetooth.print(fsr(fsr_sense_Right_Toe));
-  bluetooth.print(Average_Volt_RL);
+  //  bluetooth.print(Average_Volt_RL);
+  bluetooth.print(fsr_percent_thresh_Right_Toe * fsr_Right_Combined_peak_ref);
   bluetooth.print(',');
-  bluetooth.print(Average_Volt_RL_Heel);
+  bluetooth.print(Combined_Average_RL);
   bluetooth.print(',');
-  bluetooth.print(Average_Trq_LL);
+
+  // LEFT
+  bluetooth.print(L_sign * Average_Trq_LL);
   bluetooth.print(',');
   bluetooth.print(L_state);
   bluetooth.print(',');
-  bluetooth.print(L_sign*PID_Setpoint_LL);
+  bluetooth.print(L_sign * PID_Setpoint_LL);
   bluetooth.print(',');
   //  bluetooth.print(fsr(fsr_sense_Left_Toe));
   //  bluetooth.print(fsr(fsr_sense_Left_Toe));
-  bluetooth.print(L_sign*Average_Volt_LL);
+  //  bluetooth.print(Average_Volt_LL);
+  bluetooth.print(fsr_percent_thresh_Left_Toe * fsr_Left_Combined_peak_ref);
   bluetooth.print(',');
-  bluetooth.print(Average_Volt_LL_Heel);
+  bluetooth.print(Combined_Average_LL);
   bluetooth.print(',');
-  bluetooth.print(analogRead(pin_err_LL));//bluetooth.print(flag_enable_catch_error);//SIG1
-  bluetooth.print(',');
-  bluetooth.print(analogRead(pin_err_RL));//bluetooth.print(motor_driver_count_err);//SIG2
-  bluetooth.print(',');
-  bluetooth.print(time_err_motor);//SIG3
+
+  // OTHER
+  //  bluetooth.print(timeElapsed); //SIG1
+  //  bluetooth.print(',');
+  //  bluetooth.print(L_COP_fun()); //SIG2
+  //  bluetooth.print(',');
+  //  bluetooth.print(R_COP_fun()); //SIG3
+  //-------------------------------------
+
+
+      bluetooth.print(FSR_Average_LL_Heel); //SIG1
+      bluetooth.print(',');
+      bluetooth.print(FSR_Average_RL_Heel); //SIG2-
+      bluetooth.print(',');
+      bluetooth.print(min(10, fabs(L_p_steps->curr_voltage / L_p_steps->plant_peak_mean))); //SIG3
+      bluetooth.print(',');
+      bluetooth.print(min(10, fabs(R_p_steps->curr_voltage / R_p_steps->plant_peak_mean))); //SIG4
+
+
+  //-----------------------------
+
+//  bluetooth.print((analogRead(pin_err_LL) <= 5) || (analogRead(pin_err_RL) <= 5)); //SIG1
+//  bluetooth.print(',');
+//  bluetooth.print(analogRead(pin_err_LL)); //SIG2
+//  bluetooth.print(',');
+//  bluetooth.print(analogRead(pin_err_RL)); //SIG3
+//  bluetooth.print(',');
+//  bluetooth.print(analogRead(pin_err_RL)); //SIG4
+
+
+
+////  bluetooth.print(analogRead(A6)); //SIG4
+
+  //  bluetooth.print(analogRead(fsr_sense_Left_Heel)+analogRead(fsr_sense_Left_Toe)); //SIG2
+  //  bluetooth.print(',');
+  //  bluetooth.print(analogRead(fsr_sense_Right_Heel)+analogRead(fsr_sense_Right_Toe)); //SIG3
+
   bluetooth.print(',');
   bluetooth.println('Z');
 }

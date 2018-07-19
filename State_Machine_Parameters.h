@@ -21,4 +21,4 @@ double L_start_from_3 = 0;
 double state_counter_th = 3;
 double R_start_time = 0;
 double L_start_time = 0;
-double step_time_length = 250;
+double step_time_length = 150;

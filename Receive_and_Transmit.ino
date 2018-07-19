@@ -158,8 +158,8 @@ void receive_and_transmit()
       //      write_FSR_values(address_FSR_RL, fsr_Right_Heel_peak_ref);
       //      write_FSR_values((address_FSR_RL + sizeof(double) + sizeof(char)), fsr_Right_Toe_peak_ref);
       //
-      //      L_p_steps->voltage_ref = fsr_Left_Toe_peak_ref;
-      //      R_p_steps->voltage_ref = fsr_Right_Toe_peak_ref;
+      //      L_p_steps->voltage_peak_ref = fsr_Left_Toe_peak_ref;
+      //      R_p_steps->voltage_peak_ref = fsr_Right_Toe_peak_ref;
       //
       //      // KF_LL = store_KF_LL;
       //      // KF_RL = store_KF_RL;
@@ -221,17 +221,21 @@ void receive_and_transmit()
       if (((check_FSR_values(address_FSR_LL)) && (check_FSR_values(address_FSR_LL + sizeof(double) + 1))) &&
           ((check_FSR_values(address_FSR_RL)) && (check_FSR_values(address_FSR_RL + sizeof(double) + 1))))
       {
-        fsr_Left_Heel_peak_ref = read_FSR_values(address_FSR_LL);
-        fsr_Left_Toe_peak_ref = read_FSR_values(address_FSR_LL + sizeof(double) + 1);
-        fsr_Right_Heel_peak_ref = read_FSR_values(address_FSR_RL);
-        fsr_Right_Toe_peak_ref = read_FSR_values(address_FSR_RL + sizeof(double) + 1);
+        //        fsr_Left_Heel_peak_ref = read_FSR_values(address_FSR_LL);
+        //        fsr_Left_Toe_peak_ref = read_FSR_values(address_FSR_LL + sizeof(double) + 1);
+        //        fsr_Right_Heel_peak_ref = read_FSR_values(address_FSR_RL);
+        //        fsr_Right_Toe_peak_ref = read_FSR_values(address_FSR_RL + sizeof(double) + 1);
+
+        fsr_Left_Combined_peak_ref = read_FSR_values(address_FSR_LL) + read_FSR_values(address_FSR_LL + sizeof(double) + 1);
+        fsr_Right_Combined_peak_ref = read_FSR_values(address_FSR_RL) + read_FSR_values(address_FSR_RL + sizeof(double) + 1);
+
         *(data_to_send_point + 1) = 1;
         //send_command_message('<', data_to_send_point, 0);   //For the Arduino to prove to MATLAB that it is behaving, it will send back the character B
         Serial.print("Left values: ");
-        Serial.print(fsr_Left_Toe_peak_ref);
+        Serial.print(fsr_Left_Combined_peak_ref);
         Serial.print(", ");
         Serial.print("Right values: ");
-        Serial.print(fsr_Right_Toe_peak_ref);
+        Serial.print(fsr_Right_Combined_peak_ref);
       }
       else
       {
@@ -251,8 +255,8 @@ void receive_and_transmit()
       }
 
       send_command_message('<', data_to_send_point, 3);
-      L_p_steps->voltage_ref = fsr_Left_Toe_peak_ref;
-      R_p_steps->voltage_ref = fsr_Right_Toe_peak_ref;
+      L_p_steps->voltage_peak_ref = fsr_Left_Combined_peak_ref;
+      R_p_steps->voltage_peak_ref = fsr_Right_Combined_peak_ref;
       break;
 
     case '>':
@@ -538,9 +542,9 @@ void receive_and_transmit()
       // KF_RL = 0;
       // KF_LL = 0;
 
-      L_p_steps->count_steps = 0;
+      L_p_steps->count_plant = 0;
       L_p_steps->n_steps = 0;
-      L_p_steps->flag_1_step = false;
+      L_p_steps->flag_start_plant = false;
       L_p_steps->flag_take_average = false;
       L_p_steps->flag_N3_adjustment_time = false;
       L_p_steps->flag_take_baseline = false;
@@ -559,9 +563,9 @@ void receive_and_transmit()
       // KF_LL = 0;
 
 
-      R_p_steps->count_steps = 0;
+      R_p_steps->count_plant = 0;
       R_p_steps->n_steps = 0;
-      R_p_steps->flag_1_step = false;
+      R_p_steps->flag_start_plant = false;
       R_p_steps->flag_take_average = false;
       R_p_steps->flag_N3_adjustment_time = false;
       R_p_steps->flag_take_baseline = false;
@@ -714,6 +718,50 @@ void receive_and_transmit()
     case ';':
       flag_auto_KF = 0;
       Serial.println(" Deactivate Auto KF ");
+      break;
+
+    case '#':
+      Old_Trq_time_volt = Trq_time_volt;
+      Trq_time_volt = 3; // activate pivot proportional control
+      *p_Setpoint_Ankle_RL_Pctrl = R_p_steps->Setpoint;
+      *p_Setpoint_Ankle_LL_Pctrl = L_p_steps->Setpoint;
+      Serial.println(" Activate Proportional Pivot Ctrl ");
+      break;
+
+    case '^':
+      Trq_time_volt = Old_Trq_time_volt;
+      R_p_steps->torque_adj = false;
+      L_p_steps->torque_adj = false;
+      *p_Setpoint_Ankle_RL = R_p_steps->Setpoint;
+      *p_Setpoint_Ankle_LL = L_p_steps->Setpoint;
+      *p_Setpoint_Ankle_RL_Pctrl = R_p_steps->Setpoint;
+      *p_Setpoint_Ankle_LL_Pctrl = L_p_steps->Setpoint;
+      Serial.println(" Deactivate Proportional Pivot Ctrl ");
+      break;
+
+    case 'B':
+      // check baseline
+      Serial.println("Check Baseline");
+      Serial.println(L_p_steps->plant_peak_mean);
+      Serial.println(R_p_steps->plant_peak_mean);
+      *(data_to_send_point) = L_p_steps->plant_peak_mean;
+      *(data_to_send_point + 1) = R_p_steps->plant_peak_mean;
+      send_command_message('B', data_to_send_point, 2);
+      break;
+
+    case 'b':
+      // Calc baseline
+      Serial.println(" Calc Baseline");
+      FSR_baseline_FLAG_Left = 1;
+      FSR_baseline_FLAG_Right = 1;
+      base_1 = 0;
+      base_2 = 0;
+      L_p_steps->count_plant_base = 0;
+      R_p_steps->count_plant_base = 0;
+      R_p_steps->flag_start_plant = false;
+      L_p_steps->flag_start_plant = false;
+      R_p_steps->Setpoint = 0;
+      L_p_steps->Setpoint = 0;
       break;
 
   }

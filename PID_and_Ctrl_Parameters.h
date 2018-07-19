@@ -11,11 +11,11 @@ const unsigned int motor_RL_pin = A22;                                     //ana
 
 double kp_LL = 800;
 double ki_LL = 0;
-double kd_LL = 0;
+double kd_LL = 3;
 double KF_LL = 1;
 double kp_RL = 800;
 double ki_RL = 0;
-double kd_RL = 0;
+double kd_RL = 3;
 double KF_RL = 1;
 
 //int dim = 3;

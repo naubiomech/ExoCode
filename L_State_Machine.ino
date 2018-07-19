@@ -9,7 +9,7 @@ void state_machine_LL()
         L_set_2_zero = 0;
         One_time_L_set_2_zero = 1;
       }
-      else if ((L_p_steps->curr_voltage > fsr_percent_thresh_Left_Toe * fsr_Left_Toe_peak_ref)) //&& (fsr(fsr_sense_Long) < (fsr_thresh_long * fsr_cal_Long)))
+      else if ((L_p_steps->curr_voltage > fsr_percent_thresh_Left_Toe * fsr_Left_Combined_peak_ref)) //&& (fsr(fsr_sense_Long) < (fsr_thresh_long * fsr_cal_Long)))
       {
         state_count_LL_13++;
         // if you're in the same state for more than state_counter_th it means that it is not noise
@@ -61,7 +61,7 @@ void state_machine_LL()
         Setpoint_Ankle_LL_Pctrl = 0;
       }
 
-      if ((L_p_steps->curr_voltage < (fsr_percent_thresh_Left_Toe * fsr_Left_Toe_peak_ref)))
+      if ((L_p_steps->curr_voltage < (fsr_percent_thresh_Left_Toe * fsr_Left_Combined_peak_ref)))
       {
         state_count_LL_31++;
         if (state_count_LL_31 >= state_counter_th)
@@ -80,8 +80,8 @@ void state_machine_LL()
   // Adjust the torque reference as a function of the step
   L_ref_step_adj();
 
-  if (Trq_time_volt == 2 && L_state == 3) {
-    PID_Setpoint_LL = Setpoint_Ankle_LL_Pctrl * L_Prop_Gain;
+  if ((Trq_time_volt == 2 || Trq_time_volt == 3) && L_state == 3) {
+    PID_Setpoint_LL = Setpoint_Ankle_LL_Pctrl;
     Serial.println("After switch case : ");
     Serial.println(L_coef_in_3_steps_Pctrl);
     Serial.println(Setpoint_Ankle_LL_Pctrl);
@@ -90,15 +90,14 @@ void state_machine_LL()
   }
   else {
 
-    if (N3_LL < 1 || N3_RL < 1 || N3 < 1) {
+    if (N1 < 1 || N2 < 1 || N3 < 1) {
       PID_Setpoint_LL = New_PID_Setpoint_LL;
     }
     else {
       // Create the smoothed reference and call the PID
       PID_Sigm_Curve_LL();
     }
-  
-  
+    
   }
 
   //  Serial.print("L_state ");

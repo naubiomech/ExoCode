@@ -45,14 +45,19 @@ void FSR_calibration()
     //    fsr_cal_Long = 0;
     startTime = millis();
     Serial.println("First time");
-    Curr_Left_Toe = 0;
-    Curr_Left_Heel = 0;
-    Curr_Right_Toe = 0;
-    Curr_Right_Heel = 0;
-    fsr_Left_Toe_peak_ref = 0;
-    fsr_Left_Heel_peak_ref = 0;
-    fsr_Right_Toe_peak_ref = 0;
-    fsr_Right_Heel_peak_ref = 0;
+    //    Curr_Left_Toe = 0;
+    //    Curr_Left_Heel = 0;
+    //    Curr_Right_Toe = 0;
+    //    Curr_Right_Heel = 0;
+    Curr_Combined_Right = 0;
+    Curr_Combined_Left = 0;
+
+    fsr_Right_Combined_peak_ref = 0;
+    fsr_Left_Combined_peak_ref = 0;
+    //    fsr_Left_Toe_peak_ref = 0;
+    //    fsr_Left_Heel_peak_ref = 0;
+    //    fsr_Right_Toe_peak_ref = 0;
+    //    fsr_Right_Heel_peak_ref = 0;
   }
 
 
@@ -61,52 +66,70 @@ void FSR_calibration()
     //      fsrLongCurrent = fsr(fsr_sense_Long);
     //      fsrShortCurrent = fsr(fsr_sense_Short);
 
-    Curr_Left_Toe = fsr(fsr_sense_Left_Toe);
-    Curr_Left_Heel = fsr(fsr_sense_Left_Heel);
-    Curr_Right_Toe = fsr(fsr_sense_Right_Toe);
-    Curr_Right_Heel = fsr(fsr_sense_Right_Heel);
+    //    Curr_Left_Toe = fsr(fsr_sense_Left_Toe);
+    //    Curr_Left_Heel = fsr(fsr_sense_Left_Heel);
 
-    if (Curr_Left_Toe > fsr_Left_Toe_peak_ref)
+    Curr_Combined_Right = fsr(fsr_sense_Right_Toe) + fsr(fsr_sense_Right_Heel);
+    Curr_Combined_Left = fsr(fsr_sense_Left_Toe) + fsr(fsr_sense_Left_Heel);
+
+    if (Curr_Combined_Left > fsr_Left_Combined_peak_ref)
     {
-      fsr_Left_Toe_peak_ref = Curr_Left_Toe;
+      fsr_Left_Combined_peak_ref = Curr_Combined_Left;
     }
 
-    if ( Curr_Left_Heel > fsr_Left_Heel_peak_ref)
+    if (Curr_Combined_Right > fsr_Right_Combined_peak_ref)
     {
-      fsr_Left_Heel_peak_ref = Curr_Left_Heel;
+      fsr_Right_Combined_peak_ref = Curr_Combined_Right;
     }
 
-    if (Curr_Right_Toe > fsr_Right_Toe_peak_ref)
-    {
-      fsr_Right_Toe_peak_ref = Curr_Right_Toe;
-    }
-
-    if ( Curr_Right_Heel > fsr_Right_Heel_peak_ref)
-    {
-      fsr_Right_Heel_peak_ref = Curr_Right_Heel;
-    }
+    //
+    //
+    //    if (Curr_Left_Toe > fsr_Left_Toe_peak_ref)
+    //    {
+    //      fsr_Left_Toe_peak_ref = Curr_Left_Toe;
+    //    }
+    //
+    //    if ( Curr_Left_Heel > fsr_Left_Heel_peak_ref)
+    //    {
+    //      fsr_Left_Heel_peak_ref = Curr_Left_Heel;
+    //    }
+    //
+    //    if (Curr_Right_Toe > fsr_Right_Toe_peak_ref)
+    //    {
+    //      fsr_Right_Toe_peak_ref = Curr_Right_Toe;
+    //    }
+    //
+    //    if ( Curr_Right_Heel > fsr_Right_Heel_peak_ref)
+    //    {
+    //      fsr_Right_Heel_peak_ref = Curr_Right_Heel;
+    //    }
   }
   else {
     //    Serial.println("else <5000");
     //Update structure with the threshold
-    L_p_steps->voltage_ref = fsr_Left_Toe_peak_ref;
-    R_p_steps->voltage_ref = fsr_Right_Toe_peak_ref;
+    //    L_p_steps->voltage_peak_ref = fsr_Left_Toe_peak_ref;
+    //    R_p_steps->voltage_peak_ref = fsr_Right_Toe_peak_ref;
 
-    write_FSR_values(address_FSR_LL, fsr_Left_Heel_peak_ref);
-    write_FSR_values((address_FSR_LL + sizeof(double) + sizeof(char)), fsr_Left_Toe_peak_ref);
-    write_FSR_values(address_FSR_RL, fsr_Right_Heel_peak_ref);
-    write_FSR_values((address_FSR_RL + sizeof(double) + sizeof(char)), fsr_Right_Toe_peak_ref);
+    L_p_steps->voltage_peak_ref = fsr_Left_Combined_peak_ref;
+    R_p_steps->voltage_peak_ref = fsr_Right_Combined_peak_ref;
+    
+    // What I need to comment out
+    
+    write_FSR_values(address_FSR_LL, fsr_Left_Combined_peak_ref / 2);
+    write_FSR_values((address_FSR_LL + sizeof(double) + sizeof(char)), fsr_Left_Combined_peak_ref / 2);
+    write_FSR_values(address_FSR_RL, fsr_Right_Combined_peak_ref / 2);
+    write_FSR_values((address_FSR_RL + sizeof(double) + sizeof(char)), fsr_Right_Combined_peak_ref / 2);
 
-    //      L_p_steps->voltage_ref = fsr_Left_Toe_peak_ref;
-    //      R_p_steps->voltage_ref = fsr_Right_Toe_peak_ref;
+    //      L_p_steps->voltage_peak_ref = fsr_Left_Toe_peak_ref;
+    //      R_p_steps->voltage_peak_ref = fsr_Right_Toe_peak_ref;
 
     // KF_LL = store_KF_LL;
     // KF_RL = store_KF_RL;
     FSR_FIRST_Cycle = 1;
     FSR_CAL_FLAG = 0;
 
-    Serial.println(fsr_Right_Toe_peak_ref);
-    Serial.println(fsr_Left_Toe_peak_ref);
+    Serial.println(fsr_Right_Combined_peak_ref);
+    Serial.println(fsr_Left_Combined_peak_ref);
     Serial.println(" ");
   }
 }
@@ -147,12 +170,18 @@ double fsr(const unsigned int pin) {
   //Vo from analog read: 3.3* analog read/ max read (4096) || I = Vo/R || FSR resistance = (3.3V - Vo)/I
   double Vo = 10 * 3.3 * analogRead(pin) / 4096; //ZL Added in the 10* to scale the output
 
-
-  if (flag_FSR_sensors_10N_40N == 1) {
+  if ( FSR_Sensors_type == 10) {
     // This to return the force instead of the Voltage
-    Vo = max(0, p[0] * pow(Vo, 3) + p[1] * pow(Vo, 2) + p[2] * Vo + p[3]); // add the max cause cannot be negative force
+    Vo = max(0, Vo); // add the max cause cannot be negative force
   }
-  
+  else {
+    if (FSR_Sensors_type == 40)
+      // This to return the force instead of the Voltage
+      Vo = max(0, p[0] * pow(Vo, 3) + p[1] * pow(Vo, 2) + p[2] * Vo + p[3]); // add the max cause cannot be negative force
+  }
+
+
+
   //return (3.3 - Vo)*1000/Vo; //this is FSR resistance value
   return Vo;
 }
