@@ -30,10 +30,16 @@ typedef struct {
   double curr_voltage;
   double perc_l = 0.5;
   double fsr_percent_thresh_Toe=0.9;
-
+  double plant_peak_mean;
+  double four_step_plant_peak[4];
+  double plant_mean_peak_base;
+  double peak;
+  double fsr_Toe;
+  double torque_average;
 } steps;
 
 steps val_L;
 steps val_R;
 steps* L_p_steps = &val_L;
 steps* R_p_steps = &val_R;
+

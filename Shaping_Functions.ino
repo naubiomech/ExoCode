@@ -7,7 +7,7 @@ double Change_PID_Setpoint_Sigm(double New_PID_Setpoint_l, double Current_PID_Se
   //Ts sampling time in this case 0.001 with exp_mult=2000 it takes 6 milliseconds to rise from 0 to 1
   // it has to stop if N==n_iter
   //  N_l = round(1 / (Ts_l * exp_mult_l) * 10);
-  //  if ((N_l // 2)) {
+  //  if ((N_l % 2)) {
   //    N_l++;
   //  }
   double sig = 1 / (1 + exp(-exp_mult_l * ((-N_l / 2 + n_iter_l + 1)) * Ts_l));

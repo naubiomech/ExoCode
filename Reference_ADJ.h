@@ -21,6 +21,8 @@ double L_coef_in_3_steps = 0;
 double L_start_step = 0;
 double L_num_3_steps = 0;
 
+double L_coef_in_3_steps_Pctrl = 0;
+double R_coef_in_3_steps_Pctrl = 0;
 
 double L_store_N1 = 0;
 double L_set_2_zero = 0;
@@ -31,11 +33,12 @@ double One_time_L_set_2_zero = 1;
 double One_time_R_set_2_zero = 1;
 
 
-void R_ref_step_adj(){
+void R_ref_step_adj() {
   if (R_activate_in_3_steps == 1) {
 
     if (R_1st_step == 1) {
       R_coef_in_3_steps = 0;
+      //      R_coef_in_3_steps_Pctrl = 1;
       R_1st_step = 0;
     }
 
@@ -49,12 +52,14 @@ void R_ref_step_adj(){
         R_start_step = 0;
         if (millis() - R_start_time >= step_time_length) { // if the transition from 3 to 1 lasted more than 0.3 sec it was a step
           R_num_3_steps += 1;
+
           Serial.println(R_coef_in_3_steps);
         }
       }
     }
 
     R_coef_in_3_steps = R_num_3_steps / 6;
+
 
     if (R_coef_in_3_steps >= 1) {
       R_coef_in_3_steps = 1;
@@ -66,15 +71,16 @@ void R_ref_step_adj(){
 
 
   }
-return;
+  return;
 }
 
-void L_ref_step_adj(){
-	
+void L_ref_step_adj() {
+
   if (L_activate_in_3_steps == 1) {
 
     if (L_1st_step == 1) {
       L_coef_in_3_steps = 0;
+      L_coef_in_3_steps_Pctrl = 1;
       L_1st_step = 0;
     }
 
@@ -89,6 +95,8 @@ void L_ref_step_adj(){
         L_start_step = 0;
         if (millis() - L_start_time >= step_time_length) {
           L_num_3_steps += 1;
+
+          Serial.print("Left adj/step ");
           Serial.println(L_coef_in_3_steps);
         }
       }
@@ -96,16 +104,20 @@ void L_ref_step_adj(){
 
     L_coef_in_3_steps = L_num_3_steps / 6;
 
+    if (L_num_3_steps >= 1) {
+      L_coef_in_3_steps_Pctrl = 1;
+    }
     if (L_coef_in_3_steps >= 1) {
       L_coef_in_3_steps = 1;
       L_activate_in_3_steps = 0;
       L_1st_step = 1;
       L_num_3_steps = 0;
+
     }
 
 
   }
 
 
-	return;
+  return;
 }

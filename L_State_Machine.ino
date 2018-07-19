@@ -9,7 +9,7 @@ void state_machine_LL()
         L_set_2_zero = 0;
         One_time_L_set_2_zero = 1;
       }
-      else if ((fsr(fsr_sense_Left_Toe) > fsr_percent_thresh_Left_Toe * fsr_Left_Toe_thresh)) //&& (fsr(fsr_sense_Long) < (fsr_thresh_long * fsr_cal_Long)))
+      else if ((L_p_steps->curr_voltage > fsr_percent_thresh_Left_Toe * fsr_Left_Toe_peak_ref)) //&& (fsr(fsr_sense_Long) < (fsr_thresh_long * fsr_cal_Long)))
       {
         state_count_LL_13++;
         // if you're in the same state for more than state_counter_th it means that it is not noise
@@ -17,28 +17,27 @@ void state_machine_LL()
         {
           sigm_done_LL = true;
           Old_PID_Setpoint_LL = PID_Setpoint_LL;
-//                    New_PID_Setpoint_LL = Setpoint_Ankle_LL * L_coef_in_3_steps; //L_coef_in_3_steps goes from 0 to 1 as a function of the step that you perform
-
+          //          New_PID_Setpoint_LL = Setpoint_Ankle_LL * L_coef_in_3_steps; //L_coef_in_3_steps goes from 0 to 1 as a function of the step that you perform
           if (Previous_Setpoint_Ankle_LL <= Setpoint_Ankle_LL) {
 
             New_PID_Setpoint_LL = Previous_Setpoint_Ankle_LL + (Setpoint_Ankle_LL - Previous_Setpoint_Ankle_LL) * L_coef_in_3_steps;
-//            Serial.println("Old>=Pid");
-//            Serial.print("Old ");
-//            Serial.print(Previous_Setpoint_Ankle_LL);
-//            Serial.print(" , ");
-//            Serial.print("New ");
-//            Serial.println(New_PID_Setpoint_LL);
-            
+            //            Serial.println("Old>=Pid");
+            //            Serial.print("Old ");
+            //            Serial.print(Previous_Setpoint_Ankle_LL);
+            //            Serial.print(" , ");
+            //            Serial.print("New ");
+            //            Serial.println(New_PID_Setpoint_LL);
+
 
           } else {
 
             New_PID_Setpoint_LL = Previous_Setpoint_Ankle_LL - (Previous_Setpoint_Ankle_LL - Setpoint_Ankle_LL) * L_coef_in_3_steps;
-//            Serial.println("Old<Pid");
-//            Serial.print("Old ");
-//            Serial.print(Previous_Setpoint_Ankle_LL);
-//            Serial.print(" , ");
-//            Serial.print("New ");
-//            Serial.println(New_PID_Setpoint_LL);
+            //            Serial.println("Old<Pid");
+            //            Serial.print("Old ");
+            //            Serial.print(Previous_Setpoint_Ankle_LL);
+            //            Serial.print(" , ");
+            //            Serial.print("New ");
+            //            Serial.println(New_PID_Setpoint_LL);
           }
 
           L_state_old = L_state;
@@ -56,9 +55,13 @@ void state_machine_LL()
         L_state_old = L_state;
         New_PID_Setpoint_LL = 0;
         One_time_L_set_2_zero = 0;
+        Previous_Setpoint_Ankle_LL = 0;
+        //        L_coef_in_3_steps_Pctrl = 0;
+        PID_Setpoint_LL = 0;
+        Setpoint_Ankle_LL_Pctrl = 0;
       }
 
-      if ((fsr(fsr_sense_Left_Toe) < (fsr_percent_thresh_Left_Toe * fsr_Left_Toe_thresh)))
+      if ((L_p_steps->curr_voltage < (fsr_percent_thresh_Left_Toe * fsr_Left_Toe_peak_ref)))
       {
         state_count_LL_31++;
         if (state_count_LL_31 >= state_counter_th)
@@ -76,7 +79,33 @@ void state_machine_LL()
   }
   // Adjust the torque reference as a function of the step
   L_ref_step_adj();
-  // Create the smoothed reference and call the PID
-  PID_Sigm_Curve_LL();
+
+  if (Trq_time_volt == 2 && L_state == 3) {
+    PID_Setpoint_LL = Setpoint_Ankle_LL_Pctrl * L_Prop_Gain;
+    Serial.println("After switch case : ");
+    Serial.println(L_coef_in_3_steps_Pctrl);
+    Serial.println(Setpoint_Ankle_LL_Pctrl);
+    Serial.println(PID_Setpoint_LL);
+    Serial.println();
+  }
+  else {
+
+    if (N3_LL < 1 || N3_RL < 1 || N3 < 1) {
+      PID_Setpoint_LL = New_PID_Setpoint_LL;
+    }
+    else {
+      // Create the smoothed reference and call the PID
+      PID_Sigm_Curve_LL();
+    }
+  
+  
+  }
+
+  //  Serial.print("L_state ");
+  //  Serial.println(L_state);
+  //    Serial.print("New_Left PID Setpoint ");
+  //  Serial.println(New_PID_Setpoint_LL);
+  //  Serial.print("Left PID Setpoint ");
+  //  Serial.println(PID_Setpoint_LL);
 }
 

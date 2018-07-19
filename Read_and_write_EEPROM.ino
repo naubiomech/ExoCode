@@ -22,23 +22,16 @@ int write_torque_bias(int address_torque_l, double torque_adj)
 
 double read_torque_bias(int address_torque_l)
 {
-  address_torque_l ++;
+  address_torque_l += 1;
   double val_t = 0;
-//  byte array_values[8];
-//  byte* p_array = array_values;
-//  for (int i = 0; i < sizeof(double); i++)
-//  {
-//    *(p_array + i) = EEPROM.read(address_torque_l + i);
-//  }
-//  memcpy(&val_t, &array_values, 8);
-
-
-    EEPROM.get(address_torque_l,val_t);
-  if(isnan(val_t)){Serial.println("IT IS A NAN");}
-  Serial.println(isnan(val_t));
+  byte array_values[8];
+  byte* p_array = array_values;
+  for (int i = 0; i < sizeof(double); i++)
+  {
+    *(p_array + i) = EEPROM.read(address_torque_l + i);
+  }
+  memcpy(&val_t, &array_values, 8);
   return val_t;
-
-//  return val_t;
 }
 
 int clean_torque_bias(int address_torque_l)
@@ -139,9 +132,8 @@ Serial.println("Completed Saving EXP Parameters");
 }
 
 int check_EXP_parameters(int address_params_l)
-{ 
-//  Serial.print("Checking at pos ");
-//  Serial.println(address_params_l);
+{ Serial.print("Checking at pos ");
+  Serial.println(address_params_l);
   byte value = EEPROM.read(address_params_l);
   Serial.println(char(value));
   if (char(value) == 'y') {
