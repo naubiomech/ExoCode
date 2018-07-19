@@ -497,8 +497,8 @@ double Adj_N3_speed_with_voltage_every_step(int R_state_l, int R_state_old_l, st
       p_steps_l->plant_time = millis() - (p_steps_l->plant_time);
       if (p_steps_l->plant_time <= 16) p_steps_l->plant_time = 16;
       p_steps_l->flag_1_step = false; // you have provided one step
-      Serial.print(" Plant Time = ");
-      Serial.println(p_steps_l->plant_time);
+//      Serial.print(" Plant Time = ");
+//      Serial.println(p_steps_l->plant_time);
 
       if (p_steps_l->count_steps >= 2) { //avoid the first step just to be sure
 
@@ -546,22 +546,22 @@ double Adj_N3_speed_with_voltage_every_step(int R_state_l, int R_state_old_l, st
 
       // print the last 4 results
       Serial.println();
-      for (int i = 0; i < 4; i++)
-      {
-        Serial.print("Dorsi ");
-        Serial.print(p_steps_l->four_step_dorsi_time[i]);
-        Serial.print(" ");
-      }
-      Serial.println(" ");
-      for (int i = 0; i < 4; i++)
-      {
-        Serial.print("Plant ");
-        Serial.print(p_steps_l->four_step_plant_time[i]);
-        Serial.print(" ");
-      }
-      Serial.println(" ");
-      Serial.print(" mean = ");
-      Serial.println(p_steps_l->plant_mean);
+//      for (int i = 0; i < 4; i++)
+//      {
+//        Serial.print("Dorsi ");
+//        Serial.print(p_steps_l->four_step_dorsi_time[i]);
+//        Serial.print(" ");
+//      }
+//      Serial.println(" ");
+//      for (int i = 0; i < 4; i++)
+//      {
+//        Serial.print("Plant ");
+//        Serial.print(p_steps_l->four_step_plant_time[i]);
+//        Serial.print(" ");
+//      }
+//      Serial.println(" ");
+//      Serial.print(" mean = ");
+//      Serial.println(p_steps_l->plant_mean);
       if (p_steps_l->flag_N3_adjustment_time) {
         N3_l = round((p_steps_l->plant_mean) * p_steps_l->perc_l);
         if (N3_l <= 4) N3_l = 4;
@@ -577,18 +577,18 @@ double Adj_N3_speed_with_voltage_every_step(int R_state_l, int R_state_old_l, st
         //        }// end if torque_adj
       }
 
-      Serial.print(" N3 = ");
-      Serial.println(N3_l);
-
-      Serial.print(" volt curr ref = ");
-
-      Serial.print((p_steps_l->curr_voltage));
-      Serial.print(",");
-      Serial.print((p_steps_l->voltage_ref * 0.9));
-
-
-      Serial.print(" Trq = ");
-      Serial.println(*p_Setpoint_Ankle_l);
+//      Serial.print(" N3 = ");
+//      Serial.println(N3_l);
+//
+//      Serial.print(" volt curr ref = ");
+//
+//      Serial.print((p_steps_l->curr_voltage));
+//      Serial.print(",");
+//      Serial.print((p_steps_l->voltage_ref * 0.9));
+//
+//
+//      Serial.print(" Trq = ");
+//      Serial.println(*p_Setpoint_Ankle_l);
 
     }//end if R old 3 i.e. finish plantarflexion
   }// end if flag_1_step

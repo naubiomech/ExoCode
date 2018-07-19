@@ -224,6 +224,18 @@ SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an 
 
 
 
+double R_state_3_start_time = 0;
+double R_state_1_start_time = 0;
+double R_start_from_1 = 0;
+double R_start_from_3 = 0;
+
+double L_state_3_start_time = 0;
+double L_state_1_start_time = 0;
+double L_start_from_1 = 0;
+double L_start_from_3 = 0;
+
+
+double state_counter_th=8;
 
 
 //---------------------
@@ -285,19 +297,92 @@ void setup()
 
 }
 
+double L_stateTimerCount;
+double L_flag_1 = 0;
+double L_time_old_state;
+double R_stateTimerCount;
+double R_flag_1 = 0;
+double R_time_old_state;
+
+double R_activate_in_3_steps = 0;
+double R_1st_step = 1;
+double R_coef_in_3_steps = 0;
+double R_start_step = 0;
+double R_num_3_steps = 0;
+double store_3sec_N1_RL = N1_RL;
+
+double L_activate_in_3_steps = 0;
+double L_1st_step = 1;
+double L_coef_in_3_steps = 0;
+double L_start_step = 0;
+double L_num_3_steps = 0;
+
+
+double L_store_N1 = 0;
+double L_set_2_zero = 0;
+double R_store_N1 = 0;
+double R_set_2_zero = 0;
+
+double One_time_L_set_2_zero = 1;
+double One_time_R_set_2_zero = 1;
+
 
 void callback()
 {
-  //  Serial.print(56.5 / (2.1) * (analogRead(A19) * (3.3 / 4096)));
-  //  Serial.print(",");
-  //  Serial.print(56.5 / (2.1) * (analogRead(A18) * (3.3 / 4096)));
-  //  Serial.print(",");
-  //  Serial.print(get_LL_torq());
-  //  Serial.print(",");
-  //  Serial.println(get_RL_torq());
-  //  delay(1);
+
   if ((stream == 1))
   {
+    if (L_flag_1 == 0) {
+      L_flag_1 = 1;
+      L_time_old_state = L_state;
+    }
+    if (L_state != L_time_old_state) {
+      L_flag_1 = 0;
+      L_stateTimerCount = 0;
+    } else {
+      if (L_stateTimerCount >= 3 / 0.002) {
+        //        Serial.println("Too Long");
+        if (L_store_N1 == 0) {
+          Serial.println("Change N1");
+          L_set_2_zero = 1;
+          L_store_N1 = 1;
+        }
+
+      } else {
+        L_stateTimerCount++;
+        if (L_store_N1) {
+          L_set_2_zero = 0;
+          L_store_N1 = 0;
+        }
+
+        //        set_2_zero = 0;
+
+      }
+    }
+
+    if (R_flag_1 == 0) {
+      R_flag_1 = 1;
+      R_time_old_state = R_state;
+    }
+    if (R_state != R_time_old_state) {
+      R_flag_1 = 0;
+      R_stateTimerCount = 0;
+    } else {
+      if (R_stateTimerCount >= 3 / 0.002) {
+        if (R_store_N1 == 0) {
+          Serial.println("Change N1");
+          R_set_2_zero = 1;
+          R_store_N1 = 1;
+        }
+      } else {
+        R_stateTimerCount++;
+        if (R_store_N1) {
+          R_set_2_zero = 0;
+          R_store_N1 = 0;
+        }
+      }
+    }
+
     //    Serial.println("LEFT");
     N3_LL = Adj_N3_speed_with_voltage_every_step(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL);
     //    Serial.println("RIGHT");
@@ -398,6 +483,9 @@ void loop()
 
       L_p_steps->perc_l = 0.5;
       R_p_steps->perc_l = 0.5;
+
+      L_activate_in_3_steps = 1;
+      R_activate_in_3_steps = 1;
 
     }
   }

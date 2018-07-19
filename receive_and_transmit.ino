@@ -25,6 +25,10 @@ void receive_and_transmit()
     Setpoint_Ankle_LL = abs(Setpoint_Ankle_LL);                     //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
     //Recieved the large data chunk chopped into bytes, a roundabout way was needed
     L_p_steps->Setpoint = Setpoint_Ankle_LL;
+    L_activate_in_3_steps = 1;
+    L_num_3_steps = 0;
+    L_1st_step = 1;
+    L_start_step=0;
   }
   if (Peek == 'f')                                                  //If MATLAB sent the character F
   { //MATLAB wants to write a new Torque Value
@@ -34,6 +38,10 @@ void receive_and_transmit()
     Setpoint_Ankle_RL = -abs(Setpoint_Ankle_RL);                    //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
     //Recieved the large data chunk chopped into bytes, a roundabout way was needed
     R_p_steps->Setpoint = Setpoint_Ankle_RL;
+    R_activate_in_3_steps = 1;
+    R_num_3_steps = 0;
+    R_1st_step = 1;
+    R_start_step=0;
   }
   if (Peek  == 'E')                                                 //If MATLAB sent the character E
   {
@@ -97,12 +105,12 @@ void receive_and_transmit()
   if (Peek == 'L')
   {
     garbage = bluetooth.read();
-    
+
     double store_KF_LL = KF_LL;
     double store_KF_RL = KF_RL;
     KF_LL = 0;
     KF_RL = 0;
-    
+
     FSR_calibration();
     //double fsr_Left_Heel_thresh;
     //double fsr_Left_Toe_thresh;
@@ -115,7 +123,7 @@ void receive_and_transmit()
 
     L_p_steps->voltage_ref = fsr_Left_Toe_thresh;
     R_p_steps->voltage_ref = fsr_Right_Toe_thresh;
-    
+
     KF_LL = store_KF_LL;
     KF_RL = store_KF_RL;
 
@@ -281,14 +289,22 @@ void receive_and_transmit()
   if (Peek == '_')
   { //Matlab wants to set KF_LL
     garbage = bluetooth.read();
+    double store_KF_RL = KF_RL;
+    KF_LL = 0;
+    KF_RL = 0;
     recieveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
     memcpy(&KF_LL, &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+    KF_RL = store_KF_RL;
   }
   if (Peek == '-')
   { //MATLAB wants to set KF_RL
     garbage = bluetooth.read();
+    double store_KF_LL = KF_LL;
+    KF_LL = 0;
+    KF_RL = 0;
     recieveVals(8);
     memcpy(&KF_RL, &holdon, 8);
+    KF_LL = store_KF_LL;
   }
   if (Peek == '`')
   { //Matlab wants to check KF_LL
@@ -503,6 +519,13 @@ void receive_and_transmit()
     KF_LL = store_KF_LL;
     KF_RL = store_KF_RL;
   }//end if
+  
+  if (Peek == 'C'){ // Clear the buffer
+while(bluetooth.available()>0) bluetooth.read(); 
+Serial.println("Buffer Clean");
+  }
 
   Peek = 0;
 }
+
+
