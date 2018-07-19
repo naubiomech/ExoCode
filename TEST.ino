@@ -190,6 +190,8 @@ void callback()
   }
 }
 
+int R_state_old = 1;
+
 void loop()
 {
   /***************Ankle CODE********************/
@@ -203,15 +205,19 @@ void loop()
           if ((fsr(fsr_sense_Long) > (fsr_thresh_long * fsr_cal_Long)) && (fsr(fsr_sense_Short) < (fsr_thresh * fsr_cal_Short)))
           {
             digitalWrite(13, LOW);
+            sigm_done = true;
             Old_PID_Setpoint = PID_Setpoint;
             New_PID_Setpoint = Setpoint_earlyStance;
+            R_state_old = R_state;
             R_state = 2;
           }
           if ((fsr(fsr_sense_Long) > ((fsr_thresh_long) * fsr_cal_Long) && (fsr(fsr_sense_Short) > fsr_thresh * fsr_cal_Short)))
           {
             digitalWrite(13, HIGH);
+            sigm_done = true;
             Old_PID_Setpoint = PID_Setpoint;
             New_PID_Setpoint = Setpoint_Ankle;
+            R_state_old = R_state;
             R_state = 3;
           }
           break;
@@ -219,14 +225,18 @@ void loop()
           if ((fsr(fsr_sense_Long) > (fsr_thresh_long * fsr_cal_Long) && (fsr(fsr_sense_Short) > fsr_thresh * fsr_cal_Short)))
           {
             digitalWrite(13, HIGH);
+            sigm_done = true;
             Old_PID_Setpoint = PID_Setpoint;
             New_PID_Setpoint = Setpoint_Ankle;
+            R_state_old = R_state;
             R_state = 3;
           }
           if ((fsr(fsr_sense_Long) < (fsr_thresh_long * fsr_cal_Long)) && (fsr(fsr_sense_Short) < (fsr_thresh * fsr_cal_Short)))
           {
             digitalWrite(13, LOW);
+            sigm_done = true;
             Old_PID_Setpoint = PID_Setpoint;
+            R_state_old = R_state;
             New_PID_Setpoint = 0;
             //            PID_Setpoint = 0;//-3;  //Dorsiflexion for MAriah in Swing, otherwise should be 0
             R_state = 1;
@@ -236,7 +246,9 @@ void loop()
           if ((fsr(fsr_sense_Long) < (fsr_thresh_long * fsr_cal_Long)) && (fsr(fsr_sense_Short) < (fsr_thresh * fsr_cal_Short)))
           {
             digitalWrite(13, LOW);
+            sigm_done = true;
             Old_PID_Setpoint = PID_Setpoint;
+            R_state_old = R_state;
             New_PID_Setpoint = 0;
             //            PID_Setpoint = 0;//-3; //Dorsiflexion for MAriah in Swing, otherwise should be 0
             R_state = 1;
@@ -246,16 +258,39 @@ void loop()
 
 
       if (sigm_flag) {
-        if ((abs(New_PID_Setpoint - PID_Setpoint) > 0.5) && (sigm_done)) {
+        if ((abs(New_PID_Setpoint - PID_Setpoint) > 0.1) && (sigm_done)) {
           //if (1) {
           sigm_done = false;
           n_iter = 0;
-          N_step = round((1 / (Ts * exp_mult)) * 10);
 
-          if ((N_step % 2)) {
-            N_step++;
+          //          if ((R_state_old == 1)&&(R_state == 3))
+          //
+          //          elseif ((R_state_old == 3)&&(R_state == 1))
+          //
+          //          elseif ((R_state_old == 1)&&(R_state == 2))
+          //          elseif ((R_state_old == 1)&&(R_state == 2))
+          //
+          if (R_state == 3) {
+            N_step = 12;
           }
-        }
+          else if (R_state == 2) {
+            N_step = 6;
+          }
+          else if (R_state == 1) {
+            N_step = 4;
+          }
+
+          exp_mult = round((10 / Ts) / (N_step - 1));
+
+          //          N_step = round((1 / (Ts * exp_mult)) * 10);
+          //
+          //          if ((N_step % 2)) {
+          //            N_step++;
+          //          }
+
+
+
+        }// end if sigm_done
 
         if (n_iter < N_step) {
 
@@ -272,7 +307,7 @@ void loop()
       Serial.print(New_PID_Setpoint);
       Serial.print(",");
       Serial.println(PID_Setpoint);
-      delay(15);
+      delay(5);
 
 
 
