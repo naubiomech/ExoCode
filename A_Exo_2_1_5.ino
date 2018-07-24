@@ -60,6 +60,7 @@ double Average_RL = 0;
 double R_sign = 1;
 double L_sign = 1;
 
+#include "Board.h"
 #include <elapsedMillis.h>
 #include <EEPROM.h>
 #include "TimerOne.h"
@@ -79,7 +80,6 @@ double L_sign = 1;
 #include "Auto_KF.h"
 #include "Combined_FSR.h"
 #include <Metro.h> // Include the Metro library
-#include "Board.h"
 
 
 Metro slowThisDown = Metro(1);  // Set the function to be called at no faster a rate than once per millisecond
