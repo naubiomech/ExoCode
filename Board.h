@@ -19,7 +19,7 @@ const unsigned int MOTOR_RIGHT_ANKLE_PIN = A22;
 
 const unsigned int LED_PIN = 13;
 
-const unsigned int MOTOR_ENABLE = 22;
+const unsigned int MOTOR_ENABLE_PIN = 22;
 
 const unsigned int WHICH_LEG_PIN = 15;
 

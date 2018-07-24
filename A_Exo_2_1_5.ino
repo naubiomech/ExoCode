@@ -97,7 +97,7 @@ char Peek = 'a';
 int cmd_from_Gui = 0;
 
 // Single board small
-const unsigned int onoff = MOTOR_ENABLE;
+const unsigned int onoff = MOTOR_ENABLE_PIN;
 
 // Single board SQuare (big)
 //const unsigned int onoff = 17;                                          //The digital pin connected to the motor on/off swich
