@@ -224,63 +224,8 @@ void callback()//executed every 2ms
 
   resetMotorIfError();
 
-  //Calc the average value of Torque
-
-  //Shift the arrays
-  for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
-  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-    *(TarrayPoint_LL + j) = *(TarrayPoint_LL + j - 1);                //Puts the element in the following memory space into the current memory space
-    *(TarrayPoint_RL + j) = *(TarrayPoint_RL + j - 1);
-  }
-
-  //Get the torques
-  *(TarrayPoint_LL) = get_LL_torq();
-  *(TarrayPoint_RL) = get_RL_torq();
-
-  //  noInterrupts();
-  FSR_Average_LL = 0;
-  FSR_Average_RL = 0;
-  FSR_Average_LL_Heel = 0;
-  FSR_Average_RL_Heel = 0;
-  Average_LL = 0;
-  Average_RL = 0;
-
-  for (int i = 0; i < dim_FSR; i++)
-  {
-
-    if (i < dim)
-    {
-      Average_LL =  Average_LL + *(TarrayPoint_LL + i);
-      Average_RL =  Average_RL + *(TarrayPoint_RL + i);
-      //        Average_RL =  Average_RL + *(TarrayPoint_RL + i);
-    }
-  }
-
-  // if not filtering the FSR anymore
-  FSR_Average_LL = fsr(fsr_sense_Left_Toe);
-  Average_Volt_LL = FSR_Average_LL;
-
-  FSR_Average_LL_Heel = fsr(fsr_sense_Left_Heel);
-  Average_Volt_LL_Heel = FSR_Average_LL_Heel;
-
-  FSR_Average_RL = fsr(fsr_sense_Right_Toe);
-  Average_Volt_RL = FSR_Average_RL;
-
-  FSR_Average_RL_Heel = fsr(fsr_sense_Right_Heel);
-  Average_Volt_RL_Heel = FSR_Average_RL_Heel;
-
-  Combined_Average_LL = (FSR_Average_LL + FSR_Average_LL_Heel);
-  Combined_Average_RL = (FSR_Average_RL + FSR_Average_RL_Heel);
-
-  Average_Trq_LL = Average_LL / dim;
-  Average_Trq_RL = Average_RL / dim;
-
-  L_p_steps->curr_voltage = Combined_Average_LL;
-  R_p_steps->curr_voltage = Combined_Average_RL;
-
-  L_p_steps->torque_average = Average_LL / dim;
-  R_p_steps->torque_average = Average_RL / dim;
-
+  calculateAverages();
+  
   if (FSR_CAL_FLAG) {
 
     FSR_calibration();
@@ -386,7 +331,7 @@ void loop()
   }// End else
 }
 
-void resetMotorIfError(){
+void resetMotorIfError() {
   //motor_error true I have an error, false I haven't
 
   motor_error = ((analogRead(pin_err_LL) <= 5) || (analogRead(pin_err_RL) <= 5));
@@ -423,5 +368,65 @@ void resetMotorIfError(){
     }// end if flag_enable_catch_error==1;
 
   }//end stream==1
+}
+
+void calculateAverages() {
+//Calc the average value of Torque
+
+  //Shift the arrays
+  for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
+  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
+    *(TarrayPoint_LL + j) = *(TarrayPoint_LL + j - 1);                //Puts the element in the following memory space into the current memory space
+    *(TarrayPoint_RL + j) = *(TarrayPoint_RL + j - 1);
+  }
+
+  //Get the torques
+  *(TarrayPoint_LL) = get_LL_torq();
+  *(TarrayPoint_RL) = get_RL_torq();
+
+  //  noInterrupts();
+  FSR_Average_LL = 0;
+  FSR_Average_RL = 0;
+  FSR_Average_LL_Heel = 0;
+  FSR_Average_RL_Heel = 0;
+  Average_LL = 0;
+  Average_RL = 0;
+
+  for (int i = 0; i < dim_FSR; i++)
+  {
+
+    if (i < dim)
+    {
+      Average_LL =  Average_LL + *(TarrayPoint_LL + i);
+      Average_RL =  Average_RL + *(TarrayPoint_RL + i);
+      //        Average_RL =  Average_RL + *(TarrayPoint_RL + i);
+    }
+  }
+
+  // if not filtering the FSR anymore
+  FSR_Average_LL = fsr(fsr_sense_Left_Toe);
+  Average_Volt_LL = FSR_Average_LL;
+
+  FSR_Average_LL_Heel = fsr(fsr_sense_Left_Heel);
+  Average_Volt_LL_Heel = FSR_Average_LL_Heel;
+
+  FSR_Average_RL = fsr(fsr_sense_Right_Toe);
+  Average_Volt_RL = FSR_Average_RL;
+
+  FSR_Average_RL_Heel = fsr(fsr_sense_Right_Heel);
+  Average_Volt_RL_Heel = FSR_Average_RL_Heel;
+
+  Combined_Average_LL = (FSR_Average_LL + FSR_Average_LL_Heel);
+  Combined_Average_RL = (FSR_Average_RL + FSR_Average_RL_Heel);
+
+  Average_Trq_LL = Average_LL / dim;
+  Average_Trq_RL = Average_RL / dim;
+
+  L_p_steps->curr_voltage = Combined_Average_LL;
+  R_p_steps->curr_voltage = Combined_Average_RL;
+
+  L_p_steps->torque_average = Average_LL / dim;
+  R_p_steps->torque_average = Average_RL / dim;
+
 }
 
