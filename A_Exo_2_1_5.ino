@@ -257,32 +257,6 @@ void callback()//executed every 2ms
 
   }//end stream==1
 
-  //start_time_callback = micros();
-
-  //  start_time_timer = micros();
-  //  Update_Averages();
-
-  //------------------FSR & TRQ AVERAGE-------------
-
-
-  // if not filtering the FSR anymore
-  //  for (int j = dim_FSR - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
-  //  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-  //    *(p_FSR_Array_LL + j) = *(p_FSR_Array_LL + j - 1);                //Puts the element in the following memory space into the current memory space
-  //    *(p_FSR_Array_RL + j) = *(p_FSR_Array_RL + j - 1);
-  //
-  //    *(p_FSR_Array_LL_Heel + j) = *(p_FSR_Array_LL_Heel + j - 1);                //Puts the element in the following memory space into the current memory space
-  //    *(p_FSR_Array_RL_Heel + j) = *(p_FSR_Array_RL_Heel + j - 1);
-  //  }
-  //
-  //  //Get the FSR
-  //  *(p_FSR_Array_LL) = fsr(fsr_sense_Left_Toe);
-  //  *(p_FSR_Array_RL) = fsr(fsr_sense_Right_Toe);
-  //
-  //  *(p_FSR_Array_LL_Heel) = fsr(fsr_sense_Left_Heel);
-  //  *(p_FSR_Array_RL_Heel) = fsr(fsr_sense_Right_Heel);
-
-
   //Calc the average value of Torque
 
   //Shift the arrays
@@ -306,11 +280,6 @@ void callback()//executed every 2ms
 
   for (int i = 0; i < dim_FSR; i++)
   {
-    //    FSR_Average_LL = FSR_Average_LL + *(p_FSR_Array_LL + i);
-    //    FSR_Average_RL = FSR_Average_RL + *(p_FSR_Array_RL + i);
-    //
-    //    FSR_Average_LL_Heel = FSR_Average_LL_Heel + *(p_FSR_Array_LL_Heel + i);
-    //    FSR_Average_RL_Heel = FSR_Average_RL_Heel + *(p_FSR_Array_RL_Heel + i);
 
     if (i < dim)
     {
@@ -319,18 +288,6 @@ void callback()//executed every 2ms
       //        Average_RL =  Average_RL + *(TarrayPoint_RL + i);
     }
   }
-
-  //  Average_Volt_LL = FSR_Average_LL / dim_FSR;
-  //  Average_Volt_RL = FSR_Average_RL / dim_FSR;
-  //
-  //  Average_Volt_LL_Heel = FSR_Average_LL_Heel / dim_FSR;
-  //  Average_Volt_RL_Heel = FSR_Average_RL_Heel / dim_FSR;
-  //
-  //  Average_Trq_LL = Average_LL / dim;
-  //  Average_Trq_RL = Average_RL / dim;
-  //
-  //  Combined_Average_LL = (FSR_Average_LL + FSR_Average_LL_Heel) / dim_FSR;
-  //  Combined_Average_RL = (FSR_Average_RL + FSR_Average_RL_Heel) / dim_FSR;
 
   // if not filtering the FSR anymore
   FSR_Average_LL = fsr(fsr_sense_Left_Toe);
@@ -345,10 +302,8 @@ void callback()//executed every 2ms
   FSR_Average_RL_Heel = fsr(fsr_sense_Right_Heel);
   Average_Volt_RL_Heel = FSR_Average_RL_Heel;
 
-
   Combined_Average_LL = (FSR_Average_LL + FSR_Average_LL_Heel);
   Combined_Average_RL = (FSR_Average_RL + FSR_Average_RL_Heel);
-
 
   Average_Trq_LL = Average_LL / dim;
   Average_Trq_RL = Average_RL / dim;
@@ -359,27 +314,11 @@ void callback()//executed every 2ms
   L_p_steps->torque_average = Average_LL / dim;
   R_p_steps->torque_average = Average_RL / dim;
 
-  //--------------------------------
-  //  Serial.println();
-  //  Serial.print("Time averages: ");
-  //  Serial.println(micros() - start_time_timer);
-  //  start_time_timer = micros();
   if (FSR_CAL_FLAG) {
-    //    Serial.println("Going to calib");
 
     FSR_calibration();
-    //    FSR_baseline_FLAG = 1;
+		j
   }
-
-  //  if (FSR_baseline_FLAG_Left) {
-  //
-  //    base_1 = take_baseline(L_state, L_state_old, L_p_steps);
-  //
-  //    if (base_1) {
-  //      Serial.println("Left Baseline token");
-  //      FSR_baseline_FLAG_Left = 0;
-  //    }
-  //  }
 
   if (FSR_baseline_FLAG_Right) {
     take_baseline(R_state, R_state_old, R_p_steps, p_FSR_baseline_FLAG_Right);
@@ -388,90 +327,33 @@ void callback()//executed every 2ms
     take_baseline(L_state, L_state_old, L_p_steps, p_FSR_baseline_FLAG_Left);
   }
 
-  //
-  //
   if (stream == 1)
   {
     if (streamTimerCount >= 5)
     {
-      //      start_time_timer = micros();
       send_data_message_wc();
       streamTimerCount = 0;
-      //      Serial.print("Time sending data : ");
-      //      Serial.println(micros() - start_time_timer);
-      //      if (flag_13) {
-      //        if (flag_count > 10) {
-      //          digitalWrite(13, HIGH);
-      //          flag_13 = 0;
-      //          flag_count = 0;
-      //        }
-      //        else {
-      //          flag_count++;
-      //        }
-      //      } else {
-      //        if (flag_count > 10) {
-      //          digitalWrite(13, LOW);
-      //          flag_13 = 1;
-      //          flag_count = 0;
-      //        }
-      //        else {
-      //          flag_count++;
-      //        }
-      //      }
     }
-
-    //    Serial.println(digitalRead(pin_err_LL));
-    //    Serial.println(digitalRead(pin_err_RL));
-
-    //    if (digitalRead(pin_err_LL) == HIGH || digitalRead(pin_err_RL) == HIGH) {
-    //      digitalWrite(onoff, LOW);
-    //      //      delayMicroseconds(1000);
-    //      //      digitalWrite(onoff, HIGH);
-    //      motor_driver_count_err++;
-    //    }
 
     if (streamTimerCount == 1 && flag_auto_KF == 1)
       Auto_KF();
 
     streamTimerCount++;
 
-    //Apply PID control
-    //    start_time_timer = micros();
-
     pid(Average_Trq_LL, 1);
     pid(Average_Trq_RL, 2);
-
-    //    Serial.print("Time PIDs : ");
-    //    Serial.println(micros() - start_time_timer);
-    //    start_time_timer = micros();
 
     state_machine_LL();  //for LL
     state_machine_RL();  //for RL
 
-    //    Serial.print("Time State Machines : ");
-    //    Serial.println(micros() - start_time_timer);
-    //    start_time_timer = micros();
-
     set_2_zero_if_steady_state();
 
     N3_LL = Ctrl_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL, p_Setpoint_Ankle_LL_Pctrl, Trq_time_volt, L_Prop_Gain, FSR_baseline_FLAG_Left);
-    ////        Serial.println("RIGHT");
     N3_RL = Ctrl_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL, p_Setpoint_Ankle_RL_Pctrl, Trq_time_volt, R_Prop_Gain, FSR_baseline_FLAG_Right);
-    //    Serial.print("Time other functions : ");
-    //    Serial.println(micros() - start_time_timer);
   }
 
-  //  if (micros() - start_time_callback >= 600) {
-  //    Serial.println( micros() - start_time_callback);
-  //  }
-  //Serial.println(analogRead(fsr_sense_Left_Heel)+analogRead(fsr_sense_Left_Toe));
-  //Serial.println(analogRead(fsr_sense_Right_Heel)+analogRead(fsr_sense_Right_Toe));
 }// end callback
-//
-//const unsigned int fsr_sense_Left_Heel = A14;
-//const unsigned int fsr_sense_Left_Toe = A15;
-//const unsigned int fsr_sense_Right_Heel = A12;
-//const unsigned int fsr_sense_Right_Toe = A13;
+
 void loop()
 {
 
@@ -483,32 +365,7 @@ void loop()
       receive_and_transmit();       //Recieve and transmit was moved here so it will not interfere with the data message
     }
 
-    //    if (digitalRead(pin_err_LL) == HIGH || digitalRead(pin_err_RL) == HIGH) {
-    //      if (time_err_motor == 0)
-    //        digitalWrite(onoff, LOW);
-    //
-    //      if (time_err_motor >= 200) {
-    //        digitalWrite(onoff, HIGH);
-    //      }
-    //
-    //      motor_driver_count_err++;
-    //      time_err_motor++;
-    //
-    //      if (time_err_motor >= 300) {
-    //        time_err_motor = 0;
-    //      }
-
-
-    //      delayMicroseconds(1000);
-    //      digitalWrite(onoff, HIGH);
-
-    //    }
-
     slowThisDown.reset();     //Resets the interval
-    //    if (millis() - start_time_timer >= 1) {
-    //      Serial.print("Time timer : ");
-    //      Serial.println( millis() - start_time_callback);
-    //    }
   }
 
 
@@ -549,7 +406,6 @@ void loop()
     L_activate_in_3_steps = 1;
     R_activate_in_3_steps = 1;
 
-    //New at 06/05/2018
     Previous_Setpoint_Ankle_LL = 0;
     Previous_Setpoint_Ankle_RL = 0;
     R_coef_in_3_steps = 0;
@@ -559,7 +415,6 @@ void loop()
 
     R_1st_step = 1;
     L_1st_step = 1;
-    //New at 06/05/2018
 
   }// End else
 

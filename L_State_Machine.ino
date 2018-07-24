@@ -17,27 +17,14 @@ void state_machine_LL()
         {
           sigm_done_LL = true;
           Old_PID_Setpoint_LL = PID_Setpoint_LL;
-          //          New_PID_Setpoint_LL = Setpoint_Ankle_LL * L_coef_in_3_steps; //L_coef_in_3_steps goes from 0 to 1 as a function of the step that you perform
           if (Previous_Setpoint_Ankle_LL <= Setpoint_Ankle_LL) {
 
             New_PID_Setpoint_LL = Previous_Setpoint_Ankle_LL + (Setpoint_Ankle_LL - Previous_Setpoint_Ankle_LL) * L_coef_in_3_steps;
-            //            Serial.println("Old>=Pid");
-            //            Serial.print("Old ");
-            //            Serial.print(Previous_Setpoint_Ankle_LL);
-            //            Serial.print(" , ");
-            //            Serial.print("New ");
-            //            Serial.println(New_PID_Setpoint_LL);
-
 
           } else {
 
             New_PID_Setpoint_LL = Previous_Setpoint_Ankle_LL - (Previous_Setpoint_Ankle_LL - Setpoint_Ankle_LL) * L_coef_in_3_steps;
-            //            Serial.println("Old<Pid");
-            //            Serial.print("Old ");
-            //            Serial.print(Previous_Setpoint_Ankle_LL);
-            //            Serial.print(" , ");
-            //            Serial.print("New ");
-            //            Serial.println(New_PID_Setpoint_LL);
+
           }
 
           L_state_old = L_state;
@@ -56,7 +43,6 @@ void state_machine_LL()
         New_PID_Setpoint_LL = 0;
         One_time_L_set_2_zero = 0;
         Previous_Setpoint_Ankle_LL = 0;
-        //        L_coef_in_3_steps_Pctrl = 0;
         PID_Setpoint_LL = 0;
         Setpoint_Ankle_LL_Pctrl = 0;
       }
@@ -70,7 +56,6 @@ void state_machine_LL()
           Old_PID_Setpoint_LL = PID_Setpoint_LL;
           L_state_old = L_state;
           New_PID_Setpoint_LL = 0 * L_coef_in_3_steps;
-          //            PID_Setpoint = 0;//-3; //Dorsiflexion for MAriah in Swing, otherwise should be 0
           L_state = 1;
           state_count_LL_31 = 0;
           state_count_LL_13 = 0;
@@ -100,11 +85,4 @@ void state_machine_LL()
     
   }
 
-  //  Serial.print("L_state ");
-  //  Serial.println(L_state);
-  //    Serial.print("New_Left PID Setpoint ");
-  //  Serial.println(New_PID_Setpoint_LL);
-  //  Serial.print("Left PID Setpoint ");
-  //  Serial.println(PID_Setpoint_LL);
 }
-

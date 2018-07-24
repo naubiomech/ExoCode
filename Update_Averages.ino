@@ -10,8 +10,6 @@ void Update_Averages() {
   }
 
   //Get the FSR
-  //  Curr_FSR_LL = fsr(fsr_sense_Left_Toe);
-  //  Curr_FSR_RL = fsr(fsr_sense_Right_Toe);
   *(p_FSR_Array_LL) = fsr(fsr_sense_Left_Toe);
   *(p_FSR_Array_RL) = fsr(fsr_sense_Right_Toe);
 
@@ -52,7 +50,6 @@ void Update_Averages() {
     {
       Average_LL =  Average_LL + *(TarrayPoint_LL + i);
       Average_RL =  Average_RL + *(TarrayPoint_RL + i);
-      //        Average_RL =  Average_RL + *(TarrayPoint_RL + i);
     }
   }
 
@@ -65,8 +62,6 @@ void Update_Averages() {
   Average_Trq_LL = Average_LL / dim;
   Average_Trq_RL = Average_RL / dim;
 
-  //  L_p_steps->curr_voltage = FSR_Average_LL / dim_FSR;
-  //  R_p_steps->curr_voltage = FSR_Average_RL / dim_FSR;
   L_p_steps->curr_voltage = (FSR_Average_LL + FSR_Average_LL_Heel) / dim_FSR;
   R_p_steps->curr_voltage = (FSR_Average_RL + FSR_Average_RL_Heel) / dim_FSR;
   L_p_steps->torque_average = Average_LL / dim;
