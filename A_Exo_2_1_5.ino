@@ -222,42 +222,7 @@ bool motor_error = true;
 void callback()//executed every 2ms
 {
 
-  //motor_error true I have an error, false I haven't
-
-  motor_error = ((analogRead(pin_err_LL) <= 5) || (analogRead(pin_err_RL) <= 5));
-
-  if (stream == 1) {
-
-    if (not(motor_error) && (digitalRead(onoff) == LOW)) {
-      digitalWrite(onoff, HIGH);
-    }
-
-    if (motor_error && (flag_enable_catch_error == 0)) {
-      flag_enable_catch_error = 1;
-    }
-
-    if (flag_enable_catch_error) {
-      if (time_err_motor == 0) {
-        digitalWrite(onoff, LOW);
-        time_err_motor_reboot = 0;
-      }
-
-      motor_driver_count_err++;
-      time_err_motor++;
-
-      //was time_err_motor >= 4
-      if (time_err_motor >= 8) {
-        digitalWrite(onoff, HIGH);
-        time_err_motor_reboot++;
-        if (time_err_motor_reboot >= 12) {
-          flag_enable_catch_error = 0;
-          time_err_motor = 0;
-        }
-      }
-
-    }// end if flag_enable_catch_error==1;
-
-  }//end stream==1
+  resetMotorIfError();
 
   //Calc the average value of Torque
 
@@ -419,6 +384,44 @@ void loop()
     L_1st_step = 1;
 
   }// End else
-
-
 }
+
+void resetMotorIfError(){
+  //motor_error true I have an error, false I haven't
+
+  motor_error = ((analogRead(pin_err_LL) <= 5) || (analogRead(pin_err_RL) <= 5));
+
+  if (stream == 1) {
+
+    if (not(motor_error) && (digitalRead(onoff) == LOW)) {
+      digitalWrite(onoff, HIGH);
+    }
+
+    if (motor_error && (flag_enable_catch_error == 0)) {
+      flag_enable_catch_error = 1;
+    }
+
+    if (flag_enable_catch_error) {
+      if (time_err_motor == 0) {
+        digitalWrite(onoff, LOW);
+        time_err_motor_reboot = 0;
+      }
+
+      motor_driver_count_err++;
+      time_err_motor++;
+
+      //was time_err_motor >= 4
+      if (time_err_motor >= 8) {
+        digitalWrite(onoff, HIGH);
+        time_err_motor_reboot++;
+        if (time_err_motor_reboot >= 12) {
+          flag_enable_catch_error = 0;
+          time_err_motor = 0;
+        }
+      }
+
+    }// end if flag_enable_catch_error==1;
+
+  }//end stream==1
+}
+
