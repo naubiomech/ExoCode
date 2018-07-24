@@ -82,7 +82,7 @@ void state_machine_LL()
       // Create the smoothed reference and call the PID
       PID_Sigm_Curve_LL();
     }
-    
+
   }
 
 }

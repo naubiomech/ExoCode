@@ -29,16 +29,16 @@ void send_data_message_wc() //with COP
   bluetooth.print(',');
 
 
-	bluetooth.print(FSR_Average_LL_Heel); //SIG1
-	bluetooth.print(',');
-	bluetooth.print(FSR_Average_RL_Heel); //SIG2-
-	bluetooth.print(',');
-	bluetooth.print(min(10, fabs(L_p_steps->curr_voltage / L_p_steps->plant_peak_mean))); //SIG3
-	bluetooth.print(',');
-	bluetooth.print(min(10, fabs(R_p_steps->curr_voltage / R_p_steps->plant_peak_mean))); //SIG4
+  bluetooth.print(FSR_Average_LL_Heel); //SIG1
+  bluetooth.print(',');
+  bluetooth.print(FSR_Average_RL_Heel); //SIG2-
+  bluetooth.print(',');
+  bluetooth.print(min(10, fabs(L_p_steps->curr_voltage / L_p_steps->plant_peak_mean))); //SIG3
+  bluetooth.print(',');
+  bluetooth.print(min(10, fabs(R_p_steps->curr_voltage / R_p_steps->plant_peak_mean))); //SIG4
 
-	bluetooth.print(',');
-	bluetooth.println('Z');
+  bluetooth.print(',');
+  bluetooth.println('Z');
 }
 
 void send_command_message(char command_char, double* data_point, int number_to_send)

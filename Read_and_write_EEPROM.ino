@@ -92,7 +92,7 @@ int clean_FSR_values(int address_FSR_l)
 // Since it is really big update I would suggest to do it before the trial not in the middle
 
 int write_EXP_parameters(int address_params_l)
-{Serial.println();
+{ Serial.println();
   EEPROM.put(address_params_l, 'y');
   address_params_l++;
   EEPROM.put(address_params_l, KF_LL);
@@ -126,7 +126,7 @@ int write_EXP_parameters(int address_params_l)
   address_params_l += 8;
   EEPROM.put(address_params_l, fsr_percent_thresh_Right_Toe);
   address_params_l += 8;
-Serial.println("Completed Saving EXP Parameters");
+  Serial.println("Completed Saving EXP Parameters");
 
   return 1;
 }
@@ -137,7 +137,7 @@ int check_EXP_parameters(int address_params_l)
   byte value = EEPROM.read(address_params_l);
   Serial.println(char(value));
   if (char(value) == 'y') {
-    
+
     Serial.println(" EXP parameters are present in memory ");
     return 1;
   }
@@ -206,7 +206,7 @@ int read_all_params(int address_params_l) {
 
 int clean_EXP_Parameters(int address_params_l)
 {
-  for ( int i = address_params_l ; i < (sizeof(double)*13 + sizeof(char) + address_params_l) ; i++ )
+  for ( int i = address_params_l ; i < (sizeof(double) * 13 + sizeof(char) + address_params_l) ; i++ )
   {
     EEPROM.write(i, 0);
   }

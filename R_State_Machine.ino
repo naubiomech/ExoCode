@@ -65,8 +65,8 @@ void state_machine_RL() //For the comments on this file see the L_State_Machine
   R_ref_step_adj();
 
 
-  if ((Trq_time_volt == 2 || Trq_time_volt ==3) && R_state == 3) {
-PID_Setpoint_RL = Setpoint_Ankle_RL_Pctrl;
+  if ((Trq_time_volt == 2 || Trq_time_volt == 3) && R_state == 3) {
+    PID_Setpoint_RL = Setpoint_Ankle_RL_Pctrl;
   }
   else {
 
@@ -77,7 +77,7 @@ PID_Setpoint_RL = Setpoint_Ankle_RL_Pctrl;
       // Create the smoothed reference and call the PID
       PID_Sigm_Curve_RL();
     }
-    
+
   }
 
 }

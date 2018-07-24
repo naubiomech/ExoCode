@@ -4,7 +4,7 @@ typedef struct {
   char start_character = 'S';
   char special_character = ',';
   float N_array[4];
-  char end_character = 'E'; 
+  char end_character = 'E';
   int N_double;
 } msg;
 

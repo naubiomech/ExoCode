@@ -64,7 +64,7 @@ void Auto_KF() {
     ERR_RL += (PID_Setpoint_RL - Input_RL );
     count_err_RL++;
   }
-   if (R_state == 1) {
+  if (R_state == 1) {
 
     ERR_RL = -ERR_RL / count_err_RL; // because the right has a different sign
     if ((count_err_RL != 0)) {
@@ -96,7 +96,7 @@ void Auto_KF() {
     ERR_RL = 0;
   }
 
-  
+
   //  ERR_LL += ()
   // adjust KF
 

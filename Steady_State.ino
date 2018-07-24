@@ -2,7 +2,7 @@
 
 
 void set_2_zero_if_steady_state() {
-  
+
   if (L_flag_1 == 0) {
     L_flag_1 = 1;
     L_time_old_state = L_state;
@@ -46,7 +46,7 @@ void set_2_zero_if_steady_state() {
         R_store_N1 = 1;
         R_activate_in_3_steps = 1;
         R_num_3_steps = 0;
-        
+
         R_1st_step = 1;
         R_start_step = 0;
         R_coef_in_3_steps_Pctrl = 0;

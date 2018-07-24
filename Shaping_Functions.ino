@@ -46,7 +46,7 @@ void PID_Sigm_Curve_RL()
       if (n_iter_RL < N_step_RL)
       {
         // Determines the new intermediate PID Setpoint
-        PID_Setpoint_RL = Change_PID_Setpoint_Sigm(New_PID_Setpoint_RL, PID_Setpoint_RL, Old_PID_Setpoint_RL,Ts, exp_mult_RL, n_iter_RL, N_step_RL);
+        PID_Setpoint_RL = Change_PID_Setpoint_Sigm(New_PID_Setpoint_RL, PID_Setpoint_RL, Old_PID_Setpoint_RL, Ts, exp_mult_RL, n_iter_RL, N_step_RL);
         n_iter_RL++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
       }
       if (n_iter_RL >= N_step_RL)
@@ -68,7 +68,7 @@ void PID_Sigm_Curve_LL()
     { //This is always true???
       if ((abs(New_PID_Setpoint_LL - PID_Setpoint_LL) > 0.1) && (sigm_done_LL))
       { //if state machine transition has occured and the newsetpoint is greater than the setpoint
-        
+
         sigm_done_LL = false;                                                   //Do not let the code enter this block, uhh until the setpoint transition has finished?
         n_iter_LL = 0;
 
