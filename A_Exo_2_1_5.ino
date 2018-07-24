@@ -228,14 +228,7 @@ void callback()//executed every 2ms
 
   checkFSRCalibration();
 
-    state_machine_LL();  //for LL
-    state_machine_RL();  //for RL
-
-    set_2_zero_if_steady_state();
-
-    N3_LL = Ctrl_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL, p_Setpoint_Ankle_LL_Pctrl, Trq_time_volt, L_Prop_Gain, FSR_baseline_FLAG_Left);
-    N3_RL = Ctrl_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL, p_Setpoint_Ankle_RL_Pctrl, Trq_time_volt, R_Prop_Gain, FSR_baseline_FLAG_Right);
-  }
+  rotateMotor();
 
 }// end callback
 
@@ -344,7 +337,7 @@ void resetMotorIfError() {
 }
 
 void calculateAverages() {
-//Calc the average value of Torque
+  //Calc the average value of Torque
 
   //Shift the arrays
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
@@ -416,5 +409,32 @@ void checkFSRCalibration() {
     take_baseline(L_state, L_state_old, L_p_steps, p_FSR_baseline_FLAG_Left);
   }
 
+}
+
+void rotateMotor() {
+  if (stream == 1)
+  {
+    if (streamTimerCount >= 5)
+    {
+      send_data_message_wc();
+      streamTimerCount = 0;
+    }
+
+    if (streamTimerCount == 1 && flag_auto_KF == 1)
+      Auto_KF();
+
+    streamTimerCount++;
+
+    pid(Average_Trq_LL, 1);
+    pid(Average_Trq_RL, 2);
+
+    state_machine_LL();  //for LL
+    state_machine_RL();  //for RL
+
+    set_2_zero_if_steady_state();
+
+    N3_LL = Ctrl_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL, p_Setpoint_Ankle_LL_Pctrl, Trq_time_volt, L_Prop_Gain, FSR_baseline_FLAG_Left);
+    N3_RL = Ctrl_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL, p_Setpoint_Ankle_RL_Pctrl, Trq_time_volt, R_Prop_Gain, FSR_baseline_FLAG_Right);
+  }
 }
 
