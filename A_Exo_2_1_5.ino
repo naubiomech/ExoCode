@@ -247,7 +247,7 @@ void callback()//executed every 2ms
       if (time_err_motor >= 8) {
         digitalWrite(onoff, HIGH);
         time_err_motor_reboot++;
-        if (time_err_motor_reboot >= 4){
+        if (time_err_motor_reboot >= 12){
           flag_enable_catch_error = 0;
           time_err_motor = 0;
         }
