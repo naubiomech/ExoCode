@@ -26,7 +26,6 @@ void PID_Sigm_Curve_RL()
     { //This is always true???
       if ((abs(New_PID_Setpoint_RL - PID_Setpoint_RL) > 0.1) && (sigm_done_RL))
       { //if state machine transition has occured and the newsetpoint is greater than the setpoint
-        //if (1) {
         sigm_done_RL = false;                                                   //Do not let the code enter this block, uhh until the setpoint transition has finished?
         n_iter_RL = 0;
 

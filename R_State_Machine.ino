@@ -18,23 +18,11 @@ void state_machine_RL() //For the comments on this file see the L_State_Machine
           if (Previous_Setpoint_Ankle_RL <= Setpoint_Ankle_RL) {
 
             New_PID_Setpoint_RL = Previous_Setpoint_Ankle_RL + (Setpoint_Ankle_RL - Previous_Setpoint_Ankle_RL) * R_coef_in_3_steps;
-            //            Serial.println("Old>=Pid");
-            //            Serial.print("Old ");
-            //            Serial.print(Previous_Setpoint_Ankle_RL);
-            //            Serial.print(" , ");
-            //            Serial.print("New ");
-            //            Serial.println(New_PID_Setpoint_RL);
-
 
           } else {
 
             New_PID_Setpoint_RL = Previous_Setpoint_Ankle_RL - (Previous_Setpoint_Ankle_RL - Setpoint_Ankle_RL) * R_coef_in_3_steps;
-            //            Serial.println("Old<Pid");
-            //            Serial.print("Old ");
-            //            Serial.print(Previous_Setpoint_Ankle_RL);
-            //            Serial.print(" , ");
-            //            Serial.print("New ");
-            //            Serial.println(New_PID_Setpoint_RL);
+
           }
 
           R_state_old = R_state;
@@ -66,7 +54,6 @@ void state_machine_RL() //For the comments on this file see the L_State_Machine
           Old_PID_Setpoint_RL = PID_Setpoint_RL;
           R_state_old = R_state;
           New_PID_Setpoint_RL = 0 * R_coef_in_3_steps;
-          //            PID_Setpoint = 0;//-3; //Dorsiflexion for MAriah in Swing, otherwise should be 0
           R_state = 1;
           state_count_RL_31 = 0;
           state_count_RL_13 = 0;
@@ -79,7 +66,6 @@ void state_machine_RL() //For the comments on this file see the L_State_Machine
 
 
   if ((Trq_time_volt == 2 || Trq_time_volt ==3) && R_state == 3) {
-//    PID_Setpoint_RL = Setpoint_Ankle_RL_Pctrl * R_Prop_Gain;
 PID_Setpoint_RL = Setpoint_Ankle_RL_Pctrl;
   }
   else {

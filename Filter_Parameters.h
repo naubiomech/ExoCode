@@ -11,4 +11,3 @@ int flag = 0;
 float filterVal = .8;
 double smoothedVal = 0;
 int clean_flag = 1;
-//boolean filter_done = true;

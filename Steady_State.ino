@@ -12,7 +12,6 @@ void set_2_zero_if_steady_state() {
     L_stateTimerCount = 0;
   } else {
     if (L_stateTimerCount >= 5 / 0.002) {
-      //        Serial.println("Too Long");
       if (L_store_N1 == 0) {
         Serial.println("Steady state, setting to 0Nm , Change N1");
         L_set_2_zero = 1;
@@ -21,7 +20,6 @@ void set_2_zero_if_steady_state() {
         L_num_3_steps = 0;
         L_1st_step = 1;
         L_start_step = 0;
-//        L_coef_in_3_steps_Pctrl = 0;
       }
 
     } else {

@@ -38,7 +38,6 @@ void R_ref_step_adj() {
 
     if (R_1st_step == 1) {
       R_coef_in_3_steps = 0;
-      //      R_coef_in_3_steps_Pctrl = 1;
       R_1st_step = 0;
     }
 

@@ -96,24 +96,15 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
           Serial.println("BASE before return");
           Serial.print(" Peak ");
           Serial.println(p_steps_l->peak);
-          //          Serial.print(" Peak Mean");
-          //          Serial.println(p_steps_l->plant_peak_mean);
           Serial.print(" N ");
           Serial.println(p_steps_l->count_plant_base);
         }
         else {
           p_steps_l->four_step_dorsi_time[p_steps_l->count_plant_base - 2] = p_steps_l->dorsi_time;
-          //          p_steps_l->dorsi_mean += p_steps_l->dorsi_time;
 
           p_steps_l->four_step_plant_time[p_steps_l->count_plant_base - 2] = p_steps_l->plant_time;
-          //          p_steps_l->plant_mean += p_steps_l->plant_time;
 
           p_steps_l->four_step_plant_peak[p_steps_l->count_plant_base - 2] = p_steps_l->peak;
-          //          p_steps_l->plant_peak_mean += p_steps_l->peak;
-          //          Serial.print("Step ");
-          //          Serial.println((p_steps_l->count_plant_base - 2));
-          //          Serial.print(" Peak ");
-          //          Serial.println(p_steps_l->peak);
           Serial.println("Inside Peak vector ");
 
           for (int i = 0; i < n_step_baseline; i++) {
@@ -121,23 +112,10 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
           }
         }
 
-        //        p_steps_l->dorsi_mean = (p_steps_l->dorsi_mean) / 4;
-        //        p_steps_l->plant_mean = p_steps_l->plant_mean / 4;
-        //        p_steps_l->plant_peak_mean = p_steps_l->plant_peak_mean / 4;
-
-        //        Serial.println("BASE before return");
-        //        Serial.print(" Peak ");
-        //        Serial.println(p_steps_l->peak);
-        //        Serial.print(" Peak Mean");
-        //        Serial.println(p_steps_l->plant_peak_mean);
-        //        Serial.print(" N ");
-        //        Serial.println(p_steps_l->count_plant_base);
-
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
           Serial.print("BASE return peak mean ");
           Serial.println(p_steps_l->plant_peak_mean);
         }
-        //          p_steps_l->count_plant = 0;
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
           (p_steps_l->count_plant_base) = 0;
           *p_flag_take_baseline_l = 0;
@@ -184,11 +162,6 @@ double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l,
     FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
 
 
-    //    if (flag_torque_time_volt_l == 2 && p_steps_l->torque_adj == false) {
-    //      p_steps_l->flag_take_baseline = true;
-    //    }
-    //    if (flag_torque_time_volt_l == 2 && p_steps_l->torque_adj == true) {
-    //      *p_Setpoint_Ankle_Pctrl_l = (p_steps_l->Setpoint ) * (fabs( p_steps_l->curr_voltage / p_steps_l->plant_mean_peak_base));// the difference here is that if curr<peak during state 3 this will not decrease
     if (flag_torque_time_volt_l == 2) {
       if ((p_steps_l->Setpoint ) > 0) {
         *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (prop_gain_l) * (FSR_Ratio)); // the difference here is that we do it as a function of the FSR calibration
@@ -203,18 +176,6 @@ double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l,
       return N3_l; // No modification in the shaping
 
     } else if (flag_torque_time_volt_l == 3) {
-      // First version of the Pivot Proportional Ctrl
-      //      if ((p_steps_l->Setpoint ) > 0) {
-      //        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) + (prop_gain_l) * (fabs( p_steps_l->curr_voltage / p_steps_l->plant_peak_mean) - 1)); // the difference here is that we do it as a function of the FSR calibration
-      //        *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
-      //      }
-      //      else if ((p_steps_l->Setpoint ) < 0) {
-      //        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) - (prop_gain_l) * (fabs( p_steps_l->curr_voltage / p_steps_l->plant_peak_mean) - 1)); // the difference here is that we do it as a function of the FSR calibration
-      //        *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
-      //      } else {
-      //        *p_Setpoint_Ankle_Pctrl_l = 0;
-      //      }
-
       // Second version of pivot proportional Ctrl with polynomial law XXXXX QUI METTERE LEGGE
       if ((p_steps_l->Setpoint ) > 0) {
         *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(FSR_Ratio, 2) + p_prop[1] * FSR_Ratio + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
@@ -328,8 +289,6 @@ double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l,
 
       if (p_steps_l->plant_time <= step_time_length)
       {
-        //        Serial.print(" Plant Time<200 probably noise ");
-        //        Serial.println(p_steps_l->plant_time);
 
         p_steps_l->flag_start_plant = false;
         Serial.println(" SPD ADJ plant time too short ");
@@ -368,21 +327,6 @@ double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l,
         if (N3_l <= 4) N3_l = 4;
         if (N3_l >= 500) N3_l = 500;
       }
-
-
-      //            Serial.print(" Mean Volt ");
-      //            Serial.println((p_steps_l->plant_mean_peak_base));
-      //      Serial.print(" Actual peak ");
-      //      Serial.println((p_steps_l->peak));
-      //      Serial.print(" Actual Volt ");
-      //      Serial.println((p_steps_l->curr_voltage));
-      //      Serial.print(" Setpoint ");
-      //      Serial.println(p_steps_l->Setpoint);
-      //      Serial.print(" N3 = ");
-      //      Serial.println(N3_l);
-      //      Serial.print(" Trq = ");
-      //      Serial.println(*p_Setpoint_Ankle_l);
-      //      Serial.println(" ");
 
 
     }//end if R old 3 i.e. finish plantarflexion
