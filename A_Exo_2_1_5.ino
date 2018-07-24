@@ -248,52 +248,9 @@ void loop()
 
 
 
-  if (stream == 1)
+  if (stream != 1)
   {
-  }
-  else
-  {
-    //Reset the starting values
-    L_p_steps->count_plant = 0;
-    L_p_steps->n_steps = 0;
-    L_p_steps->flag_start_plant = false;
-    L_p_steps->flag_take_average = false;
-    L_p_steps->flag_N3_adjustment_time = false;
-    L_p_steps->flag_take_baseline = false;
-    L_p_steps->torque_adj = false;
-
-    R_p_steps->count_plant = 0;
-    R_p_steps->n_steps = 0;
-    R_p_steps->flag_start_plant = false;
-    R_p_steps->flag_take_average = false;
-    R_p_steps->flag_N3_adjustment_time = false;
-    R_p_steps->flag_take_baseline = false;
-    R_p_steps->torque_adj = false;
-
-    N3_LL = N3;
-    N2_LL = N2;
-    N1_LL = N1;
-
-    N3_RL = N3;
-    N2_RL = N2;
-    N1_RL = N1;
-
-    L_p_steps->perc_l = 0.5;
-    R_p_steps->perc_l = 0.5;
-
-    L_activate_in_3_steps = 1;
-    R_activate_in_3_steps = 1;
-
-    Previous_Setpoint_Ankle_LL = 0;
-    Previous_Setpoint_Ankle_RL = 0;
-    R_coef_in_3_steps = 0;
-    R_num_3_steps = 0;
-    L_coef_in_3_steps = 0;
-    L_num_3_steps = 0;
-
-    R_1st_step = 1;
-    L_1st_step = 1;
-
+   resetStartingParameters();
   }// End else
 }
 
@@ -436,5 +393,50 @@ void rotateMotor() {
     N3_LL = Ctrl_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL, p_Setpoint_Ankle_LL_Pctrl, Trq_time_volt, L_Prop_Gain, FSR_baseline_FLAG_Left);
     N3_RL = Ctrl_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL, p_Setpoint_Ankle_RL_Pctrl, Trq_time_volt, R_Prop_Gain, FSR_baseline_FLAG_Right);
   }
+}
+
+void resetStartingParameters(){
+ //Reset the starting values
+    L_p_steps->count_plant = 0;
+    L_p_steps->n_steps = 0;
+    L_p_steps->flag_start_plant = false;
+    L_p_steps->flag_take_average = false;
+    L_p_steps->flag_N3_adjustment_time = false;
+    L_p_steps->flag_take_baseline = false;
+    L_p_steps->torque_adj = false;
+
+    R_p_steps->count_plant = 0;
+    R_p_steps->n_steps = 0;
+    R_p_steps->flag_start_plant = false;
+    R_p_steps->flag_take_average = false;
+    R_p_steps->flag_N3_adjustment_time = false;
+    R_p_steps->flag_take_baseline = false;
+    R_p_steps->torque_adj = false;
+
+    N3_LL = N3;
+    N2_LL = N2;
+    N1_LL = N1;
+
+    N3_RL = N3;
+    N2_RL = N2;
+    N1_RL = N1;
+
+    L_p_steps->perc_l = 0.5;
+    R_p_steps->perc_l = 0.5;
+
+    L_activate_in_3_steps = 1;
+    R_activate_in_3_steps = 1;
+
+    Previous_Setpoint_Ankle_LL = 0;
+    Previous_Setpoint_Ankle_RL = 0;
+    R_coef_in_3_steps = 0;
+    R_num_3_steps = 0;
+    L_coef_in_3_steps = 0;
+    L_num_3_steps = 0;
+
+    R_1st_step = 1;
+    L_1st_step = 1;
+
+
 }
 
