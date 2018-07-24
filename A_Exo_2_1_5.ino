@@ -24,6 +24,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
+#define TWO_LEG_BOARD
 
 const int dim_FSR = 30;
 double FSR_Average_RL_array[dim_FSR] = {0};
@@ -78,6 +79,7 @@ double L_sign = 1;
 #include "Auto_KF.h"
 #include "Combined_FSR.h"
 #include <Metro.h> // Include the Metro library
+#include "Board.h"
 
 
 Metro slowThisDown = Metro(1);  // Set the function to be called at no faster a rate than once per millisecond
@@ -95,20 +97,20 @@ char Peek = 'a';
 int cmd_from_Gui = 0;
 
 // Single board small
-const unsigned int onoff = 22;
+const unsigned int onoff = MOTOR_ENABLE;
 
 // Single board SQuare (big)
 //const unsigned int onoff = 17;                                          //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;                                       //whatever the zero value is for the PID analogwrite setup
-const unsigned int which_leg_pin = 15;
+const unsigned int which_leg_pin = WHICH_LEG_PIN;
 
 // if digital read
 //const unsigned int pin_err_LL = 20;
 //const unsigned int pin_err_RL = 21;
 // if analog read
 
-const unsigned int pin_err_LL = 6;
-const unsigned int pin_err_RL = 7;
+const unsigned int pin_err_LL = MOTOR_ERROR_LEFT_ANKLE_PIN;
+const unsigned int pin_err_RL = MOTOR_ERROR_RIGHT_ANKLE_PIN;
 
 //Includes the SoftwareSerial library to be able to use the bluetooth Serial Communication
 int bluetoothTx = 0;                                                 // TX-O pin of bluetooth mate, Teensy D0
@@ -140,8 +142,8 @@ void setup()
   analogReadResolution(12);                                           //ditto
 
   // The led
-  pinMode(13, OUTPUT);
-  digitalWrite(13, LOW);
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
   // set pin mode for left and right sides
   pinMode(onoff, OUTPUT); //Enable disable the motors
   digitalWrite(onoff, LOW);
@@ -152,12 +154,12 @@ void setup()
   pinMode(pin_err_LL, INPUT);
   pinMode(pin_err_RL, INPUT);
 
-  pinMode(A19, INPUT); //enable the torque reading of the left torque sensor
-  pinMode(A18, INPUT); //enable the torque reading of the right torque sensor
+  pinMode(TORQUE_SENSOR_LEFT_ANKLE_PIN, INPUT); //enable the torque reading of the left torque sensor
+  pinMode(TORQUE_SENSOR_RIGHT_ANKLE_PIN, INPUT); //enable the torque reading of the right torque sensor
 
   //change the origin of the motor
-  analogWrite(motor_LL_pin, zero);
-  analogWrite(motor_RL_pin, zero);
+  analogWrite(MOTOR_LEFT_ANKLE_PIN, zero);
+  analogWrite(MOTOR_RIGHT_ANKLE_PIN, zero);
 
   //  Left PID
   PID_LL.SetMode(AUTOMATIC);
@@ -180,7 +182,7 @@ void setup()
 
   //  p_FSR_Array_LL = &FSR_Average_LL_array[0];
   //  p_FSR_Array_RL = &FSR_Average_RL_array[0];
-  digitalWrite(13, HIGH);
+  digitalWrite(LED_PIN, HIGH);
 
 }
 
@@ -243,11 +245,11 @@ void callback()//executed every 2ms
       motor_driver_count_err++;
       time_err_motor++;
 
-//was time_err_motor >= 4
+      //was time_err_motor >= 4
       if (time_err_motor >= 8) {
         digitalWrite(onoff, HIGH);
         time_err_motor_reboot++;
-        if (time_err_motor_reboot >= 12){
+        if (time_err_motor_reboot >= 12) {
           flag_enable_catch_error = 0;
           time_err_motor = 0;
         }
@@ -317,7 +319,7 @@ void callback()//executed every 2ms
   if (FSR_CAL_FLAG) {
 
     FSR_calibration();
-		j
+
   }
 
   if (FSR_baseline_FLAG_Right) {

@@ -9,8 +9,8 @@ void torque_calibration()
   double Tcal_LL_val, Tcal_RL_val;
   while (millis() - tcal_time < 1000)
   { //Calibrates the LL for a total time of 1 second,
-    Tcal_LL_val += analogRead(A19) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
-    Tcal_RL_val += analogRead(A18) * (3.3 / 4096);
+    Tcal_LL_val += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
+    Tcal_RL_val += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
     torq_cal_count ++;                                                         //Increments count
   }
   Tcal_LL = Tcal_LL_val / torq_cal_count;                       // Averages torque over a second
@@ -58,9 +58,9 @@ void FSR_calibration()
   else {
     L_p_steps->voltage_peak_ref = fsr_Left_Combined_peak_ref;
     R_p_steps->voltage_peak_ref = fsr_Right_Combined_peak_ref;
-    
+
     // What I need to comment out
-    
+
     write_FSR_values(address_FSR_LL, fsr_Left_Combined_peak_ref / 2);
     write_FSR_values((address_FSR_LL + sizeof(double) + sizeof(char)), fsr_Left_Combined_peak_ref / 2);
     write_FSR_values(address_FSR_RL, fsr_Right_Combined_peak_ref / 2);
@@ -77,13 +77,13 @@ void FSR_calibration()
 
 double get_LL_torq()
 { //flexion is positive 8.10.16, gets the torque of the right leg
-  double Torq = 56.5 / (2.1) * (analogRead(A19) * (3.3 / 4096) - Tcal_LL);
+  double Torq = 56.5 / (2.1) * (analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096) - Tcal_LL);
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }
 
 double get_RL_torq()
 { //flexion is positive 8.10.16, gets the torque of the right leg
-  double Torq = 56.5 / (2.1) * (analogRead(A18) * (3.3 / 4096) - Tcal_RL);
+  double Torq = 56.5 / (2.1) * (analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096) - Tcal_RL);
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }
 

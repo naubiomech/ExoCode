@@ -1,12 +1,13 @@
+#include "Board.h"
 // To set FSR bias and to identify the states
 double fsrLongCurrent = 0;
 double fsrShortCurrent = 0;
 
 // Single board small
-const unsigned int fsr_sense_Left_Heel = A14;
-const unsigned int fsr_sense_Left_Toe = A15;
-const unsigned int fsr_sense_Right_Heel = A12;
-const unsigned int fsr_sense_Right_Toe = A13;
+const unsigned int fsr_sense_Left_Heel = FSR_SENSE_LEFT_HEEL_PIN;
+const unsigned int fsr_sense_Left_Toe = FSR_SENSE_LEFT_TOE_PIN;
+const unsigned int fsr_sense_Right_Heel = FSR_SENSE_RIGHT_HEEL_PIN;
+const unsigned int fsr_sense_Right_Toe = FSR_SENSE_RIGHT_TOE_PIN;
 
 double fsr_Left_Heel = 0;
 double fsr_Left_Toe = 0;

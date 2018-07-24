@@ -4,9 +4,7 @@ double Tcal_RL = 0;
 int count = 0;
 
 double T_act_LL, T_act_RL;
-int Vol_LL, Vol_RL;
-const unsigned int motor_LL_pin = A21;                                     //analogwrite pin
-const unsigned int motor_RL_pin = A22;                                     //analogwrite pin
+int Vol_LL, Vol_RL;                                  //analogwrite pin
 
 double kp_LL = 800;
 double ki_LL = 0;
