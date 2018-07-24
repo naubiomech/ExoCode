@@ -225,35 +225,8 @@ void callback()//executed every 2ms
   resetMotorIfError();
 
   calculateAverages();
-  
-  if (FSR_CAL_FLAG) {
 
-    FSR_calibration();
-
-  }
-
-  if (FSR_baseline_FLAG_Right) {
-    take_baseline(R_state, R_state_old, R_p_steps, p_FSR_baseline_FLAG_Right);
-  }
-  if (FSR_baseline_FLAG_Left) {
-    take_baseline(L_state, L_state_old, L_p_steps, p_FSR_baseline_FLAG_Left);
-  }
-
-  if (stream == 1)
-  {
-    if (streamTimerCount >= 5)
-    {
-      send_data_message_wc();
-      streamTimerCount = 0;
-    }
-
-    if (streamTimerCount == 1 && flag_auto_KF == 1)
-      Auto_KF();
-
-    streamTimerCount++;
-
-    pid(Average_Trq_LL, 1);
-    pid(Average_Trq_RL, 2);
+  checkFSRCalibration();
 
     state_machine_LL();  //for LL
     state_machine_RL();  //for RL
@@ -427,6 +400,21 @@ void calculateAverages() {
 
   L_p_steps->torque_average = Average_LL / dim;
   R_p_steps->torque_average = Average_RL / dim;
+
+}
+
+void checkFSRCalibration() {
+
+  if (FSR_CAL_FLAG) {
+    FSR_calibration();
+  }
+
+  if (FSR_baseline_FLAG_Right) {
+    take_baseline(R_state, R_state_old, R_p_steps, p_FSR_baseline_FLAG_Right);
+  }
+  if (FSR_baseline_FLAG_Left) {
+    take_baseline(L_state, L_state_old, L_p_steps, p_FSR_baseline_FLAG_Left);
+  }
 
 }
 
