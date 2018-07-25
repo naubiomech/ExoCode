@@ -143,5 +143,8 @@ struct Leg {
     steps* p_steps;
   
 };
-
+Leg left_leg_value = Leg();
+Leg right_leg_value = Leg();
+Leg* left_leg = &left_leg_value;
+Leg* right_leg = &right_leg_value;
 #endif
