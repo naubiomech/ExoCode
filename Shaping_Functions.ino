@@ -17,41 +17,41 @@ double Change_PID_Setpoint_Sigm(double New_PID_Setpoint_l, double Current_PID_Se
 
 void PID_Sigm_Curve_RL()
 {
-  sig_time_RL = millis();                                                        //Start time for sig
-  if (sig_time_RL - sig_time_old_RL > 1)
+  right_leg->sig_time = millis();                                                        //Start time for sig
+  if (right_leg->sig_time - right_leg->sig_time_old > 1)
   {
-    sig_time_old_RL = sig_time_RL;                                                  //??? records for next time this code runs??
+    right_leg->sig_time_old = right_leg->sig_time;                                                  //??? records for next time this code runs??
 
-    if (sigm_flag_RL)
+    if (right_leg->sigm_flag)
     { //This is always true???
-      if ((abs(New_PID_Setpoint_RL - PID_Setpoint_RL) > 0.1) && (sigm_done_RL))
+      if ((abs(right_leg->New_PID_Setpoint - right_leg->PID_Setpoint) > 0.1) && (right_leg->sigm_done))
       { //if state machine transition has occured and the newsetpoint is greater than the setpoint
-        sigm_done_RL = false;                                                   //Do not let the code enter this block, uhh until the setpoint transition has finished?
-        n_iter_RL = 0;
+        right_leg->sigm_done = false;                                                   //Do not let the code enter this block, uhh until the setpoint transition has finished?
+        right_leg->n_iter = 0;
 
-        if (R_state == 3) {
-          N_step_RL = N3_RL;//12 * 10;                                             //Defines number of steps
+        if (right_leg->state == 3) {
+          right_leg->N_step = right_leg->N3;//12 * 10;                                             //Defines number of steps
         }
-        else if (R_state == 2) {                                             //So I think this N_step business determines how quickly the PID Setpoint rises or falls
-          N_step_RL = N2_RL;//6 * 10;
+        else if (right_leg->state == 2) {                                             //So I think this N_step business determines how quickly the PID Setpoint rises or falls
+          right_leg->N_step = right_leg->N2;//6 * 10;
         }
-        else if (R_state == 1) {
-          N_step_RL = N1_RL;
+        else if (right_leg->state == 1) {
+          right_leg->N_step = right_leg->N1;
         }
 
-        exp_mult_RL = round((10 / Ts) / (N_step_RL - 1));                         //???
+        right_leg->exp_mult = round((10 / Ts) / (right_leg->N_step - 1));                         //???
 
       }// end if sigm_done
 
-      if (n_iter_RL < N_step_RL)
+      if (right_leg->n_iter < right_leg->N_step)
       {
         // Determines the new intermediate PID Setpoint
-        PID_Setpoint_RL = Change_PID_Setpoint_Sigm(New_PID_Setpoint_RL, PID_Setpoint_RL, Old_PID_Setpoint_RL, Ts, exp_mult_RL, n_iter_RL, N_step_RL);
-        n_iter_RL++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
+        right_leg->PID_Setpoint = Change_PID_Setpoint_Sigm(right_leg->New_PID_Setpoint, right_leg->PID_Setpoint, right_leg->Old_PID_Setpoint, Ts, right_leg->exp_mult, right_leg->n_iter, right_leg->N_step);
+        right_leg->n_iter++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
       }
-      if (n_iter_RL >= N_step_RL)
+      if (right_leg->n_iter >= right_leg->N_step)
       {
-        sigm_done_RL = true;
+        right_leg->sigm_done = true;
       }
     }// end if sigm
   }
@@ -59,41 +59,41 @@ void PID_Sigm_Curve_RL()
 
 void PID_Sigm_Curve_LL()
 {
-  sig_time_LL = millis();                                                        //Start time for sig
-  if (sig_time_LL - sig_time_old_LL > 1)
+  left_leg->sig_time = millis();                                                        //Start time for sig
+  if (left_leg->sig_time - left_leg->sig_time_old > 1)
   {
-    sig_time_old_LL = sig_time_LL;                                                  //??? records for next time this code runs??
+    left_leg->sig_time_old = left_leg->sig_time;                                                  //??? records for next time this code runs??
 
-    if (sigm_flag_LL)
+    if (left_leg->sigm_flag)
     { //This is always true???
-      if ((abs(New_PID_Setpoint_LL - PID_Setpoint_LL) > 0.1) && (sigm_done_LL))
+      if ((abs(left_leg->New_PID_Setpoint - left_leg->PID_Setpoint) > 0.1) && (left_leg->sigm_done))
       { //if state machine transition has occured and the newsetpoint is greater than the setpoint
 
-        sigm_done_LL = false;                                                   //Do not let the code enter this block, uhh until the setpoint transition has finished?
-        n_iter_LL = 0;
+        left_leg->sigm_done = false;                                                   //Do not let the code enter this block, uhh until the setpoint transition has finished?
+        left_leg->n_iter = 0;
 
-        if (L_state == 3) {
-          N_step_LL = N3_LL;//12 * 10;                                             //Defines number of steps
+        if (left_leg->state == 3) {
+          left_leg->N_step = left_leg->N3;//12 * 10;                                             //Defines number of steps
         }
-        else if (L_state == 2) {                                             //So I think this N_step business determines how quickly the PID Setpoint rises or falls
-          N_step_LL = N2_LL;//6 * 10;
+        else if (left_leg->state == 2) {                                             //So I think this N_step business determines how quickly the PID Setpoint rises or falls
+          left_leg->N_step = left_leg->N2;//6 * 10;
         }
-        else if (L_state == 1) {
-          N_step_LL = N1_LL;
+        else if (left_leg->state == 1) {
+          left_leg->N_step = left_leg->N1;
 
         }
-        exp_mult_LL = round((10 / Ts) / (N_step_LL - 1));                         //???
+        left_leg->exp_mult = round((10 / Ts) / (left_leg->N_step - 1));                         //???
       }// end if sigm_done
 
-      if (n_iter_LL < N_step_LL)
+      if (left_leg->n_iter < left_leg->N_step)
       {
         // Determines the new intermediate PID Setpoint
-        PID_Setpoint_LL = Change_PID_Setpoint_Sigm(New_PID_Setpoint_LL, PID_Setpoint_LL, Old_PID_Setpoint_LL, Ts, exp_mult_LL, n_iter_LL, N_step_LL);
-        n_iter_LL++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
+        left_leg->PID_Setpoint = Change_PID_Setpoint_Sigm(left_leg->New_PID_Setpoint, left_leg->PID_Setpoint, left_leg->Old_PID_Setpoint, Ts, left_leg->exp_mult, left_leg->n_iter, left_leg->N_step);
+        left_leg->n_iter++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
       }
-      if (n_iter_LL >= N_step_LL)
+      if (left_leg->n_iter >= left_leg->N_step)
       {
-        sigm_done_LL = true;
+        left_leg->sigm_done = true;
       }
     }// end if sigm
   }

@@ -8,39 +8,39 @@ void pid(double input, int Left_or_Right)
     {
 
 
-      KF_RL = 0;
-      double old_L_state_L = L_state;
-      L_state = 9;
+      right_leg->KF = 0;
+      double old_L_state_L = left_leg->state;
+      left_leg->state = 9;
       send_data_message_wc();
 
       digitalWrite(onoff, LOW);
       stream = 0;
       digitalWrite(LED_PIN, LOW);
-      L_state = old_L_state_L;
+      left_leg->state = old_L_state_L;
 
     }
-    Input_LL = input;
-    PID_LL.Compute_KF(KF_LL);
-    Vol_LL = Output_LL + zero; //need to map
-    analogWrite(MOTOR_LEFT_ANKLE_PIN, Vol_LL); //0 to 4096 writing for motor to get Input
+    left_leg->Input = input;
+    left_leg->pid.Compute_KF(left_leg->KF);
+    left_leg->Vol = left_leg->Output + zero; //need to map
+    analogWrite(MOTOR_LEFT_ANKLE_PIN, left_leg->Vol); //0 to 4096 writing for motor to get Input
   }
   if (Left_or_Right == 2)
   {
     if ((abs(input) > 25))
     {
-      KF_RL = 0;
-      double old_R_state_R = R_state;
-      R_state = 9;
+      right_leg->KF = 0;
+      double old_R_state_R = right_leg->state;
+      right_leg->state = 9;
       send_data_message_wc();
       digitalWrite(onoff, LOW);
       stream = 0;
       digitalWrite(LED_PIN, LOW);
-      R_state = old_R_state_R;
+      right_leg->state = old_R_state_R;
     }
-    Input_RL = input;
-    PID_RL.Compute_KF(KF_RL);
+    right_leg->Input = input;
+    right_leg->pid.Compute_KF(right_leg->KF);
 
-    Vol_RL = Output_RL + zero; //need to map
-    analogWrite(MOTOR_RIGHT_ANKLE_PIN, Vol_RL); //0 to 4096 writing for motor to get Input
+    right_leg->Vol = right_leg->Output + zero; //need to map
+    analogWrite(MOTOR_RIGHT_ANKLE_PIN, right_leg->Vol); //0 to 4096 writing for motor to get Input
   }
 }

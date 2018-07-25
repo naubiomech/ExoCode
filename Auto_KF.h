@@ -1,103 +1,96 @@
 int flag_auto_KF = 0;
 
-double ERR_LL, ERR_RL;
-double max_KF_LL = 1.2;
-double max_KF_RL = 1.2;
-double min_KF_LL = 0.8;
-double min_KF_RL = 0.8;
-int count_err_LL, count_err_RL;
-
 double max_ERR = 0.20;
 double min_ERR = -0.20;
 
 void Auto_KF() {
 
   // take error in state 3
-  if (L_state == 3) {
-    //    Input_LL is the average of the measured torque
-    //    PID_Stepoint_LL is the reference
+  if (left_leg->state == 3) {
+    //    left_leg->Input is the average of the measured torque
+    //    left_leg->PID_Stepoint is the reference
     Serial.print(" Left Error ");
-    Serial.println(PID_Setpoint_LL - Input_LL );
-    ERR_LL += (PID_Setpoint_LL - Input_LL );
-    count_err_LL++;
+    Serial.println(left_leg->PID_Setpoint - left_leg->Input );
+    left_leg->ERR += (left_leg->PID_Setpoint - left_leg->Input );
+    left_leg->count_err++;
   }
 
-  if (L_state == 1) {
+  if (left_leg->state == 1) {
 
-    ERR_LL = ERR_LL / count_err_LL;
-    if ((count_err_LL != 0)) {
+    left_leg->ERR = left_leg->ERR / left_leg->count_err;
+    if ((left_leg->count_err != 0)) {
       Serial.print("Left ERR ");
-      Serial.println(ERR_LL);
+      Serial.println(left_leg->ERR);
     }
     else {
 
     }
-    count_err_LL = 0;
+    left_leg->count_err = 0;
 
 
 
-    if (ERR_LL > max_ERR) {
-      KF_LL += 0.05;
+    if (left_leg->ERR > max_ERR) {
+      left_leg->KF += 0.05;
     }
-    else if (ERR_LL < min_ERR) {
-      KF_LL -= 0.05;
+    else if (left_leg->ERR < min_ERR) {
+      left_leg->KF -= 0.05;
     }
     else {}
 
-    if (KF_LL >= max_KF_LL)
-      KF_LL = max_KF_LL;
-    else if (KF_LL <= min_KF_LL)
-      KF_LL = min_KF_LL;
+    if (left_leg->KF >= left_leg->max_KF)
+      left_leg->KF = left_leg->max_KF;
+    else if (left_leg->KF <= left_leg->min_KF)
+      left_leg->KF = left_leg->min_KF;
     else {}
 
-    Serial.print("New KF_LL ");
-    Serial.println(KF_LL);
-    ERR_LL = 0;
+    Serial.print("New left_leg->KF ");
+    Serial.println(left_leg->KF);
+    left_leg->ERR = 0;
   }
 
 
-  if (R_state == 3) {
-    //    Input_RL is the average of the measured torque
-    //    PID_Stepoint_RL is the reference
+  if (right_leg->state == 3) {
+    //    right_leg->Input is the average of the measured torque
+    //    right_leg->PID_Stepoint is the reference
     Serial.print(" Right Error ");
-    Serial.println(PID_Setpoint_RL - Input_RL );
-    ERR_RL += (PID_Setpoint_RL - Input_RL );
-    count_err_RL++;
+    Serial.println(right_leg->PID_Setpoint - right_leg->Input );
+    right_leg->ERR += (right_leg->PID_Setpoint - right_leg->Input );
+    right_leg->count_err++;
   }
-  if (R_state == 1) {
+  if (right_leg->state == 1) {
 
-    ERR_RL = -ERR_RL / count_err_RL; // because the right has a different sign
-    if ((count_err_RL != 0)) {
+    right_leg->ERR = -right_leg->ERR / right_leg->count_err; // because the right has a different sign
+    if ((right_leg->count_err != 0)) {
       Serial.print(" Right ERR ");
-      Serial.println(ERR_RL);
+      Serial.println(right_leg->ERR);
     }
     else {
 
     }
-    count_err_RL = 0;
+    right_leg->count_err = 0;
 
 
-    if (ERR_RL > max_ERR) {
-      KF_RL += 0.05;
+    if (right_leg->ERR > max_ERR) {
+      right_leg->KF += 0.05;
     }
-    else if (ERR_RL < min_ERR) {
-      KF_RL -= 0.05;
+    else if (right_leg->ERR < min_ERR) {
+      right_leg->KF -= 0.05;
     }
     else {}
 
-    if (KF_RL >= max_KF_RL)
-      KF_RL = max_KF_RL;
-    else if (KF_RL <= min_KF_RL)
-      KF_RL = min_KF_RL;
+    if (right_leg->KF >= right_leg->max_KF)
+      right_leg->KF = right_leg->max_KF;
+    else if (right_leg->KF <= right_leg->min_KF)
+      right_leg->KF = right_leg->min_KF;
     else {}
 
-    Serial.print("New KF_RL ");
-    Serial.println(KF_RL);
-    ERR_RL = 0;
+    Serial.print("New right_leg->KF ");
+    Serial.println(right_leg->KF);
+    right_leg->ERR = 0;
   }
 
 
-  //  ERR_LL += ()
+  //  left_leg->ERR += ()
   // adjust KF
 
   return;

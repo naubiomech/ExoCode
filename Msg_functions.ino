@@ -5,37 +5,37 @@ void send_data_message_wc() //with COP
   bluetooth.print(',');
 
   // RIGHT
-  bluetooth.print(R_sign * Average_Trq_RL);
+  bluetooth.print(right_leg->sign * right_leg->Average_Trq);
   bluetooth.print(',');
-  bluetooth.print(R_state);
+  bluetooth.print(right_leg->state);
   bluetooth.print(',');
-  bluetooth.print(R_sign * PID_Setpoint_RL);
+  bluetooth.print(right_leg->sign * right_leg->PID_Setpoint);
   bluetooth.print(',');
-  bluetooth.print(fsr_percent_thresh_Right_Toe * fsr_Right_Combined_peak_ref);
+  bluetooth.print(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
   bluetooth.print(',');
-  bluetooth.print(Combined_Average_RL);
+  bluetooth.print(right_leg->Combined_Average);
   bluetooth.print(',');
 
   // LEFT
-  bluetooth.print(L_sign * Average_Trq_LL);
+  bluetooth.print(left_leg->sign * left_leg->Average_Trq);
   bluetooth.print(',');
-  bluetooth.print(L_state);
+  bluetooth.print(left_leg->state);
   bluetooth.print(',');
-  bluetooth.print(L_sign * PID_Setpoint_LL);
+  bluetooth.print(left_leg->sign * left_leg->PID_Setpoint);
   bluetooth.print(',');
-  bluetooth.print(fsr_percent_thresh_Left_Toe * fsr_Left_Combined_peak_ref);
+  bluetooth.print(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
   bluetooth.print(',');
-  bluetooth.print(Combined_Average_LL);
+  bluetooth.print(left_leg->Combined_Average);
   bluetooth.print(',');
 
 
-  bluetooth.print(FSR_Average_LL_Heel); //SIG1
+  bluetooth.print(left_leg->FSR_Average_Heel); //SIG1
   bluetooth.print(',');
-  bluetooth.print(FSR_Average_RL_Heel); //SIG2-
+  bluetooth.print(right_leg->FSR_Average_Heel); //SIG2-
   bluetooth.print(',');
-  bluetooth.print(min(10, fabs(L_p_steps->curr_voltage / L_p_steps->plant_peak_mean))); //SIG3
+  bluetooth.print(min(10, fabs(left_leg->p_steps->curr_voltage / left_leg->p_steps->plant_peak_mean))); //SIG3
   bluetooth.print(',');
-  bluetooth.print(min(10, fabs(R_p_steps->curr_voltage / R_p_steps->plant_peak_mean))); //SIG4
+  bluetooth.print(min(10, fabs(right_leg->p_steps->curr_voltage / right_leg->p_steps->plant_peak_mean))); //SIG4
 
   bluetooth.print(',');
   bluetooth.println('Z');

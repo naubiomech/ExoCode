@@ -95,12 +95,12 @@ int write_EXP_parameters(int address_params_l)
 { Serial.println();
   EEPROM.put(address_params_l, 'y');
   address_params_l++;
-  EEPROM.put(address_params_l, KF_LL);
+  EEPROM.put(address_params_l, left_leg->KF);
   address_params_l += 8;
-  Serial.println(KF_LL);
-  EEPROM.put(address_params_l, KF_RL);
+  Serial.println(left_leg->KF);
+  EEPROM.put(address_params_l, right_leg->KF);
   address_params_l += 8;
-  Serial.println(KF_RL);
+  Serial.println(right_leg->KF);
   EEPROM.put(address_params_l, N1);
   address_params_l += 8;
   Serial.println(N1);
@@ -110,21 +110,21 @@ int write_EXP_parameters(int address_params_l)
   EEPROM.put(address_params_l, N3);
   address_params_l += 8;
   Serial.println(N3);
-  EEPROM.put(address_params_l, kp_LL);
+  EEPROM.put(address_params_l, left_leg->kp);
   address_params_l += 8;
-  EEPROM.put(address_params_l, kd_LL);
+  EEPROM.put(address_params_l, left_leg->kd);
   address_params_l += 8;
-  EEPROM.put(address_params_l, ki_LL);
+  EEPROM.put(address_params_l, left_leg->ki);
   address_params_l += 8;
-  EEPROM.put(address_params_l, kp_RL);
+  EEPROM.put(address_params_l, right_leg->kp);
   address_params_l += 8;
-  EEPROM.put(address_params_l, kd_RL);
+  EEPROM.put(address_params_l, right_leg->kd);
   address_params_l += 8;
-  EEPROM.put(address_params_l, ki_RL);
+  EEPROM.put(address_params_l, right_leg->ki);
   address_params_l += 8;
-  EEPROM.put(address_params_l, fsr_percent_thresh_Left_Toe);
+  EEPROM.put(address_params_l, left_leg->fsr_percent_thresh_Toe);
   address_params_l += 8;
-  EEPROM.put(address_params_l, fsr_percent_thresh_Right_Toe);
+  EEPROM.put(address_params_l, right_leg->fsr_percent_thresh_Toe);
   address_params_l += 8;
   Serial.println("Completed Saving EXP Parameters");
 
@@ -161,9 +161,9 @@ double read_param(int address_l)
 int read_all_params(int address_params_l) {
   address_params_l++;
 
-  KF_LL = read_param(address_params_l);
+  left_leg->KF = read_param(address_params_l);
   address_params_l += 8;
-  KF_RL = read_param(address_params_l);
+  right_leg->KF = read_param(address_params_l);
   address_params_l += 8;
 
   N1 = read_param(address_params_l);
@@ -172,34 +172,34 @@ int read_all_params(int address_params_l) {
   address_params_l += 8;
   N3 = read_param(address_params_l);
   address_params_l += 8;
-  N1_LL = N1;
-  N2_LL = N2;
-  N3_LL = N3;
-  N1_RL = N1;
-  N2_RL = N2;
-  N3_RL = N3;
+  left_leg->N1 = N1;
+  left_leg->N2 = N2;
+  left_leg->N3 = N3;
+  right_leg->N1 = N1;
+  right_leg->N2 = N2;
+  right_leg->N3 = N3;
 
-  kp_LL = read_param(address_params_l);
+  left_leg->kp = read_param(address_params_l);
   address_params_l += 8;
-  kd_LL = read_param(address_params_l);
+  left_leg->kd = read_param(address_params_l);
   address_params_l += 8;
-  ki_LL = read_param(address_params_l);
-  address_params_l += 8;
-
-  kp_RL = read_param(address_params_l);
-  address_params_l += 8;
-  kd_RL = read_param(address_params_l);
-  address_params_l += 8;
-  ki_RL = read_param(address_params_l);
+  left_leg->ki = read_param(address_params_l);
   address_params_l += 8;
 
-  fsr_percent_thresh_Left_Toe = read_param(address_params_l);
+  right_leg->kp = read_param(address_params_l);
   address_params_l += 8;
-  fsr_percent_thresh_Right_Toe = read_param(address_params_l);
+  right_leg->kd = read_param(address_params_l);
+  address_params_l += 8;
+  right_leg->ki = read_param(address_params_l);
   address_params_l += 8;
 
-  L_p_steps->fsr_percent_thresh_Toe = fsr_percent_thresh_Left_Toe;
-  R_p_steps->fsr_percent_thresh_Toe = fsr_percent_thresh_Right_Toe;
+  left_leg->fsr_percent_thresh_Toe = read_param(address_params_l);
+  address_params_l += 8;
+  right_leg->fsr_percent_thresh_Toe = read_param(address_params_l);
+  address_params_l += 8;
+
+  left_leg->p_steps->fsr_percent_thresh_Toe = left_leg->fsr_percent_thresh_Toe;
+  right_leg->p_steps->fsr_percent_thresh_Toe = right_leg->fsr_percent_thresh_Toe;
 
   return 1;
 }

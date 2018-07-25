@@ -42,6 +42,3 @@ typedef struct {
 
 steps val_L;
 steps val_R;
-steps* L_p_steps = &val_L;
-steps* R_p_steps = &val_R;
-

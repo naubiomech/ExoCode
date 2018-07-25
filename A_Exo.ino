@@ -28,38 +28,6 @@
 
 #include "Board.h"
 #include "Leg.h"
-
-double FSR_Average_RL_array[dim_FSR] = {0};
-double * p_FSR_Array_RL = &FSR_Average_RL_array[0];
-double FSR_Average_RL = 0;
-double Curr_FSR_RL = 0;
-
-double FSR_Average_LL_array[dim_FSR] = {0};
-double * p_FSR_Array_LL = &FSR_Average_LL_array[0];
-double FSR_Average_LL = 0;
-double Curr_FSR_LL = 0;
-
-double FSR_Average_RL_array_Heel[dim_FSR] = {0};
-double * p_FSR_Array_RL_Heel = &FSR_Average_RL_array_Heel[0];
-double FSR_Average_RL_Heel = 0;
-double Curr_FSR_RL_Heel = 0;
-
-double FSR_Average_LL_array_Heel[dim_FSR] = {0};
-double * p_FSR_Array_LL_Heel = &FSR_Average_LL_array_Heel[0];
-double FSR_Average_LL_Heel = 0;
-double Curr_FSR_LL_Heel = 0;
-
-double Tarray_LL[dim] = {0};
-double * TarrayPoint_LL = &Tarray_LL[0];
-double Average_LL = 0;
-
-double Tarray_RL[dim] = {0};
-double * TarrayPoint_RL = &Tarray_RL[0];
-double Average_RL = 0;
-
-double R_sign = 1;
-double L_sign = 1;
-
 #include <elapsedMillis.h>
 #include <EEPROM.h>
 #include "TimerOne.h"
@@ -103,27 +71,13 @@ const unsigned int onoff = MOTOR_ENABLE_PIN;
 const unsigned int zero = 2048;//1540;                                       //whatever the zero value is for the PID analogwrite setup
 const unsigned int which_leg_pin = WHICH_LEG_PIN;
 
-// if digital read
-//const unsigned int pin_err_LL = 20;
-//const unsigned int pin_err_RL = 21;
-// if analog read
-
-const unsigned int pin_err_LL = MOTOR_ERROR_LEFT_ANKLE_PIN;
-const unsigned int pin_err_RL = MOTOR_ERROR_RIGHT_ANKLE_PIN;
-
 //Includes the SoftwareSerial library to be able to use the bluetooth Serial Communication
 int bluetoothTx = 0;                                                 // TX-O pin of bluetooth mate, Teensy D0
 int bluetoothRx = 1;                                                 // RX-I pin of bluetooth mate, Teensy D1
 SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an object named bluetooth to act as a serial port
 
-double store_KF_LL = 0;
-double store_KF_RL = 0;
-
 void setup()
 {
-
-
-
   // set the interrupt
   Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
   Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
@@ -137,6 +91,9 @@ void setup()
   Serial.begin(115200);
   //while (!Serial) {};
 
+  initialize_left_leg(left_leg);
+  initialize_right_leg(right_leg);
+
   analogWriteResolution(12);                                          //change resolution to 12 bits
   analogReadResolution(12);                                           //ditto
 
@@ -147,11 +104,11 @@ void setup()
   pinMode(onoff, OUTPUT); //Enable disable the motors
   digitalWrite(onoff, LOW);
 
-  //  pinMode(pin_err_LL, INPUT);
-  //  pinMode(pin_err_RL, INPUT);
+  //  pinMode(left_leg->pin_err, INPUT);
+  //  pinMode(right_leg->pin_err, INPUT);
 
-  pinMode(pin_err_LL, INPUT);
-  pinMode(pin_err_RL, INPUT);
+  pinMode(left_leg->pin_err, INPUT);
+  pinMode(right_leg->pin_err, INPUT);
 
   pinMode(TORQUE_SENSOR_LEFT_ANKLE_PIN, INPUT); //enable the torque reading of the left torque sensor
   pinMode(TORQUE_SENSOR_RIGHT_ANKLE_PIN, INPUT); //enable the torque reading of the right torque sensor
@@ -161,26 +118,26 @@ void setup()
   analogWrite(MOTOR_RIGHT_ANKLE_PIN, zero);
 
   //  Left PID
-  PID_LL.SetMode(AUTOMATIC);
-  PID_LL.SetTunings(kp_LL, ki_LL, kd_LL);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
-  PID_LL.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
-  PID_LL.SetSampleTime(PID_sample_time);                              //what is the sample time we want in millis
+  left_leg->pid.SetMode(AUTOMATIC);
+  left_leg->pid.SetTunings(left_leg->kp, left_leg->ki, left_leg->kd);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
+  left_leg->pid.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
+  left_leg->pid.SetSampleTime(PID_sample_time);                              //what is the sample time we want in millis
 
   //  Right PID
-  PID_RL.SetMode(AUTOMATIC);
-  PID_RL.SetTunings(kp_RL, ki_RL, kd_RL);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
-  PID_RL.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
-  PID_RL.SetSampleTime(PID_sample_time);                              //what is the sample time we want in millis
+  right_leg->pid.SetMode(AUTOMATIC);
+  right_leg->pid.SetTunings(right_leg->kp, right_leg->ki, right_leg->kd);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
+  right_leg->pid.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
+  right_leg->pid.SetSampleTime(PID_sample_time);                              //what is the sample time we want in millis
 
   // Fast torque calibration
   torque_calibration();
 
-  L_p_steps->fsr_Toe = fsr_sense_Left_Toe;
-  R_p_steps->fsr_Toe = fsr_sense_Right_Toe;
+  left_leg->p_steps->fsr_Toe = left_leg->fsr_sense_Toe;
+  right_leg->p_steps->fsr_Toe = right_leg->fsr_sense_Toe;
 
 
-  //  p_FSR_Array_LL = &FSR_Average_LL_array[0];
-  //  p_FSR_Array_RL = &FSR_Average_RL_array[0];
+  //  left_leg->p_FSR_Array = &left_leg->FSR_Average_array[0];
+  //  right_leg->p_FSR_Array = &right_leg->FSR_Average_array[0];
   digitalWrite(LED_PIN, HIGH);
 
 }
@@ -192,21 +149,6 @@ int flag_13 = 1;
 int flag_count = 0;
 
 int flag_semaphore = 0;
-
-
-double previous_curr_voltage_LL ;
-double previous_curr_voltage_RL ;
-double previous_torque_average_LL ;
-double previous_torque_average_RL ;
-
-volatile double Average_Volt_LL;
-volatile double Average_Volt_RL;
-volatile double Average_Volt_LL_Heel;
-volatile double Average_Volt_RL_Heel;
-volatile double Average_Trq_LL;
-volatile double Average_Trq_RL;
-volatile double Combined_Average_LL;
-volatile double Combined_Average_RL;
 
 volatile double motor_driver_count_err;
 
@@ -249,14 +191,14 @@ void loop()
 
   if (stream != 1)
   {
-   reset_starting_parameters();
+    reset_starting_parameters();
   }// End else
 }
 
 void resetMotorIfError() {
   //motor_error true I have an error, false I haven't
 
-  motor_error = ((analogRead(pin_err_LL) <= 5) || (analogRead(pin_err_RL) <= 5));
+  motor_error = ((analogRead(left_leg->pin_err) <= 5) || (analogRead(right_leg->pin_err) <= 5));
 
   if (stream == 1) {
 
@@ -298,57 +240,57 @@ void calculate_averages() {
   //Shift the arrays
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-    *(TarrayPoint_LL + j) = *(TarrayPoint_LL + j - 1);                //Puts the element in the following memory space into the current memory space
-    *(TarrayPoint_RL + j) = *(TarrayPoint_RL + j - 1);
+    *(left_leg->TarrayPoint + j) = *(left_leg->TarrayPoint + j - 1);                //Puts the element in the following memory space into the current memory space
+    *(right_leg->TarrayPoint + j) = *(right_leg->TarrayPoint + j - 1);
   }
 
   //Get the torques
-  *(TarrayPoint_LL) = get_LL_torq();
-  *(TarrayPoint_RL) = get_RL_torq();
+  *(left_leg->TarrayPoint) = get_LL_torq();
+  *(right_leg->TarrayPoint) = get_RL_torq();
 
   //  noInterrupts();
-  FSR_Average_LL = 0;
-  FSR_Average_RL = 0;
-  FSR_Average_LL_Heel = 0;
-  FSR_Average_RL_Heel = 0;
-  Average_LL = 0;
-  Average_RL = 0;
+  left_leg->FSR_Average = 0;
+  right_leg->FSR_Average = 0;
+  left_leg->FSR_Average_Heel = 0;
+  right_leg->FSR_Average_Heel = 0;
+  left_leg->Average = 0;
+  right_leg->Average = 0;
 
   for (int i = 0; i < dim_FSR; i++)
   {
 
     if (i < dim)
     {
-      Average_LL =  Average_LL + *(TarrayPoint_LL + i);
-      Average_RL =  Average_RL + *(TarrayPoint_RL + i);
-      //        Average_RL =  Average_RL + *(TarrayPoint_RL + i);
+      left_leg->Average =  left_leg->Average + *(left_leg->TarrayPoint + i);
+      right_leg->Average =  right_leg->Average + *(right_leg->TarrayPoint + i);
+      //        right_leg->Average =  right_leg->Average + *(right_leg->TarrayPoint + i);
     }
   }
 
   // if not filtering the FSR anymore
-  FSR_Average_LL = fsr(fsr_sense_Left_Toe);
-  Average_Volt_LL = FSR_Average_LL;
+  left_leg->FSR_Average = fsr(left_leg->fsr_sense_Toe);
+  left_leg->Average_Volt = left_leg->FSR_Average;
 
-  FSR_Average_LL_Heel = fsr(fsr_sense_Left_Heel);
-  Average_Volt_LL_Heel = FSR_Average_LL_Heel;
+  left_leg->FSR_Average_Heel = fsr(left_leg->fsr_sense_Heel);
+  left_leg->Average_Volt_Heel = left_leg->FSR_Average_Heel;
 
-  FSR_Average_RL = fsr(fsr_sense_Right_Toe);
-  Average_Volt_RL = FSR_Average_RL;
+  right_leg->FSR_Average = fsr(right_leg->fsr_sense_Toe);
+  right_leg->Average_Volt = right_leg->FSR_Average;
 
-  FSR_Average_RL_Heel = fsr(fsr_sense_Right_Heel);
-  Average_Volt_RL_Heel = FSR_Average_RL_Heel;
+  right_leg->FSR_Average_Heel = fsr(right_leg->fsr_sense_Heel);
+  right_leg->Average_Volt_Heel = right_leg->FSR_Average_Heel;
 
-  Combined_Average_LL = (FSR_Average_LL + FSR_Average_LL_Heel);
-  Combined_Average_RL = (FSR_Average_RL + FSR_Average_RL_Heel);
+  left_leg->Combined_Average = (left_leg->FSR_Average + left_leg->FSR_Average_Heel);
+  right_leg->Combined_Average = (right_leg->FSR_Average + right_leg->FSR_Average_Heel);
 
-  Average_Trq_LL = Average_LL / dim;
-  Average_Trq_RL = Average_RL / dim;
+  left_leg->Average_Trq = left_leg->Average / dim;
+  right_leg->Average_Trq = right_leg->Average / dim;
 
-  L_p_steps->curr_voltage = Combined_Average_LL;
-  R_p_steps->curr_voltage = Combined_Average_RL;
+  left_leg->p_steps->curr_voltage = left_leg->Combined_Average;
+  right_leg->p_steps->curr_voltage = right_leg->Combined_Average;
 
-  L_p_steps->torque_average = Average_LL / dim;
-  R_p_steps->torque_average = Average_RL / dim;
+  left_leg->p_steps->torque_average = left_leg->Average / dim;
+  right_leg->p_steps->torque_average = right_leg->Average / dim;
 
 }
 
@@ -358,11 +300,11 @@ void check_FSR_calibration() {
     FSR_calibration();
   }
 
-  if (FSR_baseline_FLAG_Right) {
-    take_baseline(R_state, R_state_old, R_p_steps, p_FSR_baseline_FLAG_Right);
+  if (right_leg->FSR_baseline_FLAG) {
+    take_baseline(right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);
   }
-  if (FSR_baseline_FLAG_Left) {
-    take_baseline(L_state, L_state_old, L_p_steps, p_FSR_baseline_FLAG_Left);
+  if (left_leg->FSR_baseline_FLAG) {
+    take_baseline(left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
   }
 
 }
@@ -381,60 +323,60 @@ void rotate_motor() {
 
     streamTimerCount++;
 
-    pid(Average_Trq_LL, 1);
-    pid(Average_Trq_RL, 2);
+    pid(left_leg->Average_Trq, 1);
+    pid(right_leg->Average_Trq, 2);
 
     state_machine_LL();  //for LL
     state_machine_RL();  //for RL
 
     set_2_zero_if_steady_state();
 
-    N3_LL = Ctrl_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL, p_Setpoint_Ankle_LL_Pctrl, Trq_time_volt, L_Prop_Gain, FSR_baseline_FLAG_Left);
-    N3_RL = Ctrl_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL, p_Setpoint_Ankle_RL_Pctrl, Trq_time_volt, R_Prop_Gain, FSR_baseline_FLAG_Right);
+    left_leg->N3 = Ctrl_ADJ(left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle, left_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, left_leg->Prop_Gain, left_leg->FSR_baseline_FLAG);
+    right_leg->N3 = Ctrl_ADJ(right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle, right_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, right_leg->Prop_Gain, right_leg->FSR_baseline_FLAG);
   }
 }
 
-void reset_starting_parameters(){
- //Reset the starting values
-    L_p_steps->count_plant = 0;
-    L_p_steps->n_steps = 0;
-    L_p_steps->flag_start_plant = false;
-    L_p_steps->flag_take_average = false;
-    L_p_steps->flag_N3_adjustment_time = false;
-    L_p_steps->flag_take_baseline = false;
-    L_p_steps->torque_adj = false;
+void reset_starting_parameters() {
+  //Reset the starting values
+  left_leg->p_steps->count_plant = 0;
+  left_leg->p_steps->n_steps = 0;
+  left_leg->p_steps->flag_start_plant = false;
+  left_leg->p_steps->flag_take_average = false;
+  left_leg->p_steps->flag_N3_adjustment_time = false;
+  left_leg->p_steps->flag_take_baseline = false;
+  left_leg->p_steps->torque_adj = false;
 
-    R_p_steps->count_plant = 0;
-    R_p_steps->n_steps = 0;
-    R_p_steps->flag_start_plant = false;
-    R_p_steps->flag_take_average = false;
-    R_p_steps->flag_N3_adjustment_time = false;
-    R_p_steps->flag_take_baseline = false;
-    R_p_steps->torque_adj = false;
+  right_leg->p_steps->count_plant = 0;
+  right_leg->p_steps->n_steps = 0;
+  right_leg->p_steps->flag_start_plant = false;
+  right_leg->p_steps->flag_take_average = false;
+  right_leg->p_steps->flag_N3_adjustment_time = false;
+  right_leg->p_steps->flag_take_baseline = false;
+  right_leg->p_steps->torque_adj = false;
 
-    N3_LL = N3;
-    N2_LL = N2;
-    N1_LL = N1;
+  left_leg->N3 = N3;
+  left_leg->N2 = N2;
+  left_leg->N1 = N1;
 
-    N3_RL = N3;
-    N2_RL = N2;
-    N1_RL = N1;
+  right_leg->N3 = N3;
+  right_leg->N2 = N2;
+  right_leg->N1 = N1;
 
-    L_p_steps->perc_l = 0.5;
-    R_p_steps->perc_l = 0.5;
+  left_leg->p_steps->perc_l = 0.5;
+  right_leg->p_steps->perc_l = 0.5;
 
-    L_activate_in_3_steps = 1;
-    R_activate_in_3_steps = 1;
+  left_leg->activate_in_3_steps = 1;
+  right_leg->activate_in_3_steps = 1;
 
-    Previous_Setpoint_Ankle_LL = 0;
-    Previous_Setpoint_Ankle_RL = 0;
-    R_coef_in_3_steps = 0;
-    R_num_3_steps = 0;
-    L_coef_in_3_steps = 0;
-    L_num_3_steps = 0;
+  left_leg->Previous_Setpoint_Ankle = 0;
+  right_leg->Previous_Setpoint_Ankle = 0;
+  right_leg->coef_in_3_steps = 0;
+  right_leg->num_3_steps = 0;
+  left_leg->coef_in_3_steps = 0;
+  left_leg->num_3_steps = 0;
 
-    R_1st_step = 1;
-    L_1st_step = 1;
+  right_leg->first_step = 1;
+  left_leg->first_step = 1;
 
 
 }

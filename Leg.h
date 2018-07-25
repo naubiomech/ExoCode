@@ -35,7 +35,7 @@ struct Leg {
   volatile double Average_Volt;
   volatile double Average_Volt_Heel;
   volatile double Average_Trq;
-  volatile double Combine_Average;
+  volatile double Combined_Average;
 
   // Auto_KF.h
   double ERR;
@@ -71,6 +71,7 @@ struct Leg {
 
   // PID_and_Ctrl_Parameters.h
   double Tcal = 0;
+  double Tcal_val;
   double T_act;
   int Vol;
   double kp = 800;
@@ -95,8 +96,8 @@ struct Leg {
   double flag_1 = 0;
   double time_old_state;
 
-  double activate_in_3_step = 0;
-  double lst_step = 1;
+  double activate_in_3_steps = 0;
+  double first_step = 1;
   double coef_in_3_steps = 0;
   double start_step = 0;
   double num_3_steps = 0;
@@ -110,6 +111,7 @@ struct Leg {
   // Shaping_Parameters.h
   double exp_mult = 1500.0;
   boolean sigm_flag = true;
+  boolean sigm_done;
 
   double New_PID_Setpoint = 0.0;
   double Old_PID_Setpoint = 0.0;
@@ -138,13 +140,33 @@ struct Leg {
   double start_time = 0;
 
   
-    // Torque_Speed_ADJ.h
-    //steps steps;
-    steps* p_steps;
+  // Torque_Speed_ADJ.h
+  //steps steps;
+  steps* p_steps;
   
 };
+
 Leg left_leg_value = Leg();
 Leg right_leg_value = Leg();
 Leg* left_leg = &left_leg_value;
 Leg* right_leg = &right_leg_value;
+
+void initialize_left_leg(Leg* left_leg){
+  left_leg->pin_err = MOTOR_ERROR_LEFT_ANKLE_PIN;
+  left_leg->fsr_sense_Heel = FSR_SENSE_LEFT_HEEL_PIN;
+  left_leg->fsr_sense_Toe = FSR_SENSE_LEFT_TOE_PIN;
+  left_leg->address_torque = 0;
+  left_leg->address_FSR = 18;
+  left_leg->p_steps = &val_L;
+}
+
+void initialize_right_leg(Leg* right_leg){
+	right_leg->pin_err = MOTOR_ERROR_RIGHT_ANKLE_PIN;
+	right_leg->fsr_sense_Heel = FSR_SENSE_RIGHT_HEEL_PIN;
+	right_leg->fsr_sense_Toe = FSR_SENSE_RIGHT_TOE_PIN;
+  right_leg->address_torque = 9;
+  right_leg->address_FSR = 36;
+  right_leg->p_steps = &val_R;
+}
+
 #endif

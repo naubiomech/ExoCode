@@ -2,19 +2,19 @@ void Update_Averages() {
 
   for (int j = dim_FSR - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-    *(p_FSR_Array_LL + j) = *(p_FSR_Array_LL + j - 1);                //Puts the element in the following memory space into the current memory space
-    *(p_FSR_Array_RL + j) = *(p_FSR_Array_RL + j - 1);
+    *(left_leg->p_FSR_Array + j) = *(left_leg->p_FSR_Array + j - 1);                //Puts the element in the following memory space into the current memory space
+    *(right_leg->p_FSR_Array + j) = *(right_leg->p_FSR_Array + j - 1);
 
-    *(p_FSR_Array_LL_Heel + j) = *(p_FSR_Array_LL_Heel + j - 1);                //Puts the element in the following memory space into the current memory space
-    *(p_FSR_Array_RL_Heel + j) = *(p_FSR_Array_RL_Heel + j - 1);
+    *(left_leg->p_FSR_Array_Heel + j) = *(left_leg->p_FSR_Array_Heel + j - 1);                //Puts the element in the following memory space into the current memory space
+    *(right_leg->p_FSR_Array_Heel + j) = *(right_leg->p_FSR_Array_Heel + j - 1);
   }
 
   //Get the FSR
-  *(p_FSR_Array_LL) = fsr(fsr_sense_Left_Toe);
-  *(p_FSR_Array_RL) = fsr(fsr_sense_Right_Toe);
+  *(left_leg->p_FSR_Array) = fsr(left_leg->fsr_sense_Toe);
+  *(right_leg->p_FSR_Array) = fsr(right_leg->fsr_sense_Toe);
 
-  *(p_FSR_Array_LL_Heel) = fsr(fsr_sense_Left_Heel);
-  *(p_FSR_Array_RL_Heel) = fsr(fsr_sense_Right_Heel);
+  *(left_leg->p_FSR_Array_Heel) = fsr(left_leg->fsr_sense_Heel);
+  *(right_leg->p_FSR_Array_Heel) = fsr(right_leg->fsr_sense_Heel);
 
 
   //Calc the average value of Torque
@@ -22,49 +22,49 @@ void Update_Averages() {
   //Shift the arrays
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-    *(TarrayPoint_LL + j) = *(TarrayPoint_LL + j - 1);                //Puts the element in the following memory space into the current memory space
-    *(TarrayPoint_RL + j) = *(TarrayPoint_RL + j - 1);
+    *(left_leg->TarrayPoint + j) = *(left_leg->TarrayPoint + j - 1);                //Puts the element in the following memory space into the current memory space
+    *(right_leg->TarrayPoint + j) = *(right_leg->TarrayPoint + j - 1);
   }
 
   //Get the torques
-  *(TarrayPoint_LL) = get_LL_torq();
-  *(TarrayPoint_RL) = get_RL_torq();
+  *(left_leg->TarrayPoint) = get_LL_torq();
+  *(right_leg->TarrayPoint) = get_RL_torq();
 
   //  noInterrupts();
-  FSR_Average_LL = 0;
-  FSR_Average_RL = 0;
-  FSR_Average_LL_Heel = 0;
-  FSR_Average_RL_Heel = 0;
-  Average_LL = 0;
-  Average_RL = 0;
+  left_leg->FSR_Average = 0;
+  right_leg->FSR_Average = 0;
+  left_leg->FSR_Average_Heel = 0;
+  right_leg->FSR_Average_Heel = 0;
+  left_leg->Average = 0;
+  right_leg->Average = 0;
 
   for (int i = 0; i < dim_FSR; i++)
   {
-    FSR_Average_LL = FSR_Average_LL + *(p_FSR_Array_LL + i);
-    FSR_Average_RL = FSR_Average_RL + *(p_FSR_Array_RL + i);
+    left_leg->FSR_Average = left_leg->FSR_Average + *(left_leg->p_FSR_Array + i);
+    right_leg->FSR_Average = right_leg->FSR_Average + *(right_leg->p_FSR_Array + i);
 
-    FSR_Average_LL_Heel = FSR_Average_LL_Heel + *(p_FSR_Array_LL_Heel + i);
-    FSR_Average_RL_Heel = FSR_Average_RL_Heel + *(p_FSR_Array_RL_Heel + i);
+    left_leg->FSR_Average_Heel = left_leg->FSR_Average_Heel + *(left_leg->p_FSR_Array_Heel + i);
+    right_leg->FSR_Average_Heel = right_leg->FSR_Average_Heel + *(right_leg->p_FSR_Array_Heel + i);
 
     if (i < dim)
     {
-      Average_LL =  Average_LL + *(TarrayPoint_LL + i);
-      Average_RL =  Average_RL + *(TarrayPoint_RL + i);
+      left_leg->Average =  left_leg->Average + *(left_leg->TarrayPoint + i);
+      right_leg->Average =  right_leg->Average + *(right_leg->TarrayPoint + i);
     }
   }
 
-  Average_Volt_LL = FSR_Average_LL / dim_FSR;
-  Average_Volt_RL = FSR_Average_RL / dim_FSR;
+  left_leg->Average_Volt = left_leg->FSR_Average / dim_FSR;
+  right_leg->Average_Volt = right_leg->FSR_Average / dim_FSR;
 
-  Average_Volt_LL_Heel = FSR_Average_LL_Heel / dim_FSR;
-  Average_Volt_RL_Heel = FSR_Average_RL_Heel / dim_FSR;
+  left_leg->Average_Volt_Heel = left_leg->FSR_Average_Heel / dim_FSR;
+  right_leg->Average_Volt_Heel = right_leg->FSR_Average_Heel / dim_FSR;
 
-  Average_Trq_LL = Average_LL / dim;
-  Average_Trq_RL = Average_RL / dim;
+  left_leg->Average_Trq = left_leg->Average / dim;
+  right_leg->Average_Trq = right_leg->Average / dim;
 
-  L_p_steps->curr_voltage = (FSR_Average_LL + FSR_Average_LL_Heel) / dim_FSR;
-  R_p_steps->curr_voltage = (FSR_Average_RL + FSR_Average_RL_Heel) / dim_FSR;
-  L_p_steps->torque_average = Average_LL / dim;
-  R_p_steps->torque_average = Average_RL / dim;
+  left_leg->p_steps->curr_voltage = (left_leg->FSR_Average + left_leg->FSR_Average_Heel) / dim_FSR;
+  right_leg->p_steps->curr_voltage = (right_leg->FSR_Average + right_leg->FSR_Average_Heel) / dim_FSR;
+  left_leg->p_steps->torque_average = left_leg->Average / dim;
+  right_leg->p_steps->torque_average = right_leg->Average / dim;
 
 }
