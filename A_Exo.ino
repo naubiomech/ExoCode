@@ -224,11 +224,11 @@ void callback()//executed every 2ms
 
   resetMotorIfError();
 
-  calculateAverages();
+  calculate_averages();
 
-  checkFSRCalibration();
+  check_FSR_calibration();
 
-  rotateMotor();
+  rotate_motor();
 
 }// end callback
 
@@ -250,7 +250,7 @@ void loop()
 
   if (stream != 1)
   {
-   resetStartingParameters();
+   reset_starting_parameters();
   }// End else
 }
 
@@ -293,7 +293,7 @@ void resetMotorIfError() {
   }//end stream==1
 }
 
-void calculateAverages() {
+void calculate_averages() {
   //Calc the average value of Torque
 
   //Shift the arrays
@@ -353,7 +353,7 @@ void calculateAverages() {
 
 }
 
-void checkFSRCalibration() {
+void check_FSR_calibration() {
 
   if (FSR_CAL_FLAG) {
     FSR_calibration();
@@ -368,7 +368,7 @@ void checkFSRCalibration() {
 
 }
 
-void rotateMotor() {
+void rotate_motor() {
   if (stream == 1)
   {
     if (streamTimerCount >= 5)
@@ -395,7 +395,7 @@ void rotateMotor() {
   }
 }
 
-void resetStartingParameters(){
+void reset_starting_parameters(){
  //Reset the starting values
     L_p_steps->count_plant = 0;
     L_p_steps->n_steps = 0;
