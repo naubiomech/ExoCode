@@ -26,7 +26,9 @@
 
 #define TWO_LEG_BOARD
 
-const int dim_FSR = 30;
+#include "Board.h"
+#include "Leg.h"
+
 double FSR_Average_RL_array[dim_FSR] = {0};
 double * p_FSR_Array_RL = &FSR_Average_RL_array[0];
 double FSR_Average_RL = 0;
@@ -37,7 +39,6 @@ double * p_FSR_Array_LL = &FSR_Average_LL_array[0];
 double FSR_Average_LL = 0;
 double Curr_FSR_LL = 0;
 
-//const int dim_FSR = 30;
 double FSR_Average_RL_array_Heel[dim_FSR] = {0};
 double * p_FSR_Array_RL_Heel = &FSR_Average_RL_array_Heel[0];
 double FSR_Average_RL_Heel = 0;
@@ -48,7 +49,6 @@ double * p_FSR_Array_LL_Heel = &FSR_Average_LL_array_Heel[0];
 double FSR_Average_LL_Heel = 0;
 double Curr_FSR_LL_Heel = 0;
 
-const int dim = 5;
 double Tarray_LL[dim] = {0};
 double * TarrayPoint_LL = &Tarray_LL[0];
 double Average_LL = 0;
@@ -60,13 +60,12 @@ double Average_RL = 0;
 double R_sign = 1;
 double L_sign = 1;
 
-#include "Board.h"
 #include <elapsedMillis.h>
 #include <EEPROM.h>
 #include "TimerOne.h"
 #include <PID_v2.h>
 #include <SoftwareSerial.h>
-#include "Torque_Speed_ADJ.h"
+// #include "Torque_Speed_ADJ.h"
 #include "Memory_address.h"
 #include "Shaping_Parameters.h"
 #include "FSR_Parameters.h"
