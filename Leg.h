@@ -71,7 +71,6 @@ struct Leg {
 
   // PID_and_Ctrl_Parameters.h
   double Tcal = 0;
-  double Tcal_val;
   double T_act;
   int Vol;
   double kp = 800;
