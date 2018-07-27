@@ -7,8 +7,10 @@ const int dim = 5;
 #include "Torque_Speed_ADJ.h"
 
 struct Leg {
+  int torque_sensor_ankle_pin;
+  int motor_ankle_pin;
   // In A_Exo pre-includes
-  double FSR_Average_array[dim_FSR] = {0};
+	double FSR_Average_array[dim_FSR] = {0};
   double* p_FSR_Array = &FSR_Average_array[0];
   double FSR_Average = 0;
   double Curr_FSR = 0;
@@ -157,6 +159,8 @@ void initialize_left_leg(Leg* left_leg){
   left_leg->address_torque = 0;
   left_leg->address_FSR = 18;
   left_leg->p_steps = &val_L;
+  left_leg->torque_sensor_ankle_pin = TORQUE_SENSOR_LEFT_ANKLE_PIN;
+  left_leg->motor_ankle_pin = MOTOR_LEFT_ANKLE_PIN;
 }
 
 void initialize_right_leg(Leg* right_leg){
@@ -166,6 +170,8 @@ void initialize_right_leg(Leg* right_leg){
   right_leg->address_torque = 9;
   right_leg->address_FSR = 36;
   right_leg->p_steps = &val_R;
+  right_leg->torque_sensor_ankle_pin = TORQUE_SENSOR_RIGHT_ANKLE_PIN;
+  right_leg->motor_ankle_pin = MOTOR_RIGHT_ANKLE_PIN;
 }
 
 #endif
