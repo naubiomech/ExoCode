@@ -29,6 +29,8 @@ const unsigned int WHICH_LEG_PIN = 15;
 
 const unsigned int MOTOR_ERROR_LEFT_ANKLE_PIN = 6;
 const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = 7;
+
+const i2c_pins IMU_1_PINS = IMU_SLOT_2_PINS;
 #endif
 
 #ifdef TWO_LEG_BOARD
