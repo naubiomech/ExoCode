@@ -78,18 +78,10 @@ SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an 
 
 void setup()
 {
-  // set the interrupt
-  Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
-  Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
-  Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
-  //  Timer2.initialize(2000);
-
-  //  Timer2.initialize(2000);
 
   // enable bluetooth
   bluetooth.begin(115200);
   Serial.begin(115200);
-  //while (!Serial) {};
 
   initialize_left_leg(left_leg);
   initialize_right_leg(right_leg);
@@ -139,7 +131,11 @@ void setup()
   //  left_leg->p_FSR_Array = &left_leg->FSR_Average_array[0];
   //  right_leg->p_FSR_Array = &right_leg->FSR_Average_array[0];
   digitalWrite(LED_PIN, HIGH);
-
+  
+  // set the interrupt
+  Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
+  Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
+  Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
 }
 
 
