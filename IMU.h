@@ -16,4 +16,7 @@ const double stability_trq_gain = 1.0;
 Adafruit_BNO055 bno = Adafruit_BNO055(WIRE_BUS, 1, BNO055_ADDRESS_A, I2C_MASTER, IMU_1_PINS, I2C_PULLUP_EXT, I2C_RATE_100, I2C_OP_MODE_ISR);
 
 bool IMU_flag;
+
+void calibrateIMU(Adafruit_BNO055 bno);
+
 #endif

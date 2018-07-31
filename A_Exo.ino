@@ -89,10 +89,10 @@ void setup()
   if (!bno.begin())
   {
     Serial.println("No IMU detected haulting...");
-    while (1);
-  }
-  Serial.println("IMU setup");
+  } else {
 
+    //calibrateIMU(bno);
+  }
 
   initialize_left_leg(left_leg);
   initialize_right_leg(right_leg);
@@ -147,6 +147,7 @@ void setup()
   Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
   Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
   Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
+
 }
 
 
@@ -340,6 +341,8 @@ void rotate_motor() {
       Auto_KF();
 
     streamTimerCount++;
+
+
 
     pid(left_leg->Average_Trq, 1);
     pid(right_leg->Average_Trq, 2);
