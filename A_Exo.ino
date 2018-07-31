@@ -50,6 +50,7 @@
 #include "IMU.h"
 
 Metro slowThisDown = Metro(1);  // Set the function to be called at no faster a rate than once per millisecond
+Metro BnoControl = Metro(10);
 
 //To interrupt and to schedule we take advantage of the
 elapsedMillis timeElapsed;
@@ -193,7 +194,18 @@ void loop()
     slowThisDown.reset();     //Resets the interval
   }
 
+  if (BnoControl.check()) {
+    Serial.println("Vector: ");
+    euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
 
+    Serial.print("X: ");
+    Serial.print(euler.x(), 4);
+    Serial.print("\tY: ");
+    Serial.print(euler.y(), 4);
+    Serial.print("\tZ: ");
+    Serial.print(euler.z(), 4);
+    Serial.println();
+  }
 
   if (stream != 1)
   {
