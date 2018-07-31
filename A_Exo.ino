@@ -24,7 +24,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
-#define TWO_LEG_BOARD
+#define IMU_BOARD
 
 #include "Board.h"
 #include "Leg.h"
@@ -47,7 +47,7 @@
 #include "Auto_KF.h"
 #include "Combined_FSR.h"
 #include <Metro.h> // Include the Metro library
-
+#include "IMU.h"
 
 Metro slowThisDown = Metro(1);  // Set the function to be called at no faster a rate than once per millisecond
 
@@ -82,6 +82,16 @@ void setup()
   // enable bluetooth
   bluetooth.begin(115200);
   Serial.begin(115200);
+
+  Serial.println("Starting");
+
+  if (!bno.begin())
+  {
+    Serial.println("No IMU detected haulting...");
+    while (1);
+  }
+  Serial.println("IMU setup");
+
 
   initialize_left_leg(left_leg);
   initialize_right_leg(right_leg);
@@ -131,7 +141,7 @@ void setup()
   //  left_leg->p_FSR_Array = &left_leg->FSR_Average_array[0];
   //  right_leg->p_FSR_Array = &right_leg->FSR_Average_array[0];
   digitalWrite(LED_PIN, HIGH);
-  
+
   // set the interrupt
   Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
   Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
@@ -158,7 +168,7 @@ bool motor_error = true;
 
 void callback()//executed every 2ms
 {
-
+  
   resetMotorIfError();
 
   calculate_averages();
