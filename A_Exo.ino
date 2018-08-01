@@ -295,11 +295,11 @@ void rotate_motor() {
 
     streamTimerCount++;
 
-    pid(left_leg->Average_Trq, 1);
-    pid(right_leg->Average_Trq, 2);
+    pid(left_leg, left_leg->Average_Trq);
+    pid(right_leg, right_leg->Average_Trq);
 
-    state_machine_LL();  //for LL
-    state_machine_RL();  //for RL
+    state_machine(left_leg);  //for LL
+    state_machine(right_leg);  //for RL
 
     set_2_zero_if_steady_state();
 
