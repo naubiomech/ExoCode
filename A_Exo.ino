@@ -25,6 +25,8 @@
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
 #define TWO_LEG_BOARD
+                                  //The digital pin connected to the motor on/off swich
+const unsigned int zero = 2048;//1540;  
 
 #include "Board.h"
 #include "Leg.h"
@@ -67,8 +69,7 @@ int cmd_from_Gui = 0;
 const unsigned int onoff = MOTOR_ENABLE_PIN;
 
 // Single board SQuare (big)
-//const unsigned int onoff = 17;                                          //The digital pin connected to the motor on/off swich
-const unsigned int zero = 2048;//1540;                                       //whatever the zero value is for the PID analogwrite setup
+//const unsigned int onoff = 17;                                             //whatever the zero value is for the PID analogwrite setup
 const unsigned int which_leg_pin = WHICH_LEG_PIN;
 
 //Includes the SoftwareSerial library to be able to use the bluetooth Serial Communication
@@ -104,37 +105,8 @@ void setup()
   pinMode(onoff, OUTPUT); //Enable disable the motors
   digitalWrite(onoff, LOW);
 
-  //  pinMode(left_leg->pin_err, INPUT);
-  //  pinMode(right_leg->pin_err, INPUT);
-
-  pinMode(left_leg->pin_err, INPUT);
-  pinMode(right_leg->pin_err, INPUT);
-
-  pinMode(TORQUE_SENSOR_LEFT_ANKLE_PIN, INPUT); //enable the torque reading of the left torque sensor
-  pinMode(TORQUE_SENSOR_RIGHT_ANKLE_PIN, INPUT); //enable the torque reading of the right torque sensor
-
-  //change the origin of the motor
-  analogWrite(MOTOR_LEFT_ANKLE_PIN, zero);
-  analogWrite(MOTOR_RIGHT_ANKLE_PIN, zero);
-
-  //  Left PID
-  left_leg->pid.SetMode(AUTOMATIC);
-  left_leg->pid.SetTunings(left_leg->kp, left_leg->ki, left_leg->kd);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
-  left_leg->pid.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
-  left_leg->pid.SetSampleTime(PID_sample_time);                              //what is the sample time we want in millis
-
-  //  Right PID
-  right_leg->pid.SetMode(AUTOMATIC);
-  right_leg->pid.SetTunings(right_leg->kp, right_leg->ki, right_leg->kd);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
-  right_leg->pid.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
-  right_leg->pid.SetSampleTime(PID_sample_time);                              //what is the sample time we want in millis
-
   // Fast torque calibration
   torque_calibration();
-
-  left_leg->p_steps->fsr_Toe = left_leg->fsr_sense_Toe;
-  right_leg->p_steps->fsr_Toe = right_leg->fsr_sense_Toe;
-
 
   //  left_leg->p_FSR_Array = &left_leg->FSR_Average_array[0];
   //  right_leg->p_FSR_Array = &right_leg->FSR_Average_array[0];
