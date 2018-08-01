@@ -206,64 +206,48 @@ void resetMotorIfError() {
   }//end stream==1
 }
 
-void calculate_averages() {
+void calculate_leg_average(Leg* leg) {
   //Calc the average value of Torque
 
   //Shift the arrays
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-    *(left_leg->TarrayPoint + j) = *(left_leg->TarrayPoint + j - 1);                //Puts the element in the following memory space into the current memory space
-    *(right_leg->TarrayPoint + j) = *(right_leg->TarrayPoint + j - 1);
+    leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
   }
-
-  //Get the torques
-  *(left_leg->TarrayPoint) = get_LL_torq();
-  *(right_leg->TarrayPoint) = get_RL_torq();
-
-  //  noInterrupts();
-  left_leg->FSR_Average = 0;
-  right_leg->FSR_Average = 0;
-  left_leg->FSR_Average_Heel = 0;
-  right_leg->FSR_Average_Heel = 0;
-  left_leg->Average = 0;
-  right_leg->Average = 0;
+  //Get the torque
+  leg->TarrayPoint[0] = get_torq(leg);
+  leg->FSR_Average = 0;
+  leg->FSR_Average_Heel = 0;
+  leg->Average = 0;
 
   for (int i = 0; i < dim_FSR; i++)
   {
 
     if (i < dim)
     {
-      left_leg->Average =  left_leg->Average + *(left_leg->TarrayPoint + i);
-      right_leg->Average =  right_leg->Average + *(right_leg->TarrayPoint + i);
-      //        right_leg->Average =  right_leg->Average + *(right_leg->TarrayPoint + i);
+      leg->Average =  leg->Average + leg->TarrayPoint[i];
     }
   }
+  leg->FSR_Average = fsr(leg->fsr_sense_Toe);
+  leg->Average_Volt = leg->FSR_Average;
 
-  // if not filtering the FSR anymore
-  left_leg->FSR_Average = fsr(left_leg->fsr_sense_Toe);
-  left_leg->Average_Volt = left_leg->FSR_Average;
+  leg->FSR_Average_Heel = fsr(leg->fsr_sense_Heel);
+  leg->Average_Volt_Heel = leg->FSR_Average_Heel;
 
-  left_leg->FSR_Average_Heel = fsr(left_leg->fsr_sense_Heel);
-  left_leg->Average_Volt_Heel = left_leg->FSR_Average_Heel;
 
-  right_leg->FSR_Average = fsr(right_leg->fsr_sense_Toe);
-  right_leg->Average_Volt = right_leg->FSR_Average;
+  leg->Combined_Average = (leg->FSR_Average + leg->FSR_Average_Heel);
 
-  right_leg->FSR_Average_Heel = fsr(right_leg->fsr_sense_Heel);
-  right_leg->Average_Volt_Heel = right_leg->FSR_Average_Heel;
+  leg->Average_Trq = leg->Average / dim;
 
-  left_leg->Combined_Average = (left_leg->FSR_Average + left_leg->FSR_Average_Heel);
-  right_leg->Combined_Average = (right_leg->FSR_Average + right_leg->FSR_Average_Heel);
+  leg->p_steps->curr_voltage = leg->Combined_Average;
 
-  left_leg->Average_Trq = left_leg->Average / dim;
-  right_leg->Average_Trq = right_leg->Average / dim;
+  leg->p_steps->torque_average = leg->Average / dim;
 
-  left_leg->p_steps->curr_voltage = left_leg->Combined_Average;
-  right_leg->p_steps->curr_voltage = right_leg->Combined_Average;
+}
 
-  left_leg->p_steps->torque_average = left_leg->Average / dim;
-  right_leg->p_steps->torque_average = right_leg->Average / dim;
-
+void calculate_averages() {
+  calculate_leg_average(left_leg);
+  calculate_leg_average(right_leg);
 }
 
 void check_FSR_calibration() {
