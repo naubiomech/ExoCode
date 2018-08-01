@@ -123,13 +123,13 @@ void setup()
   //  Left PID
   left_leg->pid.SetMode(AUTOMATIC);
   left_leg->pid.SetTunings(left_leg->kp, left_leg->ki, left_leg->kd);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
-  left_leg->pid.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
+  left_leg->pid.SetOutputLimits(-250, 250);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
   left_leg->pid.SetSampleTime(PID_sample_time);                              //what is the sample time we want in millis
 
   //  Right PID
   right_leg->pid.SetMode(AUTOMATIC);
   right_leg->pid.SetTunings(right_leg->kp, right_leg->ki, right_leg->kd);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
-  right_leg->pid.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
+  right_leg->pid.SetOutputLimits(-250, 250);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
   right_leg->pid.SetSampleTime(PID_sample_time);                              //what is the sample time we want in millis
 
   // Fast torque calibration
@@ -170,7 +170,7 @@ bool motor_error = true;
 
 void callback()//executed every 2ms
 {
-  
+
   resetMotorIfError();
 
   calculate_averages();
@@ -196,16 +196,8 @@ void loop()
   }
 
   if (BnoControl.check()) {
-    Serial.println("Vector: ");
     euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
-
-    Serial.print("X: ");
-    Serial.print(euler.x(), 4);
-    Serial.print("\tY: ");
-    Serial.print(euler.y(), 4);
-    Serial.print("\tZ: ");
-    Serial.print(euler.z(), 4);
-    Serial.println();
+    BnoControl.reset();
   }
 
   if (stream != 1)
@@ -343,9 +335,11 @@ void rotate_motor() {
     streamTimerCount++;
 
 
+    stability_trq = euler.z();
+    stability_trq *= -stability_trq_gain;
 
-    pid(left_leg->Average_Trq, 1);
-    pid(right_leg->Average_Trq, 2);
+    pid(stability_trq, 1);
+    pid(stability_trq, 2);
 
     state_machine_LL();  //for LL
     state_machine_RL();  //for RL
