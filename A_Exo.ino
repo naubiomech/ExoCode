@@ -25,8 +25,8 @@
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
 #define TWO_LEG_BOARD
-                                  //The digital pin connected to the motor on/off swich
-const unsigned int zero = 2048;//1540;  
+//The digital pin connected to the motor on/off swich
+const unsigned int zero = 2048;//1540;
 
 #include "Board.h"
 #include "Leg.h"
