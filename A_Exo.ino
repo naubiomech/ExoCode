@@ -290,8 +290,9 @@ void rotate_motor() {
 
     streamTimerCount++;
 
-    stability_trq = euler.z();
-    stability_trq *= -stability_trq_gain;
+    stability_trq = euler.z() - 90;
+	Serial.println(stability_trq);
+    stability_trq *= stability_trq_gain;
 
     pid(left_leg, stability_trq);
     pid(right_leg, stability_trq);
