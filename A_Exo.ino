@@ -25,6 +25,8 @@
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
 #define IMU_BOARD
+//The digital pin connected to the motor on/off swich
+const unsigned int zero = 2048;//1540;
 
 #include "Board.h"
 #include "Leg.h"
@@ -68,8 +70,7 @@ int cmd_from_Gui = 0;
 const unsigned int onoff = MOTOR_ENABLE_PIN;
 
 // Single board SQuare (big)
-//const unsigned int onoff = 17;                                          //The digital pin connected to the motor on/off swich
-const unsigned int zero = 2048;//1540;                                       //whatever the zero value is for the PID analogwrite setup
+//const unsigned int onoff = 17;                                             //whatever the zero value is for the PID analogwrite setup
 const unsigned int which_leg_pin = WHICH_LEG_PIN;
 
 //Includes the SoftwareSerial library to be able to use the bluetooth Serial Communication
@@ -107,37 +108,8 @@ void setup()
   pinMode(onoff, OUTPUT); //Enable disable the motors
   digitalWrite(onoff, LOW);
 
-  //  pinMode(left_leg->pin_err, INPUT);
-  //  pinMode(right_leg->pin_err, INPUT);
-
-  pinMode(left_leg->pin_err, INPUT);
-  pinMode(right_leg->pin_err, INPUT);
-
-  pinMode(TORQUE_SENSOR_LEFT_ANKLE_PIN, INPUT); //enable the torque reading of the left torque sensor
-  pinMode(TORQUE_SENSOR_RIGHT_ANKLE_PIN, INPUT); //enable the torque reading of the right torque sensor
-
-  //change the origin of the motor
-  analogWrite(MOTOR_LEFT_ANKLE_PIN, zero);
-  analogWrite(MOTOR_RIGHT_ANKLE_PIN, zero);
-
-  //  Left PID
-  left_leg->pid.SetMode(AUTOMATIC);
-  left_leg->pid.SetTunings(left_leg->kp, left_leg->ki, left_leg->kd);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
-  left_leg->pid.SetOutputLimits(-250, 250);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
-  left_leg->pid.SetSampleTime(PID_sample_time);                              //what is the sample time we want in millis
-
-  //  Right PID
-  right_leg->pid.SetMode(AUTOMATIC);
-  right_leg->pid.SetTunings(right_leg->kp, right_leg->ki, right_leg->kd);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
-  right_leg->pid.SetOutputLimits(-250, 250);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
-  right_leg->pid.SetSampleTime(PID_sample_time);                              //what is the sample time we want in millis
-
   // Fast torque calibration
   torque_calibration();
-
-  left_leg->p_steps->fsr_Toe = left_leg->fsr_sense_Toe;
-  right_leg->p_steps->fsr_Toe = right_leg->fsr_sense_Toe;
-
 
   //  left_leg->p_FSR_Array = &left_leg->FSR_Average_array[0];
   //  right_leg->p_FSR_Array = &right_leg->FSR_Average_array[0];
@@ -245,64 +217,48 @@ void resetMotorIfError() {
   }//end stream==1
 }
 
-void calculate_averages() {
+void calculate_leg_average(Leg* leg) {
   //Calc the average value of Torque
 
   //Shift the arrays
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-    *(left_leg->TarrayPoint + j) = *(left_leg->TarrayPoint + j - 1);                //Puts the element in the following memory space into the current memory space
-    *(right_leg->TarrayPoint + j) = *(right_leg->TarrayPoint + j - 1);
+    leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
   }
-
-  //Get the torques
-  *(left_leg->TarrayPoint) = get_LL_torq();
-  *(right_leg->TarrayPoint) = get_RL_torq();
-
-  //  noInterrupts();
-  left_leg->FSR_Average = 0;
-  right_leg->FSR_Average = 0;
-  left_leg->FSR_Average_Heel = 0;
-  right_leg->FSR_Average_Heel = 0;
-  left_leg->Average = 0;
-  right_leg->Average = 0;
+  //Get the torque
+  leg->TarrayPoint[0] = get_torq(leg);
+  leg->FSR_Average = 0;
+  leg->FSR_Average_Heel = 0;
+  leg->Average = 0;
 
   for (int i = 0; i < dim_FSR; i++)
   {
 
     if (i < dim)
     {
-      left_leg->Average =  left_leg->Average + *(left_leg->TarrayPoint + i);
-      right_leg->Average =  right_leg->Average + *(right_leg->TarrayPoint + i);
-      //        right_leg->Average =  right_leg->Average + *(right_leg->TarrayPoint + i);
+      leg->Average =  leg->Average + leg->TarrayPoint[i];
     }
   }
+  leg->FSR_Average = fsr(leg->fsr_sense_Toe);
+  leg->Average_Volt = leg->FSR_Average;
 
-  // if not filtering the FSR anymore
-  left_leg->FSR_Average = fsr(left_leg->fsr_sense_Toe);
-  left_leg->Average_Volt = left_leg->FSR_Average;
+  leg->FSR_Average_Heel = fsr(leg->fsr_sense_Heel);
+  leg->Average_Volt_Heel = leg->FSR_Average_Heel;
 
-  left_leg->FSR_Average_Heel = fsr(left_leg->fsr_sense_Heel);
-  left_leg->Average_Volt_Heel = left_leg->FSR_Average_Heel;
 
-  right_leg->FSR_Average = fsr(right_leg->fsr_sense_Toe);
-  right_leg->Average_Volt = right_leg->FSR_Average;
+  leg->Combined_Average = (leg->FSR_Average + leg->FSR_Average_Heel);
 
-  right_leg->FSR_Average_Heel = fsr(right_leg->fsr_sense_Heel);
-  right_leg->Average_Volt_Heel = right_leg->FSR_Average_Heel;
+  leg->Average_Trq = leg->Average / dim;
 
-  left_leg->Combined_Average = (left_leg->FSR_Average + left_leg->FSR_Average_Heel);
-  right_leg->Combined_Average = (right_leg->FSR_Average + right_leg->FSR_Average_Heel);
+  leg->p_steps->curr_voltage = leg->Combined_Average;
 
-  left_leg->Average_Trq = left_leg->Average / dim;
-  right_leg->Average_Trq = right_leg->Average / dim;
+  leg->p_steps->torque_average = leg->Average / dim;
 
-  left_leg->p_steps->curr_voltage = left_leg->Combined_Average;
-  right_leg->p_steps->curr_voltage = right_leg->Combined_Average;
+}
 
-  left_leg->p_steps->torque_average = left_leg->Average / dim;
-  right_leg->p_steps->torque_average = right_leg->Average / dim;
-
+void calculate_averages() {
+  calculate_leg_average(left_leg);
+  calculate_leg_average(right_leg);
 }
 
 void check_FSR_calibration() {
@@ -334,15 +290,14 @@ void rotate_motor() {
 
     streamTimerCount++;
 
-
     stability_trq = euler.z();
     stability_trq *= -stability_trq_gain;
 
-    pid(stability_trq, 1);
-    pid(stability_trq, 2);
+    pid(left_leg, stability_trq);
+    pid(right_leg, stability_trq);
 
-    state_machine_LL();  //for LL
-    state_machine_RL();  //for RL
+    state_machine(left_leg);  //for LL
+    state_machine(right_leg);  //for RL
 
     set_2_zero_if_steady_state();
 
