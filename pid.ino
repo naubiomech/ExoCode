@@ -1,6 +1,6 @@
 #include "Board.h"
 
-void sub_pid(Leg* leg, double input){
+void pid(Leg* leg, double input){
   if ((abs(input) > 25))
   {
     leg->KF = 0;
@@ -18,16 +18,4 @@ void sub_pid(Leg* leg, double input){
   leg->pid.Compute_KF(leg->KF);
   leg->Vol = leg->Output + zero; //need to map
   analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
-}
-
-void pid(double input, int Left_or_Right)
-{
-  if (Left_or_Right == 1)
-  {
-    sub_pid(left_leg, input);
-  }
-  if (Left_or_Right == 2)
-  {
-    sub_pid(right_leg, input);
-  }
 }
