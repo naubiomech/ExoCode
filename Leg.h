@@ -39,12 +39,18 @@ struct Leg {
   volatile double Average_Volt_Heel;
   volatile double Average_Trq;
   volatile double Combined_Average;
+  volatile bool motor_error = false;
+  volatile int Time_error_counter;
 
   // Auto_KF.h
   double ERR;
   double max_KF;
   double min_KF;
   int count_err;
+
+  // Calibrate_and_Read_Sensors.h
+  double FSR_Ratio;
+  double Max_FSR_Ratio;
 
   // Combined_FSR.h
   double fsr_Combined_peak_ref;
@@ -69,11 +75,13 @@ struct Leg {
   double Curr_Heel;
 
   // Memory_Address.h
-  int address_torque;
+  int torque_address;
   int address_FSR;
+  int baseline_address;
+  double baseline_value;
 
   // PID_and_Ctrl_Parameters.h
-  double Tcal = 0;
+  double torque_calibration_value = 0;
   double T_act;
   int Vol;
   double kp = 800;

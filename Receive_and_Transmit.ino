@@ -95,8 +95,8 @@ void receive_and_transmit()
 
   case 'H':
     torque_calibration();
-    write_torque_bias(left_leg->address_torque, left_leg->Tcal);
-    write_torque_bias(right_leg->address_torque, right_leg->Tcal);
+    write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
+    write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
     break;
 
   case 'K':
@@ -145,10 +145,10 @@ void receive_and_transmit()
     break;
 
   case '<':
-    if ((check_torque_bias(left_leg->address_torque)) && (check_torque_bias(right_leg->address_torque)))
+    if ((check_torque_bias(left_leg->torque_address)) && (check_torque_bias(right_leg->torque_address)))
     {
-      left_leg->Tcal = read_torque_bias(left_leg->address_torque);
-      right_leg->Tcal = read_torque_bias(right_leg->address_torque);
+      left_leg->torque_calibration_value = read_torque_bias(left_leg->torque_address);
+      right_leg->torque_calibration_value = read_torque_bias(right_leg->torque_address);
       left_leg->Tarray[3] = {0};
       right_leg->Tarray[3] = {0};
       *(data_to_send_point) = 1;
@@ -193,7 +193,7 @@ void receive_and_transmit()
 
   case '>':
     //------------------------------------------
-    if (clean_torque_bias(left_leg->address_torque))
+    if (clean_torque_bias(left_leg->torque_address))
     {
       Serial.println("Clear Torque ");
     }
@@ -210,7 +210,7 @@ void receive_and_transmit()
       Serial.println("No clear FSR");
     }
     //------------------------------------------
-    if (clean_torque_bias(right_leg->address_torque))
+    if (clean_torque_bias(right_leg->torque_address))
     {
       Serial.println("Clear Torque ");
     }
@@ -436,7 +436,17 @@ void receive_and_transmit()
       Serial.print("Cannot save data during streaming ");
     } else {
       Serial.print("Saving Experimental Parameters ");
-      write_EXP_parameters(address_params);
+
+      write_FSR_values(left_leg->address_FSR, left_leg->fsr_Combined_peak_ref / 2);
+      write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Combined_peak_ref / 2);
+      write_FSR_values(right_leg->address_FSR, right_leg->fsr_Combined_peak_ref / 2);
+      write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Combined_peak_ref / 2);
+
+      write_baseline(left_leg->baseline_address, left_leg->baseline_value);
+      write_baseline(right_leg->baseline_address, right_leg->baseline_value);
+
+      write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
+      write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
     }//end if
     break;
 
