@@ -411,7 +411,10 @@ void receive_and_transmit()
       // store_KF_RL = KF_RL;
       // KF_RL = 0;
       // KF_LL = 0;
-      L_p_steps->flag_take_baseline = true;
+      //      L_p_steps->flag_take_baseline = true;
+      L_p_steps->torque_adj = true;
+      Old_Trq_time_volt = Trq_time_volt;
+      Trq_time_volt = 1;
       Serial.println("Left Freq Baseline ");
       // KF_LL = store_KF_LL;
       // KF_RL = store_KF_RL;
@@ -422,7 +425,10 @@ void receive_and_transmit()
       // store_KF_RL = KF_RL;
       // KF_RL = 0;
       // KF_LL = 0;
-      R_p_steps->flag_take_baseline = true;
+      //      R_p_steps->flag_take_baseline = true;
+      R_p_steps->torque_adj = true;
+      Old_Trq_time_volt = Trq_time_volt;
+      Trq_time_volt = 1;
       Serial.println("Right Freq Baseline ");
       // KF_LL = store_KF_LL;
       // KF_RL = store_KF_RL;
@@ -549,6 +555,8 @@ void receive_and_transmit()
       L_p_steps->flag_N3_adjustment_time = false;
       L_p_steps->flag_take_baseline = false;
       L_p_steps->torque_adj = false;
+      Trq_time_volt = Old_Trq_time_volt;
+
       N3_LL = N3;
       Serial.print("Stop Left N3 adj, come back to: ");
       Serial.println(N3_LL);
@@ -570,6 +578,8 @@ void receive_and_transmit()
       R_p_steps->flag_N3_adjustment_time = false;
       R_p_steps->flag_take_baseline = false;
       R_p_steps->torque_adj = false;
+      Trq_time_volt = Old_Trq_time_volt;
+
       N3_RL = N3;
       Serial.print("Stop Right N3 adj, come back to: ");
       Serial.println(N3_RL);
@@ -587,6 +597,7 @@ void receive_and_transmit()
       L_p_steps->torque_adj = false;
       Serial.print("Stop Left TRQ adj, come back to: ");
       Serial.println(*p_Setpoint_Ankle_LL );
+      Trq_time_volt = Old_Trq_time_volt;
       // KF_LL = store_KF_LL;
       // KF_RL = store_KF_RL;
       break;
@@ -603,6 +614,7 @@ void receive_and_transmit()
 
       Serial.print("Stop Right TRQ adj, come back to: ");
       Serial.println(*p_Setpoint_Ankle_RL);
+      Trq_time_volt = Old_Trq_time_volt;
       // KF_LL = store_KF_LL;
       // KF_RL = store_KF_RL;
       break;
@@ -742,6 +754,9 @@ void receive_and_transmit()
     case 'B':
       // check baseline
       Serial.println("Check Baseline");
+
+//      L_p_steps->plant_peak_mean = read_baseline(L_baseline_address);
+//      R_p_steps->plant_peak_mean = read_baseline(R_baseline_address);
       Serial.println(L_p_steps->plant_peak_mean);
       Serial.println(R_p_steps->plant_peak_mean);
       *(data_to_send_point) = L_p_steps->plant_peak_mean;

@@ -1,8 +1,8 @@
 int flag_auto_KF = 0;
 
 double ERR_LL, ERR_RL;
-double max_KF_LL = 1.2;
-double max_KF_RL = 1.2;
+double max_KF_LL = 1.8;
+double max_KF_RL = 1.8;
 double min_KF_LL = 0.8;
 double min_KF_RL = 0.8;
 int count_err_LL, count_err_RL;

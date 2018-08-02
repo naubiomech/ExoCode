@@ -96,6 +96,10 @@ void state_machine_LL()
     else {
       // Create the smoothed reference and call the PID
       PID_Sigm_Curve_LL();
+//      Serial.print("Sig Done and Flag : ");
+//      Serial.print(sigm_done_LL);
+//      Serial.print(" , ");
+//      Serial.println(sigm_flag_LL);
     }
     
   }

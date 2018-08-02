@@ -9,7 +9,7 @@ void pid(double input, int Left_or_Right)
       // store_KF_LL = KF_LL;
       // store_KF_RL = KF_RL;
       // KF_RL = 0;
-      KF_RL = 0;
+//      KF_RL = 0;
       double old_L_state_L = L_state;
       L_state = 9;
       send_data_message_wc();
@@ -55,7 +55,7 @@ void pid(double input, int Left_or_Right)
       // store_KF_LL = KF_LL;
       // store_KF_RL = KF_RL;
       // KF_RL = 0;
-      KF_RL = 0;
+//      KF_RL = 0;
       double old_R_state_R = R_state;
       R_state = 9;
       send_data_message_wc();

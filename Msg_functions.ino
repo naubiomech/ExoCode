@@ -40,31 +40,45 @@ void send_data_message_wc() //with COP
   //  bluetooth.print(L_COP_fun()); //SIG2
   //  bluetooth.print(',');
   //  bluetooth.print(R_COP_fun()); //SIG3
+  //  //-------------------------------------
+  //
+  //
+  //      bluetooth.print(FSR_Average_LL_Heel); //SIG1
+  //      bluetooth.print(',');
+  //      bluetooth.print(FSR_Average_RL_Heel); //SIG2-
+  //      bluetooth.print(',');
+  //      bluetooth.print(min(10, fabs(L_p_steps->curr_voltage / L_p_steps->plant_peak_mean))); //SIG3
+  //      bluetooth.print(',');
+  //      bluetooth.print(min(10, fabs(R_p_steps->curr_voltage / R_p_steps->plant_peak_mean))); //SIG4
+  //
+  //
+  //  //-----------------------------
+
   //-------------------------------------
 
 
-      bluetooth.print(FSR_Average_LL_Heel); //SIG1
-      bluetooth.print(',');
-      bluetooth.print(FSR_Average_RL_Heel); //SIG2-
-      bluetooth.print(',');
-      bluetooth.print(min(10, fabs(L_p_steps->curr_voltage / L_p_steps->plant_peak_mean))); //SIG3
-      bluetooth.print(',');
-      bluetooth.print(min(10, fabs(R_p_steps->curr_voltage / R_p_steps->plant_peak_mean))); //SIG4
+  bluetooth.print(*p_L_Max_FSR_Ratio); //SIG1
+  bluetooth.print(',');
+  bluetooth.print(*p_R_Max_FSR_Ratio); //SIG2
+  bluetooth.print(',');
+  bluetooth.print(*p_L_FSR_Ratio); //SIG3
+  bluetooth.print(',');
+  bluetooth.print(*p_R_FSR_Ratio); //SIG4
 
 
   //-----------------------------
 
-//  bluetooth.print((analogRead(pin_err_LL) <= 5) || (analogRead(pin_err_RL) <= 5)); //SIG1
-//  bluetooth.print(',');
-//  bluetooth.print(analogRead(pin_err_LL)); //SIG2
-//  bluetooth.print(',');
-//  bluetooth.print(analogRead(pin_err_RL)); //SIG3
-//  bluetooth.print(',');
-//  bluetooth.print(analogRead(pin_err_RL)); //SIG4
+  //  bluetooth.print((analogRead(pin_err_LL) <= 5) || (analogRead(pin_err_RL) <= 5)); //SIG1
+  //  bluetooth.print(',');
+  //  bluetooth.print(analogRead(pin_err_LL)); //SIG2
+  //  bluetooth.print(',');
+  //  bluetooth.print(analogRead(pin_err_RL)); //SIG3
+  //  bluetooth.print(',');
+  //  bluetooth.print(analogRead(pin_err_RL)); //SIG4
 
 
 
-////  bluetooth.print(analogRead(A6)); //SIG4
+  ////  bluetooth.print(analogRead(A6)); //SIG4
 
   //  bluetooth.print(analogRead(fsr_sense_Left_Heel)+analogRead(fsr_sense_Left_Toe)); //SIG2
   //  bluetooth.print(',');

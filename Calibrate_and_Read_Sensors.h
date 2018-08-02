@@ -6,4 +6,12 @@ double p[4] = {0.0787, -0.8471, 20.599, -22.670};
 
 double p_prop[3] = {128.1, -50.82, 22.06};
 
-double FSR_Ratio;
+double L_FSR_Ratio;
+double L_Max_FSR_Ratio;
+double R_FSR_Ratio;
+double R_Max_FSR_Ratio;
+
+double *p_L_FSR_Ratio = &L_FSR_Ratio;
+double *p_L_Max_FSR_Ratio = &L_Max_FSR_Ratio;
+double *p_R_FSR_Ratio = &R_FSR_Ratio;
+double *p_R_Max_FSR_Ratio = &R_Max_FSR_Ratio;

@@ -115,10 +115,10 @@ void FSR_calibration()
     
     // What I need to comment out
     
-    write_FSR_values(address_FSR_LL, fsr_Left_Combined_peak_ref / 2);
-    write_FSR_values((address_FSR_LL + sizeof(double) + sizeof(char)), fsr_Left_Combined_peak_ref / 2);
-    write_FSR_values(address_FSR_RL, fsr_Right_Combined_peak_ref / 2);
-    write_FSR_values((address_FSR_RL + sizeof(double) + sizeof(char)), fsr_Right_Combined_peak_ref / 2);
+//    write_FSR_values(address_FSR_LL, fsr_Left_Combined_peak_ref / 2);
+//    write_FSR_values((address_FSR_LL + sizeof(double) + sizeof(char)), fsr_Left_Combined_peak_ref / 2);
+//    write_FSR_values(address_FSR_RL, fsr_Right_Combined_peak_ref / 2);
+//    write_FSR_values((address_FSR_RL + sizeof(double) + sizeof(char)), fsr_Right_Combined_peak_ref / 2);
 
     //      L_p_steps->voltage_peak_ref = fsr_Left_Toe_peak_ref;
     //      R_p_steps->voltage_peak_ref = fsr_Right_Toe_peak_ref;

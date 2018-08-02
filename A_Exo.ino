@@ -206,24 +206,54 @@ volatile double Average_Trq_LL;
 volatile double Average_Trq_RL;
 volatile double Combined_Average_LL;
 volatile double Combined_Average_RL;
+volatile bool motor_error_LL = false;
+volatile bool motor_error_RL = false;
+
+volatile int Time_error_counter;
+volatile int Time_error_counter_LL;
+volatile int Time_error_counter_RL;
 
 volatile double motor_driver_count_err;
 
 double start_time_callback, start_time_timer;
 
 int time_err_motor;
+int time_err_motor_reboot;
 int flag_enable_catch_error = 1;
 
-bool motor_error = true;
+bool motor_error = false;
 
 void callback()//executed every 2ms
 {
 
   //motor_error true I have an error, false I haven't
+  motor_error_LL = (analogRead(pin_err_LL) <= 5);
+  motor_error_RL = (analogRead(pin_err_RL) <= 5);
 
-  motor_error = ((analogRead(pin_err_LL) <= 5) || (analogRead(pin_err_RL) <= 5));
+  motor_error = (motor_error_LL || motor_error_RL);
+
+  if (motor_error_LL)
+  {
+    Time_error_counter_LL++;
+  }
+  else
+  {
+    //    Time_error_counter_LL = 0;
+  }
+  if (motor_error_RL)
+  {
+    Time_error_counter_RL++;
+  }
+  else
+  {
+    //    Time_error_counter_RL = 0;
+  }
 
   if (stream == 1) {
+
+    if (flag_save_EEPROM == 0) {
+      flag_save_EEPROM = 1;
+    }
 
     if (not(motor_error) && (digitalRead(onoff) == LOW)) {
       digitalWrite(onoff, HIGH);
@@ -236,46 +266,44 @@ void callback()//executed every 2ms
     if (flag_enable_catch_error) {
       if (time_err_motor == 0) {
         digitalWrite(onoff, LOW);
+        time_err_motor_reboot = 0;
       }
 
       motor_driver_count_err++;
       time_err_motor++;
 
-//was time_err_motor >= 4
-      if (time_err_motor >= 4) {
+      //was time_err_motor >= 4
+      if (time_err_motor >= 8) {
         digitalWrite(onoff, HIGH);
-        flag_enable_catch_error = 0;
-        time_err_motor = 0;
+        time_err_motor_reboot++;
+        if (time_err_motor_reboot >= 12) {
+          flag_enable_catch_error = 0;
+          time_err_motor = 0;
+        }
       }
 
     }// end if flag_enable_catch_error==1;
 
   }//end stream==1
+  else {
+    if (flag_save_EEPROM) {
 
+      write_FSR_values(address_FSR_LL, fsr_Left_Combined_peak_ref / 2);
+      write_FSR_values((address_FSR_LL + sizeof(double) + sizeof(char)), fsr_Left_Combined_peak_ref / 2);
+      write_FSR_values(address_FSR_RL, fsr_Right_Combined_peak_ref / 2);
+      write_FSR_values((address_FSR_RL + sizeof(double) + sizeof(char)), fsr_Right_Combined_peak_ref / 2);
+
+      write_baseline(L_baseline_address, L_p_steps->plant_peak_mean);
+      write_baseline(R_baseline_address, R_p_steps->plant_peak_mean);
+      //          Serial.print("Baseline written in memory ");
+      //          Serial.println(p_steps_l->plant_peak_mean);
+      flag_save_EEPROM = 0;
+    }
+  }
   //start_time_callback = micros();
 
   //  start_time_timer = micros();
   //  Update_Averages();
-
-  //------------------FSR & TRQ AVERAGE-------------
-
-
-  // if not filtering the FSR anymore
-  //  for (int j = dim_FSR - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
-  //  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-  //    *(p_FSR_Array_LL + j) = *(p_FSR_Array_LL + j - 1);                //Puts the element in the following memory space into the current memory space
-  //    *(p_FSR_Array_RL + j) = *(p_FSR_Array_RL + j - 1);
-  //
-  //    *(p_FSR_Array_LL_Heel + j) = *(p_FSR_Array_LL_Heel + j - 1);                //Puts the element in the following memory space into the current memory space
-  //    *(p_FSR_Array_RL_Heel + j) = *(p_FSR_Array_RL_Heel + j - 1);
-  //  }
-  //
-  //  //Get the FSR
-  //  *(p_FSR_Array_LL) = fsr(fsr_sense_Left_Toe);
-  //  *(p_FSR_Array_RL) = fsr(fsr_sense_Right_Toe);
-  //
-  //  *(p_FSR_Array_LL_Heel) = fsr(fsr_sense_Left_Heel);
-  //  *(p_FSR_Array_RL_Heel) = fsr(fsr_sense_Right_Heel);
 
 
   //Calc the average value of Torque
@@ -377,10 +405,10 @@ void callback()//executed every 2ms
   //  }
 
   if (FSR_baseline_FLAG_Right) {
-    take_baseline(R_state, R_state_old, R_p_steps, p_FSR_baseline_FLAG_Right);
+    take_baseline(R_state, R_state_old, R_p_steps, p_FSR_baseline_FLAG_Right, R_baseline_address);
   }
   if (FSR_baseline_FLAG_Left) {
-    take_baseline(L_state, L_state_old, L_p_steps, p_FSR_baseline_FLAG_Left);
+    take_baseline(L_state, L_state_old, L_p_steps, p_FSR_baseline_FLAG_Left, L_baseline_address);
   }
 
   //
@@ -449,9 +477,9 @@ void callback()//executed every 2ms
 
     set_2_zero_if_steady_state();
 
-    N3_LL = Ctrl_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL, p_Setpoint_Ankle_LL_Pctrl, Trq_time_volt, L_Prop_Gain, FSR_baseline_FLAG_Left);
+    N3_LL = Ctrl_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL, p_Setpoint_Ankle_LL_Pctrl, Trq_time_volt, L_Prop_Gain, FSR_baseline_FLAG_Left, p_L_FSR_Ratio, p_L_Max_FSR_Ratio);
     ////        Serial.println("RIGHT");
-    N3_RL = Ctrl_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL, p_Setpoint_Ankle_RL_Pctrl, Trq_time_volt, R_Prop_Gain, FSR_baseline_FLAG_Right);
+    N3_RL = Ctrl_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL, p_Setpoint_Ankle_RL_Pctrl, Trq_time_volt, R_Prop_Gain, FSR_baseline_FLAG_Right, p_R_FSR_Ratio, p_R_Max_FSR_Ratio);
     //    Serial.print("Time other functions : ");
     //    Serial.println(micros() - start_time_timer);
   }
@@ -469,79 +497,6 @@ void callback()//executed every 2ms
 //const unsigned int fsr_sense_Right_Toe = A13;
 void loop()
 {
-
-  //-------- COMMENTED FROM HERE and moved to callback
-  //  for (int j = dim_FSR - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
-  //  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-  //    *(p_FSR_Array_LL + j) = *(p_FSR_Array_LL + j - 1);                //Puts the element in the following memory space into the current memory space
-  //    *(p_FSR_Array_RL + j) = *(p_FSR_Array_RL + j - 1);
-  //
-  //    *(p_FSR_Array_LL_Heel + j) = *(p_FSR_Array_LL_Heel + j - 1);                //Puts the element in the following memory space into the current memory space
-  //    *(p_FSR_Array_RL_Heel + j) = *(p_FSR_Array_RL_Heel + j - 1);
-  //  }
-  //
-  //  //Get the FSR
-  //  //  Curr_FSR_LL = fsr(fsr_sense_Left_Toe);
-  //  //  Curr_FSR_RL = fsr(fsr_sense_Right_Toe);
-  //  *(p_FSR_Array_LL) = fsr(fsr_sense_Left_Toe);
-  //  *(p_FSR_Array_RL) = fsr(fsr_sense_Right_Toe);
-  //
-  //  *(p_FSR_Array_LL_Heel) = fsr(fsr_sense_Left_Heel);
-  //  *(p_FSR_Array_RL_Heel) = fsr(fsr_sense_Right_Heel);
-  //
-  //
-  //  //Calc the average value of Torque
-  //
-  //  //Shift the arrays
-  //  for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
-  //  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-  //    *(TarrayPoint_LL + j) = *(TarrayPoint_LL + j - 1);                //Puts the element in the following memory space into the current memory space
-  //    *(TarrayPoint_RL + j) = *(TarrayPoint_RL + j - 1);
-  //  }
-  //
-  //  //Get the torques
-  //  *(TarrayPoint_LL) = get_LL_torq();
-  //  *(TarrayPoint_RL) = get_RL_torq();
-  //
-  //  //  noInterrupts();
-  //  FSR_Average_LL = 0;
-  //  FSR_Average_RL = 0;
-  //  FSR_Average_LL_Heel = 0;
-  //  FSR_Average_RL_Heel = 0;
-  //  Average_LL = 0;
-  //  Average_RL = 0;
-  //
-  //  for (int i = 0; i < dim_FSR; i++)
-  //  {
-  //    FSR_Average_LL = FSR_Average_LL + *(p_FSR_Array_LL + i);
-  //    FSR_Average_RL = FSR_Average_RL + *(p_FSR_Array_RL + i);
-  //
-  //    FSR_Average_LL_Heel = FSR_Average_LL_Heel + *(p_FSR_Array_LL_Heel + i);
-  //    FSR_Average_RL_Heel = FSR_Average_RL_Heel + *(p_FSR_Array_RL_Heel + i);
-  //
-  //    if (i < dim)
-  //    {
-  //      Average_LL =  Average_LL + *(TarrayPoint_LL + i);
-  //      Average_RL =  Average_RL + *(TarrayPoint_RL + i);
-  //      //        Average_RL =  Average_RL + *(TarrayPoint_RL + i);
-  //    }
-  //  }
-  //
-  //  Average_Volt_LL = FSR_Average_LL / dim_FSR;
-  //  Average_Volt_RL = FSR_Average_RL / dim_FSR;
-  //
-  //  Average_Volt_LL_Heel = FSR_Average_LL_Heel / dim_FSR;
-  //  Average_Volt_RL_Heel = FSR_Average_RL_Heel / dim_FSR;
-  //
-  //  Average_Trq_LL = Average_LL / dim;
-  //  Average_Trq_RL = Average_RL / dim;
-  //
-  //  L_p_steps->curr_voltage = FSR_Average_LL / dim_FSR;
-  //  R_p_steps->curr_voltage = FSR_Average_RL / dim_FSR;
-  //  L_p_steps->torque_average = Average_LL / dim;
-  //  R_p_steps->torque_average = Average_RL / dim;
-  //------------ TO HERE
-
 
   if (slowThisDown.check() == 1) // If the time passed is over 1ms is a true statement
   {
@@ -583,9 +538,13 @@ void loop()
 
   if (stream == 1)
   {
+
   }
   else
   {
+
+
+
     //Reset the starting values
     L_p_steps->count_plant = 0;
     L_p_steps->n_steps = 0;
@@ -628,6 +587,12 @@ void loop()
     R_1st_step = 1;
     L_1st_step = 1;
     //New at 06/05/2018
+
+
+
+    Time_error_counter_LL = 0;
+    Time_error_counter_RL = 0;
+
 
   }// End else
 

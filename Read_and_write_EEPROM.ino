@@ -215,3 +215,25 @@ int clean_EXP_Parameters(int address_params_l)
 }
 
 
+
+int write_baseline(int address_baseline_l, double baseline_val)
+{
+  EEPROM.put(address_baseline_l, 'y');
+  address_baseline_l++;
+  EEPROM.put(address_baseline_l, baseline_val);
+  return 1;
+}
+
+double read_baseline(int address_baseline_l)
+{
+  address_baseline_l += 1;
+  double val_t = 0;
+  byte array_values[8];
+  byte* p_array = array_values;
+  for (int i = 0; i < sizeof(double); i++)
+  {
+    *(p_array + i) = EEPROM.read(address_baseline_l + i);
+  }
+  memcpy(&val_t, &array_values, 8);
+  return val_t;
+}
