@@ -29,13 +29,13 @@ void send_data_message_wc() //with COP
   bluetooth.print(',');
 
 
-  bluetooth.print(left_leg->FSR_Average_Heel); //SIG1
+  bluetooth.print(left_leg->Time_error_counter); //SIG1
   bluetooth.print(',');
-  bluetooth.print(right_leg->FSR_Average_Heel); //SIG2-
+  bluetooth.print(right_leg->Time_error_counter); //SIG2-
   bluetooth.print(',');
-  bluetooth.print(min(10, fabs(left_leg->p_steps->curr_voltage / left_leg->p_steps->plant_peak_mean))); //SIG3
+  bluetooth.print(left_leg->FSR_Ratio); //SIG3
   bluetooth.print(',');
-  bluetooth.print(min(10, fabs(right_leg->p_steps->curr_voltage / right_leg->p_steps->plant_peak_mean))); //SIG4
+  bluetooth.print(right_leg->FSR_Ratio); //SIG4
 
   bluetooth.print(',');
   bluetooth.println('Z');
