@@ -136,9 +136,10 @@ double start_time_callback, start_time_timer;
 
 int time_err_motor;
 int time_err_motor_reboot;
+
 int flag_enable_catch_error = 1;
 
-bool motor_error = true;
+bool motor_error = false;
 
 void callback()//executed every 2ms
 {
@@ -180,8 +181,19 @@ void loop()
 
 void resetMotorIfError() {
   //motor_error true I have an error, false I haven't
+  left_leg->motor_error = (analogRead(left_leg->pin_err) <= 5);
+  right_leg->motor_error = (analogRead(right_leg->pin_err) <= 5);
 
-  motor_error = ((analogRead(left_leg->pin_err) <= 5) || (analogRead(right_leg->pin_err) <= 5));
+  motor_error = (left_leg->motor_error || right_leg->motor_error);
+
+  if (left_leg->motor_error){
+    left_leg->Time_error_counter++;
+  }
+
+  if (right_leg->motor_error){
+    right_leg->Time_error_counter++;
+  }
+
 
   if (stream == 1) {
 
@@ -197,7 +209,7 @@ void resetMotorIfError() {
       if (time_err_motor == 0) {
         digitalWrite(onoff, LOW);
         time_err_motor_reboot = 0;
-      }
+          }
 
       motor_driver_count_err++;
       time_err_motor++;
@@ -302,8 +314,8 @@ void rotate_motor() {
 
     set_2_zero_if_steady_state();
 
-    left_leg->N3 = Ctrl_ADJ(left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle, left_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, left_leg->Prop_Gain, left_leg->FSR_baseline_FLAG);
-    right_leg->N3 = Ctrl_ADJ(right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle, right_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, right_leg->Prop_Gain, right_leg->FSR_baseline_FLAG);
+    left_leg->N3 = Ctrl_ADJ(left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle, left_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, left_leg->Prop_Gain, left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->Max_FSR_Ratio);
+    right_leg->N3 = Ctrl_ADJ(right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle, right_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, right_leg->Prop_Gain, right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio);
   }
 }
 
