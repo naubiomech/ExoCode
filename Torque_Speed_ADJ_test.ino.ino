@@ -187,13 +187,9 @@ double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l,
       p_steps_l->peak =  p_steps_l->curr_voltage;
 
     *p_FSR_Ratio_l = fabs(p_steps_l->curr_voltage / (p_steps_l->plant_peak_mean));
+    if (*p_FSR_Ratio_l > (*p_Max_FSR_Ratio_l))
+      (*p_Max_FSR_Ratio_l) = *p_FSR_Ratio_l;
 
-
-    //    if (flag_torque_time_volt_l == 2 && p_steps_l->torque_adj == false) {
-    //      p_steps_l->flag_take_baseline = true;
-    //    }
-    //    if (flag_torque_time_volt_l == 2 && p_steps_l->torque_adj == true) {
-    //      *p_Setpoint_Ankle_Pctrl_l = (p_steps_l->Setpoint ) * (fabs( p_steps_l->curr_voltage / p_steps_l->plant_mean_peak_base));// the difference here is that if curr<peak during state 3 this will not decrease
     if (flag_torque_time_volt_l == 2) {
       if ((p_steps_l->Setpoint ) > 0) {
         *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (prop_gain_l) * (*p_FSR_Ratio_l)); // the difference here is that we do it as a function of the FSR calibration
@@ -208,17 +204,6 @@ double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l,
       return N3_l; // No modification in the shaping
 
     } else if (flag_torque_time_volt_l == 3) {
-      // First version of the Pivot Proportional Ctrl
-      //      if ((p_steps_l->Setpoint ) > 0) {
-      //        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) + (prop_gain_l) * (fabs( p_steps_l->curr_voltage / p_steps_l->plant_peak_mean) - 1)); // the difference here is that we do it as a function of the FSR calibration
-      //        *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
-      //      }
-      //      else if ((p_steps_l->Setpoint ) < 0) {
-      //        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) - (prop_gain_l) * (fabs( p_steps_l->curr_voltage / p_steps_l->plant_peak_mean) - 1)); // the difference here is that we do it as a function of the FSR calibration
-      //        *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
-      //      } else {
-      //        *p_Setpoint_Ankle_Pctrl_l = 0;
-      //      }
 
       // Second version of pivot proportional Ctrl with polynomial law XXXXX QUI METTERE LEGGE
       if ((p_steps_l->Setpoint ) > 0) {
@@ -235,8 +220,7 @@ double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l,
       return N3_l; // No modification in the shaping
     } else if (flag_torque_time_volt_l == 1) {
 
-      if (*p_FSR_Ratio_l > (*p_Max_FSR_Ratio_l))
-        (*p_Max_FSR_Ratio_l) = *p_FSR_Ratio_l;
+
       Serial.print(" Ratios : ");
       Serial.print(*p_FSR_Ratio_l);
       Serial.print(" , ");
@@ -252,7 +236,8 @@ double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l,
         *p_Setpoint_Ankle_l = min(Min_Prop, *p_Setpoint_Ankle_l);
       } else {
         *p_Setpoint_Ankle_l = 0;
-      }
+      }     
+      return 1;
 
       //      p_steps_l->flag_N3_adjustment_time = true;
       //      return N3_l;

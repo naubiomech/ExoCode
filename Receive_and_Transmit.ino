@@ -257,6 +257,11 @@ void receive_and_transmit()
       send_command_message('<', data_to_send_point, 3);
       L_p_steps->voltage_peak_ref = fsr_Left_Combined_peak_ref;
       R_p_steps->voltage_peak_ref = fsr_Right_Combined_peak_ref;
+
+
+      L_p_steps->plant_peak_mean = read_baseline(L_baseline_address);
+      R_p_steps->plant_peak_mean = read_baseline(R_baseline_address);
+
       break;
 
     case '>':
@@ -624,7 +629,16 @@ void receive_and_transmit()
         Serial.print("Cannot save data during streaming ");
       } else {
         Serial.print("Saving Experimental Parameters ");
-        write_EXP_parameters(address_params);
+        //        write_EXP_parameters(address_params);
+
+        write_FSR_values(address_FSR_LL, fsr_Left_Combined_peak_ref / 2);
+        write_FSR_values((address_FSR_LL + sizeof(double) + sizeof(char)), fsr_Left_Combined_peak_ref / 2);
+        write_FSR_values(address_FSR_RL, fsr_Right_Combined_peak_ref / 2);
+        write_FSR_values((address_FSR_RL + sizeof(double) + sizeof(char)), fsr_Right_Combined_peak_ref / 2);
+
+        write_baseline(L_baseline_address, L_p_steps->plant_peak_mean);
+        write_baseline(R_baseline_address, R_p_steps->plant_peak_mean);
+
       }//end if
       break;
 
@@ -755,8 +769,8 @@ void receive_and_transmit()
       // check baseline
       Serial.println("Check Baseline");
 
-//      L_p_steps->plant_peak_mean = read_baseline(L_baseline_address);
-//      R_p_steps->plant_peak_mean = read_baseline(R_baseline_address);
+      //            L_p_steps->plant_peak_mean = read_baseline(L_baseline_address);
+      //            R_p_steps->plant_peak_mean = read_baseline(R_baseline_address);
       Serial.println(L_p_steps->plant_peak_mean);
       Serial.println(R_p_steps->plant_peak_mean);
       *(data_to_send_point) = L_p_steps->plant_peak_mean;

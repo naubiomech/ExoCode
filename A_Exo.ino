@@ -288,13 +288,13 @@ void callback()//executed every 2ms
   else {
     if (flag_save_EEPROM) {
 
-      write_FSR_values(address_FSR_LL, fsr_Left_Combined_peak_ref / 2);
-      write_FSR_values((address_FSR_LL + sizeof(double) + sizeof(char)), fsr_Left_Combined_peak_ref / 2);
-      write_FSR_values(address_FSR_RL, fsr_Right_Combined_peak_ref / 2);
-      write_FSR_values((address_FSR_RL + sizeof(double) + sizeof(char)), fsr_Right_Combined_peak_ref / 2);
-
-      write_baseline(L_baseline_address, L_p_steps->plant_peak_mean);
-      write_baseline(R_baseline_address, R_p_steps->plant_peak_mean);
+//      write_FSR_values(address_FSR_LL, fsr_Left_Combined_peak_ref / 2);
+//      write_FSR_values((address_FSR_LL + sizeof(double) + sizeof(char)), fsr_Left_Combined_peak_ref / 2);
+//      write_FSR_values(address_FSR_RL, fsr_Right_Combined_peak_ref / 2);
+//      write_FSR_values((address_FSR_RL + sizeof(double) + sizeof(char)), fsr_Right_Combined_peak_ref / 2);
+//
+//      write_baseline(L_baseline_address, L_p_steps->plant_peak_mean);
+//      write_baseline(R_baseline_address, R_p_steps->plant_peak_mean);
       //          Serial.print("Baseline written in memory ");
       //          Serial.println(p_steps_l->plant_peak_mean);
       flag_save_EEPROM = 0;
@@ -443,15 +443,7 @@ void callback()//executed every 2ms
       //      }
     }
 
-    //    Serial.println(digitalRead(pin_err_LL));
-    //    Serial.println(digitalRead(pin_err_RL));
 
-    //    if (digitalRead(pin_err_LL) == HIGH || digitalRead(pin_err_RL) == HIGH) {
-    //      digitalWrite(onoff, LOW);
-    //      //      delayMicroseconds(1000);
-    //      //      digitalWrite(onoff, HIGH);
-    //      motor_driver_count_err++;
-    //    }
 
     if (streamTimerCount == 1 && flag_auto_KF == 1)
       Auto_KF();
@@ -478,9 +470,30 @@ void callback()//executed every 2ms
     set_2_zero_if_steady_state();
 
     N3_LL = Ctrl_ADJ(L_state, L_state_old, L_p_steps, N3_LL, New_PID_Setpoint_LL, p_Setpoint_Ankle_LL, p_Setpoint_Ankle_LL_Pctrl, Trq_time_volt, L_Prop_Gain, FSR_baseline_FLAG_Left, p_L_FSR_Ratio, p_L_Max_FSR_Ratio);
-    ////        Serial.println("RIGHT");
+    if (Trq_time_volt == 1) {
+
+      if (L_state == 3) {
+
+                  if ((abs(New_PID_Setpoint_LL - *p_Setpoint_Ankle_LL) > 0.1))// && (sigm_done_LL))
+        //            //          Previous_Setpoint_Ankle_LL = New_PID_Setpoint_LL;
+        //            if (abs(*p_Setpoint_Ankle_LL > New_PID_Setpoint_LL)) {
+        //            Old_PID_Setpoint_LL = New_PID_Setpoint_LL;
+        New_PID_Setpoint_LL = *p_Setpoint_Ankle_LL;
+        //        }
+      }
+      //      if ((n_iter_LL >= N_step_LL) && (abs(New_PID_Setpoint_LL - PID_Setpoint_LL) <= 0.1))
+      //      {
+      //        sigm_done_LL = true;
+      //      }
+      else {
+        New_PID_Setpoint_LL = 0;
+        *p_L_Max_FSR_Ratio = 0;
+      }
+    }
+
+
     N3_RL = Ctrl_ADJ(R_state, R_state_old, R_p_steps, N3_RL, New_PID_Setpoint_RL, p_Setpoint_Ankle_RL, p_Setpoint_Ankle_RL_Pctrl, Trq_time_volt, R_Prop_Gain, FSR_baseline_FLAG_Right, p_R_FSR_Ratio, p_R_Max_FSR_Ratio);
-    //    Serial.print("Time other functions : ");
+    //    if (Trq_time_volt == 1) New_PID_Setpoint_RL = *p_Setpoint_Ankle_RL;
     //    Serial.println(micros() - start_time_timer);
   }
 
