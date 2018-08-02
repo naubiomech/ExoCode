@@ -6,7 +6,7 @@ void initialize_leg(Leg* leg) {
   analogWrite(leg->motor_ankle_pin, zero);
   leg->pid.SetMode(AUTOMATIC);
   leg->pid.SetTunings(leg->kp, leg->ki, leg->kd);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
-  leg->pid.SetOutputLimits(-250, 250);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
+  leg->pid.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
   leg->pid.SetSampleTime(PID_sample_time);  
 
   leg->p_steps->fsr_Toe = leg->fsr_sense_Toe;
