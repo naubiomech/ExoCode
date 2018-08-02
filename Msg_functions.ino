@@ -57,9 +57,14 @@ void send_data_message_wc() //with COP
   //-------------------------------------
 
 
-  bluetooth.print(*p_L_Max_FSR_Ratio); //SIG1
+//  bluetooth.print(*p_L_Max_FSR_Ratio); //SIG1
+//  bluetooth.print(',');
+//  bluetooth.print(*p_R_Max_FSR_Ratio); //SIG2
+
+
+  bluetooth.print(Time_error_counter_LL); //SIG1
   bluetooth.print(',');
-  bluetooth.print(*p_R_Max_FSR_Ratio); //SIG2
+  bluetooth.print(Time_error_counter_RL); //SIG2
   bluetooth.print(',');
   bluetooth.print(*p_L_FSR_Ratio); //SIG3
   bluetooth.print(',');
