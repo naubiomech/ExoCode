@@ -209,7 +209,7 @@ void resetMotorIfError() {
       if (time_err_motor == 0) {
         digitalWrite(onoff, LOW);
         time_err_motor_reboot = 0;
-          }
+      }
 
       motor_driver_count_err++;
       time_err_motor++;
@@ -303,11 +303,11 @@ void rotate_motor() {
     streamTimerCount++;
 
     stability_trq = euler.z() - 90;
-	Serial.println(stability_trq);
     stability_trq *= stability_trq_gain;
+    Serial.println(stability_trq);
 
-    pid(left_leg, stability_trq);
-    pid(right_leg, stability_trq);
+    pid(left_leg, -stability_trq * left_leg->Prop_Gain);
+    pid(right_leg, stability_trq * right_leg->Prop_Gain);
 
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
