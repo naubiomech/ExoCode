@@ -297,10 +297,9 @@ void rotate_motor() {
 
     stability_trq = euler.z() - 90;
     stability_trq *= stability_trq_gain;
-    Serial.println(stability_trq);
 
-    pid(left_leg, -stability_trq);
-    pid(right_leg, stability_trq);
+    pid(left_leg, left_leg->Average_Trq, -stability_trq);
+    pid(right_leg, right_leg->Average_Trq, stability_trq);
 
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
