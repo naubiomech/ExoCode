@@ -28,6 +28,7 @@
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
+#include "Parameters.h"
 #include "Board.h"
 #include "Leg.h"
 #include <elapsedMillis.h>
@@ -35,13 +36,6 @@ const unsigned int zero = 2048;//1540;
 #include "TimerOne.h"
 #include <PID_v2.h>
 #include <SoftwareSerial.h>
-// #include "Torque_Speed_ADJ.h"
-#include "Memory_address.h"
-#include "Shaping_Parameters.h"
-#include "FSR_Parameters.h"
-#include "PID_and_Ctrl_Parameters.h"
-#include "Filter_Parameters.h"
-#include "State_Machine_Parameters.h"
 #include "Reference_ADJ.h"
 #include "Msg_functions.h"
 #include "Calibrate_and_Read_Sensors.h"
