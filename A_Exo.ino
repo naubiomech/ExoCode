@@ -38,7 +38,6 @@ const unsigned int zero = 2048;//1540;
 #include <SoftwareSerial.h>
 #include "Reference_ADJ.h"
 #include "Msg_functions.h"
-#include "Calibrate_and_Read_Sensors.h"
 #include "Proportional_Ctrl.h"
 #include "Auto_KF.h"
 #include "Combined_FSR.h"

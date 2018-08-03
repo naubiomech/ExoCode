@@ -5,7 +5,6 @@ const int dim = 5;
 
 #include "PID_v2.h"
 #include "Torque_Speed_ADJ.h"
-#include "PID_and_Ctrl_Parameters.h"
 
 struct Leg {
   int torque_sensor_ankle_pin;
