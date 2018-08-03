@@ -28,6 +28,7 @@
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
+#include "Parameters.h"
 #include "Board.h"
 #include "Leg.h"
 #include <elapsedMillis.h>
@@ -35,13 +36,6 @@ const unsigned int zero = 2048;//1540;
 #include "TimerOne.h"
 #include <PID_v2.h>
 #include <SoftwareSerial.h>
-// #include "Torque_Speed_ADJ.h"
-#include "Memory_address.h"
-#include "Shaping_Parameters.h"
-#include "FSR_Parameters.h"
-#include "PID_and_Ctrl_Parameters.h"
-#include "Filter_Parameters.h"
-#include "State_Machine_Parameters.h"
 #include "Reference_ADJ.h"
 #include "Msg_functions.h"
 #include "Calibrate_and_Read_Sensors.h"
@@ -327,46 +321,29 @@ void rotate_motor() {
 
 void reset_starting_parameters() {
   //Reset the starting values
-  left_leg->p_steps->count_plant = 0;
-  left_leg->p_steps->n_steps = 0;
-  left_leg->p_steps->flag_start_plant = false;
-  left_leg->p_steps->flag_take_average = false;
-  left_leg->p_steps->flag_N3_adjustment_time = false;
-  left_leg->p_steps->flag_take_baseline = false;
-  left_leg->p_steps->torque_adj = false;
-
-  right_leg->p_steps->count_plant = 0;
-  right_leg->p_steps->n_steps = 0;
-  right_leg->p_steps->flag_start_plant = false;
-  right_leg->p_steps->flag_take_average = false;
-  right_leg->p_steps->flag_N3_adjustment_time = false;
-  right_leg->p_steps->flag_take_baseline = false;
-  right_leg->p_steps->torque_adj = false;
-
-  left_leg->N3 = N3;
-  left_leg->N2 = N2;
-  left_leg->N1 = N1;
-
-  right_leg->N3 = N3;
-  right_leg->N2 = N2;
-  right_leg->N1 = N1;
-
-  left_leg->p_steps->perc_l = 0.5;
-  right_leg->p_steps->perc_l = 0.5;
-
-  left_leg->activate_in_3_steps = 1;
-  right_leg->activate_in_3_steps = 1;
-
-  left_leg->Previous_Setpoint_Ankle = 0;
-  right_leg->Previous_Setpoint_Ankle = 0;
-  right_leg->coef_in_3_steps = 0;
-  right_leg->num_3_steps = 0;
-  left_leg->coef_in_3_steps = 0;
-  left_leg->num_3_steps = 0;
-
-  right_leg->first_step = 1;
-  left_leg->first_step = 1;
-
-
+  reset_leg_starting_parameters(left_leg);
+  reset_leg_starting_parameters(right_leg);
 }
 
+void reset_leg_starting_parameters(Leg* leg){
+  leg->p_steps->count_plant = 0;
+  leg->p_steps->n_steps = 0;
+  leg->p_steps->flag_start_plant = false;
+  leg->p_steps->flag_take_average = false;
+  leg->p_steps->flag_N3_adjustment_time = false;
+  leg->p_steps->flag_take_baseline = false;
+  leg->p_steps->torque_adj = false;
+
+  leg->N3 = N3;
+  leg->N2 = N2;
+  leg->N1 = N1;
+
+  leg->p_steps->perc_l = 0.5;
+  leg->activate_in_3_steps = 1;
+  leg->Previous_Setpoint_Ankle = 0;
+
+  leg->coef_in_3_steps = 0;
+  leg->num_3_steps = 0;
+
+  leg->first_step = 1;
+}

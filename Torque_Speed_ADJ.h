@@ -1,6 +1,4 @@
 // Stuctur in order to have all the needed values to adjust the torque or the shaping as a function of the force applied or of the speed respectively
-const int n_step_baseline = 6;
-
 typedef struct {
   int    n_steps;
   int    n_kf;
