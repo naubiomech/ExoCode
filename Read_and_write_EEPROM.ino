@@ -110,17 +110,17 @@ int write_EXP_parameters(int address_params_l)
   EEPROM.put(address_params_l, N3);
   address_params_l += 8;
   Serial.println(N3);
-  EEPROM.put(address_params_l, left_leg->kp);
+  EEPROM.put(address_params_l, left_leg->kp_ankle);
   address_params_l += 8;
-  EEPROM.put(address_params_l, left_leg->kd);
+  EEPROM.put(address_params_l, left_leg->kd_ankle);
   address_params_l += 8;
-  EEPROM.put(address_params_l, left_leg->ki);
+  EEPROM.put(address_params_l, left_leg->ki_ankle);
   address_params_l += 8;
-  EEPROM.put(address_params_l, right_leg->kp);
+  EEPROM.put(address_params_l, right_leg->kp_ankle);
   address_params_l += 8;
-  EEPROM.put(address_params_l, right_leg->kd);
+  EEPROM.put(address_params_l, right_leg->kd_ankle);
   address_params_l += 8;
-  EEPROM.put(address_params_l, right_leg->ki);
+  EEPROM.put(address_params_l, right_leg->ki_ankle);
   address_params_l += 8;
   EEPROM.put(address_params_l, left_leg->fsr_percent_thresh_Toe);
   address_params_l += 8;
@@ -179,18 +179,18 @@ int read_all_params(int address_params_l) {
   right_leg->N2 = N2;
   right_leg->N3 = N3;
 
-  left_leg->kp = read_param(address_params_l);
+  left_leg->kp_ankle = read_param(address_params_l);
   address_params_l += 8;
-  left_leg->kd = read_param(address_params_l);
+  left_leg->kd_ankle = read_param(address_params_l);
   address_params_l += 8;
-  left_leg->ki = read_param(address_params_l);
+  left_leg->ki_ankle = read_param(address_params_l);
   address_params_l += 8;
 
-  right_leg->kp = read_param(address_params_l);
+  right_leg->kp_ankle = read_param(address_params_l);
   address_params_l += 8;
-  right_leg->kd = read_param(address_params_l);
+  right_leg->kd_ankle = read_param(address_params_l);
   address_params_l += 8;
-  right_leg->ki = read_param(address_params_l);
+  right_leg->ki_ankle = read_param(address_params_l);
   address_params_l += 8;
 
   left_leg->fsr_percent_thresh_Toe = read_param(address_params_l);

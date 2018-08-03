@@ -100,16 +100,16 @@ void receive_and_transmit()
     break;
 
   case 'K':
-    *(data_to_send_point) = left_leg->kp;
-    *(data_to_send_point + 1) = left_leg->kd;
-    *(data_to_send_point + 2) = left_leg->ki;
+    *(data_to_send_point) = left_leg->kp_ankle;
+    *(data_to_send_point + 1) = left_leg->kd_ankle;
+    *(data_to_send_point + 2) = left_leg->ki_ankle;
     send_command_message('K', data_to_send_point, 3);     //MATLAB is expecting to recieve the Torque Parameters
     break;
 
   case 'k':
-    *(data_to_send_point) = right_leg->kp;
-    *(data_to_send_point + 1) = right_leg->kd;
-    *(data_to_send_point + 2) = right_leg->ki;
+    *(data_to_send_point) = right_leg->kp_ankle;
+    *(data_to_send_point + 1) = right_leg->kd_ankle;
+    *(data_to_send_point + 2) = right_leg->ki_ankle;
     send_command_message('k', data_to_send_point, 3);     //MATLAB is expecting to recieve the Torque Parameters
     break;
 
@@ -122,19 +122,19 @@ void receive_and_transmit()
   case 'M':
     receiveVals(24);                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
     //MATLAB Sent Kp, then Kd, then Ki.
-    memcpy(&left_leg->kp, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-    memcpy(&left_leg->kd, holdOnPoint + 8, 8);                              //memory space pointed to by the variable kp_L.  Essentially a roundabout way to change a variable value, but since the bluetooth
-    memcpy(&left_leg->ki, holdOnPoint + 16, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-    left_leg->pid.SetTunings(left_leg->kp, left_leg->ki, left_leg->kd);
+    memcpy(&left_leg->kp_ankle, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+    memcpy(&left_leg->kd_ankle, holdOnPoint + 8, 8);                              //memory space pointed to by the variable kp_L.  Essentially a roundabout way to change a variable value, but since the bluetooth
+    memcpy(&left_leg->ki_ankle, holdOnPoint + 16, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
+    left_leg->ankle_pid.SetTunings(left_leg->kp_ankle, left_leg->ki_ankle, left_leg->kd_ankle);
     break;
 
   case 'm':
     receiveVals(24);                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
     //MATLAB Sent Kp, then Kd, then Ki.
-    memcpy(&right_leg->kp, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-    memcpy(&right_leg->kd, holdOnPoint + 8, 8);                              //memory space pointed to by the variable kp_R.  Essentially a roundabout way to change a variable value, but since the bluetooth
-    memcpy(&right_leg->ki, holdOnPoint + 16, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-    right_leg->pid.SetTunings(right_leg->kp, right_leg->ki, right_leg->kd);
+    memcpy(&right_leg->kp_ankle, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+    memcpy(&right_leg->kd_ankle, holdOnPoint + 8, 8);                              //memory space pointed to by the variable kp_R.  Essentially a roundabout way to change a variable value, but since the bluetooth
+    memcpy(&right_leg->ki_ankle, holdOnPoint + 16, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
+    right_leg->ankle_pid.SetTunings(right_leg->kp_ankle, right_leg->ki_ankle, right_leg->kd_ankle);
     break;
 
   case 'N':

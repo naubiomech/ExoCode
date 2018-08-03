@@ -38,7 +38,6 @@ const unsigned int zero = 2048;//1540;
 #include <SoftwareSerial.h>
 #include "Reference_ADJ.h"
 #include "Msg_functions.h"
-#include "Calibrate_and_Read_Sensors.h"
 #include "Proportional_Ctrl.h"
 #include "Auto_KF.h"
 #include "Combined_FSR.h"
@@ -300,8 +299,8 @@ void rotate_motor() {
     stability_trq *= stability_trq_gain;
     Serial.println(stability_trq);
 
-    pid(left_leg, -stability_trq * left_leg->Prop_Gain);
-    pid(right_leg, stability_trq * right_leg->Prop_Gain);
+    pid(left_leg, -stability_trq);
+    pid(right_leg, stability_trq);
 
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
