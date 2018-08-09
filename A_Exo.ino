@@ -38,9 +38,7 @@ const unsigned int zero = 2048;//1540;
 #include <SoftwareSerial.h>
 #include "Reference_ADJ.h"
 #include "Msg_functions.h"
-#include "Proportional_Ctrl.h"
 #include "Auto_KF.h"
-#include "Combined_FSR.h"
 #include <Metro.h> // Include the Metro library
 
 
