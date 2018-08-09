@@ -1,3 +1,5 @@
+#include "State_Machine.h"
+
 #include "Leg.h"
 void state_machine(Leg* leg)
 {
