@@ -1,3 +1,4 @@
+#include "Shaping_Functions.h"
 //Calc Sigmoid function and apply to the New point
 
 
