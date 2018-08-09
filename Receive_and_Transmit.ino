@@ -1,6 +1,7 @@
+#include "Receive_and_Transmit.h"
+
 // Peek is the variable used to identify the message received by matlab
 // To understand the commands see the file .......... in the folder
-
 
 void receive_and_transmit()
 {
@@ -8,16 +9,16 @@ void receive_and_transmit()
   cmd_from_Gui = bluetooth.read();
   switch (cmd_from_Gui)
   {
-    case '?':
-      send_data_message_wc();
-      break;
+  case '?':
+    send_data_message_wc();
+    break;
 
-    case 'D':                                         //if MATLAB sent the character D
-      *(data_to_send_point) = left_leg->Setpoint_Ankle;      //MATLAB is expecting to recieve the Torque Parameters
-      send_command_message('D', data_to_send_point, 1);
-      Serial.print("Received Left Set ");
-      Serial.println(left_leg->Setpoint_Ankle);
-      break;
+  case 'D':                                         //if MATLAB sent the character D
+    *(data_to_send_point) = left_leg->Setpoint_Ankle;      //MATLAB is expecting to recieve the Torque Parameters
+    send_command_message('D', data_to_send_point, 1);
+    Serial.print("Received Left Set ");
+    Serial.println(left_leg->Setpoint_Ankle);
+    break;
 
   case 'd':
     *(data_to_send_point) = right_leg->Setpoint_Ankle;
