@@ -1,4 +1,5 @@
 // Calibrate the torque sensors, FSR sensors and get the torque and FSR voltage
+#include "Calibrate_and_Read_Sensors.h"
 
 void torque_calibration()
 {
