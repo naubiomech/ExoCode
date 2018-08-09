@@ -1,3 +1,4 @@
+#include "Leg.h"
 
 void initialize_leg(Leg* leg) {
   pinMode(leg->pin_err, INPUT);
