@@ -1,3 +1,5 @@
+#include "pid.h"
+#include "Leg.h"
 #include "Board.h"
 
 void pid(Leg* leg, double input){
