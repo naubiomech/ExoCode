@@ -26,7 +26,7 @@ double read_torque_bias(int address_torque_l)
   double val_t = 0;
   byte array_values[8];
   byte* p_array = array_values;
-  for (int i = 0; i < sizeof(double); i++)
+  for (unsigned int i = 0; i < sizeof(double); i++)
   {
     *(p_array + i) = EEPROM.read(address_torque_l + i);
   }
@@ -36,7 +36,7 @@ double read_torque_bias(int address_torque_l)
 
 int clean_torque_bias(int address_torque_l)
 {
-  for ( int i = address_torque_l ; i < (sizeof(double) + sizeof(char) + address_torque_l) ; i++ )
+  for ( unsigned int i = address_torque_l ; i < (sizeof(double) + sizeof(char) + address_torque_l) ; i++ )
   {
     EEPROM.write(i, 0);
   }
@@ -69,7 +69,7 @@ double read_FSR_values(int address_FSR_l)
   double val_t = 0;
   byte array_values[8];
   byte* p_array = array_values;
-  for (int i = 0; i < sizeof(double); i++)
+  for (unsigned int i = 0; i < sizeof(double); i++)
   {
     *(p_array + i) = EEPROM.read(address_FSR_l + i);
   }
@@ -79,7 +79,7 @@ double read_FSR_values(int address_FSR_l)
 
 int clean_FSR_values(int address_FSR_l)
 {
-  for ( int i = address_FSR_l ; i < (sizeof(double) + sizeof(char) + address_FSR_l) ; i++ )
+  for ( unsigned int i = address_FSR_l ; i < (sizeof(double) + sizeof(char) + address_FSR_l) ; i++ )
   {
     EEPROM.write(i, 0);
   }
@@ -150,7 +150,7 @@ double read_param(int address_l)
   double val_t = 0;
   byte array_values[8];
   byte* p_array = array_values;
-  for (int i = 0; i < sizeof(double); i++)
+  for (unsigned int i = 0; i < sizeof(double); i++)
   {
     *(p_array + i) = EEPROM.read(address_l + i);
   }
@@ -206,7 +206,7 @@ int read_all_params(int address_params_l) {
 
 int clean_EXP_Parameters(int address_params_l)
 {
-  for ( int i = address_params_l ; i < (sizeof(double) * 13 + sizeof(char) + address_params_l) ; i++ )
+  for ( unsigned int i = address_params_l ; i < (sizeof(double) * 13 + sizeof(char) + address_params_l) ; i++ )
   {
     EEPROM.write(i, 0);
   }
@@ -228,7 +228,7 @@ double read_baseline(int address_baseline_l)
   double val_t = 0;
   byte array_values[8];
   byte* p_array = array_values;
-  for (int i = 0; i < sizeof(double); i++)
+  for (unsigned int i = 0; i < sizeof(double); i++)
   {
     *(p_array + i) = EEPROM.read(address_baseline_l + i);
   }
