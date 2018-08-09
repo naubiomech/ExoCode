@@ -1,3 +1,4 @@
+#include "Msg_functions.h"
 
 void send_data_message_wc() //with COP
 {
