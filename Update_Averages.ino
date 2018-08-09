@@ -1,3 +1,5 @@
+#include "Update_Averages.h"
+
 void Update_Averages() {
 
   for (int j = dim_FSR - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
@@ -67,4 +69,4 @@ void Update_Averages() {
   left_leg->p_steps->torque_average = left_leg->Average / dim;
   right_leg->p_steps->torque_average = right_leg->Average / dim;
 
-}
+ }
