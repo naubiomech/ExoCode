@@ -130,6 +130,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
 
   if (((R_state_l == 1) || (R_state_l == 2)) && R_state_old_l == 3)
     p_steps_l->peak = 0;
+  return 0;
 }// end take_baseline
 
 
@@ -273,7 +274,7 @@ double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l,
         }
       } else if (flag_torque_time_volt_l == 1) // If you use the volt or force value returned by the FSR sensors
       {
-        if (p_steps_l->flag_start_plant = true) {
+        if (p_steps_l->flag_start_plant == true) {
           *p_Setpoint_Ankle_l = (p_steps_l->Setpoint ) * (fabs(p_steps_l->peak / p_steps_l->plant_peak_mean));
 
           if ((p_steps_l->Setpoint ) > 0) {
