@@ -29,6 +29,7 @@
 const unsigned int zero = 2048;//1540;
 
 #include "Parameters.h"
+#include "System.h"
 #include "Board.h"
 #include "Leg.h"
 #include <elapsedMillis.h>
@@ -39,22 +40,8 @@ const unsigned int zero = 2048;//1540;
 #include "Reference_ADJ.h"
 #include "Msg_functions.h"
 #include "Auto_KF.h"
-#include <Metro.h> // Include the Metro library
 #include "IMU.h"
 
-Metro slowThisDown = Metro(1);  // Set the function to be called at no faster a rate than once per millisecond
-Metro BnoControl = Metro(10);
-
-//To interrupt and to schedule we take advantage of the
-elapsedMillis timeElapsed;
-double startTime = 0;
-int streamTimerCount = 0;
-
-int stream = 0;
-
-char holdon[24];
-char *holdOnPoint = &holdon[0];
-char Peek = 'a';
 
 // Single board small
 const unsigned int onoff = MOTOR_ENABLE_PIN;
