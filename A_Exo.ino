@@ -42,12 +42,6 @@ const unsigned int zero = 2048;//1540;
 #include "Auto_KF.h"
 #include "IMU.h"
 
-
-// Single board small
-const unsigned int onoff = MOTOR_ENABLE_PIN;
-
-// Single board SQuare (big)
-//const unsigned int onoff = 17;                                             //whatever the zero value is for the PID analogwrite setup
 const unsigned int which_leg_pin = WHICH_LEG_PIN;
 
 //Includes the SoftwareSerial library to be able to use the bluetooth Serial Communication
@@ -76,8 +70,8 @@ void setup()
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
   // set pin mode for left and right sides
-  pinMode(onoff, OUTPUT); //Enable disable the motors
-  digitalWrite(onoff, LOW);
+  pinMode(MOTOR_ENABLE_PIN, OUTPUT); //Enable disable the motors
+  digitalWrite(MOTOR_ENABLE_PIN, LOW);
 
   // Fast torque calibration
   torque_calibration();
@@ -168,8 +162,8 @@ void resetMotorIfError() {
 
   if (stream == 1) {
 
-    if (not(motor_error) && (digitalRead(onoff) == LOW)) {
-      digitalWrite(onoff, HIGH);
+    if (not(motor_error) && (digitalRead(MOTOR_ENABLE_PIN) == LOW)) {
+      digitalWrite(MOTOR_ENABLE_PIN, HIGH);
     }
 
     if (motor_error && (flag_enable_catch_error == 0)) {
@@ -178,7 +172,7 @@ void resetMotorIfError() {
 
     if (flag_enable_catch_error) {
       if (time_err_motor == 0) {
-        digitalWrite(onoff, LOW);
+        digitalWrite(MOTOR_ENABLE_PIN, LOW);
         time_err_motor_reboot = 0;
       }
 
@@ -187,7 +181,7 @@ void resetMotorIfError() {
 
       //was time_err_motor >= 4
       if (time_err_motor >= 8) {
-        digitalWrite(onoff, HIGH);
+        digitalWrite(MOTOR_ENABLE_PIN, HIGH);
         time_err_motor_reboot++;
         if (time_err_motor_reboot >= 12) {
           flag_enable_catch_error = 0;

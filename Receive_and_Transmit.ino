@@ -83,14 +83,14 @@ void receive_and_transmit()
     break;
 
   case COMM_CODE_START_TRIAL:
-    digitalWrite(onoff, HIGH);                                         //The GUI user is ready to start the trial so Motor is enabled
+    digitalWrite(MOTOR_ENABLE_PIN, HIGH);                                         //The GUI user is ready to start the trial so Motor is enabled
     stream = 1;                                                     //and the torque data is allowed to be streamed
     streamTimerCount = 0;
     timeElapsed = 0;
     break;
 
   case COMM_CODE_END_TRIAL:
-    digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
+    digitalWrite(MOTOR_ENABLE_PIN, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
     stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
     break;
 

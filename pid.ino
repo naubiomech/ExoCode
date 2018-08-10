@@ -21,7 +21,7 @@ void pid(Leg* leg, double trq, double stability){
       leg->state = 9;
       send_data_message_wc();
 
-      digitalWrite(onoff, LOW);
+      digitalWrite(MOTOR_ENABLE_PIN, LOW);
       stream = 0;
       digitalWrite(LED_PIN, LOW);
       leg->state = old_L_state_L;
