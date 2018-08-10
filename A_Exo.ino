@@ -151,11 +151,11 @@ void resetMotorIfError() {
 
   motor_error = (left_leg->motor_error || right_leg->motor_error);
 
-  if (left_leg->motor_error){
+  if (left_leg->motor_error) {
     left_leg->Time_error_counter++;
   }
 
-  if (right_leg->motor_error){
+  if (right_leg->motor_error) {
     right_leg->Time_error_counter++;
   }
 
@@ -295,7 +295,7 @@ void reset_starting_parameters() {
   reset_leg_starting_parameters(right_leg);
 }
 
-void reset_leg_starting_parameters(Leg* leg){
+void reset_leg_starting_parameters(Leg* leg) {
   leg->p_steps->count_plant = 0;
   leg->p_steps->n_steps = 0;
   leg->p_steps->flag_start_plant = false;
