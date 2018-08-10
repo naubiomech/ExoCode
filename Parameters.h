@@ -72,7 +72,7 @@ double min_ERR = -0.20;
 
 // ===== IMU Parameters =====
 const int BNO055_SAMPLERATE_DELAY_MS = 100;
-const double stability_trq_gain = 0.01;
+const double stability_trq_gain = 1;
 
 // ===== Torque Speed Adjust Parameters =====
 const int n_step_baseline = 6;

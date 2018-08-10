@@ -70,11 +70,6 @@ void state_machine(Leg* leg)
 
   if ((Trq_time_volt == 2 || Trq_time_volt == 3) && leg->state == 3) {
     leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
-    Serial.println("After switch case : ");
-    Serial.println(leg->coef_in_3_steps_Pctrl);
-    Serial.println(leg->Setpoint_Ankle_Pctrl);
-    Serial.println(leg->PID_Setpoint);
-    Serial.println();
   }
   else {
 

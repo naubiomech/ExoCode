@@ -24,7 +24,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
-#define TWO_LEG_BOARD
+#define IMU_BOARD
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -40,9 +40,10 @@ const unsigned int zero = 2048;//1540;
 #include "Msg_functions.h"
 #include "Auto_KF.h"
 #include <Metro.h> // Include the Metro library
-
+#include "IMU.h"
 
 Metro slowThisDown = Metro(1);  // Set the function to be called at no faster a rate than once per millisecond
+Metro BnoControl = Metro(10);
 
 //To interrupt and to schedule we take advantage of the
 elapsedMillis timeElapsed;
@@ -69,18 +70,14 @@ SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an 
 
 void setup()
 {
-  // set the interrupt
-  Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
-  Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
-  Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
-  //  Timer2.initialize(2000);
-
-  //  Timer2.initialize(2000);
 
   // enable bluetooth
   bluetooth.begin(115200);
   Serial.begin(115200);
-  //while (!Serial) {};
+
+  Serial.println("Starting");
+
+  setupIMU(&bno);
 
   initialize_left_leg(left_leg);
   initialize_right_leg(right_leg);
@@ -101,6 +98,11 @@ void setup()
   //  left_leg->p_FSR_Array = &left_leg->FSR_Average_array[0];
   //  right_leg->p_FSR_Array = &right_leg->FSR_Average_array[0];
   digitalWrite(LED_PIN, HIGH);
+
+  // set the interrupt
+  Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
+  Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
+  Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
 
 }
 
@@ -150,7 +152,10 @@ void loop()
     slowThisDown.reset();     //Resets the interval
   }
 
-
+  if (BnoControl.check()) {
+    updateIMU(&bno);
+    BnoControl.reset();
+  }
 
   if (stream != 1)
   {
@@ -188,7 +193,7 @@ void resetMotorIfError() {
       if (time_err_motor == 0) {
         digitalWrite(onoff, LOW);
         time_err_motor_reboot = 0;
-          }
+      }
 
       motor_driver_count_err++;
       time_err_motor++;
@@ -281,8 +286,11 @@ void rotate_motor() {
 
     streamTimerCount++;
 
-    pid(left_leg, left_leg->Average_Trq);
-    pid(right_leg, right_leg->Average_Trq);
+    stability_trq = euler.z() - 90;
+    stability_trq *= stability_trq_gain;
+
+    pid(left_leg, left_leg->Average_Trq, -stability_trq);
+    pid(right_leg, right_leg->Average_Trq, stability_trq);
 
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
