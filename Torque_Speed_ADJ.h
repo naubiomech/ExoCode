@@ -42,9 +42,6 @@ typedef struct {
 	double torque_average;
 } steps;
 
-steps val_L;
-steps val_R;
-
 int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_flag_take_baseline_l);
 double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l,
 				double* p_Setpoint_Ankle_l, double * p_Setpoint_Ankle_Pctrl_l, int flag_torque_time_volt_l,

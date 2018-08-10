@@ -26,24 +26,21 @@
 
 #define IMU_BOARD
 //The digital pin connected to the motor on/off swich
-const unsigned int zero = 2048;//1540;
 
 #include "Parameters.h"
-#include "System.h"
 #include "Board.h"
 #include "Leg.h"
 #include <elapsedMillis.h>
 #include <EEPROM.h>
 #include "TimerOne.h"
 #include <PID_v2.h>
-#include <SoftwareSerial.h>
 #include "Reference_ADJ.h"
 #include "Msg_functions.h"
 #include "Auto_KF.h"
 #include "IMU.h"
+#include "System.h"
 
 //Includes the SoftwareSerial library to be able to use the bluetooth Serial Communication
-SoftwareSerial bluetooth(BLUETOOTH_TX_PIN, BLUETOOTH_RX_PIN);                  // Sets an object named bluetooth to act as a serial port
 
 void setup()
 {
@@ -82,25 +79,6 @@ void setup()
   Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
 
 }
-
-
-int Trq_time_volt = 0; // 1 for time 0 for volt 2 for proportional gain 3 for pivot proportional control
-int Old_Trq_time_volt = Trq_time_volt;
-int flag_13 = 1;
-int flag_count = 0;
-
-int flag_semaphore = 0;
-
-volatile double motor_driver_count_err;
-
-double start_time_callback, start_time_timer;
-
-int time_err_motor;
-int time_err_motor_reboot;
-
-int flag_enable_catch_error = 1;
-
-bool motor_error = false;
 
 void callback()//executed every 2ms
 {

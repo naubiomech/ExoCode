@@ -1,5 +1,8 @@
 #ifndef PARAMETERS_HEADER
 #define PARAMETERS_HEADER
+
+const unsigned int zero = 2048;//1540;
+
 // ===== FSR Parameters =====
 // To set FSR bias and to identify the states
 double fsrLongCurrent = 0;

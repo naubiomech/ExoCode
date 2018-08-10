@@ -6,15 +6,6 @@
 #include <Adafruit_BNO055_t3.h>
 #include <utility/imumaths.h>
 
-sensors_event_t event;
-imu::Vector<3> euler;
-
-volatile double stability_trq;
-
-Adafruit_BNO055 bno = Adafruit_BNO055(WIRE_BUS, 1, BNO055_ADDRESS_A, I2C_MASTER, IMU_1_PINS, I2C_PULLUP_EXT, I2C_RATE_100, I2C_OP_MODE_ISR);
-
-bool IMU_flag;
-
 void setupIMU(Adafruit_BNO055* bno);
 void calibrateIMU(Adafruit_BNO055* bno);
 void updateIMU(Adafruit_BNO055* bno);

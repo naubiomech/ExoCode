@@ -11,14 +11,6 @@ typedef struct {
   int N_double;
 } msg;
 
-msg val_msg_send;
-msg val_msg_receive;
-msg* p_msg_send = &val_msg_send;
-msg* p_msg_receive = &val_msg_receive;
-
-double data_to_send[8];
-double *data_to_send_point = &data_to_send[0];
-
 void send_data_message_wc(); //with COP
 void send_command_message(char command_char, double* data_point, int number_to_send);
 

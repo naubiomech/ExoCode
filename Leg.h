@@ -159,11 +159,6 @@ struct Leg {
 
 };
 
-Leg left_leg_value = Leg();
-Leg right_leg_value = Leg();
-Leg* left_leg = &left_leg_value;
-Leg* right_leg = &right_leg_value;
-
 void initialize_leg(Leg* leg);
 void initialize_left_leg(Leg* left_leg);
 void initialize_right_leg(Leg* right_leg);
