@@ -42,8 +42,6 @@ const unsigned int zero = 2048;//1540;
 #include "Auto_KF.h"
 #include "IMU.h"
 
-const unsigned int which_leg_pin = WHICH_LEG_PIN;
-
 //Includes the SoftwareSerial library to be able to use the bluetooth Serial Communication
 int bluetoothTx = 0;                                                 // TX-O pin of bluetooth mate, Teensy D0
 int bluetoothRx = 1;                                                 // RX-I pin of bluetooth mate, Teensy D1
