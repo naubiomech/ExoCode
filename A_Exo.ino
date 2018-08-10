@@ -123,7 +123,7 @@ void resetMotorIfError() {
   left_leg->motor_error = (analogRead(left_leg->pin_err) <= 5);
   right_leg->motor_error = (analogRead(right_leg->pin_err) <= 5);
 
-  motor_error = (left_leg->motor_error || right_leg->motor_error);
+  bool motor_error = (left_leg->motor_error || right_leg->motor_error);
 
   if (left_leg->motor_error) {
     left_leg->Time_error_counter++;

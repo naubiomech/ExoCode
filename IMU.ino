@@ -10,6 +10,7 @@ void setupIMU(Adafruit_BNO055* bno){
 }
 
 void calibrateIMU(Adafruit_BNO055* bno){
+  sensors_event_t event;
   Serial.println("IMU setup... calibrating");
   while (!bno->isFullyCalibrated()) {
     bno->getEvent(&event);

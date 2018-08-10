@@ -28,7 +28,7 @@ void FSR_calibration()
   if (FSR_FIRST_Cycle) {
     FSR_FIRST_Cycle = 0;
 
-    startTime = millis();
+    fsrCalibrationStartTime = millis();
     Serial.println("First time");
     right_leg->Curr_Combined = 0;
     left_leg->Curr_Combined = 0;
@@ -38,7 +38,7 @@ void FSR_calibration()
   }
 
 
-  if (millis() - startTime < 5000)
+  if (millis() - fsrCalibrationStartTime < 5000)
   {
 
     right_leg->Curr_Combined = fsr(right_leg->fsr_sense_Toe) + fsr(right_leg->fsr_sense_Heel);
