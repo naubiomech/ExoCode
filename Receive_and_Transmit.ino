@@ -9,25 +9,25 @@ void receive_and_transmit()
   cmd_from_Gui = bluetooth.read();
   switch (cmd_from_Gui)
   {
-  case '?':
+  case COMM_CODE_REQUEST_DATA:
     send_data_message_wc();
     break;
 
-  case 'D':                                         //if MATLAB sent the character D
+  case COMM_CODE_GET_LEFT_ANKLE_SETPOINT:                                         //if MATLAB sent the character D
     *(data_to_send_point) = left_leg->Setpoint_Ankle;      //MATLAB is expecting to recieve the Torque Parameters
     send_command_message('D', data_to_send_point, 1);
     Serial.print("Received Left Set ");
     Serial.println(left_leg->Setpoint_Ankle);
     break;
 
-  case 'd':
+  case COMM_CODE_GET_RIGHT_ANKLE_SETPOINT:
     *(data_to_send_point) = right_leg->Setpoint_Ankle;
     send_command_message('d', data_to_send_point, 1);     //MATLAB is expecting to receive the Torque Parameters
     Serial.print("Received Right Set");
     Serial.println(right_leg->Setpoint_Ankle);
     break;
 
-  case 'F':
+  case COMM_CODE_SET_LEFT_ANKLE_SETPOINT:
     receiveVals(8);                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
     left_leg->Previous_Setpoint_Ankle = left_leg->Setpoint_Ankle;
     memcpy(&left_leg->Setpoint_Ankle, &holdon, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
@@ -54,7 +54,7 @@ void receive_and_transmit()
     }
     break;
 
-  case 'f':
+  case COMM_CODE_SET_RIGHT_ANKLE_SETPOINT:
     receiveVals(8);                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
     right_leg->Previous_Setpoint_Ankle = right_leg->Setpoint_Ankle;
     memcpy(&right_leg->Setpoint_Ankle, &holdon, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
@@ -82,45 +82,45 @@ void receive_and_transmit()
     }
     break;
 
-  case 'E':
+  case COMM_CODE_START_TRIAL:
     digitalWrite(onoff, HIGH);                                         //The GUI user is ready to start the trial so Motor is enabled
     stream = 1;                                                     //and the torque data is allowed to be streamed
     streamTimerCount = 0;
     timeElapsed = 0;
     break;
 
-  case 'G':
+  case COMM_CODE_END_TRIAL:
     digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
     stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
     break;
 
-  case 'H':
+  case COMM_CODE_CALIBRATE_TORQUE:
     torque_calibration();
     write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
     write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
     break;
 
-  case 'K':
+  case COMM_CODE_GET_LEFT_ANKLE_PID_PARAMS:
     *(data_to_send_point) = left_leg->kp;
     *(data_to_send_point + 1) = left_leg->kd;
     *(data_to_send_point + 2) = left_leg->ki;
     send_command_message('K', data_to_send_point, 3);     //MATLAB is expecting to recieve the Torque Parameters
     break;
 
-  case 'k':
+  case COMM_CODE_GET_RIGHT_ANKLE_PID_PARAMS:
     *(data_to_send_point) = right_leg->kp;
     *(data_to_send_point + 1) = right_leg->kd;
     *(data_to_send_point + 2) = right_leg->ki;
     send_command_message('k', data_to_send_point, 3);     //MATLAB is expecting to recieve the Torque Parameters
     break;
 
-  case 'L':
+  case COMM_CODE_CALIBRATE_FSR:
 
     FSR_CAL_FLAG = 1;
 
     break;
 
-  case 'M':
+  case COMM_CODE_SET_LEFT_PID_PARAMS:
     receiveVals(24);                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
     //MATLAB Sent Kp, then Kd, then Ki.
     memcpy(&left_leg->kp, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
@@ -129,7 +129,7 @@ void receive_and_transmit()
     left_leg->pid.SetTunings(left_leg->kp, left_leg->ki, left_leg->kd);
     break;
 
-  case 'm':
+  case COMM_CODE_SET_RIGHT_PID_PARAMS:
     receiveVals(24);                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
     //MATLAB Sent Kp, then Kd, then Ki.
     memcpy(&right_leg->kp, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
@@ -138,14 +138,14 @@ void receive_and_transmit()
     right_leg->pid.SetTunings(right_leg->kp, right_leg->ki, right_leg->kd);
     break;
 
-  case 'N':
+  case COMM_CODE_CHECK_BLUETOOTH:
     *(data_to_send_point) = 0;
     *(data_to_send_point + 1) = 1;
     *(data_to_send_point + 2) = 2;
     send_command_message('N', data_to_send_point, 3);   //For the Arduino to prove to MATLAB that it is behaving, it will send back the character B
     break;
 
-  case '<':
+  case COMM_CODE_CHECK_MEMORY:
     if ((check_torque_bias(left_leg->torque_address)) && (check_torque_bias(right_leg->torque_address)))
     {
       left_leg->torque_calibration_value = read_torque_bias(left_leg->torque_address);
@@ -192,7 +192,7 @@ void receive_and_transmit()
     right_leg->p_steps->voltage_peak_ref = right_leg->fsr_Combined_peak_ref;
     break;
 
-  case '>':
+  case COMM_CODE_CLEAR_MEMORY:
     //------------------------------------------
     if (clean_torque_bias(left_leg->torque_address))
     {
@@ -254,32 +254,32 @@ void receive_and_transmit()
     }
     break;
 
-  case '_':
+  case COMM_CODE_SET_LEFT_ANKLE_KF_:
     receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
     memcpy(&left_leg->KF, &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
     // right_leg->KF = right_leg->store_KF;
     break;
 
-  case '-':
+  case COMM_CODE_SET_RIGHT_ANKLE_KF:
     receiveVals(8);
     memcpy(&right_leg->KF, &holdon, 8);
     break;
 
-  case'`':
+  case COMM_CODE_GET_LEFT_ANKLE_KF:
     *(data_to_send_point) = left_leg->KF;
     send_command_message('`', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
     Serial.print("Checking left KF ");
     Serial.println(left_leg->KF);
     break;
 
-  case'~':
+  case COMM_CODE_GET_RIGHT_ANKLE_KF:
     *(data_to_send_point) = right_leg->KF;
     send_command_message('~', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
     Serial.print("Checking right KF ");
     Serial.println(right_leg->KF);
     break;
 
-  case')':
+  case COMM_CODE_SET_SMOOTHING_PARAMS:
     receiveVals(24);                               //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
     //MATLAB Sent N1 N2 and then N3 Paramenters for smoothing (see change pid setpoint)
     memcpy(&N1, holdOnPoint, 8);                   //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
@@ -304,7 +304,7 @@ void receive_and_transmit()
     Serial.println();
     break;
 
-  case '(':
+  case COMM_CODE_GET_SMOOTHING_PARAMS:
     *(data_to_send_point) = N1;
     *(data_to_send_point + 1) = N2;
     *(data_to_send_point + 2) = N3;
@@ -320,42 +320,42 @@ void receive_and_transmit()
 
     break;
 
-  case 'P':
+  case COMM_CODE_SET_LEFT_ANKLE_FREQ_BASELINE:
     left_leg->p_steps->flag_take_baseline = true;
     Serial.println("Left Freq Baseline ");
     break;
 
-  case 'p':
+  case COMM_CODE_SET_RIGHT_ANKLE_FREQ_BASELINE:
     right_leg->p_steps->flag_take_baseline = true;
     Serial.println("Right Freq Baseline ");
     break;
 
-  case 'O':
+  case COMM_CODE_ADJ_LEFT_ANKLE_N3:
     left_leg->p_steps->flag_N3_adjustment_time = true;
     Serial.println(" Left N3 Adj ");
     break;
 
 
-  case 'o':
+  case COMM_CODE_ADJ_RIGHT_ANKLE_N3:
     right_leg->p_steps->flag_N3_adjustment_time = true;
     Serial.println(" Right N3 Adj ");
     break;
 
-  case 'Q':
+  case COMM_CODE_GET_LEFT_ANKLE_FSR_THRESHOLD:
     *(data_to_send_point) = left_leg->fsr_percent_thresh_Toe;
     send_command_message('Q', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
     Serial.print("Checking the left_leg->fsr_percent_thresh_Toe: ");
     Serial.println(left_leg->fsr_percent_thresh_Toe);
     break;
 
-  case 'q':
+  case COMM_CODE_GET_RIGHT_ANKLE_FSR_THRESHOLD:
     *(data_to_send_point) = right_leg->fsr_percent_thresh_Toe;
     send_command_message('q', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
     Serial.print("Checking the right_leg->fsr_percent_thresh_Toe: ");
     Serial.println(right_leg->fsr_percent_thresh_Toe);
     break;
 
-  case 'R':
+  case COMM_CODE_SET_LEFT_ANKLE_FSR_THRESHOLD:
     receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
     memcpy(&left_leg->fsr_percent_thresh_Toe, &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
     left_leg->p_steps->fsr_percent_thresh_Toe = left_leg->fsr_percent_thresh_Toe;
@@ -363,7 +363,7 @@ void receive_and_transmit()
     Serial.println(left_leg->fsr_percent_thresh_Toe);
     break;
 
-  case 'r':
+  case COMM_CODE_SET_RIGHT_ANKLE_FSR_THRESHOLD:
     receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
     memcpy(&right_leg->fsr_percent_thresh_Toe, &holdon, 8);
     right_leg->p_steps->fsr_percent_thresh_Toe = right_leg->fsr_percent_thresh_Toe;
@@ -371,26 +371,26 @@ void receive_and_transmit()
     Serial.println(right_leg->fsr_percent_thresh_Toe);
     break;
 
-  case 'S':
+  case COMM_CODE_SET_LEFT_ANKLE_PERC:
     receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
     memcpy(&(left_leg->p_steps->perc_l), &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
     Serial.print("Setting the left_leg->p_steps->perc_l: ");
     Serial.println(left_leg->p_steps->perc_l);
     break;
 
-  case's':
+  case COMM_CODE_SET_RIGHT_ANKLE_PERC:
     receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
     memcpy(&(right_leg->p_steps->perc_l), &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
     Serial.print("Setting the right_leg->p_steps->perc_l: ");
     Serial.println(right_leg->p_steps->perc_l);
     break;
 
-  case 'C':
+  case COMM_CODE_CLEAN_BLUETOOTH_BUFFER:
     while (bluetooth.available() > 0) bluetooth.read();
     Serial.println("Buffer Clean");
     break;
 
-  case 'T':
+  case COMM_CODE_STOP_LEFT_ANKLE_N3_ADJ:
     left_leg->p_steps->count_plant = 0;
     left_leg->p_steps->n_steps = 0;
     left_leg->p_steps->flag_start_plant = false;
@@ -403,7 +403,7 @@ void receive_and_transmit()
     Serial.println(left_leg->N3);
     break;
 
-  case 't':
+  case COMM_CODE_STOP_RIGHT_ANKLE_N3_ADJ:
     right_leg->p_steps->count_plant = 0;
     right_leg->p_steps->n_steps = 0;
     right_leg->p_steps->flag_start_plant = false;
@@ -416,14 +416,14 @@ void receive_and_transmit()
     Serial.println(right_leg->N3);
     break;
 
-  case 'I':
+  case COMM_CODE_STOP_LEFT_ANKLE_TORQUE_ADJ:
     *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
     left_leg->p_steps->torque_adj = false;
     Serial.print("Stop Left TRQ adj, come back to: ");
     Serial.println(*left_leg->p_Setpoint_Ankle );
     break;
 
-  case 'i':
+  case COMM_CODE_STOP_RIGHT_ANKLE_TORQUE_ADJ:
 
     *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
     right_leg->p_steps->torque_adj = false;
@@ -432,7 +432,7 @@ void receive_and_transmit()
     Serial.println(*right_leg->p_Setpoint_Ankle);
     break;
 
-  case '!':
+  case COMM_CODE_SAVE_EXP_PARAMS:
     if (stream == 1) {
       Serial.print("Cannot save data during streaming ");
     } else {
@@ -451,55 +451,55 @@ void receive_and_transmit()
     }//end if
     break;
 
-  case 'W':
+  case COMM_CODE_NEG_LEFT_ANKLE_SIGN:
     left_leg->sign = -1;
     Serial.println(" Changed Sign in the Left torque ");
     break;
 
-  case 'X':
+  case COMM_CODE_RESORE_LEFT_ANKLE_SIGN:
     left_leg->sign = 1;
     Serial.println(" Restored the correct Sign the Left torque ");
     break;
 
-  case 'w':
+  case COMM_CODE_NEG_RIGHT_ANKLE_SIGN:
     right_leg->sign = -1;
     Serial.println(" Changed Sign in the Right torque ");
     break;
 
-  case 'x':
+  case COMM_CODE_RESORE_RIGHT_ANKLE_SIGN:
     right_leg->sign = 1;
     Serial.println(" Restored the correct Sign the Right torque ");
     break;
 
-  case '[': // Receive Right Gain from GUI
+  case COMM_CODE_GET_RIGHT_ANKLE_GAIN: // Receive Right Gain from GUI
     receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
     memcpy(&right_leg->Prop_Gain, &holdon, 8);
     Serial.print(" Settting Right Gain for Proportional Ctrl: ");
     Serial.println(right_leg->Prop_Gain);
     break;
 
-  case ']': // Send Right Gain to GUI
+  case COMM_CODE_SET_RIGHT_ANKLE_GAIN: // Send Right Gain to GUI
     *(data_to_send_point) = right_leg->Prop_Gain;
     send_command_message(']', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
     Serial.print(" Checking Right Gain for Proportional Ctrl: ");
     Serial.println(right_leg->Prop_Gain);
     break;
 
-  case '{': // Receive Left Gain from GUI
+  case COMM_CODE_GET_LEFT_ANKLE_GAIN: // Receive Left Gain from GUI
     receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
     memcpy(&left_leg->Prop_Gain, &holdon, 8);
     Serial.print(" Settting Left Gain for Proportional Ctrl: ");
     Serial.println(left_leg->Prop_Gain);
     break;
 
-  case '}': // Send Left Gain to GUI
+  case COMM_CODE_SET_LEFT_ANKLE_GAIN: // Send Left Gain to GUI
     *(data_to_send_point) = left_leg->Prop_Gain;
     send_command_message('}', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
     Serial.print(" Checking Left Gain for Proportional Ctrl: ");
     Serial.println(left_leg->Prop_Gain);
     break;
 
-  case '+':
+  case COMM_CODE_ACTIVATE_PROP_CTRL:
     Old_Trq_time_volt = Trq_time_volt;
     Trq_time_volt = 2;
     *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
@@ -507,7 +507,7 @@ void receive_and_transmit()
     Serial.println(" Activate Proportional Ctrl: ");
     break;
 
-  case '=':
+  case COMM_CODE_DEACTIVATE_PROP_CTRL:
     Trq_time_volt = Old_Trq_time_volt;
     right_leg->p_steps->torque_adj = false;
     left_leg->p_steps->torque_adj = false;
@@ -519,19 +519,19 @@ void receive_and_transmit()
     break;
 
 
-  case '.':
+  case COMM_CODE_ACTIVATE_AUTO_KF:
     flag_auto_KF = 1;
     left_leg->KF = 1;
     right_leg->KF = 1;
     Serial.println(" Activate Auto KF ");
     break;
 
-  case ';':
+  case COMM_CODE_DEACTIVATE_AUTO_KF:
     flag_auto_KF = 0;
     Serial.println(" Deactivate Auto KF ");
     break;
 
-  case '#':
+  case COMM_CODE_ACTIVATE_PROP_PIVOT_CTRL:
     Old_Trq_time_volt = Trq_time_volt;
     Trq_time_volt = 3; // activate pivot proportional control
     *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
@@ -539,7 +539,7 @@ void receive_and_transmit()
     Serial.println(" Activate Proportional Pivot Ctrl ");
     break;
 
-  case '^':
+  case COMM_CODE_DEACTIVATE_PROP_PIVOT_CTRL:
     Trq_time_volt = Old_Trq_time_volt;
     right_leg->p_steps->torque_adj = false;
     left_leg->p_steps->torque_adj = false;
@@ -550,7 +550,7 @@ void receive_and_transmit()
     Serial.println(" Deactivate Proportional Pivot Ctrl ");
     break;
 
-  case 'B':
+  case COMM_CODE_GET_BASELINE:
     // check baseline
     Serial.println("Check Baseline");
     Serial.println(left_leg->p_steps->plant_peak_mean);
@@ -560,7 +560,7 @@ void receive_and_transmit()
     send_command_message('B', data_to_send_point, 2);
     break;
 
-  case 'b':
+  case COMM_CODE_CALC_BASELINE:
     // Calc baseline
     Serial.println(" Calc Baseline");
     left_leg->FSR_baseline_FLAG = 1;
