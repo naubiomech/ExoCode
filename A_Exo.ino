@@ -80,13 +80,7 @@ void setup()
 
   Serial.println("Starting");
 
-  if (!bno.begin())
-  {
-    Serial.println("No IMU detected haulting...");
-  } else {
-
-    //calibrateIMU(bno);
-  }
+  setupIMU(&bno);
 
   initialize_left_leg(left_leg);
   initialize_right_leg(right_leg);
@@ -162,7 +156,7 @@ void loop()
   }
 
   if (BnoControl.check()) {
-    euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
+    updateIMU(&bno);
     BnoControl.reset();
   }
 

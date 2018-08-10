@@ -5,7 +5,7 @@ void pid(Leg* leg, double trq, double stability){
   PID* pid;
   double input;
 
-  if (leg->state == 3 && Trq_time_volt == 2){
+  if (IMU_ENABLED && leg->state == 3 && Trq_time_volt == 2){
     input = stability * leg->Prop_Gain;
     pid = &(leg->balance_pid);
   } else{

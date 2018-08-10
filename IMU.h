@@ -15,6 +15,7 @@ Adafruit_BNO055 bno = Adafruit_BNO055(WIRE_BUS, 1, BNO055_ADDRESS_A, I2C_MASTER,
 
 bool IMU_flag;
 
-void calibrateIMU(Adafruit_BNO055 bno);
-
+void setupIMU(Adafruit_BNO055* bno);
+void calibrateIMU(Adafruit_BNO055* bno);
+void updateIMU(Adafruit_BNO055* bno);
 #endif
