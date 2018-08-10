@@ -38,6 +38,12 @@ int flag_enable_catch_error = 1;
 
 bool motor_error = false;
 
+// ===== FSR Parameters =====
+int FSR_FIRST_Cycle = 1;
+int FSR_CAL_FLAG = 0;
+
+double base_1, base_2;
+
 // ===== Auto KF =====
 int flag_auto_KF = 0;
 
@@ -52,10 +58,8 @@ Adafruit_BNO055 bno = Adafruit_BNO055(WIRE_BUS, 1, BNO055_ADDRESS_A, I2C_MASTER,
 bool IMU_flag;
 
 // ===== Leg =====
-Leg left_leg_value = Leg();
-Leg right_leg_value = Leg();
-Leg* left_leg = &left_leg_value;
-Leg* right_leg = &right_leg_value;
+Leg* left_leg = new Leg();
+Leg* right_leg = new Leg();
 
 // ===== Msg Functions =====
 msg val_msg_send;
@@ -66,6 +70,11 @@ msg* p_msg_receive = &val_msg_receive;
 double data_to_send[8];
 double *data_to_send_point = &data_to_send[0];
 
+// ===== Shaping Parameters =====
+// the smoothing value, i.e. the sigmoind number of steps as a function of the EXO state
+double N3 = 500;
+double N2 = 4;
+double N1 = 4;
 // ===== Torque Speed Adj =====
 steps val_L;
 steps val_R;
