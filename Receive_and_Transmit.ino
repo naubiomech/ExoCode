@@ -6,7 +6,7 @@
 void receive_and_transmit()
 {
 
-  cmd_from_Gui = bluetooth.read();
+  int cmd_from_Gui = bluetooth.read();
   switch (cmd_from_Gui)
   {
   case COMM_CODE_REQUEST_DATA:

@@ -54,7 +54,6 @@ int stream = 0;
 char holdon[24];
 char *holdOnPoint = &holdon[0];
 char Peek = 'a';
-int cmd_from_Gui = 0;
 
 // Single board small
 const unsigned int onoff = MOTOR_ENABLE_PIN;
