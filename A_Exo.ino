@@ -43,9 +43,7 @@ const unsigned int zero = 2048;//1540;
 #include "IMU.h"
 
 //Includes the SoftwareSerial library to be able to use the bluetooth Serial Communication
-int bluetoothTx = 0;                                                 // TX-O pin of bluetooth mate, Teensy D0
-int bluetoothRx = 1;                                                 // RX-I pin of bluetooth mate, Teensy D1
-SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an object named bluetooth to act as a serial port
+SoftwareSerial bluetooth(BLUETOOTH_TX_PIN, BLUETOOTH_RX_PIN);                  // Sets an object named bluetooth to act as a serial port
 
 void setup()
 {

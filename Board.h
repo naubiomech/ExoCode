@@ -8,8 +8,8 @@ const i2c_pins IMU_SLOT_2_PINS = I2C_PINS_7_8;
 const i2c_pins IMU_SLOT_3_PINS = I2C_PINS_37_38;
 const bool IMU_ENABLED = true;
 
-const unsigned int RX1_PIN = 0;
-const unsigned int TX1_PIN = 1;
+const unsigned int BLUETOOTH_RX_PIN = 0;
+const unsigned int BLUETOOTH_TX_PIN = 1;
 
 const unsigned int FSR_SENSE_RIGHT_HEEL_PIN = A12;
 const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A13;
@@ -37,8 +37,8 @@ const i2c_pins IMU_1_PINS = IMU_SLOT_2_PINS;
 #ifdef TWO_LEG_BOARD
 const bool IMU_ENABLED = false;
 
-const unsigned int RX1_PIN = 0;
-const unsigned int TX1_PIN = 1;
+const unsigned int BLUETOOTH_RX_PIN = 0;
+const unsigned int BLUETOOTH_TX_PIN = 1;
 
 const unsigned int FSR_SENSE_RIGHT_HEEL_PIN = A12;
 const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A13;
