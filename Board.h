@@ -12,8 +12,8 @@ const unsigned int TX1_PIN = 1;
 
 const unsigned int FSR_SENSE_RIGHT_HEEL_PIN = A12;
 const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A13;
-const unsigned int FSR_SENSE_LEFT_TOE_PIN = A14;
-const unsigned int FSR_SENSE_LEFT_HEEL_PIN = A15;
+const unsigned int FSR_SENSE_LEFT_TOE_PIN = A15;
+const unsigned int FSR_SENSE_LEFT_HEEL_PIN = A14;
 
 const unsigned int TORQUE_SENSOR_RIGHT_ANKLE_PIN = A6;
 const unsigned int TORQUE_SENSOR_LEFT_ANKLE_PIN = A0;
@@ -37,8 +37,8 @@ const unsigned int TX1_PIN = 1;
 
 const unsigned int FSR_SENSE_RIGHT_HEEL_PIN = A12;
 const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A13;
-const unsigned int FSR_SENSE_LEFT_TOE_PIN = A14;
-const unsigned int FSR_SENSE_LEFT_HEEL_PIN = A15;
+const unsigned int FSR_SENSE_LEFT_TOE_PIN = A15;
+const unsigned int FSR_SENSE_LEFT_HEEL_PIN = A14;
 
 const unsigned int TORQUE_SENSOR_RIGHT_ANKLE_PIN = A18;
 const unsigned int TORQUE_SENSOR_LEFT_ANKLE_PIN = A19;
@@ -57,3 +57,6 @@ const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = 7;
 #endif
 
 #endif
+
+
+

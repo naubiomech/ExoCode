@@ -9,7 +9,7 @@ void send_data_message_wc() //with COP
   bluetooth.print(',');
   bluetooth.print(right_leg->state);
   bluetooth.print(',');
-  bluetooth.print(right_leg->sign * stability_trq * right_leg->Prop_Gain);
+  bluetooth.print(right_leg->sign * right_leg->PID_Setpoint);
   bluetooth.print(',');
   bluetooth.print(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
   bluetooth.print(',');
@@ -21,7 +21,7 @@ void send_data_message_wc() //with COP
   bluetooth.print(',');
   bluetooth.print(left_leg->state);
   bluetooth.print(',');
-  bluetooth.print(left_leg->sign * -stability_trq * left_leg->Prop_Gain);
+  bluetooth.print(left_leg->sign * left_leg->PID_Setpoint);
   bluetooth.print(',');
   bluetooth.print(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
   bluetooth.print(',');
@@ -29,13 +29,19 @@ void send_data_message_wc() //with COP
   bluetooth.print(',');
 
 
-  bluetooth.print(left_leg->Time_error_counter); //SIG1
+//  bluetooth.print(left_leg->Time_error_counter); //SIG1
+//  bluetooth.print(',');
+//  bluetooth.print(right_leg->Time_error_counter); //SIG2
+//  bluetooth.print(',');
+
+  bluetooth.print((left_leg->Vol)); //SIG1
   bluetooth.print(',');
-  bluetooth.print(right_leg->Time_error_counter); //SIG2
+  bluetooth.print((right_leg->Vol)); //SIG2
   bluetooth.print(',');
-  bluetooth.print(stability_trq); //SIG3
+
+  bluetooth.print(left_leg->FSR_Ratio); //SIG3
   bluetooth.print(',');
-  bluetooth.print(stability_trq / stability_trq_gain); //SIG4
+  bluetooth.print(right_leg->FSR_Ratio); //SIG4
 
   bluetooth.print(',');
   bluetooth.println('Z');

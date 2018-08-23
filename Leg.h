@@ -5,7 +5,6 @@ const int dim = 5;
 
 #include "PID_v2.h"
 #include "Torque_Speed_ADJ.h"
-#include "PID_and_Ctrl_Parameters.h"
 
 struct Leg {
   int torque_sensor_ankle_pin;
@@ -84,9 +83,9 @@ struct Leg {
   double torque_calibration_value = 0;
   double T_act;
   int Vol;
-  double kp = 800;
+  double kp = 1000;
   double ki = 0;
-  double kd = 3;
+  double kd = 0;
   double KF = 1;
 
   double PID_Setpoint, Input, Output;
@@ -97,6 +96,11 @@ struct Leg {
   double* p_Setpoint_Ankle = &Setpoint_Ankle;
   double* p_Setpoint_Ankle_Pctrl = &Setpoint_Ankle_Pctrl;
   double Setpoint_earlyStance = 0.25 * Setpoint_Ankle;
+  double Dorsi_Setpoint_Ankle;
+  double Previous_Dorsi_Setpoint_Ankle;
+  double* p_Dorsi_Setpoint_Ankle = &Dorsi_Setpoint_Ankle;
+  double* p_Previous_Dorsi_Setpoint_Ankle = &Previous_Dorsi_Setpoint_Ankle;
+
 
   // Proportional_Ctrl.h
   double Prop_Gain = 1;
@@ -130,6 +134,10 @@ struct Leg {
   double N2 = 4;
   double N1 = 4;
 
+  double old_N3 = 500;
+  double old_N2 = 4;
+  double old_N1 = 4;
+
   long sig_time = 0;
   long sig_time_old = 0;
 
@@ -149,6 +157,7 @@ struct Leg {
   double start_from_3 = 0;
   double start_time = 0;
 
+  double zero;
 
   // Torque_Speed_ADJ.h
   //steps steps;

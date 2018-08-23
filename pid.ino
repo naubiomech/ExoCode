@@ -16,6 +16,8 @@ void pid(Leg* leg, double input){
   }
   leg->Input = input;
   leg->pid.Compute_KF(leg->KF);
-  leg->Vol = leg->Output + zero; //need to map
+//  Serial.print(" ZERO: ");
+//  Serial.print(leg->zero);
+  leg->Vol = leg->Output + leg->zero; //need to map
   analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
 }

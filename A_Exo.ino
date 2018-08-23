@@ -38,7 +38,6 @@ const unsigned int zero = 2048;//1540;
 #include <SoftwareSerial.h>
 #include "Reference_ADJ.h"
 #include "Msg_functions.h"
-#include "Calibrate_and_Read_Sensors.h"
 #include "Proportional_Ctrl.h"
 #include "Auto_KF.h"
 #include "Combined_FSR.h"
@@ -71,6 +70,13 @@ int bluetoothTx = 0;                                                 // TX-O pin
 int bluetoothRx = 1;                                                 // RX-I pin of bluetooth mate, Teensy D1
 SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an object named bluetooth to act as a serial port
 
+
+
+bool FLAG_PRINT_TORQUES = false;
+bool FLAG_PID_VALS = true;
+
+
+
 void setup()
 {
   // set the interrupt
@@ -86,11 +92,13 @@ void setup()
   Serial.begin(115200);
   //while (!Serial) {};
 
+  analogWriteResolution(12);                                          //change resolution to 12 bits
+  analogReadResolution(12);                                           //ditto
+
   initialize_left_leg(left_leg);
   initialize_right_leg(right_leg);
 
-  analogWriteResolution(12);                                          //change resolution to 12 bits
-  analogReadResolution(12);                                           //ditto
+  torque_calibration();
 
   // The led
   pinMode(LED_PIN, OUTPUT);
@@ -169,11 +177,11 @@ void resetMotorIfError() {
 
   motor_error = (left_leg->motor_error || right_leg->motor_error);
 
-  if (left_leg->motor_error){
+  if (left_leg->motor_error) {
     left_leg->Time_error_counter++;
   }
 
-  if (right_leg->motor_error){
+  if (right_leg->motor_error) {
     right_leg->Time_error_counter++;
   }
 
@@ -192,7 +200,7 @@ void resetMotorIfError() {
       if (time_err_motor == 0) {
         digitalWrite(onoff, LOW);
         time_err_motor_reboot = 0;
-          }
+      }
 
       motor_driver_count_err++;
       time_err_motor++;
@@ -226,14 +234,11 @@ void calculate_leg_average(Leg* leg) {
   leg->FSR_Average_Heel = 0;
   leg->Average = 0;
 
-  for (int i = 0; i < dim_FSR; i++)
+  for (int i = 0; i < dim; i++)
   {
-
-    if (i < dim)
-    {
-      leg->Average =  leg->Average + leg->TarrayPoint[i];
-    }
+    leg->Average =  leg->Average + leg->TarrayPoint[i];
   }
+
   leg->FSR_Average = fsr(leg->fsr_sense_Toe);
   leg->Average_Volt = leg->FSR_Average;
 
@@ -254,6 +259,24 @@ void calculate_leg_average(Leg* leg) {
 void calculate_averages() {
   calculate_leg_average(left_leg);
   calculate_leg_average(right_leg);
+
+  if (FLAG_PRINT_TORQUES) {
+    Serial.print("LEFT [");
+    for (int i = 0; i < dim; i++) {
+      Serial.print(left_leg->TarrayPoint[i]);
+      Serial.print(" , ");
+    }
+    Serial.print(" ] Average: ");
+    Serial.println(left_leg->Average_Trq);
+    Serial.print("RIGHT [");
+    for (int i = 0; i < dim; i++) {
+      Serial.print(right_leg->TarrayPoint[i]);
+      Serial.print(" , ");
+    }
+    Serial.print(" ] Average: ");
+    Serial.println(right_leg->Average_Trq);
+  }
+
 }
 
 void check_FSR_calibration() {
@@ -272,6 +295,31 @@ void check_FSR_calibration() {
 }
 
 void rotate_motor() {
+
+
+  //  // modification to check the pid
+  //  if (FLAG_PID_VALS) {
+  //
+  //    pid(left_leg, left_leg->Average_Trq);
+  //    pid(right_leg, right_leg->Average_Trq);
+  //
+  //    Serial.print("LEFT PID INPUT:");
+  //    Serial.print(left_leg->Input);
+  //    Serial.print(" , AVG: ");
+  //    Serial.print(left_leg->Average_Trq);
+  //    Serial.print(" , VOL: ");
+  //    Serial.println(left_leg->Vol);
+  //    Serial.print("RIGHT PID INPUT:");
+  //    Serial.print(right_leg->Input);
+  //    Serial.print(" , AVG: ");
+  //    Serial.print(right_leg->Average_Trq);
+  //    Serial.print(" , VOL: ");
+  //    Serial.println(right_leg->Vol);
+  //
+  //  }
+  //  // end modification
+
+
   if (stream == 1)
   {
     if (streamTimerCount >= 5)
@@ -287,6 +335,28 @@ void rotate_motor() {
 
     pid(left_leg, left_leg->Average_Trq);
     pid(right_leg, right_leg->Average_Trq);
+
+
+    // modification to check the pid
+    if (FLAG_PID_VALS) {
+
+      Serial.print("LEFT PID INPUT:");
+      Serial.print(left_leg->Input);
+      Serial.print(" , AVG: ");
+      Serial.print(left_leg->Average_Trq);
+      Serial.print(" , VOL: ");
+      double cane = (left_leg->Vol);
+      Serial.println(cane - zero);
+      Serial.print("RIGHT PID INPUT:");
+      Serial.print(right_leg->Input);
+      Serial.print(" , AVG: ");
+      Serial.print(right_leg->Average_Trq);
+      cane = (right_leg->Vol);
+      Serial.print(" , VOL: ");
+      Serial.println(cane - zero);
+
+    }
+    // end modification
 
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
@@ -310,7 +380,7 @@ void reset_starting_parameters() {
   reset_leg_starting_parameters(right_leg);
 }
 
-void reset_leg_starting_parameters(Leg* leg){
+void reset_leg_starting_parameters(Leg* leg) {
   leg->p_steps->count_plant = 0;
   leg->p_steps->n_steps = 0;
   leg->p_steps->flag_start_plant = false;

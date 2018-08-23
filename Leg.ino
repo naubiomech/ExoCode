@@ -2,14 +2,15 @@
 void initialize_leg(Leg* leg) {
   pinMode(leg->pin_err, INPUT);
   pinMode(leg->torque_sensor_ankle_pin, INPUT); //enable the torque reading of the left torque sensor
- 
+
   analogWrite(leg->motor_ankle_pin, zero);
   leg->pid.SetMode(AUTOMATIC);
   leg->pid.SetTunings(leg->kp, leg->ki, leg->kd);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
   leg->pid.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
-  leg->pid.SetSampleTime(PID_sample_time);  
+  leg->pid.SetSampleTime(PID_sample_time);
 
   leg->p_steps->fsr_Toe = leg->fsr_sense_Toe;
+  leg->zero = zero;
 }
 
 void initialize_left_leg(Leg* left_leg) {
