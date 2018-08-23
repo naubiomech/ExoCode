@@ -45,26 +45,12 @@
 void setup()
 {
 
-  // enable bluetooth
-  bluetooth.begin(115200);
-  Serial.begin(115200);
-
-  Serial.println("Starting");
+  setupBoard();
 
   setupIMU(&bno);
 
   initialize_left_leg(left_leg);
   initialize_right_leg(right_leg);
-
-  analogWriteResolution(12);                                          //change resolution to 12 bits
-  analogReadResolution(12);                                           //ditto
-
-  // The led
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
-  // set pin mode for left and right sides
-  pinMode(MOTOR_ENABLE_PIN, OUTPUT); //Enable disable the motors
-  digitalWrite(MOTOR_ENABLE_PIN, LOW);
 
   // Fast torque calibration
   torque_calibration();
