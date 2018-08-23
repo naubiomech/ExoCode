@@ -6,14 +6,14 @@ void torque_calibration()
   int torq_cal_count = 0;
   left_leg->torque_calibration_value = 0;
   right_leg->torque_calibration_value = 0;
-  
+
   while (millis() - torque_calibration_value_time < 1000)
   { //Calibrates the LL for a total time of 1 second,
     left_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
     right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
     torq_cal_count ++;                                                         //Increments count
   }
-  
+
   left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
   Serial.println(left_leg->torque_calibration_value);
@@ -36,14 +36,23 @@ void FSR_calibration()
 
     right_leg->fsr_Combined_peak_ref = 0;
     left_leg->fsr_Combined_peak_ref = 0;
+    left_leg->fsr_Toe_peak_ref = 0;
+    right_leg->fsr_Toe_peak_ref = 0;
+    left_leg->fsr_Heel_peak_ref = 0;
+    right_leg->fsr_Heel_peak_ref = 0;
   }
 
 
   if (millis() - startTime < 5000)
   {
+    left_leg->Curr_Toe = fsr(left_leg->fsr_sense_Toe);
+    right_leg->Curr_Toe = fsr(right_leg->fsr_sense_Toe);
 
-    right_leg->Curr_Combined = fsr(right_leg->fsr_sense_Toe) + fsr(right_leg->fsr_sense_Heel);
-    left_leg->Curr_Combined = fsr(left_leg->fsr_sense_Toe) + fsr(left_leg->fsr_sense_Heel);
+    left_leg->Curr_Heel = fsr(left_leg->fsr_sense_Heel);
+    right_leg->Curr_Heel = fsr(right_leg->fsr_sense_Heel);
+
+    left_leg->Curr_Combined = left_leg->Curr_Toe + left_leg->Curr_Heel;
+    right_leg->Curr_Combined = right_leg->Curr_Toe + right_leg->Curr_Heel;
 
     if (left_leg->Curr_Combined > left_leg->fsr_Combined_peak_ref)
     {
@@ -55,23 +64,55 @@ void FSR_calibration()
       right_leg->fsr_Combined_peak_ref = right_leg->Curr_Combined;
     }
 
+    // Toe
+
+    if (left_leg->Curr_Toe > left_leg->fsr_Toe_peak_ref)
+    {
+      left_leg->fsr_Toe_peak_ref = left_leg->Curr_Toe;
+    }
+
+    if (right_leg->Curr_Toe > right_leg->fsr_Toe_peak_ref)
+    {
+      right_leg->fsr_Toe_peak_ref = right_leg->Curr_Toe;
+    }
+
+    // Heel
+    if (left_leg->Curr_Heel > left_leg->fsr_Heel_peak_ref)
+    {
+      left_leg->fsr_Heel_peak_ref = left_leg->Curr_Heel;
+    }
+
+    if (right_leg->Curr_Heel > right_leg->fsr_Heel_peak_ref)
+    {
+      right_leg->fsr_Heel_peak_ref = right_leg->Curr_Heel;
+    }
+
   }
   else {
-    left_leg->p_steps->voltage_peak_ref = left_leg->fsr_Combined_peak_ref;
-    right_leg->p_steps->voltage_peak_ref = right_leg->fsr_Combined_peak_ref;
+
+    //    left_leg->p_steps->voltage_peak_ref = left_leg->fsr_Combined_peak_ref;
+    //    right_leg->p_steps->voltage_peak_ref = right_leg->fsr_Combined_peak_ref;
 
     // What I need to comment out
 
     FSR_FIRST_Cycle = 1;
     FSR_CAL_FLAG = 0;
-
-    Serial.println(right_leg->fsr_Combined_peak_ref);
-    Serial.println(left_leg->fsr_Combined_peak_ref);
-    Serial.println(" ");
+    if (FLAG_TWO_TOE_SENSORS) {
+      Serial.println(left_leg->fsr_Combined_peak_ref);
+      Serial.println(right_leg->fsr_Combined_peak_ref);
+      Serial.println(" ");
+    } else {
+      Serial.println(left_leg->fsr_Toe_peak_ref);
+      Serial.println(left_leg->fsr_Heel_peak_ref);
+      Serial.println(" ");
+      Serial.println(right_leg->fsr_Toe_peak_ref);
+      Serial.println(right_leg->fsr_Heel_peak_ref);
+      Serial.println(" ");
+    }
   }
 }
 
-double get_torq(Leg* leg){
+double get_torq(Leg* leg) {
   double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value);
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }

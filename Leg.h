@@ -12,12 +12,12 @@ struct Leg {
   // In A_Exo pre-includes
   double FSR_Average_array[dim_FSR] = {0};
   double* p_FSR_Array = &FSR_Average_array[0];
-  double FSR_Average = 0;
-  double Curr_FSR = 0;
+  //  double FSR_Average_Toe = 0;
+  double Curr_FSR_Toe = 0;
 
   double FSR_Average_array_Heel[dim_FSR] = {0};
   double* p_FSR_Array_Heel = &FSR_Average_array_Heel[0];
-  double FSR_Average_Heel = 0;
+  //  double FSR_Average_Heel = 0;
   double Curr_FSR_Heel = 0;
 
   double Tarray[dim] = {0};
@@ -37,10 +37,15 @@ struct Leg {
   volatile double Average_Volt;
   volatile double Average_Volt_Heel;
   volatile double Average_Trq;
-  volatile double Combined_Average;
+  volatile double FSR_Combined_Average;
+  volatile double FSR_Toe_Average;
+  volatile double FSR_Heel_Average;
   volatile bool motor_error = false;
   volatile int Time_error_counter;
 
+  volatile double FSR_Toe_Balance_Baseline;
+  volatile double FSR_Heel_Balance_Baseline;
+  
   // Auto_KF.h
   double ERR;
   double max_KF;

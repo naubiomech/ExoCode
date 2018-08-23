@@ -1,6 +1,6 @@
 // Peek is the variable used to identify the message received by matlab
 // To understand the commands see the file .......... in the folder
-double app=0;
+double app = 0;
 
 void receive_and_transmit()
 {
@@ -173,15 +173,34 @@ void receive_and_transmit()
       if (((check_FSR_values(left_leg->address_FSR)) && (check_FSR_values(left_leg->address_FSR + sizeof(double) + 1))) &&
           ((check_FSR_values(right_leg->address_FSR)) && (check_FSR_values(right_leg->address_FSR + sizeof(double) + 1))))
       {
-        left_leg->fsr_Combined_peak_ref = read_FSR_values(left_leg->address_FSR) + read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
-        right_leg->fsr_Combined_peak_ref = read_FSR_values(right_leg->address_FSR) + read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
+        if (FLAG_TWO_TOE_SENSORS) {
+          left_leg->fsr_Combined_peak_ref = read_FSR_values(left_leg->address_FSR) + read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
+          right_leg->fsr_Combined_peak_ref = read_FSR_values(right_leg->address_FSR) + read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
+        } else {
+          left_leg->fsr_Toe_peak_ref = read_FSR_values(left_leg->address_FSR);
+          right_leg->fsr_Toe_peak_ref = read_FSR_values(right_leg->address_FSR);
+          left_leg->fsr_Heel_peak_ref = read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
+          right_leg->fsr_Heel_peak_ref = read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
+        }
 
         *(data_to_send_point + 1) = 1;
-        Serial.print("Left values: ");
-        Serial.print(left_leg->fsr_Combined_peak_ref);
-        Serial.print(", ");
-        Serial.print("Right values: ");
-        Serial.print(right_leg->fsr_Combined_peak_ref);
+        if (FLAG_TWO_TOE_SENSORS) {
+          Serial.print("Left values Combined Toe and Heel: ");
+          Serial.print(left_leg->fsr_Combined_peak_ref);
+          Serial.print(", ");
+          Serial.print("Right values: ");
+          Serial.print(right_leg->fsr_Combined_peak_ref);
+        } else {
+          Serial.print("Left values Toe and Heel: ");
+          Serial.print(left_leg->fsr_Toe_peak_ref);
+          Serial.print(", ");
+          Serial.print(left_leg->fsr_Heel_peak_ref);
+          Serial.print(", ");
+          Serial.print("Right values Toe and Hell: ");
+          Serial.print(right_leg->fsr_Toe_peak_ref);
+          Serial.print(", ");
+          Serial.print(right_leg->fsr_Heel_peak_ref);
+        }
       }
       else
       {
@@ -200,8 +219,8 @@ void receive_and_transmit()
       }
 
       send_command_message('<', data_to_send_point, 3);
-      left_leg->p_steps->voltage_peak_ref = left_leg->fsr_Combined_peak_ref;
-      right_leg->p_steps->voltage_peak_ref = right_leg->fsr_Combined_peak_ref;
+      //      left_leg->p_steps->voltage_peak_ref = left_leg->fsr_Combined_peak_ref;
+      //      right_leg->p_steps->voltage_peak_ref = right_leg->fsr_Combined_peak_ref;
 
       // add baseline
       left_leg->p_steps->plant_peak_mean = read_baseline(left_leg->baseline_address);
@@ -467,11 +486,17 @@ void receive_and_transmit()
         Serial.print("Cannot save data during streaming ");
       } else {
         Serial.print("Saving Experimental Parameters ");
-
-        write_FSR_values(left_leg->address_FSR, left_leg->fsr_Combined_peak_ref / 2);
-        write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Combined_peak_ref / 2);
-        write_FSR_values(right_leg->address_FSR, right_leg->fsr_Combined_peak_ref / 2);
-        write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Combined_peak_ref / 2);
+        if (FLAG_TWO_TOE_SENSORS) {
+          write_FSR_values(left_leg->address_FSR, left_leg->fsr_Combined_peak_ref / 2);
+          write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Combined_peak_ref / 2);
+          write_FSR_values(right_leg->address_FSR, right_leg->fsr_Combined_peak_ref / 2);
+          write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Combined_peak_ref / 2);
+        } else {
+          write_FSR_values(left_leg->address_FSR, left_leg->fsr_Toe_peak_ref);
+          write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Heel_peak_ref);
+          write_FSR_values(right_leg->address_FSR, right_leg->fsr_Toe_peak_ref);
+          write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Heel_peak_ref);
+        }
 
         write_baseline(left_leg->baseline_address, left_leg->baseline_value);
         write_baseline(right_leg->baseline_address, right_leg->baseline_value);
@@ -549,6 +574,8 @@ void receive_and_transmit()
       Trq_time_volt = 2;
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      FLAG_TWO_TOE_SENSORS = true;
+      FLAG_BALANCE = true;
       Serial.println(" Activate Proportional Ctrl: ");
       break;
 
@@ -560,6 +587,8 @@ void receive_and_transmit()
       *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      FLAG_TWO_TOE_SENSORS = false;
+      FLAG_BALANCE = false;
       Serial.println(" Deactivate Proportional Ctrl: ");
       break;
 
@@ -620,6 +649,20 @@ void receive_and_transmit()
       left_leg->p_steps->flag_start_plant = false;
       right_leg->p_steps->Setpoint = 0;
       left_leg->p_steps->Setpoint = 0;
+      break;
+
+    case '&':
+      Serial.println("");
+      Serial.println(FLAG_BALANCE_BASELINE);
+      Serial.println("Calc Balance Baseline");
+      FLAG_BALANCE_BASELINE = 1;
+      startTime = millis();
+      Trq_time_volt = Old_Trq_time_volt;// you cannot calibrate if your doing something
+      left_leg->FSR_Toe_Balance_Baseline = 0;
+      right_leg->FSR_Toe_Balance_Baseline = 0;
+      left_leg->FSR_Heel_Balance_Baseline = 0;
+      right_leg->FSR_Heel_Balance_Baseline = 0;
+      count_balance = 0;
       break;
 
   }
