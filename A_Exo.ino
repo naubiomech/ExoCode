@@ -73,11 +73,9 @@ SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an 
 
 
 bool FLAG_PRINT_TORQUES = false;
-bool FLAG_PID_VALS = false;
-bool FLAG_TWO_TOE_SENSORS = true;
-bool FLAG_BALANCE = false;
-double FLAG_BALANCE_BASELINE = 0;
-double count_balance = 0;
+bool FLAG_PID_VALS = true;
+bool FLAG_TWO_TOE_SENSORS = false;
+
 
 void setup()
 {
@@ -147,10 +145,6 @@ void callback()//executed every 2ms
   check_FSR_calibration();
 
   rotate_motor();
-
-  check_Balance_Baseline();
-
-
 
 }// end callback
 
@@ -305,13 +299,6 @@ void check_FSR_calibration() {
 
 }
 
-void check_Balance_Baseline() {
-  if (FLAG_BALANCE_BASELINE) {
-    Balance_Baseline();
-  }
-
-}
-
 void rotate_motor() {
 
 
@@ -379,16 +366,13 @@ void rotate_motor() {
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
 
-    if (Trq_time_volt == 2) {}
-    else {
-      set_2_zero_if_steady_state();
-    }
+    set_2_zero_if_steady_state();
 
-    left_leg->N3 = Ctrl_ADJ(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
+    left_leg->N3 = Ctrl_ADJ(left_leg->state, left_leg->state_old, left_leg->p_steps,
                             left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle,
                             left_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, left_leg->Prop_Gain,
                             left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->Max_FSR_Ratio);
-    right_leg->N3 = Ctrl_ADJ(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps,
+    right_leg->N3 = Ctrl_ADJ(right_leg->state, right_leg->state_old, right_leg->p_steps,
                              right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle,
                              right_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, right_leg->Prop_Gain,
                              right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio);
@@ -399,10 +383,6 @@ void reset_starting_parameters() {
   //Reset the starting values
   reset_leg_starting_parameters(left_leg);
   reset_leg_starting_parameters(right_leg);
-
-
-  //  FLAG_TWO_TOE_SENSORS = false;
-  FLAG_TWO_TOE_SENSORS = true;
 }
 
 void reset_leg_starting_parameters(Leg* leg) {

@@ -219,8 +219,8 @@ void receive_and_transmit()
       }
 
       send_command_message('<', data_to_send_point, 3);
-      //      left_leg->p_steps->voltage_peak_ref = left_leg->fsr_Combined_peak_ref;
-      //      right_leg->p_steps->voltage_peak_ref = right_leg->fsr_Combined_peak_ref;
+//      left_leg->p_steps->voltage_peak_ref = left_leg->fsr_Combined_peak_ref;
+//      right_leg->p_steps->voltage_peak_ref = right_leg->fsr_Combined_peak_ref;
 
       // add baseline
       left_leg->p_steps->plant_peak_mean = read_baseline(left_leg->baseline_address);
@@ -574,8 +574,6 @@ void receive_and_transmit()
       Trq_time_volt = 2;
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      FLAG_TWO_TOE_SENSORS = true;
-      FLAG_BALANCE = true;
       Serial.println(" Activate Proportional Ctrl: ");
       break;
 
@@ -587,8 +585,6 @@ void receive_and_transmit()
       *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      FLAG_TWO_TOE_SENSORS = false;
-      FLAG_BALANCE = false;
       Serial.println(" Deactivate Proportional Ctrl: ");
       break;
 
@@ -649,20 +645,6 @@ void receive_and_transmit()
       left_leg->p_steps->flag_start_plant = false;
       right_leg->p_steps->Setpoint = 0;
       left_leg->p_steps->Setpoint = 0;
-      break;
-
-    case '&':
-      Serial.println("");
-      Serial.println(FLAG_BALANCE_BASELINE);
-      Serial.println("Calc Balance Baseline");
-      FLAG_BALANCE_BASELINE = 1;
-      startTime = millis();
-      Trq_time_volt = Old_Trq_time_volt;// you cannot calibrate if your doing something
-      left_leg->FSR_Toe_Balance_Baseline = 0;
-      right_leg->FSR_Toe_Balance_Baseline = 0;
-      left_leg->FSR_Heel_Balance_Baseline = 0;
-      right_leg->FSR_Heel_Balance_Baseline = 0;
-      count_balance = 0;
       break;
 
   }
