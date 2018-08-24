@@ -3,7 +3,7 @@
 void initialize_leg(Leg* leg) {
   pinMode(leg->pin_err, INPUT);
   pinMode(leg->torque_sensor_ankle_pin, INPUT); //enable the torque reading of the left torque sensor
- 
+
   analogWrite(leg->motor_ankle_pin, zero);
   leg->balance_pid.SetMode(AUTOMATIC);
   leg->balance_pid.SetTunings(leg->kp_balance, leg->ki_balance, leg->kd_balance);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
@@ -16,6 +16,7 @@ void initialize_leg(Leg* leg) {
   leg->ankle_pid.SetSampleTime(PID_sample_time);
 
   leg->p_steps->fsr_Toe = leg->fsr_sense_Toe;
+  leg->zero = zero;
 }
 
 void initialize_left_leg(Leg* left_leg) {

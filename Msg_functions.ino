@@ -30,9 +30,14 @@ void send_data_message_wc() //with COP
   bluetooth.print(',');
 
 
-  bluetooth.print(left_leg->Time_error_counter); //SIG1
+//  bluetooth.print(left_leg->Time_error_counter); //SIG1
+//  bluetooth.print(',');
+//  bluetooth.print(right_leg->Time_error_counter); //SIG2
+//  bluetooth.print(',');
+
+  bluetooth.print((left_leg->Vol)); //SIG1
   bluetooth.print(',');
-  bluetooth.print(right_leg->Time_error_counter); //SIG2
+  bluetooth.print((right_leg->Vol)); //SIG2
   bluetooth.print(',');
   bluetooth.print(left_leg->FSR_Ratio); //SIG3
   bluetooth.print(',');

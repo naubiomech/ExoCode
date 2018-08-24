@@ -133,8 +133,9 @@ int write_EXP_parameters(int address_params_l)
 }
 
 int check_EXP_parameters(int address_params_l)
-{ Serial.print("Checking at pos ");
-  Serial.println(address_params_l);
+{ 
+//  Serial.print("Checking at pos ");
+//  Serial.println(address_params_l);
   byte value = EEPROM.read(address_params_l);
   Serial.println(char(value));
   if (char(value) == 'y') {

@@ -40,7 +40,6 @@ void pid(Leg* leg, double meas_trq, double meas_IMU) {
     }
   }
 
-  //  leg->Input = PID_ref;
   pid->Compute_KF(leg->KF);
 
   //This can be used as alternative to the previous gain (see up)
@@ -51,6 +50,7 @@ void pid(Leg* leg, double meas_trq, double meas_IMU) {
     //    leg->PID_Setpoint = 56.5 / (2.1) * ((leg->Output) * (3.3 / 4096));
   }
 
-  leg->Vol = leg->Output + zero; //need to map
+  leg->Vol = leg->Output + leg->zero; //need to map
+
   analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
 }

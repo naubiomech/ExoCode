@@ -83,23 +83,29 @@ struct Leg {
   double torque_calibration_value = 0;
   double T_act;
   int Vol;
-	double kp_ankle = 800;
-	double ki_ankle = 0;
-	double kd_ankle = 3;
-	double kp_balance = 60;
-	double ki_balance = 0;
-	double kd_balance = 20;
-	double KF = 1;
+
+  double kp_ankle = 1000;
+  double ki_ankle = 0;
+  double kd_ankle = 0;
+  double kp_balance = 60;
+  double ki_balance = 0;
+  double kd_balance = 20;
+  double KF = 1;
 
   double PID_Setpoint, Input, Output;
-	PID ankle_pid = PID(&Input, &Output, &PID_Setpoint, kp_ankle, ki_ankle, kd_ankle, DIRECT);
-	PID balance_pid = PID(&Input, &Output, &PID_Setpoint, kp_balance, ki_balance, kd_balance, DIRECT);
+  PID ankle_pid = PID(&Input, &Output, &PID_Setpoint, kp_ankle, ki_ankle, kd_ankle, DIRECT);
+  PID balance_pid = PID(&Input, &Output, &PID_Setpoint, kp_balance, ki_balance, kd_balance, DIRECT);
 
-	double Setpoint_Ankle, Setpoint_Ankle_Pctrl;
+  double Setpoint_Ankle, Setpoint_Ankle_Pctrl;
   double Previous_Setpoint_Ankle = 0;
   double* p_Setpoint_Ankle = &Setpoint_Ankle;
   double* p_Setpoint_Ankle_Pctrl = &Setpoint_Ankle_Pctrl;
   double Setpoint_earlyStance = 0.25 * Setpoint_Ankle;
+  double Dorsi_Setpoint_Ankle;
+  double Previous_Dorsi_Setpoint_Ankle;
+  double* p_Dorsi_Setpoint_Ankle = &Dorsi_Setpoint_Ankle;
+  double* p_Previous_Dorsi_Setpoint_Ankle = &Previous_Dorsi_Setpoint_Ankle;
+
 
   // Proportional_Ctrl.h
   double Prop_Gain = 1;
@@ -133,6 +139,10 @@ struct Leg {
   double N2 = 4;
   double N1 = 4;
 
+  double old_N3 = 500;
+  double old_N2 = 4;
+  double old_N1 = 4;
+
   long sig_time = 0;
   long sig_time_old = 0;
 
@@ -152,6 +162,7 @@ struct Leg {
   double start_from_3 = 0;
   double start_time = 0;
 
+  double zero;
 
   // Torque_Speed_ADJ.h
   //steps steps;
