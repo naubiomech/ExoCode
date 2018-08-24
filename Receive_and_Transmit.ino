@@ -333,14 +333,14 @@ void receive_and_transmit()
     left_leg->N2 = N2;
     left_leg->N3 = N3;
 
-      left_leg->old_N3 = left_leg->N3;
-      left_leg->old_N2 = left_leg->N2;
-      left_leg->old_N1 = left_leg->N1;
+    left_leg->old_N3 = left_leg->N3;
+    left_leg->old_N2 = left_leg->N2;
+    left_leg->old_N1 = left_leg->N1;
 
-      right_leg->old_N3 = right_leg->N3;
-      right_leg->old_N2 = right_leg->N2;
-      right_leg->old_N1 = right_leg->N1;
-	  
+    right_leg->old_N3 = right_leg->N3;
+    right_leg->old_N2 = right_leg->N2;
+    right_leg->old_N1 = right_leg->N1;
+
     Serial.print("Set Smooth ");
     Serial.print(" ");
     Serial.print(N1);
@@ -484,23 +484,23 @@ void receive_and_transmit()
       Serial.print("Cannot save data during streaming ");
     } else {
       Serial.print("Saving Experimental Parameters ");
-	  
-if (FLAG_TWO_TOE_SENSORS) {
-          write_FSR_values(left_leg->address_FSR, left_leg->fsr_Combined_peak_ref / 2);
-          write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Combined_peak_ref / 2);
-          write_FSR_values(right_leg->address_FSR, right_leg->fsr_Combined_peak_ref / 2);
-          write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Combined_peak_ref / 2);
-        } else {
-          write_FSR_values(left_leg->address_FSR, left_leg->fsr_Toe_peak_ref);
-          write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Heel_peak_ref);
-          write_FSR_values(right_leg->address_FSR, right_leg->fsr_Toe_peak_ref);
-          write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Heel_peak_ref);
-        }
+
+      if (FLAG_TWO_TOE_SENSORS) {
+        write_FSR_values(left_leg->address_FSR, left_leg->fsr_Combined_peak_ref / 2);
+        write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Combined_peak_ref / 2);
+        write_FSR_values(right_leg->address_FSR, right_leg->fsr_Combined_peak_ref / 2);
+        write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Combined_peak_ref / 2);
+      } else {
+        write_FSR_values(left_leg->address_FSR, left_leg->fsr_Toe_peak_ref);
+        write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Heel_peak_ref);
+        write_FSR_values(right_leg->address_FSR, right_leg->fsr_Toe_peak_ref);
+        write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Heel_peak_ref);
+      }
       write_baseline(left_leg->baseline_address, left_leg->baseline_value);
       write_baseline(right_leg->baseline_address, right_leg->baseline_value);
 
-      write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
-      write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
+                write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
+                write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
     }
     break;
 
@@ -573,8 +573,6 @@ if (FLAG_TWO_TOE_SENSORS) {
     Trq_time_volt = 2;
     *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
     *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-	      FLAG_TWO_TOE_SENSORS = true;
-      FLAG_BALANCE = true;
     Serial.println(" Activate Proportional Ctrl: ");
     break;
 
@@ -586,8 +584,6 @@ if (FLAG_TWO_TOE_SENSORS) {
     *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
     *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
     *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      FLAG_TWO_TOE_SENSORS = false;
-      FLAG_BALANCE = false;
     Serial.println(" Deactivate Proportional Ctrl: ");
     break;
 

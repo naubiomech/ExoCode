@@ -132,7 +132,7 @@ void state_machine(Leg* leg)
           leg->set_2_zero = 0;
           leg->One_time_set_2_zero = 1;
         }
-        else if ((leg->p_steps->curr_voltage > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref))
+        else if ((leg->FSR_Toe_Average > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref))
         {
           leg->state_count_13++;
           // if you're in the same state for more than state_counter_th it means that it is not noise

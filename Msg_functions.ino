@@ -15,13 +15,8 @@ void send_data_message_wc() //with COP
   if (FLAG_TWO_TOE_SENSORS) {
     bluetooth.print(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
     bluetooth.print(',');
-    if (FLAG_BALANCE) {
-      bluetooth.print(right_leg->FSR_Toe_Average);
-      bluetooth.print(',');
-    } else {
-      bluetooth.print(right_leg->FSR_Combined_Average);
-      bluetooth.print(',');
-    }
+    bluetooth.print(right_leg->FSR_Combined_Average);
+    bluetooth.print(',');
   } else {
     bluetooth.print(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Toe_peak_ref);
     bluetooth.print(',');
@@ -40,13 +35,8 @@ void send_data_message_wc() //with COP
   if (FLAG_TWO_TOE_SENSORS) {
     bluetooth.print(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
     bluetooth.print(',');
-    if (FLAG_BALANCE) {
-      bluetooth.print(left_leg->FSR_Toe_Average);
-      bluetooth.print(',');
-    } else {
-      bluetooth.print(left_leg->FSR_Combined_Average);
-      bluetooth.print(',');
-    }
+    bluetooth.print(left_leg->FSR_Combined_Average);
+    bluetooth.print(',');
   } else {
     bluetooth.print(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Toe_peak_ref);
     bluetooth.print(',');
@@ -61,9 +51,9 @@ void send_data_message_wc() //with COP
   //  bluetooth.print(right_leg->Time_error_counter); //SIG2
   //  bluetooth.print(',');
 
-  bluetooth.print((left_leg->FSR_Heel_Average)); //SIG1
+  bluetooth.print((left_leg->Vol)); //SIG1
   bluetooth.print(',');
-  bluetooth.print((right_leg->FSR_Heel_Average)); //SIG2
+  bluetooth.print((right_leg->Vol)); //SIG2
   bluetooth.print(',');
   bluetooth.print(left_leg->FSR_Ratio); //SIG3
   bluetooth.print(',');

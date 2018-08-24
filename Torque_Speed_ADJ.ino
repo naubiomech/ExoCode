@@ -137,7 +137,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
 
 
 
-double Ctrl_ADJ(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l, double* p_Setpoint_Ankle_l, double * p_Setpoint_Ankle_Pctrl_l, int flag_torque_time_volt_l, double prop_gain_l, double taking_baseline_l, double *p_FSR_Ratio, double* p_Max_FSR_Ratio) {
+double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l, double* p_Setpoint_Ankle_l, double * p_Setpoint_Ankle_Pctrl_l, int flag_torque_time_volt_l, double prop_gain_l, double taking_baseline_l, double *p_FSR_Ratio, double* p_Max_FSR_Ratio) {
 
   // Speed adjustment -> the smoothing parameters are updated as a function of the plantar time in order to modify the shaping of the torque to the new step time.
   // It considers the average time of 4 steps. There's a filter of step_time_length on the plantarflexion time in order to cut the noise
@@ -169,19 +169,16 @@ double Ctrl_ADJ(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, do
 
 
     if (flag_torque_time_volt_l == 2) {
-      //      if ((p_steps_l->Setpoint ) > 0) {
-      //
-      //        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (prop_gain_l) * (*p_FSR_Ratio)); // the difference here is that we do it as a function of the FSR calibration
-      //        *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
-      //      }
-      //      else if ((p_steps_l->Setpoint ) < 0) {
-      //        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (prop_gain_l) * (*p_FSR_Ratio)); // the difference here is that we do it as a function of the FSR calibration
-      //        *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
-      //      } else {
-      //        *p_Setpoint_Ankle_Pctrl_l = 0;
-      //    }
-      *p_Setpoint_Ankle_Pctrl_l = Balance_Torque_ref(leg);
-    
+      if ((p_steps_l->Setpoint ) > 0) {
+        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (prop_gain_l) * (*p_FSR_Ratio)); // the difference here is that we do it as a function of the FSR calibration
+        *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
+      }
+      else if ((p_steps_l->Setpoint ) < 0) {
+        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (prop_gain_l) * (*p_FSR_Ratio)); // the difference here is that we do it as a function of the FSR calibration
+        *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
+      } else {
+        *p_Setpoint_Ankle_Pctrl_l = 0;
+      }
       return N3_l; // No modification in the shaping
 
     } else if (flag_torque_time_volt_l == 3) {
@@ -368,7 +365,7 @@ double Ctrl_ADJ(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, do
   }// end if flag_start_plant
 
   // During the all dorsiflexion set the voltage peak to 0, probably we just need to do it one time
-  if (((R_state_l == 1) || (R_state_l == 2)) && R_state_old_l == 3) {
+  if (((R_state_l == 1) || (R_state_l == 2)) && R_state_old_l == 3){
     p_steps_l->peak = 0;
     p_Max_FSR_Ratio = 0;
   }
