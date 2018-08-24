@@ -172,15 +172,33 @@ void receive_and_transmit()
     if (((check_FSR_values(left_leg->address_FSR)) && (check_FSR_values(left_leg->address_FSR + sizeof(double) + 1))) &&
         ((check_FSR_values(right_leg->address_FSR)) && (check_FSR_values(right_leg->address_FSR + sizeof(double) + 1))))
     {
-      left_leg->fsr_Combined_peak_ref = read_FSR_values(left_leg->address_FSR) + read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
-      right_leg->fsr_Combined_peak_ref = read_FSR_values(right_leg->address_FSR) + read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
-
-      *(data_to_send_point + 1) = 1;
-      Serial.print("Left values: ");
-      Serial.print(left_leg->fsr_Combined_peak_ref);
-      Serial.print(", ");
-      Serial.print("Right values: ");
-      Serial.print(right_leg->fsr_Combined_peak_ref);
+      if (FLAG_TWO_TOE_SENSORS) {
+          left_leg->fsr_Combined_peak_ref = read_FSR_values(left_leg->address_FSR) + read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
+          right_leg->fsr_Combined_peak_ref = read_FSR_values(right_leg->address_FSR) + read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
+        } else {
+          left_leg->fsr_Toe_peak_ref = read_FSR_values(left_leg->address_FSR);
+          right_leg->fsr_Toe_peak_ref = read_FSR_values(right_leg->address_FSR);
+          left_leg->fsr_Heel_peak_ref = read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
+          right_leg->fsr_Heel_peak_ref = read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
+        }
+        *(data_to_send_point + 1) = 1;
+        if (FLAG_TWO_TOE_SENSORS) {
+          Serial.print("Left values Combined Toe and Heel: ");
+          Serial.print(left_leg->fsr_Combined_peak_ref);
+          Serial.print(", ");
+          Serial.print("Right values: ");
+          Serial.print(right_leg->fsr_Combined_peak_ref);
+        } else {
+          Serial.print("Left values Toe and Heel: ");
+          Serial.print(left_leg->fsr_Toe_peak_ref);
+          Serial.print(", ");
+          Serial.print(left_leg->fsr_Heel_peak_ref);
+          Serial.print(", ");
+          Serial.print("Right values Toe and Hell: ");
+          Serial.print(right_leg->fsr_Toe_peak_ref);
+          Serial.print(", ");
+          Serial.print(right_leg->fsr_Heel_peak_ref);
+        }
     }
     else
     {
@@ -315,6 +333,14 @@ void receive_and_transmit()
     left_leg->N2 = N2;
     left_leg->N3 = N3;
 
+      left_leg->old_N3 = left_leg->N3;
+      left_leg->old_N2 = left_leg->N2;
+      left_leg->old_N1 = left_leg->N1;
+
+      right_leg->old_N3 = right_leg->N3;
+      right_leg->old_N2 = right_leg->N2;
+      right_leg->old_N1 = right_leg->N1;
+	  
     Serial.print("Set Smooth ");
     Serial.print(" ");
     Serial.print(N1);
@@ -458,12 +484,18 @@ void receive_and_transmit()
       Serial.print("Cannot save data during streaming ");
     } else {
       Serial.print("Saving Experimental Parameters ");
-
-      write_FSR_values(left_leg->address_FSR, left_leg->fsr_Combined_peak_ref / 2);
-      write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Combined_peak_ref / 2);
-      write_FSR_values(right_leg->address_FSR, right_leg->fsr_Combined_peak_ref / 2);
-      write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Combined_peak_ref / 2);
-
+	  
+if (FLAG_TWO_TOE_SENSORS) {
+          write_FSR_values(left_leg->address_FSR, left_leg->fsr_Combined_peak_ref / 2);
+          write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Combined_peak_ref / 2);
+          write_FSR_values(right_leg->address_FSR, right_leg->fsr_Combined_peak_ref / 2);
+          write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Combined_peak_ref / 2);
+        } else {
+          write_FSR_values(left_leg->address_FSR, left_leg->fsr_Toe_peak_ref);
+          write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Heel_peak_ref);
+          write_FSR_values(right_leg->address_FSR, right_leg->fsr_Toe_peak_ref);
+          write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Heel_peak_ref);
+        }
       write_baseline(left_leg->baseline_address, left_leg->baseline_value);
       write_baseline(right_leg->baseline_address, right_leg->baseline_value);
 
@@ -525,7 +557,7 @@ void receive_and_transmit()
   case COMM_CODE_SET_LEFT_ANKLE_GAIN: // Receive Left Gain from GUI
     receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
     memcpy(&left_leg->Prop_Gain, &holdon, 8);
-    Serial.print(" Settting Left Gain for Proportional Ctrl: ");
+    Serial.print(" Setting Left Gain for Proportional Ctrl: ");
     Serial.println(left_leg->Prop_Gain);
     break;
 
@@ -541,6 +573,8 @@ void receive_and_transmit()
     Trq_time_volt = 2;
     *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
     *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+	      FLAG_TWO_TOE_SENSORS = true;
+      FLAG_BALANCE = true;
     Serial.println(" Activate Proportional Ctrl: ");
     break;
 
@@ -552,6 +586,8 @@ void receive_and_transmit()
     *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
     *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
     *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      FLAG_TWO_TOE_SENSORS = false;
+      FLAG_BALANCE = false;
     Serial.println(" Deactivate Proportional Ctrl: ");
     break;
 
@@ -592,6 +628,8 @@ void receive_and_transmit()
     Serial.println("Check Baseline");
     Serial.println(left_leg->p_steps->plant_peak_mean);
     Serial.println(right_leg->p_steps->plant_peak_mean);
+      left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
+      right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
     *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
     *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
     send_command_message(COMM_CODE_GET_BASELINE, data_to_send_point, 2);
