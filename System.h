@@ -4,9 +4,9 @@
 #include <SoftwareSerial.h>
 
 struct Trial {
-	int bluetoothStream = 0;
-	elapsedMillis timeElapsed;
-	int streamTimerCount = 0;
+  int bluetoothStream = 0;
+  elapsedMillis timeElapsed;
+  int streamTimerCount = 0;
 };
 // ===== A Exo =====
 Metro slowThisDown = Metro(1);  // Set the function to be called at no faster a rate than once per millisecond

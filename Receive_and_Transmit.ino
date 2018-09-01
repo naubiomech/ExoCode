@@ -173,32 +173,32 @@ void receive_and_transmit()
         ((check_FSR_values(right_leg->address_FSR)) && (check_FSR_values(right_leg->address_FSR + sizeof(double) + 1))))
     {
       if (FLAG_TWO_TOE_SENSORS) {
-          left_leg->fsr_Combined_peak_ref = read_FSR_values(left_leg->address_FSR) + read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
-          right_leg->fsr_Combined_peak_ref = read_FSR_values(right_leg->address_FSR) + read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
-        } else {
-          left_leg->fsr_Toe_peak_ref = read_FSR_values(left_leg->address_FSR);
-          right_leg->fsr_Toe_peak_ref = read_FSR_values(right_leg->address_FSR);
-          left_leg->fsr_Heel_peak_ref = read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
-          right_leg->fsr_Heel_peak_ref = read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
-        }
-        *(data_to_send_point + 1) = 1;
-        if (FLAG_TWO_TOE_SENSORS) {
-          Serial.print("Left values Combined Toe and Heel: ");
-          Serial.print(left_leg->fsr_Combined_peak_ref);
-          Serial.print(", ");
-          Serial.print("Right values: ");
-          Serial.print(right_leg->fsr_Combined_peak_ref);
-        } else {
-          Serial.print("Left values Toe and Heel: ");
-          Serial.print(left_leg->fsr_Toe_peak_ref);
-          Serial.print(", ");
-          Serial.print(left_leg->fsr_Heel_peak_ref);
-          Serial.print(", ");
-          Serial.print("Right values Toe and Hell: ");
-          Serial.print(right_leg->fsr_Toe_peak_ref);
-          Serial.print(", ");
-          Serial.print(right_leg->fsr_Heel_peak_ref);
-        }
+        left_leg->fsr_Combined_peak_ref = read_FSR_values(left_leg->address_FSR) + read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
+        right_leg->fsr_Combined_peak_ref = read_FSR_values(right_leg->address_FSR) + read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
+      } else {
+        left_leg->fsr_Toe_peak_ref = read_FSR_values(left_leg->address_FSR);
+        right_leg->fsr_Toe_peak_ref = read_FSR_values(right_leg->address_FSR);
+        left_leg->fsr_Heel_peak_ref = read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
+        right_leg->fsr_Heel_peak_ref = read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
+      }
+      *(data_to_send_point + 1) = 1;
+      if (FLAG_TWO_TOE_SENSORS) {
+        Serial.print("Left values Combined Toe and Heel: ");
+        Serial.print(left_leg->fsr_Combined_peak_ref);
+        Serial.print(", ");
+        Serial.print("Right values: ");
+        Serial.print(right_leg->fsr_Combined_peak_ref);
+      } else {
+        Serial.print("Left values Toe and Heel: ");
+        Serial.print(left_leg->fsr_Toe_peak_ref);
+        Serial.print(", ");
+        Serial.print(left_leg->fsr_Heel_peak_ref);
+        Serial.print(", ");
+        Serial.print("Right values Toe and Hell: ");
+        Serial.print(right_leg->fsr_Toe_peak_ref);
+        Serial.print(", ");
+        Serial.print(right_leg->fsr_Heel_peak_ref);
+      }
     }
     else
     {
@@ -499,8 +499,8 @@ void receive_and_transmit()
       write_baseline(left_leg->baseline_address, left_leg->baseline_value);
       write_baseline(right_leg->baseline_address, right_leg->baseline_value);
 
-                write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
-                write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
+      write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
+      write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
     }
     break;
 
@@ -624,8 +624,8 @@ void receive_and_transmit()
     Serial.println("Check Baseline");
     Serial.println(left_leg->p_steps->plant_peak_mean);
     Serial.println(right_leg->p_steps->plant_peak_mean);
-      left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
-      right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
+    left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
+    right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
     *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
     *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
     send_command_message(COMM_CODE_GET_BASELINE, data_to_send_point, 2);
