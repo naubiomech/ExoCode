@@ -37,10 +37,6 @@
 #include "IMU.h"
 #include "System.h"
 
-bool FLAG_PRINT_TORQUES = false;
-bool FLAG_PID_VALS = true;
-bool FLAG_TWO_TOE_SENSORS = false;
-
 void setup()
 {
 
