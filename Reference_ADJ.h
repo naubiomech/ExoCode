@@ -2,7 +2,8 @@
 #ifndef REFERENCE_ADJ_HEADER
 #define REFERENCE_ADJ_HEADER
 
-void R_ref_step_adj();
-void L_ref_step_adj();
+#include "Leg.h"
+
+void ref_step_adj(Leg* leg);
 
 #endif
