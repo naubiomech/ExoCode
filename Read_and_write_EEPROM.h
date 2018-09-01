@@ -17,8 +17,6 @@ double read_FSR_values(int address_FSR_l);
 
 int clean_FSR_values(int address_FSR_l);
 
-// write and read values in EEPROM also per KF, smoothing ,PID and FSR params
-// Since it is really big update I would suggest to do it before the trial not in the middle
 int write_EXP_parameters(int address_params_l);
 
 int check_EXP_parameters(int address_params_l);

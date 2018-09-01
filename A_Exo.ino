@@ -24,9 +24,6 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
-#define IMU_BOARD
-//The digital pin connected to the motor on/off swich
-
 #include "Parameters.h"
 #include "Board.h"
 #include "Leg.h"
@@ -40,14 +37,9 @@
 #include "IMU.h"
 #include "System.h"
 
-//Includes the SoftwareSerial library to be able to use the bluetooth Serial Communication
-
-
-
 bool FLAG_PRINT_TORQUES = false;
 bool FLAG_PID_VALS = true;
 bool FLAG_TWO_TOE_SENSORS = false;
-
 
 void setup()
 {
@@ -65,15 +57,12 @@ void setup()
   // Fast torque calibration
   torque_calibration();
 
-  //  left_leg->p_FSR_Array = &left_leg->FSR_Average_array[0];
-  //  right_leg->p_FSR_Array = &right_leg->FSR_Average_array[0];
   digitalWrite(LED_PIN, HIGH);
 
   // set the interrupt
   Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
   Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
   Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
-
 }
 
 void callback()//executed every 2ms
@@ -184,10 +173,7 @@ void calculate_leg_average(Leg* leg) {
   }
 
   leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
-  //  leg->Average_Volt = leg->FSR_Average;
-
   leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
-  //  leg->Average_Volt_Heel = leg->FSR_Average_Heel;
 
 
   leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
@@ -245,30 +231,6 @@ void check_FSR_calibration() {
 
 void rotate_motor() {
 
-
-  //  // modification to check the pid
-  //  if (FLAG_PID_VALS) {
-  //
-  //    pid(left_leg, left_leg->Average_Trq);
-  //    pid(right_leg, right_leg->Average_Trq);
-  //
-  //    Serial.print("LEFT PID INPUT:");
-  //    Serial.print(left_leg->Input);
-  //    Serial.print(" , AVG: ");
-  //    Serial.print(left_leg->Average_Trq);
-  //    Serial.print(" , VOL: ");
-  //    Serial.println(left_leg->Vol);
-  //    Serial.print("RIGHT PID INPUT:");
-  //    Serial.print(right_leg->Input);
-  //    Serial.print(" , AVG: ");
-  //    Serial.print(right_leg->Average_Trq);
-  //    Serial.print(" , VOL: ");
-  //    Serial.println(right_leg->Vol);
-  //
-  //  }
-  //  // end modification
-
-
   if (stream == 1)
   {
     if (streamTimerCount >= 5)
@@ -288,8 +250,6 @@ void rotate_motor() {
     pid(left_leg, left_leg->Average_Trq, -stability_trq);
     pid(right_leg, right_leg->Average_Trq, stability_trq);
 
-
-    // modification to check the pid
     if (FLAG_PID_VALS) {
 
       Serial.print("LEFT PID INPUT:");
@@ -308,7 +268,6 @@ void rotate_motor() {
       Serial.println(cane - zero);
 
     }
-    // end modification
 
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL

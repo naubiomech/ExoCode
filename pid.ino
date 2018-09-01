@@ -18,7 +18,6 @@ void pid(Leg* leg, double meas_trq, double meas_IMU) {
     PID_ref = 0;
     leg->PID_Setpoint = PID_ref;
     leg->Input = meas_IMU * leg->Prop_Gain; // this is totally new, we have to test!
-    //    PID_ref = meas_IMU * leg->Prop_Gain;
     pid = &(leg->balance_pid);
   } else {
     PID_ref = leg->PID_Setpoint;
@@ -47,7 +46,6 @@ void pid(Leg* leg, double meas_trq, double meas_IMU) {
     leg->Output *= leg->Prop_Gain;
     if (leg->Output >= 1500) leg->Output = 1500;
     if (leg->Output <= -1500) leg->Output = -1500;
-    //    leg->PID_Setpoint = 56.5 / (2.1) * ((leg->Output) * (3.3 / 4096));
   }
 
   leg->Vol = leg->Output + leg->zero; //need to map

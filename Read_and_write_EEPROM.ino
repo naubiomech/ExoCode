@@ -91,7 +91,6 @@ int clean_FSR_values(int address_FSR_l)
 
 // wirte and read values in EEPROM also per KF, smoothing ,PID and FSR params
 // Since it is really big update I would suggest to do it before the trial not in the middle
-
 int write_EXP_parameters(int address_params_l)
 { Serial.println();
   EEPROM.put(address_params_l, 'y');
@@ -134,8 +133,6 @@ int write_EXP_parameters(int address_params_l)
 
 int check_EXP_parameters(int address_params_l)
 { 
-//  Serial.print("Checking at pos ");
-//  Serial.println(address_params_l);
   byte value = EEPROM.read(address_params_l);
   Serial.println(char(value));
   if (char(value) == 'y') {

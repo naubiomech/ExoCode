@@ -12,12 +12,10 @@ struct Leg {
   // In A_Exo pre-includes
   double FSR_Average_array[dim_FSR] = {0};
   double* p_FSR_Array = &FSR_Average_array[0];
-  //  double FSR_Average_Toe = 0;
   double Curr_FSR_Toe = 0;
 
   double FSR_Average_array_Heel[dim_FSR] = {0};
   double* p_FSR_Array_Heel = &FSR_Average_array_Heel[0];
-  //  double FSR_Average_Heel = 0;
   double Curr_FSR_Heel = 0;
 
   double Tarray[dim] = {0};
@@ -172,8 +170,6 @@ struct Leg {
 
   double zero;
 
-  // Torque_Speed_ADJ.h
-  //steps steps;
   steps* p_steps;
 
 };

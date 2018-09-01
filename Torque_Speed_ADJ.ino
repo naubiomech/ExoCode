@@ -59,8 +59,6 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
       Serial.println(p_steps_l->plant_time);
 
       if ((p_steps_l->count_plant_base) >= 2) { // avoid the first step just to be sure
-
-        //        // this is the time window of the filter for the dorsiflexion
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
 
           p_steps_l->dorsi_mean = 0;
@@ -92,8 +90,6 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
           p_steps_l->dorsi_mean = (p_steps_l->dorsi_mean) / n_step_baseline;
           p_steps_l->plant_mean = p_steps_l->plant_mean / n_step_baseline;
           p_steps_l->plant_peak_mean = 0.9 * (p_steps_l->plant_peak_mean) / n_step_baseline;
-
-          //HERE
 
           Serial.println("BASE before return");
           Serial.print(" Peak ");
@@ -135,9 +131,9 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
   return 0;
 }// end take_baseline
 
-
-
-double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l, double* p_Setpoint_Ankle_l, double * p_Setpoint_Ankle_Pctrl_l, int flag_torque_time_volt_l, double prop_gain_l, double taking_baseline_l, double *p_FSR_Ratio, double* p_Max_FSR_Ratio) {
+double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l,
+                double* p_Setpoint_Ankle_l, double * p_Setpoint_Ankle_Pctrl_l, int flag_torque_time_volt_l,
+                double prop_gain_l, double taking_baseline_l, double *p_FSR_Ratio, double* p_Max_FSR_Ratio) {
 
   // Speed adjustment -> the smoothing parameters are updated as a function of the plantar time in order to modify the shaping of the torque to the new step time.
   // It considers the average time of 4 steps. There's a filter of step_time_length on the plantarflexion time in order to cut the noise
@@ -149,7 +145,6 @@ double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l,
   if (taking_baseline_l) {
     *p_Setpoint_Ankle_Pctrl_l = 0;
     *p_Setpoint_Ankle_l = 0;
-    //    Serial.println("No ctrl adj");
     return N3_l;
   }
 
@@ -216,10 +211,6 @@ double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l,
         *p_Setpoint_Ankle_l = 0;
       }
       return 1;
-
-      //      p_steps_l->flag_N3_adjustment_time = true;
-      //      return N3_l;
-
 
     }
 

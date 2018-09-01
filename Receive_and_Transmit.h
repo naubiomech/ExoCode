@@ -43,10 +43,10 @@ const char COMM_CODE_MODIFY_LEFT_ANKLE_ZERO = 'W';
 const char COMM_CODE_MODIFY_RIGHT_ANKLE_ZERO = 'X';
 const char COMM_CODE_NEG_RIGHT_ANKLE_SIGN = 'w';
 const char COMM_CODE_RESORE_RIGHT_ANKLE_SIGN = 'x';
-const char COMM_CODE_GET_RIGHT_ANKLE_GAIN = '['; // Receive Right Gain from GUI
-const char COMM_CODE_SET_RIGHT_ANKLE_GAIN = ']'; // Send Right Gain to GUI
-const char COMM_CODE_GET_LEFT_ANKLE_GAIN = '{'; // Receive Left Gain from GUI
-const char COMM_CODE_SET_LEFT_ANKLE_GAIN = '}'; // Send Left Gain to GUI
+const char COMM_CODE_GET_RIGHT_ANKLE_GAIN = '[';
+const char COMM_CODE_SET_RIGHT_ANKLE_GAIN = ']';
+const char COMM_CODE_GET_LEFT_ANKLE_GAIN = '{';
+const char COMM_CODE_SET_LEFT_ANKLE_GAIN = '}';
 const char COMM_CODE_ACTIVATE_PROP_CTRL = '+';
 const char COMM_CODE_DEACTIVATE_PROP_CTRL = '=';
 const char COMM_CODE_ACTIVATE_AUTO_KF = '.';

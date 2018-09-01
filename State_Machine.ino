@@ -54,12 +54,6 @@ void state_machine(Leg* leg)
       break;
     case 3: //Late Stance
 
-
-      //      leg->N3 = leg->old_N3;
-      //      leg->N2 = leg->old_N2;
-      //      leg->N1 = leg->old_N1;
-
-
       if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
         leg->sigm_done = true;
         leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -79,8 +73,6 @@ void state_machine(Leg* leg)
           leg->sigm_done = true;
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
           leg->state_old = leg->state;
-          //          leg->New_PID_Setpoint = 0 * leg->coef_in_3_steps;
-
 
           if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
 
@@ -103,11 +95,6 @@ void state_machine(Leg* leg)
 
     if ((Trq_time_volt == 2 || Trq_time_volt == 3) && leg->state == 3) {
       leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
-      //    Serial.println("After switch case : ");
-      //    Serial.println(leg->coef_in_3_steps_Pctrl);
-      //    Serial.println(leg->Setpoint_Ankle_Pctrl);
-      //    Serial.println(leg->PID_Setpoint);
-      //    Serial.println();
     }
     else {
 
@@ -142,9 +129,7 @@ void state_machine(Leg* leg)
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
 
           if (abs(leg->Dorsi_Setpoint_Ankle) > 0) {
-            //            //            leg->Previous_Setpoint_Ankle = 0;
             leg->Old_PID_Setpoint = 0;
-            //            leg->Setpoint_Ankle = 0;
           } else {
             leg->Previous_Dorsi_Setpoint_Ankle = 0;
           }
@@ -169,12 +154,6 @@ void state_machine(Leg* leg)
       break;
     case 3: //Late Stance
 
-
-      //      leg->N3 = leg->old_N3;
-      //      leg->N2 = leg->old_N2;
-      //      leg->N1 = leg->old_N1;
-
-
       if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
         leg->sigm_done = true;
         leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -194,8 +173,6 @@ void state_machine(Leg* leg)
           leg->sigm_done = true;
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
           leg->state_old = leg->state;
-          //          leg->New_PID_Setpoint = 0 * leg->coef_in_3_steps;
-
 
           if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
 
@@ -217,11 +194,6 @@ void state_machine(Leg* leg)
 
     if ((Trq_time_volt == 2 || Trq_time_volt == 3) && leg->state == 3) {
       leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
-      //    Serial.println("After switch case : ");
-      //    Serial.println(leg->coef_in_3_steps_Pctrl);
-      //    Serial.println(leg->Setpoint_Ankle_Pctrl);
-      //    Serial.println(leg->PID_Setpoint);
-      //    Serial.println();
     }
     else {
 

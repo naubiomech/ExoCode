@@ -91,11 +91,6 @@ void FSR_calibration()
   }
   else {
 
-    //    left_leg->p_steps->voltage_peak_ref = left_leg->fsr_Combined_peak_ref;
-    //    right_leg->p_steps->voltage_peak_ref = right_leg->fsr_Combined_peak_ref;
-
-    // What I need to comment out
-
     FSR_FIRST_Cycle = 1;
     FSR_CAL_FLAG = 0;
     if (FLAG_TWO_TOE_SENSORS) {
@@ -129,8 +124,8 @@ double get_RL_torq()
 }
 
 /*FSR Code
-  This code is very basic but is kept as an outside function for clarity. The FSR readings are used to control state based actions based on the part of the gait cycle the patient
-  is in.
+  This code is very basic but is kept as an outside function for clarity.
+  The FSR readings are used to control state based actions based on the part of the gait cycle the patient is in.
 */
 double fsr(const unsigned int pin) {
   //using voltage divider: 3.3 V -- >FSR<-- Vo -- >R< (1000) -- ground

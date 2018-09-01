@@ -220,7 +220,6 @@ void receive_and_transmit()
     left_leg->p_steps->voltage_peak_ref = left_leg->fsr_Combined_peak_ref;
     right_leg->p_steps->voltage_peak_ref = right_leg->fsr_Combined_peak_ref;
 
-    // add baseline
     left_leg->p_steps->plant_peak_mean = read_baseline(left_leg->baseline_address);
     right_leg->p_steps->plant_peak_mean = read_baseline(right_leg->baseline_address);
     left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
@@ -296,7 +295,6 @@ void receive_and_transmit()
   case COMM_CODE_SET_LEFT_ANKLE_KF_:
     receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
     memcpy(&left_leg->KF, &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-    // right_leg->KF = right_leg->store_KF;
     break;
 
   case COMM_CODE_SET_RIGHT_ANKLE_KF:

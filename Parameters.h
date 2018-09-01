@@ -1,11 +1,12 @@
 #ifndef PARAMETERS_HEADER
 #define PARAMETERS_HEADER
 
+#define IMU_BOARD
+
 const unsigned int zero = 2048;//1540;
 
 // ===== FSR Parameters =====
 // To set FSR bias and to identify the states
-
 const double FSR_Sensors_type = 40;
 
 // ===== Shaping Parameters =====
@@ -26,7 +27,6 @@ const int address_params = 54;
 
 // ===== Calibrate and read Parameters =====
 const double p[4] = {0.0787, -0.8471, 20.599, -22.670};
-
 const double p_prop[3] = {128.1, -50.82, 22.06};
 
 // ===== Proportional Control Parameters =====
