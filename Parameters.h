@@ -4,9 +4,9 @@
 // Selects the board to compile for
 #define IMU_BOARD
 
-bool FLAG_PRINT_TORQUES = false;
-bool FLAG_PID_VALS = false;
-bool FLAG_TWO_TOE_SENSORS = false;
+const bool FLAG_PRINT_TORQUES = false;
+const bool FLAG_PID_VALS = false;
+const bool FLAG_TWO_TOE_SENSORS = false;
 
 const unsigned int zero = 2048;//1540;
 
