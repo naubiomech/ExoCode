@@ -42,9 +42,6 @@ void setup()
 
   setupIMU(&bno);
 
-  analogWriteResolution(12);                                          //change resolution to 12 bits
-  analogReadResolution(12);                                           //ditto
-
   initialize_left_leg(left_leg);
   initialize_right_leg(right_leg);
 
