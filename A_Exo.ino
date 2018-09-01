@@ -26,15 +26,13 @@
 
 #include "Parameters.h"
 #include "Board.h"
-#include "Leg.h"
-#include <elapsedMillis.h>
-#include <EEPROM.h>
+
+#include "State_Machine.h"
 #include "TimerOne.h"
-#include <PID_v2.h>
-#include "Reference_ADJ.h"
 #include "Msg_functions.h"
 #include "Auto_KF.h"
 #include "IMU.h"
+
 #include "System.h"
 
 void setup()

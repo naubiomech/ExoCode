@@ -1,6 +1,8 @@
 #include "State_Machine.h"
 
 #include "Leg.h"
+#include "Reference_ADJ.h"
+
 void state_machine(Leg* leg)
 {
 
