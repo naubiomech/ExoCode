@@ -570,26 +570,36 @@ void receive_and_transmit()
       break;
 
     case '+':
-      Old_Trq_time_volt = Trq_time_volt;
-      Trq_time_volt = 2;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      FLAG_TWO_TOE_SENSORS = true;
-      FLAG_BALANCE = true;
-      Serial.println(" Activate Proportional Ctrl: ");
+      if (not(FLAG_TWO_TOE_SENSORS)) {
+        Old_Trq_time_volt = Trq_time_volt;
+        Trq_time_volt = 2;
+        *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+        *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+//        FLAG_TWO_TOE_SENSORS = true;
+        FLAG_BALANCE = true;
+        Serial.println(" Activate Balance Ctrl ");
+      } else {
+        Serial.println(" Cannoct Activate Balance Ctrl ");
+      }
       break;
 
     case '=':
-      Trq_time_volt = Old_Trq_time_volt;
-      right_leg->p_steps->torque_adj = false;
-      left_leg->p_steps->torque_adj = false;
-      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      FLAG_TWO_TOE_SENSORS = false;
-      FLAG_BALANCE = false;
-      Serial.println(" Deactivate Proportional Ctrl: ");
+      if (not(FLAG_TWO_TOE_SENSORS)) {
+        Trq_time_volt = Old_Trq_time_volt;
+        right_leg->p_steps->torque_adj = false;
+        left_leg->p_steps->torque_adj = false;
+        *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
+        *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
+        *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+        *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+//        FLAG_TWO_TOE_SENSORS = false;
+        FLAG_BALANCE = false;
+        
+        Serial.println(" Deactivate Balance Ctrl ");
+        Serial.println(Trq_time_volt);
+      } else {
+        Serial.println(" Cannoct Deactivate Balance Ctrl ");
+      }
       break;
 
 

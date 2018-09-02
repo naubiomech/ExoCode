@@ -74,7 +74,9 @@ SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an 
 
 bool FLAG_PRINT_TORQUES = false;
 bool FLAG_PID_VALS = false;
-bool FLAG_TWO_TOE_SENSORS = true;
+bool FLAG_TWO_TOE_SENSORS = false;
+bool OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
+
 bool FLAG_BALANCE = false;
 double FLAG_BALANCE_BASELINE = 0;
 double count_balance = 0;
@@ -402,7 +404,7 @@ void reset_starting_parameters() {
 
 
   //  FLAG_TWO_TOE_SENSORS = false;
-  FLAG_TWO_TOE_SENSORS = true;
+  FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
 }
 
 void reset_leg_starting_parameters(Leg* leg) {
