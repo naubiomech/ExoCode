@@ -111,6 +111,8 @@ void state_machine(Leg* leg)
     }
   }//end if (FLAG_TWO_TOE_SENSORS)
   else {
+    // in case we do not do balance but we want to use two sensors one on the heel one on the toe
+
     switch (leg->state)
     {
     case 1: //Swing
