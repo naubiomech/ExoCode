@@ -41,6 +41,9 @@ struct Leg {
   volatile bool motor_error = false;
   volatile int Time_error_counter;
 
+  volatile double FSR_Toe_Balance_Baseline;
+  volatile double FSR_Heel_Balance_Baseline;
+
   // Auto_KF.h
   double ERR;
   double max_KF;
