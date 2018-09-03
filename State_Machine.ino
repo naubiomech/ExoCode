@@ -26,7 +26,7 @@ void state_machine(Leg* leg)
 void State_Machine_Two_Toe_Sensors(Leg* leg) {
   switch (leg->state)
   {
-  case 1: //Swing
+  case SWING: //Swing
     // This flag enables the "set to zero" procedure for the left ankle.
     // When you're for at least 3 seconds in the same state, the torque reference is set to zero
 
@@ -67,7 +67,7 @@ void State_Machine_Two_Toe_Sensors(Leg* leg) {
     }
 
     break;
-  case 3: //Late Stance
+  case LATE_STANCE: //Late Stance
 
     if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
       leg->sigm_done = true;
@@ -132,7 +132,7 @@ void State_Machine_Heel_Toe_Sensors(Leg* leg) {
 
   switch (leg->state)
   {
-  case 1: //Swing
+  case SWING: //Swing
     // This flag enables the "set to zero" procedure for the left ankle.
     // When you're for at least 3 seconds in the same state, the torque reference is set to zero
 
@@ -175,7 +175,7 @@ void State_Machine_Heel_Toe_Sensors(Leg* leg) {
     }
 
     break;
-  case 3: //Late Stance
+  case LATE_STANCE: //Late Stance
 
     if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
       leg->sigm_done = true;
@@ -239,7 +239,7 @@ void State_Machine_Heel_Toe_Sensors(Leg* leg) {
 void State_Machine_Heel_Toe_Sensors_Balance(Leg* leg) {
   switch (leg->state)
   {
-  case 1: //Swing
+  case SWING: //Swing
     // This flag enables the "set to zero" procedure for the left ankle.
     // When you're for at least 3 seconds in the same state, the torque reference is set to zero
 
@@ -282,7 +282,7 @@ void State_Machine_Heel_Toe_Sensors_Balance(Leg* leg) {
     }
 
     break;
-  case 3: //Late Stance
+  case LATE_STANCE: //Late Stance
 
     if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
       leg->sigm_done = true;
