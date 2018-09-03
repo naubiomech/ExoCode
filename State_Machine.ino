@@ -47,7 +47,7 @@ void state_machine(Leg* leg)
           }
 
           leg->state_old = leg->state;
-          leg->state = 3;
+          leg->state = LATE_STANCE;
           leg->state_count_13 = 0;
           leg->state_count_31 = 0;
         }
@@ -86,7 +86,7 @@ void state_machine(Leg* leg)
 
           }
 
-          leg->state = 1;
+          leg->state = SWING;
           leg->state_count_31 = 0;
           leg->state_count_13 = 0;
         }
@@ -95,7 +95,7 @@ void state_machine(Leg* leg)
     // Adjust the torque reference as a function of the step
     ref_step_adj(leg);
 
-    if ((Trq_time_volt == 2 || Trq_time_volt == 3) && leg->state == 3) {
+    if ((Trq_time_volt == 2 || Trq_time_volt == 3) && leg->state == LATE_STANCE) {
       leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
     }
     else {
@@ -149,7 +149,7 @@ void state_machine(Leg* leg)
           }
 
           leg->state_old = leg->state;
-          leg->state = 3;
+          leg->state = LATE_STANCE;
           leg->state_count_13 = 0;
           leg->state_count_31 = 0;
         }
@@ -187,7 +187,7 @@ void state_machine(Leg* leg)
             leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
           }
 
-          leg->state = 1;
+          leg->state = SWING;
           leg->state_count_31 = 0;
           leg->state_count_13 = 0;
         }
@@ -196,7 +196,7 @@ void state_machine(Leg* leg)
     // Adjust the torque reference as a function of the step
     ref_step_adj(leg);
 
-    if ((Trq_time_volt == 2 || Trq_time_volt == 3) && leg->state == 3) {
+    if ((Trq_time_volt == 2 || Trq_time_volt == 3) && leg->state == LATE_STANCE) {
       leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
     }
     else {

@@ -7,7 +7,7 @@ void pid(Leg* leg, double meas_trq, double meas_IMU) {
   PID* pid;
   double PID_ref;
 
-  if (IMU_ENABLED && leg->state == 3 && Trq_time_volt == 2) {
+  if (IMU_ENABLED && leg->state == LATE_STANCE && Trq_time_volt == 2) {
     if (meas_IMU >= 45)
     {
       meas_IMU = 45;
@@ -42,7 +42,7 @@ void pid(Leg* leg, double meas_trq, double meas_IMU) {
   pid->Compute_KF(leg->KF);
 
   //This can be used as alternative to the previous gain (see up)
-  if (IMU_ENABLED && leg->state == 3 && Trq_time_volt == 2) {
+  if (IMU_ENABLED && leg->state == LATE_STANCE && Trq_time_volt == 2) {
     leg->Output *= leg->Prop_Gain;
     if (leg->Output >= 1500) leg->Output = 1500;
     if (leg->Output <= -1500) leg->Output = -1500;

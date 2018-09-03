@@ -3,7 +3,7 @@
 
 void sub_Auto_KF(Leg* leg){
   // take error in state 3
-  if (leg->state == 3) {
+  if (leg->state == LATE_STANCE) {
     //    leg->Input is the average of the measured torque
     //    leg->PID_Stepoint is the reference
     Serial.print(" Leg Error ");
@@ -12,7 +12,7 @@ void sub_Auto_KF(Leg* leg){
     leg->count_err++;
   }
 
-  if (leg->state == 1) {
+  if (leg->state == SWING) {
 
     leg->ERR = leg->ERR / leg->count_err;
     if ((leg->count_err != 0)) {

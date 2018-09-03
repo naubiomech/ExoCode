@@ -29,13 +29,13 @@ void PID_Sigm_Curve(Leg* leg){
         leg->sigm_done = false;                                                   //Do not let the code enter this block, uhh until the setpoint transition has finished?
         leg->n_iter = 0;
 
-        if (leg->state == 3) {
+        if (leg->state == LATE_STANCE) {
           leg->N_step = leg->N3;//12 * 10;                                             //Defines number of steps
         }
         else if (leg->state == 2) {                                             //So I think this N_step business determines how quickly the PID Setpoint rises or falls
           leg->N_step = leg->N2;//6 * 10;
         }
-        else if (leg->state == 1) {
+        else if (leg->state == SWING) {
           leg->N_step = leg->N1;
         }
 

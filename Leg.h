@@ -151,7 +151,7 @@ struct Leg {
   boolean signm_done = true;
 
   // State_Machine_Parameters.h
-  int state = 1;
+  int state = SWING;
   int state_old = 1;
   int state_count_13 = 0;
   int state_count_31 = 0;
