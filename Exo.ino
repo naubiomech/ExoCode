@@ -96,10 +96,10 @@ void loop()
 
 void resetMotorIfError() {
   //motor_error true I have an error, false I haven't
-  left_leg->motor_error = (analogRead(left_leg->pin_err) <= 5);
-  right_leg->motor_error = (analogRead(right_leg->pin_err) <= 5);
+  bool left_leg_motor_error = (analogRead(left_leg->pin_err) <= 5);
+  bool right_leg_motor_error = (analogRead(right_leg->pin_err) <= 5);
 
-  bool motor_error = (left_leg->motor_error || right_leg->motor_error);
+  bool motor_error = (left_leg_motor_error || right_leg_motor_error);
 
   if (stream == 1) {
 
