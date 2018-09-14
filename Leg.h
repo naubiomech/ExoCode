@@ -9,6 +9,18 @@ const int dim = 5;
 struct Leg {
   int torque_sensor_ankle_pin;
   int motor_ankle_pin;
+
+  double sign = 1;
+
+  double Tarray[dim] = {0};
+  double* TarrayPoint = &Tarray[0];
+
+  volatile double Average_Trq;
+
+  unsigned int pin_err;
+  PID ankle_pid = PID(&Input, &Output, &PID_Setpoint, kp_ankle, ki_ankle, kd_ankle, DIRECT);
+  // -------
+
   // In A_Exo pre-includes
   double FSR_Average_array[dim_FSR] = {0};
   double* p_FSR_Array = &FSR_Average_array[0];
@@ -18,15 +30,7 @@ struct Leg {
   double* p_FSR_Array_Heel = &FSR_Average_array_Heel[0];
   double Curr_FSR_Heel = 0;
 
-  double Tarray[dim] = {0};
-  double* TarrayPoint = &Tarray[0];
-
-  double sign = 1;
-
   // In A_Exo post_includes
-  unsigned int pin_err;
-
-  volatile double Average_Trq;
 
   volatile double FSR_Combined_Average;
   volatile double FSR_Toe_Average;
@@ -86,7 +90,6 @@ struct Leg {
   double KF = 1;
 
   double PID_Setpoint, Input, Output;
-  PID ankle_pid = PID(&Input, &Output, &PID_Setpoint, kp_ankle, ki_ankle, kd_ankle, DIRECT);
   PID balance_pid = PID(&Input, &Output, &PID_Setpoint, kp_balance, ki_balance, kd_balance, DIRECT);
 
   double Setpoint_Ankle, Setpoint_Ankle_Pctrl;
