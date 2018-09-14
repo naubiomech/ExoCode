@@ -20,11 +20,11 @@ const unsigned int TORQUE_SENSOR_RIGHT_ANKLE_PIN = A6;
 const unsigned int TORQUE_SENSOR_LEFT_ANKLE_PIN = A0;
 
 const unsigned int MOTOR_LEFT_ANKLE_PIN = A21;
-const unsigned int MOTOR_RIGHT_ANKLE_PIN = A22;
+const unsigned int MOTOR_RIGHT_ANKLE_PIN = A3;
 
 const unsigned int LED_PIN = 13;
 
-const unsigned int MOTOR_ENABLE_PIN = A3;
+const unsigned int MOTOR_ENABLE_PIN = A22;
 
 const unsigned int WHICH_LEG_PIN = 15;
 
