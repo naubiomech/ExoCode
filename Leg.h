@@ -38,7 +38,6 @@ struct Leg {
   volatile double FSR_Toe_Average;
   volatile double FSR_Heel_Average;
   volatile bool motor_error = false;
-  volatile int Time_error_counter;
 
   volatile double FSR_Toe_Balance_Baseline;
   volatile double FSR_Heel_Balance_Baseline;

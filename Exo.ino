@@ -101,15 +101,6 @@ void resetMotorIfError() {
 
   bool motor_error = (left_leg->motor_error || right_leg->motor_error);
 
-  if (left_leg->motor_error) {
-    left_leg->Time_error_counter++;
-  }
-
-  if (right_leg->motor_error) {
-    right_leg->Time_error_counter++;
-  }
-
-
   if (stream == 1) {
 
     if (not(motor_error) && (digitalRead(MOTOR_ENABLE_PIN) == LOW)) {
