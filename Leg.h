@@ -20,7 +20,6 @@ struct Leg {
 
   double Tarray[dim] = {0};
   double* TarrayPoint = &Tarray[0];
-  double Average = 0;
 
   double sign = 1;
 

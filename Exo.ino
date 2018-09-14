@@ -156,11 +156,11 @@ void calculate_leg_average(Leg* leg) {
   leg->TarrayPoint[0] = get_torq(leg);
   leg->FSR_Toe_Average = 0;
   leg->FSR_Heel_Average = 0;
-  leg->Average = 0;
+  double Average = 0;
 
   for (int i = 0; i < dim; i++)
   {
-    leg->Average =  leg->Average + leg->TarrayPoint[i];
+    Average =  Average + leg->TarrayPoint[i];
   }
 
   leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
@@ -169,7 +169,7 @@ void calculate_leg_average(Leg* leg) {
 
   leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
 
-  leg->Average_Trq = leg->Average / dim;
+  leg->Average_Trq = Average / dim;
 
   if (FLAG_TWO_TOE_SENSORS)
   {
@@ -178,7 +178,7 @@ void calculate_leg_average(Leg* leg) {
   else {
     leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
   }
-  leg->p_steps->torque_average = leg->Average / dim;
+  leg->p_steps->torque_average = Average / dim;
 
 }
 
