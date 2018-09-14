@@ -139,10 +139,6 @@ struct Leg {
   double N2 = 4;
   double N1 = 4;
 
-  double old_N3 = 500;
-  double old_N2 = 4;
-  double old_N1 = 4;
-
   long sig_time = 0;
   long sig_time_old = 0;
 

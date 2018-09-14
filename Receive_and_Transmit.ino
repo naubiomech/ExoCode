@@ -331,14 +331,6 @@ void receive_and_transmit()
     left_leg->N2 = N2;
     left_leg->N3 = N3;
 
-    left_leg->old_N3 = left_leg->N3;
-    left_leg->old_N2 = left_leg->N2;
-    left_leg->old_N1 = left_leg->N1;
-
-    right_leg->old_N3 = right_leg->N3;
-    right_leg->old_N2 = right_leg->N2;
-    right_leg->old_N1 = right_leg->N1;
-
     Serial.print("Set Smooth ");
     Serial.print(" ");
     Serial.print(N1);
