@@ -26,14 +26,8 @@ struct Leg {
   // In A_Exo post_includes
   unsigned int pin_err;
 
-  double store_KF = 0;
-
-  double previous_curr_voltage;
-  double previous_torque_average;
-
-  volatile double Average_Volt;
-  volatile double Average_Volt_Heel;
   volatile double Average_Trq;
+
   volatile double FSR_Combined_Average;
   volatile double FSR_Toe_Average;
   volatile double FSR_Heel_Average;
@@ -81,7 +75,6 @@ struct Leg {
 
   // PID_and_Ctrl_Parameters.h
   double torque_calibration_value = 0;
-  double T_act;
   int Vol;
 
   double kp_ankle = 1000;
@@ -106,7 +99,6 @@ struct Leg {
   double* p_Dorsi_Setpoint_Ankle = &Dorsi_Setpoint_Ankle;
   double* p_Previous_Dorsi_Setpoint_Ankle = &Previous_Dorsi_Setpoint_Ankle;
 
-
   // Proportional_Ctrl.h
   double Prop_Gain = 1;
 
@@ -120,7 +112,6 @@ struct Leg {
   double coef_in_3_steps = 0;
   double start_step = 0;
   double num_3_steps = 0;
-  double store_3sec_N1 = N1; // Not sure if this one is needed
 
   double coef_in_3_steps_Pctrl = 0;
   double store_N1 = 0;
@@ -155,8 +146,6 @@ struct Leg {
   int state_count_21 = 0;
   int state_count_23 = 0;
   int state_count_32 = 0;
-
-
 
   double state_3_start_time = 0;
   double state_1_start_time = 0;
