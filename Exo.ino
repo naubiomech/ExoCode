@@ -141,17 +141,16 @@ void calculate_leg_average(Leg* leg) {
   //Shift the arrays
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-    leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
   }
   //Get the torque
-  leg->TarrayPoint[0] = get_torq(leg);
+  leg->Tarray[0] = get_torq(leg);
   leg->FSR_Toe_Average = 0;
   leg->FSR_Heel_Average = 0;
   double Average = 0;
 
   for (int i = 0; i < dim; i++)
   {
-    Average =  Average + leg->TarrayPoint[i];
+    Average =  Average + leg->Tarray[i];
   }
 
   leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
@@ -180,14 +179,14 @@ void calculate_averages() {
   if (FLAG_PRINT_TORQUES) {
     Serial.print("LEFT [");
     for (int i = 0; i < dim; i++) {
-      Serial.print(left_leg->TarrayPoint[i]);
+      Serial.print(left_leg->Tarray[i]);
       Serial.print(" , ");
     }
     Serial.print(" ] Average: ");
     Serial.println(left_leg->Average_Trq);
     Serial.print("RIGHT [");
     for (int i = 0; i < dim; i++) {
-      Serial.print(right_leg->TarrayPoint[i]);
+      Serial.print(right_leg->Tarray[i]);
       Serial.print(" , ");
     }
     Serial.print(" ] Average: ");
@@ -203,10 +202,10 @@ void check_FSR_calibration() {
   }
 
   if (right_leg->FSR_baseline_FLAG) {
-    take_baseline(right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);
+    take_baseline(right_leg->state, right_leg->state_old, right_leg->p_steps, &right_leg->FSR_baseline_FLAG);
   }
   if (left_leg->FSR_baseline_FLAG) {
-    take_baseline(left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
+    take_baseline(left_leg->state, left_leg->state_old, left_leg->p_steps, &left_leg->FSR_baseline_FLAG);
   }
 
 }
@@ -257,12 +256,12 @@ void rotate_motor() {
     set_2_zero_if_steady_state();
 
     left_leg->N3 = Ctrl_ADJ(left_leg->state, left_leg->state_old, left_leg->p_steps,
-                            left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle,
-                            left_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, left_leg->Prop_Gain,
+                            left_leg->N3, left_leg->New_PID_Setpoint, &left_leg->Setpoint_Ankle,
+                            &left_leg->Setpoint_Ankle_Pctrl, Trq_time_volt, left_leg->Prop_Gain,
                             left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->Max_FSR_Ratio);
     right_leg->N3 = Ctrl_ADJ(right_leg->state, right_leg->state_old, right_leg->p_steps,
-                             right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle,
-                             right_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, right_leg->Prop_Gain,
+                             right_leg->N3, right_leg->New_PID_Setpoint, &right_leg->Setpoint_Ankle,
+                             &right_leg->Setpoint_Ankle_Pctrl, Trq_time_volt, right_leg->Prop_Gain,
                              right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio);
   }
 }

@@ -454,19 +454,19 @@ void receive_and_transmit()
     break;
 
   case COMM_CODE_STOP_LEFT_ANKLE_TORQUE_ADJ:
-    *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
+    left_leg->Setpoint_Ankle = left_leg->p_steps->Setpoint;
     left_leg->p_steps->torque_adj = false;
     Serial.print("Stop Left TRQ adj, come back to: ");
-    Serial.println(*left_leg->p_Setpoint_Ankle );
+    Serial.println(left_leg->Setpoint_Ankle);
     break;
 
   case COMM_CODE_STOP_RIGHT_ANKLE_TORQUE_ADJ:
 
-    *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
+    right_leg->Setpoint_Ankle = right_leg->p_steps->Setpoint;
     right_leg->p_steps->torque_adj = false;
 
     Serial.print("Stop Right TRQ adj, come back to: ");
-    Serial.println(*right_leg->p_Setpoint_Ankle);
+    Serial.println(right_leg->Setpoint_Ankle);
     break;
 
   case COMM_CODE_SAVE_EXP_PARAMS:
@@ -562,8 +562,8 @@ void receive_and_transmit()
     if (not(FLAG_TWO_TOE_SENSORS)) {
       Old_Trq_time_volt = Trq_time_volt;
       Trq_time_volt = 2;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      right_leg->Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+      left_leg->Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
 //        FLAG_TWO_TOE_SENSORS = true;
       FLAG_BALANCE = true;
       Serial.println(" Activate Balance Ctrl ");
@@ -578,10 +578,10 @@ void receive_and_transmit()
       Trq_time_volt = Old_Trq_time_volt;
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
-      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      right_leg->Setpoint_Ankle = right_leg->p_steps->Setpoint;
+      left_leg->Setpoint_Ankle = left_leg->p_steps->Setpoint;
+      right_leg->Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+      left_leg->Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
 //        FLAG_TWO_TOE_SENSORS = false;
       FLAG_BALANCE = false;
 
@@ -608,8 +608,8 @@ void receive_and_transmit()
   case COMM_CODE_ACTIVATE_PROP_PIVOT_CTRL:
     Old_Trq_time_volt = Trq_time_volt;
     Trq_time_volt = 3; // activate pivot proportional control
-    *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-    *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+    right_leg->Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+    left_leg->Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
     Serial.println(" Activate Proportional Pivot Ctrl ");
     break;
 
@@ -617,10 +617,10 @@ void receive_and_transmit()
     Trq_time_volt = Old_Trq_time_volt;
     right_leg->p_steps->torque_adj = false;
     left_leg->p_steps->torque_adj = false;
-    *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
-    *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
-    *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-    *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+    right_leg->Setpoint_Ankle = right_leg->p_steps->Setpoint;
+    left_leg->Setpoint_Ankle = left_leg->p_steps->Setpoint;
+    right_leg->Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+    left_leg->Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
     Serial.println(" Deactivate Proportional Pivot Ctrl ");
     break;
 

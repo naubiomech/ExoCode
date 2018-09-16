@@ -14,7 +14,6 @@ struct Leg {
   double sign = 1;
 
   double Tarray[dim] = {0};
-  double* TarrayPoint = &Tarray[0];
 
   volatile double Average_Trq;
 
@@ -45,13 +44,9 @@ struct Leg {
 
   double Setpoint_Ankle, Setpoint_Ankle_Pctrl;
   double Previous_Setpoint_Ankle = 0;
-  double* p_Setpoint_Ankle = &Setpoint_Ankle;
-  double* p_Setpoint_Ankle_Pctrl = &Setpoint_Ankle_Pctrl;
   double Setpoint_earlyStance = 0.25 * Setpoint_Ankle;
   double Dorsi_Setpoint_Ankle;
   double Previous_Dorsi_Setpoint_Ankle;
-  double* p_Dorsi_Setpoint_Ankle = &Dorsi_Setpoint_Ankle;
-  double* p_Previous_Dorsi_Setpoint_Ankle = &Previous_Dorsi_Setpoint_Ankle;
 
   // TODO: Change these to local variables
   double exp_mult = 1500.0;
@@ -66,11 +61,9 @@ struct Leg {
   // FSRs
 
   double FSR_Average_array[dim_FSR] = {0};
-  double* p_FSR_Array = &FSR_Average_array[0];
   double Curr_FSR_Toe = 0;
 
   double FSR_Average_array_Heel[dim_FSR] = {0};
-  double* p_FSR_Array_Heel = &FSR_Average_array_Heel[0];
   double Curr_FSR_Heel = 0;
 
   volatile double FSR_Combined_Average;
@@ -101,7 +94,6 @@ struct Leg {
   double Max_FSR_Ratio;
 
   int FSR_baseline_FLAG = 0;
-  int* p_FSR_baseline_FLAG = &FSR_baseline_FLAG;
 
   int address_FSR;
   int baseline_address;
@@ -122,7 +114,6 @@ struct Leg {
   double N3 = 500;
   double N2 = 4;
   double N1 = 4;
-  // ------------
 
   double activate_in_3_steps = 0;
   double first_step = 1;
@@ -158,6 +149,7 @@ struct Leg {
 
   steps* p_steps;
 
+  // ------------
 };
 
 void initialize_leg(Leg* leg);
