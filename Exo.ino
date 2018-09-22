@@ -139,7 +139,7 @@ void calculate_leg_average(Leg* leg) {
   //Calc the average value of Torque
 
   //Shift the arrays
-  for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
+  for (int j = dim - 1; j >= 1; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
     leg->Tarray[j] = leg->Tarray[j - 1];                //Puts the element in the following memory space into the current memory space
   }
