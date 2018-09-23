@@ -140,16 +140,12 @@ struct Leg {
   int state_old = SWING;
   int state_count_13 = 0;
   int state_count_31 = 0;
-  int state_count_12 = 0;
-  int state_count_21 = 0;
-  int state_count_23 = 0;
-  int state_count_32 = 0;
 
-  double start_time = 0;
+	double start_time = 0;
 
-  steps* p_steps;
+	steps* p_steps;
 
-  // ------------
+	// ------------
 };
 
 void initialize_leg(Leg* leg);
