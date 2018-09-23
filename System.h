@@ -59,9 +59,6 @@ Leg* left_leg = new Leg();
 Leg* right_leg = new Leg();
 
 // ===== Msg Functions =====
-msg* p_msg_send = new msg();
-msg* p_msg_receive = new msg();
-
 double data_to_send[8];
 double *data_to_send_point = &data_to_send[0];
 
