@@ -50,8 +50,8 @@ void pid(Leg* leg, double meas_trq, double meas_IMU) {
 
   leg->Vol = leg->Output + leg->zero; //need to map
 
-#IFDEF QUAD_BOARD
+#ifdef QUAD_BOARD
   leg->Vol = leg->Vol * 0.8 + 0.1 * 4096;
-#ENDIF
+#endif
   analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
 }
