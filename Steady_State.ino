@@ -36,5 +36,5 @@ void set_to_zero(Leg* leg){
 
 void set_2_zero_if_steady_state() {
   set_to_zero_if_leg_in_steady_state(right_leg);
-  set_to_zero_if_leg_in_steady_state(leg_leg);
+  set_to_zero_if_leg_in_steady_state(left_leg);
 }
