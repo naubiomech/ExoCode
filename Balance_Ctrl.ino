@@ -2,7 +2,7 @@
 void Balance_Baseline() {
 
 
-  if (millis() - startTime < 5000)
+  if (millis() - fsrCalibrationStartTime < 5000)
   {
     if (left_leg->FSR_Toe_Balance_Baseline <=  fsr(left_leg->fsr_sense_Toe))
       left_leg->FSR_Toe_Balance_Baseline =  fsr(left_leg->fsr_sense_Toe);
