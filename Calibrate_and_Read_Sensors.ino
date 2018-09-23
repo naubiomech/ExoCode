@@ -8,15 +8,15 @@ void torque_calibration()
   left_leg->torque_calibration_value = 0;
   right_leg->torque_calibration_value = 0;
 
-  while (millis() - torque_calibration_value_time < 1000)
-  { //Calibrates the LL for a total time of 1 second,
-    left_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
-    right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
-    torq_cal_count ++;                                                         //Increments count
+  // Creates a running total of read torque values to average after one second
+  while (millis() - torque_calibration_value_time < TORQUE_CALIBRATION_TIME_IN_MS){
+    left_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN);
+    right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN);
+    torq_cal_count++;
   }
 
-  left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
-  right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
+  left_leg->torque_calibration_value *= (3.3 / 4096) / torq_cal_count;  // Averages torque over a second
+  right_leg->torque_calibration_value *= (3.3 / 4096) / torq_cal_count; // Averages torque over a second
   Serial.println(left_leg->torque_calibration_value);
   Serial.println(right_leg->torque_calibration_value);
 }
