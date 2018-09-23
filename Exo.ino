@@ -65,6 +65,8 @@ void callback()//executed every 2ms
 
   check_FSR_calibration();
 
+  check_Balance_Baseline();
+
   rotate_motor();
 
 }// end callback
@@ -209,6 +211,12 @@ void check_FSR_calibration() {
     take_baseline(left_leg->state, left_leg->state_old, left_leg->p_steps, &left_leg->FSR_baseline_FLAG);
   }
 
+}
+
+void check_Balance_Baseline() {
+  if (FLAG_BALANCE_BASELINE) {
+    Balance_Baseline();
+  }
 }
 
 void rotate_motor() {

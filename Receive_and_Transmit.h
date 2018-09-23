@@ -55,6 +55,7 @@ const char COMM_CODE_ACTIVATE_PROP_PIVOT_CTRL = '#';
 const char COMM_CODE_DEACTIVATE_PROP_PIVOT_CTRL = '^';
 const char COMM_CODE_GET_BASELINE = 'B';
 const char COMM_CODE_CALC_BASELINE = 'b';
+const char COMM_CODE_CALC_BALANCE_BASELINE = '&';
 
 void receive_and_transmit();
 

@@ -42,6 +42,7 @@ double base_1, base_2;
 
 // ===== Receive_and_Transmit
 bool FLAG_BALANCE = false;
+bool FLAG_BALANCE_BASELINE = false;
 
 // ===== Auto KF =====
 int flag_auto_KF = 0;
