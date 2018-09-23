@@ -9,7 +9,7 @@ void torque_calibration()
   right_leg->torque_calibration_value = 0;
 
   // Creates a running total of read torque values to average after one second
-  while (millis() - torque_calibration_value_time < TORQUE_CALIBRATION_TIME_IN_MS){
+  while (millis() - torque_calibration_value_time < 1000){
     left_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN);
     right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN);
     torq_cal_count++;
@@ -21,12 +21,24 @@ void torque_calibration()
   Serial.println(right_leg->torque_calibration_value);
 }
 
+void calibrate_fsr_peak(double* peak_ref, int fsr_value){
+  if (*peak_ref > fsr_value) {
+    *peak_ref = fsr_value;
+  }
+}
 
+void calibrate_fsr_leg(Leg* leg){
+
+  leg->Curr_Toe = fsr(leg->fsr_sense_Toe);
+  leg->Curr_Heel = fsr(leg->fsr_sense_Heel);
+  leg->Curr_Combined = leg->Curr_Toe + leg->Curr_Heel;
+  calibrate_fsr_peak(&leg->fsr_Toe_peak_ref, leg->Curr_Toe);
+  calibrate_fsr_peak(&leg->fsr_Heel_peak_ref, leg->Curr_Heel);
+  calibrate_fsr_peak(&leg->fsr_Combined_peak_ref, leg->Curr_Combined);
+}
 
 void FSR_calibration()
 {
-
-
   if (FSR_FIRST_Cycle) {
     FSR_FIRST_Cycle = 0;
 
@@ -46,48 +58,8 @@ void FSR_calibration()
 
   if (millis() - fsrCalibrationStartTime < 5000)
   {
-    left_leg->Curr_Toe = fsr(left_leg->fsr_sense_Toe);
-    right_leg->Curr_Toe = fsr(right_leg->fsr_sense_Toe);
-
-    left_leg->Curr_Heel = fsr(left_leg->fsr_sense_Heel);
-    right_leg->Curr_Heel = fsr(right_leg->fsr_sense_Heel);
-
-    left_leg->Curr_Combined = left_leg->Curr_Toe + left_leg->Curr_Heel;
-    right_leg->Curr_Combined = right_leg->Curr_Toe + right_leg->Curr_Heel;
-
-    if (left_leg->Curr_Combined > left_leg->fsr_Combined_peak_ref)
-    {
-      left_leg->fsr_Combined_peak_ref = left_leg->Curr_Combined;
-    }
-
-    if (right_leg->Curr_Combined > right_leg->fsr_Combined_peak_ref)
-    {
-      right_leg->fsr_Combined_peak_ref = right_leg->Curr_Combined;
-    }
-
-    // Toe
-
-    if (left_leg->Curr_Toe > left_leg->fsr_Toe_peak_ref)
-    {
-      left_leg->fsr_Toe_peak_ref = left_leg->Curr_Toe;
-    }
-
-    if (right_leg->Curr_Toe > right_leg->fsr_Toe_peak_ref)
-    {
-      right_leg->fsr_Toe_peak_ref = right_leg->Curr_Toe;
-    }
-
-    // Heel
-    if (left_leg->Curr_Heel > left_leg->fsr_Heel_peak_ref)
-    {
-      left_leg->fsr_Heel_peak_ref = left_leg->Curr_Heel;
-    }
-
-    if (right_leg->Curr_Heel > right_leg->fsr_Heel_peak_ref)
-    {
-      right_leg->fsr_Heel_peak_ref = right_leg->Curr_Heel;
-    }
-
+    calibrate_fsr_leg(left_leg);
+    calibrate_fsr_leg(right_leg);
   }
   else {
 
@@ -113,13 +85,11 @@ double get_torq(Leg* leg) {
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }
 
-double get_LL_torq()
-{ //flexion is positive 8.10.16, gets the torque of the right leg
+double get_LL_torq() {
   return get_torq(left_leg);
 }
 
-double get_RL_torq()
-{ //flexion is positive 8.10.16, gets the torque of the right leg
+double get_RL_torq() {
   return get_torq(right_leg);
 }
 
@@ -135,11 +105,9 @@ double fsr(const unsigned int pin) {
   if ( FSR_Sensors_type == 10) {
     // This to return the force instead of the Voltage
     Vo = max(0, Vo); // add the max cause cannot be negative force
-  }
-  else {
-    if (FSR_Sensors_type == 40)
-      // This to return the force instead of the Voltage
-      Vo = max(0, p[0] * pow(Vo, 3) + p[1] * pow(Vo, 2) + p[2] * Vo + p[3]); // add the max cause cannot be negative force
+  } else if (FSR_Sensors_type == 40){
+    // This to return the force instead of the Voltage
+    Vo = max(0, p[0] * pow(Vo, 3) + p[1] * pow(Vo, 2) + p[2] * Vo + p[3]); // add the max cause cannot be negative force
   }
 
   return Vo;
