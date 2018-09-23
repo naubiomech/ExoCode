@@ -5,10 +5,10 @@ void Auto_KF_leg(Leg* leg){
   // take error in state 3
   switch(leg->state){
   case LATE_STANCE:
-    Auto_KF_leg_Late_stance(Leg* leg);
+    Auto_KF_leg_Late_stance(leg);
     break;
   case SWING:
-    Auto_KF_leg_Swing(Leg* leg);
+    Auto_KF_leg_Swing(leg);
     break;
   }
 }
@@ -47,6 +47,6 @@ void Auto_KF_leg_Swing(Leg* leg){
 }
 
 void Auto_KF() {
-  sub_Auto_KF(left_leg);
-  sub_Auto_KF(right_leg);
+  Auto_KF_leg(left_leg);
+  Auto_KF_leg(right_leg);
 }
