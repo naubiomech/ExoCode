@@ -22,38 +22,35 @@ void PID_Sigm_Curve(Leg* leg){
   {
     leg->sig_time_old = leg->sig_time;                                                  //??? records for next time this code runs??
 
-    if (leg->sigm_flag)
-    { //This is always true???
-      if ((abs(leg->New_PID_Setpoint - leg->PID_Setpoint) > 0.1) && (leg->sigm_done))
-      { //if state machine transition has occured and the newsetpoint is greater than the setpoint
-        leg->sigm_done = false;                                                   //Do not let the code enter this block, uhh until the setpoint transition has finished?
-        leg->n_iter = 0;
+    if ((abs(leg->New_PID_Setpoint - leg->PID_Setpoint) > 0.1) && (leg->sigm_done))
+    { //if state machine transition has occured and the newsetpoint is greater than the setpoint
+      leg->sigm_done = false;                                                   //Do not let the code enter this block, uhh until the setpoint transition has finished?
+      leg->n_iter = 0;
 
-        if (leg->state == LATE_STANCE) {
-          leg->N_step = leg->N3;//12 * 10;                                             //Defines number of steps
-        }
-        else if (leg->state == 2) {                                             //So I think this N_step business determines how quickly the PID Setpoint rises or falls
-          leg->N_step = leg->N2;//6 * 10;
-        }
-        else if (leg->state == SWING) {
-          leg->N_step = leg->N1;
-        }
-
-        leg->exp_mult = round((10 / Ts) / (leg->N_step - 1));                         //???
-
-      }// end if sigm_done
-
-      if (leg->n_iter < leg->N_step)
-      {
-        // Determines the new intermediate PID Setpoint
-        leg->PID_Setpoint = Change_PID_Setpoint_Sigm(leg->New_PID_Setpoint, leg->PID_Setpoint, leg->Old_PID_Setpoint, Ts, leg->exp_mult, leg->n_iter, leg->N_step);
-        leg->n_iter++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
+      if (leg->state == LATE_STANCE) {
+        leg->N_step = leg->N3;//12 * 10;                                             //Defines number of steps
       }
-      if (leg->n_iter >= leg->N_step)
-      {
-        leg->sigm_done = true;
+      else if (leg->state == 2) {                                             //So I think this N_step business determines how quickly the PID Setpoint rises or falls
+        leg->N_step = leg->N2;//6 * 10;
       }
-    }// end if sigm
+      else if (leg->state == SWING) {
+        leg->N_step = leg->N1;
+      }
+
+      double exp_mult = round((10 / Ts) / (leg->N_step - 1));                         //???
+
+    }// end if sigm_done
+
+    if (leg->n_iter < leg->N_step)
+    {
+      // Determines the new intermediate PID Setpoint
+      leg->PID_Setpoint = Change_PID_Setpoint_Sigm(leg->New_PID_Setpoint, leg->PID_Setpoint, leg->Old_PID_Setpoint, Ts, exp_mult, leg->n_iter, leg->N_step);
+      leg->n_iter++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
+    }
+    if (leg->n_iter >= leg->N_step)
+    {
+      leg->sigm_done = true;
+    }
   }
 }
 
