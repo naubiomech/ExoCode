@@ -78,15 +78,8 @@ void state_machine_swing(Leg* leg, boolean foot_on_fsr){
         leg->Previous_Dorsi_Setpoint_Ankle = 0;
       }
 
-      if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle) {
-
-        leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
-
-      } else {
-
-        leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
-
-      }
+      leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle +
+        (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
 
       leg->state_old = leg->state;
       leg->state = LATE_STANCE;
@@ -117,16 +110,8 @@ void state_machine_late_stance(Leg* leg, boolean foot_on_fsr){
       leg->Old_PID_Setpoint = leg->PID_Setpoint;
       leg->state_old = leg->state;
 
-
-      if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
-
-        leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
-
-      } else {
-
-        leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
-
-      }
+      leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle +
+        (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
 
       leg->state = SWING;
       leg->state_count_31 = 0;
