@@ -8,6 +8,8 @@ const bool FLAG_PRINT_TORQUES = false;
 const bool FLAG_PID_VALS = false;
 const bool FLAG_TWO_TOE_SENSORS = false;
 
+const int PID_DEFAULTS[] = {1000, 0, 0};
+
 const int TORQUE_CALIBRATION_TIME_IN_MS = 1000;
 
 const unsigned int zero = 2048;//1540;
