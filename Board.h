@@ -76,10 +76,10 @@ const unsigned int FSR_SENSE_LEFT_HEEL_PIN = A13;
 const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A14;
 const unsigned int FSR_SENSE_RIGHT_HEEL_PIN = A15;
 
-const unsigned int TORQUE_SENSOR_LEFT_KNEE_PIN = A1;
-const unsigned int TORQUE_SENSOR_LEFT_ANKLE_PIN = A0;
-const unsigned int TORQUE_SENSOR_RIGHT_KNEE_PIN = A5;
-const unsigned int TORQUE_SENSOR_RIGHT_ANKLE_PIN = A6;
+const unsigned int TORQUE_SENSOR_LEFT_KNEE_PIN = A5;
+const unsigned int TORQUE_SENSOR_LEFT_ANKLE_PIN = A6;
+const unsigned int TORQUE_SENSOR_RIGHT_KNEE_PIN = A1;
+const unsigned int TORQUE_SENSOR_RIGHT_ANKLE_PIN = A0;
 
 const unsigned int MOTOR_LEFT_KNEE_PIN = 23; //PWM
 const unsigned int MOTOR_LEFT_ANKLE_PIN = 22; //PWM
