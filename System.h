@@ -2,7 +2,6 @@
 #define SYSTEM_HEADER
 #include <Metro.h> // Include the Metro library
 #include <SoftwareSerial.h>
-#include "Msg_functions.h"
 
 struct Trial {
   int bluetoothStream = 0;
