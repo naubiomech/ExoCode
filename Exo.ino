@@ -141,47 +141,48 @@ void resetMotorIfError() {
   }//end stream==1
 }
 
-void calculate_leg_average(Leg* leg) {
+void calculate_motor_average(Motor* motor) {
   //Calc the average value of Torque
 
   //Shift the arrays
   for (int j = dim - 1; j >= 1; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-    leg->Tarray[j] = leg->Tarray[j - 1];                //Puts the element in the following memory space into the current memory space
+    motor->Tarray[j] = motor->Tarray[j - 1];                //Puts the element in the following memory space into the current memory space
   }
   //Get the torque
-  leg->Tarray[0] = get_torq(leg);
-  leg->FSR_Toe_Average = 0;
-  leg->FSR_Heel_Average = 0;
+  motor->Tarray[0] = get_torq(motor);
+  motor->FSR_Toe_Average = 0;
+  motor->FSR_Heel_Average = 0;
   double Average = 0;
 
   for (int i = 0; i < dim; i++)
   {
-    Average =  Average + leg->Tarray[i];
+    Average =  Average + motor->Tarray[i];
   }
 
-  leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
-  leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
+  motor->FSR_Toe_Average = fsr(motor->fsr_sense_Toe);
+  motor->FSR_Heel_Average = fsr(motor->fsr_sense_Heel);
 
 
-  leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
+  motor->FSR_Combined_Average = (motor->FSR_Toe_Average + motor->FSR_Heel_Average);
 
-  leg->Average_Trq = Average / dim;
+  motor->Average_Trq = Average / dim;
 
   if (FLAG_TWO_TOE_SENSORS)
   {
-    leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
+    motor->p_steps->curr_voltage = motor->FSR_Combined_Average;
   }
   else {
-    leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
+    motor->p_steps->curr_voltage = motor->FSR_Toe_Average;
   }
-  leg->p_steps->torque_average = Average / dim;
+  motor->p_steps->torque_average = Average / dim;
 
 }
 
 void calculate_averages() {
-  calculate_leg_average(left_leg);
-  calculate_leg_average(right_leg);
+  for (int i = 0; i < MOTOR_COUNT; i++){
+    calculate_moto_average(exo_motors[i]);
+  }
 
   if (FLAG_PRINT_TORQUES) {
     Serial.print("LEFT [");
