@@ -71,4 +71,6 @@ double N1 = 4;
 steps val_L;
 steps val_R;
 
+Motor* exo_motors[MOTOR_COUNT];
+
 #endif

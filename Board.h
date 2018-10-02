@@ -32,6 +32,8 @@ const unsigned int MOTOR_ERROR_LEFT_ANKLE_PIN = A5;
 const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = A7;
 
 const i2c_pins IMU_1_PINS = IMU_SLOT_2_PINS;
+
+const unsigned int MOTOR_COUNT = 2;
 #endif
 
 #ifdef TWO_LEG_BOARD
@@ -59,6 +61,8 @@ const unsigned int WHICH_LEG_PIN = 15;
 
 const unsigned int MOTOR_ERROR_LEFT_ANKLE_PIN = 6;
 const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = 7;
+
+const unsigned int MOTOR_COUNT = 2;
 #endif
 
 #ifdef QUAD_BOARD
@@ -98,6 +102,8 @@ const unsigned int MOTOR_ERROR_RIGHT_KNEE_PIN = 26;
 const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = 27;
 
 const i2c_pins IMU_1_PINS = IMU_SLOT_2_PINS;
+
+const unsigned int MOTOR_COUNT = 4;
 #endif
 #endif
 
