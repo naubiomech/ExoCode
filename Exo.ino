@@ -98,10 +98,14 @@ void loop()
 
 void resetMotorIfError() {
   //motor_error true I have an error, false I haven't
-  bool left_leg_motor_error = (analogRead(left_leg->pin_err) <= 5);
-  bool right_leg_motor_error = (analogRead(right_leg->pin_err) <= 5);
 
-  bool motor_error = (left_leg_motor_error || right_leg_motor_error);
+  bool motor_error = false;
+  for (int i = 0; i < MOTOR_COUNT; i++){
+    if (digitalRead(exo_motors[i])){
+      motor_error = true;
+      break;
+    }
+  }
 
   if (stream == 1) {
 
