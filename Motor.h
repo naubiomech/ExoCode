@@ -40,6 +40,6 @@ public:
 	double Old_PID_Setpoint = 0.0;
 
 	double zero_torque;
-}
+};
 
 #endif

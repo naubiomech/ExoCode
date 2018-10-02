@@ -13,7 +13,7 @@ public:
 	int address_FSR;
 	int baseline_address;
 	double baseline_value;
-}
+};
 
 class FSRGroup{
 	FSR fsrs[];
@@ -24,4 +24,4 @@ class FSRGroup{
 	double Max_FSR_Ratio;
 	int FSR_baseline_FLAG = 0;
 
-}
+};

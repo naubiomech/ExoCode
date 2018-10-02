@@ -5,12 +5,16 @@ const int dim = 5;
 
 #include "PID_v2.h"
 #include "Torque_Speed_ADJ.h"
+#include "Motor.h"
+#include "FSR.h"
 
-struct Leg {
-	// ---------
+class Leg {
+public:
+  Leg();
+  // ---------
 	// Leg
-	Motor ankle = new Motor();
-	FSRGroup fsr_group = new FSRGroup();
+	Motor* ankle_motor;
+	FSRGroup* foot_fsrs;
 
 
 	double Prop_Gain = 1;
