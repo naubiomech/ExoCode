@@ -11,7 +11,7 @@ const int dim = 5;
 class Leg {
 public:
   Leg();
-  initialize();
+  void initialize();
   // ---------
   // Leg
   Motor* ankle_motor;

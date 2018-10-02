@@ -1,6 +1,6 @@
 #include "Leg.h"
 
-Leg::initalize(){
+void Leg::initalize(){
 
   pinMode(this.pin_err, INPUT);
   pinMode(this.torque_sensor_ankle_pin, INPUT); //enable the torque reading of the left torque sensor
