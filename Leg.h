@@ -11,57 +11,58 @@ const int dim = 5;
 class Leg {
 public:
   Leg();
+  initialize();
   // ---------
-	// Leg
-	Motor* ankle_motor;
-	FSRGroup* foot_fsrs;
+  // Leg
+  Motor* ankle_motor;
+  FSRGroup* foot_fsrs;
 
 
-	double Prop_Gain = 1;
+  double Prop_Gain = 1;
 
-	double stateTimerCount;
-	double flag_1 = 0;
-	double time_old_state;
+  double stateTimerCount;
+  double flag_1 = 0;
+  double time_old_state;
 
 
-	// TODO: Give proper name showing they relate to state
-	double N3 = 500;
-	double N2 = 4;
-	double N1 = 4;
+  // TODO: Give proper name showing they relate to state
+  double N3 = 500;
+  double N2 = 4;
+  double N1 = 4;
 
-	double activate_in_3_steps = 0;
-	double first_step = 1;
-	double coef_in_3_steps = 0;
-	double start_step = 0;
-	double num_3_steps = 0;
+  double activate_in_3_steps = 0;
+  double first_step = 1;
+  double coef_in_3_steps = 0;
+  double start_step = 0;
+  double num_3_steps = 0;
 
-	double coef_in_3_steps_Pctrl = 0;
-	double store_N1 = 0;
-	double set_2_zero = 0;
-	double One_time_set_2_zero = 1;
+  double coef_in_3_steps_Pctrl = 0;
+  double store_N1 = 0;
+  double set_2_zero = 0;
+  double One_time_set_2_zero = 1;
 
-	// TODO: Make local variable
-	long sig_time = 0;
+  // TODO: Make local variable
+  long sig_time = 0;
 
-	long sig_time_old = 0;
+  long sig_time_old = 0;
 
-	// TODO: Make local variables
-	int n_iter, N_step;
+  // TODO: Make local variables
+  int n_iter, N_step;
 
-	// TODO: Find a better way to track state changing
-	// TODO: Give names that relate to state
-	int state = SWING;
-	int state_old = SWING;
-	int state_count_13 = 0;
-	int state_count_31 = 0;
+  // TODO: Find a better way to track state changing
+  // TODO: Give names that relate to state
+  int state = SWING;
+  int state_old = SWING;
+  int state_count_13 = 0;
+  int state_count_31 = 0;
 
-	double start_time = 0;
+  double start_time = 0;
 
-	steps* p_steps;
+  steps* p_steps;
 
-	boolean sigm_done;
+  boolean sigm_done;
 
-	// ------------
+  // ------------
 };
 
 void initialize_leg(Leg* leg);
