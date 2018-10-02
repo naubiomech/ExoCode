@@ -1,22 +1,23 @@
 #include "Leg.h"
 
-void initialize_leg(Leg* leg) {
-  pinMode(leg->pin_err, INPUT);
-  pinMode(leg->torque_sensor_ankle_pin, INPUT); //enable the torque reading of the left torque sensor
+Leg::initalize(){
 
-  analogWrite(leg->motor_ankle_pin, zero);
-  leg->balance_pid.SetMode(AUTOMATIC);
-  leg->balance_pid.SetTunings(leg->kp_balance, leg->ki_balance, leg->kd_balance);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
-  leg->balance_pid.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
-  leg->balance_pid.SetSampleTime(PID_sample_time);
+  pinMode(this.pin_err, INPUT);
+  pinMode(this.torque_sensor_ankle_pin, INPUT); //enable the torque reading of the left torque sensor
 
-  leg->ankle_pid.SetMode(AUTOMATIC);
-  leg->ankle_pid.SetTunings(leg->kp_ankle, leg->ki_ankle, leg->kd_ankle);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
-  leg->ankle_pid.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
-  leg->ankle_pid.SetSampleTime(PID_sample_time);
+  analogWrite(this.motor_ankle_pin, zero);
+  this.balance_pid.SetMode(AUTOMATIC);
+  this.balance_pid.SetTunings(this.kp_balance, this.ki_balance, this.kd_balance);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
+  this.balance_pid.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
+  this.balance_pid.SetSampleTime(PID_sample_time);
 
-  leg->p_steps->fsr_Toe = leg->fsr_sense_Toe;
-  leg->zero = zero;
+  this.ankle_pid.SetMode(AUTOMATIC);
+  this.ankle_pid.SetTunings(this.kp_ankle, this.ki_ankle, this.kd_ankle);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
+  this.ankle_pid.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
+  this.ankle_pid.SetSampleTime(PID_sample_time);
+
+  this.p_steps->fsr_Toe = this.fsr_sense_Toe;
+  this.zero = zero;
 }
 
 void initialize_left_leg(Leg* left_leg) {
