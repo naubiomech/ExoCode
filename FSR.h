@@ -18,7 +18,7 @@ private:
   int fsr_count;
   FSR* fsrs[];
 public:
-  FSRGroup(FSR* fsrs; int fsr_count);
+  FSRGroup(FSR* fsrs, int fsr_count);
 
   double getMeasure();
   double getForce();

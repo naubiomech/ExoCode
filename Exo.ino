@@ -101,7 +101,7 @@ void resetMotorIfError() {
 
   bool motor_error = false;
   for (unsigned int i = 0; i < MOTOR_COUNT; i++){
-    if (motor->hasErrored()){
+    if (motors[i]->hasErrored()){
       motor_error = true;
       break;
     }
@@ -143,16 +143,14 @@ void resetMotorIfError() {
 
 void calculate_leg_average(Leg* leg) {
   //Calc the average value of Torque
-  leg->ankle_motor->measureTorque();
-  leg->fsrs->measureForce();
+  leg->measureSensors();
 
   leg->p_steps->torque_average = leg->ankle_motor->getTorque();
-
 }
 
 void calculate_averages() {
-    calculate_leg_average();
-    calculate_leg_average();
+  calculate_leg_average(exo->left_leg);
+  calculate_leg_average(exo->right_leg);
 }
 
 void check_FSR_calibration() {
