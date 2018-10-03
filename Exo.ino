@@ -144,49 +144,15 @@ void resetMotorIfError() {
 void calculate_leg_average(Leg* leg) {
   //Calc the average value of Torque
   leg->ankle_motor->measureTorque();
+  leg->fsrs->measureForce();
 
-  leg->FSR_Toe_Average = 0;
-  leg->FSR_Heel_Average = 0;
-
-  leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
-  leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
-
-
-  leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
-
-  if (FLAG_TWO_TOE_SENSORS)
-  {
-    leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
-  }
-  else {
-    leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
-  }
-  leg->p_steps->torque_average = Average / dim;
+  leg->p_steps->torque_average = leg->ankle_motor->getTorque();
 
 }
 
 void calculate_averages() {
-  for (int i = 0; i < MOTOR_COUNT; i++){
-    calculate_moto_average(exo_motors[i]);
-  }
-
-  if (FLAG_PRINT_TORQUES) {
-    Serial.print("LEFT [");
-    for (int i = 0; i < dim; i++) {
-      Serial.print(left_leg->Tarray[i]);
-      Serial.print(" , ");
-    }
-    Serial.print(" ] Average: ");
-    Serial.println(left_leg->Average_Trq);
-    Serial.print("RIGHT [");
-    for (int i = 0; i < dim; i++) {
-      Serial.print(right_leg->Tarray[i]);
-      Serial.print(" , ");
-    }
-    Serial.print(" ] Average: ");
-    Serial.println(right_leg->Average_Trq);
-  }
-
+    calculate_leg_average();
+    calculate_leg_average();
 }
 
 void check_FSR_calibration() {

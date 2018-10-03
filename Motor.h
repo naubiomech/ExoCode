@@ -8,9 +8,12 @@ public:
 	Motor(int motor_pin, int torque_sensor_pin, int err_pin);
 	double getTorque();
   void measureTorque();
+  void measureError();
   bool hasErrored();
 
-	unsigned int torque_sensor_pin;
+  bool inErrorState;
+
+  unsigned int torque_sensor_pin;
 	unsigned int motor_pin;
 	unsigned int err_pin;
 

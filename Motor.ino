@@ -11,6 +11,10 @@ double Motor::measureRawTorque(){
   return -Torq; // TODO Check if negative is necessary
 }
 
+void Motor::measureError(){
+  inErrorState = digitalRead(err_pin);
+}
+
 void Motor::measureTorque(){
 
   double average = 0;
@@ -31,5 +35,5 @@ double Motor::getTorque(){
 }
 
 bool Motor::hasErrored(){
-  return digitalRead(exo_motors[i]->err_pin);
+  return inErrorState;
 }

@@ -12,6 +12,7 @@ class Leg {
 public:
   Leg();
   void initialize();
+  void measureSensors();
   // ---------
   // Leg
   Motor* ankle_motor;
