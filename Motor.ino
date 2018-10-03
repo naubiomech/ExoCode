@@ -6,12 +6,12 @@ Motor::Motor(int motor_pin, int torque_sensor_pin, int error_pin){
   this.motor_error_pin = error_pin;
 }
 
-double Motor::getRawTorque(){
+double Motor::measureRawTorque(){
   double Torq = 56.5 / (2.1) * (analogRead(this.torque_sensor_pin) * (3.3 / 4096) - this.torque_calibration_value);
   return -Torq; // TODO Check if negative is necessary
 }
 
-double Motor::updateTorque(){
+void Motor::measureTorque(){
 
   double average = 0;
 
@@ -24,8 +24,6 @@ double Motor::updateTorque(){
 
   average += torque_measurements[0];
   averaged_torque = average / dim;
-
-  return averaged_torque;
 }
 
 double Motor::getTorque(){

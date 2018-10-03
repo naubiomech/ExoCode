@@ -143,7 +143,7 @@ void resetMotorIfError() {
 
 void calculate_leg_average(Leg* leg) {
   //Calc the average value of Torque
-  leg->ankle_motor->updateTorque();
+  leg->ankle_motor->measureTorque();
 
   leg->FSR_Toe_Average = 0;
   leg->FSR_Heel_Average = 0;

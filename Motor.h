@@ -3,11 +3,12 @@
 
 class Motor{
 private:
-	getRawTorque();
+	double measureRawTorque();
 public:
 	Motor(int motor_pin, int torque_sensor_pin, int err_pin);
 	double getTorque();
-	bool hasErrored();
+  void measureTorque();
+  bool hasErrored();
 
 	unsigned int torque_sensor_pin;
 	unsigned int motor_pin;
