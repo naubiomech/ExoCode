@@ -141,41 +141,27 @@ void resetMotorIfError() {
   }//end stream==1
 }
 
-void calculate_motor_average(Motor* motor) {
+void calculate_leg_average(Leg* leg) {
   //Calc the average value of Torque
+  leg->ankle_motor->updateTorque();
 
-  //Shift the arrays
-  for (int j = dim - 1; j >= 1; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
-  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-    motor->Tarray[j] = motor->Tarray[j - 1];                //Puts the element in the following memory space into the current memory space
-  }
-  //Get the torque
-  motor->Tarray[0] = get_torq(motor);
-  motor->FSR_Toe_Average = 0;
-  motor->FSR_Heel_Average = 0;
-  double Average = 0;
+  leg->FSR_Toe_Average = 0;
+  leg->FSR_Heel_Average = 0;
 
-  for (int i = 0; i < dim; i++)
-  {
-    Average =  Average + motor->Tarray[i];
-  }
-
-  motor->FSR_Toe_Average = fsr(motor->fsr_sense_Toe);
-  motor->FSR_Heel_Average = fsr(motor->fsr_sense_Heel);
+  leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
+  leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
 
 
-  motor->FSR_Combined_Average = (motor->FSR_Toe_Average + motor->FSR_Heel_Average);
-
-  motor->Average_Trq = Average / dim;
+  leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
 
   if (FLAG_TWO_TOE_SENSORS)
   {
-    motor->p_steps->curr_voltage = motor->FSR_Combined_Average;
+    leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
   }
   else {
-    motor->p_steps->curr_voltage = motor->FSR_Toe_Average;
+    leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
   }
-  motor->p_steps->torque_average = Average / dim;
+  leg->p_steps->torque_average = Average / dim;
 
 }
 

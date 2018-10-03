@@ -80,19 +80,6 @@ void FSR_calibration()
   }
 }
 
-double get_torq(Leg* leg) {
-  double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value);
-  return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
-}
-
-double get_LL_torq() {
-  return get_torq(left_leg);
-}
-
-double get_RL_torq() {
-  return get_torq(right_leg);
-}
-
 /*FSR Code
   This code is very basic but is kept as an outside function for clarity.
   The FSR readings are used to control state based actions based on the part of the gait cycle the patient is in.

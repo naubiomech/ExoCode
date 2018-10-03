@@ -2,8 +2,11 @@
 #define MOTOR_HEADER
 
 class Motor{
+private:
+	getRawTorque();
 public:
 	Motor(int motor_pin, int torque_sensor_pin, int err_pin);
+	double getTorque();
 	bool hasErrored();
 
 	unsigned int torque_sensor_pin;
@@ -12,9 +15,9 @@ public:
 
 	double sign = 1;
 
-	double Tarray[dim] = {0};
+	double torque_measurements[dim] = {0};
 
-	volatile double Average_Trq;
+	double averaged_torque;
 
 	double PID_Setpoint, Input, Output;
 	PID pid = PID(&Input, &Output, &PID_Setpoint, PID_DEFAULTS[0], PID_DEFAULTS[1], PID_DEFAULTS[2], DIRECT);
