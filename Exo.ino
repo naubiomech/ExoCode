@@ -100,8 +100,8 @@ void resetMotorIfError() {
   //motor_error true I have an error, false I haven't
 
   bool motor_error = false;
-  for (int i = 0; i < MOTOR_COUNT; i++){
-    if (digitalRead(exo_motors[i])){
+  for (unsigned int i = 0; i < MOTOR_COUNT; i++){
+    if (motor->hasErrored()){
       motor_error = true;
       break;
     }

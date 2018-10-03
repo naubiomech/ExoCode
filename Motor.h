@@ -4,6 +4,7 @@
 class Motor{
 public:
 	Motor(int motor_pin, int torque_sensor_pin, int err_pin);
+	bool hasErrored();
 
 	unsigned int torque_sensor_pin;
 	unsigned int motor_pin;
