@@ -55,8 +55,7 @@ volatile double stability_trq;
 Adafruit_BNO055 bno;
 
 // ===== Leg =====
-Leg* left_leg = new Leg();
-Leg* right_leg = new Leg();
+Exoskeleton* exo = new Exoskeleton();
 
 // ===== Msg Functions =====
 double data_to_send[8];
