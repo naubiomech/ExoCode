@@ -13,6 +13,7 @@ public:
   Leg();
   void initialize();
   void measureSensors();
+  bool checkMotorErrors();
   // ---------
   // Leg
   Motor* ankle_motor;

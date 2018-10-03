@@ -99,13 +99,7 @@ void loop()
 void resetMotorIfError() {
   //motor_error true I have an error, false I haven't
 
-  bool motor_error = false;
-  for (unsigned int i = 0; i < MOTOR_COUNT; i++){
-    if (motors[i]->hasErrored()){
-      motor_error = true;
-      break;
-    }
-  }
+  bool motor_error = exo->checkMotorErrors();
 
   if (stream == 1) {
 
