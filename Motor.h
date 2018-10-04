@@ -10,6 +10,7 @@ public:
   void measureTorque();
   void measureError();
   bool hasErrored();
+  bool applyTorque();
 
   bool inErrorState;
 

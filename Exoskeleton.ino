@@ -21,3 +21,17 @@ void Exoskeleton::takeFSRBaseline(){
   right_leg->takeBaseline();
   left_leg->takeBaseline();
 }
+
+void Exoskeleton::disableExo(){
+  digitalWrite(MOTOR_ENABLE_PIN, LOW);
+  stream = 0;
+  digitalWrite(LED_PIN, LOW);
+  leg->state = old_L_state_L;
+}
+
+void Exoskeleton::applyTorque(){
+  if(!(left_leg->applyTorque() &&
+       right_leg->applyTorque())){
+    disableExo();
+  }
+}

@@ -37,6 +37,10 @@ void Leg::takeFSRBaseline(){
   }
 }
 
+bool Leg::applyTorque(){
+  return ankle_motor->applyTorque(state);
+}
+
 void initialize_left_leg(Leg* left_leg) {
   left_leg->pin_err = MOTOR_ERROR_LEFT_ANKLE_PIN;
   left_leg->fsr_sense_Heel = FSR_SENSE_LEFT_HEEL_PIN;

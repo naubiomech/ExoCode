@@ -173,8 +173,7 @@ void rotate_motor() {
     stability_trq = euler.z() - 90;
     stability_trq *= stability_trq_gain;
 
-    pid(left_leg, left_leg->Average_Trq, -stability_trq);
-    pid(right_leg, right_leg->Average_Trq, stability_trq);
+    exo->applyTorque();
 
     if (FLAG_PID_VALS) {
 

@@ -13,6 +13,9 @@ public:
   void measureSensors();
   bool checkMotorErrors();
   void takeFSRBaseline();
+  void disableExo();
+  void applyTorque();
+
 };
 
 #endif
