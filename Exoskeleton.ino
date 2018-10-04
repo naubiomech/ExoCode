@@ -1,6 +1,8 @@
 Exoskeleton::Exoskeleton(){
   left_leg = new Leg();
   right_leg = new Leg();
+  initialize_left_leg(left_leg);
+  initialize_right_leg(right_leg);
 }
 
 void Exoskeleton::measureSensors(){
