@@ -136,16 +136,8 @@ void resetMotorIfError() {
   }//end stream==1
 }
 
-void calculate_leg_average(Leg* leg) {
-  //Calc the average value of Torque
-  leg->measureSensors();
-
-  leg->p_steps->torque_average = leg->ankle_motor->getTorque();
-}
-
 void calculate_averages() {
-  calculate_leg_average(exo->left_leg);
-  calculate_leg_average(exo->right_leg);
+  exo->measureSensors();
 }
 
 void check_FSR_calibration() {
