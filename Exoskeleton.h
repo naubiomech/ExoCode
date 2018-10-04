@@ -9,6 +9,7 @@ public:
   Leg* right_leg;
 
   Exoskeleton();
+  void initialize();
   void measureSensors();
   bool checkMotorErrors();
 };

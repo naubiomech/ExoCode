@@ -43,8 +43,7 @@ void setup()
 
   setupIMU(&bno);
 
-  initialize_left_leg(left_leg);
-  initialize_right_leg(right_leg);
+  exo->initialize();
 
   // Fast torque calibration
   torque_calibration();
