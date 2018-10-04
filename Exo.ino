@@ -32,6 +32,7 @@
 #include "Auto_KF.h"
 #include "IMU.h"
 #include "Receive_and_Transmit.h"
+#include "Exoskeleton.h"
 
 #include "System.h"
 

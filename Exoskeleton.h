@@ -1,3 +1,5 @@
+#include "Leg.h"
+
 class Exoskeleton{
 private:
   Leg* left_leg;
@@ -5,4 +7,4 @@ private:
 public:
   Exoskeleton();
   void measureSensors();
-}
+};
