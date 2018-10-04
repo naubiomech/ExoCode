@@ -1,3 +1,5 @@
+#ifndef FSR_HEADER
+#define FSR_HEADER
 
 class FSR{
 public:
@@ -30,3 +32,4 @@ public:
   double Max_FSR_Ratio;
   int FSR_baseline_FLAG = 0;
 };
+#endif
