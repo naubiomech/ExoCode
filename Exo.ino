@@ -145,12 +145,7 @@ void check_FSR_calibration() {
     FSR_calibration();
   }
 
-  if (right_leg->FSR_baseline_FLAG) {
-    take_baseline(right_leg->state, right_leg->state_old, right_leg->p_steps, &right_leg->FSR_baseline_FLAG);
-  }
-  if (left_leg->FSR_baseline_FLAG) {
-    take_baseline(left_leg->state, left_leg->state_old, left_leg->p_steps, &left_leg->FSR_baseline_FLAG);
-  }
+  exo->takeFSRBaseline();
 
 }
 

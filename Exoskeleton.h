@@ -12,6 +12,7 @@ public:
   void initialize();
   void measureSensors();
   bool checkMotorErrors();
+  void takeFSRBaseline();
 };
 
 #endif

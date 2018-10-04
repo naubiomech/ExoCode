@@ -31,6 +31,12 @@ void Leg::measureSensors(){
   leg->p_steps->torque_average = leg->ankle_motor->getTorque();
 }
 
+void Leg::takeFSRBaseline(){
+  if (FSR_baseline_FLAG){
+    take_baseline(state, state_old, p_steps, &FSR_baseline_FLAG);
+  }
+}
+
 void initialize_left_leg(Leg* left_leg) {
   left_leg->pin_err = MOTOR_ERROR_LEFT_ANKLE_PIN;
   left_leg->fsr_sense_Heel = FSR_SENSE_LEFT_HEEL_PIN;

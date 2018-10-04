@@ -16,3 +16,8 @@ void Exoskeleton::measureSensors(){
 bool Exoskeleton::checkMotorErrors(){
   return left_leg->checkMotorErrors() || right_leg->checkMotorErrors();
 }
+
+void Exoskeleton::takeFSRBaseline(){
+  right_leg->takeBaseline();
+  left_leg->takeBaseline();
+}

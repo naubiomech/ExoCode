@@ -14,6 +14,7 @@ public:
   void initialize();
   void measureSensors();
   bool checkMotorErrors();
+  void takeFSRBaseline();
   // ---------
   // Leg
   Motor* ankle_motor;
