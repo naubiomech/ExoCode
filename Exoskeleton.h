@@ -17,6 +17,8 @@ public:
   void applyTorque();
   void applyStateMachine();
   void adjustControl();
+  void resetStartingParameters();
+  void Exoskeleton::setZeroIfStateState();
 
 };
 

@@ -18,6 +18,7 @@ public:
   bool applyTorque();
   void applyStateMachine();
   void setZeroIfSteadyState();
+  void resetStartingParameters();
   // ---------
   // Leg
   Motor* ankle_motor;

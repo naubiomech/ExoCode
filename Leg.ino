@@ -31,6 +31,30 @@ void Leg::adjustControl(){
                      leg->FSR_baseline_FLAG, &leg->FSR_Ratio, &leg->Max_FSR_Ratio);
 }
 
+void Leg::resetStartingParameters(){
+  leg->p_steps->count_plant = 0;
+  leg->p_steps->n_steps = 0;
+  leg->p_steps->flag_start_plant = false;
+  leg->p_steps->flag_take_average = false;
+  leg->p_steps->flag_N3_adjustment_time = false;
+  leg->p_steps->flag_take_baseline = false;
+  leg->p_steps->torque_adj = false;
+
+  leg->N3 = N3;
+  leg->N2 = N2;
+  leg->N1 = N1;
+
+  leg->p_steps->perc_l = 0.5;
+  leg->activate_in_3_steps = 1;
+  leg->Previous_Setpoint_Ankle = 0;
+
+  leg->coef_in_3_steps = 0;
+  leg->num_3_steps = 0;
+
+  leg->first_step = 1;
+}
+
+
 void Leg::setZeroIfSteadyState(){
   set_to_zero_if_leg_in_steady_state(this);
 }
