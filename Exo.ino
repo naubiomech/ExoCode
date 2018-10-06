@@ -175,8 +175,7 @@ void rotate_motor() {
 
     exo->applyTorque();
 
-    state_machine(left_leg);  //for LL
-    state_machine(right_leg);  //for RL
+    exo->applyStateMachine();
 
     set_2_zero_if_steady_state();
 

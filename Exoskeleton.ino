@@ -3,6 +3,12 @@ Exoskeleton::Exoskeleton(){
   right_leg = new Leg();
 }
 
+void Exoskeleton::applyStateMachine(){
+  left_leg->applyStateMachine();
+  right_leg->applyStateMachine();
+
+}
+
 void Exoskeleton::initialize(){
   initialize_left_leg(left_leg);
   initialize_right_leg(right_leg);

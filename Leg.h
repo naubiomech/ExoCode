@@ -16,6 +16,7 @@ public:
   bool checkMotorErrors();
   void takeFSRBaseline();
   bool applyTorque();
+  void applyStateMachine();
   // ---------
   // Leg
   Motor* ankle_motor;

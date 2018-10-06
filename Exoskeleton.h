@@ -15,6 +15,7 @@ public:
   void takeFSRBaseline();
   void disableExo();
   void applyTorque();
+  void applyStateMachine();
 
 };
 
