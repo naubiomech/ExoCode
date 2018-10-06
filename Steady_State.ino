@@ -33,8 +33,3 @@ void set_to_zero(Leg* leg){
       leg->start_step = 0;
     }
 }
-
-void set_2_zero_if_steady_state() {
-  set_to_zero_if_leg_in_steady_state(right_leg);
-  set_to_zero_if_leg_in_steady_state(left_leg);
-}

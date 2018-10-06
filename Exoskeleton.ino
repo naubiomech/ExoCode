@@ -3,6 +3,11 @@ Exoskeleton::Exoskeleton(){
   right_leg = new Leg();
 }
 
+void Exoskeleton::setZeroIfStateState(){
+  left_leg->setZeroIfSteadyState();
+  right_leg->setZeroIfSteadyState();
+}
+
 void Exoskeleton::applyStateMachine(){
   left_leg->applyStateMachine();
   right_leg->applyStateMachine();
@@ -29,15 +34,15 @@ void Exoskeleton::takeFSRBaseline(){
 }
 
 void Exoskeleton::disableExo(){
-  digitalWrite(MOTOR_ENABLE_PIN, LOW);
-  stream = 0;
-  digitalWrite(LED_PIN, LOW);
-  leg->state = old_L_state_L;
-}
-
-void Exoskeleton::applyTorque(){
-  if(!(left_leg->applyTorque() &&
-       right_leg->applyTorque())){
-    disableExo();
+    digitalWrite(MOTOR_ENABLE_PIN, LOW);
+    stream = 0;
+    digitalWrite(LED_PIN, LOW);
+    leg->state = old_L_state_L;
   }
-}
+
+  void Exoskeleton::applyTorque(){
+    if(!(left_leg->applyTorque() &&
+         right_leg->applyTorque())){
+      disableExo();
+    }
+  }

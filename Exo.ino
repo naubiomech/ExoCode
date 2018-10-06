@@ -177,7 +177,7 @@ void rotate_motor() {
 
     exo->applyStateMachine();
 
-    set_2_zero_if_steady_state();
+    exo->setZeroIfStateState();
 
     left_leg->N3 = Ctrl_ADJ(left_leg->state, left_leg->state_old, left_leg->p_steps,
                             left_leg->N3, left_leg->New_PID_Setpoint, &left_leg->Setpoint_Ankle,

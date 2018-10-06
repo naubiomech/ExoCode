@@ -17,6 +17,7 @@ public:
   void takeFSRBaseline();
   bool applyTorque();
   void applyStateMachine();
+  void setZeroIfSteadyState();
   // ---------
   // Leg
   Motor* ankle_motor;
