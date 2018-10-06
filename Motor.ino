@@ -1,5 +1,5 @@
 #include "Motor.h"
-#include "utilites.h"
+#include "utils.h"
 
 Motor::Motor(int motor_pin, int torque_sensor_pin, int error_pin){
   this.motor_pin = motor_pin;
