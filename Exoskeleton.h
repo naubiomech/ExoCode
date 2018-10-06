@@ -16,6 +16,7 @@ public:
   void disableExo();
   void applyTorque();
   void applyStateMachine();
+  void adjustControl();
 
 };
 
