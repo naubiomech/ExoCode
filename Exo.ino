@@ -175,25 +175,6 @@ void rotate_motor() {
 
     exo->applyTorque();
 
-    if (FLAG_PID_VALS) {
-
-      Serial.print("LEFT PID INPUT:");
-      Serial.print(left_leg->Input);
-      Serial.print(" , AVG: ");
-      Serial.print(left_leg->Average_Trq);
-      Serial.print(" , VOL: ");
-      double cane = (left_leg->Vol);
-      Serial.println(cane - zero);
-      Serial.print("RIGHT PID INPUT:");
-      Serial.print(right_leg->Input);
-      Serial.print(" , AVG: ");
-      Serial.print(right_leg->Average_Trq);
-      cane = (right_leg->Vol);
-      Serial.print(" , VOL: ");
-      Serial.println(cane - zero);
-
-    }
-
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
 
