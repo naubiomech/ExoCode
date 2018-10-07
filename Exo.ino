@@ -165,8 +165,9 @@ void rotate_motor() {
       streamTimerCount = 0;
     }
 
-    if (streamTimerCount == 1 && flag_auto_KF == 1)
-      Auto_KF();
+    if (streamTimerCount == 1 && flag_auto_KF == 1){
+      exo->autoKF();
+    }
 
     streamTimerCount++;
 
