@@ -19,6 +19,7 @@ public:
   void applyStateMachine();
   void setZeroIfSteadyState();
   void resetStartingParameters();
+  void autoKF();
   // ---------
   // Leg
   Motor* ankle_motor;

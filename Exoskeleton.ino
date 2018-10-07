@@ -13,6 +13,11 @@ void Exoskeleton::adjustControl(){
   right_leg->adjustControl();
 }
 
+void Exoskeleton::autoKF(){
+  left_leg->autoKF();
+  right_leg->autoKF();
+}
+
 void Exoskeleton::setZeroIfStateState(){
   left_leg->setZeroIfSteadyState();
   right_leg->setZeroIfSteadyState();
@@ -48,11 +53,11 @@ void Exoskeleton::disableExo(){
   stream = 0;
   digitalWrite(LED_PIN, LOW);
   leg->state = old_L_state_L;
-}
-
-void Exoskeleton::applyTorque(){
-  if(!(left_leg->applyTorque() &&
-       right_leg->applyTorque())){
-    disableExo();
   }
-}
+
+  void Exoskeleton::applyTorque(){
+    if(!(left_leg->applyTorque() &&
+         right_leg->applyTorque())){
+      disableExo();
+    }
+  }

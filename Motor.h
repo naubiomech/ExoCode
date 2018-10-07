@@ -1,5 +1,6 @@
 #ifndef MOTOR_HEADER
 #define MOTOR_HEADER
+#include "utils.h"
 
 class Motor{
 private:
@@ -11,6 +12,7 @@ public:
   void measureError();
   bool hasErrored();
   bool applyTorque();
+  void autoKF(int state);
 
   bool inErrorState;
 
@@ -27,10 +29,8 @@ public:
   double PID_Setpoint, Input, Output;
   PID pid = PID(&Input, &Output, &PID_Setpoint, PID_DEFAULTS[0], PID_DEFAULTS[1], PID_DEFAULTS[2], DIRECT);
 
-  double ERR;
-  double max_KF;
-  double min_KF;
-  int count_err;
+  Average* pid_avg_err = new Average();
+  Clamp* kf_clamp = new Clamp(max_kf, min_kf);
 
   double KF = 1;
 

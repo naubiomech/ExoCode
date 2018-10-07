@@ -7,6 +7,17 @@ Motor::Motor(int motor_pin, int torque_sensor_pin, int error_pin){
   this.motor_error_pin = error_pin;
 }
 
+void Motor::autoKF(int state){
+  switch(state){
+  case LATE_STANCE:
+    Auto_KF_leg_Late_stance(pid_avg_err, PID_Setpoint, Input);
+    break;
+  case SWING:
+    KF = Auto_KF_leg_Swing(pid_avg_err, KF, kf_clamp);
+    break;
+  }
+}
+
 void Motor::writeToMotor(int value){
   leg->Vol = leg->Output + leg->zero; //need to map
 // TODO Find a better way to implement this preprocessor instruction
@@ -60,13 +71,13 @@ bool Motor::applyTorque(int state){
 double Motor::measureRawTorque(){
   double Torq = 56.5 / (2.1) * (analogRead(this.torque_sensor_pin) * (3.3 / 4096) - this.torque_calibration_value);
   return -Torq; // TODO Check if negative is necessary
-}
+  }
 
-void Motor::measureError(){
-  inErrorState = digitalRead(err_pin);
-}
+  void Motor::measureError(){
+    inErrorState = digitalRead(err_pin);
+  }
 
-void Motor::measureTorque(){
+  void Motor::measureTorque(){
 
     double average = 0;
 

@@ -23,8 +23,11 @@ bool Leg::checkMotorErrors(){
   return this.ankle_motor->hasErrored();
 }
 
-void Leg::adjustControl(){
+void Leg::autoKF(){
+  ankle_motor->autoKF(state);
+}
 
+void Leg::adjustControl(){
   leg->N3 = Ctrl_ADJ(leg->state, leg->state_old, leg->p_steps,
                      leg->N3, leg->New_PID_Setpoint, &leg->Setpoint_Ankle,
                      &leg->Setpoint_Ankle_Pctrl, Trq_time_volt, leg->Prop_Gain,
