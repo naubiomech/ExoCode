@@ -89,30 +89,29 @@ double Motor::measureRawCalibratedTorque(){
   return -Torq; // TODO Check if negative is necessary
 }
 
-  void Motor::measureError(){
-    inErrorState = digitalRead(err_pin);
+void Motor::measureError(){
+  inErrorState = digitalRead(err_pin);
+}
+
+void Motor::measureTorque(){
+
+  double average = 0;
+
+  for (int i = dim - 1; i >= 1; i--) {
+    torque_measurements[i] = torque_measurements[i - 1];
+    average += torque_measurements[j - 1];
   }
 
-  void Motor::measureTorque(){
-
-    double average = 0;
-
-    for (int i = dim - 1; i >= 1; i--) {
-      torque_measurements[i] = torque_measurements[i - 1];
-      average += torque_measurements[j - 1];
-    }
-
-    torque_measurements[0] = this.getRawTorque();
   torque_measurements[0] = this.measureRawCalibratedTorque();
 
-    average += torque_measurements[0];
-    averaged_torque = average / dim;
-  }
+  average += torque_measurements[0];
+  averaged_torque = average / dim;
+}
 
-  double Motor::getTorque(){
-    return averaged_torque;
-  }
+double Motor::getTorque(){
+  return averaged_torque;
+}
 
-  bool Motor::hasErrored(){
-    return inErrorState;
-  }
+bool Motor::hasErrored(){
+  return inErrorState;
+}
