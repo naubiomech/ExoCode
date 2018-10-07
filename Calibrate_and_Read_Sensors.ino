@@ -1,5 +1,6 @@
 // Calibrate the torque sensors, FSR sensors and get the torque and FSR voltage
 #include "Calibrate_and_Read_Sensors.h"
+#include "Utils.h"
 
 void torque_calibration()
 {
@@ -22,9 +23,7 @@ void torque_calibration()
 }
 
 void calibrate_fsr_peak(double* peak_ref, int fsr_value){
-  if (*peak_ref > fsr_value) {
-    *peak_ref = fsr_value;
-  }
+  updateMax(peak_ref, fsr_value);
 }
 
 void calibrate_fsr_leg(Leg* leg){
