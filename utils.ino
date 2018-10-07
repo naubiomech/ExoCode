@@ -13,6 +13,11 @@ void Average::reset(){
   count = 0;
 }
 
-double clamp(double val, double lower, double upper){
+double Clamp::Clamp(double upper, double lower){
+  this.upper = upper;
+  this.lower = lower;
+}
+
+double Clamp::clamp(double val){
   return min(max(val, lower),upper);
 }

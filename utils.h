@@ -11,6 +11,12 @@ public:
   void reset();
 };
 
-double clamp(double val, double min, double max);
+class Clamp{
+private:
+  double upper;
+  double lower;
+public:
+  double clamp(double value);
+}
 
 #endif
