@@ -1,5 +1,6 @@
 #ifndef MOTOR_HEADER
 #define MOTOR_HEADER
+#include "parameters.h"
 #include "utils.h"
 
 class Motor{
@@ -30,7 +31,7 @@ public:
   PID pid = PID(&Input, &Output, &PID_Setpoint, PID_DEFAULTS[0], PID_DEFAULTS[1], PID_DEFAULTS[2], DIRECT);
 
   Average* pid_avg_err = new Average();
-  Clamp* kf_clamp = new Clamp(max_kf, min_kf);
+  Clamp* kf_clamp = new Clamp(MAX_KF, MIN_KF);
 
   double KF = 1;
 

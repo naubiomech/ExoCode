@@ -45,6 +45,8 @@ const double Min_Prop = 0;
 // ===== Auto KF Parameters =====
 const double max_ERR = 0.20;
 const double min_ERR = -0.20;
+const double MAX_KF = 1.8;
+const double MIN_KF = 0.8;
 
 // ===== IMU Parameters =====
 const int BNO055_SAMPLERATE_DELAY_MS = 100;
