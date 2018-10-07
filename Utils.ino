@@ -1,3 +1,4 @@
+#include "Utils.h"
 
 void Average::update(double value){
   avg += value;

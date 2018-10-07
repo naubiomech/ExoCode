@@ -1,7 +1,7 @@
 #ifndef MOTOR_HEADER
 #define MOTOR_HEADER
-#include "parameters.h"
-#include "utils.h"
+#include "Parameters.h"
+#include "Utils.h"
 
 class Motor{
 private:
