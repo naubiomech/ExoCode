@@ -20,6 +20,7 @@ public:
   void resetStartingParameters();
   void setZeroIfSteadyState();
   void calibrateTorque();
+  void calibrateFSRs();
 
 };
 

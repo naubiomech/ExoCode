@@ -23,6 +23,7 @@ public:
   void startTorqueCalibration();
   void updateTorqueCalibration();
   void endTorqueCalibration();
+  void calibrateFSRs();
   // ---------
   // Leg
   Motor* ankle_motor;

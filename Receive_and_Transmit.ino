@@ -176,7 +176,7 @@ void receive_and_transmit()
     break;
 
   case COMM_CODE_CALIBRATE_TORQUE:
-    torque_calibration();
+    exo->calibrateTorque();
     write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
     write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
     break;

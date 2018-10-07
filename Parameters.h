@@ -17,6 +17,7 @@ const unsigned int zero = 2048;//1540;
 // ===== FSR Parameters =====
 // To set FSR bias and to identify the states
 const double FSR_Sensors_type = 40;
+const int FSR_CALIBRATION_TIME_MS = 5000;
 
 // ===== Shaping Parameters =====
 //Paramenters used to shape the reference
@@ -54,5 +55,6 @@ const double stability_trq_gain = 1;
 
 // ===== Torque Speed Adjust Parameters =====
 const int n_step_baseline = 6;
+
 
 #endif

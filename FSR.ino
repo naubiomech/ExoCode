@@ -1,7 +1,36 @@
 #include "FSR.h"
+#include "Utils.h"
 
 FSR::FSR(int pin){
   this.pin = pin;
+}
+
+double FSR::calibrate(){
+  if (!isCalibrating) {
+     startCalibration();
+   }
+
+   if (millis() - fsrCalibrationStartTime < FSR_CALIBRATION_TIME_MS) {
+     updateCalibration();
+   } else {
+     endCalibration();
+   }
+   return peak_force;
+}
+
+void FSR::startCalibration(){
+  isCalibrating = true;
+  fsrCalibrationStartTime = millis();
+  peak_force = 0;
+}
+
+void FSR::updateCalibration(){
+  updateMax(&peak_force, getForce());
+}
+
+void FSR::endCalibration(){
+  isCalibrating = false;
+  FSR_CAL_FLAG = 0;
 }
 
 void FSR::measureForce(){
@@ -38,4 +67,12 @@ void FSRGroup::measureForce(){
 
 double FSRGroup::getForce(){
   return force;
+}
+
+void FSRGroup::calibrate(){
+  double peak = 0;
+  for(int i = 0; i< fsr_count;i++){
+    peak += fsrs[i]->calibrate();
+  }
+  calibration_peak = peak;
 }

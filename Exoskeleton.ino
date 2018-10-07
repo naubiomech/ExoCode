@@ -15,6 +15,11 @@ void Exoskeleton::calibrateTorque(){
   right_leg->endTorqueCalibration();
 }
 
+void Exoskeleton::calibrateFSRs(){
+  left_leg->calibrateFSRs();
+  right_leg->calibrateFSRs();
+}
+
 void Exoskeleton::resetStartingParameters(){
   left_leg->resetStartingParameters();
   right_leg->resetStartingParameters();
@@ -65,9 +70,9 @@ void Exoskeleton::disableExo(){
   stream = 0;
   digitalWrite(LED_PIN, LOW);
   leg->state = old_L_state_L;
-}
+  }
 
-void Exoskeleton::applyTorque(){
+  void Exoskeleton::applyTorque(){
     if(!(left_leg->applyTorque() &&
          right_leg->applyTorque())){
       disableExo();

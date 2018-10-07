@@ -46,7 +46,7 @@ void setup()
   exo->initialize();
 
   // Fast torque calibration
-  torque_calibration();
+  exo->calibrateTorque();
 
   digitalWrite(LED_PIN, HIGH);
 
@@ -142,7 +142,7 @@ void calculate_averages() {
 void check_FSR_calibration() {
 
   if (FSR_CAL_FLAG) {
-    FSR_calibration();
+    exo->calibrateFSRs();
   }
 
   exo->takeFSRBaseline();

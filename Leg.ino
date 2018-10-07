@@ -20,6 +20,9 @@ void Leg::initalize(){
   this.zero = zero;
 }
 
+void Leg::calibrateFSRs(){
+  foot_fsrs->calibrate();
+}
 void Leg::startTorqueCalibration(){
   ankle_motor->startTorqueCalibration;
 }
