@@ -13,6 +13,7 @@ public:
   double calibrate();
   void measureForce();
   double getForce();
+  double getBalanceReference();
 
   unsigned int pin;
 
@@ -40,6 +41,7 @@ public:
   double getMeasure();
   double getForce();
   void calibrate();
+  double getBalanceReference();
 
   double force;
 

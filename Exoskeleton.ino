@@ -70,11 +70,11 @@ void Exoskeleton::disableExo(){
   stream = 0;
   digitalWrite(LED_PIN, LOW);
   leg->state = old_L_state_L;
-  }
+}
 
-  void Exoskeleton::applyTorque(){
-    if(!(left_leg->applyTorque() &&
-         right_leg->applyTorque())){
-      disableExo();
-    }
+void Exoskeleton::applyTorque(){
+  if(!(left_leg->applyTorque() &&
+       right_leg->applyTorque())){
+    disableExo();
   }
+}

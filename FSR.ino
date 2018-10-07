@@ -49,6 +49,10 @@ double FSR::getForce(){
   return force;
 }
 
+double getBalanceReference(){
+  return min(1, (getForce() / peak_force));
+}
+
 FSRGroup::FSRGroup(int* fsr_pins, int fsr_count){
   this.fsrs = new[](fsr_count * sizeof(*this.fsrs));
   for (int i = 0; i < fsr_count; i++){
@@ -75,4 +79,8 @@ void FSRGroup::calibrate(){
     peak += fsrs[i]->calibrate();
   }
   calibration_peak = peak;
+}
+
+double FSRGroup::getBalanceReference(){
+  return fsrs[0]->getBalanceReference() - fsrs[1]->getBalanceReference();
 }
