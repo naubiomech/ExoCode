@@ -15,8 +15,8 @@ void Average::reset(){
 }
 
 Clamp::Clamp(double upper, double lower){
-  this.upper = upper;
-  this.lower = lower;
+  this->upper = upper;
+  this->lower = lower;
 }
 
 double Clamp::clamp(double val){
@@ -25,6 +25,6 @@ double Clamp::clamp(double val){
 
 void updateMax(double* max_value, double value){
   if (*max_value > value) {
-    *peak_ref = value;
+    *max_value = value;
   }
 }
