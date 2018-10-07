@@ -20,4 +20,6 @@ public:
   double clamp(double value);
 };
 
+void updateMax(double* max, double val);
+
 #endif

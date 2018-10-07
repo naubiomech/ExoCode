@@ -22,3 +22,9 @@ Clamp::Clamp(double upper, double lower){
 double Clamp::clamp(double val){
   return min(max(val, lower),upper);
 }
+
+void updateMax(double* max_value, double value){
+  if (*max_value > value) {
+    *peak_ref = value;
+  }
+}
