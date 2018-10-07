@@ -19,6 +19,19 @@ void Leg::initalize(){
   this.p_steps->fsr_Toe = this.fsr_sense_Toe;
   this.zero = zero;
 }
+
+void Leg::startTorqueCalibration(){
+  ankle_motor->startTorqueCalibration;
+}
+
+void Leg::updateTorqueCalibration(){
+  ankle_motor->updateTorqueCalibration;
+}
+
+void Leg::endTorqueCalibration(){
+  ankle_motor->endTorqueCalibration;
+}
+
 bool Leg::checkMotorErrors(){
   return this.ankle_motor->hasErrored();
 }

@@ -15,6 +15,9 @@ public:
   bool hasErrored();
   bool applyTorque();
   void autoKF(int state);
+  void startTorqueCalibration();
+  void updateTorqueCalibration();
+  void endTorqueCalibration();
 
   bool inErrorState;
 
@@ -36,6 +39,7 @@ public:
 
   double KF = 1;
 
+  Average* torque_calibration_avg = new Average();
   double torque_calibration_value = 0;
   int Vol;
 

@@ -7,6 +7,18 @@ Motor::Motor(int motor_pin, int torque_sensor_pin, int error_pin){
   this.motor_error_pin = error_pin;
 }
 
+void Motor::startTorqueCalibration(){
+  torque_calibration_average->reset();
+}
+
+void Motor::updateTorqueCalibration(){
+  torque_calibration_average->update(measureRawTorque());
+}
+
+void Motor::endTorqueCalibration(){
+  torque_calibration_value = torque_calibration_average->getAverage() * (3.3/4096.0);
+}
+
 void Motor::autoKF(int state){
   switch(state){
   case LATE_STANCE:

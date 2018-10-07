@@ -20,6 +20,9 @@ public:
   void setZeroIfSteadyState();
   void resetStartingParameters();
   void autoKF();
+  void startTorqueCalibration();
+  void updateTorqueCalibration();
+  void endTorqueCalibration();
   // ---------
   // Leg
   Motor* ankle_motor;

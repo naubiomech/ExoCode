@@ -3,6 +3,18 @@ Exoskeleton::Exoskeleton(){
   right_leg = new Leg();
 }
 
+void Exoskeleton::calibrateTorque(){
+  left_leg->startTorqueCalibration();
+  right_leg->startTorqueCalibration();
+  long torque_calibration_value_time = millis();
+  while (millis() - torque_calibration_value_time < 1000){
+    left_leg->updateTorqueCalibration();
+    right_leg->updateTorqueCalibration();
+  }
+  left_leg->endTorqueCalibration();
+  right_leg->endTorqueCalibration();
+}
+
 void Exoskeleton::resetStartingParameters(){
   left_leg->resetStartingParameters();
   right_leg->resetStartingParameters();
@@ -53,9 +65,9 @@ void Exoskeleton::disableExo(){
   stream = 0;
   digitalWrite(LED_PIN, LOW);
   leg->state = old_L_state_L;
-  }
+}
 
-  void Exoskeleton::applyTorque(){
+void Exoskeleton::applyTorque(){
     if(!(left_leg->applyTorque() &&
          right_leg->applyTorque())){
       disableExo();

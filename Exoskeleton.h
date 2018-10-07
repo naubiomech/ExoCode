@@ -19,6 +19,7 @@ public:
   void adjustControl();
   void resetStartingParameters();
   void setZeroIfSteadyState();
+  void calibrateTorque();
 
 };
 
