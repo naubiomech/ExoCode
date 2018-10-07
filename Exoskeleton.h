@@ -18,7 +18,7 @@ public:
   void applyStateMachine();
   void adjustControl();
   void resetStartingParameters();
-  void Exoskeleton::setZeroIfStateState();
+  void setZeroIfSteadyState();
 
 };
 
