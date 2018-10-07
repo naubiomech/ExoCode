@@ -3,7 +3,7 @@ Exoskeleton::Exoskeleton(){
   right_leg = new Leg();
 }
 
-void Exoskeelton::resetStartingParameters(){
+void Exoskeleton::resetStartingParameters(){
   left_leg->resetStartingParameters();
   right_leg->resetStartingParameters();
 }
