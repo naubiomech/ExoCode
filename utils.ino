@@ -1,14 +1,14 @@
 
-void Averager::update(double value){
+void Average::update(double value){
   avg += value;
   count++;
 }
 
-double Averager::getAverage(){
+double Average::getAverage(){
   return avg / count;
 }
 
-void Averager::reset(){
+void Average::reset(){
   avg = 0;
   count = 0;
 }

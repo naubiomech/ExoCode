@@ -1,7 +1,7 @@
 #ifndef UTILITES_HEADER
 #define UTILITES_HEADER
 
-class Averager{
+class Average{
 private:
   double avg;
   double count;
