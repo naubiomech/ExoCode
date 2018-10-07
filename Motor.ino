@@ -69,9 +69,13 @@ bool Motor::applyTorque(int state){
 }
 
 double Motor::measureRawTorque(){
-  double Torq = 56.5 / (2.1) * (analogRead(this.torque_sensor_pin) * (3.3 / 4096) - this.torque_calibration_value);
+  return analogRead(this.torque_sensor_pin) * (3.3 / 4096);
+}
+
+double Motor::measureRawCalibratedTorque(){
+  double Torq = 56.5 / (2.1) * (measureRawCalibratedTorque() - this.torque_calibration_value);
   return -Torq; // TODO Check if negative is necessary
-  }
+}
 
   void Motor::measureError(){
     inErrorState = digitalRead(err_pin);
@@ -87,6 +91,7 @@ double Motor::measureRawTorque(){
     }
 
     torque_measurements[0] = this.getRawTorque();
+  torque_measurements[0] = this.measureRawCalibratedTorque();
 
     average += torque_measurements[0];
     averaged_torque = average / dim;

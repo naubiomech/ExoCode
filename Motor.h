@@ -6,6 +6,7 @@
 class Motor{
 private:
   double measureRawTorque();
+  double measureRawCalibratedTorque();
 public:
   Motor(int motor_pin, int torque_sensor_pin, int err_pin);
   double getTorque();
