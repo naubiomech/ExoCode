@@ -16,6 +16,7 @@ private:
   double upper;
   double lower;
 public:
+  Clamp(double upper, double lower);
   double clamp(double value);
 };
 

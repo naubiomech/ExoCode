@@ -14,7 +14,7 @@ void Average::reset(){
   count = 0;
 }
 
-double Clamp::Clamp(double upper, double lower){
+Clamp::Clamp(double upper, double lower){
   this.upper = upper;
   this.lower = lower;
 }
