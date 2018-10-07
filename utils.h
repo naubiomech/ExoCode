@@ -17,6 +17,6 @@ private:
   double lower;
 public:
   double clamp(double value);
-}
+};
 
 #endif
