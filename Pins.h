@@ -3,6 +3,7 @@
 
 class ExoPins{
   ExoPins(int motorsPerLeg, int fsrsPerLeg);
+  ~ExoPins();
   LegPins* left_leg;
   LegPins* right_leg;
   int bluetooth_rx;
@@ -13,6 +14,7 @@ class ExoPins{
 
 class LegPins{
   LegPins(int motorsAmount, int fsrAmount);
+  ~LegPins();
   MotorPins* motor_pins;
   int motor_count;
   FSRPins* fsr_pins;

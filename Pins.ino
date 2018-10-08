@@ -17,8 +17,8 @@ LegPins::~LegPins(){
 }
 
 LegPins::LegPins(int motor_count, int fsr_count){
-  this.motor_pins = new MotorPins[motor_count];
-  this.fsr_pins = new FSRPins[fsr_count];
-  this.motor_count = motor_count;
-  this.fsr_count = fsr_count;
+  this->motor_pins = new MotorPins[motor_count];
+  this->fsr_pins = new FSRPins[fsr_count];
+  this->motor_count = motor_count;
+  this->fsr_count = fsr_count;
 }
