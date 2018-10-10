@@ -76,8 +76,4 @@ public:
 
   // ------------
 };
-
-void initialize_leg(Leg* leg);
-void initialize_left_leg(Leg* left_leg);
-void initialize_right_leg(Leg* right_leg);
 #endif
