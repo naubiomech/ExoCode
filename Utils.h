@@ -20,6 +20,16 @@ public:
   double clamp(double value);
 };
 
+class Threshold{
+private:
+  double upper_threshold;
+  int crossed_count;
+  bool state;
+public:
+  Threshold(double upper_threshold);
+  bool confirmState(double value);
+}
+
 void updateMax(double* max_val, double val);
 
 #endif
