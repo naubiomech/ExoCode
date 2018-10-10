@@ -29,14 +29,14 @@ void updateMax(double* max_value, double value){
   }
 }
 
-Threshold::Threshold(double threshold, int crossed_threshold_max){
-  this->upper_threshold = upper_threshold;
+Threshold::Threshold(bool starting_state, double threshold_value, int crossed_threshold_max){
+  this->upper_threshold = threshold_value;
   this->crossed_threshold_max = crossed_threshold_max;
-  this->state = 0;
+  this->state = starting_state;
   this->crossed_threshold_count = 0;
 }
 
-bool Threshold::confirmState(double value){
+bool Threshold::getState(double value){
   if((value > upper_threshold) == state){
     crossed_threshold_count = 0;
   } else {

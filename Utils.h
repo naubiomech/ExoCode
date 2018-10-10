@@ -26,8 +26,8 @@ private:
   int crossed_count;
   bool state;
 public:
-  Threshold(double upper_threshold);
-  bool confirmState(double value);
+  Threshold(bool starting_state, double threshold_value, int crossed_threshold_max);
+  bool getState(double value);
 }
 
 void updateMax(double* max_val, double val);
