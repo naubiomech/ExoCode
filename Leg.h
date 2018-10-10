@@ -29,8 +29,8 @@ struct Leg {
   int count_err;
 
   // TODO: Remove these in place of PID getters
-  double kp_ankle = 1000;
-  double ki_ankle = 0;
+  double kp_ankle = 700;
+  double ki_ankle = 3;
   double kd_ankle = 0;
   double kp_balance = 60;
   double ki_balance = 0;
