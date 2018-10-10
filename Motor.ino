@@ -2,9 +2,9 @@
 #include "Utils.h"
 
 Motor::Motor(int motor_pin, int torque_sensor_pin, int error_pin){
-  this.motor_pin = motor_pin;
-  this.torque_sensor_pin = torque_sensor_pin;
-  this.motor_error_pin = error_pin;
+  this->motor_pin = motor_pin;
+  this->torque_sensor_pin = torque_sensor_pin;
+  this->motor_error_pin = error_pin;
 }
 
 void Motor::startTorqueCalibration(){
@@ -81,11 +81,11 @@ bool Motor::applyTorque(int state){
 }
 
 double Motor::measureRawTorque(){
-  return analogRead(this.torque_sensor_pin) * (3.3 / 4096);
+  return analogRead(this->torque_sensor_pin) * (3.3 / 4096);
 }
 
 double Motor::measureRawCalibratedTorque(){
-  double Torq = 56.5 / (2.1) * (measureRawCalibratedTorque() - this.torque_calibration_value);
+  double Torq = 56.5 / (2.1) * (measureRawCalibratedTorque() - this->torque_calibration_value);
   return -Torq; // TODO Check if negative is necessary
 }
 
@@ -102,7 +102,7 @@ void Motor::measureTorque(){
     average += torque_measurements[j - 1];
   }
 
-  torque_measurements[0] = this.measureRawCalibratedTorque();
+  torque_measurements[0] = this->measureRawCalibratedTorque();
 
   average += torque_measurements[0];
   averaged_torque = average / dim;
