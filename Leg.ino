@@ -79,7 +79,32 @@ void Leg::resetStartingParameters(){
 
 
 void Leg::setZeroIfSteadyState(){
-  set_to_zero_if_leg_in_steady_state(this);
+  if (leg->flag_1 == 0) {
+    leg->flag_1 = 1;
+    leg->time_old_state = leg->state;
+  }
+  if (leg->state != leg->time_old_state) {
+    leg->flag_1 = 0;
+    leg->stateTimerCount = 0;
+  } else {
+    if (leg->stateTimerCount >= 5 / 0.002) {
+      if (leg->store_N1 == 0) {
+        Serial.println("Steady state, setting to 0Nm , Change N1");
+        leg->set_2_zero = 1;
+        leg->store_N1 = 1;
+        leg->activate_in_3_steps = 1;
+        leg->num_3_steps = 0;
+        leg->first_step = 1;
+        leg->start_step = 0;
+      }
+    } else {
+      leg->stateTimerCount++;
+      if (leg->store_N1) {
+        leg->set_2_zero = 0;
+        leg->store_N1 = 0;
+      }
+    }
+  }
 }
 
 void Leg::applyStateMachine(){
