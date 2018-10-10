@@ -133,7 +133,7 @@ void Leg::determineState(boolean foot_on_fsr){
         leg->state_count_13 = 0;
         leg->state_count_31 = 0;
       }
-  }
+    }
   case LATE_STANCE:
     if (!foot_on_fsr)
     {
