@@ -1,18 +1,20 @@
 #ifndef PINS_HEADER
 #define PINS_HEADER
 
-class ExoPins{
-  ExoPins(int motorsPerLeg, int fsrsPerLeg);
-  ~ExoPins();
-  LegPins* left_leg;
-  LegPins* right_leg;
-  int bluetooth_rx;
-  int bluetooth_tx;
-  int motor_enable;
-  int led;
+class MotorPins{
+public:
+  int err;
+  int torque;
+  int motor;
+};
+
+class FSRPins{
+public:
+  int fsr_pin;
 };
 
 class LegPins{
+public:
   LegPins(int motorsAmount, int fsrAmount);
   ~LegPins();
   MotorPins* motor_pins;
@@ -21,14 +23,16 @@ class LegPins{
   int fsr_count;
 };
 
-class MotorPins{
-  int err;
-  int torque;
-  int motor;
-};
-
-class FSRPins{
-  int fsr_pin;
+class ExoPins{
+public:
+  ExoPins(int motorsPerLeg, int fsrsPerLeg);
+  ~ExoPins();
+  LegPins* left_leg;
+  LegPins* right_leg;
+  int bluetooth_rx;
+  int bluetooth_tx;
+  int motor_enable;
+  int led;
 };
 
 #endif
