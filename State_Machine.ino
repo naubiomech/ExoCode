@@ -63,30 +63,7 @@ void state_machine_swing(Leg* leg, boolean foot_on_fsr){
     leg->set_2_zero = 0;
     leg->One_time_set_2_zero = 1;
   }
-  else if (foot_on_fsr)
-  {
-    leg->state_count_13++;
-    // if you're in the same state for more than state_counter_th it means that it is not noise
-    if (leg->state_count_13 >= state_counter_th)
-    {
-      leg->sigm_done = true;
-      leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
-      if (abs(leg->Dorsi_Setpoint_Ankle) > 0) {
-        leg->Old_PID_Setpoint = 0;
-      } else {
-        leg->Previous_Dorsi_Setpoint_Ankle = 0;
-      }
-
-      leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle +
-        (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
-
-      leg->state_old = leg->state;
-      leg->state = LATE_STANCE;
-      leg->state_count_13 = 0;
-      leg->state_count_31 = 0;
-    }
-  }
+  leg->determineState(foot_on_fsr);
 }
 
 void state_machine_late_stance(Leg* leg, boolean foot_on_fsr){
@@ -100,22 +77,6 @@ void state_machine_late_stance(Leg* leg, boolean foot_on_fsr){
     leg->PID_Setpoint = 0;
     leg->Setpoint_Ankle_Pctrl = 0;
   }
+  leg->determineState(foot_on_fsr);
 
-  if (!foot_on_fsr)
-  {
-    leg->state_count_31++;
-    if (leg->state_count_31 >= state_counter_th)
-    {
-      leg->sigm_done = true;
-      leg->Old_PID_Setpoint = leg->PID_Setpoint;
-      leg->state_old = leg->state;
-
-      leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle +
-        (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
-
-      leg->state = SWING;
-      leg->state_count_31 = 0;
-      leg->state_count_13 = 0;
-    }
-  }
 }
