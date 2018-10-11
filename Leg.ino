@@ -135,8 +135,55 @@ void Leg::determineState(boolean foot_on_fsr){
   }
 }
 
+bool Leg::determine_foot_on_ground(){
+  boolean foot_on_fsr;
+  if (FLAG_TWO_TOE_SENSORS) {
+    foot_on_fsr = this->p_steps->curr_voltage > this->fsr_percent_thresh_Toe * this->fsr_Combined_peak_ref;
+  } else if (FLAG_BALANCE) {
+    foot_on_fsr = (this->FSR_Toe_Average > this->fsr_percent_thresh_Toe * this->FSR_Toe_Balance_Baseline) ||
+      (this->FSR_Heel_Average > this->fsr_percent_thresh_Toe * this->FSR_Heel_Balance_Baseline);
+  } else {
+    foot_on_fsr =this->p_steps->curr_voltage > this->fsr_percent_thresh_Toe * this->fsr_Toe_peak_ref;
+  }
+  return foot_on_fsr;
+}
+
 void Leg::applyStateMachine(){
-  state_machine(this);
+
+  if (this->set_2_zero){
+    switch (this->state) {
+    case SWING:
+      this->set_2_zero = 0;
+      this->One_time_set_2_zero = 1;
+      break;
+    case LATE_STANCE:
+      if (this->One_time_set_2_zero) {
+        this->sigm_done = true;
+        this->Old_PID_Setpoint = this->PID_Setpoint;
+        this->state_old = this->state;
+        this->New_PID_Setpoint = 0;
+        this->One_time_set_2_zero = 0;
+        this->Previous_Setpoint_Ankle = 0;
+        this->PID_Setpoint = 0;
+        this->Setpoint_Ankle_Pctrl = 0;
+      }
+      break;
+    }
+  }
+
+  bool foot_on_ground = determine_foot_on_ground();
+  this->determineState(foot_on_fsr);
+  ref_step_adj(leg);
+
+  if ((Trq_time_volt == 2 || Trq_time_volt == 3) && this->state == LATE_STANCE) {
+    this->PID_Setpoint = this->Setpoint_Ankle_Pctrl;
+  } else if (N1 < 1 || N2 < 1 || N3 < 1) {
+    this->PID_Setpoint = this->New_PID_Setpoint;
+  } else {
+    // Create the smoothed reference and call the PID
+    PID_Sigm_Curve(leg);
+  }
+
 }
 
 void Leg::measureSensors(){
