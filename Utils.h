@@ -23,12 +23,13 @@ public:
 class Threshold{
 private:
   double upper_threshold;
-  int crossed_count;
+  int crossed_threshold_max;
+  int crossed_threshold_count;
   bool state;
 public:
   Threshold(bool starting_state, double threshold_value, int crossed_threshold_max);
   bool getState(double value);
-}
+};
 
 void updateMax(double* max_val, double val);
 
