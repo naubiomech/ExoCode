@@ -1,4 +1,5 @@
 #include "Leg.h"
+#include "Shaping_Functions.h"
 
 void Leg::initalize(){
 
@@ -181,9 +182,38 @@ void Leg::applyStateMachine(){
     this->PID_Setpoint = this->New_PID_Setpoint;
   } else {
     // Create the smoothed reference and call the PID
-    PID_Sigm_Curve(leg);
+    sigmoidCurveSetpoint();
   }
+}
 
+void Leg::sigmoidCurveSetpoint(){
+  long sig_time = millis();
+  if ((sig_time - leg->sig_time_old) > 1) {
+
+    leg->sig_time_old = sig_time;
+
+    if ((abs(leg->New_PID_Setpoint - leg->PID_Setpoint) > 0.1) && (leg->sigm_done)) {
+
+      leg->sigm_done = false;
+      leg->n_iter = 0;
+      int N_step;
+
+      if (leg->state == LATE_STANCE) {
+        N_step = N3;
+      } else if (leg->state == SWING) {
+        N_step = N1;
+      }
+      double exp_mult = round((10 / Ts) / (N_step - 1));
+    }
+
+    if (leg->n_iter < N_step) {
+      leg->PID_Setpoint = calculatePIDSetpointSigm(New_PID_Setpoint, leg->Old_PID_Setpoint,
+                                                   Ts, exp_mult, leg->n_iter, N_step);
+      leg->n_iter++;
+    } else {
+      leg->sigm_done = true;
+    }
+  }
 }
 
 void Leg::measureSensors(){
