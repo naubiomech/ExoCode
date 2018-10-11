@@ -21,7 +21,10 @@ public:
   void setZeroIfSteadyState();
   void calibrateTorque();
   void calibrateFSRs();
-
+  double getRightAnkleSetpoint();
+  double getLeftAnkleSetpoint();
+  double getRightAverageTorque();
+  double getLeftAverageTorque();
 };
 
 #endif

@@ -15,6 +15,30 @@ void Exoskeleton::calibrateTorque(){
   right_leg->endTorqueCalibration();
 }
 
+double Exoskeleton::getRightAnkleSetpoint(){
+  return right_leg->getAnkleSetpoint();
+}
+
+double Exoskeleton::getLeftAnkleSetpoint(){
+  return left_leg->getAnkleSetpoint();
+}
+
+double Exoskeleton::getRightAverageTorque(){
+  return right_leg->getAverageTorque();
+}
+
+double Exoskeleton::getLeftAverageTorque(){
+  return left_leg->getAverageTorque();
+}
+
+int Exoskeleton::getLeftLegState(){
+  return left_leg->getState();
+}
+
+int Exoskeleton::getRightLegState(){
+  return right_leg->getState();
+}
+
 void Exoskeleton::calibrateFSRs(){
   left_leg->calibrateFSRs();
   right_leg->calibrateFSRs();
@@ -52,29 +76,29 @@ void Exoskeleton::initialize(){
 }
 
 void Exoskeleton::measureSensors(){
-  left_leg->measureSensors();
-  right_leg->measureSensors();
-}
-
-bool Exoskeleton::checkMotorErrors(){
-  return left_leg->checkMotorErrors() || right_leg->checkMotorErrors();
-}
-
-void Exoskeleton::takeFSRBaseline(){
-  right_leg->takeBaseline();
-  left_leg->takeBaseline();
-}
-
-void Exoskeleton::disableExo(){
-  digitalWrite(MOTOR_ENABLE_PIN, LOW);
-  stream = 0;
-  digitalWrite(LED_PIN, LOW);
-  leg->state = old_L_state_L;
-}
-
-void Exoskeleton::applyTorque(){
-  if(!(left_leg->applyTorque() &&
-       right_leg->applyTorque())){
-    disableExo();
+    left_leg->measureSensors();
+    right_leg->measureSensors();
   }
-}
+
+  bool Exoskeleton::checkMotorErrors(){
+    return left_leg->checkMotorErrors() || right_leg->checkMotorErrors();
+  }
+
+  void Exoskeleton::takeFSRBaseline(){
+    right_leg->takeBaseline();
+    left_leg->takeBaseline();
+  }
+
+  void Exoskeleton::disableExo(){
+    digitalWrite(MOTOR_ENABLE_PIN, LOW);
+    stream = 0;
+    digitalWrite(LED_PIN, LOW);
+    leg->state = old_L_state_L;
+  }
+
+  void Exoskeleton::applyTorque(){
+    if(!(left_leg->applyTorque() &&
+         right_leg->applyTorque())){
+      disableExo();
+    }
+  }

@@ -9,9 +9,9 @@ void send_data_message_wc() //with COP
   bluetooth.print(',');
 
   // RIGHT
-  bluetooth.print(right_leg->sign * right_leg->Average_Trq);
+  bluetooth.print(exo->getRightAverageTorque());
   bluetooth.print(',');
-  bluetooth.print(right_leg->state);
+  bluetooth.print(exo->getRightLegState());
   bluetooth.print(',');
   bluetooth.print(right_leg->sign * right_leg->PID_Setpoint);
   bluetooth.print(',');
@@ -29,9 +29,9 @@ void send_data_message_wc() //with COP
 
 
   // LEFT
-  bluetooth.print(left_leg->sign * left_leg->Average_Trq);
+  bluetooth.print(exo->getLeftAverageTorque());
   bluetooth.print(',');
-  bluetooth.print(left_leg->state);
+  bluetooth.print(exo->getLeftLegState());
   bluetooth.print(',');
   bluetooth.print(left_leg->sign * left_leg->PID_Setpoint);
   bluetooth.print(',');
@@ -84,18 +84,18 @@ void receive_and_transmit()
     break;
 
   case COMM_CODE_GET_LEFT_ANKLE_SETPOINT:                                         //if MATLAB sent the character D
-    *(data_to_send_point) = left_leg->Setpoint_Ankle;      //MATLAB is expecting to recieve the Torque Parameters
+    data_to_send_point[0] = exo->getLeftAnkleSetpoint();      //MATLAB is expecting to recieve the Torque Parameters
     send_command_message(COMM_CODE_GET_LEFT_ANKLE_SETPOINT, data_to_send_point, 1);
     Serial.print("Received Left Set ");
-    Serial.println(left_leg->Setpoint_Ankle);
+    Serial.println(data_to_send_point[0]);
     Serial.println(left_leg->Dorsi_Setpoint_Ankle);
     break;
 
   case COMM_CODE_GET_RIGHT_ANKLE_SETPOINT:
-    *(data_to_send_point) = right_leg->Setpoint_Ankle;
+    data_to_send_point[0] = exo->getRightAnkleSetpoint();
     send_command_message(COMM_CODE_GET_RIGHT_ANKLE_SETPOINT, data_to_send_point, 1);     //MATLAB is expecting to receive the Torque Parameters
     Serial.print("Received Right Set");
-    Serial.println(right_leg->Setpoint_Ankle);
+    Serial.println(data_to_send_point[0]);
     Serial.println(right_leg->Dorsi_Setpoint_Ankle);
     break;
 
@@ -128,51 +128,51 @@ void receive_and_transmit()
       left_leg->first_step = 1;
       left_leg->start_step = 0;
     }
-    break;
+      break;
 
-  case COMM_CODE_SET_RIGHT_ANKLE_SETPOINT:
-    receiveVals(16);                                         //MATLAB is only sending 1 value, a double, which is 8 bytes
-    right_leg->Previous_Setpoint_Ankle = right_leg->Setpoint_Ankle;
-    right_leg->Previous_Dorsi_Setpoint_Ankle = right_leg->Dorsi_Setpoint_Ankle;
-    memcpy(&right_leg->Setpoint_Ankle, &holdon, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-    memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
-    if (right_leg->Setpoint_Ankle < 0) {
+      case COMM_CODE_SET_RIGHT_ANKLE_SETPOINT:
+        receiveVals(16);                                         //MATLAB is only sending 1 value, a double, which is 8 bytes
+        right_leg->Previous_Setpoint_Ankle = right_leg->Setpoint_Ankle;
+        right_leg->Previous_Dorsi_Setpoint_Ankle = right_leg->Dorsi_Setpoint_Ankle;
+        memcpy(&right_leg->Setpoint_Ankle, &holdon, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+        memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
+        if (right_leg->Setpoint_Ankle < 0) {
 
-      right_leg->Setpoint_Ankle = 0;
-      right_leg->Dorsi_Setpoint_Ankle = 0;
-      right_leg->Previous_Setpoint_Ankle = 0;
-      right_leg->Previous_Dorsi_Setpoint_Ankle = 0;
-      right_leg->coef_in_3_steps = 0;
-      right_leg->activate_in_3_steps = 1;
-      right_leg->first_step = 1;
-      right_leg->num_3_steps = 0;
-      right_leg->start_step = 0;
-      Serial.println("Right Setpoint Negative, going to zero");
+          right_leg->Setpoint_Ankle = 0;
+          right_leg->Dorsi_Setpoint_Ankle = 0;
+          right_leg->Previous_Setpoint_Ankle = 0;
+          right_leg->Previous_Dorsi_Setpoint_Ankle = 0;
+          right_leg->coef_in_3_steps = 0;
+          right_leg->activate_in_3_steps = 1;
+          right_leg->first_step = 1;
+          right_leg->num_3_steps = 0;
+          right_leg->start_step = 0;
+          Serial.println("Right Setpoint Negative, going to zero");
 
-    } else {
+        } else {
 
-      right_leg->Setpoint_Ankle = -abs(right_leg->Setpoint_Ankle);                    //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
-      right_leg->Dorsi_Setpoint_Ankle = abs(right_leg->Dorsi_Setpoint_Ankle);
-      //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-      right_leg->Setpoint_Ankle_Pctrl = right_leg->Setpoint_Ankle;
-      right_leg->p_steps->Setpoint = right_leg->sign * right_leg->Setpoint_Ankle;
-      right_leg->activate_in_3_steps = 1;
-      right_leg->num_3_steps = 0;
-      right_leg->first_step = 1;
-      right_leg->start_step = 0;
-    }
-    break;
+          right_leg->Setpoint_Ankle = -abs(right_leg->Setpoint_Ankle);                    //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
+          right_leg->Dorsi_Setpoint_Ankle = abs(right_leg->Dorsi_Setpoint_Ankle);
+          //Recieved the large data chunk chopped into bytes, a roundabout way was needed
+          right_leg->Setpoint_Ankle_Pctrl = right_leg->Setpoint_Ankle;
+          right_leg->p_steps->Setpoint = right_leg->sign * right_leg->Setpoint_Ankle;
+          right_leg->activate_in_3_steps = 1;
+          right_leg->num_3_steps = 0;
+          right_leg->first_step = 1;
+          right_leg->start_step = 0;
+        }
+        break;
 
-  case COMM_CODE_START_TRIAL:
-    digitalWrite(MOTOR_ENABLE_PIN, HIGH);                                         //The GUI user is ready to start the trial so Motor is enabled
-    stream = 1;                                                     //and the torque data is allowed to be streamed
-    streamTimerCount = 0;
-    timeElapsed = 0;
-    break;
+        case COMM_CODE_START_TRIAL:
+          digitalWrite(MOTOR_ENABLE_PIN, HIGH);                                         //The GUI user is ready to start the trial so Motor is enabled
+          stream = 1;                                                     //and the torque data is allowed to be streamed
+          streamTimerCount = 0;
+          timeElapsed = 0;
+          break;
 
-  case COMM_CODE_END_TRIAL:
-    digitalWrite(MOTOR_ENABLE_PIN, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
-    stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
+          case COMM_CODE_END_TRIAL:
+            digitalWrite(MOTOR_ENABLE_PIN, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
+            stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
     break;
 
   case COMM_CODE_CALIBRATE_TORQUE:
