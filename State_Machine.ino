@@ -32,7 +32,7 @@ void state_machine_generic(Leg* leg, boolean foot_on_fsr){
       leg->One_time_set_2_zero = 1;
       break;
     case LATE_STANCE:
-      if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
+      if (leg->One_time_set_2_zero) {
         leg->sigm_done = true;
         leg->Old_PID_Setpoint = leg->PID_Setpoint;
         leg->state_old = leg->state;

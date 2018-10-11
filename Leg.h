@@ -29,6 +29,7 @@ public:
   Motor* ankle_motor;
   FSRGroup* foot_fsrs;
 
+  Threshold* swing_state_threshold = new Threshold(false, 0.5, state_counter_th);
 
   double Prop_Gain = 1;
 
