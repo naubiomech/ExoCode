@@ -54,20 +54,15 @@ public:
   double set_2_zero = 0;
   double One_time_set_2_zero = 1;
 
-  // TODO: Make local variable
-  long sig_time = 0;
 
   long sig_time_old = 0;
 
-  // TODO: Make local variables
-  int n_iter, N_step;
+  int n_iter;
 
   // TODO: Find a better way to track state changing
   // TODO: Give names that relate to state
   int state = SWING;
   int state_old = SWING;
-  int state_count_13 = 0;
-  int state_count_31 = 0;
 
   double start_time = 0;
 
