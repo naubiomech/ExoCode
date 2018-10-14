@@ -1,4 +1,5 @@
 #include "Auto_KF.h"
+#include "Parameters.h"
 #include "Utils.h"
 
 void Auto_KF_motor_Late_stance(Average* error_average, double pid_setpoint, double motor_input){
