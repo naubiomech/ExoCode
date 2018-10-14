@@ -10,6 +10,7 @@ private:
   void endCalibration();
 
 public:
+  FSR(int pin);
   double calibrate();
   void measureForce();
   double getForce();
