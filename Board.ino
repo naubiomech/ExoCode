@@ -18,8 +18,6 @@ void setupBoard(){
   pinMode(MOTOR_ENABLE_PIN, OUTPUT); //Enable disable the motors
   digitalWrite(MOTOR_ENABLE_PIN, LOW);
 
-  exo_motors = {left_leg->ankle_motor, right_leg->ankle_motor}
-
 #ifdef IMU_BOARD
   bno = Adafruit_BNO055(WIRE_BUS, 1, BNO055_ADDRESS_A, I2C_MASTER, IMU_1_PINS, I2C_PULLUP_EXT, I2C_RATE_100, I2C_OP_MODE_ISR);
 #endif
