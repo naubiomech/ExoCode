@@ -2,7 +2,7 @@
 #define PARAMETERS_HEADER
 
 // Selects the board to compile for
-#define IMU_BOARD
+#define QUAD_BOARD
 
 const bool FLAG_PRINT_TORQUES = false;
 const bool FLAG_PID_VALS = false;
