@@ -13,7 +13,7 @@ ExoPins::~ExoPins(){
 
 LegPins::~LegPins(){
   delete[] motor_pins;
-  delete[] fsrs_pins;
+  delete[] fsr_pins;
 }
 
 LegPins::LegPins(int motor_count, int fsr_count){
