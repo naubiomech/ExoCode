@@ -33,7 +33,7 @@ void Motor::autoKF(int state){
 
 void Motor::writeToMotor(int value){
   int Vol = this->Output + this->zero; //need to map
-// TODO Find a better way to implement this preprocessor instruction
+
   if (PWM_CONTROL){
     Vol = Vol * 0.8 + 0.1 * 4096;
   }
