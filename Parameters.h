@@ -4,6 +4,8 @@
 // Selects the board to compile for
 #define QUAD_BOARD
 
+const int TORQUE_AVERAGE_COUNT = 5;
+
 const bool FLAG_PRINT_TORQUES = false;
 const bool FLAG_PID_VALS = false;
 const bool FLAG_TWO_TOE_SENSORS = false;

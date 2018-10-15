@@ -1,10 +1,16 @@
 #ifndef MOTOR_HEADER
 #define MOTOR_HEADER
+#include <PID_v2.h>
+
 #include "Parameters.h"
 #include "Utils.h"
 
 class Motor{
 private:
+  unsigned int torque_sensor_pin;
+  unsigned int motor_pin;
+  unsigned int motor_error_pin;
+
   double measureRawTorque();
   double measureRawCalibratedTorque();
 public:
@@ -13,21 +19,18 @@ public:
   void measureTorque();
   void measureError();
   bool hasErrored();
-  bool applyTorque();
+  bool applyTorque(int state);
   void autoKF(int state);
   void startTorqueCalibration();
   void updateTorqueCalibration();
   void endTorqueCalibration();
+  void writeToMotor(int value);
 
   bool inErrorState;
 
-  unsigned int torque_sensor_pin;
-  unsigned int motor_pin;
-  unsigned int err_pin;
-
   double sign = 1;
 
-  double torque_measurements[dim] = {0};
+  double torque_measurements[TORQUE_AVERAGE_COUNT] = {0};
 
   double averaged_torque;
 
@@ -39,7 +42,7 @@ public:
 
   double KF = 1;
 
-  Average* torque_calibration_avg = new Average();
+  Average* torque_calibration_average = new Average();
   double torque_calibration_value = 0;
   int Vol;
 
