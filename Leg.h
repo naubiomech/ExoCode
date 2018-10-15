@@ -5,13 +5,13 @@ const int dim = 5;
 
 #include "PID_v2.h"
 #include "Torque_Speed_ADJ.h"
+#include "State_Machine.h"
 #include "Motor.h"
 #include "FSR.h"
 
 class Leg {
 public:
-  Leg();
-  void initialize();
+  Leg(LegPins* legPins);
   void measureSensors();
   bool checkMotorErrors();
   void takeFSRBaseline();
@@ -24,9 +24,11 @@ public:
   void updateTorqueCalibration();
   void endTorqueCalibration();
   void calibrateFSRs();
+  double getBalanceReference();
   // ---------
   // Leg
-  Motor* ankle_motor;
+  Motor** motors;
+  int motor_count;
   FSRGroup* foot_fsrs;
 
   Threshold* swing_state_threshold = new Threshold(false, 0.5, state_counter_th);

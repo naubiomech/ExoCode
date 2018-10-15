@@ -1,24 +1,14 @@
 #include "Leg.h"
+#include "Pins.h"
 #include "Shaping_Functions.h"
 
-void Leg::initalize(){
-
-  pinMode(this.pin_err, INPUT);
-  pinMode(this.torque_sensor_ankle_pin, INPUT);
-
-  analogWrite(this.motor_ankle_pin, zero);
-  this.balance_pid.SetMode(AUTOMATIC);
-  this.balance_pid.SetTunings(this.kp_balance, this.ki_balance, this.kd_balance);
-  this.balance_pid.SetOutputLimits(-1500, 1500);
-  this.balance_pid.SetSampleTime(PID_sample_time);
-
-  this.ankle_pid.SetMode(AUTOMATIC);
-  this.ankle_pid.SetTunings(this.kp_ankle, this.ki_ankle, this.kd_ankle);
-  this.ankle_pid.SetOutputLimits(-1500, 1500);
-  this.ankle_pid.SetSampleTime(PID_sample_time);
-
-  this.p_steps->fsr_Toe = this.fsr_sense_Toe;
-  this.zero = zero;
+Leg::Leg(LegPins* legPins){
+  this->foot_fsrs = new FSRGroup(legPins->fsr_pins, legPins->fsr_count);
+  this->motor_count = legPins->motor_count;
+  this->motors = new Motor*[motor_count];
+  for (int i = 0; i < legPins->motor_count; i++){
+    this->motors[i] = new Motor(legPins->motor_pins[i]);
+  }
 }
 
 double Leg::getBalanceReference(){
@@ -28,81 +18,95 @@ double Leg::getBalanceReference(){
 void Leg::calibrateFSRs(){
   foot_fsrs->calibrate();
 }
+
 void Leg::startTorqueCalibration(){
-  ankle_motor->startTorqueCalibration;
+  for(int i = 0; i < motor_count;i++){
+    motors[i]->startTorqueCalibration();
+  }
 }
 
 void Leg::updateTorqueCalibration(){
-  ankle_motor->updateTorqueCalibration;
+  for(int i = 0; i < motor_count;i++){
+    motors[i]->updateTorqueCalibration();
+  }
 }
 
 void Leg::endTorqueCalibration(){
-  ankle_motor->endTorqueCalibration;
+  for(int i = 0; i < motor_count;i++){
+    motors[i]->endTorqueCalibration();
+  }
 }
 
 bool Leg::checkMotorErrors(){
-  return this.ankle_motor->hasErrored();
+  for(int i = 0; i < motor_count;i++){
+    if(motors[i]->hasErrored()){
+      return true;
+    }
+  }
+  return false;
 }
 
 void Leg::autoKF(){
-  ankle_motor->autoKF(state);
+  for(int i = 0; i < motor_count;i++){
+    motors[i]->autoKF(state);
+  }
 }
 
 void Leg::adjustControl(){
-  leg->N3 = Ctrl_ADJ(leg->state, leg->state_old, leg->p_steps,
-                     leg->N3, leg->New_PID_Setpoint, &leg->Setpoint_Ankle,
-                     &leg->Setpoint_Ankle_Pctrl, Trq_time_volt, leg->Prop_Gain,
-                     leg->FSR_baseline_FLAG, &leg->FSR_Ratio, &leg->Max_FSR_Ratio);
+  this->N3 = Ctrl_ADJ(this->state, this->state_old, this->p_steps,
+                      this->N3, this->New_PID_Setpoint, &this->Setpoint_Ankle,
+                      &this->Setpoint_Ankle_Pctrl, Trq_time_volt, this->Prop_Gain,
+                      this->FSR_baseline_FLAG, &this->FSR_Ratio, &this->Max_FSR_Ratio);
 }
 
 void Leg::resetStartingParameters(){
-  leg->p_steps->count_plant = 0;
-  leg->p_steps->n_steps = 0;
-  leg->p_steps->flag_start_plant = false;
-  leg->p_steps->flag_take_average = false;
-  leg->p_steps->flag_N3_adjustment_time = false;
-  leg->p_steps->flag_take_baseline = false;
-  leg->p_steps->torque_adj = false;
+  this->p_steps->count_plant = 0;
+  this->p_steps->n_steps = 0;
+  this->p_steps->flag_start_plant = false;
+  this->p_steps->flag_take_average = false;
+  this->p_steps->flag_N3_adjustment_time = false;
+  this->p_steps->flag_take_baseline = false;
+  this->p_steps->torque_adj = false;
 
-  leg->N3 = N3;
-  leg->N2 = N2;
-  leg->N1 = N1;
+  this->N3 = N3;
+  this->N2 = N2;
+  this->N1 = N1;
 
-  leg->p_steps->perc_l = 0.5;
-  leg->activate_in_3_steps = 1;
-  leg->Previous_Setpoint_Ankle = 0;
+  this->p_steps->perc_l = 0.5;
+  this->activate_in_3_steps = 1;
+  this->Previous_Setpoint_Ankle = 0;
 
-  leg->coef_in_3_steps = 0;
-  leg->num_3_steps = 0;
+  this->coef_in_3_steps = 0;
+  this->num_3_steps = 0;
 
-  leg->first_step = 1;
+  this->first_step = 1;
 }
 
 
 void Leg::setZeroIfSteadyState(){
-  if (leg->flag_1 == 0) {
-    leg->flag_1 = 1;
-    leg->time_old_state = leg->state;
+  if (this->flag_1 == 0) {
+    this->flag_1 = 1;
+    this->time_old_state = this->state;
   }
-  if (leg->state != leg->time_old_state) {
-    leg->flag_1 = 0;
-    leg->stateTimerCount = 0;
+  if (this->state != this->time_old_state) {
+    this->flag_1 = 0;
+    this->stateTimerCount = 0;
   } else {
-    if (leg->stateTimerCount >= 5 / 0.002) {
-      if (leg->store_N1 == 0) {
+    if (this->stateTimerCount >= 5 / 0.002) {
+      if (this->store_N1 == 0) {
         Serial.println("Steady state, setting to 0Nm , Change N1");
-        leg->set_2_zero = 1;
-        leg->store_N1 = 1;
-        leg->activate_in_3_steps = 1;
-        leg->num_3_steps = 0;
-        leg->first_step = 1;
-        leg->start_step = 0;
+        this->set_2_zero = 1;
+        this->store_N1 = 1;
+        this->activate_in_3_steps = 1;
+        this->num_3_steps = 0;
+        this->first_step = 1;
+        this->start_step = 0;
       }
     } else {
-      leg->stateTimerCount++;
-      if (leg->store_N1) {
-        leg->set_2_zero = 0;
-        leg->store_N1 = 0;
+      this->stateTimerCount++;
+      if (this->store_N1) {
+        this->set_2_zero = 0;
+        this->store_N1 = 0;
       }
     }
   }
@@ -116,21 +120,21 @@ void Leg::determineState(boolean foot_on_fsr){
     new_state = LATE_STANCE;
   }
 
-  if (new_state != leg->state){
-    leg->sigm_done = true;
-    leg->Old_PID_Setpoint = leg->PID_Setpoint;
-    leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle +
-      (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+  if (new_state != this->state){
+    this->sigm_done = true;
+    this->Old_PID_Setpoint = this->PID_Setpoint;
+    this->New_PID_Setpoint = this->Previous_Setpoint_Ankle +
+      (this->Setpoint_Ankle - this->Previous_Setpoint_Ankle) * this->coef_in_3_steps;
 
-    leg->state_old = leg->state;
-    leg->state = state;
-    leg->state_count_13 = 0;
-    leg->state_count_31 = 0;
+    this->state_old = this->state;
+    this->state = state;
+    this->state_count_13 = 0;
+    this->state_count_31 = 0;
     if (state == LATE_STANCE){
-      if (abs(leg->Dorsi_Setpoint_Ankle) > 0) {
-        leg->Old_PID_Setpoint = 0;
+      if (abs(this->Dorsi_Setpoint_Ankle) > 0) {
+        this->Old_PID_Setpoint = 0;
       } else {
-        leg->Previous_Dorsi_Setpoint_Ankle = 0;
+        this->Previous_Dorsi_Setpoint_Ankle = 0;
       }
     }
   }
@@ -174,7 +178,7 @@ void Leg::applyStateMachine(){
 
   bool foot_on_ground = determine_foot_on_ground();
   this->determineState(foot_on_fsr);
-  ref_step_adj(leg);
+  ref_step_adj(this);
 
   if ((Trq_time_volt == 2 || Trq_time_volt == 3) && this->state == LATE_STANCE) {
     this->PID_Setpoint = this->Setpoint_Ankle_Pctrl;
@@ -188,40 +192,40 @@ void Leg::applyStateMachine(){
 
 void Leg::sigmoidCurveSetpoint(){
   long sig_time = millis();
-  if ((sig_time - leg->sig_time_old) > 1) {
+  if ((sig_time - this->sig_time_old) > 1) {
 
-    leg->sig_time_old = sig_time;
+    this->sig_time_old = sig_time;
 
-    if ((abs(leg->New_PID_Setpoint - leg->PID_Setpoint) > 0.1) && (leg->sigm_done)) {
+    if ((abs(this->New_PID_Setpoint - this->PID_Setpoint) > 0.1) && (this->sigm_done)) {
 
-      leg->sigm_done = false;
-      leg->n_iter = 0;
+      this->sigm_done = false;
+      this->n_iter = 0;
       int N_step;
 
-      if (leg->state == LATE_STANCE) {
+      if (this->state == LATE_STANCE) {
         N_step = N3;
-      } else if (leg->state == SWING) {
+      } else if (this->state == SWING) {
         N_step = N1;
       }
       double exp_mult = round((10 / Ts) / (N_step - 1));
     }
 
-    if (leg->n_iter < N_step) {
-      leg->PID_Setpoint = calculatePIDSetpointSigm(New_PID_Setpoint, leg->Old_PID_Setpoint,
-                                                   Ts, exp_mult, leg->n_iter, N_step);
-      leg->n_iter++;
+    if (this->n_iter < N_step) {
+      this->PID_Setpoint = calculatePIDSetpointSigm(New_PID_Setpoint, this->Old_PID_Setpoint,
+                                                    Ts, exp_mult, this->n_iter, N_step);
+      this->n_iter++;
     } else {
-      leg->sigm_done = true;
+      this->sigm_done = true;
     }
   }
 }
 
 void Leg::measureSensors(){
-  leg->ankle_motor->measureTorque();
-  leg->ankle_motor->measureError();
-  leg->fsrs->measureForce();
+  this->ankle_motor->measureTorque();
+  this->ankle_motor->measureError();
+  this->fsrs->measureForce();
 
-  leg->p_steps->torque_average = leg->ankle_motor->getTorque();
+  this->p_steps->torque_average = this->ankle_motor->getTorque();
 }
 
 void Leg::takeFSRBaseline(){
