@@ -37,7 +37,7 @@ private:
   void updateCalibration();
 
 public:
-  FSRGroup(int* fsr_pins, int fsr_count);
+  FSRGroup(FSRPins* fsr_pins, int fsr_count);
 
   void measureForce();
   double getForce();
