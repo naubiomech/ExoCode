@@ -1,5 +1,6 @@
 #ifndef TORQUE_SPEED_ADJ_HEADER
 #define TORQUE_SPEED_ADJ_HEADER
+#include "Parameters.h"
 
 // Stuctur in order to have all the needed values to adjust the torque or
 // the shaping as a function of the force applied or of the speed respectively
