@@ -2,7 +2,7 @@
 #include "Utils.h"
 
 FSR::FSR(int pin){
-  this.pin = pin;
+  this->pin = pin;
 }
 
 double FSR::calibrate(){
@@ -49,22 +49,23 @@ double FSR::getForce(){
   return force;
 }
 
-double getBalanceReference(){
+double FSR::getBalanceReference(){
   return min(1, (getForce() / peak_force));
 }
 
 FSRGroup::FSRGroup(int* fsr_pins, int fsr_count){
-  this.fsrs = new[](fsr_count * sizeof(*this.fsrs));
+  this->fsrs = new FSR*[fsr_count];
   for (int i = 0; i < fsr_count; i++){
-    this.fsrs[i] = fsrs[i];
+    this->fsrs[i] = new FSR(fsr_pins[i]);
   }
-  this.fsr_count = fsr_count;
+  this->fsr_count = fsr_count;
 }
 
 void FSRGroup::measureForce(){
   double average = 0;
   for (int i = 0; i < fsr_count; i++){
-    average += fsrs[i]->measureForce();
+    fsrs[i]->measureForce();
+    average += fsrs[i]->getForce();
   }
   force = average / fsr_count;
 }

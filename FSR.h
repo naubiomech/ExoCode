@@ -31,15 +31,15 @@ class FSRGroup{
 private:
   int fsr_count;
   double calibration_peak;
-  FSR* fsrs[];
+  FSR** fsrs;
 
   void startCalibration();
   void updateCalibration();
 
 public:
-  FSRGroup(FSR* fsrs, int fsr_count);
+  FSRGroup(int* fsr_pins, int fsr_count);
 
-  double getMeasure();
+  void measureForce();
   double getForce();
   void calibrate();
   double getBalanceReference();
