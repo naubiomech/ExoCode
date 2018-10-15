@@ -44,7 +44,6 @@ public:
 
   Average* torque_calibration_average = new Average();
   double torque_calibration_value = 0;
-  int Vol;
 
   int torque_address;
 

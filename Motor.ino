@@ -32,13 +32,12 @@ void Motor::autoKF(int state){
 }
 
 void Motor::writeToMotor(int value){
-  leg->Vol = leg->Output + leg->zero; //need to map
+  int Vol = this->Output + this->zero; //need to map
 // TODO Find a better way to implement this preprocessor instruction
-#ifdef QUAD_BOARD
-  leg->Vol = leg->Vol * 0.8 + 0.1 * 4096;
-#endif
-  analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
-
+  if (PWM_CONTROL){
+    Vol = Vol * 0.8 + 0.1 * 4096;
+  }
+  analogWrite(leg->motor_ankle_pin, ,Vol); //0 to 4096 writing for motor to get Input
 }
 
 bool Motor::applyTorque(int state){
