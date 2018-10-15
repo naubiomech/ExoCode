@@ -67,8 +67,5 @@ double *data_to_send_point = &data_to_send[0];
 double N3 = 500;
 double N2 = 4;
 double N1 = 4;
-// ===== Torque Speed Adj =====
-steps val_L;
-steps val_R;
 
 #endif
