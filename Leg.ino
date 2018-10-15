@@ -231,5 +231,9 @@ void Leg::takeFSRBaseline(){
 }
 
 bool Leg::applyTorque(){
-  return ankle_motor->applyTorque(state);
+  if (!ankle_motor->applyTorque(state)){
+    state = 9;
+    return false;
+  }
+  return true;
 }

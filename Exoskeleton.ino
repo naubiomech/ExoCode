@@ -92,8 +92,8 @@ void Exoskeleton::measureSensors(){
   void Exoskeleton::disableExo(){
     digitalWrite(MOTOR_ENABLE_PIN, LOW);
     stream = 0;
+    send_data_message_wc();
     digitalWrite(LED_PIN, LOW);
-    leg->state = old_L_state_L;
   }
 
   void Exoskeleton::applyTorque(){
