@@ -32,52 +32,38 @@ void Motor::autoKF(int state){
 }
 
 void Motor::writeToMotor(int value){
-  int Vol = this->Output + this->zero; //need to map
+  int Vol = this->Output + this->zero_torque_reference;
 
   if (PWM_CONTROL){
-    Vol = Vol * 0.8 + 0.1 * 4096;
+    Vol = Vol * 0.8 + 0.1 * 4096.0;
   }
-  analogWrite(leg->motor_ankle_pin, ,Vol); //0 to 4096 writing for motor to get Input
+  analogWrite(this->motor_pin, Vol);
 }
 
 bool Motor::applyTorque(int state){
   double torque = averaged_torque;
-  PID* pid;
   double PID_ref;
 
   //TODO Test IMU balance control
   if (IMU_ENABLED && state == LATE_STANCE && Trq_time_volt == 2) {
-    meas_IMU = clamp(meas_IMU,-45,45);
+    meas_IMU = imu_clamp.clamp(meas_IMU);
     PID_Setpoint = 0;
-    Input = meas_IMU * Prop_Gain;
-    pid = &(balance_pid);
+    Input = meas_IMU * IMU_Gain;
   } else {
     PID_ref = PID_Setpoint;
     Input = torque;
-    pid = &(ankle_pid);
 
     if ((abs(torque) > 25))
     {
-      leg->KF = 0;
-      double old_L_state_L = leg->state;
-      leg->state = 9;
-      send_data_message_wc();
-
+      KF = 0;
       return false;
 
     }
   }
 
-  pid->Compute_KF(leg->KF);
-
-  //This can be used as alternative to the previous gain (see up)
-  if (IMU_ENABLED && leg->state == LATE_STANCE && Trq_time_volt == 2) {
-    leg->Output *= leg->Prop_Gain;
-    if (leg->Output >= 1500) leg->Output = 1500;
-    if (leg->Output <= -1500) leg->Output = -1500;
-  }
-
+  pid.Compute_KF(KF);
   writeToMotor(Output);
+  return true;
 }
 
 double Motor::measureRawTorque(){
@@ -90,7 +76,7 @@ double Motor::measureRawCalibratedTorque(){
 }
 
 void Motor::measureError(){
-  inErrorState = digitalRead(err_pin);
+  inErrorState = digitalRead(motor_error_pin);
 }
 
 void Motor::measureTorque(){

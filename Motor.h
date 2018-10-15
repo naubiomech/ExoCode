@@ -44,6 +44,7 @@ public:
 
   Average* torque_calibration_average = new Average();
   double torque_calibration_value = 0;
+  Clamp imu_clamp = Clamp(-45,45);
 
   int torque_address;
 
@@ -56,7 +57,10 @@ public:
   double New_PID_Setpoint = 0.0;
   double Old_PID_Setpoint = 0.0;
 
-  double zero_torque;
+  double zero_torque_reference;
+
+  double meas_IMU = 0;
+  double IMU_Gain = 1;
 };
 
 #endif
