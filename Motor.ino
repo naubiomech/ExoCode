@@ -1,6 +1,7 @@
 #include "Motor.h"
 #include "Utils.h"
 #include "State_Machine.h"
+#include "Auto_KF.h"
 
 Motor::Motor(int motor_pin, int torque_sensor_pin, int error_pin){
   this->motor_pin = motor_pin;
@@ -23,10 +24,10 @@ void Motor::endTorqueCalibration(){
 void Motor::autoKF(int state){
   switch(state){
   case LATE_STANCE:
-    /* Auto_KF_leg_Late_stance(pid_avg_err, PID_Setpoint, Input); */
+    Auto_KF_motor_Late_stance(pid_avg_err, PID_Setpoint, Input);
     break;
   case SWING:
-    /* KF = Auto_KF_leg_Swing(pid_avg_err, KF, kf_clamp); */
+    KF = Auto_KF_motor_Swing(pid_avg_err, KF, kf_clamp);
     break;
   }
 }
