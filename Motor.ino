@@ -4,10 +4,10 @@
 #include "State_Machine.h"
 #include "Auto_KF.h"
 
-Motor::Motor(int motor_pin, int torque_sensor_pin, int error_pin){
-  this->motor_pin = motor_pin;
-  this->torque_sensor_pin = torque_sensor_pin;
-  this->motor_error_pin = error_pin;
+Motor::Motor(MotorPins* motor_pins){
+  this->motor_pin = motor_pins->motor;
+  this->torque_sensor_pin = motor_pins->torque;
+  this->motor_error_pin = motor_pins->err;
 }
 
 void Motor::startTorqueCalibration(){
