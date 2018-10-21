@@ -4,6 +4,7 @@
 
 #include "Parameters.h"
 #include "Utils.h"
+#include "Shaping_Functions.h"
 
 class Motor{
 private:
@@ -25,6 +26,13 @@ public:
   void updateTorqueCalibration();
   void endTorqueCalibration();
   void writeToMotor(int value);
+  void changeState(int state);
+  void updateSetpoint(int state);
+  void sigmoidCurveSetpoint(int state);
+  void setToZero();
+  void adjustControl(int state, int state_old, int FSR_baseline_FLAG);
+  void resetStartingParameters();
+  void takeBaseline(int state, int state_old, int* FSR_baseline_FLAG);
 
   bool inErrorState;
 
@@ -61,6 +69,13 @@ public:
 
   double meas_IMU = 0;
   double IMU_Gain = 1;
+
+  long sig_time_old = 0;
+  ShapingFunction* shaping_function = new ShapingFunction();
+  double coef_in_3_steps = 0;
+
+  steps* p_steps;
+
 };
 
 #endif

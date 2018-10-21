@@ -103,3 +103,81 @@ double Motor::getTorque(){
 bool Motor::hasErrored(){
   return inErrorState;
 }
+
+void Motor::changeState(int state){
+  this->Old_PID_Setpoint = this->PID_Setpoint;
+  this->New_PID_Setpoint = this->Previous_Setpoint +
+    (this->Setpoint - this->Previous_Setpoint) * this->coef_in_3_steps;
+  if (state == LATE_STANCE){
+    if (abs(this->Dorsi_Setpoint) > 0) {
+      this->Old_PID_Setpoint = 0;
+    } else {
+      this->Previous_Dorsi_Setpoint = 0;
+    }
+  }
+}
+
+void Motor::updateSetpoint(int state){
+  if ((Trq_time_volt == 2 || Trq_time_volt == 3) && state == LATE_STANCE) {
+    this->PID_Setpoint = this->Setpoint_Pctrl;
+  } else if (N1 < 1 || N2 < 1 || N3 < 1) {
+    this->PID_Setpoint = this->New_PID_Setpoint;
+  } else {
+    // Create the smoothed reference and call the PID
+    sigmoidCurveSetpoint(state);
+  }
+}
+
+void Motor::sigmoidCurveSetpoint(int state){
+  long sig_time = millis();
+  if ((sig_time - this->sig_time_old) > 1) {
+
+    this->sig_time_old = sig_time;
+    this->PID_Setpoint =
+      this->shaping_function->getPIDSetpoint(New_PID_Setpoint, PID_Setpoint, Old_PID_Setpoint, state);
+  }
+}
+
+void Motor::setToZero(){
+  this->Old_PID_Setpoint = this->PID_Setpoint;
+  this->New_PID_Setpoint = 0;
+  this->Previous_Setpoint = 0;
+  this->PID_Setpoint = 0;
+  this->Setpoint_Pctrl = 0;
+}
+
+void Motor::resetStartingParameters(){
+
+  this->Previous_Setpoint = 0;
+  this->coef_in_3_steps = 0;
+
+  this->p_steps->count_plant = 0;
+  this->p_steps->n_steps = 0;
+  this->p_steps->flag_start_plant = false;
+  this->p_steps->flag_take_average = false;
+  this->p_steps->flag_N3_adjustment_time = false;
+  this->p_steps->flag_take_baseline = false;
+  this->p_steps->torque_adj = false;
+  this->p_steps->perc_l = 0.5;
+}
+
+void Motor::adjustControl(int state, int state_old, int FSR_baseline_FLAG){
+  int iter_late_stance = this->shaping_function->getIterationCount(LATE_STANCE);
+  int new_iters;
+  if (FSR_baseline_FLAG){
+    Setpoint = 0;
+    Setpoint_Pctrl = 0;
+    new_iters = iter_late_stance;
+  } else {
+
+    new_iters = Ctrl_ADJ(state, state_old, this->p_steps,
+                         this->N3, this->New_PID_Setpoint, &this->Setpoint_Ankle,
+                         &this->Setpoint_Pctrl, Trq_time_volt, this->Prop_Gain,
+                         this->FSR_baseline_FLAG, &this->FSR_Ratio, &this->Max_FSR_Ratio);
+  }
+  this->shaping_function->setIterationCount(LATE_STANCE,new_iters);
+}
+
+void Motor::takeBaseline(int state, int state_old, int* FSR_baseline_FLAG){
+  take_baseline(state, state_old, p_steps, FSR_baseline_FLAG);
+}
