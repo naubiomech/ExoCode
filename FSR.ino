@@ -90,6 +90,6 @@ void FSRGroup::setPercentageThreshold(double percent){
   fsr_percent_thresh = percent;
 }
 
-void FSRGroup::getThreshold(){
+double FSRGroup::getThreshold(){
   return calibration_peak * fsr_percent_thresh;
 }

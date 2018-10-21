@@ -45,9 +45,9 @@ public:
   void calibrate();
   double getBalanceReference();
   double getThreshold();
+  void setPercentageThreshold(double percent);
 
   double force;
 
-  int FSR_baseline_FLAG = 0;
 };
 #endif
