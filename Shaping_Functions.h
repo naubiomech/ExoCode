@@ -12,6 +12,7 @@ private:
 public:
   double getPIDSetpoint(double newPIDSetpoint, double oldPIDSetpoint, double currentPIDSetpoint, int state);
   void setIterationCount(int whichState, double n);
+  double getIterationCount(int whichState);
 };
 
 #endif
