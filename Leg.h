@@ -25,6 +25,9 @@ public:
   void endTorqueCalibration();
   void calibrateFSRs();
   double getBalanceReference();
+  int determineState(boolean foot_on_ground);
+  bool determine_foot_on_ground();
+  void adjustControl();
   // ---------
   // Leg
   Motor** motors;
@@ -47,7 +50,6 @@ public:
 
   double activate_in_3_steps = 0;
   double first_step = 1;
-  double coef_in_3_steps = 0;
   double start_step = 0;
   double num_3_steps = 0;
 
@@ -56,22 +58,12 @@ public:
   double set_2_zero = 0;
   double One_time_set_2_zero = 1;
 
-
-  long sig_time_old = 0;
-
-  int n_iter;
-
-  // TODO: Find a better way to track state changing
-  // TODO: Give names that relate to state
   int state = SWING;
   int state_old = SWING;
 
   double start_time = 0;
 
-  steps* p_steps;
-
-  boolean sigm_done;
-
+  int FSR_baseline_FLAG = 0;
   // ------------
 };
 #endif
