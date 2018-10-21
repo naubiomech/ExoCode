@@ -56,7 +56,7 @@ double FSR::getBalanceReference(){
 FSRGroup::FSRGroup(FSRPins* fsr_pins, int fsr_count){
   this->fsrs = new FSR*[fsr_count];
   for (int i = 0; i < fsr_count; i++){
-    this->fsrs[i] = new FSR(fsr_pins[i]->fsr_pin);
+    this->fsrs[i] = new FSR(fsr_pins[i].fsr_pin);
   }
   this->fsr_count = fsr_count;
 }
@@ -84,4 +84,12 @@ void FSRGroup::calibrate(){
 
 double FSRGroup::getBalanceReference(){
   return fsrs[0]->getBalanceReference() - fsrs[1]->getBalanceReference();
+}
+
+void FSRGroup::setPercentageThreshold(double percent){
+  fsr_percent_thresh = percent;
+}
+
+void FSRGroup::getThreshold(){
+  return calibration_peak * fsr_percent_thresh;
 }

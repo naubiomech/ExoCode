@@ -31,6 +31,7 @@ class FSRGroup{
 private:
   int fsr_count;
   double calibration_peak;
+  double fsr_percent_thresh = 0.9;
   FSR** fsrs;
 
   void startCalibration();
@@ -43,13 +44,10 @@ public:
   double getForce();
   void calibrate();
   double getBalanceReference();
+  double getThreshold();
 
   double force;
 
-  double fsr_Combined_peak_ref;
-  double fsr_percent_thresh = 0.9;
-  double FSR_Ratio;
-  double Max_FSR_Ratio;
   int FSR_baseline_FLAG = 0;
 };
 #endif
