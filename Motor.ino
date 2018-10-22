@@ -171,9 +171,9 @@ void Motor::adjustControl(int state, int state_old, int FSR_baseline_FLAG){
   } else {
 
     new_iters = Ctrl_ADJ(state, state_old, this->p_steps,
-                         this->N3, this->New_PID_Setpoint, &this->Setpoint_Ankle,
-                         &this->Setpoint_Pctrl, Trq_time_volt, this->Prop_Gain,
-                         this->FSR_baseline_FLAG, &this->FSR_Ratio, &this->Max_FSR_Ratio);
+                         iter_late_stance, this->New_PID_Setpoint, &this->Setpoint,
+                         &this->Setpoint_Pctrl, Trq_time_volt, Prop_Gain,
+                         FSR_baseline_FLAG, &this->FSR_Ratio, &this->Max_FSR_Ratio);
   }
   this->shaping_function->setIterationCount(LATE_STANCE,new_iters);
 }
