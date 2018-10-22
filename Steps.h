@@ -11,6 +11,7 @@ public:
   FixedAverage* plant_time_averager = new FixedAverage(n_step_baseline);
   FixedAverage* peak_time_averager = new FixedAverage(n_step_baseline);
   FixedAverage* dorsi_time_averager = new FixedAverage(n_step_baseline);
+  Clamp* setpoint_clamp = new Clamp(Min_Prop, Max_Prop);
   bool flag_take_average = false;
   bool flag_N3_adjustment_time = false;
   double dorsi_mean;
