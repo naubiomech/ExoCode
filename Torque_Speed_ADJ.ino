@@ -108,8 +108,8 @@ double clamp_setpoint(double raw_setpoint, Clamp* setpoint_clamp){
     return 0;
   }
 
-  double setpoint_sign = abs(raw_setpoint) / raw_setpoint;
-  double setpoint = setpoint_sign * setpoint_clamp->clamp(abs(raw_setpoint));
+  double setpoint_sign = fabs(raw_setpoint) / raw_setpoint;
+  double setpoint = setpoint_sign * setpoint_clamp->clamp(fabs(raw_setpoint));
   return setpoint;
 }
 
