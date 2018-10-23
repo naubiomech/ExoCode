@@ -113,7 +113,8 @@ double clamp_setpoint(double raw_setpoint, Clamp* setpoint_clamp){
   return setpoint;
 }
 
-double Ctrl_ADJ_plantar(){
+double Ctrl_ADJ_plantar(Steps* p_steps, int N3, double* p_FSRatio, double* p_Max_FSRatio,
+                        int flag_torque_time_volt, double* p_Setpoint_Ankle_Pctrl, double* p_Setpoint_Ankle){
   // update the voltage peak to update torque in case of Bang Bang ctrl
   if (p_steps->curr_voltage > p_steps->peak)
     p_steps->peak =  p_steps->curr_voltage;
@@ -196,7 +197,7 @@ double Ctrl_ADJ_plantar(){
 
 }
 
-double Ctrl_ADJ_dorsi(){
+double Ctrl_ADJ_dorsi(Steps* p_steps, double N3){
 
   if (p_steps->flag_start_plant) { // If a step has started i.e. the states have passed from 1 or 2 to 3
     // if you transit from 3 to 1 plantar flexion is completed and start dorsiflexion
@@ -262,17 +263,18 @@ double Ctrl_ADJ(int state, int state_old, Steps* p_steps, double N3, double New_
     return N3;
   }
 
-  // if you transit from state 1 to state 3 dorsiflexion is completed and start plantarflexion
+    // if you transit from state 1 to state 3 dorsiflexion is completed and start plantarflexion
   if ((state == LATE_STANCE) && (state_old == SWING)) {
-    N3 = Ctrl_ADJ_plantar();
+    N3 = Ctrl_ADJ_plantar(p_steps, N3, p_FSRatio, p_Max_FSRatio,
+                          flag_torque_time_volt, p_Setpoint_Ankle_Pctrl, p_Setpoint_Ankle);
   }
 
   if ((state == SWING) && (state_old == LATE_STANCE)) {
-    N3 = Ctrl_ADJ_dorsi();
-    // During the all dorsiflexion set the voltage peak to 0, probably we just need to do it one time
+    N3 = Ctrl_ADJ_dorsi(p_steps, N3);
+      // During the all dorsiflexion set the voltage peak to 0, probably we just need to do it one time
     p_steps->peak = 0;
-    p_Max_FSRatio = 0;
-  }
+      p_Max_FSRatio = 0;
+    }
 
-  return N3;
-}
+    return N3;
+  }
