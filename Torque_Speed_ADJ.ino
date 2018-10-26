@@ -207,14 +207,6 @@ double Ctrl_ADJ_dorsi(Steps* p_steps, double N3){
     // start dorsiflexion
     p_steps->dorsi_time = millis();
 
-    if (p_steps->flag_N3_adjustment_time) { // If you wanted to adjust the smoothing as a function of the speed
-      // check for the first step in order to see if everything started properly
-      if (p_steps->n_steps == 1) {
-        Serial.println(" N3 Adj activated");
-      }
-      p_steps->n_steps++;
-    }
-
     // calculate plantarflexion
     p_steps->plant_time = millis() - (p_steps->plant_time);
 

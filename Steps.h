@@ -30,15 +30,11 @@ public:
   double curr_voltage;
   double fsr_percent_thresh_Toe = 0.9;
   double peak;
-  // Other
   // Maybe delete
-  int n_steps;
   bool flag_take_average = false;
   bool flag_take_baseline = false;
   double plant_mean_base;
   double voltage_peak_ref;
-  // Unsorted
-
 };
 
 #endif

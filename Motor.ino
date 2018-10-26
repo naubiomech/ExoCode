@@ -152,7 +152,6 @@ void Motor::resetStartingParameters(){
   this->coef_in_3_steps = 0;
 
   this->p_steps->count_plant = 0;
-  this->p_steps->n_steps = 0;
   this->p_steps->flag_start_plant = false;
   this->p_steps->flag_take_average = false;
   this->p_steps->flag_N3_adjustment_time = false;

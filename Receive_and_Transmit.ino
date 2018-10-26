@@ -499,7 +499,6 @@ void receive_and_transmit()
 
   case COMM_CODE_STOP_LEFT_ANKLE_N3_ADJ:
     left_leg->p_steps->count_plant = 0;
-    left_leg->p_steps->n_steps = 0;
     left_leg->p_steps->flag_start_plant = false;
     left_leg->p_steps->flag_take_average = false;
     left_leg->p_steps->flag_N3_adjustment_time = false;
@@ -512,7 +511,6 @@ void receive_and_transmit()
 
   case COMM_CODE_STOP_RIGHT_ANKLE_N3_ADJ:
     right_leg->p_steps->count_plant = 0;
-    right_leg->p_steps->n_steps = 0;
     right_leg->p_steps->flag_start_plant = false;
     right_leg->p_steps->flag_take_average = false;
     right_leg->p_steps->flag_N3_adjustment_time = false;
