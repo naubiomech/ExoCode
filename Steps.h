@@ -30,8 +30,6 @@ public:
   double curr_voltage;
   double fsr_percent_thresh_Toe = 0.9;
   double peak;
-  // Maybe delete
-  double plant_mean_base; //TODO: Determine effect if this might be producing zero
 };
 
 #endif

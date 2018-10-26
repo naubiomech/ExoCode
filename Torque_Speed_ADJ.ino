@@ -184,7 +184,7 @@ double Ctrl_ADJ_plantar(Steps* p_steps, int N3, double* p_FSRatio, double* p_Max
     if (p_steps->flag_start_plant == true) {
       if (flag_torque_time_volt == 0) {
         // if you're going use the time as reference to increase also the torque
-        new_setpoint = (p_steps->Setpoint ) * (1 / (fabs(p_steps->plant_mean / p_steps->plant_mean_base)));
+        new_setpoint = (p_steps->Setpoint ) * (1 / (fabs(p_steps->plant_mean)));
       } else if (flag_torque_time_volt == 1) { // If you use the volt or force value returned by the FSR sensors
         new_setpoint = (p_steps->Setpoint ) * (fabs(p_steps->peak / p_steps->plant_peak_mean));
       }
