@@ -287,8 +287,6 @@ void receive_and_transmit()
     }
 
     send_command_message(COMM_CODE_CHECK_MEMORY, data_to_send_point, 3);
-    left_leg->p_steps->voltage_peak_ref = left_leg->fsr_Combined_peak_ref;
-    right_leg->p_steps->voltage_peak_ref = right_leg->fsr_Combined_peak_ref;
 
     left_leg->p_steps->plant_peak_mean = read_baseline(left_leg->baseline_address);
     right_leg->p_steps->plant_peak_mean = read_baseline(right_leg->baseline_address);

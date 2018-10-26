@@ -32,7 +32,6 @@ public:
   double peak;
   // Maybe delete
   double plant_mean_base; //TODO: Determine effect if this might be producing zero
-  double voltage_peak_ref;
 };
 
 #endif
