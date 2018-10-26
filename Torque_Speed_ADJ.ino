@@ -51,7 +51,7 @@ int take_baseline_update_mean_time(Steps* p_steps){
                                 p_steps, p_steps->plant_peak_time_averager);
 }
 
-int take_baseline_dorsi(Steps* p_steps, int* p_flag_take_baseline){
+int take_baseline_dorsi(Steps* p_steps){
   if (p_steps->flag_start_plant) {
     // If a step has started i.e. the states have passed from 1 or 2 to 3
     // if you transit from 3 to 1 plantar flexion is completed and start dorsiflexion
@@ -77,7 +77,6 @@ int take_baseline_dorsi(Steps* p_steps, int* p_flag_take_baseline){
 
       if (((p_steps->count_plant_base) - 2) >= n_step_baseline) {
         (p_steps->count_plant_base) = 0;
-        *p_flag_take_baseline = 0;
         return (p_steps->count_plant_base);
 
       } // return 1 activate a flag that stops the calc of the baseline
@@ -89,7 +88,7 @@ int take_baseline_dorsi(Steps* p_steps, int* p_flag_take_baseline){
   return 0;
 }
 
-int take_baseline(int state, int state_old, Steps* p_steps, int* p_flag_take_baseline) {
+int take_baseline(int state, int state_old, Steps* p_steps) {
 
 
   if ((state == LATE_STANCE) && state_old == SWING) { // I am in plantarflexion
@@ -97,7 +96,7 @@ int take_baseline(int state, int state_old, Steps* p_steps, int* p_flag_take_bas
   }
 
   if ((state_old == 3) && (state == 1 || state == 2)) {
-    return take_baseline_dorsi(p_steps, p_flag_take_baseline);
+    return take_baseline_dorsi(p_steps);
   }
 
   return 0;

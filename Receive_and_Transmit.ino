@@ -428,13 +428,9 @@ void receive_and_transmit()
     break;
 
   case COMM_CODE_SET_LEFT_ANKLE_FREQ_BASELINE:
-    left_leg->p_steps->flag_take_baseline = true;
-    Serial.println("Left Freq Baseline ");
     break;
 
   case COMM_CODE_SET_RIGHT_ANKLE_FREQ_BASELINE:
-    right_leg->p_steps->flag_take_baseline = true;
-    Serial.println("Right Freq Baseline ");
     break;
 
   case COMM_CODE_ADJ_LEFT_ANKLE_N3:
@@ -501,7 +497,6 @@ void receive_and_transmit()
     left_leg->p_steps->count_plant = 0;
     left_leg->p_steps->flag_start_plant = false;
     left_leg->p_steps->flag_N3_adjustment_time = false;
-    left_leg->p_steps->flag_take_baseline = false;
     left_leg->p_steps->torque_adj = false;
     left_leg->N3 = N3;
     Serial.print("Stop Left N3 adj, come back to: ");
@@ -512,7 +507,6 @@ void receive_and_transmit()
     right_leg->p_steps->count_plant = 0;
     right_leg->p_steps->flag_start_plant = false;
     right_leg->p_steps->flag_N3_adjustment_time = false;
-    right_leg->p_steps->flag_take_baseline = false;
     right_leg->p_steps->torque_adj = false;
     right_leg->N3 = N3;
     Serial.print("Stop Right N3 adj, come back to: ");
