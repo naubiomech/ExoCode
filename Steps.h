@@ -24,7 +24,7 @@ public:
   Clamp* setpoint_clamp = new Clamp(Min_Prop, Max_Prop);
   bool flag_N3_adjustment_time = false;
   bool torque_adj = false;
-  double Setpoint; // Desired setpoint
+  double desired_setpoint;
   double perc_l = 0.5;
   // FSR
   double curr_voltage;

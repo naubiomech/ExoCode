@@ -127,16 +127,16 @@ double Ctrl_ADJ_plantar(Steps* p_steps, int N3, double* p_FSRatio, double* p_Max
   if (flag_torque_time_volt != 0){
     double new_setpoint;
     if (flag_torque_time_volt == 2) {
-      new_setpoint = (p_steps->Setpoint ) * (prop_gain) * (*p_FSRatio);
+      new_setpoint = (p_steps->desired_setpoint ) * (prop_gain) * (*p_FSRatio);
 
     } else if (flag_torque_time_volt == 3) {
       // Second version of pivot proportional Ctrl with polynomial law XXXXX QUI METTERE LEGGE
-      new_setpoint =(p_steps->Setpoint ) *
+      new_setpoint =(p_steps->desired_setpoint ) *
         (p_prop[0] * pow(*p_FSRatio, 2) + p_prop[1] * (*p_FSRatio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]) ;
 
     } else if (flag_torque_time_volt == 1) {
 
-      new_setpoint = (p_steps->Setpoint ) *
+      new_setpoint = (p_steps->desired_setpoint ) *
         (p_prop[0] * pow((*p_Max_FSRatio), 2) + p_prop[1] * (*p_Max_FSRatio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]);
 
       N3 = 1;
@@ -184,9 +184,9 @@ double Ctrl_ADJ_plantar(Steps* p_steps, int N3, double* p_FSRatio, double* p_Max
     if (p_steps->flag_start_plant == true) {
       if (flag_torque_time_volt == 0) {
         // if you're going use the time as reference to increase also the torque
-        new_setpoint = (p_steps->Setpoint ) * (1 / (fabs(p_steps->plant_mean)));
+        new_setpoint = (p_steps->desired_setpoint ) * (1 / (fabs(p_steps->plant_mean)));
       } else if (flag_torque_time_volt == 1) { // If you use the volt or force value returned by the FSR sensors
-        new_setpoint = (p_steps->Setpoint ) * (fabs(p_steps->peak / p_steps->plant_peak_mean));
+        new_setpoint = (p_steps->desired_setpoint ) * (fabs(p_steps->peak / p_steps->plant_peak_mean));
       }
       new_setpoint = clamp_setpoint(new_setpoint, p_steps->setpoint_clamp);
       *p_Setpoint_Ankle = new_setpoint;
