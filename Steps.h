@@ -7,12 +7,10 @@ public:
   // Leg
   FixedAverage* plant_time_averager = new FixedAverage(n_step_baseline);
   FixedAverage* peak_time_averager = new FixedAverage(n_step_baseline);
-  FixedAverage* dorsi_time_averager = new FixedAverage(n_step_baseline);
 
   double dorsi_time;
   double plant_time;
 
-  double dorsi_mean;
   double plant_mean;
   double plant_peak_mean;
 

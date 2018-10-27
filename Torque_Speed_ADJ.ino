@@ -38,10 +38,6 @@ double take_baseline_get_mean_time(double time, double current_mean, Steps* p_st
 
 int take_baseline_update_mean_time(Steps* p_steps){
 
-  p_steps->dorsi_mean =
-    take_baseline_get_mean_time(p_steps->dorsi_time, p_steps->dorsi_mean,
-                                p_steps, p_steps->dorsi_time_averager);
-
   p_steps->plant_mean =
     take_baseline_get_mean_time(p_steps->plant_time, p_steps->plant_mean,
                                 p_steps, p_steps->plant_time_averager);
