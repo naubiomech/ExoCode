@@ -3,10 +3,6 @@
 
 int take_baseline_plantar(Steps* p_steps){
 
-  // update the voltage peak
-  if (p_steps->curr_voltage > p_steps->peak)
-    p_steps->peak =  p_steps->curr_voltage;
-
   if (p_steps->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
   {
     p_steps->plant_time = millis(); // start the plantarflexion
@@ -88,6 +84,10 @@ int take_baseline(int state, int state_old, Steps* p_steps) {
 
 
   if ((state == LATE_STANCE) && state_old == SWING) { // I am in plantarflexion
+    // update the voltage peak
+    if (p_steps->curr_voltage > p_steps->peak)
+      p_steps->peak =  p_steps->curr_voltage;
+
     return take_baseline_plant(p_steps);
   }
 
@@ -110,13 +110,6 @@ double clamp_setpoint(double raw_setpoint, Clamp* setpoint_clamp){
 
 double Ctrl_ADJ_plantar(Steps* p_steps, int N3, double* p_FSRatio, double* p_Max_FSRatio,
                         int flag_torque_time_volt, double* p_Setpoint_Ankle_Pctrl, double* p_Setpoint_Ankle){
-  // update the voltage peak to update torque in case of Bang Bang ctrl
-  if (p_steps->curr_voltage > p_steps->peak)
-    p_steps->peak =  p_steps->curr_voltage;
-
-  *p_FSRatio = fabs(p_steps->curr_voltage / p_steps->plant_peak_mean);
-  if (*p_FSRatio > (*p_Max_FSRatio))
-    (*p_Max_FSRatio) = *p_FSRatio;
 
 
 
@@ -227,6 +220,8 @@ double Ctrl_ADJ_dorsi(Steps* p_steps, double N3){
       N3 = min(500, max(4, N3));
     }
   }// end if flag_start_plant
+  p_steps->peak = 0;
+  p_Max_FSRatio = 0;
   return N3;
 }
 
@@ -252,6 +247,13 @@ double Ctrl_ADJ(int state, int state_old, Steps* p_steps, double N3, double New_
 
     // if you transit from state 1 to state 3 dorsiflexion is completed and start plantarflexion
   if ((state == LATE_STANCE) && (state_old == SWING)) {
+    // update the voltage peak to update torque in case of Bang Bang ctrl
+    if (p_steps->curr_voltage > p_steps->peak)
+      p_steps->peak =  p_steps->curr_voltage;
+
+    *p_FSRatio = fabs(p_steps->curr_voltage / p_steps->plant_peak_mean);
+    if (*p_FSRatio > (*p_Max_FSRatio))
+      (*p_Max_FSRatio) = *p_FSRatio;
     N3 = Ctrl_ADJ_plantar(p_steps, N3, p_FSRatio, p_Max_FSRatio,
                           flag_torque_time_volt, p_Setpoint_Ankle_Pctrl, p_Setpoint_Ankle);
   }
@@ -259,9 +261,7 @@ double Ctrl_ADJ(int state, int state_old, Steps* p_steps, double N3, double New_
   if ((state == SWING) && (state_old == LATE_STANCE)) {
     N3 = Ctrl_ADJ_dorsi(p_steps, N3);
       // During the all dorsiflexion set the voltage peak to 0, probably we just need to do it one time
-    p_steps->peak = 0;
-      p_Max_FSRatio = 0;
-    }
+  }
 
-    return N3;
+  return N3;
   }
