@@ -53,21 +53,14 @@ void send_data_message_wc() //with COP
     bluetooth.print(',');
   }
 
-
-
-  //  bluetooth.print(left_leg->Time_error_counter); //SIG1
-  //  bluetooth.print(',');
-  //  bluetooth.print(right_leg->Time_error_counter); //SIG2
-  //  bluetooth.print(',');
-
   bluetooth.print((left_leg->FSR_Heel_Average)); //SIG1
   bluetooth.print(',');
   bluetooth.print((right_leg->FSR_Heel_Average)); //SIG2
   bluetooth.print(',');
 
-  bluetooth.print(left_leg->FSR_Ratio); //SIG3
+  bluetooth.print(counter_msgs); //SIG3
   bluetooth.print(',');
-  bluetooth.print(right_leg->FSR_Ratio); //SIG4
+  bluetooth.print(millis()/1000); //SIG4
 
   bluetooth.print(',');
   bluetooth.println('Z');

@@ -657,8 +657,6 @@ void receive_and_transmit()
     right_leg->p_steps->count_plant_base = 0;
     right_leg->p_steps->flag_start_plant = false;
     left_leg->p_steps->flag_start_plant = false;
-    right_leg->p_steps->Setpoint = 0;
-    left_leg->p_steps->Setpoint = 0;
     break;
 
   case '&':
