@@ -175,7 +175,7 @@ double Ctrl_ADJ_plantar(Steps* p_steps, int N3, double* p_FSRatio, double* p_Max
         // if you're going use the time as reference to increase also the torque
         new_setpoint = (motor_steps->desired_setpoint ) * (1 / (fabs(leg_steps->plant_mean)));
       } else if (flag_torque_time_volt == 1) { // If you use the volt or force value returned by the FSR sensors
-        new_setpoint = (motor_steps->desired_setpoint ) * (fabs(FSR_steps->peak_voltage / FSR_steps->plant_peak_mean));
+        new_setpoint = (motor_steps->desired_setpoint ) * (fabs(FSR_steps->peak_voltage / leg_steps->plant_peak_mean));
       }
       new_setpoint = clamp_setpoint(new_setpoint, motor_steps->setpoint_clamp);
       *p_Setpoint_Ankle = new_setpoint;
@@ -185,25 +185,28 @@ double Ctrl_ADJ_plantar(Steps* p_steps, int N3, double* p_FSRatio, double* p_Max
 
 }
 
+void ctrl_adj_dorsi_measure_time(Leg_Steps* leg_steps){
+
+  // start dorsiflexion
+  leg_steps->dorsi_time = millis();
+
+  // calculate plantarflexion
+  leg_steps->plant_time = millis() - (leg_steps->plant_time);
+
+}
+
 double Ctrl_ADJ_dorsi(Steps* p_steps, double N3){
 
   if (leg_steps->flag_start_plant) { // If a step has started i.e. the states have passed from 1 or 2 to 3
     // if you transit from 3 to 1 plantar flexion is completed and start dorsiflexion
 
     leg_steps->count_plant++; // you have accomplished a step
+    ctrl_adj_dorsi_measure_time(leg_steps);
 
-    // start dorsiflexion
-    leg_steps->dorsi_time = millis();
-
-    // calculate plantarflexion
-    leg_steps->plant_time = millis() - (leg_steps->plant_time);
-
+    leg_steps->flag_start_plant = false;
     if (leg_steps->plant_time <= step_time_length) {
-      leg_steps->flag_start_plant = false;
       return N3;
     }
-
-    leg_steps->flag_start_plant = false; // you have provided one step
 
     if (leg_steps->count_plant >= 2) {
       // this is the time window of the filter for the plantarflexion
@@ -229,7 +232,7 @@ double Ctrl_ADJ(int state, int state_old, Steps* p_steps, double N3, double New_
                 double* p_Setpoint_Ankle, double * p_Setpoint_Ankle_Pctrl, int flag_torque_time_volt,
                 double prop_gain, double taking_baseline, double *p_FSRatio, double* p_Max_FSRatio) {
 
-// Speed adjustment -> the smoothing parameters are updated as a function of the plantar time in order to modify the
+  // Speed adjustment -> the smoothing parameters are updated as a function of the plantar time in order to modify the
   // shaping of the torque to the new step time.
 
   // It considers the average time of 4 steps. There's a filter of step_time_length on the plantarflexion time in order
@@ -251,7 +254,7 @@ double Ctrl_ADJ(int state, int state_old, Steps* p_steps, double N3, double New_
     if (FSR_steps->curr_voltage > FSR_steps->peak_voltage)
       FSR_steps->peak_voltage =  FSR_steps->curr_voltage;
 
-    *p_FSRatio = fabs(FSR_steps->curr_voltage / FSR_steps->plant_peak_mean);
+    *p_FSRatio = fabs(FSR_steps->curr_voltage / leg_steps->plant_peak_mean);
     if (*p_FSRatio > (*p_Max_FSRatio))
       (*p_Max_FSRatio) = *p_FSRatio;
     N3 = Ctrl_ADJ_plantar(p_steps, N3, p_FSRatio, p_Max_FSRatio,
