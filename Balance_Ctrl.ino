@@ -41,9 +41,9 @@ double Balance_Torque_ref(Leg * leg) {
   Serial.print(" ");
   Serial.print((leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline) - (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline));
   Serial.print(" -> ");
-  Serial.println(min(1, (leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline)) - min(1, (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline)));
+  Serial.println(min(1,(leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline)) - min(1,(leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline)));
 
-  return (min(1, (leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline)) - min(1, (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline))) * (leg->Prop_Gain) * (leg->Setpoint_Ankle);
+  return (min(1,(leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline)) - min(1,(leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline))) * (leg->Prop_Gain) * (leg->Setpoint_Ankle);
 
 }
 

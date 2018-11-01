@@ -88,9 +88,9 @@ struct Leg {
   double torque_calibration_value = 0;
   double T_act;
   int Vol;
-  double kp = 1000;
+  double kp = 700;
   double ki = 0;
-  double kd = 0;
+  double kd = 3;
   double KF = 1;
 
   double PID_Setpoint, Input, Output;

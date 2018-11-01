@@ -1,7 +1,7 @@
 #include "Leg.h"
 
 //--------------------NEW FUNCTIONS-----------------
-// Before state 3 in case of balance control was activated just in case of not negligible value
+// Before state 3 in case of balance control was activated just in case of not negligible value 
 // of the force on the toe i.e. if you just walk on the heel you never feel the balance.
 // Right now the state 3 is activate also in case of heel contact and the state 1 is activated
 // in case of no contact of both the sensors
@@ -146,9 +146,7 @@ void State_Machine_Heel_Toe_Sensors(Leg* leg) {
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
 
           if (abs(leg->Dorsi_Setpoint_Ankle) > 0) {
-            //            //            leg->Previous_Setpoint_Ankle = 0;
             leg->Old_PID_Setpoint = 0;
-            //            leg->Setpoint_Ankle = 0;
           } else {
             leg->Previous_Dorsi_Setpoint_Ankle = 0;
           }
