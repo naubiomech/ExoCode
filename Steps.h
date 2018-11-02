@@ -2,6 +2,12 @@
 #define STEPS_HEADER
 #include "Parameters.h"
 
+struct Steps{
+	Leg_Steps leg_steps;
+	Motor_Steps motor_steps;
+	FSR_Steps fsr_steps;
+};
+
 struct Leg_Steps{
   // Leg
   FixedAverage* plant_time_averager = new FixedAverage(n_step_baseline);
@@ -16,7 +22,7 @@ struct Leg_Steps{
   int count_plant_base;
 
   bool flag_start_plant = false;
-}
+};
 
 struct Motor_Steps{
   // Motor
@@ -25,7 +31,7 @@ struct Motor_Steps{
   bool torque_adj = false;
   double desired_setpoint;
   double perc_l = 0.5;
-}
+};
 
 struct FSR_Steps{
   // FSR
@@ -33,6 +39,6 @@ struct FSR_Steps{
   double curr_voltage;
   double fsr_percent_thresh_Toe = 0.9;
   double peak_voltage;
-}
+};
 
 #endif
