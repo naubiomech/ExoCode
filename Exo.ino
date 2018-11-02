@@ -140,6 +140,14 @@ int time_err_motor_reboot;
 int flag_enable_catch_error = 1;
 
 bool motor_error = false;
+bool flag_done_once_bt = false;
+int flag_auto_KF = 0;
+
+const unsigned int LED_BT_PIN = A11;
+double LED_BT_Voltage;
+int count_LED_reads;
+int *p_count_LED_reads = &count_LED_reads;
+
 
 void callback()//executed every 2ms
 {
@@ -154,7 +162,7 @@ void callback()//executed every 2ms
 
   check_Balance_Baseline();
 
-
+  LED_BT_Voltage=Check_LED_BT(LED_BT_PIN, LED_BT_Voltage, p_count_LED_reads);
 
 }// end callback
 
@@ -177,6 +185,7 @@ void loop()
   if (stream != 1)
   {
     reset_starting_parameters();
+    flag_done_once_bt = false;
   }// End else
 }
 
@@ -351,8 +360,11 @@ void rotate_motor() {
       streamTimerCount = 0;
     }
 
-    if (streamTimerCount == 1 && flag_auto_KF == 1)
-      Auto_KF();
+    if (streamTimerCount == 1 && flag_auto_KF == 1) {
+      Auto_KF(left_leg);
+      Auto_KF(right_leg);
+    }
+
 
     streamTimerCount++;
 
@@ -397,7 +409,7 @@ void rotate_motor() {
                              right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle,
                              right_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, right_leg->Prop_Gain,
                              right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio);
-  }
+  }// end if stream==1
 }
 
 void reset_starting_parameters() {

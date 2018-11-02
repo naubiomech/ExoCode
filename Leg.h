@@ -45,12 +45,13 @@ struct Leg {
 
   volatile double FSR_Toe_Balance_Baseline;
   volatile double FSR_Heel_Balance_Baseline;
-  
+
   // Auto_KF.h
   double ERR;
-  double max_KF;
-  double min_KF;
+  double max_KF=1.5;
+  double min_KF=0.5;
   int count_err;
+  bool auto_KF_update = true;
 
   // Calibrate_and_Read_Sensors.h
   double FSR_Ratio;
