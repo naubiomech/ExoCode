@@ -47,6 +47,7 @@ private:
   double startTime = 0;
   double pauseTime = 0;
 public:
+  Timer();
   double lap();
   void reset();
   void pause();

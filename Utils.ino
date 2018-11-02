@@ -70,6 +70,10 @@ bool Threshold::getState(double value){
   return state;
 }
 
+Timer::Timer(){
+  startTime = millis();
+}
+
 double Timer::lapSec(){
   return this->lapMilli() / 1000.0;
 }
