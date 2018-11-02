@@ -1,105 +1,6 @@
 #include "Torque_Speed_ADJ.h"
 #include "Steps.h"
 
-int take_baseline_plantar(Leg_Steps* leg_steps, FSR_Steps* fsr_steps){
-
-  if (leg_steps->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
-  {
-    leg_steps->plant_time = millis(); // start the plantarflexion
-    leg_steps->dorsi_time = millis() - (leg_steps->dorsi_time); // calculate the dorsiflexion that has just finished
-
-    if (leg_steps->dorsi_time <= step_timelength / 4) // if <50ms probably it is noise
-    {
-      FSR_steps->peak_voltage = 0;
-      leg_steps->flag_start_plant = false;
-      Serial.println(" BASE Dorsi too short");
-    } else {
-      leg_steps->flag_start_plant = true; // Parameters inizialized Start a step
-      Serial.println(" BASE Start Plantar");
-    }
-  }
-  return 0;
-}
-
-double take_baseline_get_mean(double time, double current_mean, int count_plant_base, FixedAverage* averager){
-  double mean = current_mean;
-  if ((count_plant_base - 2) >= n_step_baseline) {
-    mean = averager->updateAverage(time);
-  } else {
-    averager->updateAverage(time);
-    mean = current_mean;
-  }
-  return mean;
-}
-
-int take_baseline_update_means(Leg_Steps* leg_steps){
-
-  leg_steps->plant_mean =
-    take_baseline_get_mean(leg_steps->plant_time, leg_steps->plant_mean,
-                           leg_steps->count_plant_base, leg_steps->plant_time_averager);
-
-  FSR_steps->plant_peak_mean = 0.9 *
-    take_baseline_get_mean(leg_steps->peak_voltage, FSR_steps->plant_peak_mean,
-                           leg_steps->count_plant_base, leg_steps->plant_peak_fsr_averager);
-}
-
-int take_baseline_dorsi(Leg_Steps* leg_steps, FSR_Steps* FSR_steps){
-  if (leg_steps->flag_start_plant) {
-    // If a step has started i.e. the states have passed from 1 or 2 to 3
-    // if you transit from 3 to 1 plantar flexion is completed and start dorsiflexion
-
-    // start dorsiflexion
-
-    leg_steps->dorsi_time = millis();
-    // calculate plantarflexion
-    leg_steps->plant_time = millis() - (leg_steps->plant_time);
-
-    if (leg_steps->plant_time <= step_time_length)
-    {
-      leg_steps->flag_start_plant = false;
-      return 0;
-    } else {
-      leg_steps->flag_start_plant = false; // you have provided one plant
-      leg_steps->count_plant_base++; // you have accomplished a step
-    }
-
-    if ((leg_steps->count_plant_base) >= 2) { // avoid the first step just to be sure
-
-      take_baseline_update_mean_time(leg_steps);
-
-      if (((leg_steps->count_plant_base) - 2) >= n_step_baseline) {
-        (leg_steps->count_plant_base) = 0;
-        return (leg_steps->count_plant_base);
-
-      } // return 1 activate a flag that stops the calc of the baseline
-    }// end if count_plant>2
-
-  }
-
-  FSR_steps->peak_voltage = 0;
-  return 0;
-}
-
-int take_baseline(int state, int state_old, Steps* p_steps) {
-  Leg_Steps* leg_steps = &(p_steps->leg_steps);
-  Motor_Steps* motor_steps = &(p_steps->motor_steps);
-  FSR_Steps* fsr_steps = &(p_steps->fsr_steps);
-
-  if ((state == LATE_STANCE) && state_old == SWING) { // I am in plantarflexion
-    // update the voltage peak
-    if (FSR_steps->curr_voltage > FSR_steps->peak_voltage)
-      FSR_steps->peak_voltage =  FSR_steps->curr_voltage;
-
-    return take_baseline_plant(leg_steps, fsr_steps);
-  }
-
-  if ((state_old == 3) && (state == 1 || state == 2)) {
-    return take_baseline_dorsi(leg_steps);
-  }
-
-  return 0;
-}
-
 double clamp_setpoint(double raw_setpoint, Clamp* setpoint_clamp){
   if(raw_setpoint == 0){
     return 0;
@@ -176,11 +77,9 @@ double Ctrl_ADJ_plantar(Steps* p_steps, int N3, double* p_FSRatio, double* p_Max
       if (flag_torque_time_volt == 0) {
         // if you're going use the time as reference to increase also the torque
         new_setpoint = (motor_steps->desired_setpoint ) * (1 / (fabs(leg_steps->plant_mean)));
-      } else if (flag_torque_time_volt == 1) { // If you use the volt or force value returned by the FSR sensors
-        new_setpoint = (motor_steps->desired_setpoint ) * (fabs(FSR_steps->peak_voltage / leg_steps->plant_peak_mean));
+        new_setpoint = clamp_setpoint(new_setpoint, motor_steps->setpoint_clamp);
+        *p_Setpoint_Ankle = new_setpoint;
       }
-      new_setpoint = clamp_setpoint(new_setpoint, motor_steps->setpoint_clamp);
-      *p_Setpoint_Ankle = new_setpoint;
     }
   }// end torque adj
   return N3;
