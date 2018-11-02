@@ -53,8 +53,7 @@ void send_data_message_wc() //with COP
     bluetooth.print(',');
   }
 
-  bluetooth.print((LED_BT_Voltage)); //SIG1
-  
+  bluetooth.print((left_leg->FSR_Heel_Average)); //SIG1
   bluetooth.print(',');
   bluetooth.print((right_leg->FSR_Heel_Average)); //SIG2
   bluetooth.print(',');

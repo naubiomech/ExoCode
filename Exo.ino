@@ -141,13 +141,6 @@ int flag_enable_catch_error = 1;
 
 bool motor_error = false;
 bool flag_done_once_bt = false;
-int flag_auto_KF = 0;
-
-const unsigned int LED_BT_PIN = A11;
-double LED_BT_Voltage;
-int count_LED_reads;
-int *p_count_LED_reads = &count_LED_reads;
-
 
 void callback()//executed every 2ms
 {
@@ -161,9 +154,16 @@ void callback()//executed every 2ms
   rotate_motor();
 
   check_Balance_Baseline();
+  if (analogRead(A11) * 3.3 / 4096 <= 2.5 && flag_done_once_bt == false) {
+    Serial.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DISCONNECTED!  ");
+    bluetooth.flush();
+    flag_done_once_bt = true;
+  }
 
-  LED_BT_Voltage=Check_LED_BT(LED_BT_PIN, LED_BT_Voltage, p_count_LED_reads);
-
+  if (analogRead(A11) * 3.3 / 4096 > 2.5 && flag_done_once_bt == true) {
+    flag_done_once_bt = false;
+    Serial.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! RECONNECTED!  ");
+  }
 }// end callback
 
 void loop()
@@ -185,7 +185,7 @@ void loop()
   if (stream != 1)
   {
     reset_starting_parameters();
-    flag_done_once_bt = false;
+    flag_done_once_bt=false;
   }// End else
 }
 
@@ -328,43 +328,23 @@ void check_Balance_Baseline() {
 void rotate_motor() {
 
 
-  //  // modification to check the pid
-  //  if (FLAG_PID_VALS) {
-  //
-  //    pid(left_leg, left_leg->Average_Trq);
-  //    pid(right_leg, right_leg->Average_Trq);
-  //
-  //    Serial.print("LEFT PID INPUT:");
-  //    Serial.print(left_leg->Input);
-  //    Serial.print(" , AVG: ");
-  //    Serial.print(left_leg->Average_Trq);
-  //    Serial.print(" , VOL: ");
-  //    Serial.println(left_leg->Vol);
-  //    Serial.print("RIGHT PID INPUT:");
-  //    Serial.print(right_leg->Input);
-  //    Serial.print(" , AVG: ");
-  //    Serial.print(right_leg->Average_Trq);
-  //    Serial.print(" , VOL: ");
-  //    Serial.println(right_leg->Vol);
-  //
-  //  }
-  //  // end modification
 
 
   if (stream == 1)
   {
     if (streamTimerCount >= 5)
     {
-      counter_msgs++;
-      send_data_message_wc();
+      if ( analogRead(A11) * 3.3 / 4096 > 2.5) {
+        counter_msgs++;
+        send_data_message_wc();
+      }
       streamTimerCount = 0;
     }
 
-    if (streamTimerCount == 1 && flag_auto_KF == 1) {
+    if (streamTimerCount == 1 && flag_auto_KF == 1){
       Auto_KF(left_leg);
       Auto_KF(right_leg);
     }
-
 
     streamTimerCount++;
 

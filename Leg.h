@@ -48,8 +48,8 @@ struct Leg {
 
   // Auto_KF.h
   double ERR;
-  double max_KF=1.5;
-  double min_KF=0.5;
+  double max_KF;
+  double min_KF;
   int count_err;
   bool auto_KF_update = true;
 
