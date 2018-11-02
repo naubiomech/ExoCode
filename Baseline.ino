@@ -4,8 +4,8 @@ int take_baseline_plantar(Leg_Steps* leg_steps, FSR_Steps* fsr_steps){
 
   if (leg_steps->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
   {
-    leg_steps->plant_time = millis(); // start the plantarflexion
-    leg_steps->dorsi_time = millis() - (leg_steps->dorsi_time); // calculate the dorsiflexion that has just finished
+    leg_steps->plant_timer->reset();
+    leg_steps->dorsi_time = leg_steps->dorsi_timer->lap();
 
     if (leg_steps->dorsi_time <= step_timelength / 4) // if <50ms probably it is noise
     {
@@ -49,9 +49,8 @@ int take_baseline_dorsi(Leg_Steps* leg_steps, FSR_Steps* FSR_steps){
 
     // start dorsiflexion
 
-    leg_steps->dorsi_time = millis();
-    // calculate plantarflexion
-    leg_steps->plant_time = millis() - (leg_steps->plant_time);
+    leg_steps->dorsi_timer->reset();
+    leg_steps->plant_time = leg_steps->plant_timer->lap();
 
     leg_steps->flag_start_plant = false;
     if (leg_steps->plant_time <= step_time_length) {

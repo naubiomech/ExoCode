@@ -12,6 +12,8 @@ struct Leg_Steps{
   // Leg
   FixedAverage* plant_time_averager = new FixedAverage(n_step_baseline);
 
+  Timer* dorsi_timer = new Timer();
+  Timer* plant_timer = new Timer();
   double dorsi_time;
   double plant_time;
 
