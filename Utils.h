@@ -13,33 +13,44 @@ public:
 
 class FixedAverage{
 private:
-	double* previous_values;
-	double average;
-	int size;
+  double* previous_values;
+  double average;
+  int size;
 public:
-	FixedAverage(int size);
-	double updateAverage(double value);
-	double getAverage();
+  FixedAverage(int size);
+  double updateAverage(double value);
+  double getAverage();
 };
 
 class Clamp{
 private:
-	double upper;
-	double lower;
+  double upper;
+  double lower;
 public:
-	Clamp(double upper, double lower);
-	double clamp(double value);
+  Clamp(double upper, double lower);
+  double clamp(double value);
 };
 
 class Threshold{
 private:
-	double upper_threshold;
-	int crossed_threshold_max;
-	int crossed_threshold_count;
-	bool state;
+  double upper_threshold;
+  int crossed_threshold_max;
+  int crossed_threshold_count;
+  bool state;
 public:
-	Threshold(bool starting_state, double threshold_value, int crossed_threshold_max);
-	bool getState(double value);
+  Threshold(bool starting_state, double threshold_value, int crossed_threshold_max);
+  bool getState(double value);
+};
+
+class Timer{
+private:
+  double startTime = 0;
+  double pauseTime = 0;
+public:
+  double lap();
+  void reset();
+  void pause();
+  void resume();
 };
 
 void updateMax(double* max_val, double val);
