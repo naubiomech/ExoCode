@@ -1,7 +1,7 @@
 #include "Torque_Speed_ADJ.h"
 #include "Steps.h"
 
-int take_baseline_plantar(Steps* p_steps){
+int take_baseline_plantar(Leg_Steps* leg_steps, FSR_Steps* fsr_steps){
 
   if (leg_steps->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
   {
@@ -21,9 +21,9 @@ int take_baseline_plantar(Steps* p_steps){
   return 0;
 }
 
-double take_baseline_get_mean(double time, double current_mean, Steps* p_steps, FixedAverage* averager){
+double take_baseline_get_mean(double time, double current_mean, int count_plant_base, FixedAverage* averager){
   double mean = current_mean;
-  if (((leg_steps->count_plant_base) - 2) >= n_step_baseline) {
+  if ((count_plant_base - 2) >= n_step_baseline) {
     mean = averager->updateAverage(time);
   } else {
     averager->updateAverage(time);
@@ -32,18 +32,18 @@ double take_baseline_get_mean(double time, double current_mean, Steps* p_steps, 
   return mean;
 }
 
-int take_baseline_update_means(Steps* p_steps){
+int take_baseline_update_means(Leg_Steps* leg_steps){
 
   leg_steps->plant_mean =
     take_baseline_get_mean(leg_steps->plant_time, leg_steps->plant_mean,
-                           p_steps, leg_steps->plant_time_averager);
+                           leg_steps->count_plant_base, leg_steps->plant_time_averager);
 
   FSR_steps->plant_peak_mean = 0.9 *
-    take_baseline_get_mean(p_steps->plant_peak_fsr, FSR_steps->plant_peak_mean,
-                           p_steps, leg_steps->plant_peak_fsr_averager);
+    take_baseline_get_mean(leg_steps->peak_voltage, FSR_steps->plant_peak_mean,
+                           leg_steps->count_plant_base, leg_steps->plant_peak_fsr_averager);
 }
 
-int take_baseline_dorsi(Steps* p_steps){
+int take_baseline_dorsi(Leg_Steps* leg_steps, FSR_Steps* FSR_steps){
   if (leg_steps->flag_start_plant) {
     // If a step has started i.e. the states have passed from 1 or 2 to 3
     // if you transit from 3 to 1 plantar flexion is completed and start dorsiflexion
@@ -65,7 +65,7 @@ int take_baseline_dorsi(Steps* p_steps){
 
     if ((leg_steps->count_plant_base) >= 2) { // avoid the first step just to be sure
 
-      take_baseline_update_mean_time();
+      take_baseline_update_mean_time(leg_steps);
 
       if (((leg_steps->count_plant_base) - 2) >= n_step_baseline) {
         (leg_steps->count_plant_base) = 0;
@@ -81,18 +81,20 @@ int take_baseline_dorsi(Steps* p_steps){
 }
 
 int take_baseline(int state, int state_old, Steps* p_steps) {
-
+  Leg_Steps* leg_steps = &(p_steps->leg_steps);
+  Motor_Steps* motor_steps = &(p_steps->motor_steps);
+  FSR_Steps* fsr_steps = &(p_steps->fsr_steps);
 
   if ((state == LATE_STANCE) && state_old == SWING) { // I am in plantarflexion
     // update the voltage peak
     if (FSR_steps->curr_voltage > FSR_steps->peak_voltage)
       FSR_steps->peak_voltage =  FSR_steps->curr_voltage;
 
-    return take_baseline_plant(p_steps);
+    return take_baseline_plant(leg_steps, fsr_steps);
   }
 
   if ((state_old == 3) && (state == 1 || state == 2)) {
-    return take_baseline_dorsi(p_steps);
+    return take_baseline_dorsi(leg_steps);
   }
 
   return 0;
@@ -248,7 +250,7 @@ double Ctrl_ADJ(int state, int state_old, Steps* p_steps, double N3, double New_
     return N3;
   }
 
-    // if you transit from state 1 to state 3 dorsiflexion is completed and start plantarflexion
+  // if you transit from state 1 to state 3 dorsiflexion is completed and start plantarflexion
   if ((state == LATE_STANCE) && (state_old == SWING)) {
     // update the voltage peak to update torque in case of Bang Bang ctrl
     if (FSR_steps->curr_voltage > FSR_steps->peak_voltage)
@@ -263,8 +265,8 @@ double Ctrl_ADJ(int state, int state_old, Steps* p_steps, double N3, double New_
 
   if ((state == SWING) && (state_old == LATE_STANCE)) {
     N3 = Ctrl_ADJ_dorsi(p_steps, N3);
-      // During the all dorsiflexion set the voltage peak to 0, probably we just need to do it one time
+    // During the all dorsiflexion set the voltage peak to 0, probably we just need to do it one time
   }
 
   return N3;
-  }
+}
