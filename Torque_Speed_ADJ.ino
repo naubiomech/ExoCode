@@ -11,30 +11,35 @@ double clamp_setpoint(double raw_setpoint, Clamp* setpoint_clamp){
   return setpoint;
 }
 
+double Ctrl_ADJ_planter_general(Motor_Steps* motor_steps, double FSRatio,
+                                double Max_FSRatio, int flag_torque_time_volt){
+  double new_setpoint;
+
+  if (flag_torque_time_volt == 2) {
+    new_setpoint = (motor_steps->desired_setpoint ) * (prop_gain) * (FSRatio);
+  } else if (flag_torque_time_volt == 3) {
+    // Second version of pivot proportional Ctrl with polynomial law XXXXX QUI METTERE LEGGE
+    new_setpoint =(motor_steps->desired_setpoint ) *
+      (p_prop[0] * pow(FSRatio, 2) + p_prop[1] * (FSRatio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]) ;
+  } else if (flag_torque_time_volt == 1) {
+    new_setpoint = (motor_steps->desired_setpoint ) *
+      (p_prop[0] * pow((Max_FSRatio), 2) + p_prop[1] * (Max_FSRatio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]);
+  }
+
+  new_setpoint = clamp_setpoint(new_setpoint, motor_steps->setpoint_clamp);
+
+  return new_setpoint;
+}
+
 double Ctrl_ADJ_plantar(Steps* p_steps, int N3, double* p_FSRatio, double* p_Max_FSRatio,
                         int flag_torque_time_volt, double* p_Setpoint_Ankle_Pctrl, double* p_Setpoint_Ankle){
 
 
-
   if (flag_torque_time_volt != 0){
-    double new_setpoint;
-    if (flag_torque_time_volt == 2) {
-      new_setpoint = (motor_steps->desired_setpoint ) * (prop_gain) * (*p_FSRatio);
-
-    } else if (flag_torque_time_volt == 3) {
-      // Second version of pivot proportional Ctrl with polynomial law XXXXX QUI METTERE LEGGE
-      new_setpoint =(motor_steps->desired_setpoint ) *
-        (p_prop[0] * pow(*p_FSRatio, 2) + p_prop[1] * (*p_FSRatio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]) ;
-
-    } else if (flag_torque_time_volt == 1) {
-
-      new_setpoint = (motor_steps->desired_setpoint ) *
-        (p_prop[0] * pow((*p_Max_FSRatio), 2) + p_prop[1] * (*p_Max_FSRatio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]);
-
+    *p_Setpoint_Ankle_Pctrl = Ctrl_ADJ_planter_general(motor_steps, &p_FSRatio, &p_Max_FSRatio, flag_torque_time_volt);
+    if (flag_torque_time_volt == 1){
       N3 = 1;
     }
-    new_setpoint = clamp_setpoint(new_setpoint, motor_steps->setpoint_clamp);
-    *p_Setpoint_Ankle_Pctrl = new_setpoint;
     return N3;
   }
 
