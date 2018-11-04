@@ -57,32 +57,9 @@ double Ctrl_ADJ_plantar(Steps* p_steps, int N3, double* p_FSRatio, double* p_Max
       leg_steps->flag_start_plant = false;
       return N3;
     }
-
-    leg_steps->flag_start_plant = true; // Parameters inizialized Start a step
   }
+  leg_steps->flag_start_plant = true; // Parameters inizialized Start a step
 
-
-  // Torque adaption as a function of the speed or of the pressure force
-  // If you want to adjust the torque and hence torque_adj = 1
-  //-----------------add 11:49 6/19/18
-  if (motor_steps->torque_adj)
-  {
-    if (leg_steps->plant_time <= step_time_length)
-    {
-      FSR_steps->peak_voltage = 0;
-      leg_steps->flag_start_plant = false;
-      Serial.println(" TRQ ADJ plant time too short ");
-      return N3;
-    }
-
-
-    // if you use plantar time as reference to increase the torque
-    double new_setpoint;
-        // if you're going use the time as reference to increase also the torque
-    new_setpoint = (motor_steps->desired_setpoint ) * (1 / (fabs(leg_steps->plant_mean)));
-    new_setpoint = clamp_setpoint(new_setpoint, motor_steps->setpoint_clamp);
-    *p_Setpoint_Ankle = new_setpoint;
-  }// end torque adj
   return N3;
 
 }
