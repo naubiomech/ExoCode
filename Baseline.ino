@@ -20,26 +20,19 @@ int take_baseline_plantar(Leg_Steps* leg_steps, FSR_Steps* fsr_steps){
   return 0;
 }
 
-double take_baseline_get_mean(double value, double current_mean, int count_plant_base, FixedAverage* averager){
-  double mean = current_mean;
-  if ((count_plant_base - 2) >= n_step_baseline) {
-    mean = averager->updateAverage(value);
-  } else {
-    averager->updateAverage(value);
-    mean = current_mean;
-  }
+double take_baseline_get_mean(double value, FixedAverage* averager){
+  double mean;
+  mean = averager->updateAverage(value);
   return mean;
 }
 
 int take_baseline_update_means(Leg_Steps* leg_steps){
 
   leg_steps->plant_mean =
-    take_baseline_get_mean(leg_steps->plant_time, leg_steps->plant_mean,
-                           leg_steps->count_plant_base, leg_steps->plant_time_averager);
+    take_baseline_get_mean(leg_steps->plant_time, leg_steps->plant_time_averager);
 
   FSR_steps->plant_peak_mean = 0.9 *
-    take_baseline_get_mean(leg_steps->peak_voltage, FSR_steps->plant_peak_mean,
-                           leg_steps->count_plant_base, leg_steps->plant_peak_fsr_averager);
+    take_baseline_get_mean(leg_steps->peak_voltage, leg_steps->plant_peak_fsr_averager);
 }
 
 int take_baseline_dorsi(Leg_Steps* leg_steps, FSR_Steps* FSR_steps){
@@ -56,18 +49,8 @@ int take_baseline_dorsi(Leg_Steps* leg_steps, FSR_Steps* FSR_steps){
     if (leg_steps->plant_time <= step_time_length) {
       return 0;
     }
-    leg_steps->count_plant_base++; // you have accomplished a step
 
-    if ((leg_steps->count_plant_base) >= 2) { // avoid the first step just to be sure
-
-      take_baseline_update_means(leg_steps);
-
-      if (((leg_steps->count_plant_base) - 2) >= n_step_baseline) {
-        leg_steps->count_plant_base = 0;
-        return 0;
-
-      } // return 1 activate a flag that stops the calc of the baseline
-    }// end if count_plant>2
+    take_baseline_update_means(leg_steps);
 
   }
 
