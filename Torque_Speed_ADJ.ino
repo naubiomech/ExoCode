@@ -78,26 +78,12 @@ double Ctrl_ADJ_plantar(Steps* p_steps, int N3, double* p_FSRatio, double* p_Max
 
     // if you use plantar time as reference to increase the torque
     double new_setpoint;
-    if (leg_steps->flag_start_plant == true) {
-      if (flag_torque_time_volt == 0) {
         // if you're going use the time as reference to increase also the torque
-        new_setpoint = (motor_steps->desired_setpoint ) * (1 / (fabs(leg_steps->plant_mean)));
-        new_setpoint = clamp_setpoint(new_setpoint, motor_steps->setpoint_clamp);
-        *p_Setpoint_Ankle = new_setpoint;
-      }
-    }
+    new_setpoint = (motor_steps->desired_setpoint ) * (1 / (fabs(leg_steps->plant_mean)));
+    new_setpoint = clamp_setpoint(new_setpoint, motor_steps->setpoint_clamp);
+    *p_Setpoint_Ankle = new_setpoint;
   }// end torque adj
   return N3;
-
-}
-
-void ctrl_adj_dorsi_measure_time(Leg_Steps* leg_steps){
-
-  // start dorsiflexion
-  leg_steps->dorsi_time = millis();
-
-  // calculate plantarflexion
-  leg_steps->plant_time = millis() - (leg_steps->plant_time);
 
 }
 
@@ -107,7 +93,10 @@ double Ctrl_ADJ_dorsi(Steps* p_steps, double N3){
     // if you transit from 3 to 1 plantar flexion is completed and start dorsiflexion
 
     leg_steps->count_plant++; // you have accomplished a step
-    ctrl_adj_dorsi_measure_time(leg_steps);
+    // start dorsiflexion
+    // calculate plantarflexion
+    leg_steps->dorsi_time = millis();
+    leg_steps->plant_time = millis() - (leg_steps->plant_time);
 
     leg_steps->flag_start_plant = false;
     if (leg_steps->plant_time <= step_time_length) {
@@ -120,8 +109,6 @@ double Ctrl_ADJ_dorsi(Steps* p_steps, double N3){
         take_baseline_get_mean(leg_steps->plant_time, leg_steps->plant_mean,
                                p_steps, leg_steps->plant_time_averager);
 
-      // Update mean value
-      leg_steps->plant_mean = leg_steps->plant_time_averager->getAverage();
     }
 
     if (motor_steps->flag_N3_adjustment_time) {

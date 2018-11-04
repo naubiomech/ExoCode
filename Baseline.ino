@@ -20,12 +20,12 @@ int take_baseline_plantar(Leg_Steps* leg_steps, FSR_Steps* fsr_steps){
   return 0;
 }
 
-double take_baseline_get_mean(double time, double current_mean, int count_plant_base, FixedAverage* averager){
+double take_baseline_get_mean(double value, double current_mean, int count_plant_base, FixedAverage* averager){
   double mean = current_mean;
   if ((count_plant_base - 2) >= n_step_baseline) {
-    mean = averager->updateAverage(time);
+    mean = averager->updateAverage(value);
   } else {
-    averager->updateAverage(time);
+    averager->updateAverage(value);
     mean = current_mean;
   }
   return mean;
@@ -60,7 +60,7 @@ int take_baseline_dorsi(Leg_Steps* leg_steps, FSR_Steps* FSR_steps){
 
     if ((leg_steps->count_plant_base) >= 2) { // avoid the first step just to be sure
 
-      take_baseline_update_mean_time(leg_steps);
+      take_baseline_update_means(leg_steps);
 
       if (((leg_steps->count_plant_base) - 2) >= n_step_baseline) {
         leg_steps->count_plant_base = 0;
