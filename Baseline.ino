@@ -21,13 +21,10 @@ int take_baseline_plantar(Leg_Steps* leg_steps, FSR_Steps* fsr_steps){
 }
 
 double take_baseline_get_mean(double value, FixedAverage* averager){
-  double mean;
-  mean = averager->updateAverage(value);
-  return mean;
+  return averager->updateAverage(value);
 }
 
 int take_baseline_update_means(Leg_Steps* leg_steps){
-
   leg_steps->plant_mean =
     take_baseline_get_mean(leg_steps->plant_time, leg_steps->plant_time_averager);
 
