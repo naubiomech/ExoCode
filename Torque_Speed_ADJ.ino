@@ -30,13 +30,13 @@ double Ctrl_ADJ_planter_general(Motor_Steps* motor_steps, double FSRatio,
 
   return new_setpoint;
 }
+
 int Ctrl_ADJ_trigger_dorsi_start(){
 
   leg_steps->count_plant++; // you have accomplished a step
-  // start dorsiflexion
-  // calculate plantarflexion
-  leg_steps->dorsi_time = millis();
-  leg_steps->plant_time = millis() - (leg_steps->plant_time);
+  leg_steps->dorsi_timer->reset();
+
+  double plant_time = leg_steps->plant_timer->lap();
 
   leg_steps->plant_mean =
     take_baseline_get_mean(leg_steps->plant_time, leg_steps->plant_mean,
@@ -50,9 +50,9 @@ int Ctrl_ADJ_trigger_dorsi_start(){
 }
 
 int Ctrl_ADJ_trigger_planter_start(){
-  leg_steps->plant_time = millis(); // start the plantarflexion
-  leg_steps->dorsi_time = millis() - (leg_steps->dorsi_time); // calculate the dorsiflexion that has just finished
-
+  leg_steps->plant_timer->reset();
+  fsr_steps->max_fsr_voltage->reset();
+  fsr_steps->max_fsr_ratio->reset();
 }
 
 int Ctrl_ADJ_dorsi(){
@@ -67,23 +67,20 @@ int Ctrl_ADJ_dorsi(){
 
 int Ctrl_ADJ_planter(){
 
+  fsr_steps->max_fsr_voltage->update(steps->currVoltage);
+  double FSRatio = fabs(FSR_steps->curr_voltage / leg_steps->plant_peak_mean);
+  fsr_steps->max_fsr_ratio->update(FSRatio);
+
   if (taking_baseline) {
     *p_Setpoint_Ankle_Pctrl = 0;
     *p_Setpoint_Ankle = 0;
     return N3;
   }
 
-  if (FSR_steps->curr_voltage > FSR_steps->peak_voltage)
-    FSR_steps->peak_voltage =  FSR_steps->curr_voltage;
-
-  *p_FSRatio = fabs(FSR_steps->curr_voltage / leg_steps->plant_peak_mean);
-  if (*p_FSRatio > (*p_Max_FSRatio))
-    (*p_Max_FSRatio) = *p_FSRatio;
-
-
+  double Max_FSRatio = fsr_steps->max_fsr_ratio->getMax();
 
   if (flag_torque_time_volt != 0){
-    *p_Setpoint_Ankle_Pctrl = Ctrl_ADJ_planter_general(motor_steps, &p_FSRatio, &p_Max_FSRatio, flag_torque_time_volt);
+    *p_Setpoint = Ctrl_ADJ_planter_general(motor_steps, FSRatio, Max_FSRatio, flag_torque_time_volt);
     if (flag_torque_time_volt == 1){
       N3 = 1;
     }
