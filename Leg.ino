@@ -111,14 +111,48 @@ int Leg::determineState(boolean foot_on_ground){
     new_state = LATE_STANCE;
   }
 
-  if (new_state != this->state){
-    this->state_old = this->state;
-    this->state = state;
-    for(int i = 0; i < motor_count; i++){
-      motors[i]->changeState(state);
-    }
-  }
   return new_state;
+}
+
+void Leg::changeState(int new_state){
+  this->state_old = this->state;
+  this->state = new_state;
+  for(int i = 0; i < motor_count; i++){
+    motors[i]->changeState(state);
+  }
+  int new_phase = determinePhase(this->state, this->old_state, this->phase);
+  if (new_phase != this->phase){
+    this->phase = new_phase;
+    this->changePhase(new_phase);
+  }
+}
+
+void Leg::changePhase(int new_phase){
+  if (new_phase == PLANTER){
+    this->trigger_planter_phase();
+  } else if (next_phase == DORSI){
+    this->trigger_dorsi_phase();
+  }
+}
+
+int Leg::determinePhase(int new_state, int old_state, int current_phase){
+  double current_phase_time;
+  int next_phase;
+  if (new_state == SWING && old_state == LATE_STANCE && current_phase == DORSI){
+    next_phase = PLANTER;
+    current_phase_time = planter_timer->lap();
+  } else if (new_state == LATE_STANCE && old_state == SWING && current_phase == PLANTER){
+    next_phase = DORSI;
+    current_phase_time = dorsi_timer->lap();
+  } else {
+    return current_phase;
+  }
+
+  if (current_phase_time <=step_time_length /4){
+    return current_phase;
+  }
+
+  return next_phase;
 }
 
 bool Leg::determine_foot_on_ground(){
@@ -131,7 +165,7 @@ void Leg::applyStateMachine(){
   if (this->set_2_zero){
     switch (this->state) {
     case SWING:
-      this->set_2_zero = 0;
+        this->set_2_zero = 0;
       this->One_time_set_2_zero = 1;
       break;
     case LATE_STANCE:
@@ -148,6 +182,9 @@ void Leg::applyStateMachine(){
 
   bool foot_on_ground = determine_foot_on_ground();
   this->determineState(foot_on_ground);
+  if (new_state != this->state){
+    changeState(new_state);
+  }
   ref_step_adj(this);
   for(int i = 0; i < motor_count;i++){
     motors[i]->updateSetpoint(state);
