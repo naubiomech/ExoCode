@@ -14,14 +14,11 @@ struct Leg_Steps{
 
   Timer* dorsi_timer = new Timer();
   Timer* plant_timer = new Timer();
-  double dorsi_time;
-  double plant_time;
 
   double plant_mean;
   double plant_peak_mean;
 
   int count_plant;
-  int count_plant_base;
 
   bool flag_start_plant = false;
 };
@@ -37,8 +34,10 @@ struct Motor_Steps{
 
 struct FSR_Steps{
   // FSR
+  Max* max_fsr_ratio = new Max();
+  Max* max_fsr_voltage = new Max();
   FixedAverage* plant_peak_fsr_averager = new FixedAverage(n_step_baseline);
-  double curr_voltage;
+                              double curr_voltage;
   double fsr_percent_thresh_Toe = 0.9;
   double peak_voltage;
 };

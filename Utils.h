@@ -54,6 +54,15 @@ public:
   void resume();
 };
 
+class Max{
+private:
+	double maxVal = -inf;
+public:
+	double getMax();
+	void update(double value);
+	void reset();
+}
+
 void updateMax(double* max_val, double val);
 
 #endif

@@ -93,3 +93,15 @@ void Timer::pause(){
 void Timer::resume(){
   startTime -= (millis() - pauseTime);
 }
+
+double Max::getMax(){
+  return this->maxVal;
+}
+
+void Max::update(double value){
+  maxVal = max(value, maxVal);
+}
+
+void Max::reset(){
+  maxVal = -inf;
+}
