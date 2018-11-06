@@ -31,6 +31,21 @@ double Ctrl_ADJ_planter_general(Motor_Steps* motor_steps, double FSRatio,
   return new_setpoint;
 }
 
+int take_baseline_trigger_dorsi_start(FSR_Steps* steps){
+
+  double plant_time = leg_steps->plant_timer->lap();
+  leg_steps->plant_mean = leg_steps->plant_time_averager->updateAverage(plant_time);
+
+  double plant_fsr_peak = fsr_steps->max_fsr_voltage->getMax();
+  fsr_steps->plant_peak_mean = fsr_steps->plant_peak_averager->updateAverage(plant_fsr_peak);
+
+  if (leg_steps->count_plant_base >= n_step_baseline){
+    leg_steps->count_plant_base = 0;
+
+    return 0;
+  }
+  return 1;
+}
 int Ctrl_ADJ_trigger_dorsi_start(){
 
   leg_steps->count_plant++; // you have accomplished a step
@@ -49,10 +64,23 @@ int Ctrl_ADJ_trigger_dorsi_start(){
   }
 }
 
+int take_baseline_trigger_plant_start(Steps* steps){
+
+  double dorsi_time = leg_steps->dorsi_timer->lap();
+  leg_steps->dorsi_mean = leg_steps->dorsi_time_averager->updateAverage(dorsi_time);
+
+  return 1;
+}
+
 int Ctrl_ADJ_trigger_planter_start(){
   leg_steps->plant_timer->reset();
   fsr_steps->max_fsr_voltage->reset();
   fsr_steps->max_fsr_ratio->reset();
+}
+
+void take_baseline_dorsi(Steps* steps){
+
+
 }
 
 int Ctrl_ADJ_dorsi(){
@@ -87,3 +115,9 @@ int Ctrl_ADJ_planter(){
     return N3;
   }
 }
+
+void take_baseline_plant(FSR_Steps* fsr_steps){
+
+
+}
+
