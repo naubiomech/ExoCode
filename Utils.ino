@@ -1,24 +1,24 @@
 #include "Utils.h"
 
-void Average::update(double value){
+void RunningAverage::update(double value){
   avg += value;
   count++;
 }
 
-double Average::getAverage(){
+double RunningAverage::getAverage(){
   return avg / count;
 }
 
-void Average::reset(){
+void RunningAverage::reset(){
   avg = 0;
   count = 0;
 }
 
-FixedAverage::FixedAverage(int size){
+MovingAverage::MovingAverage(int size){
   previous_values = new double[size];
 }
 
-double FixedAverage::updateAverage(double value){
+double MovingAverage::updateAverage(double value){
   average = value;
   for(int i = 0; i < size-1;i++){
     average += previous_values[i];
@@ -29,7 +29,7 @@ double FixedAverage::updateAverage(double value){
   return average;
 }
 
-double FixedAverage::getAverage(){
+double MovingAverage::getAverage(){
   return average;
 }
 

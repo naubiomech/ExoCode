@@ -33,6 +33,10 @@ private:
   double calibration_peak;
   double fsr_percent_thresh = 0.9;
   FSR** fsrs;
+  Max* max_fsr_voltage = Max();
+  Max* max_fsr_percentage = Max();
+  double plant_peak_mean = 0;
+  RunningAverage* plant_peak_averager = RunningAverage();
 
   void startCalibration();
   void updateCalibration();

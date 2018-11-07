@@ -104,6 +104,16 @@ bool Motor::hasErrored(){
   return inErrorState;
 }
 
+void Motor::applyPlanterControlAlgorithm(double FSR_percentage, double max_FSR_percentage, int control_algorithm){
+  if (control_algorithm != 0){
+    *p_Setpoint = Ctrl_ADJ_planter_general(control_algorithm, desired_setpoint, setpoint_clamp,
+                                           FSR_percentage, max_FSR_percentage, control_algorithm);
+    if (control_algorithm == 1){
+      iter_late_stance = 1;
+    }
+  }
+}
+
 void Motor::changeState(int state){
   this->Old_PID_Setpoint = this->PID_Setpoint;
   this->New_PID_Setpoint = this->Previous_Setpoint +
@@ -172,9 +182,14 @@ void Motor::adjustControl(int state, int state_old, int FSR_baseline_FLAG){
                          &this->Setpoint_Pctrl, Trq_time_volt, Prop_Gain,
                          FSR_baseline_FLAG, &this->FSR_Ratio, &this->Max_FSR_Ratio);
   }
-  this->shaping_function->setIterationCount(LATE_STANCE,new_iters);
+  this->shaping_function->setIterationCount(LATE_STANCE, new_iters);
 }
 
 void Motor::takeBaseline(int state, int state_old, int* FSR_baseline_FLAG){
   take_baseline(state, state_old, p_steps, FSR_baseline_FLAG);
+}
+
+void Motor::adjustShapingForTime(double planterTime){
+  iter_late_stance = round((this->plant_mean) * iter_time_percentage);
+  iter_late_stance = min(500, max(4, N3));
 }

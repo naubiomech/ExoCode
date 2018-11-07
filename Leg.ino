@@ -135,6 +135,40 @@ void Leg::changePhase(int new_phase){
   }
 }
 
+void Leg::applyControlAlgorithm(){
+  if (this->phase == PLANTER){
+    this->applyPlanterControlAlgorithm();
+  } else if (this->phase == DORSI){
+    this->applyDorsiControlAlgorithm();
+  }
+}
+
+void Leg::applyPlanterControlAlgorithm(){
+  for(int i =0; i < fsr_count; i++){
+    fsrs[i]->updateMaxes();
+  }
+
+  if (taking_baseline) {
+    *p_Setpoint_Ankle_Pctrl = 0;
+    *p_Setpoint_Ankle = 0;
+  }
+
+  double FSR_percentage = foot_fsrs->getRatio();
+  double max_FSR_percentage = foot_fsrs->getMaxRatio();
+
+  motors[0]->applyPlanterControlAlgorithm(FSR_percentage, max_FSR_percentage, control_algorithm);
+  for(int i = 1; i < motor_count; i++){
+    motors[i]->applyPlanterControlAlgorithm(FSR_percentage, max_FSR_percentage, 0);
+  }
+}
+
+void Leg::applyDorsiControlAlgorithm(){
+  if (taking_baseline) {
+    *p_Setpoint_Ankle_Pctrl = 0;
+    *p_Setpoint_Ankle = 0;
+  }
+}
+
 int Leg::determinePhase(int new_state, int old_state, int current_phase){
   double current_phase_time;
   int next_phase;
@@ -156,8 +190,60 @@ int Leg::determinePhase(int new_state, int old_state, int current_phase){
 }
 
 bool Leg::determine_foot_on_ground(){
-  boolean foot_on_fsr = this->motors[0]->p_steps->curr_voltage > this->foot_fsrs->getThreshold();
+  boolean foot_on_fsr = this->foot_fsrs->getForce() > this->foot_fsrs->getThreshold();
   return foot_on_fsr;
+}
+
+void Leg::trigger_planter_phase(){
+  this->plant_timer->reset();
+
+  for (int i = 0; i <fsr_count;i++){
+    fsrs[i]->trigger_dorsi_phase(plant_time);
+  }
+
+  for (int i = 0; i <motor_count;i++){
+    motors[i]->trigger_dorsi_phase(plant_time);
+  }
+}
+
+void Leg::trigger_dorsi_phase(){
+  this->count_plant++; // you have accomplished a step
+  this->dorsi_timer->reset();
+
+  double plant_time = this->plant_timer->lap();
+  this->plant_mean = this->planter_time_average->update(plant_time);
+
+  if (this->flag_N3_adjustment_time) {
+    for (int i =0; i < motor_count; i++){
+      motors[i]->adjustIterForTime();
+    }
+  }
+
+}
+
+int Leg::takeBaselineTriggerDorsiStart(){
+
+  double plant_time = this->plant_timer->lap();
+  this->plant_mean = this->plant_time_averager->updateAverage(plant_time);
+
+  for(int i = 0; i < fsr_count;i++){
+    fsrs[i]->updateBaseline();
+  }
+
+  if (this->count_plant_base >= n_step_baseline){
+    this->count_plant_base = 0;
+
+    return 0;
+  }
+  return 1;
+
+}
+
+int Leg::takeBaselineTriggerPlanterStart(){
+  double dorsi_time = this->dorsi_timer->lap();
+  this->dorsi_mean = this->dorsi_time_averager->updateAverage(dorsi_time);
+
+  return 1;
 }
 
 void Leg::applyStateMachine(){
@@ -165,7 +251,7 @@ void Leg::applyStateMachine(){
   if (this->set_2_zero){
     switch (this->state) {
     case SWING:
-        this->set_2_zero = 0;
+      this->set_2_zero = 0;
       this->One_time_set_2_zero = 1;
       break;
     case LATE_STANCE:

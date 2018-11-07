@@ -1,7 +1,7 @@
 #ifndef UTILITES_HEADER
 #define UTILITES_HEADER
 
-class Average{
+class RunningAverage{
 private:
   double avg;
   double count;
@@ -11,13 +11,13 @@ public:
   void reset();
 };
 
-class FixedAverage{
+class MovingAverage{
 private:
   double* previous_values;
   double average;
   int size;
 public:
-  FixedAverage(int size);
+  MovingAverage(int size);
   double updateAverage(double value);
   double getAverage();
 };

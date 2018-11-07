@@ -45,12 +45,12 @@ public:
   double PID_Setpoint, Input, Output;
   PID pid = PID(&Input, &Output, &PID_Setpoint, PID_DEFAULTS[0], PID_DEFAULTS[1], PID_DEFAULTS[2], DIRECT);
 
-  Average* pid_avg_err = new Average();
+  RunningAverage* pid_avg_err = new RunningAverage();
   Clamp* kf_clamp = new Clamp(MAX_KF, MIN_KF);
 
   double KF = 1;
 
-  Average* torque_calibration_average = new Average();
+  RunningAverage* torque_calibration_average = new RunningAverage();
   double torque_calibration_value = 0;
   Clamp imu_clamp = Clamp(-45,45);
 
@@ -74,8 +74,10 @@ public:
   ShapingFunction* shaping_function = new ShapingFunction();
   double coef_in_3_steps = 0;
 
-  steps* p_steps;
+  double iter_time_percentage = 0.5;
 
+  Clamp* setpoint_clamp = new Clamp(Min_Prop, Max_Prop);
+  double desired_setpoint = 0;
 };
 
 #endif

@@ -93,3 +93,33 @@ void FSRGroup::setPercentageThreshold(double percent){
 double FSRGroup::getThreshold(){
   return calibration_peak * fsr_percent_thresh;
 }
+
+void FSRGroup::resetMaxes(){
+  this->max_fsr_voltage->reset();
+  this->max_fsr_ratio->reset();
+}
+
+void FSRGroup::updateMaxes(){
+
+  this->max_fsr_voltage->update(steps->currVoltage);
+  double FSRatio = fabs(this->getForce() / this->plant_peak_mean);
+  this->max_fsr_percentage->update(FSRatio);
+}
+
+void FSRGroup::getPercentage(){
+  return fsr_percentage;
+}
+
+void FSRGroup::getMaxPercentage(){
+  return max_fsr_percentage->getMax();
+}
+
+void FSRGroup::startBaseline(){
+
+  this->plant_peak_averager->reset();
+}
+
+void FSRGroup::updateBaseline(){
+  double plant_fsr_peak = this->max_fsr_voltage->getMax();
+  this->plant_peak_mean = this->plant_peak_averager->updateAverage(plant_fsr_peak);
+}
