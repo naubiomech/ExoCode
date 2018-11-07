@@ -4,7 +4,6 @@ const int dim_FSR = 30;
 const int dim = 5;
 
 #include "PID_v2.h"
-#include "Torque_Speed_ADJ.h"
 #include "State_Machine.h"
 #include "Motor.h"
 #include "FSR.h"

@@ -61,7 +61,7 @@ public:
 	double getMax();
 	void update(double value);
 	void reset();
-}
+};
 
 void updateMax(double* max_val, double val);
 
