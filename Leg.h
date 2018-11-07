@@ -9,6 +9,18 @@ const int dim = 5;
 #include "FSR.h"
 
 class Leg {
+private:
+  void changeState(int new_state);
+  void changePhase(int new_phase);
+  void applyControlAlgorithm();
+  void applyPlanterControlAlgorithm();
+  void applyDorsiControlAlgorithm();
+  int determinePhase(int new_state, int old_state, int current_phase);
+  void trigger_planter_phase();
+  void trigger_dorsi_phase();
+  int takeBaselineTriggerDorsiStart();
+  int takeBaselineTriggerPlanterStart();
+
 public:
   Leg(LegPins* legPins);
   void measureSensors();

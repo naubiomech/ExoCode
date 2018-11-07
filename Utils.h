@@ -44,11 +44,12 @@ public:
 
 class Timer{
 private:
-  double startTime = 0;
-  double pauseTime = 0;
+  double start_time = 0;
+  double pause_time = 0;
 public:
   Timer();
   double lap();
+  double lapSec();
   void reset();
   void pause();
   void resume();
@@ -56,9 +57,10 @@ public:
 
 class Max{
 private:
-	double maxVal = -inf;
+	double maxVal;
 public:
-	double getMax();
+  Max();
+  double getMax();
 	void update(double value);
 	void reset();
 };

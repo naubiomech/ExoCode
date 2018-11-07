@@ -169,15 +169,7 @@ void Motor::resetStartingParameters(){
   this->Previous_Setpoint = 0;
   this->coef_in_3_steps = 0;
 
-  this->p_steps->count_plant = 0;
-  this->p_steps->flag_start_plant = false;
-  this->p_steps->flag_N3_adjustment_time = false;
-  this->p_steps->torque_adj = false;
-  this->p_steps->perc_l = 0.5;
-}
-
-void Motor::takeBaseline(int state, int state_old, int* FSR_baseline_FLAG){
-  take_baseline(state, state_old, p_steps, FSR_baseline_FLAG);
+  this->perc_l = 0.5;
 }
 
 void Motor::adjustShapingForTime(double planterTime){

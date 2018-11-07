@@ -67,6 +67,8 @@ void Leg::resetStartingParameters(){
 
   this->num_3_steps = 0;
 
+  this->count_plant = 0;
+  this->flag_N3_adjustment_time = false;
   this->first_step = 1;
 
   for (int i = 0; i < motor_count; i++){

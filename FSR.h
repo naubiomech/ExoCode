@@ -50,8 +50,12 @@ public:
   double getBalanceReference();
   double getThreshold();
   void setPercentageThreshold(double percent);
-
+  void FSRGroup::resetMaxes();
+  void FSRGroup::updateMaxes();
+  void FSRGroup::getPercentage();
+  void FSRGroup::getMaxPercentage();
+  void FSRGroup::startBaseline();
+  void FSRGroup::updateBaseline();
   double force;
-
 };
 #endif

@@ -1,4 +1,5 @@
 #include "Utils.h"
+#include <float.h>
 
 void RunningAverage::update(double value){
   avg += value;
@@ -71,11 +72,11 @@ bool Threshold::getState(double value){
 }
 
 Timer::Timer(){
-  startTime = millis();
+  start_time = millis();
 }
 
 double Timer::lapSec(){
-  return this->lapMilli() / 1000.0;
+  return this->lap() / 1000.0;
 }
 
 double Timer::lap(){
@@ -83,15 +84,19 @@ double Timer::lap(){
 }
 
 void Timer::reset(){
-  startTime = millis();
+  start_time = millis();
 }
 
 void Timer::pause(){
-  pauseTime = millis();
+  pause_time = millis();
 }
 
 void Timer::resume(){
-  startTime -= (millis() - pauseTime);
+  start_time -= (millis() - pause_time);
+}
+
+Max::Max(){
+  this->reset();
 }
 
 double Max::getMax(){
@@ -103,5 +108,5 @@ void Max::update(double value){
 }
 
 void Max::reset(){
-  maxVal = -inf;
+  maxVal = FLT_MIN;
 }
