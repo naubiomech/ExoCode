@@ -148,17 +148,12 @@ void Leg::applyPlanterControlAlgorithm(){
     fsrs[i]->updateMaxes();
   }
 
-  if (taking_baseline) {
-    *p_Setpoint_Ankle_Pctrl = 0;
-    *p_Setpoint_Ankle = 0;
-  }
-
   double FSR_percentage = foot_fsrs->getRatio();
   double max_FSR_percentage = foot_fsrs->getMaxRatio();
 
-  motors[0]->applyPlanterControlAlgorithm(FSR_percentage, max_FSR_percentage, control_algorithm);
+  motors[0]->applyPlanterControlAlgorithm(FSR_percentage, taking_baseline, max_FSR_percentage, control_algorithm);
   for(int i = 1; i < motor_count; i++){
-    motors[i]->applyPlanterControlAlgorithm(FSR_percentage, max_FSR_percentage, 0);
+    motors[i]->applyPlanterControlAlgorithm(FSR_percentage, taking_baseline, max_FSR_percentage, 0);
   }
 }
 
