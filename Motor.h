@@ -53,6 +53,7 @@ private:
   double measureRawTorque();
   double measureRawCalibratedTorque();
 
+  RunningAverage* error_average = new RunningAverage();
   int iter_late_stance = N1;
   int iter_swing = N3;
 
@@ -79,6 +80,8 @@ public:
   void adjustShapingForTime(double planterTime);
   void setTorqueScalar(double scalar);
   void applyPlanterControlAlgorithm(bool taking_baseline, double FSR_percentage, double max_FSR_percentage);
+  void updateKFPIDError();
+  void applyAutoKF();
 };
 
 #endif

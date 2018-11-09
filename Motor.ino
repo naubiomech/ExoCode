@@ -151,6 +151,24 @@ void Motor::resetStartingParameters(){
   this->iter_time_percentage = 0.5;
 }
 
+void Motor::updateKFPIDError(){
+  error_average->update(pid_setpoint - getTorque());
+}
+
+void Motor::applyAutoKF(){
+  double err = error_average->getAverage();
+  error_average->reset();
+
+  if (err > max_ERR) {
+    KF += 0.05;
+  }
+  else if (err < min_ERR) {
+    KF -= 0.05;
+  }
+
+  KF = kf_clamp->clamp(KF);
+}
+
 void Motor::adjustShapingForTime(double planter_time){
   iter_late_stance = round((planter_time) * iter_time_percentage);
   iter_late_stance = min(500, max(4, N3));
