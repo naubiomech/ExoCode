@@ -106,11 +106,11 @@ void FSRGroup::updateMaxes(){
   this->max_fsr_percentage->update(FSRatio);
 }
 
-void FSRGroup::getPercentage(){
+double FSRGroup::getPercentage(){
   return fsr_percentage;
 }
 
-void FSRGroup::getMaxPercentage(){
+double FSRGroup::getMaxPercentage(){
   return max_fsr_percentage->getMax();
 }
 

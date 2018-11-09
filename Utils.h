@@ -18,7 +18,7 @@ private:
   int size;
 public:
   MovingAverage(int size);
-  double updateAverage(double value);
+  double update(double value);
   double getAverage();
 };
 

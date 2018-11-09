@@ -19,7 +19,7 @@ MovingAverage::MovingAverage(int size){
   previous_values = new double[size];
 }
 
-double MovingAverage::updateAverage(double value){
+double MovingAverage::update(double value){
   average = value;
   for(int i = 0; i < size-1;i++){
     average += previous_values[i];

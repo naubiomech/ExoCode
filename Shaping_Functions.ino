@@ -19,25 +19,32 @@ double ShapingFunction::getIterationCount(int whichState){
 
 }
 
-double ShapingFunction::getPIDSetpoint(double newPIDSetpoint, double oldPIDSetpoint, double currentPIDSetpoint, int state){
+double ShapingFunction::getPIDSetpoint(double newPIDSetpoint, double oldPIDSetpoint,
+                                       double currentPIDSetpoint, int state){
 
-  if ((abs(newPIDSetpoint - currentPIDSetpoint) > 0.1) && (iteration_count >= iteration_threshold)) {
+  double actual_setpoint = currentPIDSetpoint;
+  if (recharge_timer->lap() >= RECHARGE_TIME){
+    recharge_timer->reset();
 
-    iteration_count = 0;
+    if ((abs(newPIDSetpoint - currentPIDSetpoint) > 0.1) && (iteration_count >= iteration_threshold)) {
 
-    if (state == LATE_STANCE) {
-      iteration_threshold = iter_late_stance;
-    } else if (state == SWING) {
-      iteration_threshold = iter_swing;
+      iteration_count = 0;
+
+      if (state == LATE_STANCE) {
+        iteration_threshold = iter_late_stance;
+      } else if (state == SWING) {
+        iteration_threshold = iter_swing;
+      }
+      exp_mult = round((10 / Ts) / (iteration_threshold - 1));
     }
-    exp_mult = round((10 / Ts) / (iteration_threshold - 1));
+
+    double adjustedSetpoint = calculatePIDSetpointSigm(newPIDSetpoint, oldPIDSetpoint,
+                                                       Ts, exp_mult, iteration_count, iteration_threshold);
+    iteration_count++;
+    actual_setpoint = adjustedSetpoint;
   }
 
-  double adjustedSetpoint = calculatePIDSetpointSigm(newPIDSetpoint, oldPIDSetpoint,
-                                                     Ts, exp_mult, iteration_count, iteration_threshold);
-  iteration_count++;
-
-  return adjustedSetpoint;
+  return actual_setpoint;
 }
 
 double calculatePIDSetpointSigm(double New_PID_Setpoint, double Old_PID_Setpoint,

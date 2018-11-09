@@ -24,6 +24,7 @@ const int FSR_CALIBRATION_TIME_MS = 5000;
 // ===== Shaping Parameters =====
 //Paramenters used to shape the reference
 const double Ts = 0.001;
+const double RECHARGE_TIME = 1
 
 // ===== State Machine Parameters =====
 const double state_counter_th = 3;
@@ -58,6 +59,7 @@ const double stability_trq_gain = 1;
 
 // ===== Torque Speed Adjust Parameters =====
 const int n_step_baseline = 6;
+const int ACTIVATION_STEP_COUNT = 6;
 
 
 #endif
