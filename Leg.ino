@@ -59,13 +59,7 @@ void Leg::adjustControl(){
 }
 
 void Leg::resetStartingParameters(){
-  this->N3 = N3;
-  this->N2 = N2;
-  this->N1 = N1;
-
   this->activate_in_3_steps = 1;
-
-  this->num_3_steps = 0;
 
   this->count_plant = 0;
   this->flag_N3_adjustment_time = false;
@@ -76,32 +70,19 @@ void Leg::resetStartingParameters(){
   }
 }
 
-void Leg::setZeroIfSteadyState(){
-  if (this->flag_1 == 0) {
-    this->flag_1 = 1;
-    this->time_old_state = this->state;
-  }
-  if (this->state != this->time_old_state) {
-    this->flag_1 = 0;
-    this->stateTimerCount = 0;
-  } else {
-    if (this->stateTimerCount >= 5 / 0.002) {
-      if (this->store_N1 == 0) {
-        Serial.println("Steady state, setting to 0Nm , Change N1");
-        this->set_2_zero = 1;
-        this->store_N1 = 1;
-        this->activate_in_3_steps = 1;
-        this->num_3_steps = 0;
-        this->first_step = 1;
-        this->start_step = 0;
-      }
-    } else {
-      this->stateTimerCount++;
-      if (this->store_N1) {
-        this->set_2_zero = 0;
-        this->store_N1 = 0;
-      }
-    }
+void Leg::IsSteadyState(){
+  return this->stateTime->lap() > STEADY_STATE_TIMEOUT;
+}
+
+void Leg::startIncrementalActivation(){
+  this->increment_activation_starting_step = 0;
+}
+
+void Leg::updateIncrementalActivation(){
+  double since_activation_step_count = this->step_count - this->increment_activation_starting_steps;
+  double activation_percent = since_activation_step_count / activation_step_count;
+  for(int i = 0; i < motor_count; i++){
+    motors[i]->setTorqueScalar(completion_percent);
   }
 }
 
@@ -119,9 +100,12 @@ int Leg::determineState(boolean foot_on_ground){
 void Leg::changeState(int new_state){
   this->state_old = this->state;
   this->state = new_state;
+  this->stateTime->reset();
+
   for(int i = 0; i < motor_count; i++){
     motors[i]->changeState(state);
   }
+
   int new_phase = determinePhase(this->state, this->old_state, this->phase);
   if (new_phase != this->phase){
     this->phase = new_phase;
@@ -153,17 +137,12 @@ void Leg::applyPlanterControlAlgorithm(){
   double FSR_percentage = foot_fsrs->getRatio();
   double max_FSR_percentage = foot_fsrs->getMaxRatio();
 
-  motors[0]->applyPlanterControlAlgorithm(FSR_percentage, taking_baseline, max_FSR_percentage, control_algorithm);
-  for(int i = 1; i < motor_count; i++){
-    motors[i]->applyPlanterControlAlgorithm(FSR_percentage, taking_baseline, max_FSR_percentage, 0);
+  for(int i = 0; i < motor_count; i++){
+    motors[i]->applyPlanterControlAlgorithm(FSR_percentage, taking_baseline, max_FSR_percentage);
   }
 }
 
 void Leg::applyDorsiControlAlgorithm(){
-  if (taking_baseline) {
-    *p_Setpoint_Ankle_Pctrl = 0;
-    *p_Setpoint_Ankle = 0;
-  }
 }
 
 int Leg::determinePhase(int new_state, int old_state, int current_phase){
@@ -215,7 +194,6 @@ void Leg::trigger_dorsi_phase(){
       motors[i]->adjustIterForTime();
     }
   }
-
 }
 
 int Leg::takeBaselineTriggerDorsiStart(){
@@ -232,36 +210,36 @@ int Leg::takeBaselineTriggerDorsiStart(){
 
     return 0;
   }
-  return 1;
 
+  return 1;
 }
 
 int Leg::takeBaselineTriggerPlanterStart(){
+
   double dorsi_time = this->dorsi_timer->lap();
   this->dorsi_mean = this->dorsi_time_averager->updateAverage(dorsi_time);
 
   return 1;
 }
 
-void Leg::applyStateMachine(){
-
-  if (this->set_2_zero){
-    switch (this->state) {
-    case SWING:
-      this->set_2_zero = 0;
-      this->One_time_set_2_zero = 1;
-      break;
-    case LATE_STANCE:
-      if (this->One_time_set_2_zero) {
-        this->One_time_set_2_zero = 0;
-        this->state_old = this->state;
-        for(int i = 0; i<motor_count; i++){
-          motors[i]->setToZero();
-        }
-      }
-      break;
-    }
+void Leg::triggerLateStance(){
+  if (this->set_motors_to_zero_torque){
+    setToZero();
+    this->set_motors_to_zero_torque = 0;
   }
+}
+
+void Leg::triggerSwing(){
+
+}
+
+void Leg::setToZero(){
+  for(int i = 0; i<motor_count; i++){
+    motors[i]->setToZero();
+  }
+}
+
+void Leg::applyStateMachine(){
 
   bool foot_on_ground = determine_foot_on_ground();
   this->determineState(foot_on_ground);
@@ -272,9 +250,7 @@ void Leg::applyStateMachine(){
   for(int i = 0; i < motor_count;i++){
     motors[i]->updateSetpoint(state);
   }
-
 }
-
 
 void Leg::measureSensors(){
   for(int i = 0; i < motor_count; i++){
@@ -282,7 +258,6 @@ void Leg::measureSensors(){
     this->motors[i]->measureError();
   }
   this->foot_fsrs->measureForce();
-
 }
 
 void Leg::takeFSRBaseline(){

@@ -28,6 +28,7 @@ const double Ts = 0.001;
 // ===== State Machine Parameters =====
 const double state_counter_th = 3;
 const double step_time_length = 150;
+const double STEADY_STATE_TIMEOUT = 2500;
 
 // ===== PID and CTRL Parameters =====
 //Includes the PID library so we can utilize PID control

@@ -22,6 +22,11 @@ void Motor::endTorqueCalibration(){
   torque_calibration_value = torque_calibration_average->getAverage() * (3.3/4096.0);
 }
 
+void Motor::setControlAlgorithm(ControlAlgorithm control_algorithm){
+  this->previous_control_algorithm = control_algorithm;
+  this->control_algorithm = control_algorithm;
+}
+
 void Motor::autoKF(int state){
   switch(state){
   case LATE_STANCE:
@@ -40,6 +45,17 @@ void Motor::writeToMotor(int value){
     Vol = Vol * 0.8 + 0.1 * 4096.0;
   }
   analogWrite(this->motor_pin, Vol);
+}
+
+void Motor::applyPlanterControlAlgorithm(FSR_percentage, taking_baseline, max_FSR_percentage){
+  ControlAlgorithm control_algorithm = this->control_algorithm;
+
+  if(taking_baseline){
+    control_algorithm = zero_torque;
+  }
+
+  this->setpoint = getControlAlgorithmSetpoint(control_algorithm, this->desired_setpoint, this->setpoint_clamp,
+                                               FSR_percentage, max_FSR_percentage);
 }
 
 bool Motor::applyTorque(int state){
@@ -175,4 +191,9 @@ void Motor::resetStartingParameters(){
 void Motor::adjustShapingForTime(double planterTime){
   iter_late_stance = round((this->plant_mean) * iter_time_percentage);
   iter_late_stance = min(500, max(4, N3));
+}
+
+void Motor::setTorqueScalar(double scalar){
+  scalar = fmin(fmax(scalar,0,1));
+  this->coef_in_3_steps = scalar;
 }

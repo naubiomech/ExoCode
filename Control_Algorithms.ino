@@ -15,6 +15,8 @@ double getControlAlgorithmSetpoint(ControlAlgorithm control_algorithm, double de
   double new_setpoint;
 
   switch (control_algorithm){
+  case zero_torque:
+    return 0;
   case unknown_control:
     new_setpoint = (desired_setpoint ) *
       (p_prop[0] * pow((Max_FSRatio), 2) + p_prop[1] * (Max_FSRatio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]);
