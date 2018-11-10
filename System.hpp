@@ -5,19 +5,24 @@
 #include "Parameters.hpp"
 #include "Exoskeleton.hpp"
 #include "Pins.hpp"
+#include <Metro.h>
 
 class Trial {
+public:
   int bluetoothStream = 0;
   Metro reportDataTimer = Metro(10);
-  Metro receiverTimer = Metro(1);
+  Metro receiveDataTimer = Metro(1);
 };
 
 class ExoSystem{
 public:
   ExoSystem(ExoPins* exoPins);
   Trial* trial = new Trial();
-  SoftwareSerial* bluetooth;
+  SoftwareSerial* commandSerial;
   elapsedMillis timeElapsed;
   int streamTimerCount = 0;
+  void startTrial();
+  void endTrial();
+  Exoskeleton* exo;
 };
 #endif

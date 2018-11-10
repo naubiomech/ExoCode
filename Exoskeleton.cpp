@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include "Exoskeleton.hpp"
+#include "Board.hpp"
+#include "Leg.hpp"
 
 Exoskeleton::Exoskeleton(ExoPins* exoPins){
   left_leg = new Leg(exoPins->left_leg);
@@ -33,7 +35,7 @@ void Exoskeleton::adjustControl(){
   right_leg->adjustControl();
 }
 
-void Exoskeleton::setZeroIfStateState(){
+void Exoskeleton::setZeroIfSteadyState(){
   left_leg->setZeroIfSteadyState();
   right_leg->setZeroIfSteadyState();
 }
@@ -51,6 +53,11 @@ void Exoskeleton::measureSensors(){
 
 bool Exoskeleton::checkMotorErrors(){
   return left_leg->checkMotorErrors() || right_leg->checkMotorErrors();
+}
+
+void Exoskeleton::enableExo(){
+	digitalWrite(MOTOR_ENABLE_PIN, HIGH);
+	digitalWrite(LED_PIN, HIGH);
 }
 
 void Exoskeleton::disableExo(){

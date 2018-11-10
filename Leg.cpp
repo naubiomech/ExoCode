@@ -2,6 +2,7 @@
 #include "Leg.hpp"
 #include "Pins.hpp"
 #include "Shaping_Functions.hpp"
+#include "Motor.hpp"
 
 Leg::Leg(LegPins* legPins){
   this->foot_fsrs = new FSRGroup(legPins->fsr_pins, legPins->fsr_count);
@@ -53,12 +54,6 @@ void Leg::autoKF(){
   }
 }
 
-void Leg::adjustControl(){
-  for(int i = 0; i<motor_count;i++){
-    motors[i]->adjustControl(state, state_old, FSR_baseline_FLAG);
-  }
-}
-
 void Leg::resetStartingParameters(){
   this->activate_in_3_steps = 1;
 
@@ -67,6 +62,12 @@ void Leg::resetStartingParameters(){
 
   for (int i = 0; i < motor_count; i++){
     motors[i]->resetStartingParameters();
+  }
+}
+
+void Leg::setZeroIfSteadyState(){
+  if (isSteadyState()){
+    setToZero();
   }
 }
 
@@ -120,6 +121,10 @@ void Leg::changePhase(int new_phase){
   }
 }
 
+void Leg::adjustControl(){
+  applyControlAlgorithm();
+}
+
 void Leg::applyControlAlgorithm(){
   if (this->current_phase == PLANTER){
     this->applyPlanterControlAlgorithm();
@@ -141,29 +146,29 @@ void Leg::applyPlanterControlAlgorithm(){
     fsrs[i]->updateMaxes();
   }
 
-  for(int i = 0; i < motor_count; i++){
-    motors[i]->applyPlanterControlAlgorithm(FSR_percentage, taking_baseline, max_FSR_percentage);
+    for(int i = 0; i < motor_count; i++){
+      motors[i]->applyPlanterControlAlgorithm(FSR_percentage, taking_baseline, max_FSR_percentage);
+    }
   }
-}
 
-void Leg::applyDorsiControlAlgorithm(){
-  for(int i = 0; i < motor_count; i++){
-    motors[i]->applyAutoKF();
+  void Leg::applyDorsiControlAlgorithm(){
+    for(int i = 0; i < motor_count; i++){
+      motors[i]->applyAutoKF();
+    }
   }
-}
 
-Phase Leg::determinePhase(int new_state, int old_state, Phase current_phase){
-  double current_phase_time;
-  Phase next_phase;
-  if (new_state == SWING && old_state == LATE_STANCE && current_phase == DORSI){
-    next_phase = PLANTER;
-    current_phase_time = planter_timer->lap();
-  } else if (new_state == LATE_STANCE && old_state == SWING && current_phase == PLANTER){
-    next_phase = DORSI;
-    current_phase_time = dorsi_timer->lap();
-  } else {
-    return current_phase;
-  }
+  Phase Leg::determinePhase(int new_state, int old_state, Phase current_phase){
+    double current_phase_time;
+    Phase next_phase;
+    if (new_state == SWING && old_state == LATE_STANCE && current_phase == DORSI){
+      next_phase = PLANTER;
+      current_phase_time = planter_timer->lap();
+    } else if (new_state == LATE_STANCE && old_state == SWING && current_phase == PLANTER){
+      next_phase = DORSI;
+      current_phase_time = dorsi_timer->lap();
+    } else {
+      return current_phase;
+    }
 
   if (current_phase_time <=step_time_length /4){
     return current_phase;
@@ -241,7 +246,6 @@ void Leg::setToZero(){
 }
 
 void Leg::applyStateMachine(){
-
   bool foot_on_ground = determine_foot_on_ground();
   int new_state = this->determineState(foot_on_ground);
   if (new_state != this->state){

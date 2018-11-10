@@ -3,6 +3,8 @@
 #include "Parameters.hpp"
 #include "System.hpp"
 
+ExoSystem* setupBoard();
+
 #ifdef IMU_BOARD
 #include <i2c_t3.h>
 const i2c_pins IMU_SLOT_1_PINS = I2C_PINS_3_4;

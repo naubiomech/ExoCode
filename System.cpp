@@ -3,8 +3,20 @@
 
 ExoSystem::ExoSystem(ExoPins* exoPins){
   trial = new Trial();
-  bluetooth = new SoftwareSerial(BLUETOOTH_TX_PIN, BLUETOTH_RX_PIN);
-  bluetooth->begin(115200);
+  commandSerial = new SoftwareSerial(exoPins->bluetooth_tx, exoPins->bluetooth_rx);
+  commandSerial->begin(115200);
 
   exo = new Exoskeleton(exoPins);
+}
+
+void ExoSystem::startTrial(){
+  exo->enableExo();
+  trial->bluetoothStream = 1;
+  trial->reportDataTimer.reset();
+  trial->receiveDataTimer.reset();
+}
+
+void ExoSystem::endTrial(){
+  exo->disableExo();
+  trial->bluetoothStream = 1;
 }

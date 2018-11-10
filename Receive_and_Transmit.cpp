@@ -101,33 +101,30 @@ void receive_and_transmit(ExoSystem* exoSystem) {
   switch (cmd_from_Gui)
   {
   case COMM_CODE_REQUEST_DATA:
-    send_data_message_wc();
+    send_report(commandSerial);
     break;
 
   case COMM_CODE_START_TRIAL:
-    exo->enableExo();
-    stream = 1;                                                     //and the torque data is allowed to be streamed
-    streamTimerCount = 0;
+    exoSystem->startTrial();
     break;
 
   case COMM_CODE_END_TRIAL:
-    exo->disableExo();
-    stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
+    exoSystem->endTrial();
     break;
 
   case COMM_CODE_CALIBRATE_TORQUE:
-    exo->calibrateTorque();
+    exoSystem->exo->calibrateTorque();
     break;
 
   case COMM_CODE_CHECK_BLUETOOTH:
     data_to_send_point[0] = 0;
     data_to_send_point[1] = 1;
     data_to_send_point[2] = 2;
-    send_command_message(COMM_CODE_CHECK_BLUETOOTH, data_to_send_point, 3);   //For the Arduino to prove to MATLAB that it is behaving, it will send back the character B
+    send_command_message(commandSerial, COMM_CODE_CHECK_BLUETOOTH, data_to_send_point, 3);   //For the Arduino to prove to MATLAB that it is behaving, it will send back the character B
     break;
 
   case COMM_CODE_CLEAN_BLUETOOTH_BUFFER:
-    while (bluetooth->available() > 0) bluetooth->read();
-    break;
+	  while (commandSerial->available() > 0) commandSerial->read();
+	  break;
   }
 }

@@ -2,6 +2,7 @@
 #define EXOSKELETON_HEADER
 #include "Leg.hpp"
 #include "Pins.hpp"
+#include <Metro.h>
 
 class Exoskeleton{
 private:
@@ -35,6 +36,7 @@ public:
   bool checkMotorErrors();
   void takeFSRBaseline();
   void disableExo();
+  void enableExo();
   void applyTorque();
   void applyStateMachine();
   void adjustControl();
