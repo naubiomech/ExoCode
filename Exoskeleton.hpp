@@ -43,6 +43,7 @@ public:
   void calibrateTorque();
   void calibrateFSRs();
   void setZeroIfStateState();
+  void checkIMUs();
 };
 
 #endif

@@ -7,7 +7,7 @@
 
 //To interrupt and to schedule we take advantage of the
 
-ExoSystem* exoSystem = new ExoSystem();
+ExoSystem* exoSystem;
 
 void setup(){};
 void loop(){};

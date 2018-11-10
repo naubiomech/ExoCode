@@ -4,6 +4,7 @@
 #include <SoftwareSerial.h>
 #include "Parameters.hpp"
 #include "Exoskeleton.hpp"
+#include "Pins.hpp"
 
 class Trial {
   int bluetoothStream = 0;
@@ -12,10 +13,10 @@ class Trial {
 };
 
 class ExoSystem{
+public:
+  ExoSystem(ExoPins* exoPins);
   Trial* trial = new Trial();
-  SoftwareSerial bluetooth(BLUETOOTH_TX_PIN, BLUETOOTH_RX_PIN);
-  // ===== A Exo =====
-
+  SoftwareSerial* bluetooth;
   elapsedMillis timeElapsed;
   int streamTimerCount = 0;
 };

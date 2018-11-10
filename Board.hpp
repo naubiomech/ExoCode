@@ -1,6 +1,7 @@
 #ifndef BOARD_SETTINGS_HEADER
 #define BOARD_SETTINGS_HEADER
 #include "Parameters.hpp"
+#include "System.hpp"
 
 #ifdef IMU_BOARD
 #include <i2c_t3.h>
@@ -111,6 +112,3 @@ const i2c_pins IMU_1_PINS = IMU_SLOT_2_PINS;
 const unsigned int MOTOR_COUNT = 4;
 #endif
 #endif
-
-
-

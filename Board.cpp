@@ -4,29 +4,25 @@
 #include <i2c_t3.h>
 
 ExoPins* setupPins();
-void setupBoard(){
-  // enable bluetooth
-  bluetooth.begin(115200);
-  Serial.begin(115200);
 
+ExoSystem* setupBoard(){
+  // enable bluetooth
+  Serial.begin(115200);
   Serial.println("Starting");
+  // The led
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
 
   analogWriteResolution(12);
   analogReadResolution(12);
 
-  // The led
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
   // set pin mode for left and right sides
   pinMode(MOTOR_ENABLE_PIN, OUTPUT); //Enable disable the motors
   digitalWrite(MOTOR_ENABLE_PIN, LOW);
   ExoPins* exoPins = setupPins();
-  exo = new Exoskeleton(exoPins);
+  ExoSystem* exoSystem = new ExoSystem(exoPins);
   delete exoPins;
-
-#ifdef IMU_BOARD
-  bno = Adafruit_BNO055(WIRE_BUS, 1, BNO055_ADDRESS_A, I2C_MASTER, IMU_1_PINS, I2C_PULLUP_EXT, I2C_RATE_100, I2C_OP_MODE_ISR);
-#endif
+  return exoSystem;
 }
 
 #ifdef QUAD_BOARD
