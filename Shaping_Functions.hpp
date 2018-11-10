@@ -1,5 +1,6 @@
 #ifndef SHAPING_FUNCTIONS_HEADER
 #define SHAPING_FUNCTIONS_HEADER
+#include "Utils.h"
 
 class ShapingFunction{
 private:
