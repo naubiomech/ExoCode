@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "Motor.h"
 #include "Parameters.h"
 #include "Board.h"

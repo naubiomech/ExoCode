@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "IMU.h"
 #include "System.h"
 

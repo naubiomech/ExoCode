@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "FSR.h"
 #include "Utils.h"
 

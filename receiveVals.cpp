@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "receiveVals.h"
 
 void receiveVals(int bytesExpected)

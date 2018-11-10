@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "Read_and_write_EEPROM.h"
 
 #include <EEPROM.h>

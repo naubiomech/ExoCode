@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "Leg.h"
 #include "Pins.h"
 #include "Shaping_Functions.h"

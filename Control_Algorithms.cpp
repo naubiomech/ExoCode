@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "Control_Algorithms.h"
 
 double clamp_setpoint(double raw_setpoint, Clamp* setpoint_clamp){

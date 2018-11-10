@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 Exoskeleton::Exoskeleton(ExoPins* exoPins){
   left_leg = new Leg(exoPins->left_leg);
   right_leg = new Leg(exoPins->left_leg);
