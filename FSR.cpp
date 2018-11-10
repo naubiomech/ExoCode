@@ -8,15 +8,15 @@ FSR::FSR(int pin){
 
 double FSR::calibrate(){
   if (!isCalibrating) {
-     startCalibration();
-   }
+    startCalibration();
+  }
 
-   if (millis() - fsrCalibrationStartTime < FSR_CALIBRATION_TIME_MS) {
-     updateCalibration();
-   } else {
-     endCalibration();
-   }
-   return peak_force;
+  if (millis() - fsrCalibrationStartTime < FSR_CALIBRATION_TIME_MS) {
+    updateCalibration();
+  } else {
+    endCalibration();
+  }
+  return peak_force;
 }
 
 void FSR::startCalibration(){

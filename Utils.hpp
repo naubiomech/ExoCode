@@ -57,12 +57,12 @@ public:
 
 class Max{
 private:
-	double maxVal;
+  double maxVal;
 public:
   Max();
   double getMax();
-	void update(double value);
-	void reset();
+  void update(double value);
+  void reset();
 };
 
 void updateMax(double* max_val, double val);

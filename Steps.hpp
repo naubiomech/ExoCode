@@ -3,9 +3,9 @@
 #include "Parameters.hpp"
 
 struct Steps{
-	Leg_Steps leg_steps;
-	Motor_Steps motor_steps;
-	FSR_Steps fsr_steps;
+  Leg_Steps leg_steps;
+  Motor_Steps motor_steps;
+  FSR_Steps fsr_steps;
 };
 
 struct Leg_Steps{
@@ -37,7 +37,7 @@ struct FSR_Steps{
   Max* max_fsr_ratio = new Max();
   Max* max_fsr_voltage = new Max();
   FixedAverage* plant_peak_fsr_averager = new FixedAverage(n_step_baseline);
-                              double curr_voltage;
+  double curr_voltage;
   double fsr_percent_thresh_Toe = 0.9;
   double peak_voltage;
 };
