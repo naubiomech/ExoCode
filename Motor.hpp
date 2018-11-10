@@ -2,11 +2,11 @@
 #define MOTOR_HEADER
 #include <PID_v2.h>
 
-#include "Parameters.h"
-#include "Board.h"
-#include "Utils.h"
-#include "Shaping_Functions.h"
-#include "Control_Algorithms.h"
+#include "Parameters.hpp"
+#include "Board.hpp"
+#include "Utils.hpp"
+#include "Shaping_Functions.hpp"
+#include "Control_Algorithms.hpp"
 
 class Motor{
 private:

@@ -1,11 +1,10 @@
 #include <Arduino.h>
-#include "Motor.h"
-#include "Parameters.h"
-#include "Board.h"
-#include "Utils.h"
-#include "State_Machine.h"
-#include "Auto_KF.h"
-#include "Control_Algorithms.h"
+#include "Motor.hpp"
+#include "Parameters.hpp"
+#include "Board.hpp"
+#include "Utils.hpp"
+#include "State_Machine.hpp"
+#include "Control_Algorithms.hpp"
 
 Motor::Motor(MotorPins* motor_pins){
   this->motor_pin = motor_pins->motor;

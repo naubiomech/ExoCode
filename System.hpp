@@ -2,8 +2,8 @@
 #define SYSTEM_HEADER
 #include <Metro.h> // Include the Metro library
 #include <SoftwareSerial.h>
-#include "Exoskeleton.h"
-#include "IMU.h"
+#include "Exoskeleton.hpp"
+#include "IMU.hpp"
 
 struct Trial {
   int bluetoothStream = 0;

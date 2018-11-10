@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Pins.h"
+#include "Pins.hpp"
 
 
 ExoPins::ExoPins(int motors_per_leg, int fsrs_per_leg){

@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "receiveVals.h"
+#include "receiveVals.hpp"
 
 void receiveVals(int bytesExpected)
 {

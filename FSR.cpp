@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include "FSR.h"
-#include "Utils.h"
+#include "FSR.hpp"
+#include "Utils.hpp"
 
 FSR::FSR(int pin){
   this->pin = pin;

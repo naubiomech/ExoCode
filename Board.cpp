@@ -1,7 +1,7 @@
 #include <Arduino.h>
-#include "Board.h"
-#include "Pins.h"
-#include "System.h"
+#include "Board.hpp"
+#include "Pins.hpp"
+#include "System.hpp"
 #include <i2c_t3.h>
 
 ExoPins* setupPins();

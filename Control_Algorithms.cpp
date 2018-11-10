@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "Control_Algorithms.h"
+#include "Parameters.h"
 
 double clamp_setpoint(double raw_setpoint, Clamp* setpoint_clamp){
   if(raw_setpoint == 0){

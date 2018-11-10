@@ -1,6 +1,6 @@
 #ifndef BOARD_SETTINGS_HEADER
 #define BOARD_SETTINGS_HEADER
-#include "Parameters.h"
+#include "Parameters.hpp"
 
 #ifdef IMU_BOARD
 #include <i2c_t3.h>

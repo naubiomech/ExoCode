@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Utils.h"
+#include "Utils.hpp"
 #include <float.h>
 
 void RunningAverage::update(double value){

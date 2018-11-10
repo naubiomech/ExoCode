@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Shaping_Functions.h"
+#include "Shaping_Functions.hpp"
 //Calc Sigmoid function and apply to the New point
 
 void ShapingFunction::setIterationCount(int whichState, double n){

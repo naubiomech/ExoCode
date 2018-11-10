@@ -1,7 +1,7 @@
 #include <Arduino.h>
-#include "Leg.h"
-#include "Pins.h"
-#include "Shaping_Functions.h"
+#include "Leg.hpp"
+#include "Pins.hpp"
+#include "Shaping_Functions.hpp"
 
 Leg::Leg(LegPins* legPins){
   this->foot_fsrs = new FSRGroup(legPins->fsr_pins, legPins->fsr_count);

@@ -1,7 +1,7 @@
 #ifndef EXOSKELETON_HEADER
 #define EXOSKELETON_HEADER
-#include "Leg.h"
-#include "Pins.h"
+#include "Leg.hpp"
+#include "Pins.hpp"
 
 class Exoskeleton{
 private:

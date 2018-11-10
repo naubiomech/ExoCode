@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Read_and_write_EEPROM.h"
+#include "Read_and_write_EEPROM.hpp"
 
 #include <EEPROM.h>
 // Functions to check the memory values and to read them

@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include "IMU.h"
-#include "System.h"
+#include "IMU.hpp"
+#include "System.hpp"
 
 void setupIMU(Adafruit_BNO055* bno){
   if (IMU_ENABLED){

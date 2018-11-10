@@ -1,6 +1,6 @@
 #ifndef STEPS_HEADER
 #define STEPS_HEADER
-#include "Parameters.h"
+#include "Parameters.hpp"
 
 struct Steps{
 	Leg_Steps leg_steps;

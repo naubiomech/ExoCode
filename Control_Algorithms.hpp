@@ -1,6 +1,6 @@
 #ifndef CONTROL_ALGORITHMS_HEADER
 #define CONTROL_ALGORITHMS_HEADER
-#include "Utils.h"
+#include "Utils.hpp"
 
 enum ControlAlgorithm {zero_torque,bang_bang, unknown_control, porportional,pivot_porportional};
 

@@ -4,10 +4,10 @@ const int dim_FSR = 30;
 const int dim = 5;
 
 #include "PID_v2.h"
-#include "State_Machine.h"
-#include "Motor.h"
-#include "FSR.h"
-#include "Phase.h"
+#include "State_Machine.hpp"
+#include "Motor.hpp"
+#include "FSR.hpp"
+#include "Phase.hpp"
 
 class Leg {
 private:

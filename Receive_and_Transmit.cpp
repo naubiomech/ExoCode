@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Receive_and_Transmit.h"
+#include "Receive_and_Transmit.hpp"
 
 // Peek is the variable used to identify the message received by matlab
 // To understand the commands see the file .......... in the folder
