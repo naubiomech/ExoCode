@@ -1,5 +1,7 @@
 #ifndef RECEIVE_AND_TRANSMIT_HEADER
 #define RECEIVE_AND_TRANSMIT_HEADER
+#include <SoftwareSerial.h>
+#include "System.hpp"
 
 const char COMM_CODE_REQUEST_DATA = '?';
 const char COMM_CODE_GET_LEFT_ANKLE_SETPOINT = 'D';
@@ -57,7 +59,8 @@ const char COMM_CODE_GET_BASELINE = 'B';
 const char COMM_CODE_CALC_BASELINE = 'b';
 const char COMM_CODE_CALC_BALANCE_BASELINE = '&';
 
-void send_data_message_wc();
-void receive_and_transmit();
+void send_report(SoftwareSerial* commandSerial);
+void receive_data(SoftwareSerial* commandSerial, void* outputDataRawForm, int bytesExpected);
+void receive_and_transmit(ExoSystem* system);
 
 #endif

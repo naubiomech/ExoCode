@@ -11,8 +11,8 @@ class Trial {
   Metro receiverTimer = Metro(1);
 };
 
-struct System{
-  Trial* trial = new Trial;
+class ExoSystem{
+  Trial* trial = new Trial();
   SoftwareSerial bluetooth(BLUETOOTH_TX_PIN, BLUETOOTH_RX_PIN);
   // ===== A Exo =====
 

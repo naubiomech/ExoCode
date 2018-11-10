@@ -1,11 +1,11 @@
 #include <Arduino.h>
 #include "Receive_and_Transmit.hpp"
+#include <SoftwareSerial.h>
 
 // Peek is the variable used to identify the message received by matlab
 // To understand the commands see the file .......... in the folder
 
-void receive_data(SoftwareSerial* commandSerial, void* outputDataRawForm, int bytesExpected)
-{
+void receive_data(SoftwareSerial* commandSerial, void* outputDataRawForm, int bytesExpected) {
   char* outputData = (char*) outputDataRawForm;
   int k = 0;
   while ((k < bytesExpected))
@@ -13,7 +13,7 @@ void receive_data(SoftwareSerial* commandSerial, void* outputDataRawForm, int by
     while (commandSerial->available() > 0)
     {
       int data = commandSerial->read();
-      holdon[k] = data;               //Store all recieved bytes in subsequent memory spaces
+      outputData[k] = data;               //Store all recieved bytes in subsequent memory spaces
       k++;                                  //Increments memory space
     }
   }
@@ -91,13 +91,12 @@ void send_command_message(SoftwareSerial* commandSerial, char command_char, doub
   commandSerial->println('Z');
 }
 
-void receive_and_transmit(System* system)
-{
+void receive_and_transmit(ExoSystem* exoSystem) {
 // ===== Msg Functions =====
   double data_to_send[8];
   double *data_to_send_point = &data_to_send[0];
 
-  SoftwareSerial* commandSerial = system->commandSerial;
+  SoftwareSerial* commandSerial = exoSystem->commandSerial;
   int cmd_from_Gui = commandSerial->read();
   switch (cmd_from_Gui)
   {
