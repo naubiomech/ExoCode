@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "FSR.hpp"
+#include "Parameters.hpp"
 #include "Utils.hpp"
 
 FSR::FSR(int pin){
@@ -31,7 +32,6 @@ void FSR::updateCalibration(){
 
 void FSR::endCalibration(){
   isCalibrating = false;
-  FSR_CAL_FLAG = 0;
 }
 
 void FSR::measureForce(){

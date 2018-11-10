@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include "Board.hpp"
 #include "Pins.hpp"
-#include "System.hpp"
 #include <i2c_t3.h>
 
 ExoPins* setupPins();
@@ -12,8 +11,8 @@ void setupBoard(){
 
   Serial.println("Starting");
 
-  analogWriteResolution(12);                                          //change resolution to 12 bits
-  analogReadResolution(12);                                           //ditto
+  analogWriteResolution(12);
+  analogReadResolution(12);
 
   // The led
   pinMode(LED_PIN, OUTPUT);

@@ -1,5 +1,7 @@
 #ifndef FSR_HEADER
 #define FSR_HEADER
+#include "Pins.hpp"
+#include "Utils.hpp"
 
 class FSR{
 private:

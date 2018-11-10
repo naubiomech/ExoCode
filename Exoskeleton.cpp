@@ -55,7 +55,6 @@ bool Exoskeleton::checkMotorErrors(){
 
 void Exoskeleton::disableExo(){
   digitalWrite(MOTOR_ENABLE_PIN, LOW);
-  stream = 0;
   digitalWrite(LED_PIN, LOW);
 }
 
@@ -63,5 +62,12 @@ void Exoskeleton::applyTorque(){
   if(!(left_leg->applyTorque() &&
        right_leg->applyTorque())){
     disableExo();
+  }
+}
+
+void Exoskeleton::checkIMUs(){
+  if (BnoControl.check()){
+    // TODO Put call to leg imus here
+    BnoControl.reset();
   }
 }

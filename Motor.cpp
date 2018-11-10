@@ -5,6 +5,7 @@
 #include "Utils.hpp"
 #include "State_Machine.hpp"
 #include "Control_Algorithms.hpp"
+#include "Pins.hpp"
 
 Motor::Motor(MotorPins* motor_pins){
   this->motor_pin = motor_pins->motor;
@@ -27,17 +28,6 @@ void Motor::endTorqueCalibration(){
 void Motor::setControlAlgorithm(ControlAlgorithm control_algorithm){
   this->previous_control_algorithm = control_algorithm;
   this->control_algorithm = control_algorithm;
-}
-
-void Motor::autoKF(int state){
-  switch(state){
-  case LATE_STANCE:
-    Auto_KF_motor_Late_stance(pid_avg_err, pid_setpoint, input);
-    break;
-  case SWING:
-    KF = Auto_KF_motor_Swing(pid_avg_err, KF, kf_clamp);
-    break;
-  }
 }
 
 void Motor::writeToMotor(int value){
@@ -67,14 +57,12 @@ void Motor::applyPlanterControlAlgorithm(bool taking_baseline, double FSR_percen
 bool Motor::applyTorque(int state){
   double meas_IMU = 0;
   double torque = this->getTorque();
-  double pid_ref;
 
   //TODO Test IMU balance control
   if (IMU_ENABLED && state == LATE_STANCE && control_algorithm == 2) {
     meas_IMU = imu_clamp.clamp(meas_IMU);
     pid_setpoint = 0;
   } else {
-    pid_ref = pid_setpoint;
     input = torque;
 
     if ((abs(torque) > 25))

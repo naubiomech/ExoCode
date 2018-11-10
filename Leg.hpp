@@ -3,11 +3,13 @@
 const int dim_FSR = 30;
 const int dim = 5;
 
+#include <i2c_t3.h>
 #include "PID_v2.h"
 #include "State_Machine.hpp"
 #include "Motor.hpp"
 #include "FSR.hpp"
 #include "Phase.hpp"
+#include "Pins.hpp"
 
 class Leg {
 private:
@@ -53,8 +55,9 @@ private:
   double planter_mean;
 
   int increment_activation_starting_step = 0;
+
+  // TODO Check usability of all variables below line
   // ------------
-  // Leg
 
   Threshold* swing_state_threshold = new Threshold(false, 0.5, state_counter_th);
 
@@ -64,8 +67,6 @@ private:
   double flag_1 = 0;
   double time_old_state;
 
-
-  // TODO: Give proper name showing they relate to state
   double activate_in_3_steps = 0;
   double first_step = 1;
   double start_step = 0;

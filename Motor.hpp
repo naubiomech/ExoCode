@@ -7,6 +7,7 @@
 #include "Utils.hpp"
 #include "Shaping_Functions.hpp"
 #include "Control_Algorithms.hpp"
+#include "Pins.hpp"
 
 class Motor{
 private:

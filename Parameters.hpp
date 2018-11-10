@@ -63,8 +63,8 @@ const int ACTIVATION_STEP_COUNT = 6;
 
 // ===== Shaping Parameters =====
 // the smoothing value, i.e. the sigmoind number of steps as a function of the EXO state
-double DEFAULT_ITER_SWING = 500;
-double DEFAULT_ITER_LATE_STANCE = 4;
+const double DEFAULT_ITER_SWING = 500;
+const double DEFAULT_ITER_LATE_STANCE = 4;
 
 
 #endif

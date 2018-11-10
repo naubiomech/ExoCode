@@ -14,13 +14,14 @@ double clamp_setpoint(double raw_setpoint, Clamp* setpoint_clamp){
 
 double getSetpoint(ControlAlgorithm control_algorithm, double desired_setpoint,
                    Clamp* setpoint_clamp, double FSRatio, double Max_FSRatio, double prop_gain){
-  double new_setpoint;
+  double new_setpoint = desired_setpoint;
 
   switch (control_algorithm){
   case zero_torque:
     return 0;
     break;
   case bang_bang:
+    new_setpoint = desired_setpoint;
     break;
   case unknown_control:
     new_setpoint = (desired_setpoint ) *
