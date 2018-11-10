@@ -113,9 +113,9 @@ void Leg::changeState(int new_state, int old_state){
 
 void Leg::changePhase(int new_phase){
   if (new_phase == PLANTER){
-    this->trigger_planter_phase();
+    this->triggerPlanterPhase();
   } else if (new_phase == DORSI){
-    this->trigger_dorsi_phase();
+    this->triggerDorsiPhase();
   }
 }
 
@@ -136,12 +136,19 @@ void Leg::applyPlanterControlAlgorithm(){
   double max_FSR_percentage = foot_fsrs->getMaxPercentage();
   bool taking_baseline = false;
 
+  for(int i = 0; i < fsr_count; i++){
+    fsrs[i]->updateMaxes();
+  }
+
   for(int i = 0; i < motor_count; i++){
     motors[i]->applyPlanterControlAlgorithm(FSR_percentage, taking_baseline, max_FSR_percentage);
   }
 }
 
 void Leg::applyDorsiControlAlgorithm(){
+  for(int i = 0; i < motor_count; i++){
+    motors[i]->applyAutoKF();
+  }
 }
 
 Phase Leg::determinePhase(int new_state, int old_state, Phase current_phase){
@@ -169,29 +176,23 @@ bool Leg::determine_foot_on_ground(){
   return foot_on_fsr;
 }
 
-void Leg::trigger_planter_phase(){
+void Leg::triggerPlanterPhase(){
   this->planter_timer->reset();
 
   for (int i = 0; i <fsr_count;i++){
-    fsrs[i]->trigger_planter_phase(dorsi_time);
-  }
-
-  for (int i = 0; i <motor_count;i++){
-    motors[i]->trigger_planter_phase(dorsi_time);
+    fsrs[i]->resetMaxes();
   }
 }
 
-void Leg::trigger_dorsi_phase(){
+void Leg::triggerDorsiPhase(){
   this->planter_step_count++; // you have accomplished a step
   this->dorsi_timer->reset();
 
   double planter_time = this->planter_timer->lap();
   this->planter_mean = this->planter_time_averager->update(planter_time);
 
-  if (this->flag_N3_adjustment_time) {
-    for (int i =0; i < motor_count; i++){
-      motors[i]->adjustIterForTime();
-    }
+  for (int i =0; i < motor_count; i++){
+    motors[i]->adjustShapingForTime(planter_time);
   }
 }
 

@@ -3,6 +3,7 @@
 #include "System.h"
 #include <i2c_t3.h>
 
+ExoPins* setupPins();
 void setupBoard(){
   // enable bluetooth
   bluetooth.begin(115200);
@@ -19,23 +20,13 @@ void setupBoard(){
   // set pin mode for left and right sides
   pinMode(MOTOR_ENABLE_PIN, OUTPUT); //Enable disable the motors
   digitalWrite(MOTOR_ENABLE_PIN, LOW);
+  ExoPins* exoPins = setupPins();
+  exo = new Exoskeleton(exoPins);
+  delete exoPins;
 
 #ifdef IMU_BOARD
   bno = Adafruit_BNO055(WIRE_BUS, 1, BNO055_ADDRESS_A, I2C_MASTER, IMU_1_PINS, I2C_PULLUP_EXT, I2C_RATE_100, I2C_OP_MODE_ISR);
 #endif
-}
-
-ExoPins* setupPins(){
-#ifdef QUAD_BOARD
-  return setupQuadBoardPins();
-#endif
-#ifdef IMU_BOARD
-  return setupIMUBoardPins();
-#endif
-#ifdef TWO_LEG_BOARD
-  return setupTwoLegBoardPins();
-#endif
-  return NULL;
 }
 
 #ifdef QUAD_BOARD
@@ -83,3 +74,18 @@ ExoPins* setupTwoLegBoardPins(){
   return NULL;
 }
 #endif
+
+
+ExoPins* setupPins(){
+#ifdef QUAD_BOARD
+  return setupQuadBoardPins();
+#endif
+#ifdef IMU_BOARD
+  return setupIMUBoardPins();
+#endif
+#ifdef TWO_LEG_BOARD
+  return setupTwoLegBoardPins();
+#endif
+  return NULL;
+}
+

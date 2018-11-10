@@ -3,6 +3,7 @@
 #include <Metro.h> // Include the Metro library
 #include <SoftwareSerial.h>
 #include "Exoskeleton.h"
+#include "IMU.h"
 
 struct Trial {
   int bluetoothStream = 0;
@@ -56,16 +57,10 @@ volatile double stability_trq;
 Adafruit_BNO055 bno;
 
 // ===== Leg =====
-Exoskeleton* exo = new Exoskeleton();
+Exoskeleton* exo;
 
 // ===== Msg Functions =====
 double data_to_send[8];
 double *data_to_send_point = &data_to_send[0];
-
-// ===== Shaping Parameters =====
-// the smoothing value, i.e. the sigmoind number of steps as a function of the EXO state
-double N3 = 500;
-double N2 = 4;
-double N1 = 4;
 
 #endif

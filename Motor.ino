@@ -1,4 +1,5 @@
 #include "Motor.h"
+#include "Parameters.h"
 #include "Board.h"
 #include "Utils.h"
 #include "State_Machine.h"
@@ -55,8 +56,8 @@ void Motor::applyPlanterControlAlgorithm(bool taking_baseline, double FSR_percen
     setControlAlgorithm(zero_torque);
   }
 
-  this->setpoint = getControlAlgorithmSetpoint(control_algorithm, this->desired_setpoint,
-                                               this->setpoint_clamp, FSR_percentage, max_FSR_percentage);
+  this->setpoint = getSetpoint(control_algorithm, this->desired_setpoint, this->setpoint_clamp,
+                               FSR_percentage, max_FSR_percentage, prop_gain);
 
   if (control_algorithm == 1){
     this->shaping_function->setIterationCount(LATE_STANCE, 1);
@@ -123,7 +124,7 @@ void Motor::changeState(int state){
 void Motor::updateSetpoint(int state){
   if ((control_algorithm == 2 || control_algorithm == 3) && state == LATE_STANCE) {
     this->pid_setpoint = this->setpoint;
-  } else if (N1 < 1 || N2 < 1 || N3 < 1) {
+  } else if (iter_late_stance < 1 || iter_swing < 1) {
     this->pid_setpoint = this->new_pid_setpoint;
   } else {
     // Create the smoothed reference and call the PID
@@ -146,8 +147,8 @@ void Motor::setToZero(){
 void Motor::resetStartingParameters(){
   this->setToZero();
   this->torque_scalar = 0;
-  this->shaping_function->setIterationCount(SWING, N1);
-  this->shaping_function->setIterationCount(LATE_STANCE, N3);
+  this->shaping_function->setIterationCount(SWING, DEFAULT_ITER_SWING);
+  this->shaping_function->setIterationCount(LATE_STANCE, DEFAULT_ITER_LATE_STANCE);
   this->iter_time_percentage = 0.5;
 }
 
@@ -170,8 +171,10 @@ void Motor::applyAutoKF(){
 }
 
 void Motor::adjustShapingForTime(double planter_time){
-  iter_late_stance = round((planter_time) * iter_time_percentage);
-  iter_late_stance = min(500, max(4, N3));
+  if(adjust_shaping_for_time){
+    iter_late_stance = round((planter_time) * iter_time_percentage);
+    iter_late_stance = min(500, max(4, iter_late_stance));
+  }
 }
 
 void Motor::setTorqueScalar(double scalar){

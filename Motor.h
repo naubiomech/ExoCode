@@ -3,6 +3,7 @@
 #include <PID_v2.h>
 
 #include "Parameters.h"
+#include "Board.h"
 #include "Utils.h"
 #include "Shaping_Functions.h"
 #include "Control_Algorithms.h"
@@ -39,6 +40,8 @@ private:
 
   double zero_torque_reference;
 
+  double prop_gain = 1;
+
   long sig_time_old = 0;
   ShapingFunction* shaping_function = new ShapingFunction();
   double torque_scalar = 0;
@@ -54,8 +57,10 @@ private:
   double measureRawCalibratedTorque();
 
   RunningAverage* error_average = new RunningAverage();
-  int iter_late_stance = N1;
-  int iter_swing = N3;
+
+  bool adjust_shaping_for_time = false;
+  int iter_late_stance = DEFAULT_ITER_LATE_STANCE;
+  int iter_swing = DEFAULT_ITER_SWING;
 
 public:
   Motor(MotorPins* motor_pins);

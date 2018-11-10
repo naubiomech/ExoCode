@@ -10,13 +10,16 @@ double clamp_setpoint(double raw_setpoint, Clamp* setpoint_clamp){
   return setpoint;
 }
 
-double getControlAlgorithmSetpoint(ControlAlgorithm control_algorithm, double desired_setpoint,
-                                   Clamp* setpoint_clamp, double FSRatio, double Max_FSRatio){
+double getSetpoint(ControlAlgorithm control_algorithm, double desired_setpoint,
+                   Clamp* setpoint_clamp, double FSRatio, double Max_FSRatio, double prop_gain){
   double new_setpoint;
 
   switch (control_algorithm){
   case zero_torque:
     return 0;
+    break;
+  case bang_bang:
+    break;
   case unknown_control:
     new_setpoint = (desired_setpoint ) *
       (p_prop[0] * pow((Max_FSRatio), 2) + p_prop[1] * (Max_FSRatio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]);

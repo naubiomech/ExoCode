@@ -1,4 +1,5 @@
 #include "IMU.h"
+#include "System.h"
 
 void setupIMU(Adafruit_BNO055* bno){
   if (IMU_ENABLED){

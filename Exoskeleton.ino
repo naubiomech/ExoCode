@@ -1,6 +1,6 @@
-Exoskeleton::Exoskeleton(){
-  left_leg = new Leg();
-  right_leg = new Leg();
+Exoskeleton::Exoskeleton(ExoPins* exoPins){
+  left_leg = new Leg(exoPins->left_leg);
+  right_leg = new Leg(exoPins->left_leg);
 }
 
 void Exoskeleton::calibrateTorque(){
@@ -13,30 +13,6 @@ void Exoskeleton::calibrateTorque(){
   }
   left_leg->endTorqueCalibration();
   right_leg->endTorqueCalibration();
-}
-
-double Exoskeleton::getRightAnkleSetpoint(){
-  return right_leg->getAnkleSetpoint();
-}
-
-double Exoskeleton::getLeftAnkleSetpoint(){
-  return left_leg->getAnkleSetpoint();
-}
-
-double Exoskeleton::getRightAverageTorque(){
-  return right_leg->getAverageTorque();
-}
-
-double Exoskeleton::getLeftAverageTorque(){
-  return left_leg->getAverageTorque();
-}
-
-int Exoskeleton::getLeftLegState(){
-  return left_leg->getState();
-}
-
-int Exoskeleton::getRightLegState(){
-  return right_leg->getState();
 }
 
 void Exoskeleton::calibrateFSRs(){
@@ -54,11 +30,6 @@ void Exoskeleton::adjustControl(){
   right_leg->adjustControl();
 }
 
-void Exoskeleton::autoKF(){
-  left_leg->autoKF();
-  right_leg->autoKF();
-}
-
 void Exoskeleton::setZeroIfStateState(){
   left_leg->setZeroIfSteadyState();
   right_leg->setZeroIfSteadyState();
@@ -70,35 +41,24 @@ void Exoskeleton::applyStateMachine(){
 
 }
 
-void Exoskeleton::initialize(){
-  initialize_left_leg(left_leg);
-  initialize_right_leg(right_leg);
+void Exoskeleton::measureSensors(){
+  left_leg->measureSensors();
+  right_leg->measureSensors();
 }
 
-void Exoskeleton::measureSensors(){
-    left_leg->measureSensors();
-    right_leg->measureSensors();
-  }
+bool Exoskeleton::checkMotorErrors(){
+  return left_leg->checkMotorErrors() || right_leg->checkMotorErrors();
+}
 
-  bool Exoskeleton::checkMotorErrors(){
-    return left_leg->checkMotorErrors() || right_leg->checkMotorErrors();
-  }
+void Exoskeleton::disableExo(){
+  digitalWrite(MOTOR_ENABLE_PIN, LOW);
+  stream = 0;
+  digitalWrite(LED_PIN, LOW);
+}
 
-  void Exoskeleton::takeFSRBaseline(){
-    right_leg->takeBaseline();
-    left_leg->takeBaseline();
+void Exoskeleton::applyTorque(){
+  if(!(left_leg->applyTorque() &&
+       right_leg->applyTorque())){
+    disableExo();
   }
-
-  void Exoskeleton::disableExo(){
-    digitalWrite(MOTOR_ENABLE_PIN, LOW);
-    stream = 0;
-    send_data_message_wc();
-    digitalWrite(LED_PIN, LOW);
-  }
-
-  void Exoskeleton::applyTorque(){
-    if(!(left_leg->applyTorque() &&
-         right_leg->applyTorque())){
-      disableExo();
-    }
-  }
+}

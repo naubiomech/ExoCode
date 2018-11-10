@@ -96,12 +96,12 @@ double FSRGroup::getThreshold(){
 
 void FSRGroup::resetMaxes(){
   this->max_fsr_voltage->reset();
-  this->max_fsr_ratio->reset();
+  this->max_fsr_percentage->reset();
 }
 
 void FSRGroup::updateMaxes(){
 
-  this->max_fsr_voltage->update(steps->currVoltage);
+  this->max_fsr_voltage->update(this->getForce());
   double FSRatio = fabs(this->getForce() / this->plant_peak_mean);
   this->max_fsr_percentage->update(FSRatio);
 }
@@ -121,5 +121,6 @@ void FSRGroup::startBaseline(){
 
 void FSRGroup::updateBaseline(){
   double plant_fsr_peak = this->max_fsr_voltage->getMax();
-  this->plant_peak_mean = this->plant_peak_averager->updateAverage(plant_fsr_peak);
+  this->plant_peak_averager->update(plant_fsr_peak);
+  this->plant_peak_mean = this->plant_peak_averager->getAverage();
 }

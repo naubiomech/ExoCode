@@ -1,6 +1,7 @@
 #ifndef EXOSKELETON_HEADER
 #define EXOSKELETON_HEADER
 #include "Leg.h"
+#include "Pins.h"
 
 class Exoskeleton{
 private:
@@ -8,7 +9,7 @@ public:
   Leg* left_leg;
   Leg* right_leg;
 
-  Exoskeleton();
+  Exoskeleton(ExoPins* exoPins);
   void initialize();
   void measureSensors();
   bool checkMotorErrors();
@@ -21,10 +22,7 @@ public:
   void setZeroIfSteadyState();
   void calibrateTorque();
   void calibrateFSRs();
-  double getRightAnkleSetpoint();
-  double getLeftAnkleSetpoint();
-  double getRightAverageTorque();
-  double getLeftAverageTorque();
+  void setZeroIfStateState();
 };
 
 #endif
