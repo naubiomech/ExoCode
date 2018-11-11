@@ -52,6 +52,9 @@ ExoPins* setupQuadBoardPins(){
   exo_pins->right_leg->motor_pins[1].motor = MOTOR_RIGHT_KNEE_PIN;
   exo_pins->right_leg->motor_pins[1].err = MOTOR_ERROR_RIGHT_KNEE_PIN;
   exo_pins->right_leg->motor_pins[1].torque = TORQUE_SENSOR_RIGHT_KNEE_PIN;
+  exo_pins->right_leg->motor_count = motor_count;
+  exo_pins->right_leg->fsr_count = fsr_count;
+
   exo_pins->right_leg->fsr_pins[0].fsr_pin = FSR_SENSE_RIGHT_TOE_PIN;
   exo_pins->right_leg->fsr_pins[1].fsr_pin = FSR_SENSE_RIGHT_HEEL_PIN;
 
