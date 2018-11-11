@@ -87,6 +87,7 @@ void receive_and_transmit(ExoSystem* exoSystem) {
 
 	case COMM_CODE_END_TRIAL:
 		exoSystem->endTrial();
+		send_report(exoSystem);
 		break;
 
 	case COMM_CODE_CALIBRATE_TORQUE:
