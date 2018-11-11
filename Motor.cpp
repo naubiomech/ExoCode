@@ -21,6 +21,9 @@ Motor::Motor(MotorPins* motor_pins){
   this->setpoint_clamp = new Clamp(Min_Prop, Max_Prop);
   this->error_average = new RunningAverage();
   pid = new PID(&pid_input, &pid_output, &pid_setpoint, PID_DEFAULTS[0], PID_DEFAULTS[1], PID_DEFAULTS[2], DIRECT);
+  pid->SetMode(AUTOMATIC);
+  pid->SetOutputLimits(-1500, 1500);
+  pid->SetSampleTime(PID_sample_time);
 
   pinMode(this->torque_sensor_pin, INPUT);
   pinMode(motor_error_pin, INPUT);
