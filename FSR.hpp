@@ -2,6 +2,7 @@
 #define FSR_HEADER
 #include "Pins.hpp"
 #include "Utils.hpp"
+#include "Report.hpp"
 
 class FSR{
 private:
@@ -61,5 +62,7 @@ public:
   void startBaseline();
   void updateBaseline();
   double force;
+  FSRReport generateReport();
+  void fillReport(FSRReport* report);
 };
 #endif

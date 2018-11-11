@@ -59,8 +59,8 @@ const char COMM_CODE_GET_BASELINE = 'B';
 const char COMM_CODE_CALC_BASELINE = 'b';
 const char COMM_CODE_CALC_BALANCE_BASELINE = '&';
 
-void send_report(SoftwareSerial* commandSerial);
+void send_report(ExoSystem* exoSystem);
 void receive_data(SoftwareSerial* commandSerial, void* outputDataRawForm, int bytesExpected);
-void receive_and_transmit(ExoSystem* system);
+void receive_and_transmit(ExoSystem* exoSystem);
 
 #endif

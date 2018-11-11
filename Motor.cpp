@@ -6,6 +6,7 @@
 #include "State_Machine.hpp"
 #include "Control_Algorithms.hpp"
 #include "Pins.hpp"
+#include "Report.hpp"
 
 Motor::Motor(MotorPins* motor_pins){
   this->motor_pin = motor_pins->motor;
@@ -183,4 +184,16 @@ void Motor::adjustShapingForTime(double planter_time){
 void Motor::setTorqueScalar(double scalar){
   scalar = fmin(fmax(scalar,0),1);
   this->torque_scalar = scalar;
+}
+
+MotorReport Motor::generateReport(){
+	MotorReport report = MotorReport();
+	report.measuredTorque = getTorque();
+	report.pid_setpoint = pid_setpoint;
+	return report;
+}
+
+void Motor::fillReport(MotorReport* report){
+	report->measuredTorque = getTorque();
+	report->pid_setpoint = pid_setpoint;
 }

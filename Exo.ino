@@ -106,7 +106,7 @@ void rotate_motor() {
   {
     if (exoSystem->trial->reportDataTimer.check())
     {
-      send_report(exoSystem->commandSerial);
+      send_report(exoSystem);
       exoSystem->trial->reportDataTimer.reset();
     }
 

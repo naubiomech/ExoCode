@@ -2,6 +2,7 @@
 #include "FSR.hpp"
 #include "Parameters.hpp"
 #include "Utils.hpp"
+#include "Report.hpp"
 
 FSR::FSR(int pin){
   this->pin = pin;
@@ -124,4 +125,16 @@ void FSRGroup::updateBaseline(){
   double plant_fsr_peak = this->max_fsr_voltage->getMax();
   this->plant_peak_averager->update(plant_fsr_peak);
   this->plant_peak_mean = this->plant_peak_averager->getAverage();
+}
+
+FSRReport FSRGroup::generateReport(){
+	FSRReport report = FSRReport();
+	report.threshold = getThreshold();
+	report.measuredForce = getForce();
+	return report;
+}
+
+void FSRGroup::fillReport(FSRReport* report){
+	report->threshold = getThreshold();
+	report->measuredForce = getForce();
 }

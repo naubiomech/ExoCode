@@ -7,6 +7,7 @@
 #include "Shaping_Functions.hpp"
 #include "Control_Algorithms.hpp"
 #include "Pins.hpp"
+#include "Report.hpp"
 
 class Motor{
 private:
@@ -90,6 +91,8 @@ public:
   void applyPlanterControlAlgorithm(bool taking_baseline, double FSR_percentage, double max_FSR_percentage);
   void updateKFPIDError();
   void applyAutoKF();
+  MotorReport generateReport();
+  void fillReport(MotorReport* report);
 };
 
 #endif

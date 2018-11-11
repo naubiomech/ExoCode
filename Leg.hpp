@@ -10,6 +10,7 @@ const int dim = 5;
 #include "FSR.hpp"
 #include "Phase.hpp"
 #include "Pins.hpp"
+#include "Report.hpp"
 
 class Leg {
 private:
@@ -103,6 +104,7 @@ public:
   bool determine_foot_on_ground();
   void adjustControl();
   void setToZero();
-  // ---------
+  LegReport* generateReport();
+  void fillReport(LegReport* report);
 };
 #endif

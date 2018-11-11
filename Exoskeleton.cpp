@@ -2,6 +2,7 @@
 #include "Exoskeleton.hpp"
 #include "Board.hpp"
 #include "Leg.hpp"
+#include "Report.hpp"
 
 Exoskeleton::Exoskeleton(ExoPins* exoPins){
   left_leg = new Leg(exoPins->left_leg);
@@ -77,4 +78,16 @@ void Exoskeleton::checkIMUs(){
     // TODO Put call to leg imus here
     BnoControl.reset();
   }
+}
+
+ExoReport* Exoskeleton::generateReport(){
+	ExoReport* report = new ExoReport();
+	report->left_leg = left_leg->generateReport();
+	report->right_leg = right_leg->generateReport();
+	return report;
+}
+
+void Exoskeleton::fillReport(ExoReport* report){
+	left_leg->fillReport(report->left_leg);
+	right_leg->fillReport(report->right_leg);
 }

@@ -3,6 +3,7 @@
 #include "Leg.hpp"
 #include "Pins.hpp"
 #include <Metro.h>
+#include "Report.hpp"
 
 class Exoskeleton{
 private:
@@ -46,6 +47,8 @@ public:
   void calibrateFSRs();
   void setZeroIfStateState();
   void checkIMUs();
+  ExoReport* generateReport();
+  void fillReport(ExoReport* report);
 };
 
 #endif

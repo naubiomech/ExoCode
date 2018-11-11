@@ -7,6 +7,7 @@ ExoSystem::ExoSystem(ExoPins* exoPins){
   commandSerial->begin(115200);
 
   exo = new Exoskeleton(exoPins);
+  report = exo->generateReport();
 }
 
 void ExoSystem::startTrial(){

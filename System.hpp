@@ -5,6 +5,7 @@
 #include "Parameters.hpp"
 #include "Exoskeleton.hpp"
 #include "Pins.hpp"
+#include "Report.hpp"
 #include <Metro.h>
 
 class Trial {
@@ -18,6 +19,7 @@ class ExoSystem{
 public:
   ExoSystem(ExoPins* exoPins);
   Trial* trial;
+  ExoReport* report;
   SoftwareSerial* commandSerial;
   elapsedMillis timeElapsed;
   int streamTimerCount = 0;

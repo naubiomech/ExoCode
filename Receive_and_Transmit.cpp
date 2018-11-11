@@ -19,112 +19,89 @@ void receive_data(SoftwareSerial* commandSerial, void* outputDataRawForm, int by
   }
 }
 
+void send_leg_report(SoftwareSerial* commandSerial, LegReport* report){
 
-void send_report(SoftwareSerial* commandSerial) //with COP
-{
-  /*
-    commandSerial->print('S');
-    commandSerial->print(',');
+	commandSerial->print(report->motor_reports[0].measuredTorque);
+	commandSerial->print(',');
+	commandSerial->print(report->state);
+	commandSerial->print(',');
+	commandSerial->print(report->motor_reports[0].pid_setpoint);
+	commandSerial->print(',');
+	commandSerial->print(report->fsr_reports[0].threshold);
+	commandSerial->print(',');
+	commandSerial->print(report->fsr_reports[0].measuredForce);
+	commandSerial->print(',');
+	}
 
-    // RIGHT
-    commandSerial->print(exo->getRightAverageTorque());
-    commandSerial->print(',');
-    commandSerial->print(exo->getRightLegState());
-    commandSerial->print(',');
-    commandSerial->print(right_leg->sign * right_leg->PID_Setpoint);
-    commandSerial->print(',');
-    if (FLAG_TWO_TOE_SENSORS) {
-    commandSerial->print(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
-    commandSerial->print(',');
-    commandSerial->print(right_leg->FSR_Combined_Average);
-    commandSerial->print(',');
-    } else {
-    commandSerial->print(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Toe_peak_ref);
-    commandSerial->print(',');
-    commandSerial->print(right_leg->FSR_Toe_Average);
-    commandSerial->print(',');
-    }
+void send_report(ExoSystem* exoSystem) {
+	ExoReport* report = exoSystem->report;
+	exoSystem->exo->fillReport(report);
+	SoftwareSerial* commandSerial = exoSystem->commandSerial;
 
-    // LEFT
-    commandSerial->print(exo->getLeftAverageTorque());
-    commandSerial->print(',');
-    commandSerial->print(exo->getLeftLegState());
-    commandSerial->print(',');
-    commandSerial->print(left_leg->sign * left_leg->PID_Setpoint);
-    commandSerial->print(',');
-    if (FLAG_TWO_TOE_SENSORS) {
-    commandSerial->print(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
-    commandSerial->print(',');
-    commandSerial->print(left_leg->FSR_Combined_Average);
-    commandSerial->print(',');
-    } else {
-    commandSerial->print(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Toe_peak_ref);
-    commandSerial->print(',');
-    commandSerial->print(left_leg->FSR_Toe_Average);
-    commandSerial->print(',');
-    }
+	commandSerial->print('S');
+	commandSerial->print(',');
+	send_leg_report(commandSerial, report->right_leg);
+	send_leg_report(commandSerial, report->right_leg);
 
+	commandSerial->print((double) (0)); //SIG1
+	commandSerial->print(',');
+	commandSerial->print((double) (0)); //SIG2
+	commandSerial->print(',');
+	commandSerial->print((double) (0)); //SIG3
+	commandSerial->print(',');
+	commandSerial->print((double) (0)); //SIG4
 
-  commandSerial->print((left_leg->Vol)); //SIG1
-  commandSerial->print(',');
-  commandSerial->print((right_leg->Vol)); //SIG2
-  commandSerial->print(',');
-  commandSerial->print(left_leg->FSR_Ratio); //SIG3
-  commandSerial->print(',');
-  commandSerial->print(right_leg->FSR_Ratio); //SIG4
-
-  commandSerial->print(',');
-  commandSerial->println('Z');
-  */
+	commandSerial->print(',');
+	commandSerial->println('Z');
 }
 
 void send_command_message(SoftwareSerial* commandSerial, char command_char, double* data_point, int number_to_send)
 {
-  commandSerial->print('S');
-  commandSerial->print(command_char);
-  commandSerial->print(',');
-  for (int message_iterator = 0; message_iterator < number_to_send; message_iterator++)
-  {
-    commandSerial->print(data_point[message_iterator]);
-    commandSerial->print(',');
-  }
-  commandSerial->println('Z');
+	commandSerial->print('S');
+	commandSerial->print(command_char);
+	commandSerial->print(',');
+	for (int message_iterator = 0; message_iterator < number_to_send; message_iterator++)
+	{
+		commandSerial->print(data_point[message_iterator]);
+		commandSerial->print(',');
+	}
+	commandSerial->println('Z');
 }
 
 void receive_and_transmit(ExoSystem* exoSystem) {
 // ===== Msg Functions =====
-  double data_to_send[8];
-  double *data_to_send_point = &data_to_send[0];
+	double data_to_send[8];
+	double *data_to_send_point = &data_to_send[0];
 
-  SoftwareSerial* commandSerial = exoSystem->commandSerial;
-  int cmd_from_Gui = commandSerial->read();
-  switch (cmd_from_Gui)
-  {
-  case COMM_CODE_REQUEST_DATA:
-    send_report(commandSerial);
-    break;
+	SoftwareSerial* commandSerial = exoSystem->commandSerial;
+	int cmd_from_Gui = commandSerial->read();
+	switch (cmd_from_Gui)
+	{
+	case COMM_CODE_REQUEST_DATA:
+		send_report(exoSystem);
+		break;
 
-  case COMM_CODE_START_TRIAL:
-    exoSystem->startTrial();
-    break;
+	case COMM_CODE_START_TRIAL:
+		exoSystem->startTrial();
+		break;
 
-  case COMM_CODE_END_TRIAL:
-    exoSystem->endTrial();
-    break;
+	case COMM_CODE_END_TRIAL:
+		exoSystem->endTrial();
+		break;
 
-  case COMM_CODE_CALIBRATE_TORQUE:
-    exoSystem->exo->calibrateTorque();
-    break;
+	case COMM_CODE_CALIBRATE_TORQUE:
+		exoSystem->exo->calibrateTorque();
+		break;
 
-  case COMM_CODE_CHECK_BLUETOOTH:
-    data_to_send_point[0] = 0;
-    data_to_send_point[1] = 1;
-    data_to_send_point[2] = 2;
-    send_command_message(commandSerial, COMM_CODE_CHECK_BLUETOOTH, data_to_send_point, 3);   //For the Arduino to prove to MATLAB that it is behaving, it will send back the character B
-    break;
+	case COMM_CODE_CHECK_BLUETOOTH:
+		data_to_send_point[0] = 0;
+		data_to_send_point[1] = 1;
+		data_to_send_point[2] = 2;
+		send_command_message(commandSerial, COMM_CODE_CHECK_BLUETOOTH, data_to_send_point, 3);   //For the Arduino to prove to MATLAB that it is behaving, it will send back the character B
+		break;
 
-  case COMM_CODE_CLEAN_BLUETOOTH_BUFFER:
-	  while (commandSerial->available() > 0) commandSerial->read();
-	  break;
-  }
+	case COMM_CODE_CLEAN_BLUETOOTH_BUFFER:
+		while (commandSerial->available() > 0) commandSerial->read();
+		break;
+	}
 }

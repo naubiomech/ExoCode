@@ -3,6 +3,7 @@
 #include "Pins.hpp"
 #include "Shaping_Functions.hpp"
 #include "Motor.hpp"
+#include "Report.hpp"
 
 Leg::Leg(LegPins* legPins){
   this->foot_fsrs = new FSRGroup(legPins->fsr_pins, legPins->fsr_count);
@@ -283,4 +284,29 @@ bool Leg::applyTorque(){
     }
   }
   return true;
+}
+
+
+LegReport* Leg::generateReport(){
+	LegReport* report = new LegReport(motor_count, fsr_count);
+	report->state = state;
+	report->phase = current_phase;
+	for (int i = 0; i < motor_count; i++){
+		report->motor_reports[i] = motors[i]->generateReport();
+	}
+	for (int i = 0; i < fsr_count; i++){
+		report->fsr_reports[i] = fsrs[i]->generateReport();
+	}
+	return report;
+}
+
+void Leg::fillReport(LegReport* report){
+	report->state = state;
+	report->phase = current_phase;
+	for (int i = 0; i < motor_count; i++){
+		motors[i]->fillReport(&(report->motor_reports[i]));
+	}
+	for (int i = 0; i < fsr_count; i++){
+		fsrs[i]->fillReport(&(report->fsr_reports[i]));
+	}
 }
