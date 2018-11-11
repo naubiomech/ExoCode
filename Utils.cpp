@@ -96,6 +96,7 @@ void Timer::pause(){
 
 void Timer::resume(){
   start_time -= (millis() - pause_time);
+  pause_time = 0;
 }
 
 Max::Max(){
