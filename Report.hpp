@@ -4,8 +4,18 @@
 
 class MotorReport{
 public:
-	double measuredTorque;
 	double pid_setpoint;
+};
+
+class TorqueSensorReport{
+public:
+	double measuredTorque;
+};
+
+class JointReport{
+public:
+	MotorReport motor_report;
+	TorqueSensorReport torque_sensor_report;
 };
 
 class FSRReport{
@@ -18,7 +28,7 @@ class LegReport{
 public:
 	LegReport(int motor_count, int fsr_count);
 	FSRReport* fsr_reports;
-	MotorReport* motor_reports;
+	JointReport* joint_reports;
 	int state;
 	Phase phase;
 };

@@ -2,9 +2,9 @@
 #include "Pins.hpp"
 
 
-ExoPins::ExoPins(int motors_per_leg, int fsrs_per_leg){
-  left_leg = new LegPins(motors_per_leg, fsrs_per_leg);
-  right_leg = new LegPins(motors_per_leg, fsrs_per_leg);
+ExoPins::ExoPins(int joints_per_leg, int fsrs_per_leg){
+  left_leg = new LegPins(joints_per_leg, fsrs_per_leg);
+  right_leg = new LegPins(joints_per_leg, fsrs_per_leg);
 }
 
 ExoPins::~ExoPins(){
@@ -13,13 +13,13 @@ ExoPins::~ExoPins(){
 }
 
 LegPins::~LegPins(){
-  delete[] motor_pins;
+  delete[] joint_pins;
   delete[] fsr_pins;
 }
 
-LegPins::LegPins(int motor_count, int fsr_count){
-  this->motor_pins = new MotorPins[motor_count];
+LegPins::LegPins(int joint_count, int fsr_count){
+  this->joint_pins = new JointPins[joint_count];
   this->fsr_pins = new FSRPins[fsr_count];
-  this->motor_count = motor_count;
+  this->joint_count = joint_count;
   this->fsr_count = fsr_count;
 }

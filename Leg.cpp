@@ -7,11 +7,11 @@
 
 Leg::Leg(LegPins* legPins){
   this->foot_fsrs = new FSRGroup(legPins->fsr_pins, legPins->fsr_count);
-  this->motor_count = legPins->motor_count;
-  this->motors = new Motor*[motor_count];
-  for (int i = 0; i < legPins->motor_count; i++){
-    MotorPins* motor_pins = &(legPins->motor_pins[i]);
-    this->motors[i] = new Motor(motor_pins);
+  this->joint_count = legPins->joint_count;
+  this->joints = new Joint*[joint_count];
+  for (int i = 0; i < legPins->joint_count; i++){
+    JointPins* joint_pins = &(legPins->joint_pins[i]);
+    this->joints[i] = new Joint(joint_pins);
   }
 }
 
@@ -24,26 +24,26 @@ void Leg::calibrateFSRs(){
 }
 
 void Leg::startTorqueCalibration(){
-  for(int i = 0; i < motor_count;i++){
-    motors[i]->startTorqueCalibration();
+  for(int i = 0; i < joint_count;i++){
+    joints[i]->startTorqueCalibration();
   }
 }
 
 void Leg::updateTorqueCalibration(){
-  for(int i = 0; i < motor_count;i++){
-    motors[i]->updateTorqueCalibration();
+  for(int i = 0; i < joint_count;i++){
+    joints[i]->updateTorqueCalibration();
   }
 }
 
 void Leg::endTorqueCalibration(){
-  for(int i = 0; i < motor_count;i++){
-    motors[i]->endTorqueCalibration();
+  for(int i = 0; i < joint_count;i++){
+    joints[i]->endTorqueCalibration();
   }
 }
 
 bool Leg::checkMotorErrors(){
-  for(int i = 0; i < motor_count;i++){
-    if(motors[i]->hasErrored()){
+  for(int i = 0; i < joint_count;i++){
+    if(joints[i]->hasErrored()){
       return true;
     }
   }
@@ -51,8 +51,8 @@ bool Leg::checkMotorErrors(){
 }
 
 void Leg::autoKF(){
-  for(int i = 0; i < motor_count;i++){
-    motors[i]->autoKF(state);
+  for(int i = 0; i < joint_count;i++){
+    joints[i]->autoKF(state);
   }
 }
 
@@ -62,8 +62,8 @@ void Leg::resetStartingParameters(){
   this->planter_step_count = 0;
   this->first_step = 1;
 
-  for (int i = 0; i < motor_count; i++){
-    motors[i]->resetStartingParameters();
+  for (int i = 0; i < joint_count; i++){
+    joints[i]->resetStartingParameters();
   }
 }
 
@@ -84,8 +84,8 @@ void Leg::startIncrementalActivation(){
 void Leg::updateIncrementalActivation(){
   double since_activation_step_count = this->planter_step_count - this->increment_activation_starting_step;
   double activation_percent = since_activation_step_count / ACTIVATION_STEP_COUNT;
-  for(int i = 0; i < motor_count; i++){
-    motors[i]->setTorqueScalar(activation_percent);
+  for(int i = 0; i < joint_count; i++){
+    joints[i]->setTorqueScalar(activation_percent);
   }
 }
 
@@ -104,8 +104,8 @@ void Leg::changeState(int new_state, int old_state){
   this->state = new_state;
   this->state_time->reset();
 
-  for(int i = 0; i < motor_count; i++){
-    motors[i]->changeState(state);
+  for(int i = 0; i < joint_count; i++){
+    joints[i]->changeState(state);
   }
 
   Phase new_phase = determinePhase(new_state, old_state, this->current_phase);
@@ -148,14 +148,14 @@ void Leg::applyPlanterControlAlgorithm(){
     fsrs[i]->updateMaxes();
   }
 
-  for(int i = 0; i < motor_count; i++){
-    motors[i]->applyPlanterControlAlgorithm(FSR_percentage, taking_baseline, max_FSR_percentage);
+  for(int i = 0; i < joint_count; i++){
+    joints[i]->applyPlanterControlAlgorithm(FSR_percentage, taking_baseline, max_FSR_percentage);
   }
 }
 
 void Leg::applyDorsiControlAlgorithm(){
-  for(int i = 0; i < motor_count; i++){
-    motors[i]->applyAutoKF();
+  for(int i = 0; i < joint_count; i++){
+    joints[i]->applyAutoKF();
   }
 }
 
@@ -199,8 +199,8 @@ void Leg::triggerDorsiPhase(){
   double planter_time = this->planter_timer->lap();
   this->planter_mean = this->planter_time_averager->update(planter_time);
 
-  for (int i =0; i < motor_count; i++){
-    motors[i]->adjustShapingForTime(planter_time);
+  for (int i =0; i < joint_count; i++){
+    joints[i]->adjustShapingForTime(planter_time);
   }
 }
 
@@ -242,8 +242,8 @@ void Leg::triggerSwing(){
 }
 
 void Leg::setToZero(){
-  for(int i = 0; i<motor_count; i++){
-    motors[i]->setToZero();
+  for(int i = 0; i<joint_count; i++){
+    joints[i]->setToZero();
   }
 }
 
@@ -254,15 +254,15 @@ void Leg::applyStateMachine(){
     changeState(new_state, this->state);
   }
   updateIncrementalActivation();
-  for(int i = 0; i < motor_count;i++){
-    motors[i]->updateSetpoint(state);
+  for(int i = 0; i < joint_count;i++){
+    joints[i]->updateSetpoint(state);
   }
 }
 
 void Leg::measureSensors(){
-  for(int i = 0; i < motor_count; i++){
-    this->motors[i]->measureTorque();
-    this->motors[i]->measureError();
+  for(int i = 0; i < joint_count; i++){
+    this->joints[i]->measureTorque();
+    this->joints[i]->measureError();
   }
   this->foot_fsrs->measureForce();
 
@@ -270,15 +270,15 @@ void Leg::measureSensors(){
 
 void Leg::takeFSRBaseline(){
   if (FSR_baseline_FLAG){
-    for (int i = 0; i < motor_count; i++){
-      motors[i]->takeBaseline(state, state_old, &FSR_baseline_FLAG);
+    for (int i = 0; i < joint_count; i++){
+      joints[i]->takeBaseline(state, state_old, &FSR_baseline_FLAG);
     }
   }
 }
 
 bool Leg::applyTorque(){
-  for(int i = 0; i < motor_count; i++){
-    if (!motors[i]->applyTorque(state)){
+  for(int i = 0; i < joint_count; i++){
+    if (!joints[i]->applyTorque(state)){
       state = 9;
       return false;
     }
@@ -288,11 +288,11 @@ bool Leg::applyTorque(){
 
 
 LegReport* Leg::generateReport(){
-  LegReport* report = new LegReport(motor_count, fsr_count);
+  LegReport* report = new LegReport(joint_count, fsr_count);
   report->state = state;
   report->phase = current_phase;
-  for (int i = 0; i < motor_count; i++){
-    report->motor_reports[i] = motors[i]->generateReport();
+  for (int i = 0; i < joint_count; i++){
+    report->joint_reports[i] = joints[i]->generateReport();
   }
   for (int i = 0; i < fsr_count; i++){
     report->fsr_reports[i] = fsrs[i]->generateReport();
@@ -303,8 +303,8 @@ LegReport* Leg::generateReport(){
 void Leg::fillReport(LegReport* report){
   report->state = state;
   report->phase = current_phase;
-  for (int i = 0; i < motor_count; i++){
-    motors[i]->fillReport(&(report->motor_reports[i]));
+  for (int i = 0; i < joint_count; i++){
+    joints[i]->fillReport(&(report->joint_reports[i]));
   }
   for (int i = 0; i < fsr_count; i++){
     fsrs[i]->fillReport(&(report->fsr_reports[i]));

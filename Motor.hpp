@@ -10,13 +10,10 @@
 
 class Motor{
 private:
-  unsigned int torque_sensor_pin;
   unsigned int motor_pin;
   unsigned int motor_error_pin;
 
   bool in_error_state;
-
-  MovingAverage* torque_averager;
 
   double pid_setpoint = 0;
   double pid_input = 0;
@@ -29,11 +26,7 @@ private:
 
   double KF = 1;
 
-  RunningAverage* torque_calibration_average;
-  double torque_calibration_value = 0;
   Clamp* imu_clamp;
-
-  int torque_address;
 
   double setpoint;
   double previous_setpoint = 0;
@@ -56,9 +49,6 @@ private:
   ControlAlgorithm control_algorithm = zero_torque;
   ControlAlgorithm previous_control_algorithm = zero_torque;
 
-  double measureRawTorque();
-  double measureRawCalibratedTorque();
-
   RunningAverage* error_average;
 
   bool adjust_shaping_for_time = false;
@@ -67,15 +57,10 @@ private:
 
 public:
   Motor(MotorPins* motor_pins);
-  double getTorque();
-  void measureTorque();
   void measureError();
   bool hasErrored();
-  bool applyTorque(int state);
+  bool applyTorque(int state, double torque);
   void autoKF(int state);
-  void startTorqueCalibration();
-  void updateTorqueCalibration();
-  void endTorqueCalibration();
   void writeToMotor(int value);
   void changeState(int state);
   void updateSetpoint(int state);
@@ -88,7 +73,7 @@ public:
   void adjustShapingForTime(double planterTime);
   void setTorqueScalar(double scalar);
   void applyPlanterControlAlgorithm(bool taking_baseline, double FSR_percentage, double max_FSR_percentage);
-  void updateKFPIDError();
+  void updateKFPIDError(double torque);
   void applyAutoKF();
   MotorReport generateReport();
   void fillReport(MotorReport* report);

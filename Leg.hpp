@@ -6,7 +6,7 @@ const int dim = 5;
 #include <i2c_t3.h>
 #include "PID_v2.h"
 #include "State_Machine.hpp"
-#include "Motor.hpp"
+#include "Joint.hpp"
 #include "FSR.hpp"
 #include "Phase.hpp"
 #include "Pins.hpp"
@@ -34,9 +34,9 @@ private:
 
   bool set_motors_to_zero_torque;
 
-  Motor** motors;
-  int motor_count;
-  FSRGroup** fsrs;
+  Joint** joints;
+	int joint_count;
+	FSRGroup** fsrs;
   int fsr_count;
   FSRGroup* foot_fsrs;
 

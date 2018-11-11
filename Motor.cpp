@@ -11,12 +11,9 @@
 
 Motor::Motor(MotorPins* motor_pins){
   this->motor_pin = motor_pins->motor;
-  this->torque_sensor_pin = motor_pins->torque;
   this->motor_error_pin = motor_pins->err;
-  this->torque_averager = new MovingAverage(TORQUE_AVERAGE_COUNT);
   this->pid_avg_err = new RunningAverage();
   this->kf_clamp = new Clamp(MAX_KF, MIN_KF);
-  this->torque_calibration_average = new RunningAverage();
   this->imu_clamp = new Clamp(-45,45);
   this->shaping_function = new ShapingFunction();
   this->setpoint_clamp = new Clamp(Min_Prop, Max_Prop);
@@ -27,21 +24,8 @@ Motor::Motor(MotorPins* motor_pins){
   pid->SetOutputLimits(-1500, 1500);
   pid->SetSampleTime(PID_sample_time);
 
-  pinMode(this->torque_sensor_pin, INPUT);
   pinMode(motor_error_pin, INPUT);
   pinMode(motor_pin, OUTPUT);
-}
-
-void Motor::startTorqueCalibration(){
-  torque_calibration_average->reset();
-}
-
-void Motor::updateTorqueCalibration(){
-  torque_calibration_average->update(measureRawTorque());
-}
-
-void Motor::endTorqueCalibration(){
-  torque_calibration_value = torque_calibration_average->getAverage();
 }
 
 void Motor::setControlAlgorithm(ControlAlgorithm control_algorithm){
@@ -73,9 +57,8 @@ void Motor::applyPlanterControlAlgorithm(bool taking_baseline, double FSR_percen
   }
 }
 
-bool Motor::applyTorque(int state){
+bool Motor::applyTorque(int state, double torque){
   double meas_IMU = 0;
-  double torque = this->getTorque();
 
   //TODO Test IMU balance control
   if (IMU_ENABLED && state == LATE_STANCE && control_algorithm == 2) {
@@ -96,29 +79,8 @@ bool Motor::applyTorque(int state){
   return true;
 }
 
-double Motor::measureRawTorque(){
-  double readValue = analogRead(this->torque_sensor_pin);
-  return readValue * (3.3 / 4096.0);
-}
-
-double Motor::measureRawCalibratedTorque(){
-  double rawTorq = measureRawTorque();
-  double Torq = 56.5 / (2.1) * (rawTorq - this->torque_calibration_value);
-  return Torq; // TODO Check if negative is necessary
-}
-
 void Motor::measureError(){
   in_error_state = digitalRead(motor_error_pin);
-}
-
-void Motor::measureTorque(){
-  double measured = this->measureRawCalibratedTorque();
-  torque_averager->update(measured);
-}
-
-double Motor::getTorque(){
-  double torque = torque_averager->getAverage();
-  return torque;
 }
 
 bool Motor::hasErrored(){
@@ -162,8 +124,8 @@ void Motor::resetStartingParameters(){
   this->iter_time_percentage = 0.5;
 }
 
-void Motor::updateKFPIDError(){
-  error_average->update(pid_setpoint - getTorque());
+void Motor::updateKFPIDError(double torque){
+  error_average->update(pid_setpoint - torque);
 }
 
 void Motor::applyAutoKF(){
@@ -194,12 +156,10 @@ void Motor::setTorqueScalar(double scalar){
 
 MotorReport Motor::generateReport(){
   MotorReport report = MotorReport();
-  report.measuredTorque = getTorque();
   report.pid_setpoint = pid_setpoint;
   return report;
 }
 
 void Motor::fillReport(MotorReport* report){
-  report->measuredTorque = getTorque();
   report->pid_setpoint = pid_setpoint;
 }

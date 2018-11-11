@@ -4,8 +4,18 @@
 class MotorPins{
 public:
   int err;
-  int torque;
   int motor;
+};
+
+class TorqueSensorPins{
+public:
+  int torque_sensor;
+};
+
+class JointPins{
+public:
+  MotorPins motor_pins;
+	TorqueSensorPins torque_sensor_pins;
 };
 
 class FSRPins{
@@ -15,10 +25,10 @@ public:
 
 class LegPins{
 public:
-  LegPins(int motorsAmount, int fsrAmount);
+  LegPins(int jointAmount, int fsrAmount);
   ~LegPins();
-  MotorPins* motor_pins;
-  int motor_count;
+  JointPins* joint_pins;
+  int joint_count;
   FSRPins* fsr_pins;
   int fsr_count;
 };
