@@ -7,6 +7,7 @@
 #include "Control_Algorithms.hpp"
 #include "Pins.hpp"
 #include "Report.hpp"
+#include <PID_v2.h>
 
 Motor::Motor(MotorPins* motor_pins){
   this->motor_pin = motor_pins->motor;
@@ -192,13 +193,13 @@ void Motor::setTorqueScalar(double scalar){
 }
 
 MotorReport Motor::generateReport(){
-	MotorReport report = MotorReport();
-	report.measuredTorque = getTorque();
-	report.pid_setpoint = pid_setpoint;
-	return report;
+  MotorReport report = MotorReport();
+  report.measuredTorque = getTorque();
+  report.pid_setpoint = pid_setpoint;
+  return report;
 }
 
 void Motor::fillReport(MotorReport* report){
-	report->measuredTorque = getTorque();
-	report->pid_setpoint = pid_setpoint;
+  report->measuredTorque = getTorque();
+  report->pid_setpoint = pid_setpoint;
 }

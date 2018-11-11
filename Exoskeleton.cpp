@@ -57,8 +57,8 @@ bool Exoskeleton::checkMotorErrors(){
 }
 
 void Exoskeleton::enableExo(){
-	digitalWrite(MOTOR_ENABLE_PIN, HIGH);
-	digitalWrite(LED_PIN, HIGH);
+  digitalWrite(MOTOR_ENABLE_PIN, HIGH);
+  digitalWrite(LED_PIN, HIGH);
 }
 
 void Exoskeleton::disableExo(){
@@ -81,13 +81,13 @@ void Exoskeleton::checkIMUs(){
 }
 
 ExoReport* Exoskeleton::generateReport(){
-	ExoReport* report = new ExoReport();
-	report->left_leg = left_leg->generateReport();
-	report->right_leg = right_leg->generateReport();
-	return report;
+  ExoReport* report = new ExoReport();
+  report->left_leg = left_leg->generateReport();
+  report->right_leg = right_leg->generateReport();
+  return report;
 }
 
 void Exoskeleton::fillReport(ExoReport* report){
-	left_leg->fillReport(report->left_leg);
-	right_leg->fillReport(report->right_leg);
+  left_leg->fillReport(report->left_leg);
+  right_leg->fillReport(report->right_leg);
 }

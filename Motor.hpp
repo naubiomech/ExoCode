@@ -1,13 +1,12 @@
 #ifndef MOTOR_HEADER
 #define MOTOR_HEADER
-#include <PID_v2.h>
-
 #include "Parameters.hpp"
 #include "Utils.hpp"
 #include "Shaping_Functions.hpp"
 #include "Control_Algorithms.hpp"
 #include "Pins.hpp"
 #include "Report.hpp"
+#include <PID_v2.h>
 
 class Motor{
 private:

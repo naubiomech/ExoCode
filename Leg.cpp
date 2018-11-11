@@ -148,29 +148,29 @@ void Leg::applyPlanterControlAlgorithm(){
     fsrs[i]->updateMaxes();
   }
 
-    for(int i = 0; i < motor_count; i++){
-      motors[i]->applyPlanterControlAlgorithm(FSR_percentage, taking_baseline, max_FSR_percentage);
-    }
+  for(int i = 0; i < motor_count; i++){
+    motors[i]->applyPlanterControlAlgorithm(FSR_percentage, taking_baseline, max_FSR_percentage);
   }
+}
 
-  void Leg::applyDorsiControlAlgorithm(){
-    for(int i = 0; i < motor_count; i++){
-      motors[i]->applyAutoKF();
-    }
+void Leg::applyDorsiControlAlgorithm(){
+  for(int i = 0; i < motor_count; i++){
+    motors[i]->applyAutoKF();
   }
+}
 
-  Phase Leg::determinePhase(int new_state, int old_state, Phase current_phase){
-    double current_phase_time;
-    Phase next_phase;
-    if (new_state == SWING && old_state == LATE_STANCE && current_phase == DORSI){
-      next_phase = PLANTER;
-      current_phase_time = planter_timer->lap();
-    } else if (new_state == LATE_STANCE && old_state == SWING && current_phase == PLANTER){
-      next_phase = DORSI;
-      current_phase_time = dorsi_timer->lap();
-    } else {
-      return current_phase;
-    }
+Phase Leg::determinePhase(int new_state, int old_state, Phase current_phase){
+  double current_phase_time;
+  Phase next_phase;
+  if (new_state == SWING && old_state == LATE_STANCE && current_phase == DORSI){
+    next_phase = PLANTER;
+    current_phase_time = planter_timer->lap();
+  } else if (new_state == LATE_STANCE && old_state == SWING && current_phase == PLANTER){
+    next_phase = DORSI;
+    current_phase_time = dorsi_timer->lap();
+  } else {
+    return current_phase;
+  }
 
   if (current_phase_time <=step_time_length /4){
     return current_phase;
@@ -288,25 +288,25 @@ bool Leg::applyTorque(){
 
 
 LegReport* Leg::generateReport(){
-	LegReport* report = new LegReport(motor_count, fsr_count);
-	report->state = state;
-	report->phase = current_phase;
-	for (int i = 0; i < motor_count; i++){
-		report->motor_reports[i] = motors[i]->generateReport();
-	}
-	for (int i = 0; i < fsr_count; i++){
-		report->fsr_reports[i] = fsrs[i]->generateReport();
-	}
-	return report;
+  LegReport* report = new LegReport(motor_count, fsr_count);
+  report->state = state;
+  report->phase = current_phase;
+  for (int i = 0; i < motor_count; i++){
+    report->motor_reports[i] = motors[i]->generateReport();
+  }
+  for (int i = 0; i < fsr_count; i++){
+    report->fsr_reports[i] = fsrs[i]->generateReport();
+  }
+  return report;
 }
 
 void Leg::fillReport(LegReport* report){
-	report->state = state;
-	report->phase = current_phase;
-	for (int i = 0; i < motor_count; i++){
-		motors[i]->fillReport(&(report->motor_reports[i]));
-	}
-	for (int i = 0; i < fsr_count; i++){
-		fsrs[i]->fillReport(&(report->fsr_reports[i]));
-	}
+  report->state = state;
+  report->phase = current_phase;
+  for (int i = 0; i < motor_count; i++){
+    motors[i]->fillReport(&(report->motor_reports[i]));
+  }
+  for (int i = 0; i < fsr_count; i++){
+    fsrs[i]->fillReport(&(report->fsr_reports[i]));
+  }
 }
