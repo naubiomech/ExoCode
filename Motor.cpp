@@ -11,6 +11,15 @@ Motor::Motor(MotorPins* motor_pins){
   this->motor_pin = motor_pins->motor;
   this->torque_sensor_pin = motor_pins->torque;
   this->motor_error_pin = motor_pins->err;
+  this->torque_averager = new MovingAverage(TORQUE_AVERAGE_COUNT);
+  this->pid_avg_err = new RunningAverage();
+  this->kf_clamp = new Clamp(MAX_KF, MIN_KF);
+  this->torque_calibration_average = new RunningAverage();
+  this->imu_clamp = new Clamp(-45,45);
+  this->shaping_function = new ShapingFunction();
+  this->setpoint_clamp = new Clamp(Min_Prop, Max_Prop);
+  this->error_average = new RunningAverage();
+
 }
 
 void Motor::startTorqueCalibration(){
@@ -60,7 +69,7 @@ bool Motor::applyTorque(int state){
 
   //TODO Test IMU balance control
   if (IMU_ENABLED && state == LATE_STANCE && control_algorithm == 2) {
-    meas_IMU = imu_clamp.clamp(meas_IMU);
+    meas_IMU = imu_clamp->clamp(meas_IMU);
     pid_setpoint = 0;
   } else {
     input = torque;
@@ -83,7 +92,7 @@ double Motor::measureRawTorque(){
 }
 
 double Motor::measureRawCalibratedTorque(){
-  double Torq = 56.5 / (2.1) * (measureRawCalibratedTorque() - this->torque_calibration_value);
+  double Torq = 56.5 / (2.1) * (measureRawTorque() - this->torque_calibration_value);
   return -Torq; // TODO Check if negative is necessary
 }
 
@@ -92,7 +101,8 @@ void Motor::measureError(){
 }
 
 void Motor::measureTorque(){
-  torque_averager->update(this->measureRawCalibratedTorque());
+  double measured = this->measureRawCalibratedTorque();
+  torque_averager->update(measured);
 }
 
 double Motor::getTorque(){

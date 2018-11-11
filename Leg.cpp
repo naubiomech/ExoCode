@@ -263,6 +263,7 @@ void Leg::measureSensors(){
     this->motors[i]->measureError();
   }
   this->foot_fsrs->measureForce();
+
 }
 
 void Leg::takeFSRBaseline(){

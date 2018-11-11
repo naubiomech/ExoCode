@@ -3,8 +3,8 @@
 
 class RunningAverage{
 private:
-  double avg;
-  double count;
+  double avg = 0;
+  double count = 0;
 public:
   void update(double value);
   double getAverage();

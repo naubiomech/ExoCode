@@ -16,19 +16,19 @@ private:
 
   bool in_error_state;
 
-  MovingAverage* torque_averager = new MovingAverage(TORQUE_AVERAGE_COUNT);
+  MovingAverage* torque_averager;
 
   double pid_setpoint, input, output;
   PID pid = PID(&input, &output, &pid_setpoint, PID_DEFAULTS[0], PID_DEFAULTS[1], PID_DEFAULTS[2], DIRECT);
 
-  RunningAverage* pid_avg_err = new RunningAverage();
-  Clamp* kf_clamp = new Clamp(MAX_KF, MIN_KF);
+  RunningAverage* pid_avg_err;
+  Clamp* kf_clamp;
 
   double KF = 1;
 
-  RunningAverage* torque_calibration_average = new RunningAverage();
+  RunningAverage* torque_calibration_average;
   double torque_calibration_value = 0;
-  Clamp imu_clamp = Clamp(-45,45);
+  Clamp* imu_clamp;
 
   int torque_address;
 
@@ -43,12 +43,12 @@ private:
   double prop_gain = 1;
 
   long sig_time_old = 0;
-  ShapingFunction* shaping_function = new ShapingFunction();
+  ShapingFunction* shaping_function;
   double torque_scalar = 0;
 
   double iter_time_percentage = 0.5;
 
-  Clamp* setpoint_clamp = new Clamp(Min_Prop, Max_Prop);
+  Clamp* setpoint_clamp;
   double desired_setpoint = 0;
   ControlAlgorithm control_algorithm = zero_torque;
   ControlAlgorithm previous_control_algorithm = zero_torque;
@@ -56,7 +56,7 @@ private:
   double measureRawTorque();
   double measureRawCalibratedTorque();
 
-  RunningAverage* error_average = new RunningAverage();
+  RunningAverage* error_average;
 
   bool adjust_shaping_for_time = false;
   int iter_late_stance = DEFAULT_ITER_LATE_STANCE;

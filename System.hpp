@@ -17,7 +17,7 @@ public:
 class ExoSystem{
 public:
   ExoSystem(ExoPins* exoPins);
-  Trial* trial = new Trial();
+  Trial* trial;
   SoftwareSerial* commandSerial;
   elapsedMillis timeElapsed;
   int streamTimerCount = 0;

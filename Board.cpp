@@ -11,7 +11,7 @@ ExoSystem* setupBoard(){
   Serial.println("Starting");
   // The led
   pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
+  digitalWrite(LED_PIN, HIGH);
 
   analogWriteResolution(12);
   analogReadResolution(12);

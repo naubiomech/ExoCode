@@ -44,9 +44,8 @@ void setup() {
 
   // Fast torque calibration
   exo->calibrateTorque();
-
-  digitalWrite(LED_PIN, HIGH);
-
+  digitalWrite(LED_PIN, LOW);
+  Serial.println("Exo Ready");
   // set the interrupt
   Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
   Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
@@ -64,7 +63,6 @@ void callback() {
   check_Balance_Baseline();
 
   rotate_motor();
-
 }
 
 void loop() {
@@ -83,11 +81,8 @@ void loop() {
 }
 
 void resetMotorIfError() {
-
   if (exoSystem->trial->bluetoothStream == 1) {
-
     //TODO implement error checking
-
   }
 }
 

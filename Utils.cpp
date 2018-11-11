@@ -18,6 +18,8 @@ void RunningAverage::reset(){
 
 MovingAverage::MovingAverage(int size){
   previous_values = new double[size];
+  this->size = size;
+  this->average = 0;
 }
 
 double MovingAverage::update(double value){
