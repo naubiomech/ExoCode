@@ -41,7 +41,7 @@ void send_report(ExoSystem* exoSystem) {
 	commandSerial->print('S');
 	commandSerial->print(',');
 	send_leg_report(commandSerial, report->right_leg);
-	send_leg_report(commandSerial, report->right_leg);
+	send_leg_report(commandSerial, report->left_leg);
 
 	commandSerial->print((double) (0)); //SIG1
 	commandSerial->print(',');
