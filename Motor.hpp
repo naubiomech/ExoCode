@@ -41,7 +41,7 @@ private:
   double new_pid_setpoint = 0.0;
   double old_pid_setpoint = 0.0;
 
-  double zero_torque_reference;
+  double zero_torque_reference = ZERO_TORQUE_REFERENCE_DEFAULT;
 
   double prop_gain = 1;
 

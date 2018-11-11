@@ -110,16 +110,15 @@ void rotate_motor() {
       exoSystem->trial->reportDataTimer.reset();
     }
 
-    //TODO apply auto kf here
-
-    exo->applyTorque();
-
-    exo->applyStateMachine();
-
-    exo->setZeroIfSteadyState();
-
-    exo->adjustControl();
   }
+//TODO apply auto kf here
+  exo->applyTorque();
+
+  exo->applyStateMachine();
+
+  exo->setZeroIfSteadyState();
+
+  exo->adjustControl();
 }
 
 void reset_starting_parameters() {

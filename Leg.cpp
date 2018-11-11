@@ -9,7 +9,8 @@ Leg::Leg(LegPins* legPins){
   this->motor_count = legPins->motor_count;
   this->motors = new Motor*[motor_count];
   for (int i = 0; i < legPins->motor_count; i++){
-    this->motors[i] = new Motor(&legPins->motor_pins[i]);
+    MotorPins* motor_pins = &(legPins->motor_pins[i]);
+    this->motors[i] = new Motor(motor_pins);
   }
 }
 

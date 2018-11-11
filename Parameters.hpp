@@ -14,7 +14,7 @@ const int PID_DEFAULTS[] = {700, 3, 0};
 
 const int TORQUE_CALIBRATION_TIME_IN_MS = 1000;
 
-const unsigned int zero = 2048;//1540;
+const unsigned int ZERO_TORQUE_REFERENCE_DEFAULT = 2048;//1540;
 
 // ===== FSR Parameters =====
 // To set FSR bias and to identify the states

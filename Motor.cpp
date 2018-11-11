@@ -36,8 +36,6 @@ void Motor::updateTorqueCalibration(){
 
 void Motor::endTorqueCalibration(){
   torque_calibration_value = torque_calibration_average->getAverage();
-  Serial.print("Torque Calibration: ");
-  Serial.println(torque_calibration_value);
 }
 
 void Motor::setControlAlgorithm(ControlAlgorithm control_algorithm){
@@ -88,13 +86,6 @@ bool Motor::applyTorque(int state){
   }
 
   pid->Compute_KF(KF);
-  Serial.print(pid_input);
-  Serial.print(":");
-  Serial.print(KF);
-  Serial.print(":");
-  Serial.print(pid_setpoint);
-  Serial.print(":");
-  Serial.println(pid_output);
   writeToMotor(pid_output);
   return true;
 }
@@ -119,7 +110,8 @@ void Motor::measureTorque(){
 }
 
 double Motor::getTorque(){
-  return torque_averager->getAverage();
+  double torque = torque_averager->getAverage();
+  return torque;
 }
 
 bool Motor::hasErrored(){

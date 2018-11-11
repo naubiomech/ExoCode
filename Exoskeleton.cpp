@@ -5,7 +5,7 @@
 
 Exoskeleton::Exoskeleton(ExoPins* exoPins){
   left_leg = new Leg(exoPins->left_leg);
-  right_leg = new Leg(exoPins->left_leg);
+  right_leg = new Leg(exoPins->right_leg);
 }
 
 void Exoskeleton::calibrateTorque(){
