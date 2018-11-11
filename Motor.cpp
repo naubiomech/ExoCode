@@ -20,7 +20,8 @@ Motor::Motor(MotorPins* motor_pins){
   this->shaping_function = new ShapingFunction();
   this->setpoint_clamp = new Clamp(Min_Prop, Max_Prop);
   this->error_average = new RunningAverage();
-  pid = new PID(&pid_input, &pid_output, &pid_setpoint, PID_DEFAULTS[0], PID_DEFAULTS[1], PID_DEFAULTS[2], DIRECT);
+  pid = new PID(&this->pid_input, &this->pid_output, &this->pid_setpoint,
+                PID_DEFAULTS[0], PID_DEFAULTS[1], PID_DEFAULTS[2], REVERSE);
   pid->SetMode(AUTOMATIC);
   pid->SetOutputLimits(-1500, 1500);
   pid->SetSampleTime(PID_sample_time);
@@ -100,8 +101,9 @@ double Motor::measureRawTorque(){
 }
 
 double Motor::measureRawCalibratedTorque(){
-  double Torq = 56.5 / (2.1) * (measureRawTorque() - this->torque_calibration_value);
-  return -Torq; // TODO Check if negative is necessary
+  double rawTorq = measureRawTorque();
+  double Torq = 56.5 / (2.1) * (rawTorq - this->torque_calibration_value);
+  return Torq; // TODO Check if negative is necessary
 }
 
 void Motor::measureError(){
