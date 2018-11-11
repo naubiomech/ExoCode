@@ -19,7 +19,11 @@ Motor::Motor(MotorPins* motor_pins){
   this->shaping_function = new ShapingFunction();
   this->setpoint_clamp = new Clamp(Min_Prop, Max_Prop);
   this->error_average = new RunningAverage();
+  pid = new PID(&pid_input, &pid_output, &pid_setpoint, PID_DEFAULTS[0], PID_DEFAULTS[1], PID_DEFAULTS[2], DIRECT);
 
+  pinMode(this->torque_sensor_pin, INPUT);
+  pinMode(motor_error_pin, INPUT);
+  pinMode(motor_pin, OUTPUT);
 }
 
 void Motor::startTorqueCalibration(){
@@ -31,7 +35,9 @@ void Motor::updateTorqueCalibration(){
 }
 
 void Motor::endTorqueCalibration(){
-  torque_calibration_value = torque_calibration_average->getAverage() * (3.3/4096.0);
+  torque_calibration_value = torque_calibration_average->getAverage();
+  Serial.print("Torque Calibration: ");
+  Serial.println(torque_calibration_value);
 }
 
 void Motor::setControlAlgorithm(ControlAlgorithm control_algorithm){
@@ -40,7 +46,7 @@ void Motor::setControlAlgorithm(ControlAlgorithm control_algorithm){
 }
 
 void Motor::writeToMotor(int value){
-  int Vol = this->output + this->zero_torque_reference;
+  int Vol = this->pid_output + this->zero_torque_reference;
 
   if (PWM_CONTROL){
     Vol = Vol * 0.8 + 0.1 * 4096.0;
@@ -72,23 +78,30 @@ bool Motor::applyTorque(int state){
     meas_IMU = imu_clamp->clamp(meas_IMU);
     pid_setpoint = 0;
   } else {
-    input = torque;
+    pid_input = torque;
 
-    if ((abs(torque) > 25))
-    {
+    if ((abs(torque) > 25)) {
       KF = 0;
       return false;
 
     }
   }
 
-  pid.Compute_KF(KF);
-  writeToMotor(output);
+  pid->Compute_KF(KF);
+  Serial.print(pid_input);
+  Serial.print(":");
+  Serial.print(KF);
+  Serial.print(":");
+  Serial.print(pid_setpoint);
+  Serial.print(":");
+  Serial.println(pid_output);
+  writeToMotor(pid_output);
   return true;
 }
 
 double Motor::measureRawTorque(){
-  return analogRead(this->torque_sensor_pin) * (3.3 / 4096);
+  double readValue = analogRead(this->torque_sensor_pin);
+  return readValue * (3.3 / 4096.0);
 }
 
 double Motor::measureRawCalibratedTorque(){

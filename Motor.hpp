@@ -18,8 +18,11 @@ private:
 
   MovingAverage* torque_averager;
 
-  double pid_setpoint, input, output;
-  PID pid = PID(&input, &output, &pid_setpoint, PID_DEFAULTS[0], PID_DEFAULTS[1], PID_DEFAULTS[2], DIRECT);
+  double pid_setpoint = 0;
+  double pid_input = 0;
+  double pid_output = 0;
+
+  PID* pid;
 
   RunningAverage* pid_avg_err;
   Clamp* kf_clamp;
