@@ -6,7 +6,7 @@ private:
   double avg = 0;
   double count = 0;
 public:
-  void update(double value);
+  double update(double value);
   double getAverage();
   void reset();
 };
@@ -14,7 +14,9 @@ public:
 class MovingAverage{
 private:
   double* previous_values;
+  double total;
   double average;
+  int index;
   int size;
 public:
   MovingAverage(int size);

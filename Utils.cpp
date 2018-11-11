@@ -2,9 +2,10 @@
 #include "Utils.hpp"
 #include <float.h>
 
-void RunningAverage::update(double value){
+double RunningAverage::update(double value){
   avg += value;
   count++;
+  return getAverage();
 }
 
 double RunningAverage::getAverage(){
@@ -18,18 +19,21 @@ void RunningAverage::reset(){
 
 MovingAverage::MovingAverage(int size){
   previous_values = new double[size];
+  for(int i = 0; i < size;i++){
+    previous_values[i] = 0;
+  }
   this->size = size;
+  this->total = 0;
   this->average = 0;
+  this->index = 0;
 }
 
 double MovingAverage::update(double value){
-  average = value;
-  for(int i = 0; i < size-1;i++){
-    average += previous_values[i];
-    previous_values[i+1] = previous_values[i];
-  }
-  previous_values[0] = value;
-  average /= size;
+  total -= previous_values[index];
+  previous_values[index] = value;
+  index = (index + 1) % size;
+  total += value;
+  average = total / size;
   return average;
 }
 
