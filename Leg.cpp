@@ -139,7 +139,7 @@ void Leg::applyControlAlgorithm(){
 }
 
 void Leg::applyPlanterControlAlgorithm(){
-  for(int i =0; i < fsr_count; i++){
+  for(int i =0; i < fsr_group_count; i++){
     fsrs[i]->updateMaxes();
   }
 
@@ -147,7 +147,7 @@ void Leg::applyPlanterControlAlgorithm(){
   double max_FSR_percentage = foot_fsrs->getMaxPercentage();
   bool taking_baseline = false;
 
-  for(int i = 0; i < fsr_count; i++){
+  for(int i = 0; i < fsr_group_count; i++){
     fsrs[i]->updateMaxes();
   }
 
@@ -190,7 +190,7 @@ bool Leg::determine_foot_on_ground(){
 void Leg::triggerPlanterPhase(){
   this->planter_timer->reset();
 
-  for (int i = 0; i <fsr_count;i++){
+  for (int i = 0; i <fsr_group_count;i++){
     fsrs[i]->resetMaxes();
   }
 }
@@ -212,7 +212,7 @@ int Leg::takeBaselineTriggerDorsiStart(){
   double planter_time = this->planter_timer->lap();
   this->planter_mean = this->planter_time_averager->update(planter_time);
 
-  for(int i = 0; i < fsr_count;i++){
+  for(int i = 0; i < fsr_group_count;i++){
     fsrs[i]->updateBaseline();
   }
 
@@ -291,13 +291,13 @@ bool Leg::applyTorque(){
 
 
 LegReport* Leg::generateReport(){
-  LegReport* report = new LegReport(joint_count, fsr_count);
+  LegReport* report = new LegReport(joint_count, fsr_group_count);
   report->state = state;
   report->phase = current_phase;
   for (int i = 0; i < joint_count; i++){
     report->joint_reports[i] = joints[i]->generateReport();
   }
-  for (int i = 0; i < fsr_count; i++){
+  for (int i = 0; i < fsr_group_count; i++){
     report->fsr_reports[i] = fsrs[i]->generateReport();
   }
   return report;
@@ -309,7 +309,7 @@ void Leg::fillReport(LegReport* report){
   for (int i = 0; i < joint_count; i++){
     joints[i]->fillReport(&(report->joint_reports[i]));
   }
-  for (int i = 0; i < fsr_count; i++){
+  for (int i = 0; i < fsr_group_count; i++){
     fsrs[i]->fillReport(&(report->fsr_reports[i]));
   }
 }
