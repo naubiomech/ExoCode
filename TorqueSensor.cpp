@@ -48,10 +48,14 @@ double TorqueSensor::measureRawCalibratedTorque(){
 
 TorqueSensorReport TorqueSensor::generateReport(){
   TorqueSensorReport report;
-  report.measuredTorque = getTorque();
+  fillLocalReport(&report);
   return report;
 }
 
 void TorqueSensor::fillReport(TorqueSensorReport* report){
+  fillLocalReport(report);
+}
+
+void TorqueSensor::fillLocalReport(TorqueSensorReport* report){
   report->measuredTorque = getTorque();
 }

@@ -129,12 +129,15 @@ void FSRGroup::updateBaseline(){
 
 FSRReport FSRGroup::generateReport(){
 	FSRReport report = FSRReport();
-	report.threshold = getThreshold();
-	report.measuredForce = getForce();
+  fillLocalReport(&report);
 	return report;
 }
 
 void FSRGroup::fillReport(FSRReport* report){
-	report->threshold = getThreshold();
-	report->measuredForce = getForce();
+  fillLocalReport(report);
+}
+
+void FSRGroup::fillLocalReport(FSRReport* report){
+  report->threshold = getThreshold();
+  report->measuredForce = getForce();
 }

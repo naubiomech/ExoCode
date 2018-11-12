@@ -32,6 +32,7 @@ private:
   bool isSteadyState();
   void trigger_planter_phase();
   void trigger_dorsi_phase();
+  void fillLocalReport(LegReport* report);
 
   bool set_motors_to_zero_torque;
 

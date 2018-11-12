@@ -15,6 +15,7 @@ private:
 
   double measureRawTorque();
   double measureRawCalibratedTorque();
+  void fillLocalReport(TorqueSensorReport* report);
 public:
   double getTorque();
   TorqueSensor(TorqueSensorPins* sensor_pins);

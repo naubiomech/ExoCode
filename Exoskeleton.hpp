@@ -7,6 +7,7 @@
 
 class Exoskeleton{
 private:
+  void fillLocalReport(ExoReport* report);
   // TODO Implement the motor error handling
   int time_err_motor;
   int time_err_motor_reboot;

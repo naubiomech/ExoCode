@@ -101,13 +101,18 @@ void Joint::endTorqueCalibration(){
 
 JointReport Joint::generateReport(){
   JointReport report;
+  fillLocalReport(&report);
   report.motor_report = motor->generateReport();
   report.torque_sensor_report = torque_sensor->generateReport();
   return report;
 }
 
 void Joint::fillReport(JointReport* report){
+  fillLocalReport(report);
   motor->fillReport(&report->motor_report);
   torque_sensor->fillReport(&report->torque_sensor_report);
+}
+
+void Joint::fillLocalReport(JointReport* report){
 
 }

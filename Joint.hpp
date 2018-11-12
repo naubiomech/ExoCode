@@ -10,6 +10,8 @@ class Joint{
 private:
   Motor* motor;
 	TorqueSensor* torque_sensor;
+
+  void fillLocalReport(JointReport* report);
 public:
   Joint(JointPins* joint_pins);
   JointReport generateReport();

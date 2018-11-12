@@ -10,6 +10,8 @@
 
 class Motor{
 private:
+  void fillLocalReport(MotorReport* report);
+
   unsigned int motor_pin;
   unsigned int motor_error_pin;
 

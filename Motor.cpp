@@ -156,10 +156,14 @@ void Motor::setTorqueScalar(double scalar){
 
 MotorReport Motor::generateReport(){
   MotorReport report = MotorReport();
-  report.pid_setpoint = pid_setpoint;
+  fillLocalReport(&report);
   return report;
 }
 
 void Motor::fillReport(MotorReport* report){
+  fillLocalReport(report);
+}
+
+void Motor::fillLocalReport(MotorReport* report){
   report->pid_setpoint = pid_setpoint;
 }

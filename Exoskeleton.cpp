@@ -81,23 +81,29 @@ void Exoskeleton::checkIMUs(){
 }
 
 void Exoskeleton::calibrateIMUs(){
-	right_leg->calibrateIMUs();
-	left_leg->calibrateIMUs();
+  right_leg->calibrateIMUs();
+  left_leg->calibrateIMUs();
 }
 
 void Exoskeleton::measureIMUs(){
-	right_leg->measureIMUs();
-	left_leg->measureIMUs();
+  right_leg->measureIMUs();
+  left_leg->measureIMUs();
 }
 
 ExoReport* Exoskeleton::generateReport(){
-	ExoReport* report = new ExoReport();
+  ExoReport* report = new ExoReport();
+  fillLocalReport(report);
   report->left_leg = left_leg->generateReport();
   report->right_leg = right_leg->generateReport();
   return report;
 }
 
 void Exoskeleton::fillReport(ExoReport* report){
+  fillLocalReport(report);
   left_leg->fillReport(report->left_leg);
   right_leg->fillReport(report->right_leg);
+}
+
+void Exoskeleton::fillLocalReport(ExoReport* report){
+
 }

@@ -11,6 +11,7 @@ private:
   void startCalibration();
   void updateCalibration();
   void endCalibration();
+  void fillLocalReport(FSRReport* report);
 
 public:
   FSR(int pin);
@@ -45,6 +46,7 @@ private:
 
   void startCalibration();
   void updateCalibration();
+  void fillLocalReport(FSRReport* report);
 
 public:
   FSRGroup(FSRPins* fsr_pins, int fsr_count);
