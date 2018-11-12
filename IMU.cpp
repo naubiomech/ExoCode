@@ -14,7 +14,7 @@ IMU::IMU(IMUPins* imu_pins){
   }
 }
 
-void IMU::calibrateIMU(){
+void IMU::calibrate(){
   sensors_event_t event;
   Serial.println("IMU setup... calibrating");
   while (!bno->isFullyCalibrated()) {
@@ -48,7 +48,7 @@ void IMU::calibrateIMU(){
   }
 }
 
-void IMU::measureIMU(){
+void IMU::measure(){
   if (imu_measure_limiter.check()){
     euler = bno->getVector(Adafruit_BNO055::VECTOR_EULER);
     imu_measure_limiter.reset();

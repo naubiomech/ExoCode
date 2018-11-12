@@ -14,8 +14,8 @@ private:
 
 public:
   IMU(IMUPins* imu_pins);
-  void calibrateIMU();
-  void measureIMU();
+  void calibrate();
+  void measure();
   void getOrientation(double* orientation);
 };
 
