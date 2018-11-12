@@ -60,3 +60,19 @@ void IMU::getOrientation(double* orientation){
   orientation[1] = euler[1];
   orientation[2] = euler[2];
 }
+
+IMUReport* IMU::generateReport(){
+  IMUReport* report = new IMUReport();
+  fillLocalReport(report);
+  return report;
+}
+
+void IMU::fillReport(IMUReport* report){
+  fillLocalReport(report);
+}
+
+void IMU::fillLocalReport(IMUReport* report){
+  report->orientation[0] = euler[0];
+  report->orientation[1] = euler[1];
+  report->orientation[2] = euler[2];
+}

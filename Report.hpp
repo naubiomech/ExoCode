@@ -24,11 +24,21 @@ public:
 	double measuredForce;
 };
 
+class IMUReport{
+public:
+	double orientation[3];
+};
+
 class LegReport{
 public:
-	LegReport(int motor_count, int fsr_count);
+	LegReport(int joint_count, int fsr_count, int imu_count);
+	~LegReport();
 	FSRReport* fsr_reports;
 	JointReport* joint_reports;
+	IMUReport* imu_reports;
+	int fsr_report_count;
+	int joint_report_count;
+	int imu_report_count;
 	int state;
 	Phase phase;
 };

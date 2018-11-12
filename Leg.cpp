@@ -307,7 +307,7 @@ void Leg::measureIMUs(){
 }
 
 LegReport* Leg::generateReport(){
-  LegReport* report = new LegReport(joint_count, fsr_group_count);
+  LegReport* report = new LegReport(joint_count, fsr_group_count, imu_count);
   fillLocalReport(report);
   for (int i = 0; i < joint_count; i++){
     report->joint_reports[i] = joints[i]->generateReport();

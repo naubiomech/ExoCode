@@ -5,6 +5,7 @@
 #include <Adafruit_BNO055_t3.h>
 #include <utility/imumaths.h>
 #include "Parameters.hpp"
+#include "Report.hpp"
 
 class IMU{
 private:
@@ -17,6 +18,9 @@ public:
   void calibrate();
   void measure();
   void getOrientation(double* orientation);
+  IMUReport* generateReport();
+  void fillReport(IMUReport* report);
+  void fillLocalReport(IMUReport* report);
 };
 
 #endif
