@@ -294,6 +294,17 @@ bool Leg::applyTorque(){
   return true;
 }
 
+void calibrateIMUs(){
+  for(int i = 0; i < imu_count; i++){
+    imus[i]->calibrate();
+  }
+}
+
+void measureIMUs(){
+  for(int i = 0; i < imu_count; i++){
+    imus[i]->measure();
+  }
+}
 
 LegReport* Leg::generateReport(){
   LegReport* report = new LegReport(joint_count, fsr_group_count);
