@@ -9,6 +9,7 @@
 Leg::Leg(LegPins* legPins){
   this->foot_fsrs = new FSRGroup(legPins->fsr_pins, legPins->fsr_count);
   this->joint_count = legPins->joint_count;
+  this->imu_count = legPins->imu_count;
   this->joints = new Joint*[joint_count];
   this->imus = new IMU*[imu_count];
   this->fsr_group_count = 1;
