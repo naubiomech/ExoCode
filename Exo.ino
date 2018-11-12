@@ -29,6 +29,7 @@
 #include <i2c_t3.h>
 #include <EEPROM.h>
 #include <SoftwareSerial.h>
+#include <Adafruit_BNO055.h>
 #include "System.hpp"
 #include "Board.hpp"
 #include "Receive_and_Transmit.hpp"
