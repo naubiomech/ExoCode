@@ -22,6 +22,10 @@ ExoSystem* setupBoard(){
   ExoPins* exoPins = setupPins();
   ExoSystem* exoSystem = new ExoSystem(exoPins);
   delete exoPins;
+  // Fast torque calibration
+  exoSystem->exo->calibrateTorque();
+  digitalWrite(LED_PIN, LOW);
+  Serial.println("Exo Ready");
   return exoSystem;
 }
 

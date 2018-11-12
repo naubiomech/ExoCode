@@ -46,10 +46,8 @@ void setup() {
   exoSystem = setupBoard();
   exo = exoSystem->exo;
 
-  // Fast torque calibration
-  exo->calibrateTorque();
-  digitalWrite(LED_PIN, LOW);
-  Serial.println("Exo Ready");
+  Serial.print("Calibrating IMUS");
+  exo->calibrateIMUs();
   // set the interrupt
   Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
   Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
