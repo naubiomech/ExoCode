@@ -53,7 +53,22 @@ void Exoskeleton::measureSensors(){
 }
 
 bool Exoskeleton::checkMotorErrors(){
-  return left_leg->checkMotorErrors() || right_leg->checkMotorErrors();
+  if (!resetting_motors && (left_leg->checkMotorErrors() || right_leg->checkMotorErrors())){
+    disableMotors();
+    resetting_motors = true;
+    motor_shutdown.reset();
+  }
+
+  if (resetting_motors && motor_shutdown.check()){
+    enableMotors();
+    motor_startup.reset();
+  }
+
+  if (resetting_motors && motor_startup.check()){
+    resetting_motors = false;
+  }
+
+  return resetting_motors;
 }
 
 void Exoskeleton::disableMotors(){

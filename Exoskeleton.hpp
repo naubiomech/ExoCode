@@ -8,13 +8,12 @@
 class Exoskeleton{
 private:
   void fillLocalReport(ExoReport* report);
-  // TODO Implement the motor error handling
-  int time_err_motor;
-  int time_err_motor_reboot;
-  int flag_enable_catch_error = 1;
   void disableMotors();
   void enableMotors();
 
+  bool resetting_motors = false;
+  Metro motor_shutdown = Metro(16);
+  Metro motor_startup = Metro(8);
 
 // TODO Fully implement the fsr calibration
 // ===== FSR Parameters =====
