@@ -29,7 +29,8 @@ ExoSystem* setupBoard(){
 ExoPins* setupQuadBoardPins(){
   int motor_count = 2;
   int fsr_count = 2;
-  ExoPins* exo_pins = new ExoPins(motor_count,fsr_count);
+  int imu_count = 1;
+  ExoPins* exo_pins = new ExoPins(motor_count, fsr_count, imu_count);
 
   exo_pins->bluetooth_rx = BLUETOOTH_RX_PIN;
   exo_pins->bluetooth_tx = BLUETOOTH_TX_PIN;
@@ -51,6 +52,10 @@ ExoPins* setupQuadBoardPins(){
   exo_pins->right_leg->joint_pins[1].torque_sensor_pins.torque_sensor = TORQUE_SENSOR_RIGHT_KNEE_PIN;
   exo_pins->right_leg->fsr_pins[0].fsr_pin = FSR_SENSE_RIGHT_TOE_PIN;
   exo_pins->right_leg->fsr_pins[1].fsr_pin = FSR_SENSE_RIGHT_HEEL_PIN;
+
+  exo_pins->left_leg->imu_count = 0;
+  exo_pins->right_leg->imu_pins[0].imu_slot = IMU_SLOT_0_PINS;
+  exo_pins->right_leg->imu_pins[0].address = IMU_ADDRESS_0;
 
   return exo_pins;
 }

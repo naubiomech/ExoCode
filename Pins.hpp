@@ -1,5 +1,6 @@
 #ifndef PINS_HEADER
 #define PINS_HEADER
+#include <i2c_t3.h>
 
 class MotorPins{
 public:
@@ -15,7 +16,13 @@ public:
 class JointPins{
 public:
   MotorPins motor_pins;
-	TorqueSensorPins torque_sensor_pins;
+  TorqueSensorPins torque_sensor_pins;
+};
+
+class IMUPins{
+public:
+  i2c_pins imu_slot;
+  int address;
 };
 
 class FSRPins{
@@ -25,17 +32,22 @@ public:
 
 class LegPins{
 public:
-  LegPins(int jointAmount, int fsrAmount);
+  LegPins(int jointAmount, int fsrAmount, int imuAmount);
   ~LegPins();
+
   JointPins* joint_pins;
   int joint_count;
+
   FSRPins* fsr_pins;
   int fsr_count;
+
+  IMUPins* imu_pins;
+  int imu_count;
 };
 
 class ExoPins{
 public:
-  ExoPins(int motorsPerLeg, int fsrsPerLeg);
+  ExoPins(int motorsPerLeg, int fsrsPerLeg, int imuAmount);
   ~ExoPins();
   LegPins* left_leg;
   LegPins* right_leg;
