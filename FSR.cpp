@@ -128,9 +128,9 @@ void FSRGroup::updateBaseline(){
 }
 
 FSRReport FSRGroup::generateReport(){
-	FSRReport report = FSRReport();
+  FSRReport report = FSRReport();
   fillLocalReport(&report);
-	return report;
+  return report;
 }
 
 void FSRGroup::fillReport(FSRReport* report){

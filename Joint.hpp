@@ -9,7 +9,7 @@
 class Joint{
 private:
   Motor* motor;
-	TorqueSensor* torque_sensor;
+  TorqueSensor* torque_sensor;
 
   void fillLocalReport(JointReport* report);
 public:

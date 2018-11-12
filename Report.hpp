@@ -4,49 +4,49 @@
 
 class MotorReport{
 public:
-	double pid_setpoint;
+  double pid_setpoint;
 };
 
 class TorqueSensorReport{
 public:
-	double measuredTorque;
+  double measuredTorque;
 };
 
 class JointReport{
 public:
-	MotorReport motor_report;
-	TorqueSensorReport torque_sensor_report;
+  MotorReport motor_report;
+  TorqueSensorReport torque_sensor_report;
 };
 
 class FSRReport{
 public:
-	double threshold;
-	double measuredForce;
+  double threshold;
+  double measuredForce;
 };
 
 class IMUReport{
 public:
-	double orientation[3];
+  double orientation[3];
 };
 
 class LegReport{
 public:
-	LegReport(int joint_count, int fsr_count, int imu_count);
-	~LegReport();
-	FSRReport* fsr_reports;
-	JointReport* joint_reports;
-	IMUReport* imu_reports;
-	int fsr_report_count;
-	int joint_report_count;
-	int imu_report_count;
-	int state;
-	Phase phase;
+  LegReport(int joint_count, int fsr_count, int imu_count);
+  ~LegReport();
+  FSRReport* fsr_reports;
+  JointReport* joint_reports;
+  IMUReport* imu_reports;
+  int fsr_report_count;
+  int joint_report_count;
+  int imu_report_count;
+  int state;
+  Phase phase;
 };
 
 class ExoReport{
 public:
-	LegReport* left_leg;
-	LegReport* right_leg;
+  LegReport* left_leg;
+  LegReport* right_leg;
 };
 
 

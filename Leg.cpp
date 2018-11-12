@@ -299,13 +299,13 @@ bool Leg::applyTorque(){
 }
 
 void Leg::calibrateIMUs(){
-  for(int i = 0; i < imu_count; i++){
+  for (int i = 0; i < imu_count; i++){
     imus[i]->calibrate();
   }
 }
 
 void Leg::measureIMUs(){
-  for(int i = 0; i < imu_count; i++){
+  for (int i = 0; i < imu_count; i++){
     imus[i]->measure();
   }
 }
@@ -336,6 +336,6 @@ void Leg::fillReport(LegReport* report){
 }
 
 void Leg::fillLocalReport(LegReport* report){
-	report->state = state;
-	report->phase = current_phase;
+  report->state = state;
+  report->phase = current_phase;
 }

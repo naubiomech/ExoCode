@@ -16,7 +16,7 @@ double calculatePIDSetpointSigm(double New_PID_Setpoint, double Old_PID_Setpoint
   //  }
   double sig = 1 / (1 + exp(-exp_mult * ((-1 * N / 2 + n_iter + 1)) * Ts));
   double Current_PID_Setpoint = Old_PID_Setpoint + (New_PID_Setpoint - Old_PID_Setpoint) * sig;
-	return Current_PID_Setpoint;
+  return Current_PID_Setpoint;
 }
 
 void ShapingFunction::setIterationCount(int whichState, double n){
