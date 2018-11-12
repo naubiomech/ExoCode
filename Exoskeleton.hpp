@@ -12,6 +12,9 @@ private:
   int time_err_motor;
   int time_err_motor_reboot;
   int flag_enable_catch_error = 1;
+  void disableMotors();
+  void enableMotors();
+
 
 // TODO Fully implement the fsr calibration
 // ===== FSR Parameters =====

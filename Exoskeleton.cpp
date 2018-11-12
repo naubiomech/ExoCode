@@ -56,13 +56,21 @@ bool Exoskeleton::checkMotorErrors(){
   return left_leg->checkMotorErrors() || right_leg->checkMotorErrors();
 }
 
-void Exoskeleton::enableExo(){
+void Exoskeleton::disableMotors(){
+  digitalWrite(MOTOR_ENABLE_PIN, LOW);
+}
+
+void Exoskeleton::enableMotors(){
   digitalWrite(MOTOR_ENABLE_PIN, HIGH);
+}
+
+void Exoskeleton::enableExo(){
+  enableMotors();
   digitalWrite(LED_PIN, HIGH);
 }
 
 void Exoskeleton::disableExo(){
-  digitalWrite(MOTOR_ENABLE_PIN, LOW);
+  disableMotors();
   digitalWrite(LED_PIN, LOW);
 }
 
