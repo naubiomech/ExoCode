@@ -2,16 +2,21 @@
 #define IMU_HEADER
 #include "Pins.hpp"
 #include <Metro.h>
-#include <Adafruit_BNO055.h>
+#include <Adafruit_BNO055_t3.h>
+#include <utility/imumaths.h>
+#include "Parameters.hpp"
 
 class IMU{
 private:
   Adafruit_BNO055* bno;
-  Vector<3> euler;
+  imu::Vector<3> euler;
   Metro imu_measure_limiter = Metro(BNO055_SAMPLERATE_DELAY_MS);
+
 public:
   IMU(IMUPins* imu_pins);
-
+  void calibrateIMU();
+  void measureIMU();
+  void getOrientation(double* orientation);
 };
 
 #endif

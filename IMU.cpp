@@ -1,7 +1,8 @@
 #include <Arduino.h>
 #include "IMU.hpp"
 #include "System.hpp"
-#include <Adafruit_BNO055.h>
+#include <Adafruit_BNO055_t3.h>
+#include <utility/imumaths.h>
 
 IMU::IMU(IMUPins* imu_pins){
 
@@ -52,4 +53,10 @@ void IMU::measureIMU(){
     euler = bno->getVector(Adafruit_BNO055::VECTOR_EULER);
     imu_measure_limiter.reset();
   }
+}
+
+void IMU::getOrientation(double* orientation){
+  orientation[0] = euler[0];
+  orientation[1] = euler[1];
+  orientation[2] = euler[2];
 }
