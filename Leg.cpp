@@ -330,6 +330,9 @@ void Leg::fillReport(LegReport* report){
   for (int i = 0; i < fsr_group_count; i++){
     fsrs[i]->fillReport(&(report->fsr_reports[i]));
   }
+  for (int i = 0; i < imu_count; i++){
+    imus[i]->fillReport(&(report->imu_reports[i]));
+  }
 }
 
 void Leg::fillLocalReport(LegReport* report){
