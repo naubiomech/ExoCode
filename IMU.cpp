@@ -72,7 +72,5 @@ void IMU::fillReport(IMUReport* report){
 }
 
 void IMU::fillLocalReport(IMUReport* report){
-  report->orientation[0] = euler[0];
-  report->orientation[1] = euler[1];
-  report->orientation[2] = euler[2];
+  getOrientation(report->orientation);
 }
