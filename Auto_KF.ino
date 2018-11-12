@@ -1,53 +1,41 @@
 #include "Auto_KF.h"
 #include "Leg.h"
 
-void sub_Auto_KF(Leg* leg){
+void Auto_KF_leg(Leg* leg){
   // take error in state 3
-  if (leg->state == LATE_STANCE) {
-    //    leg->Input is the average of the measured torque
-    //    leg->PID_Stepoint is the reference
-    Serial.print(" Leg Error ");
-    Serial.println(leg->PID_Setpoint - leg->Input );
-    leg->ERR += (leg->PID_Setpoint - leg->Input );
-    leg->count_err++;
+  if (leg->state == 3) {
+
+    if (abs(leg->Input) > abs(leg->ERR)) {
+      leg->ERR = leg->Input; // put max Input
+      leg->auto_KF_update = true;
+    }
   }
 
-  if (leg->state == SWING) {
-
-    leg->ERR = leg->ERR / leg->count_err;
-    if ((leg->count_err != 0)) {
-      Serial.print("Leg ERR ");
-      Serial.println(leg->ERR);
-    }
-    else {
-
-    }
-    leg->count_err = 0;
+  if (leg->state == 1 && leg->auto_KF_update) {
+    Serial.print(" Ref ");
+    Serial.print(leg->Setpoint_Ankle * leg->coef_in_3_steps);
+    Serial.print(" , Max Torque measured ");
+    Serial.print(leg->ERR);
+    Serial.println(" ");
 
 
-
-    if (leg->ERR > max_ERR) {
-      leg->KF += 0.05;
-    }
-    else if (leg->ERR < min_ERR) {
-      leg->KF -= 0.05;
-    }
-    else {}
-
-    if (leg->KF >= leg->max_KF)
-      leg->KF = leg->max_KF;
-    else if (leg->KF <= leg->min_KF)
-      leg->KF = leg->min_KF;
-    else {}
-
-    Serial.print("New leg->KF ");
+    leg->KF = 1 + (1 - leg->ERR / (leg->Setpoint_Ankle * leg->coef_in_3_steps));
+    Serial.print("Desired leg->KF ");
     Serial.println(leg->KF);
-    leg->ERR = 0;
+
+    if (leg->KF >= leg->max_KF) {
+      leg->KF = leg->max_KF;
+    }
+    else if (leg->KF <= leg->min_KF) {
+      leg->KF = leg->min_KF;
+    }
+    else {}
+
+    Serial.print("Actual leg->KF ");
+    Serial.println(leg->KF);
+    leg->auto_KF_update = false;
   }
 
-}
+  return;
 
-void Auto_KF() {
-  sub_Auto_KF(left_leg);
-  sub_Auto_KF(right_leg);
 }

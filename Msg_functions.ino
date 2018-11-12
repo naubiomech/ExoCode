@@ -44,14 +44,13 @@ void send_data_message_wc() //with COP
     bluetooth.print(',');
   }
 
-
-  bluetooth.print((left_leg->Vol)); //SIG1
+  bluetooth.print((left_leg->FSR_Heel_Average)); //SIG1
   bluetooth.print(',');
   bluetooth.print((right_leg->Vol)); //SIG2
   bluetooth.print(',');
-  bluetooth.print(left_leg->FSR_Ratio); //SIG3
+  bluetooth.print(left_leg->FSR_Toe_Average); //SIG3
   bluetooth.print(',');
-  bluetooth.print(right_leg->FSR_Ratio); //SIG4
+  bluetooth.print(right_leg->FSR_Toe_Average); //SIG4
 
   bluetooth.print(',');
   bluetooth.println('Z');

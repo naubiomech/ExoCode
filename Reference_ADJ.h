@@ -6,4 +6,11 @@
 
 void ref_step_adj(Leg* leg);
 
+void R_ref_step_adj() {
+  ref_step_adj(right_leg);
+}
+
+void L_ref_step_adj() {
+  ref_step_adj(left_leg);
+}
 #endif

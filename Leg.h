@@ -73,6 +73,13 @@ struct Leg {
   volatile double FSR_Toe_Balance_Baseline;
   volatile double FSR_Heel_Balance_Baseline;
 
+  // Auto_KF.h
+  double ERR;
+  double max_KF;
+  double min_KF;
+  int count_err;
+  bool auto_KF_update = true;
+
   double fsr_Combined_peak_ref;
   double Curr_Combined;
   double Curr_Toe;
@@ -99,8 +106,32 @@ struct Leg {
   int baseline_address;
   double baseline_value;
 
-  // ---------
-  // Leg
+  <<<<<<< HEAD
+          // ---------
+          // Leg
+  =======
+    // PID_and_Ctrl_Parameters.h
+    double torque_calibration_value = 0;
+  double T_act;
+  int Vol;
+  double kp = 700;
+  double ki = 0;
+  double kd = 3;
+  double KF = 1;
+
+  double PID_Setpoint, Input, Output;
+  PID pid = PID(&Input, &Output, &PID_Setpoint, kp, ki, kd, DIRECT);
+
+  double Setpoint_Ankle, Setpoint_Ankle_Pctrl;
+  double Previous_Setpoint_Ankle = 0;
+  double* p_Setpoint_Ankle = &Setpoint_Ankle;
+  double* p_Setpoint_Ankle_Pctrl = &Setpoint_Ankle_Pctrl;
+  double Setpoint_earlyStance = 0.25 * Setpoint_Ankle;
+  double Dorsi_Setpoint_Ankle;
+  double Previous_Dorsi_Setpoint_Ankle;
+  double* p_Dorsi_Setpoint_Ankle = &Dorsi_Setpoint_Ankle;
+  double* p_Previous_Dorsi_Setpoint_Ankle = &Previous_Dorsi_Setpoint_Ankle;
+  >>>>>>> origin/GiammaUpdate
 
 
   double Prop_Gain = 1;

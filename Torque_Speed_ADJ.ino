@@ -63,7 +63,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
 
           p_steps_l->dorsi_mean = 0;
           p_steps_l->plant_mean = 0;
-          p_steps_l->plant_peak_mean = 0;
+          p_steps_l->plant_peak_mean_temp = 0;
 
 
           for (int i = 0; i < n_step_baseline - 1; i++)
@@ -75,7 +75,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
             p_steps_l->plant_mean += p_steps_l->four_step_plant_time[i];
 
             p_steps_l->four_step_plant_peak[i] = p_steps_l->four_step_plant_peak[i + 1];
-            p_steps_l->plant_peak_mean += p_steps_l->four_step_plant_peak[i];
+            p_steps_l->plant_peak_mean_temp += p_steps_l->four_step_plant_peak[i];
           }
 
           p_steps_l->four_step_dorsi_time[n_step_baseline - 1] = p_steps_l->dorsi_time;
@@ -85,11 +85,11 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
           p_steps_l->plant_mean += p_steps_l->plant_time;
 
           p_steps_l->four_step_plant_peak[n_step_baseline - 1] = p_steps_l->peak;
-          p_steps_l->plant_peak_mean += p_steps_l->peak;
+          p_steps_l->plant_peak_mean_temp += p_steps_l->peak;
 
           p_steps_l->dorsi_mean = (p_steps_l->dorsi_mean) / n_step_baseline;
           p_steps_l->plant_mean = p_steps_l->plant_mean / n_step_baseline;
-          p_steps_l->plant_peak_mean = 0.9 * (p_steps_l->plant_peak_mean) / n_step_baseline;
+          p_steps_l->plant_peak_mean_temp = 0.9 * (p_steps_l->plant_peak_mean_temp) / n_step_baseline;
 
           Serial.println("BASE before return");
           Serial.print(" Peak ");
@@ -111,8 +111,8 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
         }
 
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
-          Serial.print("BASE return peak mean ");
-          Serial.println(p_steps_l->plant_peak_mean);
+          Serial.print("BASE return peak mean temporary");
+          Serial.println(p_steps_l->plant_peak_mean_temp);
         }
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
           (p_steps_l->count_plant_base) = 0;
@@ -143,9 +143,43 @@ double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l,
   // the voltage increases. It modifies the setpoint at each step.
 
   if (taking_baseline_l) {
-    *p_Setpoint_Ankle_Pctrl_l = 0;
-    *p_Setpoint_Ankle_l = 0;
+    //    Serial.println("No ctrl adj");
+
+    //--------------------------------
+    if ((R_state_l == 3) && (R_state_old_l == 1 || R_state_old_l == 2))
+    {
+      if (flag_torque_time_volt_l == 3) {
+
+        *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
+        if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
+          (*p_Max_FSR_Ratio) = *p_FSR_Ratio;
+
+        // Second version of pivot proportional Ctrl with polynomial law XXXXX QUI METTERE LEGGE
+        if ((p_steps_l->Setpoint ) > 0) {
+          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
+          *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
+        }
+        else if ((p_steps_l->Setpoint ) < 0) {
+          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
+          *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
+        } else {
+          *p_Setpoint_Ankle_Pctrl_l = 0;
+        }
+      }
+    }
+
+
+
+
+    //-------------------------------
     return N3_l;
+  }
+  if (taking_baseline_l == 0 && p_steps_l->plant_peak_mean_temp != p_steps_l->plant_peak_mean) {
+    Serial.println("Updated peak mean values");
+    Serial.print(p_steps_l->plant_peak_mean);
+    Serial.print(" -> ");
+    Serial.println(p_steps_l->plant_peak_mean_temp);
+    p_steps_l->plant_peak_mean = p_steps_l->plant_peak_mean_temp;
   }
 
   // if you transit from state 1 to state 3 dorsiflexion is completed and start plantarflexion
@@ -164,16 +198,7 @@ double Ctrl_ADJ(int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l,
 
 
     if (flag_torque_time_volt_l == 2) {
-      if ((p_steps_l->Setpoint ) > 0) {
-        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (prop_gain_l) * (*p_FSR_Ratio)); // the difference here is that we do it as a function of the FSR calibration
-        *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
-      }
-      else if ((p_steps_l->Setpoint ) < 0) {
-        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (prop_gain_l) * (*p_FSR_Ratio)); // the difference here is that we do it as a function of the FSR calibration
-        *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
-      } else {
-        *p_Setpoint_Ankle_Pctrl_l = 0;
-      }
+      *p_Setpoint_Ankle_Pctrl_l = Balance_Torque_ref(leg);
       return N3_l; // No modification in the shaping
 
     } else if (flag_torque_time_volt_l == 3) {

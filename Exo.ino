@@ -31,9 +31,46 @@
 #include "TimerOne.h"
 #include "Msg_functions.h"
 #include "Auto_KF.h"
-#include "IMU.h"
+#include "Combined_FSR.h"
+#include <Metro.h> // Include the Metro library
+
+
+Metro slowThisDown = Metro(1);  // Set the function to be called at no faster a rate than once per millisecond
+
+//To interrupt and to schedule we take advantage of the
+elapsedMillis timeElapsed;
+double startTime = 0;
+int streamTimerCount = 0;
+
+int stream = 0;
+
+char holdon[24];
+char *holdOnPoint = &holdon[0];
+char Peek = 'a';
+int cmd_from_Gui = 0;
+
+// Single board small
+const unsigned int onoff = MOTOR_ENABLE_PIN;
+
+// Single board SQuare (big)
+//const unsigned int onoff = 17;                                             //whatever the zero value is for the PID analogwrite setup
+const unsigned int which_leg_pin = WHICH_LEG_PIN;
+
+//Includes the SoftwareSerial library to be able to use the bluetooth Serial Communication
+int bluetoothTx = 0;                                                 // TX-O pin of bluetooth mate, Teensy D0
+int bluetoothRx = 1;                                                 // RX-I pin of bluetooth mate, Teensy D1
+SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an object named bluetooth to act as a serial port
+
+
+
+bool FLAG_PRINT_TORQUES = false;
+bool FLAG_PID_VALS = false;
+bool FLAG_TWO_TOE_SENSORS = true;
+bool OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
 
 #include "System.h"
+
+int counter_msgs = 0;
 
 void setup()
 {
@@ -56,6 +93,26 @@ void setup()
   Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
 }
 
+
+int Trq_time_volt = 0; // 1 for time 0 for volt 2 for proportional gain 3 for pivot proportional control
+int Old_Trq_time_volt = Trq_time_volt;
+int flag_13 = 1;
+int flag_count = 0;
+
+int flag_semaphore = 0;
+
+volatile double motor_driver_count_err;
+
+double start_time_callback, start_time_timer;
+
+int time_err_motor;
+int time_err_motor_reboot;
+
+int flag_enable_catch_error = 1;
+
+bool motor_error = false;
+bool flag_done_once_bt = false;
+
 void callback()//executed every 2ms
 {
 
@@ -66,9 +123,18 @@ void callback()//executed every 2ms
   check_FSR_calibration();
 
   check_Balance_Baseline();
+  if (analogRead(A11) * 3.3 / 4096 <= 2.5 && flag_done_once_bt == false) {
+    Serial.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! DISCONNECTED!  ");
+    bluetooth.flush();
+    flag_done_once_bt = true;
+  }
 
   rotate_motor();
 
+  if (analogRead(A11) * 3.3 / 4096 > 2.5 && flag_done_once_bt == true) {
+    flag_done_once_bt = false;
+    Serial.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! RECONNECTED!  ");
+  }
 }// end callback
 
 void loop()
@@ -93,6 +159,7 @@ void loop()
   if (stream != 1)
   {
     reset_starting_parameters();
+    flag_done_once_bt=false;
   }// End else
 }
 
@@ -225,12 +292,17 @@ void rotate_motor() {
   {
     if (streamTimerCount >= 5)
     {
-      send_data_message_wc();
+      if ( analogRead(A11) * 3.3 / 4096 > 2.5) {
+        counter_msgs++;
+        send_data_message_wc();
+      }
       streamTimerCount = 0;
     }
 
-    if (streamTimerCount == 1 && flag_auto_KF == 1)
-      Auto_KF();
+    if (streamTimerCount == 1 && flag_auto_KF == 1){
+      Auto_KF(left_leg);
+      Auto_KF(right_leg);
+    }
 
     streamTimerCount++;
 
@@ -272,7 +344,7 @@ void rotate_motor() {
                              right_leg->N3, right_leg->New_PID_Setpoint, &right_leg->Setpoint_Ankle,
                              &right_leg->Setpoint_Ankle_Pctrl, Trq_time_volt, right_leg->Prop_Gain,
                              right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio);
-  }
+  }// end if stream==1
 }
 
 void reset_starting_parameters() {
@@ -302,4 +374,5 @@ void reset_leg_starting_parameters(Leg* leg) {
   leg->num_3_steps = 0;
 
   leg->first_step = 1;
+  counter_msgs = 0;
 }

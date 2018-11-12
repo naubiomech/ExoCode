@@ -89,7 +89,6 @@ void State_Machine_Two_Toe_Sensors(Leg* leg) {
         leg->Old_PID_Setpoint = leg->PID_Setpoint;
         leg->state_old = leg->state;
 
-
         if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
 
           leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
@@ -150,9 +149,7 @@ void State_Machine_Heel_Toe_Sensors(Leg* leg) {
         leg->Old_PID_Setpoint = leg->PID_Setpoint;
 
         if (abs(leg->Dorsi_Setpoint_Ankle) > 0) {
-          //            //            leg->Previous_Setpoint_Ankle = 0;
           leg->Old_PID_Setpoint = 0;
-          //            leg->Setpoint_Ankle = 0;
         } else {
           leg->Previous_Dorsi_Setpoint_Ankle = 0;
         }
@@ -196,7 +193,6 @@ void State_Machine_Heel_Toe_Sensors(Leg* leg) {
         leg->sigm_done = true;
         leg->Old_PID_Setpoint = leg->PID_Setpoint;
         leg->state_old = leg->state;
-
 
         if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
 

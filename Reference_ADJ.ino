@@ -8,13 +8,13 @@ void ref_step_adj(Leg* leg) {
       leg->first_step = 0;
     }
 
-    if ((leg->state == LATE_STANCE) && (leg->state_old == 1) && (leg->start_step == 0)) {
+    if ((leg->state == 3) && (leg->state_old == 1) && (leg->start_step == 0)) {
       leg->start_step = 1;
       leg->start_time = millis();
     }
 
     if (leg->start_step == 1) {
-      if ((leg->state == SWING) && (leg->state_old == 3)) {
+      if ((leg->state == 1) && (leg->state_old == 3)) {
         leg->start_step = 0;
         if (millis() - leg->start_time >= step_time_length) { // if the transition from 3 to 1 lasted more than 0.3 sec it was a step
           leg->num_3_steps += 1;

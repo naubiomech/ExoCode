@@ -36,7 +36,7 @@ typedef struct {
   double fsr_percent_thresh_Toe = 0.9;
   double plant_peak_mean;
   double four_step_plant_peak[n_step_baseline] = {0};
-  double plant_mean_peak_base;
+  double plant_peak_mean_temp;
   double peak;
   double fsr_Toe;
   double torque_average;

@@ -181,6 +181,7 @@ void receive_and_transmit()
         left_leg->fsr_Heel_peak_ref = read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
         right_leg->fsr_Heel_peak_ref = read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
       }
+
       *(data_to_send_point + 1) = 1;
       if (FLAG_TWO_TOE_SENSORS) {
         Serial.print("Left values Combined Toe and Heel: ");
@@ -217,9 +218,6 @@ void receive_and_transmit()
     }
 
     send_command_message(COMM_CODE_CHECK_MEMORY, data_to_send_point, 3);
-    left_leg->p_steps->voltage_peak_ref = left_leg->fsr_Combined_peak_ref;
-    right_leg->p_steps->voltage_peak_ref = right_leg->fsr_Combined_peak_ref;
-
     left_leg->p_steps->plant_peak_mean = read_baseline(left_leg->baseline_address);
     right_leg->p_steps->plant_peak_mean = read_baseline(right_leg->baseline_address);
     left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
@@ -330,6 +328,14 @@ void receive_and_transmit()
     left_leg->N1 = N1;
     left_leg->N2 = N2;
     left_leg->N3 = N3;
+
+    left_leg->old_N3 = left_leg->N3;
+    left_leg->old_N2 = left_leg->N2;
+    left_leg->old_N1 = left_leg->N1;
+
+    right_leg->old_N3 = right_leg->N3;
+    right_leg->old_N2 = right_leg->N2;
+    right_leg->old_N1 = right_leg->N1;
 
     Serial.print("Set Smooth ");
     Serial.print(" ");
@@ -474,7 +480,6 @@ void receive_and_transmit()
       Serial.print("Cannot save data during streaming ");
     } else {
       Serial.print("Saving Experimental Parameters ");
-
       if (FLAG_TWO_TOE_SENSORS) {
         write_FSR_values(left_leg->address_FSR, left_leg->fsr_Combined_peak_ref / 2);
         write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Combined_peak_ref / 2);
@@ -653,8 +658,3 @@ void receive_and_transmit()
   }
   cmd_from_Gui = 0;
 }
-
-
-
-
-
