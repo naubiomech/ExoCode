@@ -47,6 +47,8 @@ public:
   void calibrateFSRs();
   void setZeroIfStateState();
   void checkIMUs();
+  void calibrateIMUs();
+  void measureIMUs();
   ExoReport* generateReport();
   void fillReport(ExoReport* report);
 };

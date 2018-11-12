@@ -107,6 +107,8 @@ public:
   bool determine_foot_on_ground();
   void adjustControl();
   void setToZero();
+  void calibrateIMUs();
+  void measureIMUs();
   LegReport* generateReport();
   void fillReport(LegReport* report);
 };

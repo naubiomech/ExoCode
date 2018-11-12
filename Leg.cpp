@@ -294,13 +294,13 @@ bool Leg::applyTorque(){
   return true;
 }
 
-void calibrateIMUs(){
+void Leg::calibrateIMUs(){
   for(int i = 0; i < imu_count; i++){
     imus[i]->calibrate();
   }
 }
 
-void measureIMUs(){
+void Leg::measureIMUs(){
   for(int i = 0; i < imu_count; i++){
     imus[i]->measure();
   }
