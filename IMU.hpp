@@ -3,14 +3,13 @@
 #include "Pins.hpp"
 #include <Metro.h>
 #include <Adafruit_BNO055_t3.h>
-#include <utility/imumaths.h>
 #include "Parameters.hpp"
 #include "Report.hpp"
 
 class IMU{
 private:
   Adafruit_BNO055* bno;
-  imu::Vector<3> euler;
+  double bearings[3] = {0};
   Metro imu_measure_limiter = Metro(BNO055_SAMPLERATE_DELAY_MS);
 
 public:

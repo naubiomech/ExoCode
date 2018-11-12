@@ -50,15 +50,19 @@ void IMU::calibrate(){
 
 void IMU::measure(){
   if (imu_measure_limiter.check()){
-    euler = bno->getVector(Adafruit_BNO055::VECTOR_EULER);
+    sensors_event_t event;
+    bno->getEvent(&event);
+    this->bearings[0] = event.orientation.x;
+    this->bearings[1] = event.orientation.y;
+    this->bearings[2] = event.orientation.z;
     imu_measure_limiter.reset();
   }
 }
 
 void IMU::getOrientation(double* orientation){
-  orientation[0] = euler[0];
-  orientation[1] = euler[1];
-  orientation[2] = euler[2];
+  orientation[0] = this->bearings[0];
+  orientation[1] = this->bearings[1];
+  orientation[2] = this->bearings[2];
 }
 
 IMUReport* IMU::generateReport(){
