@@ -3,6 +3,7 @@
 #include "Pins.hpp"
 #include "Shaping_Functions.hpp"
 #include "Motor.hpp"
+#include "IMU.hpp"
 #include "Report.hpp"
 
 Leg::Leg(LegPins* legPins){
@@ -15,6 +16,10 @@ Leg::Leg(LegPins* legPins){
   for (int i = 0; i < legPins->joint_count; i++){
     JointPins* joint_pins = &(legPins->joint_pins[i]);
     this->joints[i] = new Joint(joint_pins);
+  }
+  for (int i = 0; i < legPins->imu_count; i++){
+    IMUPins* imu_pins = &(legPins->imu_pins[i]);
+    this->imus[i] = new IMU(imu_pins);
   }
 }
 

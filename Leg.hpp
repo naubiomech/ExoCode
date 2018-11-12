@@ -11,6 +11,7 @@ const int dim = 5;
 #include "Phase.hpp"
 #include "Pins.hpp"
 #include "Report.hpp"
+#include "IMU.hpp"
 
 class Leg {
 private:
@@ -38,6 +39,8 @@ private:
   int joint_count;
   FSRGroup** fsrs;
   int fsr_group_count;
+  IMU** imus;
+  int imu_count;
   FSRGroup* foot_fsrs;
 
   Phase current_phase;
