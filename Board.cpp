@@ -34,9 +34,6 @@ ExoPins* setupQuadBoardPins(){
   exo_pins->bluetooth_rx = BLUETOOTH_RX_PIN;
   exo_pins->bluetooth_tx = BLUETOOTH_TX_PIN;
 
-  exo_pins->left_leg->joint_count = motor_count;
-  exo_pins->left_leg->fsr_count = fsr_count;
-
   exo_pins->left_leg->joint_pins[0].motor_pins.motor = MOTOR_LEFT_ANKLE_PIN;
   exo_pins->left_leg->joint_pins[0].motor_pins.err = MOTOR_ERROR_LEFT_ANKLE_PIN;
   exo_pins->left_leg->joint_pins[0].torque_sensor_pins.torque_sensor = TORQUE_SENSOR_LEFT_ANKLE_PIN;
@@ -45,9 +42,6 @@ ExoPins* setupQuadBoardPins(){
   exo_pins->left_leg->joint_pins[1].torque_sensor_pins.torque_sensor = TORQUE_SENSOR_LEFT_KNEE_PIN;
   exo_pins->left_leg->fsr_pins[0].fsr_pin = FSR_SENSE_LEFT_TOE_PIN;
   exo_pins->left_leg->fsr_pins[1].fsr_pin = FSR_SENSE_LEFT_HEEL_PIN;
-
-  exo_pins->right_leg->joint_count = motor_count;
-  exo_pins->right_leg->fsr_count = fsr_count;
 
   exo_pins->right_leg->joint_pins[0].motor_pins.motor = MOTOR_RIGHT_ANKLE_PIN;
   exo_pins->right_leg->joint_pins[0].motor_pins.err = MOTOR_ERROR_RIGHT_ANKLE_PIN;
