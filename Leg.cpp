@@ -9,6 +9,9 @@ Leg::Leg(LegPins* legPins){
   this->foot_fsrs = new FSRGroup(legPins->fsr_pins, legPins->fsr_count);
   this->joint_count = legPins->joint_count;
   this->joints = new Joint*[joint_count];
+  this->fsr_group_count = 1;
+  this->fsrs = new FSRGroup*[this->fsr_group_count];
+  this->fsrs[0] = foot_fsrs;
   for (int i = 0; i < legPins->joint_count; i++){
     JointPins* joint_pins = &(legPins->joint_pins[i]);
     this->joints[i] = new Joint(joint_pins);

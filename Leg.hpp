@@ -35,9 +35,9 @@ private:
   bool set_motors_to_zero_torque;
 
   Joint** joints;
-	int joint_count;
-	FSRGroup** fsrs;
-  int fsr_count;
+  int joint_count;
+  FSRGroup** fsrs;
+  int fsr_group_count;
   FSRGroup* foot_fsrs;
 
   Phase current_phase;
