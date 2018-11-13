@@ -108,11 +108,6 @@ void Exoskeleton::calibrateIMUs(){
   left_leg->calibrateIMUs();
 }
 
-void Exoskeleton::measureIMUs(){
-  right_leg->measureIMUs();
-  left_leg->measureIMUs();
-}
-
 ExoReport* Exoskeleton::generateReport(){
   ExoReport* report = new ExoReport();
   fillLocalReport(report);

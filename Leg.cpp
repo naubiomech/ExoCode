@@ -277,6 +277,7 @@ void Leg::measureSensors(){
     this->joints[i]->measureError();
   }
   this->foot_fsrs->measureForce();
+  this->measureIMUs();
 
 }
 

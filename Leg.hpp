@@ -33,6 +33,7 @@ private:
   void trigger_planter_phase();
   void trigger_dorsi_phase();
   void fillLocalReport(LegReport* report);
+  void measureIMUs();
 
   bool set_motors_to_zero_torque;
 
@@ -109,7 +110,6 @@ public:
   void adjustControl();
   void setToZero();
   void calibrateIMUs();
-  void measureIMUs();
   LegReport* generateReport();
   void fillReport(LegReport* report);
 };
