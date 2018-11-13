@@ -5,7 +5,7 @@ const int dim = 5;
 
 #include <i2c_t3.h>
 #include "PID_v2.h"
-#include "State_Machine.hpp"
+#include "States.hpp"
 #include "Joint.hpp"
 #include "FSR.hpp"
 #include "Phase.hpp"

@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "Parameters.hpp"
 #include "Shaping_Functions.hpp"
-#include "State_Machine.hpp"
+#include "States.hpp"
 //Calc Sigmoid function and apply to the New point
 
 double calculatePIDSetpointSigm(double New_PID_Setpoint, double Old_PID_Setpoint,
