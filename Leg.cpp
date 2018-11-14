@@ -176,10 +176,10 @@ Phase Leg::determinePhase(int new_state, int old_state, Phase current_phase){
   Phase next_phase;
   if (new_state == LATE_STANCE && old_state == SWING && current_phase == DORSI){
     next_phase = PLANTER;
-    current_phase_time = planter_timer->lap();
+    current_phase_time = dorsi_timer->lap();
   } else if (new_state == SWING && old_state == LATE_STANCE && current_phase == PLANTER){
     next_phase = DORSI;
-    current_phase_time = dorsi_timer->lap();
+    current_phase_time = planter_timer->lap();
   } else {
     return current_phase;
   }
