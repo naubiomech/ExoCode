@@ -174,10 +174,10 @@ void Leg::applyDorsiControlAlgorithm(){
 Phase Leg::determinePhase(int new_state, int old_state, Phase current_phase){
   double current_phase_time;
   Phase next_phase;
-  if (new_state == SWING && old_state == LATE_STANCE && current_phase == DORSI){
+  if (new_state == LATE_STANCE && old_state == SWING && current_phase == DORSI){
     next_phase = PLANTER;
     current_phase_time = planter_timer->lap();
-  } else if (new_state == LATE_STANCE && old_state == SWING && current_phase == PLANTER){
+  } else if (new_state == SWING && old_state == LATE_STANCE && current_phase == PLANTER){
     next_phase = DORSI;
     current_phase_time = dorsi_timer->lap();
   } else {
