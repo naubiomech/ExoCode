@@ -10,7 +10,7 @@ IMU::IMU(IMUPins* imu_pins){
                             I2C_PULLUP_EXT, I2C_RATE_100, I2C_OP_MODE_ISR);
 
   if (!bno->begin()) {
-    Serial.print("No IMU detected");
+    Serial.println("No IMU detected");
   }
 }
 
