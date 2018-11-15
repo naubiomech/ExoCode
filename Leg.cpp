@@ -326,6 +326,9 @@ LegReport* Leg::generateReport(){
   for (int i = 0; i < fsr_group_count; i++){
     report->fsr_reports[i] = fsrs[i]->generateReport();
   }
+  for (int i = 0; i < imu_count; i++){
+	  report->imu_reports[i] = imus[i]->generateReport();
+  }
   return report;
 }
 

@@ -14,7 +14,6 @@ public:
 
 class JointReport{
 public:
-  JointReport();
   ~JointReport();
 
   MotorReport* motor_report;
@@ -48,6 +47,7 @@ public:
 
 class ExoReport{
 public:
+  ~ExoReport();
   LegReport* left_leg;
   LegReport* right_leg;
 };

@@ -8,18 +8,6 @@ LegReport::LegReport(int joint_count, int fsr_count, int imu_count){
   joint_reports = new JointReport*[joint_count];
   fsr_reports = new FSRReport*[fsr_count];
   imu_reports = new IMUReport*[imu_count];
-
-  for (int i = 0; i < joint_count; i++){
-    joint_reports[i] = new JointReport();
-  }
-
-  for (int i = 0; i < fsr_count; i++){
-    fsr_reports[i] = new FSRReport();
-  }
-
-  for (int i = 0; i < imu_count; i++){
-    imu_reports[i] = new IMUReport();
-  }
 }
 
 LegReport::~LegReport(){
@@ -41,12 +29,12 @@ LegReport::~LegReport(){
   delete[] imu_reports;
 }
 
-JointReport::JointReport(){
-  motor_report = new MotorReport();
-  torque_sensor_report = new TorqueSensorReport();
-}
-
 JointReport::~JointReport(){
   delete motor_report;
   delete torque_sensor_report;
+}
+
+ExoReport::~ExoReport(){
+  delete left_leg;
+  delete right_leg;
 }
