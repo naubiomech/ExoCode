@@ -14,8 +14,11 @@ public:
 
 class JointReport{
 public:
-  MotorReport motor_report;
-  TorqueSensorReport torque_sensor_report;
+  JointReport();
+  ~JointReport();
+
+  MotorReport* motor_report;
+  TorqueSensorReport* torque_sensor_report;
 };
 
 class FSRReport{
@@ -33,9 +36,9 @@ class LegReport{
 public:
   LegReport(int joint_count, int fsr_count, int imu_count);
   ~LegReport();
-  FSRReport* fsr_reports;
-  JointReport* joint_reports;
-  IMUReport* imu_reports;
+  FSRReport** fsr_reports;
+  JointReport** joint_reports;
+  IMUReport** imu_reports;
   int fsr_report_count;
   int joint_report_count;
   int imu_report_count;

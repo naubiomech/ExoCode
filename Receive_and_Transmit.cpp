@@ -21,15 +21,15 @@ void receive_data(SoftwareSerial* commandSerial, void* outputDataRawForm, int by
 
 void send_leg_report(SoftwareSerial* commandSerial, LegReport* report){
 
-  commandSerial->print(report->joint_reports[0].torque_sensor_report.measuredTorque);
+  commandSerial->print(report->joint_reports[0]->torque_sensor_report->measuredTorque);
   commandSerial->print(',');
   commandSerial->print(report->state);
   commandSerial->print(',');
-  commandSerial->print(report->joint_reports[0].motor_report.pid_setpoint);
+  commandSerial->print(report->joint_reports[0]->motor_report->pid_setpoint);
   commandSerial->print(',');
-  commandSerial->print(report->fsr_reports[0].threshold);
+  commandSerial->print(report->fsr_reports[0]->threshold);
   commandSerial->print(',');
-  commandSerial->print(report->fsr_reports[0].measuredForce);
+  commandSerial->print(report->fsr_reports[0]->measuredForce);
   commandSerial->print(',');
 }
 

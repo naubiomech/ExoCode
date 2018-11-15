@@ -64,7 +64,7 @@ public:
   void startBaseline();
   void updateBaseline();
   double force;
-  FSRReport generateReport();
+  FSRReport* generateReport();
   void fillReport(FSRReport* report);
 };
 #endif

@@ -46,9 +46,9 @@ double TorqueSensor::measureRawCalibratedTorque(){
   return Torq; // TODO Check if negative is necessary
 }
 
-TorqueSensorReport TorqueSensor::generateReport(){
-  TorqueSensorReport report;
-  fillLocalReport(&report);
+TorqueSensorReport* TorqueSensor::generateReport(){
+  TorqueSensorReport* report = new TorqueSensorReport();
+  fillLocalReport(report);
   return report;
 }
 

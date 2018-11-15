@@ -23,7 +23,7 @@ public:
   void startTorqueCalibration();
   void updateTorqueCalibration();
   void endTorqueCalibration();
-  TorqueSensorReport generateReport();
+  TorqueSensorReport* generateReport();
   void fillReport(TorqueSensorReport* report);
 };
 

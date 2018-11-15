@@ -154,9 +154,9 @@ void Motor::setTorqueScalar(double scalar){
   this->torque_scalar = scalar;
 }
 
-MotorReport Motor::generateReport(){
-  MotorReport report = MotorReport();
-  fillLocalReport(&report);
+MotorReport* Motor::generateReport(){
+  MotorReport* report = new MotorReport();
+  fillLocalReport(report);
   return report;
 }
 

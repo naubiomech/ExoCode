@@ -127,9 +127,9 @@ void FSRGroup::updateBaseline(){
   this->plant_peak_mean = this->plant_peak_averager->getAverage();
 }
 
-FSRReport FSRGroup::generateReport(){
-  FSRReport report = FSRReport();
-  fillLocalReport(&report);
+FSRReport* FSRGroup::generateReport(){
+  FSRReport* report = new FSRReport();
+  fillLocalReport(report);
   return report;
 }
 

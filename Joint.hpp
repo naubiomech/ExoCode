@@ -14,7 +14,7 @@ private:
   void fillLocalReport(JointReport* report);
 public:
   Joint(JointPins* joint_pins);
-  JointReport generateReport();
+  JointReport* generateReport();
   void fillReport(JointReport* report);
 
   void measureError();

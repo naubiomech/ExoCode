@@ -77,7 +77,7 @@ public:
   void applyPlanterControlAlgorithm(bool taking_baseline, double FSR_percentage, double max_FSR_percentage);
   void updateKFPIDError(double torque);
   void applyAutoKF();
-  MotorReport generateReport();
+  MotorReport* generateReport();
   void fillReport(MotorReport* report);
 };
 

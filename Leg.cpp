@@ -332,13 +332,13 @@ LegReport* Leg::generateReport(){
 void Leg::fillReport(LegReport* report){
   fillLocalReport(report);
   for (int i = 0; i < joint_count; i++){
-    joints[i]->fillReport(&(report->joint_reports[i]));
+    joints[i]->fillReport(report->joint_reports[i]);
   }
   for (int i = 0; i < fsr_group_count; i++){
-    fsrs[i]->fillReport(&(report->fsr_reports[i]));
+    fsrs[i]->fillReport(report->fsr_reports[i]);
   }
   for (int i = 0; i < imu_count; i++){
-    imus[i]->fillReport(&(report->imu_reports[i]));
+    imus[i]->fillReport(report->imu_reports[i]);
   }
 }
 
