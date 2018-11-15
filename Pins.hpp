@@ -38,6 +38,10 @@ public:
 };
 
 class LegPins{
+private:
+	int alloced_joint_count;
+  int alloced_fsr_group_count;
+  int alloced_imu_count;
 public:
   LegPins(int joints_per_leg, int fsr_groups_per_leg, int fsrs_per_group, int imus_per_leg);
   ~LegPins();

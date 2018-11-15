@@ -13,15 +13,15 @@ ExoPins::~ExoPins(){
 }
 
 LegPins::~LegPins(){
-  for(int i = 0; i < joint_count; i++){
+  for(int i = 0; i < alloced_joint_count; i++){
     delete joint_pins[i];
   }
 
-  for(int i = 0; i < fsr_group_count; i++){
+  for(int i = 0; i < alloced_fsr_group_count; i++){
     delete fsr_groups_pins[i];
   }
 
-  for(int i = 0; i < imu_count; i++){
+  for(int i = 0; i < alloced_imu_count; i++){
     delete imu_pins[i];
   }
 
@@ -38,6 +38,11 @@ LegPins::LegPins(int joint_count, int fsr_group_count, int fsrs_per_group, int i
   this->joint_count = joint_count;
   this->fsr_group_count = fsr_group_count;
   this->imu_count = imu_count;
+
+  this->alloced_joint_count = joint_count;
+  this->alloced_fsr_group_count = fsr_group_count;
+  this->alloced_imu_count = imu_count;
+
 
   for(int i = 0; i < joint_count; i++){
     joint_pins[i] = new JointPins();
