@@ -25,6 +25,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
+#include <cstddef>
 #include <float.h>
 #include <i2c_t3.h>
 #include <EEPROM.h>

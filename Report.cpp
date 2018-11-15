@@ -1,4 +1,5 @@
 #include "Report.hpp"
+#include <cstddef>
 
 LegReport::LegReport(int joint_count, int fsr_count, int imu_count){
   joint_report_count = joint_count;
@@ -8,6 +9,18 @@ LegReport::LegReport(int joint_count, int fsr_count, int imu_count){
   joint_reports = new JointReport*[joint_count];
   fsr_reports = new FSRReport*[fsr_count];
   imu_reports = new IMUReport*[imu_count];
+
+  for (int i = 0; i < joint_report_count; i++){
+    joint_reports[i] = NULL;
+  }
+
+  for (int i = 0; i < fsr_report_count; i++){
+    fsr_reports[i] = NULL;
+  }
+
+  for (int i = 0; i < imu_report_count; i++){
+    imu_reports[i] = NULL;
+  }
 }
 
 LegReport::~LegReport(){

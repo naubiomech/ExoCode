@@ -1,5 +1,6 @@
 #ifndef EXO_REPORT_HEADER
 #define EXO_REPORT_HEADER
+#include <cstddef>
 #include "Phase.hpp"
 
 class MotorReport{
@@ -16,8 +17,8 @@ class JointReport{
 public:
   ~JointReport();
 
-  MotorReport* motor_report;
-  TorqueSensorReport* torque_sensor_report;
+  MotorReport* motor_report = NULL;
+  TorqueSensorReport* torque_sensor_report = NULL;
 };
 
 class FSRReport{
@@ -48,8 +49,8 @@ public:
 class ExoReport{
 public:
   ~ExoReport();
-  LegReport* left_leg;
-  LegReport* right_leg;
+  LegReport* left_leg = NULL;
+  LegReport* right_leg = NULL;
 };
 
 
