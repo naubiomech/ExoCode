@@ -37,7 +37,7 @@ void TorqueSensor::endTorqueCalibration(){
 
 double TorqueSensor::measureRawTorque(){
   double readValue = analogRead(this->torque_sensor_pin);
-  return readValue * (3.3 / 4096.0);
+  return readValue * (3.3 / 4096.0) * torque_sign;
 }
 
 double TorqueSensor::measureRawCalibratedTorque(){
@@ -50,6 +50,10 @@ TorqueSensorReport* TorqueSensor::generateReport(){
   TorqueSensorReport* report = new TorqueSensorReport();
   fillLocalReport(report);
   return report;
+}
+
+void TorqueSensor::setSign(int sign){
+  torque_sign = (double) sign;
 }
 
 void TorqueSensor::fillReport(TorqueSensorReport* report){

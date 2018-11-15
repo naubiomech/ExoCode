@@ -12,6 +12,7 @@ private:
   RunningAverage* torque_calibration_average;
   double torque_calibration_value = 0;
   int torque_address;
+  double torque_sign = 1.0;
 
   double measureRawTorque();
   double measureRawCalibratedTorque();
@@ -23,6 +24,7 @@ public:
   void startTorqueCalibration();
   void updateTorqueCalibration();
   void endTorqueCalibration();
+  void setSign(int sign);
   TorqueSensorReport* generateReport();
   void fillReport(TorqueSensorReport* report);
 };

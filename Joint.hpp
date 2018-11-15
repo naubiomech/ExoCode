@@ -37,6 +37,7 @@ public:
   void applyAutoKF();
   double getTorque();
   void measureTorque();
+  void setSign(int sign);
   void startTorqueCalibration();
   void updateTorqueCalibration();
   void endTorqueCalibration();

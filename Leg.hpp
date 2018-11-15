@@ -110,7 +110,9 @@ public:
   void adjustControl();
   void setToZero();
   void calibrateIMUs();
+  void setSign(int sign);
   LegReport* generateReport();
   void fillReport(LegReport* report);
+  void setLegSign(int sign);
 };
 #endif

@@ -33,13 +33,13 @@ void Motor::setControlAlgorithm(ControlAlgorithm control_algorithm){
   this->control_algorithm = control_algorithm;
 }
 
-void Motor::writeToMotor(int value){
-  int Vol = this->pid_output + this->zero_torque_reference;
+void Motor::writeToMotor(int motor_output){
+  int voltage = output_sign * motor_output + this->zero_torque_reference;
 
   if (PWM_CONTROL){
-    Vol = Vol * 0.8 + 0.1 * 4096.0;
+    voltage = voltage * 0.8 + 0.1 * 4096.0;
   }
-  analogWrite(this->motor_pin, Vol);
+  analogWrite(this->motor_pin, voltage);
 }
 
 void Motor::applyPlanterControlAlgorithm(bool taking_baseline, double FSR_percentage, double max_FSR_percentage){
@@ -75,6 +75,7 @@ bool Motor::applyTorque(int state, double torque){
   }
 
   pid->Compute_KF(KF);
+  // TODO check if pid_output should be real voltage or int rep
   writeToMotor(pid_output);
   return true;
 }
@@ -152,6 +153,10 @@ void Motor::adjustShapingForTime(double planter_time){
 void Motor::setTorqueScalar(double scalar){
   scalar = fmin(fmax(scalar,0),1);
   this->torque_scalar = scalar;
+}
+
+void Motor::setSign(int sign){
+  this->output_sign = (double) sign;
 }
 
 MotorReport* Motor::generateReport(){

@@ -12,6 +12,7 @@ class Motor{
 private:
   void fillLocalReport(MotorReport* report);
 
+  double output_sign = 1.0;
   unsigned int motor_pin;
   unsigned int motor_error_pin;
 
@@ -77,6 +78,7 @@ public:
   void applyPlanterControlAlgorithm(bool taking_baseline, double FSR_percentage, double max_FSR_percentage);
   void updateKFPIDError(double torque);
   void applyAutoKF();
+  void setSign(int sign);
   MotorReport* generateReport();
   void fillReport(MotorReport* report);
 };

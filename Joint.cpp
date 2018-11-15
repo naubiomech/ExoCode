@@ -99,6 +99,11 @@ void Joint::endTorqueCalibration(){
   torque_sensor->endTorqueCalibration();
 }
 
+void Joint::setSign(int sign){
+  motor->setSign(sign);
+  torque_sensor->setSign(sign);
+}
+
 JointReport* Joint::generateReport(){
   JointReport* report = new JointReport();
   fillLocalReport(report);

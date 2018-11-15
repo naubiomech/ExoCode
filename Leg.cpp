@@ -31,6 +31,7 @@ Leg::Leg(LegPins* legPins){
   }
 
   this->foot_fsrs = fsrs[0];
+  this->setSign(legPins->leg_sign);
 }
 
 double Leg::getBalanceReference(){
@@ -317,6 +318,18 @@ void Leg::measureIMUs(){
   }
 }
 
+void Leg::setSign(int sign){
+  if (sign == 0){
+    return;
+  }
+
+  sign = sign / abs(sign);
+
+  for (int i = 0; i < joint_count; i++){
+    joints[i]->setSign(sign);
+  }
+}
+
 LegReport* Leg::generateReport(){
   LegReport* report = new LegReport(joint_count, fsr_group_count, imu_count);
   fillLocalReport(report);
@@ -327,7 +340,7 @@ LegReport* Leg::generateReport(){
     report->fsr_reports[i] = fsrs[i]->generateReport();
   }
   for (int i = 0; i < imu_count; i++){
-	  report->imu_reports[i] = imus[i]->generateReport();
+    report->imu_reports[i] = imus[i]->generateReport();
   }
   return report;
 }

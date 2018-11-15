@@ -93,6 +93,9 @@ const unsigned int MOTOR_ERROR_LEFT_KNEE_PIN = 24;
 const unsigned int MOTOR_ERROR_LEFT_ANKLE_PIN = 25;
 const unsigned int MOTOR_ERROR_RIGHT_KNEE_PIN = 26;
 const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = 27;
+
+const int LEFT_LEG_SIGN = 1;
+const int RIGHT_LEG_SIGN = -1;
 #endif
 
 #ifdef ENABLE_PWM
