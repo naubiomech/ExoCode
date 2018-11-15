@@ -71,7 +71,6 @@ void send_command_message(SoftwareSerial* commandSerial, char command_char, doub
 void receive_and_transmit(ExoSystem* exoSystem) {
 // ===== Msg Functions =====
   double data_to_send[8];
-  double *data_to_send_point = &data_to_send[0];
 
   SoftwareSerial* commandSerial = exoSystem->commandSerial;
   int cmd_from_Gui = commandSerial->read();
@@ -95,10 +94,10 @@ void receive_and_transmit(ExoSystem* exoSystem) {
     break;
 
   case COMM_CODE_CHECK_BLUETOOTH:
-    data_to_send_point[0] = 0;
-    data_to_send_point[1] = 1;
-    data_to_send_point[2] = 2;
     send_command_message(commandSerial, COMM_CODE_CHECK_BLUETOOTH, data_to_send_point, 3);   //For the Arduino to prove to MATLAB that it is behaving, it will send back the character B
+    data_to_send[0] = 0;
+    data_to_send[1] = 1;
+    data_to_send[2] = 2;
     break;
 
   case COMM_CODE_CLEAN_BLUETOOTH_BUFFER:
