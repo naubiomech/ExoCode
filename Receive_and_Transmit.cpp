@@ -103,7 +103,7 @@ void receive_and_transmit(ExoSystem* exoSystem) {
     data_to_send[0] = 0;
     data_to_send[1] = 1;
     data_to_send[2] = 2;
-    send_command_message(commandSerial, COMM_CODE_CHECK_BLUETOOTH, data_to_send, 3 * sizeof(data_to_send));
+    send_command_message(commandSerial, COMM_CODE_CHECK_BLUETOOTH, data_to_send, 3 * sizeof(*data_to_send));
     break;
 
   case COMM_CODE_CLEAN_BLUETOOTH_BUFFER:
