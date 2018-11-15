@@ -49,7 +49,7 @@ private:
   void fillLocalReport(FSRReport* report);
 
 public:
-  FSRGroup(FSRPins* fsr_pins, int fsr_count);
+  FSRGroup(FSRGroupPins* fsr_pins);
 
   void measureForce();
   double getForce();

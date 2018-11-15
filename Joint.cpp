@@ -1,8 +1,8 @@
 #include "Joint.hpp"
 
 Joint::Joint(JointPins* pins){
-  motor = new Motor(&pins->motor_pins);
-  torque_sensor = new TorqueSensor(&pins->torque_sensor_pins);
+  motor = new Motor(pins->motor_pins);
+  torque_sensor = new TorqueSensor(pins->torque_sensor_pins);
 }
 
 void Joint::measureError(){

@@ -55,12 +55,12 @@ double FSR::getBalanceReference(){
   return min(1, (getForce() / peak_force));
 }
 
-FSRGroup::FSRGroup(FSRPins* fsr_pins, int fsr_count){
+FSRGroup::FSRGroup(FSRGroupPins* fsr_group_pins){
+  this->fsr_count = fsr_group_pins->fsr_count;
   this->fsrs = new FSR*[fsr_count];
   for (int i = 0; i < fsr_count; i++){
-    this->fsrs[i] = new FSR(fsr_pins[i].fsr_pin);
+    this->fsrs[i] = new FSR(fsr_group_pins->fsr_pins[i]);
   }
-  this->fsr_count = fsr_count;
 }
 
 void FSRGroup::measureForce(){

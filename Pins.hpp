@@ -15,8 +15,11 @@ public:
 
 class JointPins{
 public:
-  MotorPins motor_pins;
-  TorqueSensorPins torque_sensor_pins;
+  JointPins();
+  ~JointPins();
+
+  MotorPins* motor_pins;
+  TorqueSensorPins* torque_sensor_pins;
 };
 
 class IMUPins{
@@ -25,29 +28,33 @@ public:
   int address;
 };
 
-class FSRPins{
+class FSRGroupPins{
 public:
-  int fsr_pin;
+  FSRGroupPins(int fsr_count);
+  ~FSRGroupPins();
+
+  int* fsr_pins;
+  int fsr_count;
 };
 
 class LegPins{
 public:
-  LegPins(int jointAmount, int fsrAmount, int imuAmount);
+  LegPins(int joints_per_leg, int fsr_groups_per_leg, int fsrs_per_group, int imus_per_leg);
   ~LegPins();
 
-  JointPins* joint_pins;
+  JointPins** joint_pins;
   int joint_count;
 
-  FSRPins* fsr_pins;
-  int fsr_count;
+  FSRGroupPins** fsr_groups_pins;
+  int fsr_group_count;
 
-  IMUPins* imu_pins;
+  IMUPins** imu_pins;
   int imu_count;
 };
 
 class ExoPins{
 public:
-  ExoPins(int motorsPerLeg, int fsrsPerLeg, int imuAmount);
+  ExoPins(int joints_per_leg, int fsr_groups_per_leg, int fsrs_per_group, int imus_per_leg);
   ~ExoPins();
   LegPins* left_leg;
   LegPins* right_leg;

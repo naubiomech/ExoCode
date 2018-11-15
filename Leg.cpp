@@ -7,24 +7,30 @@
 #include "Report.hpp"
 
 Leg::Leg(LegPins* legPins){
-  this->foot_fsrs = new FSRGroup(legPins->fsr_pins, legPins->fsr_count);
   this->joint_count = legPins->joint_count;
   this->imu_count = legPins->imu_count;
+  this->fsr_group_count = legPins->fsr_group_count;
+
   this->joints = new Joint*[joint_count];
   this->imus = new IMU*[imu_count];
-  this->fsr_group_count = 1;
   this->fsrs = new FSRGroup*[fsr_group_count];
-  this->fsrs[0] = foot_fsrs;
+
+  for (int i = 0; i < legPins->fsr_group_count; i++){
+    FSRGroupPins* fsr_group_pins = legPins->fsr_groups_pins[i];
+    this->fsrs[i] = new FSRGroup(fsr_group_pins);
+  }
 
   for (int i = 0; i < legPins->joint_count; i++){
-    JointPins* joint_pins = &(legPins->joint_pins[i]);
+    JointPins* joint_pins = legPins->joint_pins[i];
     this->joints[i] = new Joint(joint_pins);
   }
 
   for (int i = 0; i < legPins->imu_count; i++){
-    IMUPins* imu_pins = &(legPins->imu_pins[i]);
+    IMUPins* imu_pins = legPins->imu_pins[i];
     this->imus[i] = new IMU(imu_pins);
   }
+
+  this->foot_fsrs = fsrs[0];
 }
 
 double Leg::getBalanceReference(){
