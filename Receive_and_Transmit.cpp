@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "Receive_and_Transmit.hpp"
 #include <SoftwareSerial.h>
+#include "Message.hpp"
 
 // Peek is the variable used to identify the message received by matlab
 // To understand the commands see the file .......... in the folder
@@ -71,7 +72,11 @@ void send_command_message(SoftwareSerial* commandSerial, char command_char, doub
 
 void receive_and_transmit(ExoSystem* exoSystem) {
 // ===== Msg Functions =====
+  ExoReport* report = exoSystem->report;
+  exoSystem->exo->fillReport(report);
+  ExoMessage* exoMsg = new ExoMessage();
   double data_to_send[8];
+  double data_received[8];
 
   SoftwareSerial* commandSerial = exoSystem->commandSerial;
   int cmd_from_Gui = commandSerial->read();
@@ -98,11 +103,36 @@ void receive_and_transmit(ExoSystem* exoSystem) {
     data_to_send[0] = 0;
     data_to_send[1] = 1;
     data_to_send[2] = 2;
-    send_command_message(commandSerial, COMM_CODE_CHECK_BLUETOOTH, data_to_send, 3 * sizeof(data_to_send));   //For the Arduino to prove to MATLAB that it is behaving, it will send back the character B
+    send_command_message(commandSerial, COMM_CODE_CHECK_BLUETOOTH, data_to_send, 3 * sizeof(data_to_send));
     break;
 
   case COMM_CODE_CLEAN_BLUETOOTH_BUFFER:
     while (commandSerial->available() > 0) commandSerial->read();
     break;
+
+  case COMM_CODE_GET_LEFT_ANKLE_SETPOINT:
+    data_to_send[0] = report->left_leg->joint_reports[0]->motor_report->pid_setpoint;
+    send_command_message(commandSerial, COMM_CODE_GET_LEFT_ANKLE_SETPOINT, data_to_send, 1 * sizeof(*data_to_send));
+    break;
+
+  case COMM_CODE_GET_RIGHT_ANKLE_SETPOINT:
+    data_to_send[0] = report->right_leg->joint_reports[0]->motor_report->pid_setpoint;
+    send_command_message(commandSerial, COMM_CODE_GET_RIGHT_ANKLE_SETPOINT, data_to_send, 1 * sizeof(*data_to_send));
+    break;
+
+  case COMM_CODE_SET_LEFT_ANKLE_SETPOINT:
+    receive_data(commandSerial, data_received, 2 * sizeof(*data_received));
+    exoMsg->left_leg = prepareMotorMessage(report->left_leg, 0);
+    exoMsg->left_leg->joint_messages[0]->motor_message->setpoint = data_received[0];
+    exoSystem->exo->resetStartingParameters();
+    break;
+
+  case COMM_CODE_SET_RIGHT_ANKLE_SETPOINT:
+    receive_data(commandSerial, data_received, 2 * sizeof(*data_received));
+    exoMsg->right_leg = prepareMotorMessage(report->right_leg, 0);
+    exoMsg->right_leg->joint_messages[0]->motor_message->setpoint = data_received[0];
+    exoSystem->exo->resetStartingParameters();
+    break;
   }
+  delete exoMsg;
 }
