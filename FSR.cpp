@@ -8,33 +8,6 @@ FSR::FSR(int pin){
   this->pin = pin;
 }
 
-double FSR::calibrate(){
-  if (!isCalibrating) {
-    startCalibration();
-  }
-
-  if (millis() - fsrCalibrationStartTime < FSR_CALIBRATION_TIME_MS) {
-    updateCalibration();
-  } else {
-    endCalibration();
-  }
-  return peak_force;
-}
-
-void FSR::startCalibration(){
-  isCalibrating = true;
-  fsrCalibrationStartTime = millis();
-  peak_force = 0;
-}
-
-void FSR::updateCalibration(){
-  updateMax(&peak_force, getForce());
-}
-
-void FSR::endCalibration(){
-  isCalibrating = false;
-}
-
 void FSR::measureForce(){
   double Vo = 10 * 3.3 * analogRead(pin) / 4096;
 
@@ -49,10 +22,6 @@ void FSR::measureForce(){
 
 double FSR::getForce(){
   return force;
-}
-
-double FSR::getBalanceReference(){
-  return min(1, (getForce() / peak_force));
 }
 
 FSRGroup::FSRGroup(FSRGroupPins* fsr_group_pins){
@@ -77,15 +46,7 @@ double FSRGroup::getForce(){
 }
 
 void FSRGroup::calibrate(){
-  double peak = 0;
-  for(int i = 0; i< fsr_count;i++){
-    peak += fsrs[i]->calibrate();
-  }
-  calibration_peak = peak;
-}
-
-double FSRGroup::getBalanceReference(){
-  return fsrs[0]->getBalanceReference() - fsrs[1]->getBalanceReference();
+  calibration_peak = peak_average->getAverage();
 }
 
 void FSRGroup::setPercentageThreshold(double percent){
@@ -102,10 +63,9 @@ void FSRGroup::resetMaxes(){
 }
 
 void FSRGroup::updateMaxes(){
-
   this->max_fsr_voltage->update(this->getForce());
-  double FSRatio = fabs(this->getForce() / this->plant_peak_mean);
-  this->max_fsr_percentage->update(FSRatio);
+  double fsr_percentage = fabs(this->getForce() / calibration_peak);
+  this->max_fsr_percentage->update(fsr_percentage);
 }
 
 double FSRGroup::getPercentage(){
@@ -116,15 +76,9 @@ double FSRGroup::getMaxPercentage(){
   return max_fsr_percentage->getMax();
 }
 
-void FSRGroup::startBaseline(){
-
-  this->plant_peak_averager->reset();
-}
-
 void FSRGroup::updateBaseline(){
   double plant_fsr_peak = this->max_fsr_voltage->getMax();
-  this->plant_peak_averager->update(plant_fsr_peak);
-  this->plant_peak_mean = this->plant_peak_averager->getAverage();
+  this->peak_average->update(plant_fsr_peak);
 }
 
 FSRReport* FSRGroup::generateReport(){

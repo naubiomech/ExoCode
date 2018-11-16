@@ -66,5 +66,6 @@ const int ACTIVATION_STEP_COUNT = 6;
 const double DEFAULT_ITER_SWING = 500;
 const double DEFAULT_ITER_LATE_STANCE = 4;
 
+const int FSR_CALIBRATION_PEAK_COUNT = 4;
 
 #endif
