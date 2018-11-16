@@ -5,7 +5,7 @@
 
 class MotorMessage{
 public:
-  double setpoint;
+  double* setpoint;
 };
 
 class TorqueSensorMessage{

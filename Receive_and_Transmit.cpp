@@ -123,14 +123,14 @@ void receive_and_transmit(ExoSystem* exoSystem) {
   case COMM_CODE_SET_LEFT_ANKLE_SETPOINT:
     receive_data(commandSerial, data_received, 2 * sizeof(*data_received));
     exoMsg->left_leg = prepareMotorMessage(report->left_leg, 0);
-    exoMsg->left_leg->joint_messages[0]->motor_message->setpoint = data_received[0];
+    exoMsg->left_leg->joint_messages[0]->motor_message->setpoint = data_received;
     exoSystem->exo->resetStartingParameters();
     break;
 
   case COMM_CODE_SET_RIGHT_ANKLE_SETPOINT:
     receive_data(commandSerial, data_received, 2 * sizeof(*data_received));
     exoMsg->right_leg = prepareMotorMessage(report->right_leg, 0);
-    exoMsg->right_leg->joint_messages[0]->motor_message->setpoint = data_received[0];
+    exoMsg->right_leg->joint_messages[0]->motor_message->setpoint = data_received;
     exoSystem->exo->resetStartingParameters();
     break;
   }
