@@ -31,6 +31,7 @@ LegPins::~LegPins(){
 }
 
 LegPins::LegPins(int joint_count, int fsr_group_count, int fsrs_per_group, int imu_count, int leg_sign){
+  this->leg_sign = leg_sign;
   this->joint_pins = new JointPins*[joint_count];
   this->fsr_groups_pins = new FSRGroupPins*[fsr_group_count];
   this->imu_pins = new IMUPins*[imu_count];
