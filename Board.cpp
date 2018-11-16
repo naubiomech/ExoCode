@@ -34,7 +34,7 @@ ExoPins* setupQuadBoardPins(){
   int motor_count = 2;
   int fsr_groups_per_leg = 1;
   int fsrs_per_group = 2;
-  int imu_count = 1;
+  int imu_count = 0;
   ExoPins* exo_pins = new ExoPins(motor_count, fsr_groups_per_leg, fsrs_per_group, imu_count);
 
   exo_pins->bluetooth_rx = BLUETOOTH_RX_PIN;
@@ -55,12 +55,8 @@ ExoPins* setupQuadBoardPins(){
   exo_pins->right_leg->joint_pins[1]->motor_pins->motor = MOTOR_RIGHT_KNEE_PIN;
   exo_pins->right_leg->joint_pins[1]->motor_pins->err = MOTOR_ERROR_RIGHT_KNEE_PIN;
   exo_pins->right_leg->joint_pins[1]->torque_sensor_pins->torque_sensor = TORQUE_SENSOR_RIGHT_KNEE_PIN;
-  exo_pins->left_leg->fsr_groups_pins[0]->fsr_pins[0] = FSR_SENSE_RIGHT_TOE_PIN;
-  exo_pins->left_leg->fsr_groups_pins[0]->fsr_pins[1] = FSR_SENSE_RIGHT_HEEL_PIN;
-
-  exo_pins->left_leg->imu_count = 0;
-  exo_pins->right_leg->imu_pins[0]->imu_slot = IMU_SLOT_0_PINS;
-  exo_pins->right_leg->imu_pins[0]->address = IMU_ADDRESS_0;
+  exo_pins->right_leg->fsr_groups_pins[0]->fsr_pins[0] = FSR_SENSE_RIGHT_TOE_PIN;
+  exo_pins->right_leg->fsr_groups_pins[0]->fsr_pins[1] = FSR_SENSE_RIGHT_HEEL_PIN;
 
   return exo_pins;
 }
