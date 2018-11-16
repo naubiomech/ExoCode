@@ -21,7 +21,7 @@ Motor::Motor(MotorPins* motor_pins){
   pid = new PID(&this->pid_input, &this->pid_output, &this->pid_setpoint,
                 PID_DEFAULTS[0], PID_DEFAULTS[1], PID_DEFAULTS[2], REVERSE);
   pid->SetMode(AUTOMATIC);
-  pid->SetOutputLimits(-1500, 1500);
+  pid->SetOutputLimits(-1, 1);
   pid->SetSampleTime(PID_sample_time);
 
   pinMode(motor_error_pin, INPUT);
@@ -33,8 +33,10 @@ void Motor::setControlAlgorithm(ControlAlgorithm control_algorithm){
   this->control_algorithm = control_algorithm;
 }
 
-void Motor::writeToMotor(int motor_output){
-  int voltage = output_sign * motor_output + this->zero_torque_reference;
+void Motor::writeToMotor(double motor_output){
+  int voltage = map((double) motor_output,-1.0,1.0,-2048.0, 2048.0);
+  voltage = (output_sign * voltage) + this->zero_torque_reference;
+  Serial.println(voltage);
 
   if (PWM_CONTROL){
     voltage = voltage * 0.8 + 0.1 * 4096.0;

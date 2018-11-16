@@ -64,7 +64,7 @@ public:
   bool hasErrored();
   bool applyTorque(int state, double torque);
   void autoKF(int state);
-  void writeToMotor(int value);
+  void writeToMotor(double value);
   void changeState(int state);
   void updateSetpoint(int state);
   void sigmoidCurveSetpoint(int state);
