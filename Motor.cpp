@@ -44,12 +44,8 @@ void Motor::writeToMotor(double motor_output){
   analogWrite(this->motor_pin, voltage);
 }
 
-void Motor::applyPlanterControlAlgorithm(bool taking_baseline, double FSR_percentage, double max_FSR_percentage){
+void Motor::adjustSetpoint(double FSR_percentage, double max_FSR_percentage){
   ControlAlgorithm control_algorithm = this->control_algorithm;
-
-  if(taking_baseline){
-    setControlAlgorithm(zero_torque);
-  }
 
   this->setpoint = getSetpoint(control_algorithm, this->desired_setpoint, this->setpoint_clamp,
                                FSR_percentage, max_FSR_percentage, prop_gain);

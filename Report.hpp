@@ -43,7 +43,7 @@ public:
   int joint_report_count;
   int imu_report_count;
   int state;
-  Phase phase;
+  PhaseType phase;
 };
 
 class ExoReport{

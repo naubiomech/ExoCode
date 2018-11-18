@@ -66,8 +66,8 @@ void Joint::setTorqueScalar(double scalar){
   motor->setTorqueScalar(scalar);
 }
 
-void Joint::applyPlanterControlAlgorithm(bool taking_baseline, double FSR_percentage, double max_FSR_percentage){
-  motor->applyPlanterControlAlgorithm(taking_baseline, FSR_percentage, max_FSR_percentage);
+void Joint::adjustSetpoint(double FSR_percentage, double max_FSR_percentage){
+  motor->adjustSetpoint(FSR_percentage, max_FSR_percentage);
 }
 
 void Joint::updateKFPIDError(){

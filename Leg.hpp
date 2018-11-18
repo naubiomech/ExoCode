@@ -20,7 +20,7 @@ private:
   void applyControlAlgorithm();
   void applyPlanterControlAlgorithm();
   void applyDorsiControlAlgorithm();
-  Phase determinePhase(int new_state, int old_state, Phase current_phase);
+  bool determinePhaseChange(int new_state, int old_state);
   void triggerPlanterPhase();
   void triggerDorsiPhase();
   int takeBaselineTriggerDorsiStart();
@@ -45,20 +45,12 @@ private:
   int imu_count;
   FSRGroup* foot_fsrs;
 
-  Phase current_phase;
+  Phase* current_phase;
+  double last_phase_time;
 
-  int planter_step_count_base;
-  int planter_step_count;
+  int step_count;
 
-  Timer* dorsi_timer = new Timer();
-  Timer* planter_timer = new Timer();
   Timer* state_time = new Timer();
-
-  MovingAverage* planter_time_averager = new MovingAverage(4);
-  MovingAverage* dorsi_time_averager = new MovingAverage(4);
-
-  double dorsi_mean;
-  double planter_mean;
 
   int increment_activation_starting_step = 0;
 
@@ -73,27 +65,19 @@ private:
   double flag_1 = 0;
   double time_old_state;
 
-  double activate_in_3_steps = 0;
-  double first_step = 1;
-  double start_step = 0;
-  double num_3_steps = 0;
-
-  double coef_in_3_steps_Pctrl = 0;
-  double store_N1 = 0;
-  double set_2_zero = 0;
-  double One_time_set_2_zero = 1;
-
   int state = SWING;
   int state_old = SWING;
-
-  double start_time = 0;
-
-  int FSR_baseline_FLAG = 0;
 
 public:
   Leg(LegPins* legPins);
   void measureSensors();
   bool checkMotorErrors();
+  void resetFSRMaxes();
+  void updateFSRMaxes();
+  void adjustSetpoint();
+  void runAutoKF();
+  void adjustShapingForTime(double time);
+  void incrementStepCount();
   void takeFSRBaseline();
   bool applyTorque();
   void applyStateMachine();
@@ -104,7 +88,6 @@ public:
   void updateTorqueCalibration();
   void endTorqueCalibration();
   void calibrateFSRs();
-  double getBalanceReference();
   int determineState(boolean foot_on_ground);
   bool determine_foot_on_ground();
   void adjustControl();

@@ -34,10 +34,6 @@ Leg::Leg(LegPins* legPins){
   this->setSign(legPins->leg_sign);
 }
 
-double Leg::getBalanceReference(){
-  return foot_fsrs->getBalanceReference() * Prop_Gain;
-}
-
 void Leg::calibrateFSRs(){
   foot_fsrs->calibrate();
 }
@@ -69,20 +65,42 @@ bool Leg::checkMotorErrors(){
   return false;
 }
 
-void Leg::autoKF(){
-  for(int i = 0; i < joint_count;i++){
-    joints[i]->autoKF(state);
+void Leg::resetFSRMaxes(){
+  for (int i = 0; i <fsr_group_count;i++){
+    fsrs[i]->resetMaxes();
+  }
+}
+
+void Leg::updateFSRMaxes(){
+  for(int i =0; i < fsr_group_count; i++){
+    fsrs[i]->updateMaxes();
+  }
+}
+
+void Leg::adjustSetpoint(){
+  double FSR_percentage = foot_fsrs->getPercentage();
+  double max_FSR_percentage = foot_fsrs->getMaxPercentage();
+
+  for(int i = 0; i < joint_count; i++){
+    joints[i]->adjustSetpoint(FSR_percentage, max_FSR_percentage);
+  }
+}
+
+void Leg::runAutoKF(){
+  for(int i = 0; i < joint_count; i++){
+    joints[i]->applyAutoKF();
   }
 }
 
 void Leg::resetStartingParameters(){
-  this->activate_in_3_steps = 1;
-
-  this->planter_step_count = 0;
-  this->first_step = 1;
-
   for (int i = 0; i < joint_count; i++){
     joints[i]->resetStartingParameters();
+  }
+}
+
+void Leg::adjustShapingForTime(double time){
+  for (int i =0; i < joint_count; i++){
+    joints[i]->adjustShapingForTime(time);
   }
 }
 
@@ -96,12 +114,16 @@ bool Leg::isSteadyState(){
   return this->state_time->lap() > STEADY_STATE_TIMEOUT;
 }
 
+void Leg::incrementStepCount(){
+  step_count++;
+}
+
 void Leg::startIncrementalActivation(){
-  this->increment_activation_starting_step = 0;
+  this->increment_activation_starting_step = step_count;
 }
 
 void Leg::updateIncrementalActivation(){
-  double since_activation_step_count = this->planter_step_count - this->increment_activation_starting_step;
+  double since_activation_step_count = this->step_count - this->increment_activation_starting_step;
   double activation_percent = since_activation_step_count / ACTIVATION_STEP_COUNT;
   for(int i = 0; i < joint_count; i++){
     joints[i]->setTorqueScalar(activation_percent);
@@ -126,19 +148,10 @@ void Leg::changeState(int new_state, int old_state){
   for(int i = 0; i < joint_count; i++){
     joints[i]->changeState(state);
   }
-
-  Phase new_phase = determinePhase(new_state, old_state, this->current_phase);
-  if (new_phase != this->current_phase){
-    this->current_phase = new_phase;
-    this->changePhase(new_phase);
-  }
-}
-
-void Leg::changePhase(int new_phase){
-  if (new_phase == PLANTER){
-    this->triggerPlanterPhase();
-  } else if (new_phase == DORSI){
-    this->triggerDorsiPhase();
+  bool phase_changed = determinePhaseChange(new_state, old_state);
+  if (phase_changed){
+    current_phase = current_phase->changePhase();
+    current_phase->setContext(this);
   }
 }
 
@@ -147,106 +160,20 @@ void Leg::adjustControl(){
 }
 
 void Leg::applyControlAlgorithm(){
-  if (this->current_phase == PLANTER){
-    this->applyPlanterControlAlgorithm();
-  } else if (this->current_phase == DORSI){
-    this->applyDorsiControlAlgorithm();
-  }
+  this->current_phase->run();
 }
 
-void Leg::applyPlanterControlAlgorithm(){
-  for(int i =0; i < fsr_group_count; i++){
-    fsrs[i]->updateMaxes();
+bool Leg::determinePhaseChange(int new_state, int old_state){
+  double current_phase_time = current_phase->getPhaseTime();
+  if (new_state == old_state || current_phase_time <= step_time_length / 4){
+    return false;
   }
-
-  double FSR_percentage = foot_fsrs->getPercentage();
-  double max_FSR_percentage = foot_fsrs->getMaxPercentage();
-  bool taking_baseline = false;
-
-  for(int i = 0; i < fsr_group_count; i++){
-    fsrs[i]->updateMaxes();
-  }
-
-  for(int i = 0; i < joint_count; i++){
-    joints[i]->applyPlanterControlAlgorithm(FSR_percentage, taking_baseline, max_FSR_percentage);
-  }
-}
-
-void Leg::applyDorsiControlAlgorithm(){
-  for(int i = 0; i < joint_count; i++){
-    joints[i]->applyAutoKF();
-  }
-}
-
-Phase Leg::determinePhase(int new_state, int old_state, Phase current_phase){
-  double current_phase_time;
-  Phase next_phase;
-  if (new_state == LATE_STANCE && old_state == SWING && current_phase == DORSI){
-    next_phase = PLANTER;
-    current_phase_time = dorsi_timer->lap();
-  } else if (new_state == SWING && old_state == LATE_STANCE && current_phase == PLANTER){
-    next_phase = DORSI;
-    current_phase_time = planter_timer->lap();
-  } else {
-    return current_phase;
-  }
-
-  if (current_phase_time <=step_time_length /4){
-    return current_phase;
-  }
-
-  return next_phase;
+  return true;
 }
 
 bool Leg::determine_foot_on_ground(){
   boolean foot_on_fsr = this->foot_fsrs->getForce() > this->foot_fsrs->getThreshold();
   return foot_on_fsr;
-}
-
-void Leg::triggerPlanterPhase(){
-  this->planter_timer->reset();
-
-  for (int i = 0; i <fsr_group_count;i++){
-    fsrs[i]->resetMaxes();
-  }
-}
-
-void Leg::triggerDorsiPhase(){
-  this->planter_step_count++; // you have accomplished a step
-  this->dorsi_timer->reset();
-
-  double planter_time = this->planter_timer->lap();
-  this->planter_mean = this->planter_time_averager->update(planter_time);
-
-  for (int i =0; i < joint_count; i++){
-    joints[i]->adjustShapingForTime(planter_time);
-  }
-}
-
-int Leg::takeBaselineTriggerDorsiStart(){
-
-  double planter_time = this->planter_timer->lap();
-  this->planter_mean = this->planter_time_averager->update(planter_time);
-
-  for(int i = 0; i < fsr_group_count;i++){
-    fsrs[i]->updateBaseline();
-  }
-
-  if (this->planter_step_count_base >= n_step_baseline){
-    this->planter_step_count_base = 0;
-
-    return 0;
-  }
-
-  return 1;
-}
-
-int Leg::takeBaselineTriggerPlanterStart(){
-
-  double dorsi_time = this->dorsi_timer->lap();
-  this->dorsi_mean = this->dorsi_time_averager->update(dorsi_time);
-
-  return 1;
 }
 
 void Leg::triggerLateStance(){
@@ -286,14 +213,6 @@ void Leg::measureSensors(){
   this->foot_fsrs->measureForce();
   this->measureIMUs();
 
-}
-
-void Leg::takeFSRBaseline(){
-  if (FSR_baseline_FLAG){
-    for (int i = 0; i < joint_count; i++){
-      joints[i]->takeBaseline(state, state_old, &FSR_baseline_FLAG);
-    }
-  }
 }
 
 bool Leg::applyTorque(){
@@ -360,5 +279,5 @@ void Leg::fillReport(LegReport* report){
 
 void Leg::fillLocalReport(LegReport* report){
   report->state = state;
-  report->phase = current_phase;
+  report->phase = current_phase->getPhaseType();
 }

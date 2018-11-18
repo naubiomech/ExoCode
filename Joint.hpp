@@ -32,7 +32,7 @@ public:
   void setControlAlgorithm(ControlAlgorithm control_algorithm);
   void adjustShapingForTime(double planterTime);
   void setTorqueScalar(double scalar);
-  void applyPlanterControlAlgorithm(bool taking_baseline, double FSR_percentage, double max_FSR_percentage);
+  void adjustSetpoint(double FSR_percentage, double max_FSR_percentage);
   void updateKFPIDError();
   void applyAutoKF();
   double getTorque();
