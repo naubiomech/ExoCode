@@ -22,6 +22,7 @@ public:
   MovingAverage(int size);
   double update(double value);
   double getAverage();
+  void reset();
 };
 
 class Clamp{

@@ -19,10 +19,14 @@ void RunningAverage::reset(){
 
 MovingAverage::MovingAverage(int size){
   previous_values = new double[size];
+  this->size = size;
+  this->reset();
+}
+
+void MovingAverage::reset(){
   for(int i = 0; i < size;i++){
     previous_values[i] = 0;
   }
-  this->size = size;
   this->total = 0;
   this->average = 0;
   this->index = 0;
