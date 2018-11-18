@@ -58,14 +58,14 @@ double FSRGroup::getThreshold(){
 }
 
 void FSRGroup::resetMaxes(){
+  double max_voltage = this->max_fsr_voltage->getMax();
+  this->peak_average->update(max_voltage);
+
   this->max_fsr_voltage->reset();
-  this->max_fsr_percentage->reset();
 }
 
 void FSRGroup::updateMaxes(){
   this->max_fsr_voltage->update(this->getForce());
-  double fsr_percentage = fabs(this->getForce() / calibration_peak);
-  this->max_fsr_percentage->update(fsr_percentage);
 }
 
 double FSRGroup::getPercentage(){
@@ -73,12 +73,8 @@ double FSRGroup::getPercentage(){
 }
 
 double FSRGroup::getMaxPercentage(){
-  return max_fsr_percentage->getMax();
-}
-
-void FSRGroup::updateBaseline(){
-  double plant_fsr_peak = this->max_fsr_voltage->getMax();
-  this->peak_average->update(plant_fsr_peak);
+  double max_fsr_percentage = fabs(max_fsr_voltage->getMax() / calibration_peak);
+  return max_fsr_percentage;
 }
 
 FSRReport* FSRGroup::generateReport(){
