@@ -65,8 +65,8 @@ public:
   bool applyTorque(int state, double torque);
   void autoKF(int state);
   void writeToMotor(double value);
-  void changeState(int state);
   void updateSetpoint(int state);
+  void scaleSetpointDifference();
   void sigmoidCurveSetpoint(int state);
   void setToZero();
   void adjustControl(int state, int state_old, int FSR_baseline_FLAG);

@@ -26,8 +26,8 @@ void Joint::writeToMotor(int value){
   motor->writeToMotor(value);
 }
 
-void Joint::changeState(int state){
-  motor->changeState(state);
+void Joint::scaleSetpointDifference(){
+  motor->scaleSetpointDifference();
 }
 
 void Joint::updateSetpoint(int state){

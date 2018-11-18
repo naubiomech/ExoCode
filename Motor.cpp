@@ -86,7 +86,7 @@ bool Motor::hasErrored(){
   return in_error_state;
 }
 
-void Motor::changeState(int state){
+void Motor::scaleSetpointDifference(){
   this->old_pid_setpoint = this->pid_setpoint;
   this->new_pid_setpoint = this->previous_setpoint +
     (this->setpoint - this->previous_setpoint) * this->torque_scalar;

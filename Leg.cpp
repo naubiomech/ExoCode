@@ -111,7 +111,7 @@ void Leg::setZeroIfSteadyState(){
 }
 
 bool Leg::isSteadyState(){
-  return this->state_time->lap() > STEADY_STATE_TIMEOUT;
+  return state->getStateTime() > STEADY_STATE_TIMEOUT;
 }
 
 void Leg::incrementStepCount(){
@@ -130,45 +130,18 @@ void Leg::updateIncrementalActivation(){
   }
 }
 
-int Leg::determineState(boolean foot_on_ground){
-  int new_state;
-  if (swing_state_threshold->getState((double) foot_on_ground)){
-    new_state = SWING;
-  } else {
-    new_state = LATE_STANCE;
-  }
-
-  return new_state;
+bool Leg::hasStateChanged(boolean foot_on_ground){
+  return  swing_state_threshold->getState((double) foot_on_ground) &&
+    state->getStateTime() <= step_time_length / 4;
 }
 
-void Leg::changeState(int new_state, int old_state){
-  this->state = new_state;
-  this->state_time->reset();
-
-  for(int i = 0; i < joint_count; i++){
-    joints[i]->changeState(state);
-  }
-  bool phase_changed = determinePhaseChange(new_state, old_state);
-  if (phase_changed){
-    current_phase = current_phase->changePhase();
-    current_phase->setContext(this);
-  }
+void Leg::changeState(){
+  state->changeState();
+  state->setContext(this);
 }
 
 void Leg::adjustControl(){
-  applyControlAlgorithm();
-}
-
-void Leg::applyControlAlgorithm(){
-  this->current_phase->run();
-}
-
-bool Leg::determinePhaseChange(int new_state, int old_state){
-  double current_phase_time = current_phase->getPhaseTime();
-  if (new_state == old_state || current_phase_time <= step_time_length / 4){
-    return false;
-  }
-  return true;
+  this->state->run();
 }
 
 bool Leg::determine_foot_on_ground(){
@@ -176,15 +149,11 @@ bool Leg::determine_foot_on_ground(){
   return foot_on_fsr;
 }
 
-void Leg::triggerLateStance(){
+void Leg::setZeroIfNecessary(){
   if (this->set_motors_to_zero_torque){
     setToZero();
     this->set_motors_to_zero_torque = false;
   }
-}
-
-void Leg::triggerSwing(){
-
 }
 
 void Leg::setToZero(){
@@ -195,13 +164,12 @@ void Leg::setToZero(){
 
 void Leg::applyStateMachine(){
   bool foot_on_ground = determine_foot_on_ground();
-  int new_state = this->determineState(foot_on_ground);
-  if (new_state != this->state){
-    changeState(new_state, this->state);
+  if (this->hasStateChanged(foot_on_ground)){
+    changeState();
   }
   updateIncrementalActivation();
   for(int i = 0; i < joint_count;i++){
-    joints[i]->updateSetpoint(state);
+    joints[i]->updateSetpoint(state->getStateType());
   }
 }
 
@@ -217,8 +185,7 @@ void Leg::measureSensors(){
 
 bool Leg::applyTorque(){
   for(int i = 0; i < joint_count; i++){
-    if (!joints[i]->applyTorque(state)){
-      state = 9;
+    if (!joints[i]->applyTorque(state->getStateType())){
       return false;
     }
   }
@@ -278,6 +245,5 @@ void Leg::fillReport(LegReport* report){
 }
 
 void Leg::fillLocalReport(LegReport* report){
-  report->state = state;
-  report->phase = current_phase->getPhaseType();
+  report->state = state->getStateType();
 }

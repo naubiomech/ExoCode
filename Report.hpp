@@ -1,7 +1,7 @@
 #ifndef EXO_REPORT_HEADER
 #define EXO_REPORT_HEADER
 #include <cstddef>
-#include "Phase.hpp"
+#include "States.hpp"
 
 class MotorReport{
 public:
@@ -43,7 +43,7 @@ public:
   int joint_report_count;
   int imu_report_count;
   int state;
-  PhaseType phase;
+  StateType phase;
 };
 
 class ExoReport{
