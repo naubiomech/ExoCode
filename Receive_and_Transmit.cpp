@@ -26,7 +26,7 @@ void send_leg_report(SoftwareSerial* commandSerial, LegReport* report){
   commandSerial->print(',');
   commandSerial->print(report->state);
   commandSerial->print(',');
-  commandSerial->print(report->joint_reports[0]->motor_report->pid_setpoint);
+  commandSerial->print(report->joint_reports[0]->pid_setpoint);
   commandSerial->print(',');
   commandSerial->print(report->fsr_reports[0]->threshold);
   commandSerial->print(',');
@@ -111,12 +111,12 @@ void receive_and_transmit(ExoSystem* exoSystem) {
     break;
 
   case COMM_CODE_GET_LEFT_ANKLE_SETPOINT:
-    data_to_send[0] = report->left_leg->joint_reports[0]->motor_report->pid_setpoint;
+    data_to_send[0] = report->left_leg->joint_reports[0]->pid_setpoint;
     send_command_message(commandSerial, COMM_CODE_GET_LEFT_ANKLE_SETPOINT, data_to_send, 1 * sizeof(*data_to_send));
     break;
 
   case COMM_CODE_GET_RIGHT_ANKLE_SETPOINT:
-    data_to_send[0] = report->right_leg->joint_reports[0]->motor_report->pid_setpoint;
+    data_to_send[0] = report->right_leg->joint_reports[0]->pid_setpoint;
     send_command_message(commandSerial, COMM_CODE_GET_RIGHT_ANKLE_SETPOINT, data_to_send, 1 * sizeof(*data_to_send));
     break;
 

@@ -5,7 +5,7 @@
 
 class MotorReport{
 public:
-  double pid_setpoint;
+  double error;
 };
 
 class TorqueSensorReport{
@@ -17,6 +17,7 @@ class JointReport{
 public:
   ~JointReport();
 
+  double pid_setpoint;
   MotorReport* motor_report = NULL;
   TorqueSensorReport* torque_sensor_report = NULL;
 };

@@ -2,7 +2,8 @@
 #include "Control_Algorithms.hpp"
 #include "Parameters.hpp"
 
-double clamp_setpoint(double raw_setpoint, Clamp* setpoint_clamp){
+
+double ControlAlgorithm::clamp_setpoint(double raw_setpoint){
   if(raw_setpoint == 0){
     return 0;
   }
@@ -12,30 +13,48 @@ double clamp_setpoint(double raw_setpoint, Clamp* setpoint_clamp){
   return setpoint;
 }
 
-double getSetpoint(ControlAlgorithm control_algorithm, double desired_setpoint,
-                   Clamp* setpoint_clamp, double FSRatio, double Max_FSRatio, double prop_gain){
+
+double ZeroTorqueControl::getSetpoint(double fsr_percentage, double fsr_max_percentage){
+  return 0;
+}
+
+ControlAlgorithmType ZeroTorqueControl::getType(){
+  return zero_torque;
+}
+
+double BangBangControl::getSetpoint(double fsr_percentage, double fsr_max_percentage){
   double new_setpoint = desired_setpoint;
+  return clamp_setpoint(new_setpoint);
+}
 
-  switch (control_algorithm){
-  case zero_torque:
-    return 0;
-    break;
-  case bang_bang:
-    new_setpoint = desired_setpoint;
-    break;
-  case unknown_control:
-    new_setpoint = (desired_setpoint ) *
-      (p_prop[0] * pow((Max_FSRatio), 2) + p_prop[1] * (Max_FSRatio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]);
-    break;
-  case porportional:
-    new_setpoint = (desired_setpoint ) * (prop_gain) * (FSRatio);
-    break;
-  case pivot_porportional:
-    new_setpoint =(desired_setpoint ) *
-      (p_prop[0] * pow(FSRatio, 2) + p_prop[1] * (FSRatio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]) ;
-    break;
-  }
-  new_setpoint = clamp_setpoint(new_setpoint, setpoint_clamp);
+ControlAlgorithmType BangBangControl::getType(){
+  return bang_bang;
+}
 
-  return new_setpoint;
+double BalanceControl::getSetpoint(double fsr_percentage, double fsr_max_percentage){
+  // TODO implement balance control
+  return 0;
+}
+
+ControlAlgorithmType BalanceControl::getType(){
+  return balance_control;
+}
+
+double ProportionalControl::getSetpoint(double fsr_percentage, double fsr_max_percentage){
+  double new_setpoint = desired_setpoint * gain * fsr_percentage;
+  return clamp_setpoint(new_setpoint);
+}
+
+ControlAlgorithmType ProportionalControl::getType(){
+  return proportional;
+}
+
+double ProportionalPivotControl::getSetpoint(double fsr_percentage, double fsr_max_percentage){
+  double new_setpoint = (desired_setpoint) *
+    (p_prop[0] * pow(fsr_percentage, 2) + p_prop[1] * (fsr_percentage) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]) ;
+  return clamp_setpoint(new_setpoint);
+}
+
+ControlAlgorithmType ProportionalPivotControl::getType(){
+  return pivot_proportional;
 }
