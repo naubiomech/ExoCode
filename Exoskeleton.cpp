@@ -9,6 +9,27 @@ Exoskeleton::Exoskeleton(ExoPins* exoPins){
   right_leg = new Leg(exoPins->right_leg);
 }
 
+void Exoskeleton::run(){
+  this->measureSensors();
+  //TODO implement error checking
+  this->attemptCalibration();
+  //TODO Implement the balance baseline
+  //TODO apply auto kf here
+  this->applyControl();
+
+  this->applyTorque();
+}
+
+void Exoskeleton::attemptCalibration(){
+  left_leg->attemptCalibration();
+  right_leg->attemptCalibration();
+}
+
+void Exoskeleton::applyControl(){
+  left_leg->applyControl();
+  right_leg->applyControl();
+}
+
 void Exoskeleton::calibrateTorque(){
   left_leg->startTorqueCalibration();
   right_leg->startTorqueCalibration();
@@ -29,11 +50,6 @@ void Exoskeleton::calibrateFSRs(){
 void Exoskeleton::resetStartingParameters(){
   left_leg->resetStartingParameters();
   right_leg->resetStartingParameters();
-}
-
-void Exoskeleton::adjustControl(){
-  left_leg->adjustControl();
-  right_leg->adjustControl();
 }
 
 void Exoskeleton::setZeroIfSteadyState(){

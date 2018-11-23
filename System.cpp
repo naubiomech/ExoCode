@@ -1,5 +1,6 @@
 #include "System.hpp"
 #include "Pins.hpp"
+#include "Receive_and_Transmit.hpp"
 
 ExoSystem::ExoSystem(ExoPins* exoPins){
   trial = new Trial();
@@ -8,6 +9,16 @@ ExoSystem::ExoSystem(ExoPins* exoPins){
 
   exo = new Exoskeleton(exoPins);
   report = exo->generateReport();
+}
+
+void ExoSystem::run(){
+  if (this->trial->bluetoothStream == 1) {
+    if (this->trial->reportDataTimer.check()) {
+      send_report(this);
+      this->trial->reportDataTimer.reset();
+    }
+  }
+  exo->run();
 }
 
 void ExoSystem::startTrial(){

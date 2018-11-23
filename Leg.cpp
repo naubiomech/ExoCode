@@ -34,6 +34,15 @@ Leg::Leg(LegPins* legPins){
   this->setSign(legPins->leg_sign);
 }
 
+void Leg::attemptCalibration(){
+  // TODO add any flag dependent calibrations here
+}
+
+void Leg::applyControl(){
+  this->applyStateMachine();
+  this->adjustControl();
+}
+
 void Leg::calibrateFSRs(){
   foot_fsrs->calibrate();
 }
@@ -77,7 +86,7 @@ void Leg::updateFSRMaxes(){
   }
 }
 
-void Leg::adjustSetpoint(){
+void Leg::adjustJointSetpoints(){
   double FSR_percentage = foot_fsrs->getPercentage();
   double max_FSR_percentage = foot_fsrs->getMaxPercentage();
 
@@ -141,7 +150,15 @@ void Leg::changeState(){
 }
 
 void Leg::adjustControl(){
+  updateIncrementalActivation();
+  updateMotorSetpoints();
   this->state->run();
+}
+
+void Leg::updateMotorSetpoints(){
+  for(int i = 0; i < joint_count;i++){
+    joints[i]->updateSetpoint(state->getStateType());
+  }
 }
 
 bool Leg::determine_foot_on_ground(){
@@ -166,10 +183,8 @@ void Leg::applyStateMachine(){
   bool foot_on_ground = determine_foot_on_ground();
   if (this->hasStateChanged(foot_on_ground)){
     changeState();
-  }
-  updateIncrementalActivation();
-  for(int i = 0; i < joint_count;i++){
-    joints[i]->updateSetpoint(state->getStateType());
+  } else {
+    setZeroIfSteadyState();
   }
 }
 

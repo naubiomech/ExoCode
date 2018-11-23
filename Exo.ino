@@ -54,16 +54,7 @@ void setup() {
 }
 
 void callback() {
-
-  resetMotorIfError();
-
-  calculate_averages();
-
-  check_FSR_calibration();
-
-  check_Balance_Baseline();
-
-  rotate_motor();
+  exoSystem->run();
 }
 
 void loop() {
@@ -77,52 +68,6 @@ void loop() {
   }
 
   if (exoSystem->trial->bluetoothStream != 1) {
-    reset_starting_parameters();
+    exo->resetStartingParameters();
   }
-}
-
-void resetMotorIfError() {
-  if (exoSystem->trial->bluetoothStream == 1) {
-    //TODO implement error checking
-  }
-}
-
-void calculate_averages() {
-  exo->measureSensors();
-}
-
-void check_FSR_calibration() {
-
-  //TODO implement fsr calibration
-
-}
-
-void check_Balance_Baseline() {
-  //TODO Implement the balance baseline
-}
-
-void rotate_motor() {
-
-  if (exoSystem->trial->bluetoothStream == 1)
-  {
-    if (exoSystem->trial->reportDataTimer.check())
-    {
-      send_report(exoSystem);
-      exoSystem->trial->reportDataTimer.reset();
-    }
-
-  }
-//TODO apply auto kf here
-  exo->applyTorque();
-
-  exo->applyStateMachine();
-
-  exo->setZeroIfSteadyState();
-
-  exo->adjustControl();
-}
-
-void reset_starting_parameters() {
-  //Reset the starting values
-  exo->resetStartingParameters();
 }

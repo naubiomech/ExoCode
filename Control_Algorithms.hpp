@@ -2,7 +2,6 @@
 #define CONTROL_ALGORITHMS_HEADER
 #include "Utils.hpp"
 #include "Shaping_Functions.hpp"
-
 enum ControlAlgorithmType {zero_torque, bang_bang, balance_control, proportional, pivot_proportional};
 
 class ControlAlgorithm{
@@ -49,4 +48,9 @@ public:
   ControlAlgorithmType getType();
 };
 
+class ControlAlgorithmManager{
+  ControlAlgorithm* startup_algorithm;
+  ControlAlgorithm* controlled_algorithm;
+  ControlAlgorithm* zeroed_algorithm;
+};
 #endif

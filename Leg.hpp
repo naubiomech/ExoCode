@@ -20,6 +20,8 @@ private:
   bool isSteadyState();
   void fillLocalReport(LegReport* report);
   void measureIMUs();
+  void adjustControl();
+  void updateMotorSetpoints();
 
   Joint** joints;
   int joint_count;
@@ -44,12 +46,14 @@ private:
   double flag_1 = 0;
   double time_old_state;
 
+
   State* state;
 
 public:
   Leg(LegPins* legPins);
   void measureSensors();
   bool checkMotorErrors();
+  void attemptCalibration();
   void resetFSRMaxes();
   void updateFSRMaxes();
   void adjustSetpoint();
@@ -62,6 +66,7 @@ public:
   void setZeroIfSteadyState();
   void resetStartingParameters();
   void autoKF();
+  void adjustJointSetpoints();
   void startTorqueCalibration();
   void updateTorqueCalibration();
   void endTorqueCalibration();
@@ -71,7 +76,7 @@ public:
   void changeState();
   bool hasStateChanged(boolean foot_on_ground);
   bool determine_foot_on_ground();
-  void adjustControl();
+  void applyControl();
   void setToZero();
   void calibrateIMUs();
   void setSign(int sign);

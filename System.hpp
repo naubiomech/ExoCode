@@ -25,6 +25,7 @@ public:
   int streamTimerCount = 0;
   void startTrial();
   void endTrial();
+  void run();
   Exoskeleton* exo;
 };
 #endif

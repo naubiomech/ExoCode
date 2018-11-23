@@ -10,6 +10,8 @@ private:
   void fillLocalReport(ExoReport* report);
   void disableMotors();
   void enableMotors();
+  void attemptCalibration();
+  void applyControl();
 
   bool resetting_motors = false;
   Metro motor_shutdown = Metro(16);
@@ -35,7 +37,7 @@ private:
 
 public:
   Exoskeleton(ExoPins* exoPins);
-  void initialize();
+  void run();
   void measureSensors();
   bool checkMotorErrors();
   void takeFSRBaseline();

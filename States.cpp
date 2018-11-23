@@ -40,7 +40,7 @@ void LateStanceState::triggerStart(){
 
 void LateStanceState::run(){
   leg->updateFSRMaxes();
-  leg->adjustSetpoint();
+  leg->adjustJointSetpoints();
 }
 
 void LateStanceState::triggerEnd(){
