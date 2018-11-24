@@ -15,7 +15,6 @@ const int dim = 5;
 class Leg {
 private:
   void applyControlAlgorithm();
-  void updateIncrementalActivation();
   void startIncrementalActivation();
   bool isSteadyState();
   void fillLocalReport(LegReport* report);
@@ -83,5 +82,6 @@ public:
   LegReport* generateReport();
   void fillReport(LegReport* report);
   void setLegSign(int sign);
+  void changeJointControl(StateID state_id);
 };
 #endif

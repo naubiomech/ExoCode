@@ -4,8 +4,8 @@
 #include "States.hpp"
 //Calc Sigmoid function and apply to the New point
 
-double calculatePIDSetpointSigm(double New_PID_Setpoint, double Old_PID_Setpoint,
-                                double Ts, double exp_mult, int n_iter, int N)
+double calculateNextValue(double desired_value, double starting_value,
+                          double Ts, double exp_mult, int n_iter, int N)
 { // Makes the curve for your setpoint vs time look like the voltage time graph for a charging capacitor
   //leg->n_iter tells you at which of the Nth sample you are not counting the zero
   //Ts sampling time in this case 0.001 with exp_mult=2000 it takes 6 milliseconds to rise from 0 to 1
@@ -15,57 +15,46 @@ double calculatePIDSetpointSigm(double New_PID_Setpoint, double Old_PID_Setpoint
   //    N++;
   //  }
   double sig = 1 / (1 + exp(-exp_mult * ((-1 * N / 2 + n_iter + 1)) * Ts));
-  double Current_PID_Setpoint = Old_PID_Setpoint + (New_PID_Setpoint - Old_PID_Setpoint) * sig;
-  return Current_PID_Setpoint;
+  double next_value = starting_value + (desired_value - starting_value) * sig;
+  return next_value;
 }
 
-void ShapingFunction::setIterationCount(int whichState, double n){
-  if (whichState == LATE_STANCE){
-    iter_late_stance = n;
-  } else if (whichState == SWING){
-    iter_swing = n;
-  }
+void ShapingFunction::setIterationCount(double n){
+  next_iteration_threshold = n;
 }
 
-double ShapingFunction::getIterationCount(int whichState){
-  if (whichState == LATE_STANCE){
-    return iter_late_stance;
-  } else if (whichState == SWING){
-    return iter_swing;
-  }
-  return 0;
-
+double ShapingFunction::getIterationCount(){
+  return next_iteration_threshold;
 }
 
-double ShapingFunction::getPIDSetpoint(double newPIDSetpoint, double currentPIDSetpoint,
-                                       double oldPIDSetpoint, int state){
+void ShapingFunction::beginCurve(){
+  iteration_count = 0;
+  iteration_threshold = next_iteration_threshold;
+  exp_mult = round((10 / Ts) / (iteration_threshold - 1));
+}
 
-  double actual_setpoint = currentPIDSetpoint;
+bool ShapingFunction::isCurveDone(){
+  return iteration_count >= iteration_threshold;
+}
+
+double ShapingFunction::shape(double desired_value, double current_value, double starting_value){
+
+  double next_value = current_value;
   if (recharge_timer->lap() >= RECHARGE_TIME){
     recharge_timer->reset();
 
-    if ((abs(newPIDSetpoint - currentPIDSetpoint) > 0.1) && (iteration_count >= iteration_threshold)) {
-
-      iteration_count = 0;
-
-      if (state == LATE_STANCE) {
-        iteration_threshold = iter_late_stance;
-      } else if (state == SWING) {
-        iteration_threshold = iter_swing;
-      }
-      exp_mult = round((10 / Ts) / (iteration_threshold - 1));
+    if ((abs(desired_value - current_value) > 0.1) && isCurveDone()) {
+      beginCurve();
     }
 
-
     if (iteration_threshold >= 1){
-      actual_setpoint = calculatePIDSetpointSigm(newPIDSetpoint, oldPIDSetpoint,
-                                                 Ts, exp_mult, iteration_count, iteration_threshold);
+      next_value = calculateNextValue(desired_value, starting_value,
+                                      Ts, exp_mult, iteration_count, iteration_threshold);
     } else {
-      actual_setpoint = newPIDSetpoint;
+      next_value = desired_value;
     }
     iteration_count++;
   }
 
-  return actual_setpoint;
-	}
-
+  return next_value;
+}

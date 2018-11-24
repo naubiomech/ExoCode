@@ -3,6 +3,8 @@
 #include "Utils.hpp"
 
 
+typedef int StateID;
+
 enum StateType {SWING = 1, LATE_STANCE = 3};
 
 class Leg;
@@ -21,11 +23,13 @@ public:
   virtual void triggerEnd();
   virtual void run()=0;
   virtual StateType getStateType();
+  virtual StateID getStateID() = 0;
 };
 
 class SwingState : public State{
 public:
   void run();
+  virtual StateID getStateID();
 };
 
 class LateStanceState : public State{
@@ -33,6 +37,7 @@ public:
   void triggerStart();
   void run();
   void triggerEnd();
+  virtual StateID getStateID();
 };
 
 #endif

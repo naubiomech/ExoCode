@@ -20,6 +20,7 @@ void State::setNextState(State* state){
 State* State::changeState(){
   this->triggerEnd();
   next_state->triggerStart();
+  leg->changeJointControl(next_state->getStateID());
   return next_state;
 }
 
@@ -31,6 +32,10 @@ void SwingState::run(){
   leg->runAutoKF();
 }
 
+StateID SwingState::getStateID(){
+  return SWING;
+}
+
 void LateStanceState::triggerStart(){
   State::triggerStart();
   leg->resetFSRMaxes();
@@ -38,12 +43,11 @@ void LateStanceState::triggerStart(){
   leg->setZeroIfNecessary();
 }
 
-void LateStanceState::run(){
-  leg->updateFSRMaxes();
-  leg->adjustJointSetpoints();
-}
-
 void LateStanceState::triggerEnd(){
   State::triggerEnd();
   leg->adjustShapingForTime(getStateTime());
+}
+
+StateID LateStanceState::getStateID(){
+  return LATE_STANCE;
 }

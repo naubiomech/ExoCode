@@ -91,7 +91,7 @@ void Leg::adjustJointSetpoints(){
   double max_FSR_percentage = foot_fsrs->getMaxPercentage();
 
   for(int i = 0; i < joint_count; i++){
-    joints[i]->adjustSetpoint(FSR_percentage, max_FSR_percentage);
+    joints[i]->updateMotorOutput(FSR_percentage, max_FSR_percentage);
   }
 }
 
@@ -131,14 +131,6 @@ void Leg::startIncrementalActivation(){
   this->increment_activation_starting_step = step_count;
 }
 
-void Leg::updateIncrementalActivation(){
-  double since_activation_step_count = this->step_count - this->increment_activation_starting_step;
-  double activation_percent = since_activation_step_count / ACTIVATION_STEP_COUNT;
-  for(int i = 0; i < joint_count; i++){
-    joints[i]->setTorqueScalar(activation_percent);
-  }
-}
-
 bool Leg::hasStateChanged(boolean foot_on_ground){
   return  swing_state_threshold->getState((double) foot_on_ground) &&
     state->getStateTime() <= step_time_length / 4;
@@ -150,9 +142,15 @@ void Leg::changeState(){
 }
 
 void Leg::adjustControl(){
-  updateIncrementalActivation();
-  updateMotorSetpoints();
+  this->updateFSRMaxes();
+  this->adjustJointSetpoints();
   this->state->run();
+}
+
+void Leg::changeJointControl(StateID state_id){
+  for(int i = 0; i < joint_count;i++){
+    joints[i]->changeControl(state_id);
+  }
 }
 
 void Leg::updateMotorSetpoints(){
@@ -200,7 +198,7 @@ void Leg::measureSensors(){
 
 bool Leg::applyTorque(){
   for(int i = 0; i < joint_count; i++){
-    if (!joints[i]->applyTorque(state->getStateType())){
+    if (!joints[i]->applyTorque()){
       return false;
     }
   }

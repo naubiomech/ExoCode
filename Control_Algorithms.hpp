@@ -1,56 +1,79 @@
 #ifndef CONTROL_ALGORITHMS_HEADER
 #define CONTROL_ALGORITHMS_HEADER
 #include "Utils.hpp"
-#include "Shaping_Functions.hpp"
+#include "States.hpp"
 enum ControlAlgorithmType {zero_torque, bang_bang, balance_control, proportional, pivot_proportional};
 
 class ControlAlgorithm{
-protected:
-  double desired_setpoint;
-  double gain;
+private:
   Clamp* setpoint_clamp;
-  ShapingFunction* shaping_function;
+  Clamp* activation_clamp;
+  int activation_count = 0;
+  StateID state_id;
+  ControlAlgorithm* next;
+
+  void resetIncrementalActivation();
+protected:
+  double gain = 1;
+  double desired_setpoint = 0;
+  double previous_desired_setpoint = 0;
+  double used_setpoint = 0;
+  int shaping_iteration_threshold = 0;
+
+  double getActivationPercent();
   double clamp_setpoint(double raw_setpoint);
 public:
-  void setDesiredSetpoint(double setpoint);
-  void setGain(double setpoint);
+  ControlAlgorithm();
+  virtual void setDesiredSetpoint(double setpoint);
+  virtual double getShapingIterations();
+  virtual void setShapingIterations(double iterations);
+  virtual void activate();
   virtual double getSetpoint(double fsr_percentage, double fsr_max_percentage) = 0;
+  virtual bool useShapingFunction() = 0;
   virtual ControlAlgorithmType getType() = 0;
+  virtual void setToZero();
+  virtual void reset();
+  virtual void resetStartingParameters();
+  virtual void setGain(double gain);
+  virtual StateID getStateID();
+  virtual ControlAlgorithm* getNextAlgorithm();
 };
 
 class ZeroTorqueControl:public ControlAlgorithm{
 public:
   double getSetpoint(double fsr_percentage, double fsr_max_percentage);
   ControlAlgorithmType getType();
+  bool useShapingFunction();
 };
 
 class BangBangControl:public ControlAlgorithm{
 public:
   double getSetpoint(double fsr_percentage, double fsr_max_percentage);
   ControlAlgorithmType getType();
+  bool useShapingFunction();
+  void activate();
 };
 
 class BalanceControl:public ControlAlgorithm{
 public:
   double getSetpoint(double fsr_percentage, double fsr_max_percentage);
   ControlAlgorithmType getType();
+  double getShapingIterations();
+  bool useShapingFunction();
 };
 
 class ProportionalControl:public ControlAlgorithm{
 public:
   double getSetpoint(double fsr_percentage, double fsr_max_percentage);
   ControlAlgorithmType getType();
+  bool useShapingFunction();
 };
 
 class ProportionalPivotControl:public ControlAlgorithm{
 public:
   double getSetpoint(double fsr_percentage, double fsr_max_percentage);
   ControlAlgorithmType getType();
+  bool useShapingFunction();
 };
 
-class ControlAlgorithmManager{
-  ControlAlgorithm* startup_algorithm;
-  ControlAlgorithm* controlled_algorithm;
-  ControlAlgorithm* zeroed_algorithm;
-};
 #endif
