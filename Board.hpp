@@ -1,9 +1,9 @@
 #ifndef BOARD_SETTINGS_HEADER
 #define BOARD_SETTINGS_HEADER
 #include "Parameters.hpp"
-#include "System.hpp"
+#include "Exoskeleton.hpp"
 
-ExoSystem* setupBoard();
+Exoskeleton* setupBoard();
 
 #ifdef IMU_BOARD
 #include <i2c_t3.h>

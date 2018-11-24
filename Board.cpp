@@ -5,8 +5,8 @@
 
 ExoPins* setupPins();
 
-ExoSystem* setupBoard(){
-  // enable bluetooth
+Exoskeleton* setupBoard(){
+	// enable bluetooth
   Serial.begin(115200);
   Serial.println("Starting");
   // The led
@@ -20,13 +20,13 @@ ExoSystem* setupBoard(){
   pinMode(MOTOR_ENABLE_PIN, OUTPUT); //Enable disable the motors
   digitalWrite(MOTOR_ENABLE_PIN, LOW);
   ExoPins* exoPins = setupPins();
-  ExoSystem* exoSystem = new ExoSystem(exoPins);
+  Exoskeleton* exo = new Exoskeleton(exoPins);
   delete exoPins;
   // Fast torque calibration
-  exoSystem->exo->calibrateTorque();
+  exo->calibrateTorque();
   digitalWrite(LED_PIN, LOW);
   Serial.println("Exo Ready");
-  return exoSystem;
+  return exo;
 }
 
 #ifdef QUAD_BOARD

@@ -34,10 +34,10 @@ void send_leg_report(SoftwareSerial* commandSerial, LegReport* report){
   commandSerial->print(',');
 }
 
-void send_report(ExoSystem* exoSystem) {
-  ExoReport* report = exoSystem->report;
-  exoSystem->exo->fillReport(report);
-  SoftwareSerial* commandSerial = exoSystem->commandSerial;
+void send_report(Exoskeleton* exo) {
+  ExoReport* report = exo->report;
+  exo->fillReport(report);
+  SoftwareSerial* commandSerial = exo->commandSerial;
 
   commandSerial->print('S');
   commandSerial->print(',');
@@ -70,33 +70,37 @@ void send_command_message(SoftwareSerial* commandSerial, char command_char, doub
   commandSerial->println('Z');
 }
 
-void receive_and_transmit(ExoSystem* exoSystem) {
-// ===== Msg Functions =====
-  ExoReport* report = exoSystem->report;
-  exoSystem->exo->fillReport(report);
+void receive_and_transmit(Exoskeleton* exo) {
+  SoftwareSerial* commandSerial = exo->commandSerial;
+
+  if (commandSerial->available() <= 0) {
+    return;
+  }
+
+  ExoReport* report = exo->report;
+  exo->fillReport(report);
   ExoMessage* exoMsg = new ExoMessage();
   double data_to_send[8];
   double data_received[8];
 
-  SoftwareSerial* commandSerial = exoSystem->commandSerial;
   int cmd_from_Gui = commandSerial->read();
   switch (cmd_from_Gui)
   {
   case COMM_CODE_REQUEST_DATA:
-    send_report(exoSystem);
+    send_report(exo);
     break;
 
   case COMM_CODE_START_TRIAL:
-    exoSystem->startTrial();
+    exo->startTrial();
     break;
 
   case COMM_CODE_END_TRIAL:
-    exoSystem->endTrial();
-    send_report(exoSystem);
+    exo->endTrial();
+    send_report(exo);
     break;
 
   case COMM_CODE_CALIBRATE_TORQUE:
-    exoSystem->exo->calibrateTorque();
+    exo->calibrateTorque();
     break;
 
   case COMM_CODE_CHECK_BLUETOOTH:
@@ -124,14 +128,14 @@ void receive_and_transmit(ExoSystem* exoSystem) {
     receive_data(commandSerial, data_received, 2 * sizeof(*data_received));
     exoMsg->left_leg = prepareMotorMessage(report->left_leg, 0);
     exoMsg->left_leg->joint_messages[0]->motor_message->setpoint = data_received;
-    exoSystem->exo->resetStartingParameters();
+    exo->resetStartingParameters();
     break;
 
   case COMM_CODE_SET_RIGHT_ANKLE_SETPOINT:
     receive_data(commandSerial, data_received, 2 * sizeof(*data_received));
     exoMsg->right_leg = prepareMotorMessage(report->right_leg, 0);
     exoMsg->right_leg->joint_messages[0]->motor_message->setpoint = data_received;
-    exoSystem->exo->resetStartingParameters();
+    exo->resetStartingParameters();
     break;
   }
   delete exoMsg;

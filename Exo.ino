@@ -34,18 +34,15 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055_t3.h>
 #include <utility/imumaths.h>
-#include "System.hpp"
 #include "Board.hpp"
 #include "Receive_and_Transmit.hpp"
 #include "TimerOne.h"
 #include "Exoskeleton.hpp"
 
-ExoSystem* exoSystem;
 Exoskeleton* exo;
 
 void setup() {
-  exoSystem = setupBoard();
-  exo = exoSystem->exo;
+  exo = setupBoard();
 
   // set the interrupt
   Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
@@ -54,20 +51,12 @@ void setup() {
 }
 
 void callback() {
-  exoSystem->run();
+  exo->run();
 }
 
 void loop() {
 
-  if (exoSystem->trial->receiveDataTimer.check() == 1) {
-    if (exoSystem->commandSerial->available() > 0) {
-      receive_and_transmit(exoSystem);
-    }
+  exo->receiveMessages();
+  exo->checkReset();
 
-    exoSystem->trial->receiveDataTimer.reset();
-  }
-
-  if (exoSystem->trial->bluetoothStream != 1) {
-    exo->resetStartingParameters();
-  }
 }

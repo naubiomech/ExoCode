@@ -3,10 +3,28 @@
 #include "Board.hpp"
 #include "Leg.hpp"
 #include "Report.hpp"
+#include "Receive_and_Transmit.hpp"
 
 Exoskeleton::Exoskeleton(ExoPins* exoPins){
   left_leg = new Leg(exoPins->left_leg);
   right_leg = new Leg(exoPins->right_leg);
+
+  commandSerial = new SoftwareSerial(exoPins->bluetooth_tx, exoPins->bluetooth_rx);
+  commandSerial->begin(115200);
+
+  report = generateReport();
+}
+
+void Exoskeleton::startTrial(){
+  enableExo();
+  trialStarted = true;
+  reportDataTimer.reset();
+  receiveDataTimer.reset();
+}
+
+void Exoskeleton::endTrial(){
+  disableExo();
+  trialStarted = false;
 }
 
 void Exoskeleton::run(){
@@ -18,6 +36,14 @@ void Exoskeleton::run(){
   this->applyControl();
 
   this->applyTorque();
+}
+
+void Exoskeleton::sendReport(){
+  if (trialStarted &&
+      (reportDataTimer.check())) {
+    reportDataTimer.reset();
+    send_report(this);
+  }
 }
 
 void Exoskeleton::attemptCalibration(){
@@ -48,7 +74,7 @@ void Exoskeleton::calibrateFSRs(){
 }
 
 void Exoskeleton::calibrateIMUs(){
-	right_leg->calibrateIMUs();
+  right_leg->calibrateIMUs();
   left_leg->calibrateIMUs();
 }
 
@@ -103,6 +129,19 @@ void Exoskeleton::applyTorque(){
   if(!(left_leg->applyTorque() &&
        right_leg->applyTorque())){
     disableExo();
+  }
+}
+
+void Exoskeleton::receiveMessages(){
+  if (receiveDataTimer.check() == 1) {
+    receiveDataTimer.reset();
+    receive_and_transmit(this);
+  }
+}
+
+void Exoskeleton::checkReset(){
+  if (!trialStarted) {
+    resetStartingParameters();
   }
 }
 

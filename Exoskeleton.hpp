@@ -3,6 +3,7 @@
 #include "Leg.hpp"
 #include "Pins.hpp"
 #include <Metro.h>
+#include <SoftwareSerial.h>
 #include "Report.hpp"
 
 class Exoskeleton{
@@ -17,10 +18,17 @@ private:
   Metro motor_shutdown = Metro(16);
   Metro motor_startup = Metro(8);
 
+  bool trialStarted = false;
+  Metro reportDataTimer = Metro(10);
+  Metro receiveDataTimer = Metro(1);
+
   Leg* left_leg;
   Leg* right_leg;
 
 public:
+  SoftwareSerial* commandSerial;
+  ExoReport* report;
+
   Exoskeleton(ExoPins* exoPins);
   void run();
   void measureSensors();
@@ -34,6 +42,11 @@ public:
   void calibrateFSRs();
   void setZeroIfStateState();
   void calibrateIMUs();
+  void startTrial();
+  void endTrial();
+  void receiveMessages();
+  void checkReset();
+  void sendReport();
   ExoReport* generateReport();
   void fillReport(ExoReport* report);
 };
