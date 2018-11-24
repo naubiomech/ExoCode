@@ -80,12 +80,6 @@ void Leg::resetFSRMaxes(){
   }
 }
 
-void Leg::updateFSRMaxes(){
-  for(int i =0; i < fsr_group_count; i++){
-    fsrs[i]->updateMaxes();
-  }
-}
-
 void Leg::adjustJointSetpoints(){
   double FSR_percentage = foot_fsrs->getPercentage();
   double max_FSR_percentage = foot_fsrs->getMaxPercentage();
@@ -142,20 +136,13 @@ void Leg::changeState(){
 }
 
 void Leg::adjustControl(){
-  this->updateFSRMaxes();
-  this->adjustJointSetpoints();
   this->state->run();
+  this->adjustJointSetpoints();
 }
 
 void Leg::changeJointControl(StateID state_id){
   for(int i = 0; i < joint_count;i++){
     joints[i]->changeControl(state_id);
-  }
-}
-
-void Leg::updateMotorSetpoints(){
-  for(int i = 0; i < joint_count;i++){
-    joints[i]->updateSetpoint(state->getStateType());
   }
 }
 

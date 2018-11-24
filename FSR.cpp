@@ -39,6 +39,7 @@ void FSRGroup::measureForce(){
     average += fsrs[i]->getForce();
   }
   force = average / fsr_count;
+  max_fsr_voltage->update(force);
 }
 
 double FSRGroup::getForce(){
@@ -62,10 +63,6 @@ void FSRGroup::resetMaxes(){
   this->peak_average->update(max_voltage);
 
   this->max_fsr_voltage->reset();
-}
-
-void FSRGroup::updateMaxes(){
-  this->max_fsr_voltage->update(this->getForce());
 }
 
 double FSRGroup::getPercentage(){

@@ -3,7 +3,6 @@
 
 void State::triggerStart(){
   state_time->reset();
-  leg->scaleSetpointDifference();
 }
 
 void State::triggerEnd(){

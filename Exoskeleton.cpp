@@ -47,24 +47,18 @@ void Exoskeleton::calibrateFSRs(){
   right_leg->calibrateFSRs();
 }
 
+void Exoskeleton::calibrateIMUs(){
+	right_leg->calibrateIMUs();
+  left_leg->calibrateIMUs();
+}
+
 void Exoskeleton::resetStartingParameters(){
   left_leg->resetStartingParameters();
   right_leg->resetStartingParameters();
 }
 
-void Exoskeleton::setZeroIfSteadyState(){
-  left_leg->setZeroIfSteadyState();
-  right_leg->setZeroIfSteadyState();
-}
-
-void Exoskeleton::applyStateMachine(){
-  left_leg->applyStateMachine();
-  right_leg->applyStateMachine();
-
-}
-
 void Exoskeleton::measureSensors(){
-  left_leg->measureSensors();
+	left_leg->measureSensors();
   right_leg->measureSensors();
 }
 
@@ -110,18 +104,6 @@ void Exoskeleton::applyTorque(){
        right_leg->applyTorque())){
     disableExo();
   }
-}
-
-void Exoskeleton::checkIMUs(){
-  if (BnoControl.check()){
-    // TODO Put call to leg imus here
-    BnoControl.reset();
-  }
-}
-
-void Exoskeleton::calibrateIMUs(){
-  right_leg->calibrateIMUs();
-  left_leg->calibrateIMUs();
 }
 
 ExoReport* Exoskeleton::generateReport(){

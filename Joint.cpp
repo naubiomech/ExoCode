@@ -51,6 +51,7 @@ void Joint::measureTorque(){
 }
 
 void Joint::startTorqueCalibration(){
+  void setTorqueScalar(double scalar);
   torque_sensor->startTorqueCalibration();
 }
 

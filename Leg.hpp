@@ -53,13 +53,9 @@ public:
   void measureSensors();
   bool checkMotorErrors();
   void attemptCalibration();
-  void resetFSRMaxes();
-  void updateFSRMaxes();
   void adjustSetpoint();
   void runAutoKF();
-  void adjustShapingForTime(double time);
   void incrementStepCount();
-  void takeFSRBaseline();
   bool applyTorque();
   void applyStateMachine();
   void setZeroIfSteadyState();
@@ -70,9 +66,10 @@ public:
   void updateTorqueCalibration();
   void endTorqueCalibration();
   void calibrateFSRs();
-  void scaleSetpointDifference();
   void setZeroIfNecessary();
   void changeState();
+  void resetFSRMaxes();
+  void adjustShapingForTime(double time);
   bool hasStateChanged(boolean foot_on_ground);
   bool determine_foot_on_ground();
   void applyControl();
