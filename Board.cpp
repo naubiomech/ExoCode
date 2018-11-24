@@ -6,7 +6,7 @@
 ExoPins* setupPins();
 
 Exoskeleton* setupBoard(){
-	// enable bluetooth
+  // enable bluetooth
   Serial.begin(115200);
   Serial.println("Starting");
   // The led

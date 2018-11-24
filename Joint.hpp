@@ -29,9 +29,9 @@ public:
   void adjustShapingForTime(double planterTime);
   void updateMotorOutput(double FSR_percentage, double max_FSR_percentage);
   void changeControl(StateID state_id);
-	void applyAutoKF();
-	double getTorque();
-	void measureTorque();
+  void applyAutoKF();
+  double getTorque();
+  void measureTorque();
   void setSign(int sign);
   void startTorqueCalibration();
   void updateTorqueCalibration();

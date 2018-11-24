@@ -82,7 +82,7 @@ void Exoskeleton::resetStartingParameters(){
 }
 
 void Exoskeleton::measureSensors(){
-	left_leg->measureSensors();
+  left_leg->measureSensors();
   right_leg->measureSensors();
 }
 
