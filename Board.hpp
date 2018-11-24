@@ -3,6 +3,14 @@
 #include "Parameters.hpp"
 #include "Exoskeleton.hpp"
 
+class BoardBuilder{
+
+};
+class Board{
+
+};
+
+
 Exoskeleton* setupBoard();
 
 #ifdef IMU_BOARD

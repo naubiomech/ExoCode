@@ -3,14 +3,11 @@
 #include "Board.hpp"
 #include "Leg.hpp"
 #include "Report.hpp"
-#include "Receive_and_Transmit.hpp"
+#include "Transceiver.hpp"
 
 Exoskeleton::Exoskeleton(ExoPins* exoPins){
   left_leg = new Leg(exoPins->left_leg);
   right_leg = new Leg(exoPins->right_leg);
-
-  commandSerial = new SoftwareSerial(exoPins->bluetooth_tx, exoPins->bluetooth_rx);
-  commandSerial->begin(115200);
 
   report = generateReport();
 }
@@ -42,7 +39,8 @@ void Exoskeleton::sendReport(){
   if (trialStarted &&
       (reportDataTimer.check())) {
     reportDataTimer.reset();
-    send_report(this);
+    fillReport(report);
+    transceiver->sendReport(report);
   }
 }
 
@@ -135,7 +133,8 @@ void Exoskeleton::applyTorque(){
 void Exoskeleton::receiveMessages(){
   if (receiveDataTimer.check() == 1) {
     receiveDataTimer.reset();
-    receive_and_transmit(this);
+    fillReport(report);
+    transceiver->receiveMessages(report);
   }
 }
 

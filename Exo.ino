@@ -35,7 +35,6 @@
 #include <Adafruit_BNO055_t3.h>
 #include <utility/imumaths.h>
 #include "Board.hpp"
-#include "Receive_and_Transmit.hpp"
 #include "TimerOne.h"
 #include "Exoskeleton.hpp"
 

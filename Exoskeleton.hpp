@@ -3,8 +3,8 @@
 #include "Leg.hpp"
 #include "Pins.hpp"
 #include <Metro.h>
-#include <SoftwareSerial.h>
 #include "Report.hpp"
+#include "Transceiver.hpp"
 
 class Exoskeleton{
 private:
@@ -21,13 +21,13 @@ private:
   bool trialStarted = false;
   Metro reportDataTimer = Metro(10);
   Metro receiveDataTimer = Metro(1);
+  ExoReport* report;
+  Transceiver* transceiver;
 
   Leg* left_leg;
   Leg* right_leg;
 
 public:
-  SoftwareSerial* commandSerial;
-  ExoReport* report;
 
   Exoskeleton(ExoPins* exoPins);
   void run();
