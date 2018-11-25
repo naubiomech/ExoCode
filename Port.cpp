@@ -2,16 +2,16 @@
 #include "Port.hpp"
 
 int calculateResolution(unsigned int bits){
-	int res = 1 << bits;
-	return res;
+  int res = 1 << bits;
+  return res;
 }
 
 Port::Port(unsigned int pin){
-	this->pin = pin;
+  this->pin = pin;
 }
 
 unsigned int Port::getPin(){
-	return pin;
+  return pin;
 }
 
 InputPort::InputPort(unsigned int pin):Port(pin){}
