@@ -29,7 +29,7 @@ private:
 
 public:
 
-  Exoskeleton(Leg* left_leg, Leg* right_leg);
+  Exoskeleton(Leg* left_leg, Leg* right_leg, Transceiver* transceiver);
   void run();
   void measureSensors();
   bool checkMotorErrors();
