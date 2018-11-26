@@ -2,12 +2,12 @@
 #define TORQUE_SENSOR_HEADER
 
 #include "Report.hpp"
-#include "Pins.hpp"
+#include "Port.hpp"
 #include "Utils.hpp"
 
 class TorqueSensor{
 private:
-  unsigned int torque_sensor_pin;
+  InputPort* torque_sensor_port;
   MovingAverage* torque_averager;
   RunningAverage* torque_calibration_average;
   double torque_calibration_value = 0;
@@ -19,7 +19,7 @@ private:
   void fillLocalReport(TorqueSensorReport* report);
 public:
   double getTorque();
-  TorqueSensor(TorqueSensorPins* sensor_pins);
+  TorqueSensor(InputPort* torque_sensor_port);
   void measureTorque();
   void startTorqueCalibration();
   void updateTorqueCalibration();

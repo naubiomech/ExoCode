@@ -1,16 +1,14 @@
 #include <Arduino.h>
 #include "TorqueSensor.hpp"
-#include "Pins.hpp"
+#include "Port.hpp"
 #include "Report.hpp"
 #include "Parameters.hpp"
 
-TorqueSensor::TorqueSensor(TorqueSensorPins* pins){
+TorqueSensor::TorqueSensor(InputPort* torque_sensor_port){
 
-  this->torque_sensor_pin = pins->torque_sensor;
+  this->torque_sensor_port = torque_sensor_port;
   this->torque_averager = new MovingAverage(TORQUE_AVERAGE_COUNT);
   this->torque_calibration_average = new RunningAverage();
-
-  pinMode(this->torque_sensor_pin, INPUT);
 }
 
 void TorqueSensor::measureTorque(){
@@ -36,7 +34,7 @@ void TorqueSensor::endTorqueCalibration(){
 }
 
 double TorqueSensor::measureRawTorque(){
-  double readValue = analogRead(this->torque_sensor_pin);
+  double readValue = this->torque_sensor_port->read();
   return readValue * (3.3 / 4096.0) * torque_sign;
 }
 
