@@ -1,76 +1,85 @@
 #include <Arduino.h>
 #include "Board.hpp"
-#include "Ports.hpp"
+#include "Port.hpp"
 #include <i2c_t3.h>
+#include <vector>
 
 ExoPins* setupPins();
 
 class BoardDirector{
 public:
   virtual Board* build() = 0;
-}
+};
 
 class QuadBoardDirector:public BoardDirector{
 public:
   Board* build();
-}
+};
+
+class BoardBuilder{
+private:
+  Board* board;
+  PortFactory* port_factory;
+  unsigned int read_resolution;
+  unsigned int write_resolution;
+public:
+  BoardBuilder(PortFactory* factory);
+  Board* build();
+  BoardBuilder* reset();
+  BoardBuilder* setAnalogReadResolution(unsigned int bits);
+  BoardBuilder* setAnalogWriteResolution(unsigned int bits);
+  BoardBuilder* setBluetoothTxPort(unsigned int pin);
+  BoardBuilder* setBluetoothRxPort(unsigned int pin);
+  BoardBuilder* setFsrSenseLeftToePort(unsigned int pin);
+  BoardBuilder* setFsrSenseLeftHeelPort(unsigned int pin);
+  BoardBuilder* setFsrSenseRightToePort(unsigned int pin);
+  BoardBuilder* setFsrSenseRightHeelPort(unsigned int pin);
+  BoardBuilder* setTorqueSensorLeftKneePort(unsigned int pin);
+  BoardBuilder* setTorqueSensorLeftAnklePort(unsigned int pin);
+  BoardBuilder* setTorqueSensorRightKneePort(unsigned int pin);
+  BoardBuilder* setTorqueSensorRightAnklePort(unsigned int pin);
+  BoardBuilder* setMotorLeftKneePort(unsigned int pin);
+  BoardBuilder* setMotorLeftAnklePort(unsigned int pin);
+  BoardBuilder* setMotorRightKneePort(unsigned int pin);
+  BoardBuilder* setMotorRightAnklePort(unsigned int pin);
+  BoardBuilder* setLedPort(unsigned int pin);
+  BoardBuilder* setMotorEnablePort(unsigned int pin);
+  BoardBuilder* setMotorErrorLeftKneePort(unsigned int pin);
+  BoardBuilder* setMotorErrorLeftAnklePort(unsigned int pin);
+  BoardBuilder* setMotorErrorRightKneePort(unsigned int pin);
+  BoardBuilder* setMotorErrorRightAnklePort(unsigned int pin);
+};
 
 Board* QuadBoardDirector::build(){
   BoardBuilder* builder = new BoardBuilder(new ArduinoPortFactory());
   Board* board = builder
-    .setAnalogWriteResolution(10)
-    .setAnalogReadResolution(10)
-    .setBluetoothTxPort(0)
-    .setBluetoothRxPort(1)
-    .setLedPort(13)
-    .setFsrSenseRightHeelPort(A12)
-    .setFsrSenseRightToePort(A13)
-    .setFsrSenseLeftHeelPort(A14)
-    .setFsrSenseLeftToePort(A15)
-    .setTorqueSensorRightAnklePort(A0)
-    .setTorqueSensorRightKneePort(A1)
-    .setTorqueSensorLeftAnklePort(A6)
-    .setTorqueSensorLeftKneePort(A5)
-    .setMotorLeftKneePort(23)
-    .setMotorLeftAnklePort(22)
-    .setMotorRightKneePort(5)
-    .setMotorRightAnklePort(6)
-    .setMotorEnablePort(16)
-    .setMotorErrorLeftKneePin(24)
-    .setMotorErrorLeftAnklePort(25)
-    .setMotorErrorRightKneePin(26)
-    .setMotorErrorRightAnklePort(27)
-    .build();
+    ->setAnalogWriteResolution(10)
+    ->setAnalogReadResolution(10)
+    ->setBluetoothTxPort(0)
+    ->setBluetoothRxPort(1)
+    ->setLedPort(13)
+    ->setFsrSenseRightHeelPort(A12)
+    ->setFsrSenseRightToePort(A13)
+    ->setFsrSenseLeftHeelPort(A14)
+    ->setFsrSenseLeftToePort(A15)
+    ->setTorqueSensorRightAnklePort(A0)
+    ->setTorqueSensorRightKneePort(A1)
+    ->setTorqueSensorLeftAnklePort(A6)
+    ->setTorqueSensorLeftKneePort(A5)
+    ->setMotorLeftKneePort(23)
+    ->setMotorLeftAnklePort(22)
+    ->setMotorRightKneePort(5)
+    ->setMotorRightAnklePort(6)
+    ->setMotorEnablePort(16)
+    ->setMotorErrorLeftKneePort(24)
+    ->setMotorErrorLeftAnklePort(25)
+    ->setMotorErrorRightKneePort(26)
+    ->setMotorErrorRightAnklePort(27)
+    ->build();
+  return board;
 }
 
-class BoardBuilder{
-public:
-  BoardBuilder(PortFactory* factory);
-  Board* build();
-  void reset();
-  void setBluetoothTxPort(unsigned int pin);
-  void setBluetoothRxPort(unsigned int pin);
-  void setFsrSenseLeftToePort(unsigned int pin);
-  void setFsrSenseLeftHeelPort(unsigned int pin);
-  void setFsrSenseRightToePort(unsigned int pin);
-  void setFsrSenseRightHeelPort(unsigned int pin);
-  void setTorqueSensorLeftKneePort(unsigned int pin);
-  void setTorqueSensorLeftAnklePort(unsigned int pin);
-  void setTorqueSensorRightKneePort(unsigned int pin);
-  void setTorqueSensorRightAnklePort(unsigned int pin);
-  void setMotorLeftKneePort(unsigned int pin);
-  void setMotorLeftAnklePort(unsigned int pin);
-  void setMotorRightKneePort(unsigned int pin);
-  void setMotorRightAnklePort(unsigned int pin);
-  void setLedPort(unsigned int pin);
-  void setMotorEnablePort(unsigned int pin);
-  void setMotorErrorLeftKneePort(unsigned int pin);
-  void setMotorErrorLeftAnklePort(unsigned int pin);
-  void setMotorErrorRightKneePort(unsigned int pin);
-  void setMotorErrorRightAnklePort(unsigned int pin);
-};
-
-BoardBuilder(PortFactory* factory){
+BoardBuilder::BoardBuilder(PortFactory* factory){
   port_factory = factory;
   read_resolution = 8;
   write_resolution = 8;
@@ -88,11 +97,13 @@ BoardBuilder* BoardBuilder::reset(){
 BoardBuilder* BoardBuilder::setAnalogWriteResolution(unsigned int bits){
   write_resolution = bits;
   analogWriteResolution(bits);
+  return this;
 }
 
 BoardBuilder* BoardBuilder::setAnalogReadResolution(unsigned int bits){
   read_resolution = bits;
   analogReadResolution(bits);
+  return this;
 }
 
 BoardBuilder* BoardBuilder::setBluetoothTxPort(unsigned int pin){
@@ -106,62 +117,62 @@ BoardBuilder* BoardBuilder::setBluetoothRxPort(unsigned int pin){
 }
 
 BoardBuilder* BoardBuilder::setFsrSenseLeftToePort(unsigned int pin){
-  board->setFsrSenseLeftToePort(port_factory->createAnalogInputPort(pin));
+  board->setFsrSenseLeftToePort(port_factory->createAnalogInputPort(pin, read_resolution));
   return this;
 }
 
 BoardBuilder* BoardBuilder::setFsrSenseLeftHeelPort(unsigned int pin){
-  board->setFsrSenseLeftHeelPort(port_factory->createAnalogInputPort(pin));
+  board->setFsrSenseLeftHeelPort(port_factory->createAnalogInputPort(pin, read_resolution));
   return this;
 }
 
 BoardBuilder* BoardBuilder::setFsrSenseRightToePort(unsigned int pin){
-  board->setFsrSenseRightToePort(port_factory->createAnalogInputPort(pin));
+  board->setFsrSenseRightToePort(port_factory->createAnalogInputPort(pin, read_resolution));
   return this;
 }
 
 BoardBuilder* BoardBuilder::setFsrSenseRightHeelPort(unsigned int pin){
-  board->setFsrSenseRightHeelPort(port_factory->createAnalogInputPort(pin));
+  board->setFsrSenseRightHeelPort(port_factory->createAnalogInputPort(pin, read_resolution));
   return this;
 }
 
 BoardBuilder* BoardBuilder::setTorqueSensorLeftKneePort(unsigned int pin){
-  board->setTorqueSensorLeftKneePort(port_factory->createAnalogInputPort(pin));
+  board->setTorqueSensorLeftKneePort(port_factory->createAnalogInputPort(pin, read_resolution));
   return this;
 }
 
 BoardBuilder* BoardBuilder::setTorqueSensorLeftAnklePort(unsigned int pin){
-  board->setTorqueSensorLeftAnklePort(port_factory->createAnalogInputPort(pin));
+  board->setTorqueSensorLeftAnklePort(port_factory->createAnalogInputPort(pin, read_resolution));
   return this;
 }
 
 BoardBuilder* BoardBuilder::setTorqueSensorRightKneePort(unsigned int pin){
-  board->setTorqueSensorRightKneePort(port_factory->createAnalogInputPort(pin));
+  board->setTorqueSensorRightKneePort(port_factory->createAnalogInputPort(pin, read_resolution));
   return this;
 }
 
 BoardBuilder* BoardBuilder::setTorqueSensorRightAnklePort(unsigned int pin){
-  board->setTorqueSensorRightAnklePort(port_factory->createAnalogInputPort(pin));
+  board->setTorqueSensorRightAnklePort(port_factory->createAnalogInputPort(pin, read_resolution));
   return this;
 }
 
 BoardBuilder* BoardBuilder::setMotorLeftKneePort(unsigned int pin){
-  board->setMotorLeftKneePort(port_factory->createPwmOutputPort(pin));
+  board->setMotorLeftKneePort(port_factory->createPwmOutputPort(pin, write_resolution));
   return this;
 }
 
 BoardBuilder* BoardBuilder::setMotorLeftAnklePort(unsigned int pin){
-  board->setMotorLeftAnklePort(port_factory->createPwmOutputPort(pin));
+  board->setMotorLeftAnklePort(port_factory->createPwmOutputPort(pin, write_resolution));
   return this;
 }
 
 BoardBuilder* BoardBuilder::setMotorRightKneePort(unsigned int pin){
-  board->setMotorRightKneePort(port_factory->createPwmOutputPort(pin));
+  board->setMotorRightKneePort(port_factory->createPwmOutputPort(pin, write_resolution));
   return this;
 }
 
 BoardBuilder* BoardBuilder::setMotorRightAnklePort(unsigned int pin){
-  board->setMotorRightAnklePort(port_factory->createPwmOutputPort(pin));
+  board->setMotorRightAnklePort(port_factory->createPwmOutputPort(pin, write_resolution));
   return this;
 }
 
@@ -233,7 +244,7 @@ Exoskeleton* setupBoard(){
   pinMode(MOTOR_ENABLE_PIN, OUTPUT); //Enable disable the motors
   digitalWrite(MOTOR_ENABLE_PIN, LOW);
   ExoPins* exoPins = setupPins();
-  Exoskeleton* exo = new Exoskeleton(exoPins);
+  Exoskeleton* exo = NULL;
   delete exoPins;
   // Fast torque calibration
   exo->calibrateTorque();
@@ -362,83 +373,83 @@ InputPort* Board::takeMotorErrorRightAnklePort(){
   return port;
 }
 
-void setBluetoothTxPort(OutputPort* port){
+void Board::setBluetoothTxPort(OutputPort* port){
   bluetooth_tx_port = port;
 }
 
-void setBluetoothRxPort(InputPort* port){
+void Board::setBluetoothRxPort(InputPort* port){
   bluetooth_rx_port = port;
 }
 
-void setFsrSenseLeftToePort(InputPort* port){
+void Board::setFsrSenseLeftToePort(InputPort* port){
   fsr_sense_left_toe_port = port;
 }
 
-void setFsrSenseLeftHeelPort(InputPort* port){
+void Board::setFsrSenseLeftHeelPort(InputPort* port){
   fsr_sense_left_heel_port = port;
 }
 
-void setFsrSenseRightToePort(InputPort* port){
+void Board::setFsrSenseRightToePort(InputPort* port){
   fsr_sense_right_toe_port = port;
 }
 
-void setFsrSenseRightHeelPort(InputPort* port){
+void Board::setFsrSenseRightHeelPort(InputPort* port){
   fsr_sense_right_heel_port = port;
 }
 
-void setTorqueSensorLeftKneePort(InputPort* port){
+void Board::setTorqueSensorLeftKneePort(InputPort* port){
   torque_sensor_left_knee_port = port;
 }
 
-void setTorqueSensorLeftAnklePort(InputPort* port){
+void Board::setTorqueSensorLeftAnklePort(InputPort* port){
   torque_sensor_left_ankle_port = port;
 }
 
-void setTorqueSensorRightKneePort(InputPort* port){
+void Board::setTorqueSensorRightKneePort(InputPort* port){
   torque_sensor_right_knee_port = port;
 }
 
-void setTorqueSensorRightAnklePort(InputPort* port){
+void Board::setTorqueSensorRightAnklePort(InputPort* port){
   torque_sensor_right_ankle_port = port;
 }
 
-void setMotorLeftKneePort(OutputPort* port){
+void Board::setMotorLeftKneePort(OutputPort* port){
   motor_left_knee_port = port;
 }
 
-void setMotorLeftAnklePort(OutputPort* port){
+void Board::setMotorLeftAnklePort(OutputPort* port){
   motor_left_ankle_port = port;
 }
 
-void setMotorRightKneePort(OutputPort* port){
+void Board::setMotorRightKneePort(OutputPort* port){
   motor_right_knee_port = port;
 }
 
-void setMotorRightAnklePort(OutputPort* port){
+void Board::setMotorRightAnklePort(OutputPort* port){
   motor_right_ankle_port = port;
 }
 
-void setLedPort(OutputPort* port){
+void Board::setLedPort(OutputPort* port){
   led_port = port;
 }
 
-void setMotorEnablePort(OutputPort* port){
+void Board::setMotorEnablePort(OutputPort* port){
   motor_enable_port = port;
 }
 
-void setMotorErrorLeftKneePort(InputPort* port){
+void Board::setMotorErrorLeftKneePort(InputPort* port){
   motor_error_left_knee_port = port;
 }
 
-void setMotorErrorLeftAnklePort(InputPort* port){
+void Board::setMotorErrorLeftAnklePort(InputPort* port){
   motor_error_left_ankle_port = port;
 }
 
-void setMotorErrorRightKneePort(InputPort* port){
+void Board::setMotorErrorRightKneePort(InputPort* port){
   motor_error_right_knee_port = port;
 }
 
-void setMotorErrorRightAnklePort(InputPort* port){
+void Board::setMotorErrorRightAnklePort(InputPort* port){
   motor_error_right_ankle_port = port;
 }
 
