@@ -11,6 +11,7 @@ const int dim = 5;
 #include "Pins.hpp"
 #include "Report.hpp"
 #include "IMU.hpp"
+#include <vector>
 
 class Leg {
 private:
@@ -22,11 +23,11 @@ private:
   void adjustControl();
   void updateMotorSetpoints();
 
-  Joint** joints;
+  std::vector<Joint*> joints;
   int joint_count;
-  FSRGroup** fsrs;
+  std::vector<FSRGroup*> fsrs;
   int fsr_group_count;
-  IMU** imus;
+  std::vector<IMU*> imus;
   int imu_count;
   FSRGroup* foot_fsrs;
 
@@ -49,7 +50,7 @@ private:
   State* state;
 
 public:
-  Leg(LegPins* legPins);
+  Leg(int sign, std::vector<Joint*> joints, std::vector<FSRGroup*> fsrs, std::vector<IMU*> imus);
   void measureSensors();
   bool checkMotorErrors();
   void attemptCalibration();
