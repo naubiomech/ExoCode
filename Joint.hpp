@@ -17,7 +17,7 @@ private:
 
   void fillLocalReport(JointReport* report);
 public:
-  Joint(JointPins* joint_pins);
+  Joint(Motor* motor, TorqueSensor* torque_sensor);
   JointReport* generateReport();
   void fillReport(JointReport* report);
 
