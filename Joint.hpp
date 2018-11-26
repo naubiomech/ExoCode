@@ -4,7 +4,7 @@
 #include "Motor.hpp"
 #include "TorqueSensor.hpp"
 #include "Report.hpp"
-#include "Pins.hpp"
+#include "Port.hpp"
 #include "Control_Module.hpp"
 
 class Joint{
