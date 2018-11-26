@@ -52,3 +52,29 @@ DigitalOutputPort::DigitalOutputPort(unsigned int pin):OutputPort(pin){
 void DigitalOutputPort::write(double value){
   digitalWrite((int) value, getPin());
 }
+
+PwmOutputPort::PwmOutputPort(unsigned int pin, unsigned int resolution_bits):AnalogOutputPort(pin, resolution_bits){}
+
+void PwmOutputPort::write(double value){
+  AnalogOutputPort::write(value * 0.8 + 0.1);
+}
+
+InputPort* ArduinoPortFactory::createDigitalInputPort(unsigned int pin){
+  return new DigitalInputPort(pin);
+}
+
+InputPort* ArduinoPortFactory::createAnalogInputPort(unsigned int pin, unsigned int resolution_bits){
+  return new AnalogInputPort(pin, resolution_bits);
+}
+
+OutputPort* ArduinoPortFactory::createDigitalOutputPort(unsigned int pin){
+  return new DigitalOutputPort(pin);
+}
+
+OutputPort* ArduinoPortFactory::createAnalogOutputPort(unsigned int pin, unsigned int resolution_bits){
+  return new AnalogOutputPort(pin, resolution_bits);
+}
+
+OutputPort* ArduinoPortFactory::createPwmOutputPort(unsigned int pin, unsigned int resolution_bits){
+  return new PwmOutputPort(pin, resolution_bits);
+}
