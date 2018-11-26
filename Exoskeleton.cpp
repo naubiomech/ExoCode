@@ -5,9 +5,9 @@
 #include "Report.hpp"
 #include "Transceiver.hpp"
 
-Exoskeleton::Exoskeleton(ExoPins* exoPins){
-  left_leg = new Leg(exoPins->left_leg);
-  right_leg = new Leg(exoPins->right_leg);
+Exoskeleton::Exoskeleton(Leg* left_leg, Leg* right_leg){
+  this->left_leg = left_leg;
+  this->right_leg = right_leg;
 
   report = generateReport();
 }
