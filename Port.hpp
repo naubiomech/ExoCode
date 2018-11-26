@@ -64,9 +64,10 @@ public:
   virtual InputPort* createAnalogInputPort(unsigned int pin, unsigned int resolution_bits) = 0;
   virtual OutputPort* createDigitalOutputPort(unsigned int pin) = 0;
   virtual OutputPort* createAnalogOutputPort(unsigned int pin, unsigned int resolution_bits) = 0;
+  virtual OutputPort* createPwmOutputPort(unsigned int pin, unsigned int resolution_bits) = 0;
 };
 
-class ArduinoPortFactory{
+class ArduinoPortFactory:public PortFactory{
   InputPort* createDigitalInputPort(unsigned int pin);
   InputPort* createAnalogInputPort(unsigned int pin, unsigned int resolution_bits);
   OutputPort* createDigitalOutputPort(unsigned int pin);
