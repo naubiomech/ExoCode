@@ -5,30 +5,25 @@
 #include "Utils.hpp"
 #include "States.hpp"
 #include "Control_Algorithms.hpp"
-#include "Pins.hpp"
 #include "Report.hpp"
 #include <PID_v2.h>
 
-Motor::Motor(MotorPins* motor_pins){
-  this->motor_pin = motor_pins->motor;
-  this->motor_error_pin = motor_pins->err;
-  pinMode(motor_error_pin, INPUT);
-  pinMode(motor_pin, OUTPUT);
+Motor::Motor(InputPort* motor_error_port, OutputPort* motor_port, int output_sign){
+  setSign(output_sign);
+  this->motor_port = motor_port;
+  this->motor_error_port = motor_error_port;
+  this->zero_offset = MOTOR_ZERO_OFFSET_DEFAULT;
 }
 
 void Motor::write(double motor_output){
-  int voltage = map((double) motor_output,-1.0,1.0,-2048.0, 2048.0);
-  voltage = (output_sign * voltage) + this->zero_torque_reference;
-  Serial.println(voltage);
+  double voltage = (output_sign * voltage) + this->zero_torque_reference;
+  voltage = (voltage + 1.0)/2.0;
 
-  if (PWM_CONTROL){
-    voltage = voltage * 0.8 + 0.1 * 4096.0;
-  }
-  analogWrite(this->motor_pin, voltage);
+  this->motor_port->write(voltage);
 }
 
 void Motor::measureError(){
-  in_error_state = digitalRead(motor_error_pin);
+  in_error_state = motor_error_port->read();
 }
 
 bool Motor::hasErrored(){
