@@ -9,7 +9,7 @@ FSR::FSR(InputPort* port){
 }
 
 void FSR::measureForce(){
-  double Vo = 10 * 3.3 * port->read() / 4096;
+  double Vo = port->read();
 
   if ( FSR_Sensors_type == 10) {
     Vo = max(0, Vo);
