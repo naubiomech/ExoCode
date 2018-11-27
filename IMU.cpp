@@ -3,9 +3,9 @@
 #include <Adafruit_BNO055_t3.h>
 #include <utility/imumaths.h>
 
-IMU::IMU(IMUPins* imu_pins){
+IMU::IMU(ImuPort* imu_port, unsigned int address){
 
-  bno = new Adafruit_BNO055(WIRE_BUS, 1, imu_pins->address, I2C_MASTER, imu_pins->imu_slot,
+  bno = new Adafruit_BNO055(WIRE_BUS, 1, address, I2C_MASTER, imu_port->getPins(),
                             I2C_PULLUP_EXT, I2C_RATE_100, I2C_OP_MODE_ISR);
 
   if (!bno->begin()) {
