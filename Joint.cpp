@@ -1,7 +1,8 @@
 #include "Joint.hpp"
 #include "Board.hpp"
 
-Joint::Joint(Motor* motor, TorqueSensor* torque_sensor){
+Joint::Joint(ControlModule* controller, Motor* motor, TorqueSensor* torque_sensor){
+  this->controller = controller;
   this->motor = motor;
   this->torque_sensor = torque_sensor;
 }

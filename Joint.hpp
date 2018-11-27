@@ -17,7 +17,7 @@ private:
 
   void fillLocalReport(JointReport* report);
 public:
-  Joint(Motor* motor, TorqueSensor* torque_sensor);
+  Joint(ControlModule* controller, Motor* motor, TorqueSensor* torque_sensor);
   JointReport* generateReport();
   void fillReport(JointReport* report);
 
