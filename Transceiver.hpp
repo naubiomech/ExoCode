@@ -1,6 +1,7 @@
 #ifndef TRANSCEIVER_HEADER
 #define TRANSCEIVER_HEADER
 #include <SoftwareSerial.h>
+#include "Port.hpp"
 #include "Command_Codes.hpp"
 #include "Report.hpp"
 #include "Message.hpp"
@@ -27,10 +28,13 @@ protected:
 public:
   ExoMessage* receiveMessages(ExoReport* report);
   void sendReport(ExoReport* report);
+  Transceiver(TxPort* tx, RxPort* rx);
 
 };
 
 class MatlabTransceiver:public Transceiver{
+public:
+  MatlabTransceiver(TxPort* tx, RxPort* rx);
 protected:
   void receiveData(void* data_output, int doubles_expected);
   void sendMessageBegin();

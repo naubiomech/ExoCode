@@ -1,4 +1,9 @@
 #include "Transceiver.hpp"
+#include <SoftwareSerial.h>
+
+Transceiver::Transceiver(TxPort* tx, RxPort* rx){
+  command_serial = new SoftwareSerial(tx->getPin(), rx->getPin());
+}
 
 bool Transceiver::dataAvailable(){
   return command_serial->available() > 0;
@@ -39,6 +44,7 @@ void Transceiver::sendCommandMessage(CommandCode command_code, void* data, int b
   sendMessageEnd();
 }
 
+MatlabTransceiver::MatlabTransceiver(TxPort* tx, RxPort* rx):Transceiver(tx, rx){}
 
 void MatlabTransceiver::receiveData(void* data, int doubles_expected){
   int new_data_size = doubles_expected * sizeof(double);
