@@ -43,6 +43,7 @@ private:
 public:
   Threshold(bool starting_state, double threshold_value, int crossed_threshold_max);
   bool getState(double value);
+  void setUpperThreshold(double value);
 };
 
 class Timer{

@@ -82,6 +82,10 @@ bool Threshold::getState(double value){
   return state;
 }
 
+void Threshold::setUpperThreshold(double threshold){
+  upper_threshold = threshold;
+}
+
 Timer::Timer(){
   start_time = millis();
 }
