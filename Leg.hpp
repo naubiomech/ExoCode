@@ -24,11 +24,8 @@ private:
   void updateMotorSetpoints();
 
   std::vector<Joint*> joints;
-  int joint_count;
   std::vector<FSRGroup*> fsrs;
-  int fsr_group_count;
   std::vector<IMU*> imus;
-  int imu_count;
   FSRGroup* foot_fsrs;
 
   bool set_motors_to_zero_torque;
@@ -40,17 +37,10 @@ private:
 
   Threshold* swing_state_threshold = new Threshold(false, 0.5, state_counter_th);
 
-  double Prop_Gain = 1;
-
-  double stateTimerCount;
-  double flag_1 = 0;
-  double time_old_state;
-
-
   State* state;
 
 public:
-  Leg(int sign, std::vector<Joint*> joints, std::vector<FSRGroup*> fsrs, std::vector<IMU*> imus);
+  Leg(State* states, std::vector<Joint*> joints, std::vector<FSRGroup*> fsrs, std::vector<IMU*> imus);
   void measureSensors();
   bool checkMotorErrors();
   void attemptCalibration();
