@@ -1,6 +1,8 @@
 #ifndef PORT_HEADER
 #define PORT_HEADER
 
+#include <i2c_t3.h>
+
 class Port{
 private:
   unsigned int pin;
@@ -8,6 +10,14 @@ protected:
   unsigned int getPin();
 public:
   Port(unsigned int pin);
+};
+
+class ImuPort:public Port{
+private:
+  i2c_pins imu_pins;
+  ImuPort(i2c_pins imu_pins);
+public:
+  i2c_pins getPins();
 };
 
 class InputPort:public Port{
@@ -28,6 +38,12 @@ class DigitalInputPort: public InputPort{
 public:
   double read();
   DigitalInputPort(unsigned int pin);
+};
+
+class RxPort:public InputPort{
+public:
+  unsigned int getPin();
+  RxPort(unsigned int pin);
 };
 
 class OutputPort: public Port{
@@ -56,6 +72,12 @@ class PwmOutputPort: public AnalogOutputPort{
 public:
   void write(double value);
   PwmOutputPort(unsigned int pin, unsigned int resolution_bits);
+};
+
+class TxPort:public InputPort{
+public:
+  unsigned int getPin();
+  TxPort(unsigned int pin);
 };
 
 class PortFactory{
