@@ -32,10 +32,7 @@ private:
   int step_count;
   int increment_activation_starting_step = 0;
 
-  // TODO Check usability of all variables below line
-  // ------------
-
-  Threshold* swing_state_threshold = new Threshold(false, 0.5, state_counter_th);
+  Threshold* foot_on_fsrs_threshold;
 
   State* state;
 
