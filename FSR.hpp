@@ -1,18 +1,19 @@
 #ifndef FSR_HEADER
 #define FSR_HEADER
 #include "Parameters.hpp"
-#include "Pins.hpp"
 #include "Utils.hpp"
 #include "Report.hpp"
+#include "Port.hpp"
+#include <vector>
 
 class FSR{
 private:
   void fillLocalReport(FSRReport* report);
-  unsigned int pin;
+  InputPort* port;
   double force = 0;
 
 public:
-  FSR(int pin);
+  FSR(InputPort* port);
   void measureForce();
   double getForce();
 };
@@ -20,7 +21,7 @@ public:
 class FSRGroup{
 private:
   int fsr_count;
-  FSR** fsrs;
+  std::vector<FSR*> fsrs;
 
   double fsr_percent_thresh = 0.9;
   Max* max_fsr_voltage = new Max();
@@ -33,7 +34,7 @@ private:
   void fillLocalReport(FSRReport* report);
 
 public:
-  FSRGroup(FSRGroupPins* fsr_pins);
+  FSRGroup(std::vector<FSR*> fsrs);
 
   void measureForce();
   double getForce();

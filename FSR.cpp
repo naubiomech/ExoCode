@@ -4,12 +4,12 @@
 #include "Utils.hpp"
 #include "Report.hpp"
 
-FSR::FSR(int pin){
-  this->pin = pin;
+FSR::FSR(InputPort* port){
+  this->port = port;
 }
 
 void FSR::measureForce(){
-  double Vo = 10 * 3.3 * analogRead(pin) / 4096;
+  double Vo = 10 * 3.3 * port->read() / 4096;
 
   if ( FSR_Sensors_type == 10) {
     Vo = max(0, Vo);
@@ -24,12 +24,9 @@ double FSR::getForce(){
   return force;
 }
 
-FSRGroup::FSRGroup(FSRGroupPins* fsr_group_pins){
-  this->fsr_count = fsr_group_pins->fsr_count;
-  this->fsrs = new FSR*[fsr_count];
-  for (int i = 0; i < fsr_count; i++){
-    this->fsrs[i] = new FSR(fsr_group_pins->fsr_pins[i]);
-  }
+FSRGroup::FSRGroup(std::vector<FSR*> fsrs){
+  this->fsr_count = fsrs.size();
+  this->fsrs = fsrs;
 }
 
 void FSRGroup::measureForce(){
