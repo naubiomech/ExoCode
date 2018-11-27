@@ -8,14 +8,21 @@
 
 class FSR{
 private:
+  void updateForce(double force);
   void fillLocalReport(FSRReport* report);
   InputPort* port;
+  double calibration_peak = 1.0;
+  Max* max_force = new Max();
+  MovingAverage* peak_average = new MovingAverage(FSR_CALIBRATION_PEAK_COUNT);
+
   double force = 0;
 
 public:
   FSR(InputPort* port);
   void measureForce();
   double getForce();
+  void calibrate();
+  void resetMaxes();
 };
 
 class FSRGroup{
@@ -23,19 +30,18 @@ private:
   int fsr_count;
   std::vector<FSR*> fsrs;
 
-  double fsr_percent_thresh = 0.9;
-  Max* max_fsr_voltage = new Max();
-  Max* max_fsr_percentage = new Max();
-  MovingAverage* peak_average = new MovingAverage(FSR_CALIBRATION_PEAK_COUNT);
+  double force = 0;
 
-  double calibration_peak;
-  double fsr_percentage;
+  double fsr_percent_thresh = 0.9;
+  Threshold* activation_threshold;
+  bool is_activated = false;
 
   void fillLocalReport(FSRReport* report);
 
 public:
   FSRGroup(std::vector<FSR*> fsrs);
 
+  bool isActivated();
   void measureForce();
   double getForce();
   void calibrate();
@@ -46,7 +52,6 @@ public:
   double getPercentage();
   double getMaxPercentage();
   void updateBaseline();
-  double force;
   FSRReport* generateReport();
   void fillReport(FSRReport* report);
 };

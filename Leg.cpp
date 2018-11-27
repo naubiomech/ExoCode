@@ -14,7 +14,6 @@ Leg::Leg(State* states, std::vector<Joint*> joints, std::vector<FSRGroup*> fsrs,
   this->imus = imus;
 
   this->foot_fsrs = fsrs[0];
-  foot_on_fsrs_threshold = new Threshold(0, 0.8, state_counter_th);
 }
 
 void Leg::attemptCalibration(){
@@ -129,7 +128,7 @@ void Leg::changeJointControl(StateID state_id){
 }
 
 bool Leg::determine_foot_on_ground(){
-  bool foot_on_fsr = foot_on_fsrs_threshold->getState((double) foot_fsrs->getForce());
+  bool foot_on_fsr = foot_fsrs->isActivated();
   return foot_on_fsr;
 }
 

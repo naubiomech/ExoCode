@@ -9,15 +9,28 @@ FSR::FSR(InputPort* port){
 }
 
 void FSR::measureForce(){
-  double Vo = port->read();
+  double force = port->read();
 
   if ( FSR_Sensors_type == 10) {
-    Vo = max(0, Vo);
+    force = max(0, force);
   } else if (FSR_Sensors_type == 40){
-    Vo = max(0, p[0] * pow(Vo, 3) + p[1] * pow(Vo, 2) + p[2] * Vo + p[3]);
+    force = max(0, p[0] * pow(force, 3) + p[1] * pow(force, 2) + p[2] * force + p[3]);
   }
+  updateForce(force);
+}
 
-  force = Vo;
+void FSR::updateForce(double force){
+  max_force->update(force);
+  force /= calibration_peak;
+}
+
+void FSR::calibrate(){
+  calibration_peak = peak_average->getAverage();
+}
+
+void FSR::resetMaxes(){
+  peak_average->update(max_force->getMax());
+  max_force->reset();
 }
 
 double FSR::getForce(){
@@ -25,8 +38,13 @@ double FSR::getForce(){
 }
 
 FSRGroup::FSRGroup(std::vector<FSR*> fsrs){
+  activation_threshold = new Threshold(0, fsr_percent_thresh, state_counter_th);
   this->fsr_count = fsrs.size();
   this->fsrs = fsrs;
+}
+
+bool FSRGroup::isActivated(){
+  return is_activated;
 }
 
 void FSRGroup::measureForce(){
@@ -36,39 +54,35 @@ void FSRGroup::measureForce(){
     average += fsrs[i]->getForce();
   }
   force = average / fsr_count;
-  max_fsr_voltage->update(force);
-}
-
-double FSRGroup::getForce(){
-  return force;
+  is_activated = activation_threshold->getState(force);
 }
 
 void FSRGroup::calibrate(){
-  calibration_peak = peak_average->getAverage();
-}
+  for (int i = 0; i < fsr_count; i++){
+    fsrs[i]->calibrate();
+    }
+  }
 
 void FSRGroup::setPercentageThreshold(double percent){
   fsr_percent_thresh = percent;
 }
 
 double FSRGroup::getThreshold(){
-  return calibration_peak * fsr_percent_thresh;
+  return fsr_percent_thresh;
 }
 
 void FSRGroup::resetMaxes(){
-  double max_voltage = this->max_fsr_voltage->getMax();
-  this->peak_average->update(max_voltage);
-
-  this->max_fsr_voltage->reset();
+  for(unsigned int i = 0; i < fsrs.size(); i++){
+    fsrs[i]->resetMaxes();
+  }
 }
 
 double FSRGroup::getPercentage(){
-  return fsr_percentage;
+  return force;
 }
 
 double FSRGroup::getMaxPercentage(){
-  double max_fsr_percentage = fabs(max_fsr_voltage->getMax() / calibration_peak);
-  return max_fsr_percentage;
+  return 1;
 }
 
 FSRReport* FSRGroup::generateReport(){
@@ -83,5 +97,5 @@ void FSRGroup::fillReport(FSRReport* report){
 
 void FSRGroup::fillLocalReport(FSRReport* report){
   report->threshold = getThreshold();
-  report->measuredForce = getForce();
+  report->measuredForce = getPercentage();
 }

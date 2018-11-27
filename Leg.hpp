@@ -32,8 +32,6 @@ private:
   int step_count;
   int increment_activation_starting_step = 0;
 
-  Threshold* foot_on_fsrs_threshold;
-
   State* state;
 
 public:
