@@ -19,7 +19,7 @@ private:
   void fillLocalReport(TorqueSensorReport* report);
 public:
   double getTorque();
-  TorqueSensor(InputPort* torque_sensor_port);
+  TorqueSensor(InputPort* torque_sensor_port, int sign);
   void measureTorque();
   void startTorqueCalibration();
   void updateTorqueCalibration();
