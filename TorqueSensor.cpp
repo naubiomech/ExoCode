@@ -36,7 +36,7 @@ void TorqueSensor::endTorqueCalibration(){
 
 double TorqueSensor::measureRawTorque(){
   double readValue = this->torque_sensor_port->read();
-  return readValue * (3.3 / 4096.0) * torque_sign;
+  return readValue * torque_sign;
 }
 
 double TorqueSensor::measureRawCalibratedTorque(){
