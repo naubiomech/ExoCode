@@ -107,12 +107,12 @@ BoardBuilder* BoardBuilder::setAnalogReadResolution(unsigned int bits){
 }
 
 BoardBuilder* BoardBuilder::setBluetoothTxPort(unsigned int pin){
-  board->setBluetoothTxPort(port_factory->createDigitalOutputPort(pin));
+  board->setBluetoothTxPort(port_factory->createTxPort(pin));
   return this;
 }
 
 BoardBuilder* BoardBuilder::setBluetoothRxPort(unsigned int pin){
-  board->setBluetoothRxPort(port_factory->createDigitalInputPort(pin));
+  board->setBluetoothRxPort(port_factory->createRxPort(pin));
   return this;
 }
 
@@ -253,14 +253,14 @@ Exoskeleton* setupBoard(){
   return exo;
 }
 
-OutputPort* Board::takeBluetoothTxPort(){
-  OutputPort* port = bluetooth_tx_port;
+TxPort* Board::takeBluetoothTxPort(){
+  TxPort* port = bluetooth_tx_port;
   bluetooth_tx_port = NULL;
   return port;
 }
 
-InputPort* Board::takeBluetoothRxPort(){
-  InputPort* port = bluetooth_rx_port;
+RxPort* Board::takeBluetoothRxPort(){
+  RxPort* port = bluetooth_rx_port;
   bluetooth_rx_port = NULL;
   return port;
 }
@@ -373,11 +373,11 @@ InputPort* Board::takeMotorErrorRightAnklePort(){
   return port;
 }
 
-void Board::setBluetoothTxPort(OutputPort* port){
+void Board::setBluetoothTxPort(TxPort* port){
   bluetooth_tx_port = port;
 }
 
-void Board::setBluetoothRxPort(InputPort* port){
+void Board::setBluetoothRxPort(RxPort* port){
   bluetooth_rx_port = port;
 }
 

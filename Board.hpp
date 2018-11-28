@@ -6,8 +6,8 @@
 class Board{
 private:
   PortFactory* portFactory;
-  OutputPort* bluetooth_tx_port;
-  InputPort* bluetooth_rx_port;
+  TxPort* bluetooth_tx_port;
+  RxPort* bluetooth_rx_port;
   InputPort* fsr_sense_left_toe_port;
   InputPort* fsr_sense_left_heel_port;
   InputPort* fsr_sense_right_toe_port;
@@ -30,8 +30,8 @@ private:
 public:
   Board();
 
-  OutputPort* takeBluetoothTxPort();
-  InputPort* takeBluetoothRxPort();
+  TxPort* takeBluetoothTxPort();
+  RxPort* takeBluetoothRxPort();
   InputPort* takeFsrSenseLeftToePort();
   InputPort* takeFsrSenseLeftHeelPort();
   InputPort* takeFsrSenseRightToePort();
@@ -51,8 +51,8 @@ public:
   InputPort* takeMotorErrorRightKneePort();
   InputPort* takeMotorErrorRightAnklePort();
 
-  void setBluetoothTxPort(OutputPort* port);
-  void setBluetoothRxPort(InputPort* port);
+  void setBluetoothTxPort(TxPort* port);
+  void setBluetoothRxPort(RxPort* port);
   void setFsrSenseLeftToePort(InputPort* port);
   void setFsrSenseLeftHeelPort(InputPort* port);
   void setFsrSenseRightToePort(InputPort* port);
