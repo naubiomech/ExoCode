@@ -2,9 +2,20 @@
 #define EXO_BUILDER_HEADER
 #include "Port.hpp"
 #include "Exoskeleton.hpp"
+#include "Board.hpp"
+
+
+class ExoBuilderDirector{
+public:
+	virtual Exoskeleton* build(Board* board) = 0;
+};
+
+class QuadExoBuilderDirector{
+public:
+	Exoskeleton* build(Board* board);
+};
 
 class LegBuilder;
-
 class ExoBuilder{
 private:
   RxPort* rx;
