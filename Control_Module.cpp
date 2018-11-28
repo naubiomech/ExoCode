@@ -134,15 +134,15 @@ ControlModule* ControlModuleBuilder::build(StateID starting_state){
 ControlAlgorithm* ControlModuleBuilder::createControlAlgorithm(ControlAlgorithmType type, StateID state_id){
   switch(type){
   case zero_torque:
-    return new ZeroTorqueControl();
+    return new ZeroTorqueControl(state_id);
   case bang_bang:
-    return new BangBangControl();
+    return new BangBangControl(state_id);
   case balance_control:
-    return new BalanceControl();
+    return new BalanceControl(state_id);
   case proportional:
-    return new ProportinalControl();
+    return new ProportionalControl(state_id);
   case pivot_proportional:
-    return new ProportionalPivotControl();
+    return new ProportionalPivotControl(state_id);
   default:
     return NULL;
   }

@@ -49,7 +49,8 @@ private:
   std::vector<StateID> states;
   std::vector<ControlAlgorithmType> control_types;
 public:
-  ControlModuleBuilder* addState(StateID state);
-  ControlModule* build();
+  ControlModuleBuilder* addState(StateID state, ControlAlgorithmType control_type);
+  ControlModule* build(StateID starting_state);
+  ControlAlgorithm* createControlAlgorithm(ControlAlgorithmType type, StateID state_id);
 };
 #endif
