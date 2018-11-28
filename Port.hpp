@@ -42,6 +42,7 @@ public:
 
 class RxPort:public InputPort{
 public:
+  double read();
   unsigned int getPin();
   RxPort(unsigned int pin);
 };
@@ -74,14 +75,17 @@ public:
   PwmOutputPort(unsigned int pin, unsigned int resolution_bits);
 };
 
-class TxPort:public InputPort{
+class TxPort:public OutputPort{
 public:
+  void write(double value);
   unsigned int getPin();
   TxPort(unsigned int pin);
 };
 
 class PortFactory{
 public:
+  virtual RxPort* createRxPort(unsigned int pin) = 0;
+  virtual TxPort* createTxPort(unsigned int pin) = 0;
   virtual InputPort* createDigitalInputPort(unsigned int pin) = 0;
   virtual InputPort* createAnalogInputPort(unsigned int pin, unsigned int resolution_bits) = 0;
   virtual OutputPort* createDigitalOutputPort(unsigned int pin) = 0;
@@ -90,6 +94,8 @@ public:
 };
 
 class ArduinoPortFactory:public PortFactory{
+  RxPort* createRxPort(unsigned int pin);
+  TxPort* createTxPort(unsigned int pin);
   InputPort* createDigitalInputPort(unsigned int pin);
   InputPort* createAnalogInputPort(unsigned int pin, unsigned int resolution_bits);
   OutputPort* createDigitalOutputPort(unsigned int pin);

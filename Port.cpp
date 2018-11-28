@@ -24,77 +24,92 @@ i2c_pins ImuPort::getPins(){
 
 InputPort::InputPort(unsigned int pin):Port(pin){}
 
-  AnalogInputPort::AnalogInputPort(unsigned int pin, unsigned int resolution_bits):InputPort(pin){
-    resolution = calculateResolution(resolution_bits);
-    pinMode(pin, INPUT);
-  }
+AnalogInputPort::AnalogInputPort(unsigned int pin, unsigned int resolution_bits):InputPort(pin){
+  resolution = calculateResolution(resolution_bits);
+  pinMode(pin, INPUT);
+}
 
-  double AnalogInputPort::read(){
-    return analogRead(getPin())/resolution;
-  }
+double AnalogInputPort::read(){
+  return analogRead(getPin())/resolution;
+}
 
-  DigitalInputPort::DigitalInputPort(unsigned int pin):InputPort(pin){
-    pinMode(pin, INPUT);
-  }
+DigitalInputPort::DigitalInputPort(unsigned int pin):InputPort(pin){
+  pinMode(pin, INPUT);
+}
 
-  double DigitalInputPort::read(){
-    return digitalRead(getPin());
-  }
+double DigitalInputPort::read(){
+  return digitalRead(getPin());
+}
 
-  RxPort::RxPort(unsigned int pin):InputPort(pin){}
+RxPort::RxPort(unsigned int pin):InputPort(pin){}
 
-  unsigned int RxPort::getPin(){
-    return InputPort::getPin();
-  }
+double RxPort::read(){
+  return 0;
+}
 
-  OutputPort::OutputPort(unsigned int pin):Port(pin){}
+unsigned int RxPort::getPin(){
+  return InputPort::getPin();
+}
 
-  AnalogOutputPort::AnalogOutputPort(unsigned int pin, unsigned int resolution_bits):OutputPort(pin){
-    resolution = calculateResolution(resolution_bits);
-    pinMode(pin, OUTPUT);
-  }
+OutputPort::OutputPort(unsigned int pin):Port(pin){}
 
-  void AnalogOutputPort::write(double value){
-    analogWrite((int) (value * resolution), getPin());
-  }
+AnalogOutputPort::AnalogOutputPort(unsigned int pin, unsigned int resolution_bits):OutputPort(pin){
+  resolution = calculateResolution(resolution_bits);
+  pinMode(pin, OUTPUT);
+}
 
-  DigitalOutputPort::DigitalOutputPort(unsigned int pin):OutputPort(pin){
+void AnalogOutputPort::write(double value){
+  analogWrite((int) (value * resolution), getPin());
+}
 
-    pinMode(pin, OUTPUT);
-  }
+DigitalOutputPort::DigitalOutputPort(unsigned int pin):OutputPort(pin){
 
-  void DigitalOutputPort::write(double value){
-    digitalWrite((int) value, getPin());
-  }
+  pinMode(pin, OUTPUT);
+}
 
-  PwmOutputPort::PwmOutputPort(unsigned int pin, unsigned int resolution_bits):AnalogOutputPort(pin, resolution_bits){}
+void DigitalOutputPort::write(double value){
+  digitalWrite((int) value, getPin());
+}
 
-  void PwmOutputPort::write(double value){
-    AnalogOutputPort::write(value * 0.8 + 0.1);
-  }
+PwmOutputPort::PwmOutputPort(unsigned int pin, unsigned int resolution_bits):AnalogOutputPort(pin, resolution_bits){}
 
-  TxPort::TxPort(unsigned int pin):InputPort(pin){}
+void PwmOutputPort::write(double value){
+  AnalogOutputPort::write(value * 0.8 + 0.1);
+}
 
-  unsigned int TxPort::getPin(){
-    return InputPort::getPin();
-  }
+TxPort::TxPort(unsigned int pin):OutputPort(pin){}
 
-  InputPort* ArduinoPortFactory::createDigitalInputPort(unsigned int pin){
-    return new DigitalInputPort(pin);
-  }
+void TxPort::write(double value){
+}
 
-  InputPort* ArduinoPortFactory::createAnalogInputPort(unsigned int pin, unsigned int resolution_bits){
-    return new AnalogInputPort(pin, resolution_bits);
-  }
+unsigned int TxPort::getPin(){
+  return OutputPort::getPin();
+}
 
-  OutputPort* ArduinoPortFactory::createDigitalOutputPort(unsigned int pin){
-    return new DigitalOutputPort(pin);
-  }
+RxPort* ArduinoPortFactory::createRxPort(unsigned int pin){
+  return new RxPort(pin);
+}
 
-  OutputPort* ArduinoPortFactory::createAnalogOutputPort(unsigned int pin, unsigned int resolution_bits){
-    return new AnalogOutputPort(pin, resolution_bits);
-  }
+TxPort* ArduinoPortFactory::createTxPort(unsigned int pin){
+  return new TxPort(pin);
+}
 
-  OutputPort* ArduinoPortFactory::createPwmOutputPort(unsigned int pin, unsigned int resolution_bits){
-    return new PwmOutputPort(pin, resolution_bits);
-  }
+InputPort* ArduinoPortFactory::createDigitalInputPort(unsigned int pin){
+  return new DigitalInputPort(pin);
+}
+
+InputPort* ArduinoPortFactory::createAnalogInputPort(unsigned int pin, unsigned int resolution_bits){
+  return new AnalogInputPort(pin, resolution_bits);
+}
+
+OutputPort* ArduinoPortFactory::createDigitalOutputPort(unsigned int pin){
+  return new DigitalOutputPort(pin);
+}
+
+OutputPort* ArduinoPortFactory::createAnalogOutputPort(unsigned int pin, unsigned int resolution_bits){
+  return new AnalogOutputPort(pin, resolution_bits);
+}
+
+OutputPort* ArduinoPortFactory::createPwmOutputPort(unsigned int pin, unsigned int resolution_bits){
+  return new PwmOutputPort(pin, resolution_bits);
+}
