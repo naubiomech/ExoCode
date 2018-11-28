@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include "Leg.hpp"
-#include "Pins.hpp"
 #include "Shaping_Functions.hpp"
 #include "Motor.hpp"
 #include "IMU.hpp"

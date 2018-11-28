@@ -1,7 +1,6 @@
 #ifndef EXOSKELETON_HEADER
 #define EXOSKELETON_HEADER
 #include "Leg.hpp"
-#include "Pins.hpp"
 #include <Metro.h>
 #include "Report.hpp"
 #include "Transceiver.hpp"

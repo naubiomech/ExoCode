@@ -8,7 +8,6 @@ const int dim = 5;
 #include "States.hpp"
 #include "Joint.hpp"
 #include "FSR.hpp"
-#include "Pins.hpp"
 #include "Report.hpp"
 #include "IMU.hpp"
 #include <vector>
