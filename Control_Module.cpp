@@ -123,10 +123,10 @@ ControlModule* ControlModuleBuilder::build(StateID starting_state){
   ControlAlgorithm* previous = first;
   for(unsigned int i = 1; i < states.size(); i++){
     ControlAlgorithm* alg = createControlAlgorithm(control_types[i], states[i]);
-    alg.setPreviousControlAlgorithm(previous);
+    alg->setPreviousControlAlgorithm(previous);
     previous = alg;
   }
-  first.setPreviousControlAlgorithm(previous);
+  first->setPreviousControlAlgorithm(previous);
   ControlModule* module = new ControlModule(first, starting_state);
   return module;
 }
