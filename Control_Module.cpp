@@ -2,7 +2,8 @@
 #include "Parameters.hpp"
 #include <cstddef>
 
-ControlModule::ControlModule(){
+ControlModule::ControlModule(ControlAlgorithm* state_machine, StateID starting_state){
+  setControlStateMachine(state_machine, starting_state);
   this->kf_clamp = new Clamp(MAX_KF, MIN_KF);
   adjust_shaping_for_time_clamp = new Clamp(4, 500);
   this->error_average = new RunningAverage();
@@ -104,4 +105,45 @@ void ControlModule::applyAutoKF(){
 
 double ControlModule::getLastSetpoint(){
   return current_pid_setpoint;
+}
+
+void ControlModule::setControlStateMachine(ControlAlgorithm* state_machine, StateID starting_state){
+  current_algorithm = state_machine;
+  current_algorithm = getControlAlgorithm(starting_state);
+}
+
+ControlModuleBuilder* ControlModuleBuilder::addState(StateID state, ControlAlgorithmType control_type){
+  states.push_back(state);
+  control_types.push_back(control_type);
+  return this;
+}
+
+ControlModule* ControlModuleBuilder::build(StateID starting_state){
+  ControlAlgorithm* first = createControlAlgorithm(control_types[0], states[0]);
+  ControlAlgorithm* previous = first;
+  for(unsigned int i = 1; i < states.size(); i++){
+    ControlAlgorithm* alg = createControlAlgorithm(control_types[i], states[i]);
+    alg.setPreviousControlAlgorithm(previous);
+    previous = alg;
+  }
+  first.setPreviousControlAlgorithm(previous);
+  ControlModule* module = new ControlModule(first, starting_state);
+  return module;
+}
+
+ControlAlgorithm* ControlModuleBuilder::createControlAlgorithm(ControlAlgorithmType type, StateID state_id){
+  switch(type){
+  case zero_torque:
+    return new ZeroTorqueControl();
+  case bang_bang:
+    return new BangBangControl();
+  case balance_control:
+    return new BalanceControl();
+  case proportional:
+    return new ProportinalControl();
+  case pivot_proportional:
+    return new ProportionalPivotControl();
+  default:
+    return NULL;
+  }
 }

@@ -23,7 +23,8 @@ protected:
   double getActivationPercent();
   double clamp_setpoint(double raw_setpoint);
 public:
-  ControlAlgorithm();
+  ControlAlgorithm(StateID state_id);
+  void setPreviousControlAlgorithm(ControlAlgorithm* control_algorithm);
   virtual void setDesiredSetpoint(double setpoint);
   virtual double getShapingIterations();
   virtual void setShapingIterations(double iterations);

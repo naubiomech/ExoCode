@@ -24,13 +24,14 @@ private:
   RunningAverage* error_average;
   double iter_time_percentage = 0.5;
 
-  ControlAlgorithm* getControlAlgorithm(int state_id);
+  ControlAlgorithm* getControlAlgorithm(StateID state_id);
   double getSetpoint(double fsr_percentage, double fsr_max_percentage);
   double shapeSetpoint(double new_setpoint);
   double runPID(double torque_input, double kf, double pid_setpoint);
 
 public:
-  ControlModule();
+  ControlModule(ControlAlgorithm* state_machine, StateID starting_state);
+  void setControlStateMachine(ControlAlgorithm* state_machine, StateID starting_state);
   void setToZero();
   void setDesiredSetpoint(double setpoint);
   void changeState(StateID state_id);
@@ -43,4 +44,12 @@ public:
   double getLastSetpoint();
 };
 
+class ControlModuleBuilder{
+private:
+  std::vector<StateID> states;
+  std::vector<ControlAlgorithmType> control_types;
+public:
+  ControlModuleBuilder* addState(StateID state);
+  ControlModule* build();
+};
 #endif
