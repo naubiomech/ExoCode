@@ -2,7 +2,7 @@
 #include "Control_Algorithms.hpp"
 #include "Parameters.hpp"
 
-ControlAlgorithm::ControlAlgorithm(){
+ControlAlgorithm::ControlAlgorithm(StateType state){
   this->setpoint_clamp = new Clamp(Min_Prop, Max_Prop);
   activation_clamp = new Clamp(0,1);
 }
@@ -67,6 +67,8 @@ void ControlAlgorithm::setShapingIterations(double iterations){
   shaping_iteration_threshold = iterations;
 }
 
+ZeroTorqueControl::ZeroTorqueControl(StateID state_id):ControlAlgorithm(state_id){}
+
 double ZeroTorqueControl::getSetpoint(double fsr_percentage, double fsr_max_percentage){
   return 0;
 }
@@ -78,6 +80,8 @@ bool ZeroTorqueControl::useShapingFunction(){
 ControlAlgorithmType ZeroTorqueControl::getType(){
   return zero_torque;
 }
+
+BangBangControl::BangBangControl(StateID state_id):ControlAlgorithm(state_id){}
 
 void BangBangControl::activate(){
   ControlAlgorithm::activate();
@@ -97,6 +101,8 @@ ControlAlgorithmType BangBangControl::getType(){
   return bang_bang;
 }
 
+BalanceControl::BalanceControl(StateID state_id):ControlAlgorithm(state_id){}
+
 double BalanceControl::getSetpoint(double fsr_percentage, double fsr_max_percentage){
   // TODO implement balance control
   return 0;
@@ -114,6 +120,7 @@ ControlAlgorithmType BalanceControl::getType(){
   return balance_control;
 }
 
+ProportionalControl::ProportionalControl(StateID state_id):ControlAlgorithm(state_id){}
 double ProportionalControl::getSetpoint(double fsr_percentage, double fsr_max_percentage){
   double new_setpoint = desired_setpoint * gain * fsr_percentage;
   return clamp_setpoint(new_setpoint);

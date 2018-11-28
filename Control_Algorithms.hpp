@@ -42,6 +42,7 @@ public:
 
 class ZeroTorqueControl:public ControlAlgorithm{
 public:
+  ZeroTorqueControl(StateID state_id);
   double getSetpoint(double fsr_percentage, double fsr_max_percentage);
   ControlAlgorithmType getType();
   bool useShapingFunction();
@@ -49,6 +50,7 @@ public:
 
 class BangBangControl:public ControlAlgorithm{
 public:
+  BangBangControl(StateID state_id);
   double getSetpoint(double fsr_percentage, double fsr_max_percentage);
   ControlAlgorithmType getType();
   bool useShapingFunction();
@@ -57,6 +59,7 @@ public:
 
 class BalanceControl:public ControlAlgorithm{
 public:
+  BalanceControl(StateID state_id);
   double getSetpoint(double fsr_percentage, double fsr_max_percentage);
   ControlAlgorithmType getType();
   double getShapingIterations();
@@ -65,6 +68,7 @@ public:
 
 class ProportionalControl:public ControlAlgorithm{
 public:
+  ProportionalControl(StateID state_id);
   double getSetpoint(double fsr_percentage, double fsr_max_percentage);
   ControlAlgorithmType getType();
   bool useShapingFunction();
@@ -72,6 +76,7 @@ public:
 
 class ProportionalPivotControl:public ControlAlgorithm{
 public:
+  ProportionalPivotControl(StateID state_id);
   double getSetpoint(double fsr_percentage, double fsr_max_percentage);
   ControlAlgorithmType getType();
   bool useShapingFunction();
