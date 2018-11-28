@@ -1,11 +1,11 @@
 #ifndef STATE_MACHINE_HEADER
 #define STATE_MACHINE_HEADER
 #include "Utils.hpp"
-
-
-typedef int StateID;
+#include <vector>
 
 enum StateType {SWING = 1, LATE_STANCE = 3};
+
+typedef StateType StateID;
 
 class Leg;
 class State{
@@ -39,5 +39,14 @@ public:
   void triggerEnd();
   virtual StateID getStateID();
 };
+
+class StateBuilder{
+private:
+	std::vector<StateType> states;
+	State* makeState(StateType state_type);
+public:
+		StateBuilder* addState(StateType state_type);
+		State* build();
+	};
 
 #endif

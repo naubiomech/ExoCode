@@ -50,3 +50,31 @@ void LateStanceState::triggerEnd(){
 StateID LateStanceState::getStateID(){
   return LATE_STANCE;
 }
+
+StateBuilder* StateBuilder::addState(StateType state_type){
+	states.push_back(state_type);
+	return this;
+}
+
+State* StateBuilder::build(){
+	State* first = makeState(states[0]);
+	State* previous = first;
+	for(unsigned int i = 1; i < states.size(); i++){
+		State* current = makeState(states[i]);
+		previous->setNextState(current);
+		previous = current;
+	}
+	previous->setNextState(first);
+	return first;
+}
+
+State* StateBuilder::makeState(StateType state_type){
+	switch(state_type){
+	case SWING:
+		return new SwingState();
+	case LATE_STANCE:
+		return new LateStanceState();
+	default:
+		return NULL;
+	}
+}
