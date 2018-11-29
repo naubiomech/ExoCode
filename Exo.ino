@@ -64,5 +64,6 @@ void loop() {
 Exoskeleton* setupSystem(){
   Board* board = QuadBoardDirector().build();
   Exoskeleton* exo = QuadExoDirector().build(board);
+  delete board;
   return exo;
 }
