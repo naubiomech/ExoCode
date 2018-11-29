@@ -26,6 +26,7 @@ private:
   LegBuilder* right_builder;
   LegBuilder* left_builder;
 public:
+  ~ExoBuilder();
   ExoBuilder* addTransceiver(TxPort* tx, RxPort* rx);
   ExoBuilder* addMotorEnable(OutputPort* motor_enable_port);
   ExoBuilder* addLedPort(OutputPort* led_port);
@@ -48,6 +49,7 @@ private:
   LinkedList<unsigned int> imu_address;
   LinkedList<ControlModule*> controls;
 public:
+  ~LegBuilder();
   LegBuilder(ExoBuilder* return_context);
   LegBuilder* addStateMachine(State* states);
   LegBuilder* addJoint(InputPort* torque_sensor_port, OutputPort* motor_port,

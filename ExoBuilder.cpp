@@ -76,6 +76,11 @@ ExoBuilder* ExoBuilder::addLedPort(OutputPort* led_port){
   return this;
 }
 
+ExoBuilder::~ExoBuilder(){
+  delete left_builder;
+  delete right_builder;
+}
+
 Exoskeleton* ExoBuilder::build(){
   Leg* left_leg = left_builder->build();
   Leg* right_leg = right_builder->build();
@@ -98,6 +103,9 @@ LegBuilder::LegBuilder(ExoBuilder* return_context){
   this->return_context = return_context;
 }
 
+LegBuilder::~LegBuilder(){
+}
+
 LegBuilder* LegBuilder::addStateMachine(State* states){
   states = states;
   return this;
@@ -117,43 +125,43 @@ LegBuilder* LegBuilder::beginFSRGroup(){
   return this;
 }
 
-LegBuilder* LegBuilder::finishFSRGroup(){
-  fsr_ports.append(fsr_ports_begin);
-  return this;
-}
-
-LegBuilder* LegBuilder::addFSR(InputPort* fsr_port){
-  fsr_ports_begin.append(fsr_port);
-  return this;
-}
-
-ExoBuilder* LegBuilder::finishLeg(){
-  return return_context;
-}
-
-Leg* LegBuilder::build(){
-  LinkedList<Joint*> joints;
-  for (unsigned int i = 0; i < motor_ports.size(); i++){
-    Motor* motor = new Motor(error_ports[i], motor_ports[i], sign);
-    TorqueSensor* torque_sensor = new TorqueSensor(torque_sensor_ports[i], sign);
-    Joint* joint = new Joint(controls[i], motor, torque_sensor);
-    joints.append(joint);
+  LegBuilder* LegBuilder::finishFSRGroup(){
+    fsr_ports.append(fsr_ports_begin);
+    return this;
   }
 
-  LinkedList<FSRGroup*> fsrs;
-  for (unsigned int i = 0; i < fsr_ports.size(); i++){
-    LinkedList<FSR*> single_fsrs;
-    for (unsigned int j = 0; j < fsr_ports[i].size(); i++){
-      single_fsrs.append(new FSR(fsr_ports[i][j]));
+  LegBuilder* LegBuilder::addFSR(InputPort* fsr_port){
+    fsr_ports_begin.append(fsr_port);
+    return this;
+  }
+
+  ExoBuilder* LegBuilder::finishLeg(){
+    return return_context;
+  }
+
+  Leg* LegBuilder::build(){
+    LinkedList<Joint*> joints;
+    for (unsigned int i = 0; i < motor_ports.size(); i++){
+      Motor* motor = new Motor(error_ports[i], motor_ports[i], sign);
+      TorqueSensor* torque_sensor = new TorqueSensor(torque_sensor_ports[i], sign);
+      Joint* joint = new Joint(controls[i], motor, torque_sensor);
+      joints.append(joint);
     }
-    FSRGroup* group = new FSRGroup(single_fsrs);
-    fsrs.append(group);
-  }
 
-  LinkedList<IMU*> imus;
-  for (unsigned int i = 0; i < imu_ports.size(); i++){
-    imus.append(new IMU(imu_ports[i], imu_address[i]));
+    LinkedList<FSRGroup*> fsrs;
+    for (unsigned int i = 0; i < fsr_ports.size(); i++){
+      LinkedList<FSR*> single_fsrs;
+      for (unsigned int j = 0; j < fsr_ports[i].size(); i++){
+        single_fsrs.append(new FSR(fsr_ports[i][j]));
+      }
+      FSRGroup* group = new FSRGroup(single_fsrs);
+      fsrs.append(group);
+    }
+
+    LinkedList<IMU*> imus;
+    for (unsigned int i = 0; i < imu_ports.size(); i++){
+      imus.append(new IMU(imu_ports[i], imu_address[i]));
+    }
+    Leg* leg = new Leg(states, joints,fsrs,imus);
+    return leg;
   }
-  Leg* leg = new Leg(states, joints,fsrs,imus);
-  return leg;
-}
