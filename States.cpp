@@ -32,18 +32,18 @@ void SwingState::run(){
 }
 
 StateID SwingState::getStateID(){
-	return getStateType();
+  return getStateType();
 }
 
 StateType SwingState::getStateType(){
-	return SWING;
+  return SWING;
 }
 
 void LateStanceState::triggerStart(){
-	State::triggerStart();
-	leg->resetFSRMaxes();
-	leg->incrementStepCount();
-	leg->setZeroIfNecessary();
+  State::triggerStart();
+  leg->resetFSRMaxes();
+  leg->incrementStepCount();
+  leg->setZeroIfNecessary();
 }
 
 void LateStanceState::run(){
@@ -51,42 +51,42 @@ void LateStanceState::run(){
 }
 
 void LateStanceState::triggerEnd(){
-	State::triggerEnd();
-	leg->adjustShapingForTime(getStateTime());
+  State::triggerEnd();
+  leg->adjustShapingForTime(getStateTime());
 }
 
 StateID LateStanceState::getStateID(){
-	return getStateType();
+  return getStateType();
 }
 
 StateType LateStanceState::getStateType(){
-	return LATE_STANCE;
+  return LATE_STANCE;
 }
 
 StateBuilder* StateBuilder::addState(StateType state_type){
-	states.push_back(state_type);
-	return this;
+  states.append(state_type);
+  return this;
 }
 
 State* StateBuilder::build(){
-	State* first = makeState(states[0]);
-	State* previous = first;
-	for(unsigned int i = 1; i < states.size(); i++){
-		State* current = makeState(states[i]);
-		previous->setNextState(current);
-		previous = current;
-	}
-	previous->setNextState(first);
-	return first;
+  State* first = makeState(states[0]);
+  State* previous = first;
+  for(unsigned int i = 1; i < states.size(); i++){
+    State* current = makeState(states[i]);
+    previous->setNextState(current);
+    previous = current;
+  }
+  previous->setNextState(first);
+  return first;
 }
 
 State* StateBuilder::makeState(StateType state_type){
-	switch(state_type){
-	case SWING:
-		return new SwingState();
-	case LATE_STANCE:
-		return new LateStanceState();
-	default:
-		return NULL;
-	}
+  switch(state_type){
+  case SWING:
+    return new SwingState();
+  case LATE_STANCE:
+    return new LateStanceState();
+  default:
+    return NULL;
+  }
 }

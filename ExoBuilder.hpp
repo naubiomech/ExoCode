@@ -3,6 +3,7 @@
 #include "Port.hpp"
 #include "Exoskeleton.hpp"
 #include "Board.hpp"
+#include "Linked_List.hpp"
 
 
 class ExoDirector{
@@ -38,14 +39,14 @@ private:
   ExoBuilder* return_context;
   int sign;
   State* states;
-  std::vector<InputPort*> fsr_ports_begin;
-  std::vector<InputPort*> torque_sensor_ports;
-  std::vector<OutputPort*> motor_ports;
-  std::vector<InputPort*> error_ports;
-  std::vector<std::vector<InputPort*>> fsr_ports;
-  std::vector<ImuPort*> imu_ports;
-  std::vector<unsigned int> imu_address;
-  std::vector<ControlModule*> controls;
+  LinkedList<InputPort*> fsr_ports_begin;
+  LinkedList<InputPort*> torque_sensor_ports;
+  LinkedList<OutputPort*> motor_ports;
+  LinkedList<InputPort*> error_ports;
+  LinkedList<LinkedList<InputPort*>> fsr_ports;
+  LinkedList<ImuPort*> imu_ports;
+  LinkedList<unsigned int> imu_address;
+  LinkedList<ControlModule*> controls;
 public:
   LegBuilder(ExoBuilder* return_context);
   LegBuilder* addStateMachine(State* states);

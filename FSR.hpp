@@ -4,7 +4,7 @@
 #include "Utils.hpp"
 #include "Report.hpp"
 #include "Port.hpp"
-#include <vector>
+#include "Linked_List.hpp"
 
 class FSR{
 private:
@@ -28,7 +28,7 @@ public:
 class FSRGroup{
 private:
   int fsr_count;
-  std::vector<FSR*> fsrs;
+  LinkedList<FSR*> fsrs;
 
   double force = 0;
 
@@ -39,7 +39,7 @@ private:
   void fillLocalReport(FSRReport* report);
 
 public:
-  FSRGroup(std::vector<FSR*> fsrs);
+  FSRGroup(LinkedList<FSR*> fsrs);
 
   bool isActivated();
   void measureForce();

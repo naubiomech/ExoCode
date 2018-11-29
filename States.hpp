@@ -1,7 +1,7 @@
 #ifndef STATE_MACHINE_HEADER
 #define STATE_MACHINE_HEADER
 #include "Utils.hpp"
-#include <vector>
+#include "Linked_List.hpp"
 
 enum StateType {SWING = 1, LATE_STANCE = 3};
 
@@ -44,7 +44,7 @@ public:
 
 class StateBuilder{
 private:
-  std::vector<StateType> states;
+  LinkedList<StateType> states;
   State* makeState(StateType state_type);
 public:
   StateBuilder* addState(StateType state_type);

@@ -10,7 +10,7 @@ const int dim = 5;
 #include "FSR.hpp"
 #include "Report.hpp"
 #include "IMU.hpp"
-#include <vector>
+#include "Linked_List.hpp"
 
 class Leg {
 private:
@@ -22,9 +22,9 @@ private:
   void adjustControl();
   void updateMotorSetpoints();
 
-  std::vector<Joint*> joints;
-  std::vector<FSRGroup*> fsrs;
-  std::vector<IMU*> imus;
+  LinkedList<Joint*> joints;
+  LinkedList<FSRGroup*> fsrs;
+  LinkedList<IMU*> imus;
   FSRGroup* foot_fsrs;
 
   bool set_motors_to_zero_torque;
@@ -34,7 +34,7 @@ private:
   State* state;
 
 public:
-  Leg(State* states, std::vector<Joint*> joints, std::vector<FSRGroup*> fsrs, std::vector<IMU*> imus);
+  Leg(State* states, LinkedList<Joint*> joints, LinkedList<FSRGroup*> fsrs, LinkedList<IMU*> imus);
   void measureSensors();
   bool checkMotorErrors();
   void attemptCalibration();

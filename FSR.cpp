@@ -37,7 +37,7 @@ double FSR::getForce(){
   return force;
 }
 
-FSRGroup::FSRGroup(std::vector<FSR*> fsrs){
+FSRGroup::FSRGroup(LinkedList<FSR*> fsrs){
   activation_threshold = new Threshold(0, fsr_percent_thresh, state_counter_th);
   this->fsr_count = fsrs.size();
   this->fsrs = fsrs;
@@ -60,8 +60,8 @@ void FSRGroup::measureForce(){
 void FSRGroup::calibrate(){
   for (int i = 0; i < fsr_count; i++){
     fsrs[i]->calibrate();
-    }
   }
+}
 
 void FSRGroup::setPercentageThreshold(double percent){
   fsr_percent_thresh = percent;
