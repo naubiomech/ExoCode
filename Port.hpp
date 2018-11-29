@@ -95,6 +95,7 @@ public:
 
 class PortFactory{
 public:
+  virtual ~PortFactory();
   virtual RxPort* createRxPort(unsigned int pin) = 0;
   virtual TxPort* createTxPort(unsigned int pin) = 0;
   virtual InputPort* createDigitalInputPort(unsigned int pin) = 0;
