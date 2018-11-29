@@ -29,6 +29,7 @@ private:
 
 public:
   Board();
+  ~Board();
 
   TxPort* takeBluetoothTxPort();
   RxPort* takeBluetoothRxPort();

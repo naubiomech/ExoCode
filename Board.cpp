@@ -416,3 +416,27 @@ void Board::setMotorErrorRightKneePort(InputPort* port){
 void Board::setMotorErrorRightAnklePort(InputPort* port){
   motor_error_right_ankle_port = port;
 }
+
+Board::~Board(){
+  delete portFactory;
+  delete bluetooth_tx_port;
+  delete bluetooth_rx_port;
+  delete fsr_sense_left_toe_port;
+  delete fsr_sense_left_heel_port;
+  delete fsr_sense_right_toe_port;
+  delete fsr_sense_right_heel_port;
+  delete torque_sensor_left_knee_port;
+  delete torque_sensor_left_ankle_port;
+  delete torque_sensor_right_knee_port;
+  delete torque_sensor_right_ankle_port;
+  delete motor_left_knee_port;
+  delete motor_left_ankle_port;
+  delete motor_right_knee_port;
+  delete motor_right_ankle_port;
+  delete led_port;
+  delete motor_enable_port;
+  delete motor_error_left_knee_port;
+  delete motor_error_left_ankle_port;
+  delete motor_error_right_knee_port;
+  delete motor_error_right_ankle_port;
+}
