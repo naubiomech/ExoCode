@@ -22,13 +22,16 @@ private:
   Metro receiveDataTimer = Metro(1);
   ExoReport* report;
   Transceiver* transceiver;
+  OutputPort* motor_enable_port;
+  OutputPort* led_port;
 
   Leg* left_leg;
   Leg* right_leg;
 
 public:
 
-  Exoskeleton(Leg* left_leg, Leg* right_leg, Transceiver* transceiver);
+  Exoskeleton(Leg* left_leg, Leg* right_leg, Transceiver* transceiver,
+              OutputPort* motor_enable_port, OutputPort* led_port);
   void run();
   void measureSensors();
   bool checkMotorErrors();

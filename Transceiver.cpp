@@ -3,6 +3,7 @@
 
 Transceiver::Transceiver(TxPort* tx, RxPort* rx){
   command_serial = new SoftwareSerial(tx->getPin(), rx->getPin());
+  command_serial->begin(115200);
 }
 
 bool Transceiver::dataAvailable(){

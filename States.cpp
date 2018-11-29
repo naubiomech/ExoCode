@@ -32,23 +32,35 @@ void SwingState::run(){
 }
 
 StateID SwingState::getStateID(){
-  return SWING;
+	return getStateType();
+}
+
+StateType SwingState::getStateType(){
+	return SWING;
 }
 
 void LateStanceState::triggerStart(){
-  State::triggerStart();
-  leg->resetFSRMaxes();
-  leg->incrementStepCount();
-  leg->setZeroIfNecessary();
+	State::triggerStart();
+	leg->resetFSRMaxes();
+	leg->incrementStepCount();
+	leg->setZeroIfNecessary();
+}
+
+void LateStanceState::run(){
+
 }
 
 void LateStanceState::triggerEnd(){
-  State::triggerEnd();
-  leg->adjustShapingForTime(getStateTime());
+	State::triggerEnd();
+	leg->adjustShapingForTime(getStateTime());
 }
 
 StateID LateStanceState::getStateID(){
-  return LATE_STANCE;
+	return getStateType();
+}
+
+StateType LateStanceState::getStateType(){
+	return LATE_STANCE;
 }
 
 StateBuilder* StateBuilder::addState(StateType state_type){

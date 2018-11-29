@@ -36,11 +36,12 @@
 #include "Board.hpp"
 #include "TimerOne.h"
 #include "Exoskeleton.hpp"
+#include "ExoBuilder.hpp"
 
 Exoskeleton* exo;
 
 void setup() {
-  exo = setupBoard();
+  exo = setupSystem();
 
   // set the interrupt
   Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
@@ -57,4 +58,10 @@ void loop() {
   exo->receiveMessages();
   exo->checkReset();
 
+}
+
+Exoskeleton* setupSystem(){
+  Board* board = QuadBoardDirector().build();
+  Exoskeleton* exo = QuadExoDirector().build(board);
+  return exo;
 }

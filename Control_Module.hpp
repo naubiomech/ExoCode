@@ -5,6 +5,7 @@
 #include <PID_v2.h>
 #include "Shaping_Functions.hpp"
 #include "Utils.hpp"
+#include "Linked_List.hpp"
 
 class ControlModule{
 private:
@@ -46,8 +47,8 @@ public:
 
 class ControlModuleBuilder{
 private:
-  std::vector<StateID> states;
-  std::vector<ControlAlgorithmType> control_types;
+  LinkedList<StateID> states;
+  LinkedList<ControlAlgorithmType> control_types;
 public:
   ControlModuleBuilder* addState(StateID state, ControlAlgorithmType control_type);
   ControlModule* build(StateID starting_state);

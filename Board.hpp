@@ -74,3 +74,15 @@ public:
 };
 
 Exoskeleton* setupBoard();
+
+class BoardDirector{
+public:
+  virtual Board* build() = 0;
+};
+
+class QuadBoardDirector:public BoardDirector{
+public:
+  Board* build();
+};
+
+#endif

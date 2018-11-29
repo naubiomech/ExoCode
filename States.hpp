@@ -22,7 +22,7 @@ public:
   virtual void triggerStart();
   virtual void triggerEnd();
   virtual void run()=0;
-  virtual StateType getStateType();
+  virtual StateType getStateType() = 0;
   virtual StateID getStateID() = 0;
 };
 
@@ -30,6 +30,7 @@ class SwingState : public State{
 public:
   void run();
   virtual StateID getStateID();
+  virtual StateType getStateType();
 };
 
 class LateStanceState : public State{
@@ -38,15 +39,16 @@ public:
   void run();
   void triggerEnd();
   virtual StateID getStateID();
+  virtual StateType getStateType();
 };
 
 class StateBuilder{
 private:
-	std::vector<StateType> states;
-	State* makeState(StateType state_type);
+  std::vector<StateType> states;
+  State* makeState(StateType state_type);
 public:
-		StateBuilder* addState(StateType state_type);
-		State* build();
-	};
+  StateBuilder* addState(StateType state_type);
+  State* build();
+};
 
 #endif

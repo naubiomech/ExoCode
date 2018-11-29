@@ -5,11 +5,15 @@
 #include "Report.hpp"
 #include "Transceiver.hpp"
 
-Exoskeleton::Exoskeleton(Leg* left_leg, Leg* right_leg, Transceiver* transceiver){
+Exoskeleton::Exoskeleton(Leg* left_leg, Leg* right_leg, Transceiver* transceiver,
+                         OutputPort* motor_enable_port, OutputPort* led_port){
   this->left_leg = left_leg;
   this->right_leg = right_leg;
+  this->led_port = led_port;
+  this->motor_enable_port = motor_enable_port;
   this->transceiver = transceiver;
 
+  motor_enable_port->write(0);
   report = generateReport();
 }
 
@@ -107,21 +111,21 @@ bool Exoskeleton::checkMotorErrors(){
 }
 
 void Exoskeleton::disableMotors(){
-  digitalWrite(MOTOR_ENABLE_PIN, LOW);
+  motor_enable_port->write(0);
 }
 
 void Exoskeleton::enableMotors(){
-  digitalWrite(MOTOR_ENABLE_PIN, HIGH);
+  motor_enable_port->write(1);
 }
 
 void Exoskeleton::enableExo(){
   enableMotors();
-  digitalWrite(LED_PIN, HIGH);
+  led_port->write(1);
 }
 
 void Exoskeleton::disableExo(){
   disableMotors();
-  digitalWrite(LED_PIN, LOW);
+  led_port->write(1);
 }
 
 void Exoskeleton::applyTorque(){

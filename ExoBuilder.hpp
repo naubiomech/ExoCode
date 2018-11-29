@@ -5,14 +5,14 @@
 #include "Board.hpp"
 
 
-class ExoBuilderDirector{
+class ExoDirector{
 public:
-	virtual Exoskeleton* build(Board* board) = 0;
+  virtual Exoskeleton* build(Board* board) = 0;
 };
 
-class QuadExoBuilderDirector{
+class QuadExoDirector:ExoDirector{
 public:
-	Exoskeleton* build(Board* board);
+  Exoskeleton* build(Board* board);
 };
 
 class LegBuilder;
@@ -20,10 +20,14 @@ class ExoBuilder{
 private:
   RxPort* rx;
   TxPort* tx;
+  OutputPort* led_port;
+  OutputPort* motor_enable_port;
   LegBuilder* right_builder;
   LegBuilder* left_builder;
 public:
   ExoBuilder* addTransceiver(TxPort* tx, RxPort* rx);
+  ExoBuilder* addMotorEnable(OutputPort* motor_enable_port);
+  ExoBuilder* addLedPort(OutputPort* led_port);
   LegBuilder* beginRightLeg();
   LegBuilder* beginLeftLeg();
   Exoskeleton* build();

@@ -4,18 +4,6 @@
 #include <i2c_t3.h>
 #include <vector>
 
-ExoPins* setupPins();
-
-class BoardDirector{
-public:
-  virtual Board* build() = 0;
-};
-
-class QuadBoardDirector:public BoardDirector{
-public:
-  Board* build();
-};
-
 class BoardBuilder{
 private:
   Board* board;
@@ -227,30 +215,6 @@ Board::Board(){
   motor_error_left_ankle_port = NULL;
   motor_error_right_knee_port = NULL;
   motor_error_right_ankle_port = NULL;
-}
-
-Exoskeleton* setupBoard(){
-  // enable bluetooth
-  Serial.begin(115200);
-  Serial.println("Starting");
-  // The led
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, HIGH);
-
-  analogWriteResolution(12);
-  analogReadResolution(12);
-
-  // set pin mode for left and right sides
-  pinMode(MOTOR_ENABLE_PIN, OUTPUT); //Enable disable the motors
-  digitalWrite(MOTOR_ENABLE_PIN, LOW);
-  ExoPins* exoPins = setupPins();
-  Exoskeleton* exo = NULL;
-  delete exoPins;
-  // Fast torque calibration
-  exo->calibrateTorque();
-  digitalWrite(LED_PIN, LOW);
-  Serial.println("Exo Ready");
-  return exo;
 }
 
 TxPort* Board::takeBluetoothTxPort(){

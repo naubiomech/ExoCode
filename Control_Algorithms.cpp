@@ -21,6 +21,10 @@ StateID ControlAlgorithm::getStateID(){
   return state_id;
 }
 
+void ControlAlgorithm::setPreviousControlAlgorithm(ControlAlgorithm* previous){
+	previous->next = this;
+}
+
 void ControlAlgorithm::setToZero(){
   setDesiredSetpoint(0);
 }
@@ -134,6 +138,7 @@ ControlAlgorithmType ProportionalControl::getType(){
   return proportional;
 }
 
+ProportionalPivotControl::ProportionalPivotControl(StateID state_id):ControlAlgorithm(state_id){}
 double ProportionalPivotControl::getSetpoint(double fsr_percentage, double fsr_max_percentage){
   double new_setpoint = (desired_setpoint) *
     (p_prop[0] * pow(fsr_percentage, 2) + p_prop[1] * (fsr_percentage) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]) ;

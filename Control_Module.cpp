@@ -113,10 +113,11 @@ void ControlModule::setControlStateMachine(ControlAlgorithm* state_machine, Stat
 }
 
 ControlModuleBuilder* ControlModuleBuilder::addState(StateID state, ControlAlgorithmType control_type){
-  states.push_back(state);
-  control_types.push_back(control_type);
+  states.append(state);
+  control_types.append(control_type);
   return this;
 }
+
 
 ControlModule* ControlModuleBuilder::build(StateID starting_state){
   ControlAlgorithm* first = createControlAlgorithm(control_types[0], states[0]);
