@@ -31,6 +31,7 @@ public:
   Board();
   ~Board();
 
+  void turnOnLed();
   TxPort* takeBluetoothTxPort();
   RxPort* takeBluetoothRxPort();
   InputPort* takeFsrSenseLeftToePort();

@@ -15,6 +15,7 @@ Exoskeleton::Exoskeleton(Leg* left_leg, Leg* right_leg, Transceiver* transceiver
 
   motor_enable_port->write(0);
   report = generateReport();
+  led_port->write(0);
 }
 
 void Exoskeleton::startTrial(){
