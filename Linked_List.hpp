@@ -19,8 +19,8 @@ template <class T>
 class LinkedList {
 private:
   int count = 0;
-  Node<T>* first;
-  Node<T>* last;
+  Node<T>* first = NULL;
+  Node<T>* last = NULL;
   Node<T>* getNode(int pos);
   void addNode(Node<T>* node);
 public:
