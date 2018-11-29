@@ -10,6 +10,7 @@ protected:
   unsigned int getPin();
 public:
   Port(unsigned int pin);
+  virtual ~Port();
 };
 
 class ImuPort:public Port{
@@ -18,12 +19,14 @@ private:
   ImuPort(i2c_pins imu_pins);
 public:
   i2c_pins getPins();
+  virtual ~ImuPort();
 };
 
 class InputPort:public Port{
 public:
   InputPort(unsigned int pin);
   virtual double read() = 0;
+  virtual ~InputPort();
 };
 
 class AnalogInputPort: public InputPort{
@@ -32,12 +35,14 @@ private:
 public:
   double read();
   AnalogInputPort(unsigned int pin, unsigned int resolution_bits);
+  virtual ~AnalogInputPort();
 };
 
 class DigitalInputPort: public InputPort{
 public:
   double read();
   DigitalInputPort(unsigned int pin);
+  virtual ~DigitalInputPort();
 };
 
 class RxPort:public InputPort{
@@ -45,6 +50,7 @@ public:
   double read();
   unsigned int getPin();
   RxPort(unsigned int pin);
+  virtual ~RxPort();
 };
 
 class OutputPort: public Port{
@@ -53,6 +59,7 @@ private:
 public:
   virtual void write(double value) = 0;
   OutputPort(unsigned int pin);
+  virtual ~OutputPort();
 };
 
 class AnalogOutputPort: public OutputPort{
@@ -61,18 +68,21 @@ private:
 public:
   void write(double value);
   AnalogOutputPort(unsigned int pin, unsigned int bit_resolution);
+  virtual ~AnalogOutputPort();
 };
 
 class DigitalOutputPort: public OutputPort{
 public:
   void write(double value);
   DigitalOutputPort(unsigned int pin);
+  virtual ~DigitalOutputPort();
 };
 
 class PwmOutputPort: public AnalogOutputPort{
 public:
   void write(double value);
   PwmOutputPort(unsigned int pin, unsigned int resolution_bits);
+  virtual ~PwmOutputPort();
 };
 
 class TxPort:public OutputPort{
@@ -80,6 +90,7 @@ public:
   void write(double value);
   unsigned int getPin();
   TxPort(unsigned int pin);
+  virtual ~TxPort();
 };
 
 class PortFactory{
