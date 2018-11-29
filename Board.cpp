@@ -70,8 +70,7 @@ Board* QuadBoardDirector::build(){
 
 BoardBuilder::BoardBuilder(PortFactory* factory){
   port_factory = factory;
-  read_resolution = 8;
-  write_resolution = 8;
+  reset();
 }
 
 Board* BoardBuilder::build(){
@@ -80,6 +79,8 @@ Board* BoardBuilder::build(){
 }
 
 BoardBuilder* BoardBuilder::reset(){
+  read_resolution = 8;
+  write_resolution = 8;
   board = new Board();
   return this;
 }
