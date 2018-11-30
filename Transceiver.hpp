@@ -26,9 +26,10 @@ protected:
   virtual void sendCommandMessage(CommandCode code, void* data, int bytes_to_send);
 
 public:
+  Transceiver(TxPort* tx, RxPort* rx);
+  ~Transceiver();
   ExoMessage* receiveMessages(ExoReport* report);
   void sendReport(ExoReport* report);
-  Transceiver(TxPort* tx, RxPort* rx);
 
 };
 
