@@ -57,12 +57,13 @@ double ControlModule::runPID(double torque_input, double kf, double pid_setpoint
 
 ControlAlgorithm* ControlModule::getControlAlgorithm(StateID state_id){
   ControlAlgorithm* alg = current_algorithm;
-  while (alg->getNextAlgorithm() != current_algorithm){
+  do {
     if (alg->getStateID() == state_id){
       return alg;
     }
     alg = alg->getNextAlgorithm();
-  }
+
+  }while(alg != current_algorithm);
   return NULL;
 }
 
