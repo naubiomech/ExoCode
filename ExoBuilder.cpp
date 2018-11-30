@@ -21,7 +21,7 @@ Exoskeleton* QuadExoDirector::build(Board* board){
     ->addState(SWING, zero_torque)
     ->addState(LATE_STANCE, bang_bang);
   ExoBuilder* builder = new ExoBuilder();
-  Exoskeleton* exo = builder
+  builder
     ->addTransceiver(board->takeBluetoothTxPort(), board->takeBluetoothRxPort())
     ->addMotorEnable(board->takeMotorEnablePort())
     ->addLedPort(board->takeLedPort())
