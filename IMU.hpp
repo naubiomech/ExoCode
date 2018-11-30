@@ -1,7 +1,6 @@
 #ifndef IMU_HEADER
 #define IMU_HEADER
-#include <Metro.h>
-#include <Adafruit_BNO055_t3.h>
+#include "Arduino.hpp"
 #include "Parameters.hpp"
 #include "Report.hpp"
 #include "Port.hpp"
