@@ -28,12 +28,13 @@ private:
 
   bool set_motors_to_zero_torque;
   int step_count;
-  int increment_activation_starting_step = 0;
+  int increment_activation_starting_step;
 
   State* state;
 
 public:
   Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs, LinkedList<IMU*>& imus);
+  ~Leg();
   void measureSensors();
   bool checkMotorErrors();
   void attemptCalibration();

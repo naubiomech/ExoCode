@@ -13,6 +13,16 @@ Leg::Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs,
   this->imus = imus;
 
   this->foot_fsrs = fsrs[0];
+
+  increment_activation_starting_step = 0;
+}
+
+Leg::~Leg(){
+  delete state;
+  ListIterator<Joint*> joint_iter = joints.getIterator();
+  while(joint_iter.hasNext()){
+    delete joint_iter.next();
+  }
 }
 
 void Leg::attemptCalibration(){
