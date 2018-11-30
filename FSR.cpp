@@ -6,6 +6,16 @@
 
 FSR::FSR(InputPort* port){
   this->port = port;
+  max_force = new Max();
+  peak_average = new MovingAverage(FSR_CALIBRATION_PEAK_COUNT);
+  calibration_peak = 1.0;
+  force = 0;
+}
+
+FSR::~FSR(){
+  delete port;
+  delete max_force;
+  delete peak_average;
 }
 
 void FSR::measureForce(){

@@ -11,11 +11,11 @@ private:
   void updateForce(double force);
   void fillLocalReport(FSRReport* report);
   InputPort* port;
-  double calibration_peak = 1.0;
-  Max* max_force = new Max();
-  MovingAverage* peak_average = new MovingAverage(FSR_CALIBRATION_PEAK_COUNT);
+  double calibration_peak;
+  Max* max_force;
+  MovingAverage* peak_average;
 
-  double force = 0;
+  double force;
 
 public:
   FSR(InputPort* port);
