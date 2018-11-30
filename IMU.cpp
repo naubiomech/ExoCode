@@ -11,6 +11,10 @@ IMU::IMU(ImuPort* imu_port, unsigned int address){
   }
 }
 
+IMU::~IMU(){
+  delete bno;
+}
+
 void IMU::calibrate(){
   sensors_event_t event;
   Serial.println("IMU setup... calibrating");

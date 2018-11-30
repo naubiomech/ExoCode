@@ -13,6 +13,7 @@ private:
 
 public:
   IMU(ImuPort* imu_port, unsigned int address);
+  ~IMU();
   void calibrate();
   void measure();
   void getOrientation(double* orientation);
