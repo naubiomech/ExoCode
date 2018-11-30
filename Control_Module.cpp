@@ -23,8 +23,8 @@ ControlModule::ControlModule(ControlAlgorithm* state_machine, StateID starting_s
 }
 
 ControlModule::~ControlModule(){
+  current_algorithm->deleteAlgorithmStateMachine();
   delete pid;
-  delete current_algorithm;
   delete kf_clamp;
   delete adjust_shaping_for_time_clamp;
   delete error_average;

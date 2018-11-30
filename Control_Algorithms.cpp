@@ -15,19 +15,18 @@ ControlAlgorithm::ControlAlgorithm(StateID state_id){
 }
 
 ControlAlgorithm::~ControlAlgorithm(){
-  deleteAlgorithmList();
   delete setpoint_clamp;
   delete activation_clamp;
 }
 
-void ControlAlgorithm::deleteAlgorithmList(){
-  if(next == NULL){
+void ControlAlgorithm::deleteAlgorithmStateMachine(){
+  if(this == NULL || next == NULL){
     return;
   }
 
   ControlAlgorithm* next_val = next;
   next = NULL;
-  next_val->deleteAlgorithmList();
+  next_val->deleteAlgorithmStateMachine();
   delete this;
 }
 

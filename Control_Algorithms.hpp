@@ -13,7 +13,6 @@ private:
   ControlAlgorithm* next;
 
   void resetIncrementalActivation();
-  void deleteAlgorithmList();
 protected:
   double gain;
   double desired_setpoint;
@@ -27,6 +26,7 @@ public:
   ControlAlgorithm(StateID state_id);
   ~ControlAlgorithm();
   void setPreviousControlAlgorithm(ControlAlgorithm* control_algorithm);
+  void deleteAlgorithmStateMachine();
   virtual void setDesiredSetpoint(double setpoint);
   virtual double getShapingIterations();
   virtual void setShapingIterations(double iterations);
