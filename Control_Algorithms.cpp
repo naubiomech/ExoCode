@@ -2,7 +2,7 @@
 #include "Control_Algorithms.hpp"
 #include "Parameters.hpp"
 
-ControlAlgorithm::ControlAlgorithm(StateID state){
+ControlAlgorithm::ControlAlgorithm(StateID state_id){
   this->state_id = state_id;
   this->setpoint_clamp = new Clamp(Min_Prop, Max_Prop);
   activation_clamp = new Clamp(0,1);
@@ -19,7 +19,7 @@ double ControlAlgorithm::clamp_setpoint(double raw_setpoint){
 }
 
 StateID ControlAlgorithm::getStateID(){
-  return state_id;
+  return this->state_id;
 }
 
 void ControlAlgorithm::setPreviousControlAlgorithm(ControlAlgorithm* previous){
