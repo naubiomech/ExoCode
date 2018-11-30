@@ -32,6 +32,7 @@ public:
 
   Exoskeleton(Leg* left_leg, Leg* right_leg, Transceiver* transceiver,
               OutputPort* motor_enable_port, OutputPort* led_port);
+  ~Exoskeleton();
   void run();
   void measureSensors();
   bool checkMotorErrors();

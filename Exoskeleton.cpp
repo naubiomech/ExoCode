@@ -18,6 +18,16 @@ Exoskeleton::Exoskeleton(Leg* left_leg, Leg* right_leg, Transceiver* transceiver
   led_port->write(0);
 }
 
+Exoskeleton::~Exoskeleton(){
+  delete left_leg;
+  delete right_leg;
+
+  delete motor_enable_port;
+  delete led_port;
+  delete report;
+  delete transceiver;
+}
+
 void Exoskeleton::startTrial(){
   enableExo();
   trialStarted = true;
