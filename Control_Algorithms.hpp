@@ -8,22 +8,24 @@ class ControlAlgorithm{
 private:
   Clamp* setpoint_clamp;
   Clamp* activation_clamp;
-  int activation_count = 0;
+  int activation_count;
   StateID state_id;
   ControlAlgorithm* next;
 
   void resetIncrementalActivation();
+  void deleteAlgorithmList();
 protected:
-  double gain = 1;
-  double desired_setpoint = 0;
-  double previous_desired_setpoint = 0;
-  double used_setpoint = 0;
-  int shaping_iteration_threshold = 0;
+  double gain;
+  double desired_setpoint;
+  double previous_desired_setpoint;
+  double used_setpoint;
+  int shaping_iteration_threshold;
 
   double getActivationPercent();
   double clamp_setpoint(double raw_setpoint);
 public:
   ControlAlgorithm(StateID state_id);
+  ~ControlAlgorithm();
   void setPreviousControlAlgorithm(ControlAlgorithm* control_algorithm);
   virtual void setDesiredSetpoint(double setpoint);
   virtual double getShapingIterations();

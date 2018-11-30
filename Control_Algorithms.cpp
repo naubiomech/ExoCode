@@ -6,6 +6,28 @@ ControlAlgorithm::ControlAlgorithm(StateID state_id){
   this->state_id = state_id;
   this->setpoint_clamp = new Clamp(Min_Prop, Max_Prop);
   activation_clamp = new Clamp(0,1);
+  gain = 1;
+  desired_setpoint = 0;
+  previous_desired_setpoint = 0;
+  used_setpoint = 0;
+  shaping_iteration_threshold = 0;
+  activation_count = 0;
+}
+
+ControlAlgorithm::~ControlAlgorithm(){
+  delete setpoint_clamp;
+  delete activation_clamp;
+}
+
+void ControlAlgorithm::deleteAlgorithmList(){
+  if(next == NULL){
+    return;
+  }
+
+  ControlAlgorithm* next_val = next;
+  next = NULL;
+  next_val->deleteAlgorithmList();
+  delete this;
 }
 
 double ControlAlgorithm::clamp_setpoint(double raw_setpoint){
