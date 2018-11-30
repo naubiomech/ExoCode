@@ -21,6 +21,7 @@ private:
 
 public:
   Motor(InputPort* motor_error_port, OutputPort* motor_port, int output_sign);
+  ~Motor();
   void measureError();
   bool hasErrored();
   void write(double value);

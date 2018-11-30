@@ -14,6 +14,11 @@ Motor::Motor(InputPort* motor_error_port, OutputPort* motor_port, int output_sig
   this->zero_offset = MOTOR_ZERO_OFFSET_DEFAULT;
 }
 
+Motor::~Motor(){
+  delete motor_port;
+  delete motor_error_port;
+}
+
 void Motor::write(double motor_output){
   double voltage = (output_sign * motor_output) + this->zero_offset;
   voltage = (voltage + 1.0)/2.0;
