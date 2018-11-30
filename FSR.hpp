@@ -39,7 +39,7 @@ private:
   void fillLocalReport(FSRReport* report);
 
 public:
-  FSRGroup(LinkedList<FSR*> fsrs);
+  FSRGroup(LinkedList<FSR*>* fsrs);
 
   bool isActivated();
   void measureForce();

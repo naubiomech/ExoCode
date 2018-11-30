@@ -162,13 +162,14 @@ Leg* LegBuilder::build(){
 
   LinkedList<FSRGroup*> fsrs;
   for (unsigned int i = 0; i < fsr_ports.size(); i++){
-    LinkedList<FSR*> single_fsrs;
+    LinkedList<FSR*>* single_fsrs = new LinkedList<FSR*>;
     LinkedList<InputPort*>* ports = fsr_ports[i];
     ListIterator<InputPort*> iter = ports->getIterator();
     while (iter.hasNext()){
-      single_fsrs.append(new FSR(iter.next()));
+      single_fsrs->append(new FSR(iter.next()));
     }
     FSRGroup* group = new FSRGroup(single_fsrs);
+    delete single_fsrs;
     fsrs.append(group);
   }
 

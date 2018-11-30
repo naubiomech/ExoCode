@@ -37,10 +37,10 @@ double FSR::getForce(){
   return force;
 }
 
-FSRGroup::FSRGroup(LinkedList<FSR*> fsrs){
+FSRGroup::FSRGroup(LinkedList<FSR*>* fsrs){
   activation_threshold = new Threshold(0, fsr_percent_thresh, state_counter_th);
-  this->fsr_count = fsrs.size();
-  this->fsrs = fsrs;
+  this->fsr_count = fsrs->size();
+  this->fsrs = *fsrs;
 }
 
 bool FSRGroup::isActivated(){
