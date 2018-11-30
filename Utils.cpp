@@ -32,7 +32,7 @@ MovingAverage::MovingAverage(int size){
 }
 
 MovingAverage::~MovingAverage(){
-  delete previous_values;
+  delete[] previous_values;
 }
 
 void MovingAverage::reset(){
