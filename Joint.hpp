@@ -13,11 +13,12 @@ private:
   TorqueSensor* torque_sensor;
   ControlModule* controller;
 
-  double motor_output = 0;
+  double motor_output;
 
   void fillLocalReport(JointReport* report);
 public:
   Joint(ControlModule* controller, Motor* motor, TorqueSensor* torque_sensor);
+  ~Joint();
   JointReport* generateReport();
   void fillReport(JointReport* report);
 

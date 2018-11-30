@@ -5,6 +5,14 @@ Joint::Joint(ControlModule* controller, Motor* motor, TorqueSensor* torque_senso
   this->controller = controller;
   this->motor = motor;
   this->torque_sensor = torque_sensor;
+
+  motor_output = 0;
+}
+
+Joint::~Joint(){
+  delete controller;
+  delete motor;
+  delete torque_sensor;
 }
 
 void Joint::measureError(){
