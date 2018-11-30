@@ -5,11 +5,18 @@
 #include "Parameters.hpp"
 
 TorqueSensor::TorqueSensor(InputPort* torque_sensor_port, int sign){
-
+  torque_sign = 1.0;
+  torque_calibration_value = 0;
   this->torque_sensor_port = torque_sensor_port;
   this->torque_averager = new MovingAverage(TORQUE_AVERAGE_COUNT);
   this->torque_calibration_average = new RunningAverage();
   setSign(sign);
+}
+
+TorqueSensor::~TorqueSensor(){
+  delete torque_sensor_port;
+  delete torque_averager;
+  delete torque_calibration_average;
 }
 
 void TorqueSensor::measureTorque(){

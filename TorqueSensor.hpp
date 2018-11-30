@@ -10,16 +10,17 @@ private:
   InputPort* torque_sensor_port;
   MovingAverage* torque_averager;
   RunningAverage* torque_calibration_average;
-  double torque_calibration_value = 0;
+  double torque_calibration_value;
   int torque_address;
-  double torque_sign = 1.0;
+  double torque_sign;
 
   double measureRawTorque();
   double measureRawCalibratedTorque();
   void fillLocalReport(TorqueSensorReport* report);
 public:
-  double getTorque();
   TorqueSensor(InputPort* torque_sensor_port, int sign);
+  ~TorqueSensor();
+  double getTorque();
   void measureTorque();
   void startTorqueCalibration();
   void updateTorqueCalibration();
