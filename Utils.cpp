@@ -9,6 +9,9 @@ double RunningAverage::update(double value){
 }
 
 double RunningAverage::getAverage(){
+  if (count == 0){
+    return 0;
+  }
   return avg / count;
 }
 
@@ -42,7 +45,7 @@ double MovingAverage::update(double value){
 }
 
 double MovingAverage::getAverage(){
-  return average;
+  return this->average;
 }
 
 Clamp::Clamp(double upper, double lower){
