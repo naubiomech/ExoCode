@@ -7,6 +7,7 @@
 
 Leg::Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs, LinkedList<IMU*>& imus){
   state = states;
+  state->setContext(this);
 
   this->joints = joints;
   this->fsrs = fsrs;
