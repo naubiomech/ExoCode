@@ -9,7 +9,7 @@ Transceiver::Transceiver(TxPort* tx, RxPort* rx){
 }
 
 Transceiver::~Transceiver(){
-  delete command_serial;
+  /* delete command_serial; */
 }
 
 bool Transceiver::dataAvailable(){
