@@ -426,7 +426,6 @@ void Board::setMotorErrorRightAnklePort(InputPort* port){
 }
 
 Board::~Board(){
-  delete portFactory;
   delete bluetooth_tx_port;
   delete bluetooth_rx_port;
   delete fsr_sense_left_toe_port;

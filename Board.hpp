@@ -5,7 +5,6 @@
 
 class Board{
 private:
-  PortFactory* portFactory;
   TxPort* bluetooth_tx_port;
   RxPort* bluetooth_rx_port;
   InputPort* fsr_sense_left_toe_port;
