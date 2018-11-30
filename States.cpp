@@ -17,7 +17,7 @@ void State::deleteStateMachine(){
 
   State* next = next_state;
   next_state = NULL;
-  next_state->deleteStateMachine();
+  next->deleteStateMachine();
   delete this;
 }
 
