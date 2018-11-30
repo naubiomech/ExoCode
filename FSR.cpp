@@ -41,6 +41,20 @@ FSRGroup::FSRGroup(LinkedList<FSR*>* fsrs){
   activation_threshold = new Threshold(0, fsr_percent_thresh, state_counter_th);
   this->fsr_count = fsrs->size();
   this->fsrs = *fsrs;
+
+  force = 0;
+  fsr_percent_thresh = 0.9;
+  is_activated  = false;
+}
+
+FSRGroup::~FSRGroup(){
+  delete activation_threshold;
+
+  ListIterator<FSR*> iter = fsrs.getIterator();
+
+  while(iter.hasNext()){
+    delete iter.next();
+  }
 }
 
 bool FSRGroup::isActivated(){

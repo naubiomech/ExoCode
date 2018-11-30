@@ -30,16 +30,17 @@ private:
   int fsr_count;
   LinkedList<FSR*> fsrs;
 
-  double force = 0;
+  double force;
 
-  double fsr_percent_thresh = 0.9;
+  double fsr_percent_thresh;
   Threshold* activation_threshold;
-  bool is_activated = false;
+  bool is_activated;
 
   void fillLocalReport(FSRReport* report);
 
 public:
   FSRGroup(LinkedList<FSR*>* fsrs);
+  ~FSRGroup();
 
   bool isActivated();
   void measureForce();
