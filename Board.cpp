@@ -38,7 +38,8 @@ public:
 };
 
 Board* QuadBoardDirector::build(){
-  BoardBuilder* builder = new BoardBuilder(new ArduinoPortFactory());
+  PortFactory* portFactory = new ArduinoPortFactory();
+  BoardBuilder* builder = new BoardBuilder(portFactory);
   Board* board = builder
     ->setAnalogWriteResolution(10)
     ->setAnalogReadResolution(10)
@@ -63,7 +64,9 @@ Board* QuadBoardDirector::build(){
     ->setMotorErrorRightKneePort(26)
     ->setMotorErrorRightAnklePort(27)
     ->build();
+
   delete builder;
+  delete portFactory;
   board->turnOnLed();
   return board;
 }
