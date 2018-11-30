@@ -3,6 +3,13 @@
 #include <cstddef>
 
 ControlModule::ControlModule(ControlAlgorithm* state_machine, StateID starting_state){
+
+  KF = 1;
+  current_pid_setpoint = 0;
+  pid_input = 0;
+  pid_output = 0;
+  iter_time_percentage = 0.5;
+
   setControlStateMachine(state_machine, starting_state);
   this->kf_clamp = new Clamp(MAX_KF, MIN_KF);
   adjust_shaping_for_time_clamp = new Clamp(4, 500);

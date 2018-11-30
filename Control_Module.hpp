@@ -17,13 +17,13 @@ private:
   Clamp* kf_clamp;
   Clamp* adjust_shaping_for_time_clamp;
 
-  double KF = 1;
-  double current_pid_setpoint = 0;
-  double pid_input = 0;
-  double pid_output = 0;
+  double KF;
+  double current_pid_setpoint;
+  double pid_input;
+  double pid_output;
   double last_control_pid_setpoint;
   RunningAverage* error_average;
-  double iter_time_percentage = 0.5;
+  double iter_time_percentage;
 
   ControlAlgorithm* getControlAlgorithm(StateID state_id);
   double getSetpoint(double fsr_percentage, double fsr_max_percentage);
