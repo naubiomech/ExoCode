@@ -26,6 +26,10 @@ MovingAverage::MovingAverage(int size){
   this->reset();
 }
 
+MovingAverage::~MovingAverage(){
+  delete previous_values;
+}
+
 void MovingAverage::reset(){
   for(int i = 0; i < size;i++){
     previous_values[i] = 0;

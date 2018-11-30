@@ -20,6 +20,7 @@ private:
   int size;
 public:
   MovingAverage(int size);
+  ~MovingAverage();
   double update(double value);
   double getAverage();
   void reset();
