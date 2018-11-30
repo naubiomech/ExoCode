@@ -19,6 +19,19 @@ double calculateNextValue(double desired_value, double starting_value,
   return next_value;
 }
 
+ShapingFunction::ShapingFunction(){
+  iteration_count = 0;
+  iteration_threshold = 0;
+  next_iteration_threshold = 0;
+
+  exp_mult = 0;
+  recharge_timer = new Timer();
+}
+
+ShapingFunction::~ShapingFunction(){
+  delete recharge_timer;
+}
+
 void ShapingFunction::setIterationCount(double n){
   next_iteration_threshold = n;
 }

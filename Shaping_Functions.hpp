@@ -4,16 +4,18 @@
 
 class ShapingFunction{
 private:
-  int iteration_count = 0;
-  int iteration_threshold = 0;
-  int next_iteration_threshold = 0;
+  int iteration_count;
+  int iteration_threshold;
+  int next_iteration_threshold;
 
-  double exp_mult = 0;
+  double exp_mult;
 
-  Timer* recharge_timer = new Timer();
+  Timer* recharge_timer;
   void beginCurve();
   bool isCurveDone();
 public:
+  ShapingFunction();
+  ~ShapingFunction();
   double shape(double desired_value, double current_value, double starting_value);
   double getPIDSetpoint(double newPIDSetpoint, double oldPIDSetpoint, double currentPIDSetpoint);
   void setIterationCount(double iterations);
