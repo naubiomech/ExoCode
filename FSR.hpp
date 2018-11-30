@@ -19,6 +19,7 @@ private:
 
 public:
   FSR(InputPort* port);
+  ~FSR();
   void measureForce();
   double getForce();
   void calibrate();
