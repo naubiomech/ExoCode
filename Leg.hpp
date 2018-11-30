@@ -34,7 +34,7 @@ private:
   State* state;
 
 public:
-  Leg(State* states, LinkedList<Joint*> joints, LinkedList<FSRGroup*> fsrs, LinkedList<IMU*> imus);
+  Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs, LinkedList<IMU*>& imus);
   void measureSensors();
   bool checkMotorErrors();
   void attemptCalibration();

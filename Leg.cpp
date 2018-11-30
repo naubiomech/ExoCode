@@ -5,7 +5,7 @@
 #include "IMU.hpp"
 #include "Report.hpp"
 
-Leg::Leg(State* states, LinkedList<Joint*> joints, LinkedList<FSRGroup*> fsrs, LinkedList<IMU*> imus){
+Leg::Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs, LinkedList<IMU*>& imus){
   state = states;
 
   this->joints = joints;

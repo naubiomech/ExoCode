@@ -23,11 +23,14 @@ private:
   Node<T>* last = NULL;
   Node<T>* getNode(int pos);
   void addNode(Node<T>* node);
+  void copyInto(LinkedList<T>& other);
 public:
+  LinkedList<T>* copy();
   unsigned int size();
   void clear();
   void append(T value);
   T operator[] (int);
+  LinkedList<T>& operator=(LinkedList<T>& other);
   ListIterator<T> getIterator();
   ~LinkedList();
 };
@@ -65,6 +68,30 @@ Node<T>* Node<T>::getNext(){
 }
 
 template <class T>
+LinkedList<T>& LinkedList<T>::operator=(LinkedList<T>& other){
+  other.copyInto(*this);
+  return *this;
+}
+
+  template<class T>
+  void LinkedList<T>::copyInto(LinkedList<T>& other){
+    other.clear();
+    ListIterator<T> iter = getIterator();
+    while(iter.hasNext()){
+      other.append(iter.next());
+    }
+  }
+
+template <class T>
+LinkedList<T>* LinkedList<T>::copy(){
+  LinkedList<T> copied = new LinkedList<T>();
+  copyInto(*copied);
+  return copied;
+}
+
+
+
+template <class T>
 Node<T>*  LinkedList<T>::getNode(int pos){
   if (pos >= count){
     return NULL;
@@ -90,6 +117,7 @@ void LinkedList<T>::addNode(Node<T>* node){
     last = node;
   } else {
     last->setNext(node);
+    last = node;
   }
   count++;
 }
@@ -107,12 +135,11 @@ void LinkedList<T>::append(T value){
 
 template <class T>
 ListIterator<T> LinkedList<T>::getIterator(){
-  return ListIterator<T>();
+  return ListIterator<T>(this->first);
 }
 
 template <class T>
 void LinkedList<T>::clear(){
-
   Node<T>* next;
   while(first != NULL){
     next = first->getNext();
@@ -136,8 +163,8 @@ ListIterator<T>::ListIterator(Node<T>* start_node){
 
 template <class T>
 T ListIterator<T>::next(){
-  T value = next_node.getValue();
-  next_node = next_node.getNext();
+  T value = next_node->getValue();
+  next_node = next_node->getNext();
   return value;
 }
 
