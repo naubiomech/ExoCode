@@ -15,6 +15,7 @@ ControlAlgorithm::ControlAlgorithm(StateID state_id){
 }
 
 ControlAlgorithm::~ControlAlgorithm(){
+  deleteAlgorithmList();
   delete setpoint_clamp;
   delete activation_clamp;
 }
