@@ -253,41 +253,41 @@ InputPort* Board::takeFsrSenseLeftHeelPort(){
 InputPort* Board::takeFsrSenseRightToePort(){
   InputPort* port = fsr_sense_right_toe_port;
   fsr_sense_right_toe_port = NULL;
-    return port;
-  }
+  return port;
+}
 
-  InputPort* Board::takeFsrSenseRightHeelPort(){
-    InputPort* port = fsr_sense_right_heel_port;
-    fsr_sense_right_heel_port = NULL;
-    return port;
-  }
+InputPort* Board::takeFsrSenseRightHeelPort(){
+  InputPort* port = fsr_sense_right_heel_port;
+  fsr_sense_right_heel_port = NULL;
+  return port;
+}
 
-  InputPort* Board::takeTorqueSensorLeftKneePort(){
-    InputPort* port = torque_sensor_left_knee_port;
-    torque_sensor_left_knee_port = NULL;
-    return port;
-  }
+InputPort* Board::takeTorqueSensorLeftKneePort(){
+  InputPort* port = torque_sensor_left_knee_port;
+  torque_sensor_left_knee_port = NULL;
+  return port;
+}
 
-  InputPort* Board::takeTorqueSensorLeftAnklePort(){
-    InputPort* port = torque_sensor_left_ankle_port;
-    torque_sensor_left_ankle_port = NULL;
-    return port;
-  }
+InputPort* Board::takeTorqueSensorLeftAnklePort(){
+  InputPort* port = torque_sensor_left_ankle_port;
+  torque_sensor_left_ankle_port = NULL;
+  return port;
+}
 
-  InputPort* Board::takeTorqueSensorRightKneePort(){
-    InputPort* port = torque_sensor_right_knee_port;
-    torque_sensor_right_knee_port = NULL;
-    return port;
-  }
+InputPort* Board::takeTorqueSensorRightKneePort(){
+  InputPort* port = torque_sensor_right_knee_port;
+  torque_sensor_right_knee_port = NULL;
+  return port;
+}
 
-  InputPort* Board::takeTorqueSensorRightAnklePort(){
-    InputPort* port = torque_sensor_right_ankle_port;
-    torque_sensor_right_ankle_port = NULL;
-    return port;
-  }
+InputPort* Board::takeTorqueSensorRightAnklePort(){
+  InputPort* port = torque_sensor_right_ankle_port;
+  torque_sensor_right_ankle_port = NULL;
+  return port;
+}
 
-  OutputPort* Board::takeMotorLeftKneePort(){
-    OutputPort* port = motor_left_knee_port;
+OutputPort* Board::takeMotorLeftKneePort(){
+  OutputPort* port = motor_left_knee_port;
   motor_left_knee_port = NULL;
   return port;
 }
