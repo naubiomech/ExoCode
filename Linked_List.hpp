@@ -9,7 +9,7 @@ class Node;
 template <class T>
 class ListIterator {
 private:
-  Node<T>* next_node;
+  Node<T>* next_node = NULL;
 public:
   ListIterator(Node<T>* start_node);
   T next();
@@ -51,6 +51,7 @@ public:
 template <class T>
 Node<T>::Node(T value){
   this->value = value;
+  this->next = NULL;
 }
 
 template <class T>
