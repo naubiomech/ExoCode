@@ -3,9 +3,10 @@
 
 class RunningAverage{
 private:
-  double avg = 0;
-  double count = 0;
+  double avg;
+  double count;
 public:
+  RunningAverage();
   double update(double value);
   double getAverage();
   void reset();
@@ -49,8 +50,8 @@ public:
 
 class Timer{
 private:
-  double start_time = 0;
-  double pause_time = 0;
+  double start_time;
+  double pause_time;
 public:
   Timer();
   double lap();

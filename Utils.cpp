@@ -2,6 +2,11 @@
 #include "Utils.hpp"
 #include <float.h>
 
+RunningAverage::RunningAverage(){
+  avg = 0;
+  count = 0;
+}
+
 double RunningAverage::update(double value){
   avg += value;
   count++;
@@ -95,6 +100,7 @@ void Threshold::setUpperThreshold(double threshold){
 
 Timer::Timer(){
   start_time = millis();
+  pause_time = 0;
 }
 
 double Timer::lapSec(){
