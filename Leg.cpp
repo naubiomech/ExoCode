@@ -18,8 +18,7 @@ Leg::Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs,
 }
 
 Leg::~Leg(){
-  delete state;
-
+  state->deleteStateMachine();
   ListIterator<Joint*> joint_iter = joints.getIterator();
   while(joint_iter.hasNext()){
     delete joint_iter.next();

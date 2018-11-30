@@ -12,12 +12,12 @@ class State{
 private:
   Timer* state_time;
   State* next_state;
-  void deleteStateList();
 protected:
   Leg* leg;
 public:
   State();
   ~State();
+  void deleteStateMachine();
   double getStateTime();
   State* changeState();
   void setNextState(State* next_phase);

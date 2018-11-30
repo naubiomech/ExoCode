@@ -7,18 +7,17 @@ State::State(){
 }
 
 State::~State(){
-  deleteStateList();
   delete state_time;
-  delete next_state;
 }
 
-void State::deleteStateList(){
-  if(next_state == NULL){
+void State::deleteStateMachine(){
+  if (this == NULL || next_state == NULL){
     return;
   }
+
   State* next = next_state;
   next_state = NULL;
-  next->deleteStateList();
+  next_state->deleteStateMachine();
   delete this;
 }
 
