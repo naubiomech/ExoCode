@@ -32,6 +32,7 @@ private:
 
 public:
   ControlModule(ControlAlgorithm* state_machine, StateID starting_state);
+  ~ControlModule();
   void setControlStateMachine(ControlAlgorithm* state_machine, StateID starting_state);
   void setToZero();
   void setDesiredSetpoint(double setpoint);

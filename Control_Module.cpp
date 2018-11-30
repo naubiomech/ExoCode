@@ -15,6 +15,14 @@ ControlModule::ControlModule(ControlAlgorithm* state_machine, StateID starting_s
   pid->SetSampleTime(PID_sample_time);
 }
 
+ControlModule::~ControlModule(){
+  delete pid;
+  delete current_algorithm;
+  delete kf_clamp;
+  delete adjust_shaping_for_time_clamp;
+  delete error_average;
+}
+
 double ControlModule::getControlAdjustment(double torque_input, double fsr_percentage, double fsr_max_percentage){
   double setpoint = getSetpoint(fsr_percentage, fsr_max_percentage);
   double adjustment = runPID(torque_input, KF, setpoint);
