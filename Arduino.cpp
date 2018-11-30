@@ -7,30 +7,30 @@ SoftwareSerial Serial = SoftwareSerial(0,0);
 SoftwareSerial::SoftwareSerial(int a, int b){}
 bool SoftwareSerial::begin(int a){return true;}
 void SoftwareSerial::write(char str){
-	printf("%c", str);
+  printf("%c", str);
 }
 void SoftwareSerial::write(const char* str){
-	printf("%s", str);
+  printf("%s", str);
 }
 
 void SoftwareSerial::print(const char* str){
-	printf("%s", str);
+  printf("%s", str);
 }
 
 void SoftwareSerial::print(double val){
-	printf("%lf", val);
+  printf("%lf", val);
 }
 
 void SoftwareSerial::println(const char* str){
-	printf("%s\n", str);
+  printf("%s\n", str);
 }
 
 void SoftwareSerial::println(double val){
-	printf("%lf\n", val);
+  printf("%lf\n", val);
 }
 
 int SoftwareSerial::read(){
-	return -1;
+  return -1;
 }
 
 bool SoftwareSerial::available(){return false;};
