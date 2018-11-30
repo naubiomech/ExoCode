@@ -63,6 +63,7 @@ Board* QuadBoardDirector::build(){
     ->setMotorErrorRightKneePort(26)
     ->setMotorErrorRightAnklePort(27)
     ->build();
+  delete builder;
   board->turnOnLed();
   return board;
 }
