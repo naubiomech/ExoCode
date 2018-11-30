@@ -2,7 +2,8 @@
 #include "Control_Algorithms.hpp"
 #include "Parameters.hpp"
 
-ControlAlgorithm::ControlAlgorithm(StateType state){
+ControlAlgorithm::ControlAlgorithm(StateID state){
+  this->state_id = state_id;
   this->setpoint_clamp = new Clamp(Min_Prop, Max_Prop);
   activation_clamp = new Clamp(0,1);
 }
