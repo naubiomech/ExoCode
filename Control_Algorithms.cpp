@@ -22,7 +22,7 @@ StateID ControlAlgorithm::getStateID(){
 }
 
 void ControlAlgorithm::setPreviousControlAlgorithm(ControlAlgorithm* previous){
-	previous->next = this;
+  previous->next = this;
 }
 
 void ControlAlgorithm::setToZero(){
