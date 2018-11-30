@@ -3,8 +3,7 @@
 const int dim_FSR = 30;
 const int dim = 5;
 
-#include <i2c_t3.h>
-#include "PID_v2.h"
+#include "Arduino.hpp"
 #include "States.hpp"
 #include "Joint.hpp"
 #include "FSR.hpp"
@@ -55,7 +54,7 @@ public:
   void changeState();
   void resetFSRMaxes();
   void adjustShapingForTime(double time);
-  bool hasStateChanged(boolean foot_on_ground);
+  bool hasStateChanged(bool foot_on_ground);
   bool determine_foot_on_ground();
   void applyControl();
   void setToZero();

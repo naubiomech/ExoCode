@@ -1,8 +1,8 @@
 #ifndef CONTROL_MODULE_HEADER
 #define CONTROL_MODULE_HEADER
+#include "Arduino.hpp"
 #include "States.hpp"
 #include "Control_Algorithms.hpp"
-#include <PID_v2.h>
 #include "Shaping_Functions.hpp"
 #include "Utils.hpp"
 #include "Linked_List.hpp"

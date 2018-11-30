@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include "Arduino.hpp"
 #include "Leg.hpp"
 #include "Shaping_Functions.hpp"
 #include "Motor.hpp"
@@ -106,7 +106,7 @@ void Leg::startIncrementalActivation(){
   this->increment_activation_starting_step = step_count;
 }
 
-bool Leg::hasStateChanged(boolean foot_on_ground){
+bool Leg::hasStateChanged(bool foot_on_ground){
   return state->getStateTime() <= step_time_length / 4;
 }
 

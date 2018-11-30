@@ -1,7 +1,5 @@
-#include <Arduino.h>
+#include "Arduino.hpp"
 #include "IMU.hpp"
-#include <Adafruit_BNO055_t3.h>
-#include <utility/imumaths.h>
 
 IMU::IMU(ImuPort* imu_port, unsigned int address){
 
@@ -20,24 +18,24 @@ void IMU::calibrate(){
     bno->getEvent(&event);
 
     Serial.print("X: ");
-    Serial.print(event.orientation.x, 4);
+    Serial.print(event.orientation.x);
     Serial.print("\tY: ");
-    Serial.print(event.orientation.y, 4);
+    Serial.print(event.orientation.y);
     Serial.print("\tZ: ");
-    Serial.print(event.orientation.z, 4);
+    Serial.print(event.orientation.z);
 
     uint8_t system, gyro, accel, mag;
     system = gyro = accel = mag = 0;
     bno->getCalibration(&system, &gyro, &accel, &mag);
     /* Optional: Display calibration status */
     Serial.print("\tSys:");
-    Serial.print(system, DEC);
+    Serial.print(system);
     Serial.print(" G:");
-    Serial.print(gyro, DEC);
+    Serial.print(gyro);
     Serial.print(" A:");
-    Serial.print(accel, DEC);
+    Serial.print(accel);
     Serial.print(" M:");
-    Serial.print(mag, DEC);
+    Serial.print(mag);
 
     /* New line for the next sample */
     Serial.println("");

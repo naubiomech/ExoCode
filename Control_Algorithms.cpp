@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include "Arduino.hpp"
 #include "Control_Algorithms.hpp"
 #include "Parameters.hpp"
 
@@ -12,8 +12,8 @@ double ControlAlgorithm::clamp_setpoint(double raw_setpoint){
     return 0;
   }
 
-  double setpoint_sign = fabs(raw_setpoint) / raw_setpoint;
-  double setpoint = setpoint_sign * setpoint_clamp->clamp(fabs(raw_setpoint));
+  double setpoint_sign = abs(raw_setpoint) / raw_setpoint;
+  double setpoint = setpoint_sign * setpoint_clamp->clamp(abs(raw_setpoint));
   return setpoint;
 }
 

@@ -1,6 +1,6 @@
 #ifndef TRANSCEIVER_HEADER
 #define TRANSCEIVER_HEADER
-#include <SoftwareSerial.h>
+#include "Arduino.hpp"
 #include "Port.hpp"
 #include "Command_Codes.hpp"
 #include "Report.hpp"

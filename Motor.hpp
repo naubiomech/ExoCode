@@ -1,12 +1,12 @@
 #ifndef MOTOR_HEADER
 #define MOTOR_HEADER
+#include "Arduino.hpp"
 #include "Parameters.hpp"
 #include "Utils.hpp"
 #include "Shaping_Functions.hpp"
 #include "Control_Algorithms.hpp"
 #include "Port.hpp"
 #include "Report.hpp"
-#include <PID_v2.h>
 
 class Motor{
 private:

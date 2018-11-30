@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include "Arduino.hpp"
 #include "FSR.hpp"
 #include "Parameters.hpp"
 #include "Utils.hpp"

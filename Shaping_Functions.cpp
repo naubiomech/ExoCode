@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include "Arduino.hpp"
 #include "Parameters.hpp"
 #include "Shaping_Functions.hpp"
 #include "States.hpp"

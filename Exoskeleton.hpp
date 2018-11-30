@@ -1,7 +1,7 @@
 #ifndef EXOSKELETON_HEADER
 #define EXOSKELETON_HEADER
+#include "Arduino.hpp"
 #include "Leg.hpp"
-#include <Metro.h>
 #include "Report.hpp"
 #include "Transceiver.hpp"
 

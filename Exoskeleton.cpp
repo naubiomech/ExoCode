@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include "Arduino.hpp"
 #include "Exoskeleton.hpp"
 #include "Board.hpp"
 #include "Leg.hpp"

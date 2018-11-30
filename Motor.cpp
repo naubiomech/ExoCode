@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include "Arduino.hpp"
 #include "Motor.hpp"
 #include "Parameters.hpp"
 #include "Board.hpp"
@@ -6,7 +6,6 @@
 #include "States.hpp"
 #include "Control_Algorithms.hpp"
 #include "Report.hpp"
-#include <PID_v2.h>
 
 Motor::Motor(InputPort* motor_error_port, OutputPort* motor_port, int output_sign){
   setSign(output_sign);

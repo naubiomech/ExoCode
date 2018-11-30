@@ -1,5 +1,5 @@
 #include "Transceiver.hpp"
-#include <SoftwareSerial.h>
+#include "Arduino.hpp"
 
 Transceiver::Transceiver(TxPort* tx, RxPort* rx){
   command_serial = new SoftwareSerial(tx->getPin(), rx->getPin());

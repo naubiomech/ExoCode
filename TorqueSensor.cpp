@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include "Arduino.hpp"
 #include "TorqueSensor.hpp"
 #include "Port.hpp"
 #include "Report.hpp"

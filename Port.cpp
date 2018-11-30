@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include "Arduino.hpp"
 #include "Port.hpp"
 
 int calculateResolution(unsigned int bits){
