@@ -16,7 +16,7 @@ protected:
   Leg* leg;
 public:
   State();
-  ~State();
+  virtual ~State();
   void deleteStateMachine();
   double getStateTime();
   State* changeState();

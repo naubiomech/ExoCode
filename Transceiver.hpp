@@ -27,7 +27,7 @@ protected:
 
 public:
   Transceiver(TxPort* tx, RxPort* rx);
-  ~Transceiver();
+  virtual ~Transceiver();
   ExoMessage* receiveMessages(ExoReport* report);
   void sendReport(ExoReport* report);
 

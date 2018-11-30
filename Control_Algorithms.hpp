@@ -24,7 +24,7 @@ protected:
   double clamp_setpoint(double raw_setpoint);
 public:
   ControlAlgorithm(StateID state_id);
-  ~ControlAlgorithm();
+  virtual ~ControlAlgorithm();
   void setPreviousControlAlgorithm(ControlAlgorithm* control_algorithm);
   void deleteAlgorithmStateMachine();
   virtual void setDesiredSetpoint(double setpoint);
