@@ -10,11 +10,14 @@ typedef StateType StateID;
 class Leg;
 class State{
 private:
-  Timer* state_time = new Timer();
+  Timer* state_time;
   State* next_state;
+  void deleteStateList();
 protected:
   Leg* leg;
 public:
+  State();
+  ~State();
   double getStateTime();
   State* changeState();
   void setNextState(State* next_phase);

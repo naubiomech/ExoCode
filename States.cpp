@@ -1,6 +1,27 @@
 #include "States.hpp"
 #include "Leg.hpp"
 
+State::State(){
+  state_time = new Timer();
+  next_state = NULL;
+}
+
+State::~State(){
+  deleteStateList();
+  delete state_time;
+  delete next_state;
+}
+
+void State::deleteStateList(){
+  if(next_state == NULL){
+    return;
+  }
+  State* next = next_state;
+  next_state = NULL;
+  next->deleteStateList();
+  delete this;
+}
+
 void State::triggerStart(){
   state_time->reset();
 }
