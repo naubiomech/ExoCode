@@ -9,6 +9,7 @@ ControlModule::ControlModule(ControlAlgorithm* state_machine, StateID starting_s
   pid_input = 0;
   pid_output = 0;
   iter_time_percentage = 0.5;
+  shaping_function = new ShapingFunction();
 
   setControlStateMachine(state_machine, starting_state);
   this->kf_clamp = new Clamp(MAX_KF, MIN_KF);
@@ -28,6 +29,7 @@ ControlModule::~ControlModule(){
   delete kf_clamp;
   delete adjust_shaping_for_time_clamp;
   delete error_average;
+  delete shaping_function;
 }
 
 double ControlModule::getControlAdjustment(double torque_input, double fsr_percentage, double fsr_max_percentage){
