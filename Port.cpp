@@ -9,7 +9,7 @@ int calculateResolution(unsigned int bits){
 Port::Port(unsigned int pin){
   this->pin = pin;
 }
-Port::~Port(){};
+Port::~Port(){}
 
 unsigned int Port::getPin(){
   return pin;
@@ -17,6 +17,10 @@ unsigned int Port::getPin(){
 
 ImuPort::ImuPort(i2c_pins pins):Port(-1){
   imu_pins = pins;
+}
+
+ImuPort::~ImuPort(){
+
 }
 
 i2c_pins ImuPort::getPins(){

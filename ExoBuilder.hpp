@@ -19,12 +19,12 @@ public:
 class LegBuilder;
 class ExoBuilder{
 private:
-  RxPort* rx;
-  TxPort* tx;
-  OutputPort* led_port;
-  OutputPort* motor_enable_port;
-  LegBuilder* right_builder;
-  LegBuilder* left_builder;
+  RxPort* rx = NULL;
+  TxPort* tx = NULL;
+  OutputPort* led_port = NULL;
+  OutputPort* motor_enable_port = NULL;
+  LegBuilder* right_builder = NULL;
+  LegBuilder* left_builder = NULL;
 public:
   ~ExoBuilder();
   ExoBuilder* addTransceiver(TxPort* tx, RxPort* rx);

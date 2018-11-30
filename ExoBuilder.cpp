@@ -54,8 +54,11 @@ Exoskeleton* QuadExoDirector::build(Board* board){
     ->addFSR(board->takeFsrSenseRightToePort())
     ->addFSR(board->takeFsrSenseRightHeelPort())
     ->finishFSRGroup()
-    ->finishLeg()
-    ->build();
+    ->finishLeg();
+  delete state_builder;
+  delete module_builder;
+  Exoskeleton* exo = builder->build();
+  delete builder;
   return exo;
 };
 
@@ -83,7 +86,11 @@ ExoBuilder::~ExoBuilder(){
 
 Exoskeleton* ExoBuilder::build(){
   Leg* left_leg = left_builder->build();
+  delete left_builder;
+  left_builder = NULL;
   Leg* right_leg = right_builder->build();
+  delete right_builder;
+  right_builder = NULL;
   Transceiver* transceiver = new MatlabTransceiver(tx, rx);
   Exoskeleton* exo = new Exoskeleton(left_leg, right_leg, transceiver, motor_enable_port, led_port);
   return exo;
