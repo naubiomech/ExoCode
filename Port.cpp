@@ -71,7 +71,7 @@ AnalogOutputPort::AnalogOutputPort(unsigned int pin, unsigned int resolution_bit
 AnalogOutputPort::~AnalogOutputPort(){}
 
 void AnalogOutputPort::write(double value){
-  analogWrite((int) (value * resolution), getPin());
+  analogWrite(getPin(), (int) (value * resolution));
 }
 
 DigitalOutputPort::DigitalOutputPort(unsigned int pin):OutputPort(pin){
@@ -81,7 +81,8 @@ DigitalOutputPort::DigitalOutputPort(unsigned int pin):OutputPort(pin){
 DigitalOutputPort::~DigitalOutputPort(){}
 
 void DigitalOutputPort::write(double value){
-  digitalWrite((int) value, getPin());
+  int digitalVal = value;
+  digitalWrite(getPin(), digitalVal);
 }
 
 PwmOutputPort::PwmOutputPort(unsigned int pin, unsigned int resolution_bits):AnalogOutputPort(pin, resolution_bits){}
