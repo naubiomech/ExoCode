@@ -43,13 +43,14 @@ void TorqueSensor::endTorqueCalibration(){
 
 double TorqueSensor::measureRawTorque(){
   double readValue = this->torque_sensor_port->read();
-  return readValue * torque_sign;
+  double adjustVal = readValue * 2 - 1;
+  return adjustVal * torque_sign;
 }
 
 double TorqueSensor::measureRawCalibratedTorque(){
   double rawTorq = measureRawTorque();
-  double Torq = 56.5 / (2.1) * (rawTorq - this->torque_calibration_value);
-  return Torq; // TODO Check if negative is necessary
+  double Torq = rawTorq - this->torque_calibration_value;
+  return Torq;
 }
 
 TorqueSensorReport* TorqueSensor::generateReport(){
