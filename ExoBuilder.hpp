@@ -50,7 +50,7 @@ private:
   LinkedList<ControlModule*> controls;
 public:
   ~LegBuilder();
-  LegBuilder(ExoBuilder* return_context);
+  LegBuilder(ExoBuilder* return_context, int sign);
   LegBuilder* addStateMachine(State* states);
   LegBuilder* addJoint(InputPort* torque_sensor_port, OutputPort* motor_port,
                        InputPort* error_port, ControlModule* module);

@@ -101,17 +101,19 @@ Exoskeleton* ExoBuilder::build(){
 }
 
 LegBuilder* ExoBuilder::beginRightLeg(){
-  right_builder = new LegBuilder(this);
+  right_builder = new LegBuilder(this, -1);
   return right_builder;
 }
 
 LegBuilder* ExoBuilder::beginLeftLeg(){
-  left_builder = new LegBuilder(this);
+  left_builder = new LegBuilder(this, 1);
   return left_builder;
 }
 
-LegBuilder::LegBuilder(ExoBuilder* return_context){
+LegBuilder::LegBuilder(ExoBuilder* return_context, int sign){
   this->return_context = return_context;
+  this->states = NULL;
+  this->sign = sign;
 }
 
 LegBuilder::~LegBuilder(){
