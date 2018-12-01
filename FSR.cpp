@@ -48,13 +48,13 @@ double FSR::getForce(){
 }
 
 FSRGroup::FSRGroup(LinkedList<FSR*>* fsrs){
-  activation_threshold = new Threshold(0, fsr_percent_thresh, state_counter_th);
   this->fsr_count = fsrs->size();
   this->fsrs = *fsrs;
 
   force = 0;
   fsr_percent_thresh = 0.9;
   is_activated  = false;
+  activation_threshold = new Threshold(0, fsr_percent_thresh, state_counter_th);
 }
 
 FSRGroup::~FSRGroup(){
