@@ -54,8 +54,6 @@ public:
 };
 
 class OutputPort: public Port{
-private:
-  int resolution;
 public:
   virtual void write(double value) = 0;
   OutputPort(unsigned int pin);
@@ -64,7 +62,7 @@ public:
 
 class AnalogOutputPort: public OutputPort{
 private:
-  int resolution;
+  double resolution;
 public:
   void write(double value);
   AnalogOutputPort(unsigned int pin, unsigned int bit_resolution);
