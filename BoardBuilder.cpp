@@ -4,8 +4,8 @@ Board* QuadBoardDirector::build(){
   PortFactory* portFactory = new ArduinoPortFactory();
   BoardBuilder* builder = new BoardBuilder(portFactory);
   Board* board = builder
-    ->setAnalogWriteResolution(10)
-    ->setAnalogReadResolution(10)
+    ->setAnalogWriteResolution(12)
+    ->setAnalogReadResolution(12)
     ->setBluetoothTxPort(0)
     ->setBluetoothRxPort(1)
     ->setLedPort(13)
@@ -52,8 +52,8 @@ Board* BoardBuilder::build(){
 }
 
 BoardBuilder* BoardBuilder::reset(){
-  read_resolution = 8;
-  write_resolution = 8;
+  read_resolution = 10;
+  write_resolution = 10;
   board = new Board();
   return this;
 }
