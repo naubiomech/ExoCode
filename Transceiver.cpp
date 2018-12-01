@@ -63,7 +63,7 @@ void MatlabTransceiver::sendMessageBegin(){
 }
 
 void MatlabTransceiver::sendMessageEnd(){
-  command_serial->print('Z');
+  command_serial->println('Z');
 }
 
 void MatlabTransceiver::sendData(void* raw_data, int doubles_to_send){
