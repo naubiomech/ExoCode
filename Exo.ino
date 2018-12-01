@@ -69,11 +69,8 @@ void loop() {
 Exoskeleton* setupSystem(){
   Serial.begin(115200);
   delay(500);
-  Serial.println("Setting up");
   Board* board = QuadBoardDirector().build();
-  Serial.println("Got board");
   Exoskeleton* exo = QuadExoDirector().build(board);
-  Serial.println("Got exo");
   delete board;
   return exo;
 }
