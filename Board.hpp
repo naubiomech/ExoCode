@@ -2,6 +2,7 @@
 #define BOARD_SETTINGS_HEADER
 #include "Parameters.hpp"
 #include "Exoskeleton.hpp"
+#include "Port.hpp"
 
 class Board{
 private:
@@ -25,6 +26,8 @@ private:
   InputPort* motor_error_left_ankle_port;
   InputPort* motor_error_right_knee_port;
   InputPort* motor_error_right_ankle_port;
+  OutputPort* pot_left_leg_port;
+  OutputPort* pot_right_leg_port;
   ImuPort* imu_slot_0;
   ImuPort* imu_slot_1;
   ImuPort* imu_slot_2;
@@ -56,6 +59,8 @@ public:
   InputPort* takeMotorErrorLeftAnklePort();
   InputPort* takeMotorErrorRightKneePort();
   InputPort* takeMotorErrorRightAnklePort();
+  OutputPort* takePotLeftLegPort();
+  OutputPort* takePotRightLegPort();
   ImuPort* getImuSlot0();
   ImuPort* getImuSlot1();
   ImuPort* getImuSlot2();
@@ -82,6 +87,8 @@ public:
   void setMotorErrorLeftAnklePort(InputPort* port);
   void setMotorErrorRightKneePort(InputPort* port);
   void setMotorErrorRightAnklePort(InputPort* port);
+  void setPotLeftLegPort(OutputPort* port);
+  void setPotRightLegPort(OutputPort* port);
   void setImuSlot0(ImuPort* port);
   void setImuSlot1(ImuPort* port);
   void setImuSlot2(ImuPort* port);
@@ -90,15 +97,4 @@ public:
 };
 
 Exoskeleton* setupBoard();
-
-class BoardDirector{
-public:
-  virtual Board* build() = 0;
-};
-
-class QuadBoardDirector:public BoardDirector{
-public:
-  Board* build();
-};
-
 #endif
