@@ -525,4 +525,7 @@ Board::~Board(){
   delete motor_error_left_ankle_port;
   delete motor_error_right_knee_port;
   delete motor_error_right_ankle_port;
+  delete imu_slot_0;
+  delete imu_slot_1;
+  delete imu_slot_2;
 }
