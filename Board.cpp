@@ -24,6 +24,8 @@ Board::Board(){
   motor_error_left_ankle_port = NULL;
   motor_error_right_knee_port = NULL;
   motor_error_right_ankle_port = NULL;
+  pot_left_leg_port = NULL;
+  pot_right_leg_port = NULL;
 }
 
 Board::~Board(){
@@ -50,6 +52,8 @@ Board::~Board(){
   delete imu_slot_0;
   delete imu_slot_1;
   delete imu_slot_2;
+  delete pot_left_leg_port;
+  delete pot_right_leg_port;
 }
 
 void Board::turnOnLed(){
