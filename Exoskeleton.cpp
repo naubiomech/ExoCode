@@ -4,6 +4,7 @@
 #include "Leg.hpp"
 #include "Report.hpp"
 #include "Transceiver.hpp"
+#include "Message.hpp"
 
 Exoskeleton::Exoskeleton(Leg* left_leg, Leg* right_leg, Transceiver* transceiver,
                          OutputPort* motor_enable_port, OutputPort* led_port){
@@ -151,7 +152,8 @@ void Exoskeleton::receiveMessages(){
   if (receiveDataTimer.check() == 1) {
     receiveDataTimer.reset();
     fillReport(report);
-    transceiver->receiveMessages(report);
+    ExoMessage* msg = transceiver->receiveMessages(report);
+    delete msg;
   }
 }
 
