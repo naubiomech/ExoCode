@@ -38,7 +38,8 @@ AnalogInputPort::AnalogInputPort(unsigned int pin, unsigned int resolution_bits)
 AnalogInputPort::~AnalogInputPort(){}
 
 double AnalogInputPort::read(){
-  return analogRead(getPin())/resolution;
+  double readValue = analogRead(getPin());
+  return readValue/resolution;
 }
 
 DigitalInputPort::DigitalInputPort(unsigned int pin):InputPort(pin){
