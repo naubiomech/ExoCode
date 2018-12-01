@@ -129,3 +129,7 @@ OutputPort* ArduinoPortFactory::createAnalogOutputPort(unsigned int pin, unsigne
 OutputPort* ArduinoPortFactory::createPwmOutputPort(unsigned int pin, unsigned int resolution_bits){
   return new PwmOutputPort(pin, resolution_bits);
 }
+
+ImuPort* ArduinoPortFactory::createImuPort(i2c_pins pins){
+  return new ImuPort(pins);
+}

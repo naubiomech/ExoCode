@@ -16,8 +16,8 @@ public:
 class ImuPort:public Port{
 private:
   i2c_pins imu_pins;
-  ImuPort(i2c_pins imu_pins);
 public:
+  ImuPort(i2c_pins imu_pins);
   i2c_pins getPins();
   virtual ~ImuPort();
 };
@@ -103,6 +103,7 @@ public:
   virtual OutputPort* createDigitalOutputPort(unsigned int pin) = 0;
   virtual OutputPort* createAnalogOutputPort(unsigned int pin, unsigned int resolution_bits) = 0;
   virtual OutputPort* createPwmOutputPort(unsigned int pin, unsigned int resolution_bits) = 0;
+  virtual ImuPort* createImuPort(i2c_pins pins) = 0;
 };
 
 class ArduinoPortFactory:public PortFactory{
@@ -113,6 +114,7 @@ class ArduinoPortFactory:public PortFactory{
   OutputPort* createDigitalOutputPort(unsigned int pin);
   OutputPort* createAnalogOutputPort(unsigned int pin, unsigned int resolution_bits);
   OutputPort* createPwmOutputPort(unsigned int pin, unsigned int resolution_bits);
+  ImuPort* createImuPort(i2c_pins pins);
 };
 
 #endif

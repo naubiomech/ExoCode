@@ -57,6 +57,7 @@ public:
   LegBuilder* beginFSRGroup();
   LegBuilder* finishFSRGroup();
   LegBuilder* addFSR(InputPort* fsr_port);
+  LegBuilder* addImu(ImuPort* port, unsigned int address);
   ExoBuilder* finishLeg();
   Leg* build();
 };

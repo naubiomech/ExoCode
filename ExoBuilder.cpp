@@ -40,7 +40,11 @@ Exoskeleton* QuadExoDirector::build(Board* board){
     ->addFSR(board->takeFsrSenseLeftHeelPort())
     ->finishFSRGroup()
     ->finishLeg()
+
     ->beginRightLeg()
+    ->addImu(board->getImuSlot0(), board->getImuAddress0())
+    ->addImu(board->getImuSlot1(), board->getImuAddress0())
+    ->addImu(board->getImuSlot2(), board->getImuAddress0())
     ->addStateMachine(state_builder->build())
     ->addJoint(board->takeTorqueSensorRightAnklePort(),
                board->takeMotorRightAnklePort(),
@@ -144,6 +148,12 @@ LegBuilder* LegBuilder::finishFSRGroup(){
 
 LegBuilder* LegBuilder::addFSR(InputPort* fsr_port){
   fsr_ports_begin->append(fsr_port);
+  return this;
+}
+
+LegBuilder* LegBuilder::addImu(ImuPort* port,unsigned int address){
+  imu_ports.append(port);
+  imu_address.append(address);
   return this;
 }
 

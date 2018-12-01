@@ -35,6 +35,11 @@ public:
   BoardBuilder* setMotorErrorLeftAnklePort(unsigned int pin);
   BoardBuilder* setMotorErrorRightKneePort(unsigned int pin);
   BoardBuilder* setMotorErrorRightAnklePort(unsigned int pin);
+  BoardBuilder* setImuSlot0(i2c_pins pins);
+  BoardBuilder* setImuSlot1(i2c_pins pins);
+  BoardBuilder* setImuSlot2(i2c_pins pins);
+  BoardBuilder* setImuAddress0(int address);
+  BoardBuilder* setImuAddress1(int address);
 };
 
 Board* QuadBoardDirector::build(){
@@ -63,6 +68,11 @@ Board* QuadBoardDirector::build(){
     ->setMotorErrorLeftAnklePort(25)
     ->setMotorErrorRightKneePort(26)
     ->setMotorErrorRightAnklePort(27)
+    ->setImuSlot0(I2C_PINS_3_4)
+    ->setImuSlot1(I2C_PINS_7_8)
+    ->setImuSlot2(I2C_PINS_37_38)
+    ->setImuAddress0(0x28)
+    ->setImuAddress1(0x29)
     ->build();
 
   delete builder;
@@ -197,6 +207,31 @@ BoardBuilder* BoardBuilder::setMotorErrorRightKneePort(unsigned int pin){
 
 BoardBuilder* BoardBuilder::setMotorErrorRightAnklePort(unsigned int pin){
   board->setMotorErrorRightAnklePort(port_factory->createDigitalInputPort(pin));
+  return this;
+}
+
+BoardBuilder* BoardBuilder::setImuSlot0(i2c_pins pins){
+  board->setImuSlot0(port_factory->createImuPort(pins));
+  return this;
+}
+
+BoardBuilder* BoardBuilder::setImuSlot1(i2c_pins pins){
+  board->setImuSlot1(port_factory->createImuPort(pins));
+  return this;
+}
+
+BoardBuilder* BoardBuilder::setImuSlot2(i2c_pins pins){
+  board->setImuSlot2(port_factory->createImuPort(pins));
+  return this;
+}
+
+BoardBuilder* BoardBuilder::setImuAddress0(int address){
+  board->setImuAddress0(address);
+  return this;
+}
+
+BoardBuilder* BoardBuilder::setImuAddress1(int address){
+  board->setImuAddress1(address);
   return this;
 }
 
@@ -427,6 +462,46 @@ void Board::setMotorErrorRightKneePort(InputPort* port){
 
 void Board::setMotorErrorRightAnklePort(InputPort* port){
   motor_error_right_ankle_port = port;
+}
+
+void Board::setImuSlot0(ImuPort* port){
+  imu_slot_0 = port;
+}
+
+void Board::setImuSlot1(ImuPort* port){
+  imu_slot_1 = port;
+}
+
+void Board::setImuSlot2(ImuPort* port){
+  imu_slot_2 = port;
+}
+
+void Board::setImuAddress0(int address){
+  imu_address_0 = address;
+}
+
+void Board::setImuAddress1(int address){
+  imu_address_1 = address;
+}
+
+ImuPort* Board::getImuSlot0(){
+  return imu_slot_0;
+}
+
+ImuPort* Board::getImuSlot1(){
+  return imu_slot_1;
+}
+
+ImuPort* Board::getImuSlot2(){
+  return imu_slot_2;
+}
+
+int Board::getImuAddress0(){
+  return imu_address_0;
+}
+
+int Board::getImuAddress1(){
+  return imu_address_1;
 }
 
 Board::~Board(){

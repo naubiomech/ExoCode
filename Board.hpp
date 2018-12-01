@@ -25,6 +25,11 @@ private:
   InputPort* motor_error_left_ankle_port;
   InputPort* motor_error_right_knee_port;
   InputPort* motor_error_right_ankle_port;
+  ImuPort* imu_slot_0;
+  ImuPort* imu_slot_1;
+  ImuPort* imu_slot_2;
+  int imu_address_0;
+  int imu_address_1;
 
 public:
   Board();
@@ -51,6 +56,11 @@ public:
   InputPort* takeMotorErrorLeftAnklePort();
   InputPort* takeMotorErrorRightKneePort();
   InputPort* takeMotorErrorRightAnklePort();
+  ImuPort* getImuSlot0();
+  ImuPort* getImuSlot1();
+  ImuPort* getImuSlot2();
+  int getImuAddress0();
+  int getImuAddress1();
 
   void setBluetoothTxPort(TxPort* port);
   void setBluetoothRxPort(RxPort* port);
@@ -72,6 +82,11 @@ public:
   void setMotorErrorLeftAnklePort(InputPort* port);
   void setMotorErrorRightKneePort(InputPort* port);
   void setMotorErrorRightAnklePort(InputPort* port);
+  void setImuSlot0(ImuPort* port);
+  void setImuSlot1(ImuPort* port);
+  void setImuSlot2(ImuPort* port);
+  void setImuAddress0(int address);
+  void setImuAddress1(int address);
 };
 
 Exoskeleton* setupBoard();
