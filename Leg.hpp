@@ -9,6 +9,7 @@ const int dim = 5;
 #include "FSR.hpp"
 #include "Report.hpp"
 #include "IMU.hpp"
+#include "Pot.hpp"
 #include "Linked_List.hpp"
 
 class Leg {
@@ -24,6 +25,7 @@ private:
   LinkedList<Joint*> joints;
   LinkedList<FSRGroup*> fsrs;
   LinkedList<IMU*> imus;
+  LinkedList<Pot*> pots;
   FSRGroup* foot_fsrs;
 
   bool set_motors_to_zero_torque;
@@ -33,9 +35,11 @@ private:
   State* state;
 
 public:
-  Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs, LinkedList<IMU*>& imus);
+  Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs,
+      LinkedList<IMU*>& imus, LinkedList<Pot*>& pots);
   ~Leg();
   void measureSensors();
+  void measurePots();
   bool checkMotorErrors();
   void attemptCalibration();
   void adjustSetpoint();

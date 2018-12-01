@@ -4,6 +4,7 @@
 #include "Exoskeleton.hpp"
 #include "Board.hpp"
 #include "Linked_List.hpp"
+#include "Pot.hpp"
 
 
 class ExoDirector{
@@ -44,6 +45,7 @@ private:
   LinkedList<InputPort*> torque_sensor_ports;
   LinkedList<OutputPort*> motor_ports;
   LinkedList<InputPort*> error_ports;
+  LinkedList<InputPort*> pot_ports;
   LinkedList<LinkedList<InputPort*>* > fsr_ports;
   LinkedList<ImuPort*> imu_ports;
   LinkedList<unsigned int> imu_address;
@@ -52,6 +54,7 @@ public:
   ~LegBuilder();
   LegBuilder(ExoBuilder* return_context, int sign);
   LegBuilder* addStateMachine(State* states);
+  LegBuilder* addPot(InputPort* port);
   LegBuilder* addJoint(InputPort* torque_sensor_port, OutputPort* motor_port,
                        InputPort* error_port, ControlModule* module);
   LegBuilder* beginFSRGroup();

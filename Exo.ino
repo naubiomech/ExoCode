@@ -43,6 +43,8 @@ Exoskeleton* exo;
 
 void setup() {
   exo = setupSystem();
+  Serial.println("Got exo");
+  exo->startTrial();
 
   // set the interrupt
   Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
@@ -62,6 +64,9 @@ void loop() {
 }
 
 Exoskeleton* setupSystem(){
+  Serial.begin(115200);
+  delay(500);
+  Serial.println("Beginning");
   Board* board = QuadBoardDirector().build();
   Exoskeleton* exo = QuadExoDirector().build(board);
   delete board;

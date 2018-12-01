@@ -178,14 +178,14 @@ InputPort* Board::takeMotorErrorRightAnklePort(){
   return port;
 }
 
-OutputPort* Board::takePotLeftLegPort(){
-  OutputPort* port = pot_left_leg_port;
+InputPort* Board::takePotLeftLegPort(){
+  InputPort* port = pot_left_leg_port;
   pot_left_leg_port = NULL;
   return port;
 }
 
-OutputPort* Board::takePotRightLegPort(){
-  OutputPort* port = pot_right_leg_port;
+InputPort* Board::takePotRightLegPort(){
+  InputPort* port = pot_right_leg_port;
   pot_right_leg_port = NULL;
   return port;
 }
@@ -290,11 +290,11 @@ void Board::setImuAddress1(int address){
   imu_address_1 = address;
 }
 
-void Board::setPotLeftLegPort(OutputPort* port){
+void Board::setPotLeftLegPort(InputPort* port){
   pot_left_leg_port = port;
 }
 
-void Board::setPotRightLegPort(OutputPort* port){
+void Board::setPotRightLegPort(InputPort* port){
   pot_right_leg_port = port;
 }
 

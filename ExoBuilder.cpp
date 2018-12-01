@@ -26,6 +26,7 @@ Exoskeleton* QuadExoDirector::build(Board* board){
     ->addMotorEnable(board->takeMotorEnablePort())
     ->addLedPort(board->takeLedPort())
     ->beginLeftLeg()
+    ->addPot(board->takePotLeftLegPort())
     ->addStateMachine(state_builder->build())
     ->addJoint(board->takeTorqueSensorLeftAnklePort(),
                board->takeMotorLeftAnklePort(),
@@ -45,6 +46,7 @@ Exoskeleton* QuadExoDirector::build(Board* board){
     ->addImu(board->getImuSlot0(), board->getImuAddress0())
     ->addImu(board->getImuSlot1(), board->getImuAddress0())
     ->addImu(board->getImuSlot2(), board->getImuAddress0())
+    ->addPot(board->takePotRightLegPort())
     ->addStateMachine(state_builder->build())
     ->addJoint(board->takeTorqueSensorRightAnklePort(),
                board->takeMotorRightAnklePort(),
@@ -159,6 +161,11 @@ LegBuilder* LegBuilder::addImu(ImuPort* port,unsigned int address){
   return this;
 }
 
+LegBuilder* LegBuilder::addPot(InputPort* port){
+  pot_ports.append(port);
+  return this;
+}
+
 ExoBuilder* LegBuilder::finishLeg(){
   return return_context;
 }
@@ -189,6 +196,13 @@ Leg* LegBuilder::build(){
   for (unsigned int i = 0; i < imu_ports.size(); i++){
     imus.append(new IMU(imu_ports[i], imu_address[i]));
   }
-  Leg* leg = new Leg(states, joints,fsrs,imus);
+
+
+  LinkedList<Pot*> pots;
+  for (unsigned int i = 0; i < pot_ports.size(); i++){
+    pots.append(new Pot(pot_ports[i]));
+  }
+
+  Leg* leg = new Leg(states, joints, fsrs, imus, pots);
   return leg;
 }

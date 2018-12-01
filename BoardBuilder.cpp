@@ -26,6 +26,8 @@ Board* QuadBoardDirector::build(){
     ->setMotorErrorLeftAnklePort(25)
     ->setMotorErrorRightKneePort(26)
     ->setMotorErrorRightAnklePort(27)
+    ->setPotRightLegPort(A17)
+    ->setPotLeftLegPort(A16)
     ->setImuSlot0(I2C_PINS_3_4)
     ->setImuSlot1(I2C_PINS_7_8)
     ->setImuSlot2(I2C_PINS_37_38)
@@ -169,12 +171,12 @@ BoardBuilder* BoardBuilder::setMotorErrorRightAnklePort(unsigned int pin){
 }
 
 BoardBuilder* BoardBuilder::setPotLeftLegPort(unsigned int pin){
-  board->setPotLeftLegPort(port_factory->createAnalogOutputPort(pin, write_resolution));
+  board->setPotLeftLegPort(port_factory->createAnalogInputPort(pin, write_resolution));
   return this;
 }
 
 BoardBuilder* BoardBuilder::setPotRightLegPort(unsigned int pin){
-  board->setPotRightLegPort(port_factory->createAnalogOutputPort(pin, write_resolution));
+  board->setPotRightLegPort(port_factory->createAnalogInputPort(pin, write_resolution));
   return this;
 }
 
