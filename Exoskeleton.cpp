@@ -53,7 +53,8 @@ void Exoskeleton::run(){
 
 void Exoskeleton::sendReport(){
   if (trialStarted &&
-      (reportDataTimer.check())) {
+      reportDataTimer.check()) {
+
     reportDataTimer.reset();
     fillReport(report);
     transceiver->sendReport(report);
