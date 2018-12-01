@@ -26,7 +26,6 @@ Exoskeleton* QuadExoDirector::build(Board* board){
     ->addMotorEnable(board->takeMotorEnablePort())
     ->addLedPort(board->takeLedPort())
     ->beginLeftLeg()
-    ->addPot(board->takePotLeftLegPort())
     ->addStateMachine(state_builder->build())
     ->addJoint(board->takeTorqueSensorLeftAnklePort(),
                board->takeMotorLeftAnklePort(),
@@ -43,10 +42,6 @@ Exoskeleton* QuadExoDirector::build(Board* board){
     ->finishLeg()
 
     ->beginRightLeg()
-    ->addImu(board->getImuSlot0(), board->getImuAddress0())
-    ->addImu(board->getImuSlot1(), board->getImuAddress0())
-    ->addImu(board->getImuSlot2(), board->getImuAddress0())
-    ->addPot(board->takePotRightLegPort())
     ->addStateMachine(state_builder->build())
     ->addJoint(board->takeTorqueSensorRightAnklePort(),
                board->takeMotorRightAnklePort(),
