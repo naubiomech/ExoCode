@@ -33,11 +33,13 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055_t3.h>
 #include <utility/imumaths.h>
+#include "BoardBuilder.hpp"
 #include "Board.hpp"
 #include "TimerOne.h"
 #include "Exoskeleton.hpp"
 #include "ExoBuilder.hpp"
 #include "Linked_List.hpp"
+
 
 Exoskeleton* exo;
 
@@ -68,7 +70,9 @@ Exoskeleton* setupSystem(){
   delay(500);
   Serial.println("Beginning");
   Board* board = QuadBoardDirector().build();
+  Serial.println("Got board");
   Exoskeleton* exo = QuadExoDirector().build(board);
+  Serial.println("Got exo");
   delete board;
   return exo;
 }
