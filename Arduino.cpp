@@ -39,9 +39,13 @@ bool SoftwareSerial::available(){return false;};
 
 Adafruit_BNO055::Adafruit_BNO055(int, int, unsigned int, int, i2c_pins, int, int, int){}
 bool Adafruit_BNO055::begin(){return true;}
-void Adafruit_BNO055::getEvent(sensors_event_t*){}
 void Adafruit_BNO055::getCalibration(uint8_t*, uint8_t*, uint8_t*, uint8_t*){}
 bool Adafruit_BNO055::isFullyCalibrated(){return true;}
+void Adafruit_BNO055::getEvent(sensors_event_t* event){
+	event->orientation.x = 0;
+	event->orientation.y = 0;
+	event->orientation.z = 0;
+}
 
 
 Metro::Metro(unsigned long interval){}
