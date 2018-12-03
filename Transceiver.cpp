@@ -40,7 +40,6 @@ void Transceiver::sendData(void* raw_data, int bytes_to_send){
   char* data = (char*) raw_data;
   for(int i = 0; i < bytes_to_send; i++){
     command_serial->write(data);
-    command_serial->write(',');
   }
 }
 
@@ -70,7 +69,7 @@ void MatlabTransceiver::sendData(void* raw_data, int doubles_to_send){
   double* data = (double*) raw_data;
   for (int i = 0; i < doubles_to_send; i++){
     command_serial->print(data[i]);
-    command_serial->print(',');
+    command_serial->write(',');
   }
 }
 void Transceiver::sendLegReport(LegReport* report){
@@ -86,6 +85,7 @@ void Transceiver::sendLegReport(LegReport* report){
 void Transceiver::sendReport(ExoReport* report){
 
   sendMessageBegin();
+  command_serial->write(',');
   sendLegReport(report->right_leg);
   sendLegReport(report->left_leg);
 
