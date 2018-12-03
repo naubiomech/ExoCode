@@ -1,6 +1,7 @@
 #include "Arduino.hpp"
 #ifndef ARDUINO
 #include <stdio.h>
+#include <sys/time.h>
 
 SoftwareSerial Serial = SoftwareSerial(0,0);
 
@@ -37,7 +38,7 @@ bool SoftwareSerial::available(){return false;};
 
 
 Adafruit_BNO055::Adafruit_BNO055(int, int, unsigned int, int, i2c_pins, int, int, int){}
-bool Adafruit_BNO055::begin(){}
+bool Adafruit_BNO055::begin(){return true;}
 void Adafruit_BNO055::getEvent(sensors_event_t*){}
 void Adafruit_BNO055::getCalibration(uint8_t*, uint8_t*, uint8_t*, uint8_t*){}
 bool Adafruit_BNO055::isFullyCalibrated(){return true;}
@@ -60,7 +61,17 @@ double round(double){return 0;}
 double abs(double){return 0;}
 double max(double, double){return 0;}
 double min(double, double){return 0;}
-unsigned long millis(){return 0;}
+unsigned long int millis(){
+  struct timeval tv;
+
+  gettimeofday(&tv, NULL);
+
+  unsigned long long millisecondsSinceEpoch =
+    (unsigned long long)(tv.tv_sec) * 1000 +
+    (unsigned long long)(tv.tv_usec) / 1000;
+
+  return millisecondsSinceEpoch;
+}
 void pinMode(int, int){}
 void analogReadResolution(int){}
 void analogWriteResolution(int){}
