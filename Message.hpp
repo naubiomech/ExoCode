@@ -3,53 +3,54 @@
 #include <cstddef>
 #include "Report.hpp"
 
-class MotorMessage{
+enum LegMessageIndex{RIGHT_LEG_MSG, LEFT_LEG_MSG};
+
+class Command{
 public:
-  double* setpoint;
+  virtual void execute();
 };
 
-class TorqueSensorMessage{
+class JointCommand:Command{
 public:
+  virtual void execute();
+};
+
+class LegCommand:Command{
+public:
+  virtual void execute();
+};
+
+class ExoCommand:Command{
+public:
+  virtual void execute();
+};
+
+class StartTrialCommand:ExoCommand{
+public:
+  virtual void execute();
 };
 
 class JointMessage{
 public:
-  ~JointMessage();
-
-  MotorMessage* motor_message = NULL;
-  TorqueSensorMessage* torque_sensor_message = NULL;
-};
-
-class FSRMessage{
-public:
-};
-
-class IMUMessage{
-public:
+  JointCommand* command;
 };
 
 class LegMessage{
 public:
-  LegMessage(LegReport* report);
-  ~LegMessage();
-  FSRMessage** fsr_messages;
-  JointMessage** joint_messages;
-  IMUMessage** imu_messages;
-  int fsr_message_count;
-  int joint_message_count;
-  int imu_message_count;
+  LegCommand* command;
+  JointMessage* joint_msg;
+  int joint_index;
 };
 
 class ExoMessage{
 public:
-  ~ExoMessage();
-  LegMessage* left_leg = NULL;
-  LegMessage* right_leg = NULL;
+  LegMessage* right_leg_msg;
+  LegMessage* left_leg_msg;
+  ExoCommand* command;
 };
 
-LegMessage* prepareMotorMessage(LegReport* report, int joint_id);
-LegMessage* prepareTorqueSensorMessage(LegReport* report, int joint_id);
-LegMessage* prepareFSRMessage(LegReport* report, int fsr_id);
-LegMessage* prepareIMUMessage(LegReport* report, int imu_id);
-
+class MessageFactory{
+  ExoMessage* createJointMessage(JointCommand* command, LegMessageIndex leg_index,int joint_index);
+  ExoMessage* createLegMessage(JointCommand* command);
+};
 #endif
