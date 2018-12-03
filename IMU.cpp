@@ -6,9 +6,15 @@ IMU::IMU(ImuPort* imu_port, unsigned int address){
   bno = new Adafruit_BNO055(WIRE_BUS, 1, address, I2C_MASTER, imu_port->getPins(),
                             I2C_PULLUP_EXT, I2C_RATE_100, I2C_OP_MODE_ISR);
 
+  for(int i = 0; i < 3;i++){
+    bearings[i] = 0;
+  }
+
   if (!bno->begin()) {
+    enabled = false;
     Serial.println("No IMU detected");
   }
+  enabled = true;
 }
 
 IMU::~IMU(){
@@ -18,7 +24,7 @@ IMU::~IMU(){
 void IMU::calibrate(){
   sensors_event_t event;
   Serial.println("IMU setup... calibrating");
-  while (!bno->isFullyCalibrated()) {
+  while (enabled && !bno->isFullyCalibrated()) {
     bno->getEvent(&event);
 
     Serial.print("X: ");
@@ -50,7 +56,7 @@ void IMU::calibrate(){
 }
 
 void IMU::measure(){
-  if (imu_measure_limiter.check()){
+  if (enabled && imu_measure_limiter.check()){
     sensors_event_t event;
     bno->getEvent(&event);
     this->bearings[0] = event.orientation.x;
