@@ -9,7 +9,7 @@
 class Exoskeleton;
 class Transceiver{
 private:
-  void receiveMessage(ExoMessage* msg, ExoReport* report);
+  void receiveMessage(Exoskeleton* exo, ExoReport* report);
   bool dataAvailable();
   bool noDataAvailable();
   void sendLegReport(LegReport* report);
@@ -28,7 +28,7 @@ protected:
 public:
   Transceiver(TxPort* tx, RxPort* rx);
   virtual ~Transceiver();
-  ExoMessage* receiveMessages(ExoReport* report);
+  void receiveMessages(Exoskeleton* exo, ExoReport* report);
   void sendReport(ExoReport* report);
 
 };

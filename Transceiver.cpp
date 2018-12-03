@@ -1,5 +1,6 @@
 #include "Transceiver.hpp"
 #include "Arduino.hpp"
+#include "Exoskeleton.hpp"
 
 Transceiver::Transceiver(TxPort* tx, RxPort* rx){
   command_serial = new SoftwareSerial(tx->getPin(), rx->getPin());
@@ -9,6 +10,7 @@ Transceiver::Transceiver(TxPort* tx, RxPort* rx){
 }
 
 Transceiver::~Transceiver(){
+  // Commented command serial delete until software serial allows deletion
   /* delete command_serial; */
 }
 
@@ -99,15 +101,13 @@ void Transceiver::sendReport(ExoReport* report){
   sendMessageEnd();
 }
 
-ExoMessage* Transceiver::receiveMessages(ExoReport* report){
-  ExoMessage* exoMsg = new ExoMessage();
+void Transceiver::receiveMessages(Exoskeleton* exo, ExoReport* report){
   while(dataAvailable()){
-    receiveMessage(exoMsg, report);
+    receiveMessage(exo, report);
   }
-  return exoMsg;
 }
 
-void Transceiver::receiveMessage(ExoMessage* exoMsg, ExoReport* report){
+void Transceiver::receiveMessage(Exoskeleton* exo, ExoReport* report){
 
   if (noDataAvailable()) {
     return;
@@ -121,11 +121,11 @@ void Transceiver::receiveMessage(ExoMessage* exoMsg, ExoReport* report){
     break;
 
   case COMM_CODE_START_TRIAL:
-    /* exo->startTrial(); */
+    exo->startTrial();
     break;
 
   case COMM_CODE_END_TRIAL:
-    /* exo->endTrial(); */
+    exo->endTrial();
     sendReport(report);
     break;
 
@@ -155,18 +155,9 @@ void Transceiver::receiveMessage(ExoMessage* exoMsg, ExoReport* report){
     break;
 
   case COMM_CODE_SET_LEFT_ANKLE_SETPOINT:
-    receiveData(data_received, 2);
-    exoMsg->left_leg = prepareMotorMessage(report->left_leg, 0);
-    exoMsg->left_leg->joint_messages[0]->motor_message->setpoint = data_received;
-    /* exo->resetStartingParameters(); */
     break;
 
   case COMM_CODE_SET_RIGHT_ANKLE_SETPOINT:
-    receiveData(data_received, 2);
-    exoMsg->right_leg = prepareMotorMessage(report->right_leg, 0);
-    exoMsg->right_leg->joint_messages[0]->motor_message->setpoint = data_received;
-    /* exo->resetStartingParameters(); */
     break;
   }
-  delete exoMsg;
 }
