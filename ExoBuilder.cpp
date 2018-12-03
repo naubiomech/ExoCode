@@ -19,7 +19,7 @@ Exoskeleton* QuadExoDirector::build(Board* board){
   ControlModuleBuilder* module_builder = new ControlModuleBuilder();
   module_builder
     ->addState(SWING, zero_torque)
-    ->addState(LATE_STANCE, bang_bang);
+    ->addState(LATE_STANCE, zero_torque);
   ExoBuilder* builder = new ExoBuilder();
   builder
     ->addTransceiver(board->takeBluetoothTxPort(), board->takeBluetoothRxPort())
@@ -27,14 +27,6 @@ Exoskeleton* QuadExoDirector::build(Board* board){
     ->addLedPort(board->takeLedPort())
     ->beginLeftLeg()
     ->addStateMachine(state_builder->build())
-    ->addJoint(board->takeTorqueSensorLeftAnklePort(),
-               board->takeMotorLeftAnklePort(),
-               board->takeMotorErrorLeftAnklePort(),
-               module_builder->build(LATE_STANCE))
-    ->addJoint(board->takeTorqueSensorLeftKneePort(),
-               board->takeMotorLeftKneePort(),
-               board->takeMotorErrorLeftKneePort(),
-               module_builder->build(LATE_STANCE))
     ->beginFSRGroup()
     ->addFSR(board->takeFsrSenseLeftToePort())
     ->addFSR(board->takeFsrSenseLeftHeelPort())
@@ -43,18 +35,13 @@ Exoskeleton* QuadExoDirector::build(Board* board){
 
     ->beginRightLeg()
     ->addStateMachine(state_builder->build())
-    ->addJoint(board->takeTorqueSensorRightAnklePort(),
-               board->takeMotorRightAnklePort(),
-               board->takeMotorErrorRightAnklePort(),
-               module_builder->build(LATE_STANCE))
-    ->addJoint(board->takeTorqueSensorRightKneePort(),
-               board->takeMotorRightKneePort(),
-               board->takeMotorErrorRightKneePort(),
-               module_builder->build(LATE_STANCE))
     ->beginFSRGroup()
     ->addFSR(board->takeFsrSenseRightToePort())
     ->addFSR(board->takeFsrSenseRightHeelPort())
     ->finishFSRGroup()
+    ->addImu(board->getImuSlot0(), board->getImuAddress0())
+    ->addImu(board->getImuSlot1(), board->getImuAddress0())
+    ->addImu(board->getImuSlot2(), board->getImuAddress0())
     ->finishLeg();
   delete state_builder;
   delete module_builder;
