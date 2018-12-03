@@ -72,13 +72,14 @@ AnalogOutputPort::AnalogOutputPort(unsigned int pin, unsigned int resolution_bit
 AnalogOutputPort::~AnalogOutputPort(){}
 
 void AnalogOutputPort::write(double value){
-  analogWrite(getPin(), (int) (value * resolution));
+  int output = (int) (value * resolution);
+  analogWrite(getPin(), output);
 }
 
 DigitalOutputPort::DigitalOutputPort(unsigned int pin):OutputPort(pin){
-
   pinMode(pin, OUTPUT);
 }
+
 DigitalOutputPort::~DigitalOutputPort(){}
 
 void DigitalOutputPort::write(double value){
