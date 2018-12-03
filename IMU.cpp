@@ -11,8 +11,10 @@ IMU::IMU(ImuPort* imu_port, unsigned int address){
   }
 
   if (!bno->begin()) {
+    enabled = false;
     Serial.println("No IMU detected");
   }
+  enabled = true;
 }
 
 IMU::~IMU(){
@@ -22,7 +24,7 @@ IMU::~IMU(){
 void IMU::calibrate(){
   sensors_event_t event;
   Serial.println("IMU setup... calibrating");
-  while (!bno->isFullyCalibrated()) {
+  while (enabled && !bno->isFullyCalibrated()) {
     bno->getEvent(&event);
 
     Serial.print("X: ");
@@ -54,9 +56,9 @@ void IMU::calibrate(){
 }
 
 void IMU::measure(){
-  if (imu_measure_limiter.check()){
-	  sensors_event_t event;
-	  bno->getEvent(&event);
+  if (enabled && imu_measure_limiter.check()){
+    sensors_event_t event;
+    bno->getEvent(&event);
     this->bearings[0] = event.orientation.x;
     this->bearings[1] = event.orientation.y;
     this->bearings[2] = event.orientation.z;
