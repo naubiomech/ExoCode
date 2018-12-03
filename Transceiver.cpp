@@ -88,16 +88,21 @@ void Transceiver::sendReport(ExoReport* report){
 
   sendMessageBegin();
   command_serial->write(',');
-  sendLegReport(report->right_leg);
-  sendLegReport(report->left_leg);
 
-  double sigs[4];
-  sigs[0] = 0; //SIG1
-  sigs[1] = 0; //SIG2
-  sigs[2] = 0; //SIG3
-  sigs[3] = 0; //SIG4
+  double state[1];
+  state[0] = report->right_leg->state;
+  sendData(state, 1);
 
-  sendData(sigs, 4);
+  double angles[9];
+  for (int i =0; i < 3; i++){
+    for(int j = 0; j < 3; j++){
+      angles[i*3 + j] = report->right_leg->imu_reports[i]->orientation[j];
+    }
+  }
+
+  sendData(angles, 9);
+  double blank[4] = {0};
+  sendData(blank,4);
   sendMessageEnd();
 }
 
