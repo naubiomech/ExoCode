@@ -46,7 +46,6 @@ Exoskeleton* exo;
 void setup() {
   exo = setupSystem();
   Serial.println("Got exo");
-  exo->startTrial();
 
   // set the interrupt
   Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
