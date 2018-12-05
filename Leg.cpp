@@ -18,6 +18,7 @@ Leg::Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs,
   this->foot_fsrs = fsrs[0];
 
   increment_activation_starting_step = 0;
+  set_motors_to_zero_torque = false;
 }
 
 Leg::~Leg(){
