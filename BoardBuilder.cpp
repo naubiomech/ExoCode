@@ -29,7 +29,6 @@ Board* QuadBoardDirector::build(){
     ->setPotRightLegPort(A17)
     ->setPotLeftLegPort(A16)
     ->setImuSlot0(I2C_PINS_7_8)
-    ->setImuSlot1(I2C_PINS_37_38)
     ->setImuSlot2(I2C_PINS_3_4)
     ->setImuAddress0(0x28)
     ->setImuAddress1(0x29)
