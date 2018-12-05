@@ -24,6 +24,9 @@ Board::Board(){
   motor_error_left_ankle_port = NULL;
   motor_error_right_knee_port = NULL;
   motor_error_right_ankle_port = NULL;
+  imu_slot_0 = NULL;
+  imu_slot_1 = NULL;
+  imu_slot_2 = NULL;
   pot_left_leg_port = NULL;
   pot_right_leg_port = NULL;
 }
