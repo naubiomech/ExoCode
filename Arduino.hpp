@@ -32,7 +32,6 @@ public:
 #define REVERSE 1
 #define AUTOMATIC 1
 
-#define WIRE_BUS 1
 #define I2C_MASTER 1
 #define I2C_PULLUP_EXT 1
 #define I2C_RATE_100 1
