@@ -19,9 +19,11 @@ Leg::Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs,
 
   increment_activation_starting_step = 0;
   set_motors_to_zero_torque = false;
+  foot_change = new ChangeTrigger(false);
 }
 
 Leg::~Leg(){
+  delete foot_change;
   state->deleteStateMachine();
   ListIterator<Joint*> joint_iter = joints.getIterator();
   while(joint_iter.hasNext()){
@@ -157,9 +159,10 @@ void Leg::changeJointControl(StateID state_id){
   }
 }
 
-bool Leg::determine_foot_on_ground(){
+bool Leg::determine_foot_state_change(){
   bool foot_on_fsr = foot_fsrs->isActivated();
-  return foot_on_fsr;
+  bool foot_state_different = foot_change->update(foot_on_fsr);
+  return foot_state_different;
 }
 
 void Leg::setZeroIfNecessary(){
