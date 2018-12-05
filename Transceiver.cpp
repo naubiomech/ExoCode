@@ -159,8 +159,51 @@ void Transceiver::receiveMessage(Exoskeleton* exo, ExoReport* report){
 
   case COMM_CODE_SET_RIGHT_ANKLE_SETPOINT:
     break;
+
   case COMM_CODE_CALC_BASELINE:
     exo->calibrateFSRs();
     break;
+
+  case COMM_CODE_GET_SMOOTHING_PARAMS:
+    data_to_send[0] = 1;
+    data_to_send[1] = 1;
+    data_to_send[2] = 1;
+    sendCommandMessage(COMM_CODE_GET_SMOOTHING_PARAMS, data_to_send, 3);
+    break;
+
+  case COMM_CODE_GET_LEFT_ANKLE_FSR_THRESHOLD:
+    data_to_send[0] = 1;
+    sendCommandMessage(COMM_CODE_GET_LEFT_ANKLE_FSR_THRESHOLD, data_to_send, 1);
+    break;
+
+  case COMM_CODE_GET_RIGHT_ANKLE_FSR_THRESHOLD:
+    data_to_send[0] = 1;
+    sendCommandMessage(COMM_CODE_GET_RIGHT_ANKLE_FSR_THRESHOLD, data_to_send, 1);
+    break;
+
+  case COMM_CODE_GET_LEFT_ANKLE_KF:
+    data_to_send[0] = 1;
+    sendCommandMessage(COMM_CODE_GET_LEFT_ANKLE_KF, data_to_send, 1);
+    break;
+
+  case COMM_CODE_GET_RIGHT_ANKLE_KF:
+    data_to_send[0] = 1;
+    sendCommandMessage(COMM_CODE_GET_RIGHT_ANKLE_KF, data_to_send, 1);
+    break;
+
+  case COMM_CODE_GET_LEFT_ANKLE_PID_PARAMS:
+    data_to_send[0] = 1;
+    data_to_send[1] = 1;
+    data_to_send[2] = 1;
+    sendCommandMessage(COMM_CODE_GET_LEFT_ANKLE_PID_PARAMS, data_to_send,3);
+    break;
+
+  case COMM_CODE_GET_RIGHT_ANKLE_PID_PARAMS:
+    data_to_send[0] = 1;
+    data_to_send[1] = 1;
+    data_to_send[2] = 1;
+    sendCommandMessage(COMM_CODE_GET_RIGHT_ANKLE_PID_PARAMS, data_to_send,3);
+    break;
+
   }
 }
