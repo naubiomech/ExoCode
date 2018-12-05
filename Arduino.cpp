@@ -2,6 +2,7 @@
 #ifndef ARDUINO
 #include <stdio.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 SoftwareSerial Serial = SoftwareSerial(0,0);
 
@@ -58,7 +59,7 @@ void PID::SetOutputLimits(int,int){}
 void PID::SetSampleTime(int){}
 void PID::Compute_KF(double){}
 
-void delay(double){}
+void delay(double time){usleep(1000 * time);}
 double pow(double, double){return 0;}
 double exp(double){return 0;}
 double round(double){return 0;}
