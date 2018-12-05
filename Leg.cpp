@@ -187,7 +187,11 @@ void Leg::measureSensors(){
     this->joints[i]->measureTorque();
     this->joints[i]->measureError();
   }
-  this->foot_fsrs->measureForce();
+
+  for (unsigned int i = 0; i < fsrs.size(); i++){
+    fsrs[i]->measureForce();
+  }
+
   this->measureIMUs();
   this->measurePots();
 
