@@ -130,7 +130,7 @@ void Transceiver::receiveMessage(Exoskeleton* exo, ExoReport* report){
     break;
 
   case COMM_CODE_CALIBRATE_TORQUE:
-    /* exo->calibrateTorque(); */
+    exo->calibrateTorque();
     break;
 
   case COMM_CODE_CHECK_BLUETOOTH:
@@ -158,6 +158,9 @@ void Transceiver::receiveMessage(Exoskeleton* exo, ExoReport* report){
     break;
 
   case COMM_CODE_SET_RIGHT_ANKLE_SETPOINT:
+    break;
+  case COMM_CODE_CALC_BASELINE:
+    exo->calibrateFSRs();
     break;
   }
 }
