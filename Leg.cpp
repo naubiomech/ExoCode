@@ -139,7 +139,7 @@ bool Leg::hasStateChanged(){
 }
 
 void Leg::changeState(){
-  state->changeState();
+  state = state->changeState();
   state->setContext(this);
 }
 
