@@ -63,8 +63,8 @@ double pow(double, double){return 0;}
 double exp(double){return 0;}
 double round(double){return 0;}
 double abs(double){return 0;}
-double max(double, double){return 0;}
-double min(double, double){return 0;}
+double max(double a, double b){return (a>b) ? a : b;}
+double min(double a, double b){return (a<b) ? a : b;}
 unsigned long int millis(){
   struct timeval tv;
 
