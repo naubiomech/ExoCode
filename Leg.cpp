@@ -134,8 +134,8 @@ void Leg::startIncrementalActivation(){
   this->increment_activation_starting_step = step_count;
 }
 
-bool Leg::hasStateChanged(bool foot_on_ground){
-  return foot_on_ground && state->getStateTime() <= step_time_length / 4;
+bool Leg::hasStateChanged(){
+  return determine_foot_on_ground() && state->getStateTime() <= step_time_length / 4;
 }
 
 void Leg::changeState(){
@@ -173,8 +173,8 @@ void Leg::setToZero(){
 }
 
 void Leg::applyStateMachine(){
-  bool foot_on_ground = determine_foot_on_ground();
-  if (this->hasStateChanged(foot_on_ground)){
+  bool has_state_changed = this->hasStateChanged();
+  if (has_state_changed){
     changeState();
   } else {
     setZeroIfSteadyState();
@@ -233,32 +233,32 @@ void Leg::setSign(int sign){
 
 LegReport* Leg::generateReport(){
   LegReport* report = new LegReport(joints.size(), fsrs.size(), imus.size());
-    fillLocalReport(report);
-    for (unsigned int i = 0; i < joints.size(); i++){
-      report->joint_reports[i] = joints[i]->generateReport();
-    }
-    for (unsigned int i = 0; i < fsrs.size(); i++){
-      report->fsr_reports[i] = fsrs[i]->generateReport();
-    }
-    for (unsigned int i = 0; i < imus.size(); i++){
-      report->imu_reports[i] = imus[i]->generateReport();
-    }
-    return report;
+  fillLocalReport(report);
+  for (unsigned int i = 0; i < joints.size(); i++){
+    report->joint_reports[i] = joints[i]->generateReport();
   }
+  for (unsigned int i = 0; i < fsrs.size(); i++){
+    report->fsr_reports[i] = fsrs[i]->generateReport();
+  }
+  for (unsigned int i = 0; i < imus.size(); i++){
+    report->imu_reports[i] = imus[i]->generateReport();
+  }
+  return report;
+}
 
-  void Leg::fillReport(LegReport* report){
-    fillLocalReport(report);
-    for (unsigned int i = 0; i < joints.size(); i++){
-      joints[i]->fillReport(report->joint_reports[i]);
-    }
-    for (unsigned int i = 0; i < fsrs.size(); i++){
-      fsrs[i]->fillReport(report->fsr_reports[i]);
-    }
-    for (unsigned int i = 0; i < imus.size(); i++){
-      imus[i]->fillReport(report->imu_reports[i]);
-    }
+void Leg::fillReport(LegReport* report){
+  fillLocalReport(report);
+  for (unsigned int i = 0; i < joints.size(); i++){
+    joints[i]->fillReport(report->joint_reports[i]);
   }
+  for (unsigned int i = 0; i < fsrs.size(); i++){
+    fsrs[i]->fillReport(report->fsr_reports[i]);
+  }
+  for (unsigned int i = 0; i < imus.size(); i++){
+    imus[i]->fillReport(report->imu_reports[i]);
+  }
+}
 
-  void Leg::fillLocalReport(LegReport* report){
-    report->state = state->getStateType();
-  }
+void Leg::fillLocalReport(LegReport* report){
+  report->state = state->getStateType();
+}

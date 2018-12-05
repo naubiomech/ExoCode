@@ -59,7 +59,7 @@ public:
   void changeState();
   void resetFSRMaxes();
   void adjustShapingForTime(double time);
-  bool hasStateChanged(bool foot_on_ground);
+  bool hasStateChanged();
   bool determine_foot_on_ground();
   void applyControl();
   void setToZero();
