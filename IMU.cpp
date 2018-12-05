@@ -3,7 +3,7 @@
 
 IMU::IMU(ImuPort* imu_port, unsigned int address){
 
-  bno = new Adafruit_BNO055(WIRE_BUS, 1, address, I2C_MASTER, imu_port->getPins(),
+  bno = new Adafruit_BNO055(imu_port->getBus(), 1, address, I2C_MASTER, imu_port->getPins(),
                             I2C_PULLUP_EXT, I2C_RATE_100, I2C_OP_MODE_ISR);
 
   for(int i = 0; i < 3;i++){

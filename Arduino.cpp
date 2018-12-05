@@ -2,6 +2,7 @@
 #ifndef ARDUINO
 #include <stdio.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 SoftwareSerial Serial = SoftwareSerial(0,0);
 
@@ -42,9 +43,9 @@ bool Adafruit_BNO055::begin(){return true;}
 void Adafruit_BNO055::getCalibration(uint8_t*, uint8_t*, uint8_t*, uint8_t*){}
 bool Adafruit_BNO055::isFullyCalibrated(){return true;}
 void Adafruit_BNO055::getEvent(sensors_event_t* event){
-	event->orientation.x = 0;
-	event->orientation.y = 0;
-	event->orientation.z = 0;
+  event->orientation.x = 0;
+  event->orientation.y = 0;
+  event->orientation.z = 0;
 }
 
 
@@ -58,13 +59,13 @@ void PID::SetOutputLimits(int,int){}
 void PID::SetSampleTime(int){}
 void PID::Compute_KF(double){}
 
-void delay(double){}
+void delay(double time){usleep(1000 * time);}
 double pow(double, double){return 0;}
 double exp(double){return 0;}
 double round(double){return 0;}
 double abs(double){return 0;}
-double max(double, double){return 0;}
-double min(double, double){return 0;}
+double max(double a, double b){return (a>b) ? a : b;}
+double min(double a, double b){return (a<b) ? a : b;}
 unsigned long int millis(){
   struct timeval tv;
 

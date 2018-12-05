@@ -139,3 +139,15 @@ void Max::update(double value){
 void Max::reset(){
   maxVal = FLT_MIN;
 }
+
+ChangeTrigger::ChangeTrigger(bool start_state){
+  state = start_state;
+}
+
+bool ChangeTrigger::update(bool state){
+  if (this->state != state){
+    this->state = state;
+    return true;
+  }
+  return false;
+}

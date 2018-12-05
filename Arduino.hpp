@@ -41,6 +41,7 @@ public:
 enum i2c_pins {I2C_PINS_3_4 = 0,
                I2C_PINS_7_8,
                I2C_PINS_37_38};
+enum i2c_bus {WIRE_BUS, WIRE1_BUS};
 
 typedef int uint8_t;
 struct sensors_event_t{
@@ -82,18 +83,18 @@ public:
 #define OUTPUT 1
 #define LOW 0
 #define HIGH 1
-#define A1 1
-#define A2 2
-#define A3 3
-#define A0 0
-#define A5 5
-#define A6 6
-#define A12 12
-#define A13 13
-#define A14 14
-#define A15 15
-#define A16 16
-#define A17 17
+#define A1 101
+#define A2 102
+#define A3 103
+#define A0 100
+#define A5 105
+#define A6 106
+#define A12 112
+#define A13 113
+#define A14 114
+#define A15 115
+#define A16 116
+#define A17 117
 
 void delay(double);
 double pow(double, double);

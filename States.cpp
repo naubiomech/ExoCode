@@ -40,7 +40,6 @@ State* State::changeState(){
   this->triggerEnd();
   next_state->setContext(leg);
   next_state->triggerStart();
-  leg->changeJointControl(next_state->getStateID());
   return next_state;
 }
 

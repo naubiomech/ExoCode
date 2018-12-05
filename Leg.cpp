@@ -18,9 +18,12 @@ Leg::Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs,
   this->foot_fsrs = fsrs[0];
 
   increment_activation_starting_step = 0;
+  set_motors_to_zero_torque = false;
+  foot_change = new ChangeTrigger(false);
 }
 
 Leg::~Leg(){
+  delete foot_change;
   state->deleteStateMachine();
   ListIterator<Joint*> joint_iter = joints.getIterator();
   while(joint_iter.hasNext()){
@@ -53,7 +56,9 @@ void Leg::applyControl(){
 }
 
 void Leg::calibrateFSRs(){
-  foot_fsrs->calibrate();
+  for (unsigned int i = 0; i < fsrs.size(); i++){
+    fsrs[i]->calibrate();
+  }
 }
 
 void Leg::startTorqueCalibration(){
@@ -134,13 +139,14 @@ void Leg::startIncrementalActivation(){
   this->increment_activation_starting_step = step_count;
 }
 
-bool Leg::hasStateChanged(bool foot_on_ground){
-  return foot_on_ground && state->getStateTime() <= step_time_length / 4;
+bool Leg::hasStateChanged(){
+  return determine_foot_state_change() && state->getStateTime() > step_time_length / 4;
 }
 
 void Leg::changeState(){
-  state->changeState();
+  state = state->changeState();
   state->setContext(this);
+  changeJointControl(state->getStateID());
 }
 
 void Leg::adjustControl(){
@@ -154,9 +160,10 @@ void Leg::changeJointControl(StateID state_id){
   }
 }
 
-bool Leg::determine_foot_on_ground(){
+bool Leg::determine_foot_state_change(){
   bool foot_on_fsr = foot_fsrs->isActivated();
-  return foot_on_fsr;
+  bool foot_state_different = foot_change->update(foot_on_fsr);
+  return foot_state_different;
 }
 
 void Leg::setZeroIfNecessary(){
@@ -173,8 +180,8 @@ void Leg::setToZero(){
 }
 
 void Leg::applyStateMachine(){
-  bool foot_on_ground = determine_foot_on_ground();
-  if (this->hasStateChanged(foot_on_ground)){
+  bool has_state_changed = this->hasStateChanged();
+  if (has_state_changed){
     changeState();
   } else {
     setZeroIfSteadyState();
@@ -186,7 +193,11 @@ void Leg::measureSensors(){
     this->joints[i]->measureTorque();
     this->joints[i]->measureError();
   }
-  this->foot_fsrs->measureForce();
+
+  for (unsigned int i = 0; i < fsrs.size(); i++){
+    fsrs[i]->measureForce();
+  }
+
   this->measureIMUs();
   this->measurePots();
 
@@ -233,32 +244,32 @@ void Leg::setSign(int sign){
 
 LegReport* Leg::generateReport(){
   LegReport* report = new LegReport(joints.size(), fsrs.size(), imus.size());
-    fillLocalReport(report);
-    for (unsigned int i = 0; i < joints.size(); i++){
-      report->joint_reports[i] = joints[i]->generateReport();
-    }
-    for (unsigned int i = 0; i < fsrs.size(); i++){
-      report->fsr_reports[i] = fsrs[i]->generateReport();
-    }
-    for (unsigned int i = 0; i < imus.size(); i++){
-      report->imu_reports[i] = imus[i]->generateReport();
-    }
-    return report;
+  fillLocalReport(report);
+  for (unsigned int i = 0; i < joints.size(); i++){
+    report->joint_reports[i] = joints[i]->generateReport();
   }
+  for (unsigned int i = 0; i < fsrs.size(); i++){
+    report->fsr_reports[i] = fsrs[i]->generateReport();
+  }
+  for (unsigned int i = 0; i < imus.size(); i++){
+    report->imu_reports[i] = imus[i]->generateReport();
+  }
+  return report;
+}
 
-  void Leg::fillReport(LegReport* report){
-    fillLocalReport(report);
-    for (unsigned int i = 0; i < joints.size(); i++){
-      joints[i]->fillReport(report->joint_reports[i]);
-    }
-    for (unsigned int i = 0; i < fsrs.size(); i++){
-      fsrs[i]->fillReport(report->fsr_reports[i]);
-    }
-    for (unsigned int i = 0; i < imus.size(); i++){
-      imus[i]->fillReport(report->imu_reports[i]);
-    }
+void Leg::fillReport(LegReport* report){
+  fillLocalReport(report);
+  for (unsigned int i = 0; i < joints.size(); i++){
+    joints[i]->fillReport(report->joint_reports[i]);
   }
+  for (unsigned int i = 0; i < fsrs.size(); i++){
+    fsrs[i]->fillReport(report->fsr_reports[i]);
+  }
+  for (unsigned int i = 0; i < imus.size(); i++){
+    imus[i]->fillReport(report->imu_reports[i]);
+  }
+}
 
-  void Leg::fillLocalReport(LegReport* report){
-    report->state = state->getStateType();
-  }
+void Leg::fillLocalReport(LegReport* report){
+  report->state = state->getStateType();
+}

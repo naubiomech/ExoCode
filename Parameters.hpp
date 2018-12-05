@@ -18,7 +18,7 @@ const double MOTOR_ZERO_OFFSET_DEFAULT = 0.0;
 
 // ===== FSR Parameters =====
 // To set FSR bias and to identify the states
-const double FSR_Sensors_type = 40;
+const double FSR_Sensors_type = 10;
 const int FSR_CALIBRATION_TIME_MS = 5000;
 
 // ===== Shaping Parameters =====

@@ -33,6 +33,7 @@ private:
   int increment_activation_starting_step;
 
   State* state;
+  ChangeTrigger* foot_change;
 
 public:
   Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs,
@@ -59,8 +60,8 @@ public:
   void changeState();
   void resetFSRMaxes();
   void adjustShapingForTime(double time);
-  bool hasStateChanged(bool foot_on_ground);
-  bool determine_foot_on_ground();
+  bool hasStateChanged();
+  bool determine_foot_state_change();
   void applyControl();
   void setToZero();
   void calibrateIMUs();

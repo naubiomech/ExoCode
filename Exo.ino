@@ -61,7 +61,6 @@ void loop() {
 
   exo->sendReport();
   exo->receiveMessages();
-  exo->checkReset();
 
 }
 

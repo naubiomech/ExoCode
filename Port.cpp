@@ -17,6 +17,14 @@ unsigned int Port::getPin(){
 
 ImuPort::ImuPort(i2c_pins pins):Port(-1){
   imu_pins = pins;
+  switch(pins){
+  case I2C_PINS_7_8:
+    imu_bus = WIRE_BUS;
+  case I2C_PINS_3_4:
+    imu_bus = WIRE1_BUS;
+  default:
+    imu_bus = WIRE_BUS;
+  }
 }
 
 ImuPort::~ImuPort(){
@@ -25,6 +33,10 @@ ImuPort::~ImuPort(){
 
 i2c_pins ImuPort::getPins(){
   return imu_pins;
+}
+
+i2c_bus ImuPort::getPins(){
+  return imu_bus;
 }
 
 InputPort::InputPort(unsigned int pin):Port(pin){}

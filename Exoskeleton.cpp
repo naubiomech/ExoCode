@@ -140,7 +140,7 @@ void Exoskeleton::enableExo(){
 
 void Exoskeleton::disableExo(){
   disableMotors();
-  led_port->write(1);
+  led_port->write(0);
 }
 
 void Exoskeleton::applyTorque(){
