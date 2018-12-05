@@ -16,9 +16,11 @@ public:
 class ImuPort:public Port{
 private:
   i2c_pins imu_pins;
+  i2c_bus imu_bus;
 public:
   ImuPort(i2c_pins imu_pins);
   i2c_pins getPins();
+  i2c_bus getBus();
   virtual ~ImuPort();
 };
 
