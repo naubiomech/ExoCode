@@ -42,9 +42,9 @@ bool Adafruit_BNO055::begin(){return true;}
 void Adafruit_BNO055::getCalibration(uint8_t*, uint8_t*, uint8_t*, uint8_t*){}
 bool Adafruit_BNO055::isFullyCalibrated(){return true;}
 void Adafruit_BNO055::getEvent(sensors_event_t* event){
-	event->orientation.x = 0;
-	event->orientation.y = 0;
-	event->orientation.z = 0;
+  event->orientation.x = 0;
+  event->orientation.y = 0;
+  event->orientation.z = 0;
 }
 
 
