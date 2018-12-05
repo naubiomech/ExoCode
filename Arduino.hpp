@@ -41,6 +41,7 @@ public:
 enum i2c_pins {I2C_PINS_3_4 = 0,
                I2C_PINS_7_8,
                I2C_PINS_37_38};
+enum i2c_bus {WIRE_BUS, WIRE1_BUS};
 
 typedef int uint8_t;
 struct sensors_event_t{
