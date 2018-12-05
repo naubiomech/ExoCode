@@ -71,6 +71,14 @@ public:
   void reset();
 };
 
+class ChangeTrigger{
+private:
+  bool state;
+public:
+  ChangeTrigger(bool start_state);
+  bool update(bool state);
+};
+
 void updateMax(double* max_val, double val);
 
 #endif
