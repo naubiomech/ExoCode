@@ -146,6 +146,7 @@ bool Leg::hasStateChanged(){
 void Leg::changeState(){
   state = state->changeState();
   state->setContext(this);
+  changeJointControl(state->getStateID());
 }
 
 void Leg::adjustControl(){
