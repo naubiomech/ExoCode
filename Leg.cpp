@@ -54,7 +54,9 @@ void Leg::applyControl(){
 }
 
 void Leg::calibrateFSRs(){
-  foot_fsrs->calibrate();
+  for (unsigned int i = 0; i < fsrs.size(); i++){
+    fsrs[i]->calibrate();
+  }
 }
 
 void Leg::startTorqueCalibration(){
