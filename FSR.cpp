@@ -52,7 +52,7 @@ FSRGroup::FSRGroup(LinkedList<FSR*>* fsrs){
   this->fsrs = *fsrs;
 
   force = 0;
-  fsr_percent_thresh = 0.9;
+  fsr_percent_thresh = 0.7;
   is_activated  = false;
   activation_threshold = new Threshold(0, fsr_percent_thresh, state_counter_th);
 }
