@@ -20,10 +20,13 @@ ImuPort::ImuPort(i2c_pins pins):Port(-1){
   switch(pins){
   case I2C_PINS_7_8:
     imu_bus = WIRE_BUS;
+    break;
   case I2C_PINS_3_4:
     imu_bus = WIRE1_BUS;
+    break;
   default:
     imu_bus = WIRE_BUS;
+    break;
   }
 }
 
