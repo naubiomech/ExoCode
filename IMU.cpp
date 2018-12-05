@@ -10,11 +10,11 @@ IMU::IMU(ImuPort* imu_port, unsigned int address){
     bearings[i] = 0;
   }
 
+  enabled = true;
   if (!bno->begin()) {
     enabled = false;
     Serial.println("No IMU detected");
   }
-  enabled = true;
 }
 
 IMU::~IMU(){
