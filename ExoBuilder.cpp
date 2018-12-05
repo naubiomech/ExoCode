@@ -40,7 +40,7 @@ Exoskeleton* QuadExoDirector::build(Board* board){
     ->addFSR(board->takeFsrSenseRightHeelPort())
     ->finishFSRGroup()
     ->addImu(board->getImuSlot0(), board->getImuAddress0())
-    ->addImu(board->getImuSlot1(), board->getImuAddress0())
+    ->addImu(board->getImuSlot0(), board->getImuAddress1())
     ->addImu(board->getImuSlot2(), board->getImuAddress0())
     ->finishLeg();
   delete state_builder;
