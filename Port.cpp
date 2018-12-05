@@ -35,7 +35,7 @@ i2c_pins ImuPort::getPins(){
   return imu_pins;
 }
 
-i2c_bus ImuPort::getPins(){
+i2c_bus ImuPort::getBus(){
   return imu_bus;
 }
 
