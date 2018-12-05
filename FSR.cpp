@@ -31,7 +31,7 @@ void FSR::measureForce(){
 
 void FSR::updateForce(double force){
   max_force->update(force);
-  force /= calibration_peak;
+  this->force = force / calibration_peak;
 }
 
 void FSR::calibrate(){
@@ -77,7 +77,7 @@ void FSRGroup::measureForce(){
     fsrs[i]->measureForce();
     average += fsrs[i]->getForce();
   }
-  force = average / fsr_count;
+  force = average / (double) fsr_count;
   is_activated = activation_threshold->getState(force);
 }
 
