@@ -35,9 +35,9 @@ void Joint::changeControl(StateID state_id){
   controller->changeControl(state_id);
 }
 
-void Joint::updateMotorOutput(double FSR_percentage, double max_FSR_percentage){
+void Joint::updateMotorOutput(SensorReport* report){
   double torque = torque_sensor->getTorque();
-  motor_output = controller->getControlAdjustment(torque, FSR_percentage, max_FSR_percentage);
+  motor_output = controller->getControlAdjustment(torque, report);
 }
 
 void Joint::setToZero(){

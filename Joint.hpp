@@ -28,7 +28,7 @@ public:
   void setToZero();
   void resetStartingParameters();
   void adjustShapingForTime(double planterTime);
-  void updateMotorOutput(double FSR_percentage, double max_FSR_percentage);
+  void updateMotorOutput(SensorReport* report);
   void changeControl(StateID state_id);
   void applyAutoKF();
   double getTorque();

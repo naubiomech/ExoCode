@@ -20,10 +20,16 @@ Leg::Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs,
   increment_activation_starting_step = 0;
   set_motors_to_zero_torque = false;
   foot_change = new ChangeTrigger(false);
+  LegReport* report  = generateReport();
+  sensor_report = report->sensor_reports;
+  report->sensor_reports = NULL;
+  delete report;
 }
 
 Leg::~Leg(){
   delete foot_change;
+  delete sensor_report;
+
   state->deleteStateMachine();
   ListIterator<Joint*> joint_iter = joints.getIterator();
   while(joint_iter.hasNext()){
@@ -95,11 +101,9 @@ void Leg::resetFSRMaxes(){
 }
 
 void Leg::adjustJointSetpoints(){
-  double FSR_percentage = foot_fsrs->getPercentage();
-  double max_FSR_percentage = foot_fsrs->getMaxPercentage();
-
+  fillSensorReport(sensor_report);
   for(unsigned int i = 0; i < joints.size(); i++){
-    joints[i]->updateMotorOutput(FSR_percentage, max_FSR_percentage);
+    joints[i]->updateMotorOutput(sensor_report);
   }
 }
 

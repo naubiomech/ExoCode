@@ -53,9 +53,6 @@ public:
   ~LegReport();
   SensorReport* sensor_reports;
   LinkedList<JointReport*> joint_reports;
-  int fsr_report_count;
-  int joint_report_count;
-  int imu_report_count;
   int state;
   StateType phase;
 };

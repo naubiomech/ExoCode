@@ -28,6 +28,7 @@ private:
   LinkedList<IMU*> imus;
   LinkedList<Pot*> pots;
   FSRGroup* foot_fsrs;
+  SensorReport* sensor_report;
 
   bool set_motors_to_zero_torque;
   int step_count;

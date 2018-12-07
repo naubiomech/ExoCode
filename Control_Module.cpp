@@ -32,14 +32,14 @@ ControlModule::~ControlModule(){
   delete shaping_function;
 }
 
-double ControlModule::getControlAdjustment(double torque_input, double fsr_percentage, double fsr_max_percentage){
-  double setpoint = getSetpoint(fsr_percentage, fsr_max_percentage);
+double ControlModule::getControlAdjustment(double torque_input, SensorReport* report){
+  double setpoint = getSetpoint(report);
   double adjustment = runPID(torque_input, KF, setpoint);
   return adjustment;
 }
 
-double ControlModule::getSetpoint(double fsr_percentage, double fsr_max_percentage){
-  double new_setpoint = current_algorithm->getSetpoint(fsr_percentage, fsr_max_percentage);
+double ControlModule::getSetpoint(SensorReport* report){
+  double new_setpoint = current_algorithm->getSetpoint(report);
   return shapeSetpoint(new_setpoint);
 }
 
