@@ -79,8 +79,8 @@ void Transceiver::sendLegReport(LegReport* report){
   leg_data[0] = report->joint_reports[0]->torque_sensor_report->measuredTorque;
   leg_data[1] = report->state;
   leg_data[2] = report->joint_reports[0]->pid_setpoint;
-  leg_data[3] = report->fsr_reports[0]->threshold;
-  leg_data[4] = report->fsr_reports[0]->measuredForce;
+  leg_data[3] = report->sensor_reports->fsr_reports[0]->threshold;
+  leg_data[4] = report->sensor_reports->fsr_reports[0]->measuredForce;
   sendData(leg_data, 5);
 }
 

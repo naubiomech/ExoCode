@@ -243,33 +243,40 @@ void Leg::setSign(int sign){
 }
 
 LegReport* Leg::generateReport(){
-  LegReport* report = new LegReport(joints.size(), fsrs.size(), imus.size());
-  fillLocalReport(report);
+  LegReport* leg_report = new LegReport();
+  SensorReport* sensor_report = new SensorReport();
+  leg_report->sensor_reports = sensor_report;
+  fillLocalReport(leg_report);
   for (unsigned int i = 0; i < joints.size(); i++){
-    report->joint_reports[i] = joints[i]->generateReport();
+	  leg_report->joint_reports.append(joints[i]->generateReport());
   }
   for (unsigned int i = 0; i < fsrs.size(); i++){
-    report->fsr_reports[i] = fsrs[i]->generateReport();
+	  sensor_report->fsr_reports.append(fsrs[i]->generateReport());
   }
   for (unsigned int i = 0; i < imus.size(); i++){
-    report->imu_reports[i] = imus[i]->generateReport();
+	  sensor_report->imu_reports.append(imus[i]->generateReport());
   }
-  return report;
+  return leg_report;
 }
 
 void Leg::fillReport(LegReport* report){
   fillLocalReport(report);
+  fillSensorReport(report->sensor_reports);
   for (unsigned int i = 0; i < joints.size(); i++){
-    joints[i]->fillReport(report->joint_reports[i]);
-  }
-  for (unsigned int i = 0; i < fsrs.size(); i++){
-    fsrs[i]->fillReport(report->fsr_reports[i]);
-  }
-  for (unsigned int i = 0; i < imus.size(); i++){
-    imus[i]->fillReport(report->imu_reports[i]);
+	  joints[i]->fillReport(report->joint_reports[i]);
   }
 }
 
+void Leg::fillSensorReport(SensorReport* report){
+
+	for (unsigned int i = 0; i < fsrs.size(); i++){
+		fsrs[i]->fillReport(report->fsr_reports[i]);
+	}
+	for (unsigned int i = 0; i < imus.size(); i++){
+		imus[i]->fillReport(report->imu_reports[i]);
+	}
+}
+
 void Leg::fillLocalReport(LegReport* report){
-  report->state = state->getStateType();
+	report->state = state->getStateType();
 }

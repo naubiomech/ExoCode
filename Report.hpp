@@ -2,44 +2,57 @@
 #define EXO_REPORT_HEADER
 #include <cstddef>
 #include "States.hpp"
+#include "Linked_List.hpp"
 
-class MotorReport{
+class Report{
+public:
+  virtual ~Report();
+};
+
+class MotorReport:public Report{
 public:
   double error;
 };
 
-class TorqueSensorReport{
+class TorqueSensorReport:public Report{
 public:
   double measuredTorque;
 };
 
-class JointReport{
+class JointReport:public Report{
 public:
+  JointReport();
   ~JointReport();
 
   double pid_setpoint;
-  MotorReport* motor_report = NULL;
-  TorqueSensorReport* torque_sensor_report = NULL;
+  MotorReport* motor_report;
+  TorqueSensorReport* torque_sensor_report;
 };
 
-class FSRReport{
+class FSRReport:public Report{
 public:
   double threshold;
   double measuredForce;
 };
 
-class IMUReport{
+class IMUReport:public Report{
 public:
   double orientation[3];
 };
 
-class LegReport{
+class SensorReport:public Report{
 public:
-  LegReport(int joint_count, int fsr_count, int imu_count);
+  ~SensorReport();
+  LinkedList<FSRReport*> fsr_reports;
+  LinkedList<IMUReport*> imu_reports;
+};
+
+class LegReport:public Report{
+public:
+  LegReport();
   ~LegReport();
-  FSRReport** fsr_reports;
-  JointReport** joint_reports;
-  IMUReport** imu_reports;
+  SensorReport* sensor_reports;
+  LinkedList<JointReport*> joint_reports;
   int fsr_report_count;
   int joint_report_count;
   int imu_report_count;
@@ -47,11 +60,12 @@ public:
   StateType phase;
 };
 
-class ExoReport{
+class ExoReport:public Report{
 public:
+  ExoReport();
   ~ExoReport();
-  LegReport* left_leg = NULL;
-  LegReport* right_leg = NULL;
+  LegReport* left_leg;
+  LegReport* right_leg;
 };
 
 

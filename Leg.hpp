@@ -18,6 +18,7 @@ private:
   void startIncrementalActivation();
   bool isSteadyState();
   void fillLocalReport(LegReport* report);
+  void fillSensorReport(SensorReport* report);
   void measureIMUs();
   void adjustControl();
   void updateMotorSetpoints();
