@@ -27,7 +27,7 @@ private:
   LegBuilder* right_builder = NULL;
   LegBuilder* left_builder = NULL;
 public:
-	~ExoBuilder();
+  ~ExoBuilder();
   ExoBuilder* addTransceiver(TxPort* tx, RxPort* rx);
   ExoBuilder* addMotorEnable(OutputPort* motor_enable_port);
   ExoBuilder* addLedPort(OutputPort* led_port);
@@ -39,8 +39,8 @@ public:
 class LegBuilder{
 private:
   ExoBuilder* return_context;
-	FsrFactory* fsr_factory;
-	int sign;
+  FsrFactory* fsr_factory;
+  int sign;
   State* states;
   LinkedList<InputPort*>* fsr_ports_begin = NULL;
   LinkedList<InputPort*> torque_sensor_ports;
@@ -52,7 +52,7 @@ private:
   LinkedList<unsigned int> imu_address;
   LinkedList<ControlModule*> controls;
 public:
-	~LegBuilder();
+  ~LegBuilder();
   LegBuilder(ExoBuilder* return_context, int sign);
   LegBuilder* addStateMachine(State* states);
   LegBuilder* addPot(InputPort* port);
