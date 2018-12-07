@@ -8,6 +8,7 @@ FSR::FSR(InputPort* port){
   this->port = port;
   max_force = new Max();
   peak_average = new MovingAverage(FSR_CALIBRATION_PEAK_COUNT);
+  force_clamp = new Clamp(0,1);
   calibration_peak = 1.0;
   force = 0;
 }
@@ -16,6 +17,7 @@ FSR::~FSR(){
   delete port;
   delete max_force;
   delete peak_average;
+  delete force_clamp;
 }
 
 void FSR::measureForce(){
@@ -31,11 +33,17 @@ void FSR::measureForce(){
 
 void FSR::updateForce(double force){
   max_force->update(force);
-  this->force = force / calibration_peak;
+  force /= calibration_peak;
+  this->force = force_clamp->clamp(force);
 }
 
 void FSR::calibrate(){
-  calibration_peak = peak_average->getAverage();
+  double average = peak_average->getAverage();
+  if (average > 0){
+    calibration_peak = average;
+  } else {
+    calibration_peak = max_force->getMax();
+  }
 }
 
 void FSR::resetMaxes(){
@@ -52,7 +60,7 @@ FSRGroup::FSRGroup(LinkedList<FSR*>* fsrs){
   this->fsrs = *fsrs;
 
   force = 0;
-  fsr_percent_thresh = 0.7;
+  fsr_percent_thresh = 0.1;
   is_activated  = false;
   activation_threshold = new Threshold(0, fsr_percent_thresh, state_counter_th);
 }

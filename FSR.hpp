@@ -14,6 +14,7 @@ private:
   double calibration_peak;
   Max* max_force;
   MovingAverage* peak_average;
+  Clamp* force_clamp;
 
   double force;
 
