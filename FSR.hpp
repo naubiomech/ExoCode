@@ -46,7 +46,6 @@ public:
 class FSRGroup{
 private:
   int fsr_count;
-  LinkedList<FSR*> fsrs;
 
   double force;
 
@@ -55,10 +54,12 @@ private:
   bool is_activated;
 
   void fillLocalReport(FSRReport* report);
+protected:
+  LinkedList<FSR*> fsrs;
 
 public:
   FSRGroup(LinkedList<FSR*>* fsrs);
-  ~FSRGroup();
+  virtual ~FSRGroup();
 
   bool isActivated();
   void measureForce();
@@ -72,7 +73,16 @@ public:
   double getMaxPercentage();
   void updateBaseline();
   FSRReport* generateReport();
+  virtual double getRatio();
+  virtual double getDifference();
   void fillReport(FSRReport* report);
+};
+
+class FsrPair:public FSRGroup{
+public:
+  FsrPair(LinkedList<FSR*>* fsrs);
+  double getRatio();
+  double getDifference();
 };
 
 class FsrFactory{
@@ -81,5 +91,10 @@ private:
 public:
   FsrFactory(int type);
   FSR* createFSR(InputPort* port);
+};
+
+class FsrGroupFactory{
+public:
+  FSRGroup* createFsrGroup(LinkedList<FSR*>* fsrs);
 };
 #endif

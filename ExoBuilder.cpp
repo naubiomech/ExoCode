@@ -109,12 +109,14 @@ LegBuilder* ExoBuilder::beginLeftLeg(){
 
 LegBuilder::LegBuilder(ExoBuilder* return_context, int sign){
   this->fsr_factory = new FsrFactory(FSR_Sensors_type);
+  this->fsr_group_factory = new FsrGroupFactory();
   this->return_context = return_context;
   this->states = NULL;
   this->sign = sign;
 }
 
 LegBuilder::~LegBuilder(){
+  delete fsr_group_factory;
   delete fsr_factory;
   ListIterator<LinkedList<InputPort*>* > iter = fsr_ports.getIterator();
   while (iter.hasNext()){
@@ -176,6 +178,7 @@ Leg* LegBuilder::build(){
     joints.append(joint);
   }
 
+
   LinkedList<FSRGroup*> fsrs;
   for (unsigned int i = 0; i < fsr_ports.size(); i++){
     LinkedList<FSR*>* single_fsrs = new LinkedList<FSR*>;
@@ -184,7 +187,7 @@ Leg* LegBuilder::build(){
     while (iter.hasNext()){
       single_fsrs->append(fsr_factory->createFSR(iter.next()));
     }
-    FSRGroup* group = new FSRGroup(single_fsrs);
+    FSRGroup* group = fsr_group_factory->createFsrGroup(single_fsrs);
     delete single_fsrs;
     fsrs.append(group);
   }

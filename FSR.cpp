@@ -146,6 +146,24 @@ void FSRGroup::fillLocalReport(FSRReport* report){
   report->measuredForce = getPercentage();
 }
 
+double FSRGroup::getRatio(){
+  return 1;
+}
+
+double FSRGroup::getDifference(){
+  return 0;
+}
+
+FsrPair::FsrPair(LinkedList<FSR*>* fsrs):FSRGroup(fsrs){}
+
+double FsrPair::getRatio(){
+  return fsrs[0]->getForce()/fsrs[1]->getForce();
+}
+
+double FsrPair::getDifference(){
+  return fsrs[0]->getForce()-fsrs[1]->getForce();
+}
+
 FsrFactory::FsrFactory(int type){
   this->type = type;
 }
@@ -158,4 +176,12 @@ FSR* FsrFactory::createFSR(InputPort* port){
     fsr = new FSRType40(port);
   }
   return fsr;
+}
+
+FSRGroup* FsrGroupFactory::createFsrGroup(LinkedList<FSR*>* fsrs){
+  if (fsrs->size() == 2){
+    return new FsrPair(fsrs);
+  } else {
+    return new FSRGroup(fsrs);
+  }
 }
