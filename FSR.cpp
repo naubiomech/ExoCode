@@ -23,6 +23,7 @@ FSR::~FSR(){
 void FSR::measureForce(){
   double force = port->read();
 
+  force = adjustForce(force);
   if ( FSR_Sensors_type == 10) {
     force = max(0, force);
   } else if (FSR_Sensors_type == 40){
@@ -54,6 +55,19 @@ void FSR::resetMaxes(){
 double FSR::getForce(){
   return force;
 }
+
+FSRType10::FSRType10(InputPort* port):FSR(port){};
+
+double FSRType10::adjustForce(double force){
+  return force;
+}
+
+FSRType40::FSRType40(InputPort* port):FSR(port){};
+
+double FSRType40::adjustForce(double force){
+  return p[0] * pow(force, 3) + p[1] * pow(force, 2) + p[2] * force + p[3];
+}
+
 
 FSRGroup::FSRGroup(LinkedList<FSR*>* fsrs){
   this->fsr_count = fsrs->size();
@@ -130,4 +144,18 @@ void FSRGroup::fillReport(FSRReport* report){
 void FSRGroup::fillLocalReport(FSRReport* report){
   report->threshold = getThreshold();
   report->measuredForce = getPercentage();
+}
+
+FsrFactory::FsrFactory(int type){
+  this->type = type;
+}
+
+FSR* FsrFactory::createFSR(InputPort* port){
+  FSR* fsr = NULL;
+  if (type == 10){
+    fsr = new FSRType10(port);
+  } else if (type == 40){
+    fsr = new FSRType40(port);
+  }
+  return fsr;
 }

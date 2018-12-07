@@ -18,14 +18,30 @@ private:
 
   double force;
 
+  virtual double adjustForce(double force) = 0;
+
 public:
   FSR(InputPort* port);
-  ~FSR();
+  virtual ~FSR();
   void measureForce();
   double getForce();
   void calibrate();
   void resetMaxes();
 };
+
+class FSRType10:public FSR{
+private:
+  double adjustForce(double force);
+public:
+  FSRType10(InputPort* port);
+};
+
+class FSRType40:public FSR{
+  double adjustForce(double force);
+public:
+  FSRType40(InputPort* port);
+};
+
 
 class FSRGroup{
 private:
@@ -57,5 +73,13 @@ public:
   void updateBaseline();
   FSRReport* generateReport();
   void fillReport(FSRReport* report);
+};
+
+class FsrFactory{
+private:
+  int type;
+public:
+  FsrFactory(int type);
+  FSR* createFSR(InputPort* port);
 };
 #endif
