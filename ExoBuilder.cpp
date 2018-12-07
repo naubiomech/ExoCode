@@ -108,7 +108,7 @@ LegBuilder* ExoBuilder::beginLeftLeg(){
 }
 
 LegBuilder::LegBuilder(ExoBuilder* return_context, int sign){
-  this->fsr_factory = new FsrFactory(10);
+  this->fsr_factory = new FsrFactory(FSR_Sensors_type);
   this->return_context = return_context;
   this->states = NULL;
   this->sign = sign;
