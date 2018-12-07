@@ -31,25 +31,10 @@ Leg::~Leg(){
   delete sensor_report;
 
   state->deleteStateMachine();
-  ListIterator<Joint*> joint_iter = joints.getIterator();
-  while(joint_iter.hasNext()){
-    delete joint_iter.next();
-  }
-
-  ListIterator<FSRGroup*> fsr_iter = fsrs.getIterator();
-  while(fsr_iter.hasNext()){
-    delete fsr_iter.next();
-  }
-
-  ListIterator<IMU*> imu_iter = imus.getIterator();
-  while(imu_iter.hasNext()){
-    delete imu_iter.next();
-  }
-
-  ListIterator<Pot*> pot_iter = pots.getIterator();
-  while(pot_iter.hasNext()){
-    delete pot_iter.next();
-  }
+  joints.deleteItems();
+  fsrs.deleteItems();
+  imus.deleteItems();
+  pots.deleteItems();
 }
 
 void Leg::attemptCalibration(){
