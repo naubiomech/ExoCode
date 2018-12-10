@@ -87,7 +87,7 @@ LinkedList<T>& LinkedList<T>::operator=(LinkedList<T>& other){
 
 template <class T>
 LinkedList<T>* LinkedList<T>::copy(){
-  LinkedList<T> copied = new LinkedList<T>();
+  LinkedList<T>* copied = new LinkedList<T>();
   copyInto(*copied);
   return copied;
 }
