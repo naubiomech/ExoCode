@@ -80,23 +80,23 @@ void Joint::setSign(int sign){
 }
 
 void Joint::processMessage(JointMessage* msg){
-	msg->runCommands(this);
+  msg->runCommands(this);
 }
 
 JointReport* Joint::generateReport(){
-	JointReport* report = new JointReport();
-	fillLocalReport(report);
-	report->motor_report = motor->generateReport();
-	report->torque_sensor_report = torque_sensor->generateReport();
-	return report;
+  JointReport* report = new JointReport();
+  fillLocalReport(report);
+  report->motor_report = motor->generateReport();
+  report->torque_sensor_report = torque_sensor->generateReport();
+  return report;
 }
 
 void Joint::fillReport(JointReport* report){
-	fillLocalReport(report);
-	motor->fillReport(report->motor_report);
-	torque_sensor->fillReport(report->torque_sensor_report);
+  fillLocalReport(report);
+  motor->fillReport(report->motor_report);
+  torque_sensor->fillReport(report->torque_sensor_report);
 }
 
 void Joint::fillLocalReport(JointReport* report){
-	report->pid_setpoint = controller->getLastSetpoint();
+  report->pid_setpoint = controller->getLastSetpoint();
 }
