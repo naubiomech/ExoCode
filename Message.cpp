@@ -35,8 +35,15 @@ ExoMessage::ExoMessage(LinkedList<Command<Exoskeleton>*>* pre_commands,
                          this->left_leg_msg = left_leg_msg;
 };
 
+
+
 JointMessageBuilder::JointMessageBuilder(LegMessageBuilder* return_context){
   this->return_context = return_context;
+}
+
+JointMessageBuilder* JointMessageBuilder::addCommand(Command<Joint>* command){
+  SingleMessageBuilder<Joint>::addCommand(command);
+  return this;
 }
 
 LegMessageBuilder* JointMessageBuilder::finishJoint(){
@@ -44,6 +51,10 @@ LegMessageBuilder* JointMessageBuilder::finishJoint(){
 }
 
 JointMessage* JointMessageBuilder::build(){
+  if (this == NULL){
+    return NULL;
+  }
+
   JointMessage* joint_msg = new JointMessage(getCommands());
   clearCommands();
   return joint_msg;
@@ -53,8 +64,18 @@ LegMessageBuilder::LegMessageBuilder(ExoMessageBuilder* return_context){
   this->return_context = return_context;
 }
 
+LegMessageBuilder* LegMessageBuilder::addPreCommand(Command<Leg>* command){
+  MessageBuilder<Leg>::addPreCommand(command);
+  return this;
+}
+
+LegMessageBuilder* LegMessageBuilder::addPostCommand(Command<Leg>* command){
+  MessageBuilder<Leg>::addPostCommand(command);
+  return this;
+}
+
 JointMessageBuilder* LegMessageBuilder::beginJointMessage(unsigned int id){
-  while ((id+1) < joint_builders.size()){
+  while (id >= joint_builders.size()){
     joint_builders.append(new JointMessageBuilder(this));
   }
   return joint_builders[id];
@@ -65,6 +86,10 @@ ExoMessageBuilder* LegMessageBuilder::finishLeg(){
 }
 
 LegMessage* LegMessageBuilder::build(){
+  if (this == NULL){
+    return NULL;
+  }
+
   LinkedList<JointMessage*>* joint_msgs = new LinkedList<JointMessage*>();
   ListIterator<JointMessageBuilder*> joint_builder_iter = joint_builders.getIterator();
   while(joint_builder_iter.hasNext()){
@@ -78,6 +103,16 @@ LegMessage* LegMessageBuilder::build(){
 ExoMessageBuilder::ExoMessageBuilder(){
   left_builder = NULL;
   right_builder = NULL;
+}
+
+ExoMessageBuilder* ExoMessageBuilder::addPreCommand(Command<Exoskeleton>* command){
+  MessageBuilder<Exoskeleton>::addPreCommand(command);
+  return this;
+}
+
+ExoMessageBuilder* ExoMessageBuilder::addPostCommand(Command<Exoskeleton>* command){
+  MessageBuilder<Exoskeleton>::addPostCommand(command);
+  return this;
 }
 
 LegMessageBuilder* ExoMessageBuilder::beginLeftLegMessage(){
@@ -95,6 +130,10 @@ LegMessageBuilder* ExoMessageBuilder::beginRightLegMessage(){
 }
 
 ExoMessage* ExoMessageBuilder::build(){
+  if (this == NULL){
+    return NULL;
+  }
+
   ExoMessage* exo_msg = new ExoMessage(getPreCommands(), getPostCommands(),
                                        right_builder->build(), left_builder->build());
   this->clearCommands();

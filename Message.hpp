@@ -50,7 +50,7 @@ public:
 
 
 
-template <class T, class Context>
+template <class T>
 class MessageBuilder{
 private:
   LinkedList<Command<T>*>  pre_commands;
@@ -60,49 +60,54 @@ protected:
   LinkedList<Command<T>*>* getPostCommands();
   void clearCommands();
 public:
-  Context* addPreCommand(Command<T>* command);
-  Context* addPostCommand(Command<T>* command);
+  void addPreCommand(Command<T>* command);
+	void addPostCommand(Command<T>* command);
 };
 
-template <class T, class Context>
-class SingleMessageBuilder:private MessageBuilder<T, Context>{
+template <class T>
+class SingleMessageBuilder:private MessageBuilder<T>{
 protected:
   LinkedList<Command<T>*>* getCommands();
   void clearCommands();
 public:
-  Context* addCommand(Command<T>* command);
+  void addCommand(Command<T>* command);
 };
 class JointMessageBuilder;
 class LegMessageBuilder;
 class ExoMessageBuilder;
 
 
-class JointMessageBuilder:public SingleMessageBuilder<Joint, JointMessageBuilder>{
+class JointMessageBuilder:public SingleMessageBuilder<Joint>{
 private:
   LegMessageBuilder* return_context;
 public:
+  JointMessageBuilder* addCommand(Command<Joint>* command);
   JointMessageBuilder(LegMessageBuilder* return_context);
   LegMessageBuilder* finishJoint();
   JointMessage* build();
 };
 
-class LegMessageBuilder:public MessageBuilder<Leg, LegMessageBuilder>{
+class LegMessageBuilder:public MessageBuilder<Leg>{
 private:
   ExoMessageBuilder* return_context;
   LinkedList<JointMessageBuilder*> joint_builders;
 public:
   LegMessageBuilder(ExoMessageBuilder* return_context);
+  LegMessageBuilder* addPreCommand(Command<Leg>* command);
+  LegMessageBuilder* addPostCommand(Command<Leg>* command);
   JointMessageBuilder* beginJointMessage(unsigned int id);
   ExoMessageBuilder* finishLeg();
   LegMessage* build();
 };
 
-class ExoMessageBuilder:public MessageBuilder<Exoskeleton, ExoMessageBuilder>{
+class ExoMessageBuilder:public MessageBuilder<Exoskeleton>{
 private:
   LegMessageBuilder* left_builder;
   LegMessageBuilder* right_builder;
 public:
   ExoMessageBuilder();
+  ExoMessageBuilder* addPreCommand(Command<Exoskeleton>* command);
+  ExoMessageBuilder* addPostCommand(Command<Exoskeleton>* command);
   LegMessageBuilder* beginLeftLegMessage();
   LegMessageBuilder* beginRightLegMessage();
   ExoMessage* build();
@@ -148,48 +153,45 @@ void Message<Context>::runPostCommands(Context* context){
   runCommands(context, post_commands);
 }
 
-template<class T,class Context>
-Context* MessageBuilder<T, Context>::addPreCommand(Command<T>* command){
-  pre_commands.append(command);
-  return this;
+template<class T>
+void MessageBuilder<T>::addPreCommand(Command<T>* command){
+	pre_commands.append(command);
 }
 
-template<class T, class Context>
-Context* MessageBuilder<T, Context>::addPostCommand(Command<T>* command){
-  post_commands.append(command);
-  return this;
+template<class T>
+void MessageBuilder<T>::addPostCommand(Command<T>* command){
+	post_commands.append(command);
 }
 
-template<class T, class Context>
-LinkedList<Command<T>*>* MessageBuilder<T, Context>::getPreCommands(){
-  return &pre_commands;
+template<class T>
+LinkedList<Command<T>*>* MessageBuilder<T>::getPreCommands(){
+	return &pre_commands;
 }
 
-template<class T, class Context>
-LinkedList<Command<T>*>* MessageBuilder<T, Context>::getPostCommands(){
-  return &post_commands;
+template<class T>
+LinkedList<Command<T>*>* MessageBuilder<T>::getPostCommands(){
+	return &post_commands;
 }
 
-template<class T, class Context>
-void MessageBuilder<T, Context>::clearCommands(){
-  pre_commands.clear();
+template<class T>
+void MessageBuilder<T>::clearCommands(){
+	pre_commands.clear();
   post_commands.clear();
 }
 
-template<class T, class Context>
-Context* SingleMessageBuilder<T, Context>::addCommand(Command<T>* command){
-  this->addPreCommand(command);
-  return this;
+template<class T>
+void SingleMessageBuilder<T>::addCommand(Command<T>* command){
+	this->addPreCommand(command);
 }
 
-template<class T, class Context>
-LinkedList<Command<T>*>* SingleMessageBuilder<T, Context>::getCommands(){
-  return this->getPreCommands();
+template<class T>
+LinkedList<Command<T>*>* SingleMessageBuilder<T>::getCommands(){
+	return this->getPreCommands();
 }
 
 
-template<class T, class Context>
-void SingleMessageBuilder<T, Context>::clearCommands(){
-  MessageBuilder<T, Context>::clearCommands();
+template<class T>
+void SingleMessageBuilder<T>::clearCommands(){
+	MessageBuilder<T>::clearCommands();
 }
 #endif
