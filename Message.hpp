@@ -18,6 +18,7 @@ private:
 public:
   Message(LinkedList<Command<Context>*>* commands);
   Message(LinkedList<Command<Context>*>* pre_commands, LinkedList<Command<Context>*>* post_commands);
+  virtual ~Message();
   void runPreCommands(Context* context);
   void runCommands(Context* context);
   void runPostCommands(Context* context);
@@ -34,6 +35,7 @@ private:
 public:
   LegMessage(LinkedList<Command<Leg>*>* pre_commands, LinkedList<Command<Leg>*>* post_commands,
              LinkedList<JointMessage*>* joint_msgs);
+  ~LegMessage();
   void messageJoints(LinkedList<Joint*>* joints);
 };
 
@@ -44,6 +46,7 @@ private:
 public:
   ExoMessage(LinkedList<Command<Exoskeleton>*>* pre_commands, LinkedList<Command<Exoskeleton>*>* post_commands,
              LegMessage* right_leg_msg, LegMessage* left_leg_msg);
+  ~ExoMessage();
   void messageRightLeg(Leg* right);
   void messageLeftLeg(Leg* left);
 };
@@ -56,18 +59,18 @@ private:
   LinkedList<Command<T>*>  pre_commands;
   LinkedList<Command<T>*>  post_commands;
 protected:
-  LinkedList<Command<T>*>* getPreCommands();
-  LinkedList<Command<T>*>* getPostCommands();
+  LinkedList<Command<T>*>& getPreCommands();
+  LinkedList<Command<T>*>& getPostCommands();
   void clearCommands();
 public:
   void addPreCommand(Command<T>* command);
-	void addPostCommand(Command<T>* command);
+  void addPostCommand(Command<T>* command);
 };
 
 template <class T>
 class SingleMessageBuilder:private MessageBuilder<T>{
 protected:
-  LinkedList<Command<T>*>* getCommands();
+  LinkedList<Command<T>*>& getCommands();
   void clearCommands();
 public:
   void addCommand(Command<T>* command);
@@ -126,6 +129,18 @@ Message<Context>::Message(LinkedList<Command<Context>*>* pre_commands, LinkedLis
 }
 
 template<class Context>
+Message<Context>::~Message(){
+  pre_commands->deleteItems();
+
+  if (post_commands != NULL){
+    post_commands->deleteItems();
+  }
+
+  delete pre_commands;
+  delete post_commands;
+}
+
+template<class Context>
 void Message<Context>::runCommands(Context* context, LinkedList<Command<Context>*>* cmds){
   if (cmds == NULL){
     return;
@@ -155,43 +170,43 @@ void Message<Context>::runPostCommands(Context* context){
 
 template<class T>
 void MessageBuilder<T>::addPreCommand(Command<T>* command){
-	pre_commands.append(command);
+  pre_commands.append(command);
 }
 
 template<class T>
 void MessageBuilder<T>::addPostCommand(Command<T>* command){
-	post_commands.append(command);
+  post_commands.append(command);
 }
 
 template<class T>
-LinkedList<Command<T>*>* MessageBuilder<T>::getPreCommands(){
-	return &pre_commands;
+LinkedList<Command<T>*>& MessageBuilder<T>::getPreCommands(){
+  return pre_commands;
 }
 
 template<class T>
-LinkedList<Command<T>*>* MessageBuilder<T>::getPostCommands(){
-	return &post_commands;
+LinkedList<Command<T>*>& MessageBuilder<T>::getPostCommands(){
+  return post_commands;
 }
 
 template<class T>
 void MessageBuilder<T>::clearCommands(){
-	pre_commands.clear();
+  pre_commands.clear();
   post_commands.clear();
 }
 
 template<class T>
 void SingleMessageBuilder<T>::addCommand(Command<T>* command){
-	this->addPreCommand(command);
+  this->addPreCommand(command);
 }
 
 template<class T>
-LinkedList<Command<T>*>* SingleMessageBuilder<T>::getCommands(){
-	return this->getPreCommands();
+LinkedList<Command<T>*>& SingleMessageBuilder<T>::getCommands(){
+  return this->getPreCommands();
 }
 
 
 template<class T>
 void SingleMessageBuilder<T>::clearCommands(){
-	MessageBuilder<T>::clearCommands();
+  MessageBuilder<T>::clearCommands();
 }
 #endif

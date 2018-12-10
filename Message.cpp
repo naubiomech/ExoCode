@@ -2,12 +2,18 @@
 #include "Leg.hpp"
 #include "Joint.hpp"
 
+JointMessage::JointMessage(LinkedList<Command<Joint>*>* commands):Message<Joint>(commands){};
+
 LegMessage::LegMessage(LinkedList<Command<Leg>*>* pre_commands,
                        LinkedList<Command<Leg>*>* post_commands,
                        LinkedList<JointMessage*>* joint_msgs):Message<Leg>(pre_commands, post_commands){
                          this->joint_msgs = joint_msgs;
 };
 
+LegMessage::~LegMessage(){
+  joint_msgs->deleteItems();
+  delete joint_msgs;
+}
 
 void LegMessage::messageJoints(LinkedList<Joint*>* joints){
   ListIterator<Joint*> joint_iter = joints->getIterator();
@@ -17,16 +23,6 @@ void LegMessage::messageJoints(LinkedList<Joint*>* joints){
   }
 }
 
-void ExoMessage::messageLeftLeg(Leg* left){
-  left->processMessage(left_leg_msg);
-}
-
-void ExoMessage::messageRightLeg(Leg* right){
-  right->processMessage(right_leg_msg);
-}
-
-JointMessage::JointMessage(LinkedList<Command<Joint>*>* commands):Message<Joint>(commands){};
-
 ExoMessage::ExoMessage(LinkedList<Command<Exoskeleton>*>* pre_commands,
                        LinkedList<Command<Exoskeleton>*>* post_commands,
                        LegMessage* right_leg_msg,
@@ -34,6 +30,19 @@ ExoMessage::ExoMessage(LinkedList<Command<Exoskeleton>*>* pre_commands,
                          this->right_leg_msg = right_leg_msg;
                          this->left_leg_msg = left_leg_msg;
 };
+
+ExoMessage::~ExoMessage(){
+  delete left_leg_msg;
+  delete right_leg_msg;
+}
+
+void ExoMessage::messageLeftLeg(Leg* left){
+  left->processMessage(left_leg_msg);
+}
+
+void ExoMessage::messageRightLeg(Leg* right){
+  right->processMessage(right_leg_msg);
+}
 
 
 
@@ -55,7 +64,7 @@ JointMessage* JointMessageBuilder::build(){
     return NULL;
   }
 
-  JointMessage* joint_msg = new JointMessage(getCommands());
+  JointMessage* joint_msg = new JointMessage(getCommands().copy());
   clearCommands();
   return joint_msg;
 }
@@ -95,7 +104,7 @@ LegMessage* LegMessageBuilder::build(){
   while(joint_builder_iter.hasNext()){
     joint_msgs->append(joint_builder_iter.next()->build());
   }
-  LegMessage* leg_msg = new LegMessage(getPreCommands(), getPostCommands(), joint_msgs);
+  LegMessage* leg_msg = new LegMessage(getPreCommands().copy(), getPostCommands().copy(), joint_msgs);
   clearCommands();
   return leg_msg;
 }
@@ -134,8 +143,10 @@ ExoMessage* ExoMessageBuilder::build(){
     return NULL;
   }
 
-  ExoMessage* exo_msg = new ExoMessage(getPreCommands(), getPostCommands(),
-                                       right_builder->build(), left_builder->build());
+  LegMessage* left_msg = left_builder->build();
+  LegMessage* right_msg = right_builder->build();
+
+  ExoMessage* exo_msg = new ExoMessage(getPreCommands().copy(), getPostCommands().copy(), right_msg, left_msg);
   this->clearCommands();
   return exo_msg;
 }
