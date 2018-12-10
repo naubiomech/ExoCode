@@ -8,12 +8,12 @@ class Joint;
 template <class T>
 class Command{
 public:
-	virtual void execute(T* context) = 0;
+  virtual void execute(T* context) = 0;
 };
 
 class StartTrialCommand:Command<Exoskeleton>{
 public:
-	virtual void execute();
+  virtual void execute();
 };
 
 #endif
