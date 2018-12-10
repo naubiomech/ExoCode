@@ -17,3 +17,11 @@ void ExoMessage::messageLeftLeg(Leg* left){
 void ExoMessage::messageRightLeg(Leg* right){
   right->processMessage(right_leg_msg);
 }
+
+JointMessage::JointMessage(LinkedList<Command<Joint>*>* commands):Message<Joint>(commands){};
+
+LegMessage::LegMessage(LinkedList<Command<Leg>*>* pre_commands,
+                       LinkedList<Command<Leg>*>* post_commands):Message<Leg>(pre_commands, post_commands){};
+
+ExoMessage::ExoMessage(LinkedList<Command<Exoskeleton>*>* pre_commands,
+                       LinkedList<Command<Exoskeleton>*>* post_commands):Message<Exoskeleton>(pre_commands, post_commands){};

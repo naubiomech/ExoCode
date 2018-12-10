@@ -16,6 +16,8 @@ private:
   LinkedList<Command<Context>*>* post_commands;
   void runCommands(Context* context, LinkedList<Command<Context>*>* cmds);
 public:
+  Message(LinkedList<Command<Context>*>* commands);
+  Message(LinkedList<Command<Context>*>* pre_commands, LinkedList<Command<Context>*>* post_commands);
   void runPreCommands(Context* context);
   void runCommands(Context* context);
   void runPostCommands(Context* context);
@@ -23,14 +25,14 @@ public:
 
 class JointMessage:public Message<Joint>{
 public:
-  JointMessage(LinkedList<ExoCommand*>* commands);
+  JointMessage(LinkedList<Command<Joint>*>* commands);
 };
 
 class LegMessage:public Message<Leg>{
 private:
   LinkedList<JointMessage*>* joint_msgs;
 public:
-  LegMessage(LinkedList<LegCommand*>* pre_commands, LinkedList<LegCommand*>* post_commands);
+  LegMessage(LinkedList<Command<Leg>*>* pre_commands, LinkedList<Command<Leg>*>* post_commands);
   void messageJoints(LinkedList<Joint*>* joints);
 };
 
@@ -39,10 +41,22 @@ private:
   LegMessage* right_leg_msg;
   LegMessage* left_leg_msg;
 public:
-  ExoMessage(LinkedList<ExoCommand*>* pre_commands, LinkedList<ExoCommand*>* post_commands);
+  ExoMessage(LinkedList<Command<Exoskeleton>*>* pre_commands, LinkedList<Command<Exoskeleton>*>* post_commands);
   void messageRightLeg(Leg* right);
   void messageLeftLeg(Leg* left);
 };
+
+template<class Context>
+Message<Context>::Message(LinkedList<Command<Context>*>* commands){
+  pre_commands = commands;
+  post_commands = NULL;
+}
+
+template<class Context>
+Message<Context>::Message(LinkedList<Command<Context>*>* pre_commands, LinkedList<Command<Context>*>* post_commands){
+  this->pre_commands = pre_commands;
+  this->post_commands = post_commands;
+}
 
 template<class Context>
 void Message<Context>::runCommands(Context* context, LinkedList<Command<Context>*>* cmds){
