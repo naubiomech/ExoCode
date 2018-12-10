@@ -8,6 +8,7 @@ class Joint;
 template <class T>
 class Command{
 public:
+  virtual ~Command();
   virtual void execute(T* context) = 0;
 };
 
