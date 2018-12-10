@@ -11,6 +11,7 @@ const int dim = 5;
 #include "IMU.hpp"
 #include "Pot.hpp"
 #include "Linked_List.hpp"
+#include "Message.hpp"
 
 class Leg {
 private:
@@ -68,6 +69,7 @@ public:
   void setToZero();
   void calibrateIMUs();
   void setSign(int sign);
+  void processMessage(LegMessage* msg);
   LegReport* generateReport();
   void fillReport(LegReport* report);
   void setLegSign(int sign);

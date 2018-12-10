@@ -231,6 +231,12 @@ void Leg::setSign(int sign){
   }
 }
 
+void Leg::processMessage(LegMessage* msg){
+  msg->runPreCommands(this);
+  msg->messageJoints(&joints);
+  msg->runPostCommands(this);
+}
+
 LegReport* Leg::generateReport(){
   LegReport* leg_report = new LegReport();
   SensorReport* sensor_report = new SensorReport();

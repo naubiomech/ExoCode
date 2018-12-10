@@ -6,6 +6,7 @@
 #include "Report.hpp"
 #include "Port.hpp"
 #include "Control_Module.hpp"
+#include "Message.hpp"
 
 class Joint{
 private:
@@ -19,6 +20,7 @@ private:
 public:
   Joint(ControlModule* controller, Motor* motor, TorqueSensor* torque_sensor);
   ~Joint();
+  void processMessage(JointMessage* msg);
   JointReport* generateReport();
   void fillReport(JointReport* report);
 
