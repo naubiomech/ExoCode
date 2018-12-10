@@ -73,6 +73,10 @@ LegMessageBuilder::LegMessageBuilder(ExoMessageBuilder* return_context){
   this->return_context = return_context;
 }
 
+LegMessageBuilder::~LegMessageBuilder(){
+  joint_builders.deleteItems();
+}
+
 LegMessageBuilder* LegMessageBuilder::addPreCommand(Command<Leg>* command){
   MessageBuilder<Leg>::addPreCommand(command);
   return this;
@@ -112,6 +116,11 @@ LegMessage* LegMessageBuilder::build(){
 ExoMessageBuilder::ExoMessageBuilder(){
   left_builder = NULL;
   right_builder = NULL;
+}
+
+ExoMessageBuilder::~ExoMessageBuilder(){
+  delete left_builder;
+  delete right_builder;
 }
 
 ExoMessageBuilder* ExoMessageBuilder::addPreCommand(Command<Exoskeleton>* command){
