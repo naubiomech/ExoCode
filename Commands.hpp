@@ -5,19 +5,15 @@ class Exoskeleton;
 class Leg;
 class Joint;
 
-
 template <class T>
 class Command{
 public:
 	virtual void execute(T* context) = 0;
 };
 
-class JointCommand:public Command<Joint>{};
-class LegCommand:public Command<Leg>{};
-class ExoCommand:public Command<Exoskeleton>{};
-
-class StartTrialCommand:ExoCommand{
+class StartTrialCommand:Command<Exoskeleton>{
 public:
 	virtual void execute();
 };
+
 #endif
