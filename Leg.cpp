@@ -232,6 +232,9 @@ void Leg::setSign(int sign){
 }
 
 void Leg::processMessage(LegMessage* msg){
+  if (msg == NULL){
+    return;
+  }
   msg->runPreCommands(this);
   msg->messageJoints(&joints);
   msg->runPostCommands(this);
