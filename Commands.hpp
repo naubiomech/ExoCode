@@ -12,7 +12,22 @@ public:
   virtual void execute(T* context) = 0;
 };
 
-class StartTrialCommand:Command<Exoskeleton>{
+class StartTrialCommand:public Command<Exoskeleton>{
+public:
+  virtual void execute(Exoskeleton* exo);
+};
+
+class EndTrialCommand:public Command<Exoskeleton>{
+public:
+  virtual void execute(Exoskeleton* exo);
+};
+
+class CalibrateAllTorquesCommand:public Command<Exoskeleton>{
+public:
+  virtual void execute(Exoskeleton* exo);
+};
+
+class CalibrateAllFsrsCommand:public Command<Exoskeleton>{
 public:
   virtual void execute(Exoskeleton* exo);
 };
