@@ -23,6 +23,10 @@ void SoftwareSerial::print(double val){
   printf("%lf", val);
 }
 
+void SoftwareSerial::println(){
+  printf("\n");
+}
+
 void SoftwareSerial::println(const char* str){
   printf("%s\n", str);
 }

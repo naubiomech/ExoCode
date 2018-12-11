@@ -23,6 +23,7 @@ public:
   void write(const char* str);
   void print(double);
   void print(const char[]);
+  void println();
   void println(const char[]);
   void println(double);
 
