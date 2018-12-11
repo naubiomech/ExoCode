@@ -24,11 +24,6 @@ void FSR::measureForce(){
   double force = port->read();
 
   force = adjustForce(force);
-  if ( FSR_Sensors_type == 10) {
-    force = max(0, force);
-  } else if (FSR_Sensors_type == 40){
-    force = max(0, p[0] * pow(force, 3) + p[1] * pow(force, 2) + p[2] * force + p[3]);
-  }
   updateForce(force);
 }
 
