@@ -19,3 +19,7 @@ void CalibrateAllTorquesCommand::execute(Exoskeleton* exo){
 void CalibrateAllFsrsCommand::execute(Exoskeleton* exo){
   exo->calibrateFSRs();
 }
+
+void SetJointSetpoint::execute(Joint* joint){
+  joint->setDesiredSetpoint(state, setpoint);
+}

@@ -1,5 +1,6 @@
 #ifndef EXO_COMMAND_HEADER
 #define EXO_COMMAND_HEADER
+#include "States.hpp"
 
 class Exoskeleton;
 class Leg;
@@ -30,6 +31,15 @@ public:
 class CalibrateAllFsrsCommand:public Command<Exoskeleton>{
 public:
   virtual void execute(Exoskeleton* exo);
+};
+
+class SetJointSetpoint:public Command<Joint>{
+private:
+  StateID state;
+  double setpoint;
+public:
+SetJointSetpoint(StateID state, double setpoint): state(state), setpoint(setpoint){};
+  virtual void execute(Joint* joint);
 };
 
 #endif
