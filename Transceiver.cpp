@@ -101,19 +101,23 @@ void Transceiver::sendReport(ExoReport* report){
   sendMessageEnd();
 }
 
-void Transceiver::receiveMessages(Exoskeleton* exo, ExoReport* report){
+ExoMessage* Transceiver::receiveMessages(ExoReport* report){
+  ExoMessageBuilder builder;
   while(dataAvailable()){
-    receiveMessage(exo, report);
+    receiveMessage(&builder, report);
   }
+  return builder.build();
 }
 
-void Transceiver::receiveMessage(Exoskeleton* exo, ExoReport* report){
+void Transceiver::receiveMessage(ExoMessageBuilder* msg_builder, ExoReport* report){
 
   if (noDataAvailable()) {
     return;
   }
 
   CommandCode cmd_from_Gui = command_serial->read();
+  Serial.print("Cmd: ");
+  Serial.println(cmd_from_Gui);
   switch (cmd_from_Gui)
   {
   case COMM_CODE_REQUEST_DATA:
@@ -121,16 +125,15 @@ void Transceiver::receiveMessage(Exoskeleton* exo, ExoReport* report){
     break;
 
   case COMM_CODE_START_TRIAL:
-    exo->startTrial();
+    msg_builder->addPreCommand(new StartTrialCommand());
     break;
 
   case COMM_CODE_END_TRIAL:
-    exo->endTrial();
-    sendReport(report);
+    msg_builder->addPreCommand(new EndTrialCommand());
     break;
 
   case COMM_CODE_CALIBRATE_TORQUE:
-    exo->calibrateTorque();
+    msg_builder->addPreCommand(new CalibrateAllTorquesCommand());
     break;
 
   case COMM_CODE_CHECK_BLUETOOTH:
@@ -160,8 +163,8 @@ void Transceiver::receiveMessage(Exoskeleton* exo, ExoReport* report){
   case COMM_CODE_SET_RIGHT_ANKLE_SETPOINT:
     break;
 
-  case COMM_CODE_CALC_BASELINE:
-    exo->calibrateFSRs();
+  case COMM_CODE_CALIBRATE_FSR:
+    msg_builder->addPreCommand(new CalibrateAllFsrsCommand());
     break;
 
   case COMM_CODE_GET_SMOOTHING_PARAMS:

@@ -151,7 +151,9 @@ void Exoskeleton::receiveMessages(){
   if (receiveDataTimer.check() == 1) {
     receiveDataTimer.reset();
     fillReport(report);
-    transceiver->receiveMessages(this, report);
+    ExoMessage* msg = transceiver->receiveMessages(report);
+    processMessage(msg);
+    delete msg;
   }
 }
 

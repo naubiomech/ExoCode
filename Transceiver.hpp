@@ -6,10 +6,9 @@
 #include "Report.hpp"
 #include "Message.hpp"
 
-class Exoskeleton;
 class Transceiver{
 private:
-  void receiveMessage(Exoskeleton* exo, ExoReport* report);
+  void receiveMessage(ExoMessageBuilder* build, ExoReport* report);
   bool dataAvailable();
   bool noDataAvailable();
   void sendLegReport(LegReport* report);
@@ -28,7 +27,7 @@ protected:
 public:
   Transceiver(TxPort* tx, RxPort* rx);
   virtual ~Transceiver();
-  void receiveMessages(Exoskeleton* exo, ExoReport* report);
+  ExoMessage* receiveMessages(ExoReport* report);
   void sendReport(ExoReport* report);
 
 };
