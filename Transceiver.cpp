@@ -159,13 +159,19 @@ void Transceiver::receiveMessage(ExoMessageBuilder* msg_builder, ExoReport* repo
   case COMM_CODE_SET_LEFT_ANKLE_SETPOINT:
     receiveData(data_received, 2);
     msg_builder->
-      beginRightLegMessage()->
+      beginLeftLegMessage()->
       beginJointMessage(0)->
       addCommand(new SetJointSetpoint(LATE_STANCE, data_received[0]))->
       addCommand(new SetJointSetpoint(SWING, data_received[1]));
     break;
 
   case COMM_CODE_SET_RIGHT_ANKLE_SETPOINT:
+    receiveData(data_received, 2);
+    msg_builder->
+      beginRightLegMessage()->
+      beginJointMessage(0)->
+      addCommand(new SetJointSetpoint(LATE_STANCE, data_received[0]))->
+      addCommand(new SetJointSetpoint(SWING, data_received[1]));
     break;
 
   case COMM_CODE_CALIBRATE_FSR:
