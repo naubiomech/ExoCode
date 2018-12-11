@@ -47,10 +47,7 @@ void Exoskeleton::run(){
   this->measureSensors();
   //TODO implement error checking
   this->attemptCalibration();
-  //TODO Implement the balance baseline
-  //TODO apply auto kf here
   this->applyControl();
-
   this->applyTorque();
 }
 
