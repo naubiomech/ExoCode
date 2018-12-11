@@ -21,7 +21,7 @@ Board* QuadBoardDirector::build(){
     ->setMotorLeftAnklePort(22)
     ->setMotorRightKneePort(5)
     ->setMotorRightAnklePort(6)
-    ->setMotorEnablePort(16)
+    ->setMotorEnablePort(17)
     ->setMotorErrorLeftKneePort(24)
     ->setMotorErrorLeftAnklePort(25)
     ->setMotorErrorRightKneePort(26)
