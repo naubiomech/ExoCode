@@ -129,7 +129,7 @@ void Leg::startIncrementalActivation(){
 }
 
 bool Leg::hasStateChanged(){
-  return determine_foot_state_change() && state->getStateTime() > step_time_length / 4;
+  return determine_foot_state_change();
 }
 
 void Leg::changeState(){
