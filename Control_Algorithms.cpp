@@ -71,7 +71,7 @@ void ControlAlgorithm::setGain(double gain){
 }
 
 void ControlAlgorithm::setDesiredSetpoint(double setpoint){
-  previous_desired_setpoint = setpoint;
+  previous_desired_setpoint = desired_setpoint;
   desired_setpoint = setpoint;
   resetIncrementalActivation();
 }
