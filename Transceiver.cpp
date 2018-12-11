@@ -25,9 +25,7 @@ bool Transceiver::noDataAvailable(){
 void Transceiver::receiveData(void* output_data_raw_form, int bytes_expected){
   char* output_data = (char*) output_data_raw_form;
   for(int i = 0; i < bytes_expected; i ++){
-    if (noDataAvailable()){
-      break;
-    }
+    while (noDataAvailable()){}
     int data = command_serial->read();
     output_data[i] = data;
   }
