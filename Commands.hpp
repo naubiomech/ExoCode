@@ -14,7 +14,7 @@ public:
 
 class StartTrialCommand:Command<Exoskeleton>{
 public:
-  virtual void execute();
+  virtual void execute(Exoskeleton* exo);
 };
 
 #endif
