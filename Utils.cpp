@@ -80,10 +80,8 @@ Threshold::Threshold(bool starting_state, double upper_threshold_value, double l
 
 bool Threshold::getState(double value){
   if (state == 0 && value > upper_threshold){
-    Serial.println("Changing state");
     state = 1;
   } else if (state == 1 && value < lower_threshold){
-    Serial.println("Changing state");
     state = 0;
   }
   return state;
