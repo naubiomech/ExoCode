@@ -45,6 +45,7 @@ public:
   Threshold(bool starting_state, double upper_threshold_value, double lower_threshold_value);
   bool getState(double value);
   void setUpperThreshold(double value);
+  void setLowerThreshold(double value);
 };
 
 class Timer{

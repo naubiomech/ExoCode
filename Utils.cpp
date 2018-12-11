@@ -91,6 +91,10 @@ void Threshold::setUpperThreshold(double threshold){
   upper_threshold = threshold;
 }
 
+void Threshold::setLowerThreshold(double threshold){
+  lower_threshold = threshold;
+}
+
 Timer::Timer(){
   start_time = millis();
   pause_time = 0;
