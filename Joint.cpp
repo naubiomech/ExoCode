@@ -16,6 +16,10 @@ Joint::~Joint(){
   delete torque_sensor;
 }
 
+void Joint::setDesiredSetpoint(StateID state, double setpoint){
+  controller->setAlgorithmDesiredSetpoint(state, setpoint);
+}
+
 void Joint::measureError(){
   motor->measureError();
 }

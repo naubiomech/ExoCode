@@ -24,6 +24,7 @@ public:
   JointReport* generateReport();
   void fillReport(JointReport* report);
 
+  void setDesiredSetpoint(StateID state, double setpoint);
   void measureError();
   bool hasErrored();
   bool applyTorque();

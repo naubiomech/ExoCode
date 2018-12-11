@@ -32,6 +32,10 @@ ControlModule::~ControlModule(){
   delete shaping_function;
 }
 
+void ControlModule::setAlgorithmDesiredSetpoint(StateID state, double setpoint){
+  getControlAlgorithm(state)->setDesiredSetpoint(setpoint);
+}
+
 double ControlModule::getControlAdjustment(double torque_input, SensorReport* report){
   double setpoint = getSetpoint(report);
   double adjustment = runPID(torque_input, KF, setpoint);
