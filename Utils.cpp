@@ -137,6 +137,22 @@ void Max::reset(){
   maxVal = FLT_MIN;
 }
 
+Min::Min(){
+  this->reset();
+}
+
+double Min::getMin(){
+  return this->minVal;
+}
+
+void Min::update(double value){
+  minVal = min(value, minVal);
+}
+
+void Min::reset(){
+  minVal = FLT_MAX;
+}
+
 ChangeTrigger::ChangeTrigger(bool start_state){
   state = start_state;
 }

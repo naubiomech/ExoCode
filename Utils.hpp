@@ -71,6 +71,16 @@ public:
   void reset();
 };
 
+class Min{
+private:
+  double minVal;
+public:
+  Min();
+  double getMin();
+  void update(double value);
+  void reset();
+};
+
 class ChangeTrigger{
 private:
   bool state;
