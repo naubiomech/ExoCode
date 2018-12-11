@@ -85,7 +85,7 @@ void ControlAlgorithm::activate(){
 }
 
 double ControlAlgorithm::getActivationPercent(){
-  return activation_clamp->clamp(activation_count / ACTIVATION_STEP_COUNT);
+  return activation_clamp->clamp((double) activation_count / (double) ACTIVATION_STEP_COUNT);
 }
 
 double ControlAlgorithm::getShapingIterations(){
