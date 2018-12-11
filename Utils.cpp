@@ -95,6 +95,23 @@ void Threshold::setLowerThreshold(double threshold){
   lower_threshold = threshold;
 }
 
+void Range::update(double value){
+  maximum->update(value);
+  minimum->update(value);
+  avg = (maximum->getMax() + minimum->getMin())/2;
+  threshold->setUpperThreshold(avg);
+  threshold->setLowerThreshold(avg);
+  bool state = threshold->getState(value);
+  bool state_change = trigger->update(state);
+  if(state_change && state == false){
+    avgMax->update(maximum->getMax());
+    maximum->reset();
+  } else if (state_change && state == true){
+    avgMin->update(minimum->getMin());
+    minimum->reset();
+  }
+}
+
 Timer::Timer(){
   start_time = millis();
   pause_time = 0;

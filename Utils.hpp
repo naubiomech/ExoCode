@@ -89,6 +89,23 @@ public:
   bool update(bool state);
 };
 
+class Range{
+private:
+  double avg;
+  Max* maximum;
+  Min* minimum;
+  double last_max;
+  double last_min;
+  Threshold* threshold;
+  ChangeTrigger* trigger;
+  MovingAverage* avgMax;
+  MovingAverage* avgMin;
+public:
+  double getMax();
+  double getMin();
+  void update(double value);
+};
+
 void updateMax(double* max_val, double val);
 
 #endif
