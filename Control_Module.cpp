@@ -12,7 +12,7 @@ ControlModule::ControlModule(ControlAlgorithm* state_machine, StateID starting_s
   shaping_function = new ShapingFunction();
 
   setControlStateMachine(state_machine, starting_state);
-  this->kf_clamp = new Clamp(MAX_KF, MIN_KF);
+  this->kf_clamp = new Clamp(MIN_KF, MAX_KF);
   adjust_shaping_for_time_clamp = new Clamp(4, 500);
   this->error_average = new RunningAverage();
 

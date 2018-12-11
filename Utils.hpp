@@ -32,7 +32,7 @@ private:
   double upper;
   double lower;
 public:
-  Clamp(double upper, double lower);
+  Clamp(double lower, double upper);
   double clamp(double value);
 };
 

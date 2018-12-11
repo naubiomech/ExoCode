@@ -7,7 +7,7 @@
 FSR::FSR(InputPort* port){
   this->port = port;
   max_force = new Max();
-  force_clamp = new Clamp(1,0);
+  force_clamp = new Clamp(0,1);
   calibration_peak = 1.0;
   force = 0;
 }

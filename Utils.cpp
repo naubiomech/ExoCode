@@ -57,7 +57,7 @@ double MovingAverage::getAverage(){
   return this->average;
 }
 
-Clamp::Clamp(double upper, double lower){
+Clamp::Clamp(double lower, double upper){
   this->upper = upper;
   this->lower = lower;
 }
