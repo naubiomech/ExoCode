@@ -155,6 +155,13 @@ void Exoskeleton::receiveMessages(){
   }
 }
 
+void Exoskeleton::processMessage(ExoMessage* msg){
+  msg->runPreCommands(this);
+  msg->messageLeftLeg(left_leg);
+  msg->messageRightLeg(right_leg);
+  msg->runPostCommands(this);
+}
+
 void Exoskeleton::checkReset(){
   if (!trialStarted) {
     resetStartingParameters();

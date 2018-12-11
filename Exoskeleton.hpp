@@ -4,6 +4,7 @@
 #include "Leg.hpp"
 #include "Report.hpp"
 #include "Transceiver.hpp"
+#include "Message.hpp"
 
 class Exoskeleton{
 private:
@@ -50,6 +51,7 @@ public:
   void receiveMessages();
   void checkReset();
   void sendReport();
+  void processMessage(ExoMessage* msg);
   ExoReport* generateReport();
   void fillReport(ExoReport* report);
 };
