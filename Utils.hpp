@@ -39,11 +39,10 @@ public:
 class Threshold{
 private:
   double upper_threshold;
-  int crossed_threshold_max;
-  int crossed_threshold_count;
+  double lower_threshold;
   bool state;
 public:
-  Threshold(bool starting_state, double threshold_value, int crossed_threshold_max);
+  Threshold(bool starting_state, double upper_threshold_value, double lower_threshold_value);
   bool getState(double value);
   void setUpperThreshold(double value);
 };

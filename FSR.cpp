@@ -7,7 +7,6 @@
 FSR::FSR(InputPort* port){
   this->port = port;
   max_force = new Max();
-  peak_average = new MovingAverage(FSR_CALIBRATION_PEAK_COUNT);
   force_clamp = new Clamp(1,0);
   calibration_peak = 1.0;
   force = 0;
@@ -16,7 +15,6 @@ FSR::FSR(InputPort* port){
 FSR::~FSR(){
   delete port;
   delete max_force;
-  delete peak_average;
   delete force_clamp;
 }
 
@@ -34,16 +32,11 @@ void FSR::updateForce(double force){
 }
 
 void FSR::calibrate(){
-  double average = peak_average->getAverage();
-  if (average > 0){
-    calibration_peak = average;
-  } else {
-    calibration_peak = max_force->getMax();
-  }
+  calibration_peak = max_force->getMax();
+  resetMaxes();
 }
 
 void FSR::resetMaxes(){
-  peak_average->update(max_force->getMax());
   max_force->reset();
 }
 
@@ -69,9 +62,9 @@ FSRGroup::FSRGroup(LinkedList<FSR*>* fsrs){
   this->fsrs = *fsrs;
 
   force = 0;
-  fsr_percent_thresh = 0.1;
+  fsr_percent_thresh = FSR_UPPER_THRESHOLD;
   is_activated  = false;
-  activation_threshold = new Threshold(0, fsr_percent_thresh, state_counter_th);
+  activation_threshold = new Threshold(0, FSR_UPPER_THRESHOLD, FSR_LOWER_THRESHOLD);
 }
 
 FSRGroup::~FSRGroup(){
@@ -106,6 +99,7 @@ void FSRGroup::calibrate(){
 
 void FSRGroup::setPercentageThreshold(double percent){
   fsr_percent_thresh = percent;
+  activation_threshold->setUpperThreshold(percent);
 }
 
 double FSRGroup::getThreshold(){

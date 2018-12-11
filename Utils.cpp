@@ -72,25 +72,27 @@ void updateMax(double* max_value, double value){
   }
 }
 
-Threshold::Threshold(bool starting_state, double threshold_value, int crossed_threshold_max){
-  this->upper_threshold = threshold_value;
-  this->crossed_threshold_max = crossed_threshold_max;
+Threshold::Threshold(bool starting_state, double upper_threshold_value, double lower_threshold_value){
+  this->upper_threshold = upper_threshold_value;
+  this->lower_threshold = lower_threshold_value;
   this->state = starting_state;
-  this->crossed_threshold_count = 0;
 }
 
 bool Threshold::getState(double value){
-  if((value > upper_threshold) == state){
-    crossed_threshold_count = 0;
-  } else {
-    crossed_threshold_count++;
+  Serial.print(state);
+  Serial.print(":");
+  Serial.print(value);
+  Serial.print(":");
+  Serial.print(upper_threshold);
+  Serial.print(":");
+  Serial.println(lower_threshold);
+  if (state == 0 && value > upper_threshold){
+    Serial.println("Changing state");
+    state = 1;
+  } else if (state == 1 && value < lower_threshold){
+    Serial.println("Changing state");
+    state = 0;
   }
-
-  if(crossed_threshold_count == crossed_threshold_max){
-    state = !state;
-    crossed_threshold_count = 0;
-  }
-
   return state;
 }
 

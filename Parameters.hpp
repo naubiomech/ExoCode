@@ -67,5 +67,7 @@ const double DEFAULT_ITER_SWING = 500;
 const double DEFAULT_ITER_LATE_STANCE = 4;
 
 const int FSR_CALIBRATION_PEAK_COUNT = 4;
+const double FSR_UPPER_THRESHOLD = 0.7;
+const double FSR_LOWER_THRESHOLD = 0.3;
 
 #endif
