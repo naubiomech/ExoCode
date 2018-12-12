@@ -76,6 +76,10 @@ public:
   void SetOutputLimits(int,int);
   void SetSampleTime(int);
   void Compute_KF(double);
+  double GetKp();
+  double GetKi();
+  double GetKd();
+  void SetTunings(double,double,double);
 
 };
 

@@ -62,31 +62,35 @@ void PID::SetMode(int){}
 void PID::SetOutputLimits(int,int){}
 void PID::SetSampleTime(int){}
 void PID::Compute_KF(double){}
+double PID::GetKp(){return 0;}
+double PID::GetKi(){return 0;}
+double PID::GetKd(){return 0;}
+void PID::SetTunings(double p,double i,double d){};
 
 void delay(double time){usleep(1000 * time);}
 double pow(double, double){return 0;}
 double exp(double){return 0;}
 double round(double){return 0;}
 double abs(double){return 0;}
-double max(double a, double b){return (a>b) ? a : b;}
-double min(double a, double b){return (a<b) ? a : b;}
-unsigned long int millis(){
-  struct timeval tv;
+					   double max(double a, double b){return (a>b) ? a : b;}
+					   double min(double a, double b){return (a<b) ? a : b;}
+					   unsigned long int millis(){
+						   struct timeval tv;
 
-  gettimeofday(&tv, NULL);
+						   gettimeofday(&tv, NULL);
 
-  unsigned long long millisecondsSinceEpoch =
-    (unsigned long long)(tv.tv_sec) * 1000 +
-    (unsigned long long)(tv.tv_usec) / 1000;
+						   unsigned long long millisecondsSinceEpoch =
+			(unsigned long long)(tv.tv_sec) * 1000 +
+			(unsigned long long)(tv.tv_usec) / 1000;
 
-  return millisecondsSinceEpoch;
-}
-void pinMode(int, int){}
-void analogReadResolution(int){}
-void analogWriteResolution(int){}
-int analogRead(int){return 0;}
-void analogWrite(int, int){}
-int digitalRead(int){return 0;}
-void digitalWrite(int, int){}
+		return millisecondsSinceEpoch;
+	}
+	void pinMode(int, int){}
+	void analogReadResolution(int){}
+	void analogWriteResolution(int){}
+	int analogRead(int){return 0;}
+	void analogWrite(int, int){}
+	int digitalRead(int){return 0;}
+	void digitalWrite(int, int){}
 
 #endif
