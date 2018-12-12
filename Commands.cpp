@@ -20,6 +20,18 @@ void CalibrateAllFsrsCommand::execute(Exoskeleton* exo){
   exo->calibrateFSRs();
 }
 
-void SetJointSetpoint::execute(Joint* joint){
+void SetJointSetpointCommand::execute(Joint* joint){
   joint->setDesiredSetpoint(state, setpoint);
+}
+
+void SetJointPidCommand::execute(Joint* joint){
+  joint->setPid(p,i,d);
+}
+
+void SetJointKfCommand::execute(Joint* joint){
+  joint->setKf(kf);
+}
+
+void SetJointSmoothingParamCommand::execute(Joint* joint){
+  joint->setSmoothingParam(state, param);
 }

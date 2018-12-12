@@ -33,12 +33,39 @@ public:
   virtual void execute(Exoskeleton* exo);
 };
 
-class SetJointSetpoint:public Command<Joint>{
+class SetJointSetpointCommand:public Command<Joint>{
 private:
   StateID state;
   double setpoint;
 public:
-SetJointSetpoint(StateID state, double setpoint): state(state), setpoint(setpoint){};
+SetJointSetpointCommand(StateID state, double setpoint): state(state), setpoint(setpoint){};
+  virtual void execute(Joint* joint);
+};
+
+class SetJointPidCommand:public Command<Joint>{
+private:
+  double p;
+  double i;
+  double d;
+public:
+SetJointPidCommand(double p, double i, double d): p(p), i(i), d(d){};
+  virtual void execute(Joint* joint);
+};
+
+class SetJointKfCommand:public Command<Joint>{
+private:
+  double kf;
+public:
+SetJointKfCommand(double kf): kf(kf){};
+  virtual void execute(Joint* joint);
+};
+
+class SetJointSmoothingParamCommand:public Command<Joint>{
+private:
+  StateID state;
+  double param;
+public:
+SetJointSmoothingParamCommand(StateID state, double param): state(state), param(param){};
   virtual void execute(Joint* joint);
 };
 

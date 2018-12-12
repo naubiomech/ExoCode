@@ -161,8 +161,8 @@ void Transceiver::receiveMessage(ExoMessageBuilder* msg_builder, ExoReport* repo
     msg_builder->
       beginLeftLegMessage()->
       beginJointMessage(0)->
-      addCommand(new SetJointSetpoint(LATE_STANCE, data_received[0]))->
-      addCommand(new SetJointSetpoint(SWING, data_received[1]));
+      addCommand(new SetJointSetpointCommand(LATE_STANCE, data_received[0]))->
+      addCommand(new SetJointSetpointCommand(SWING, data_received[1]));
     break;
 
   case COMM_CODE_SET_RIGHT_ANKLE_SETPOINT:
@@ -170,19 +170,12 @@ void Transceiver::receiveMessage(ExoMessageBuilder* msg_builder, ExoReport* repo
     msg_builder->
       beginRightLegMessage()->
       beginJointMessage(0)->
-      addCommand(new SetJointSetpoint(LATE_STANCE, data_received[0]))->
-      addCommand(new SetJointSetpoint(SWING, data_received[1]));
+      addCommand(new SetJointSetpointCommand(LATE_STANCE, data_received[0]))->
+      addCommand(new SetJointSetpointCommand(SWING, data_received[1]));
     break;
 
   case COMM_CODE_CALIBRATE_FSR:
     msg_builder->addPreCommand(new CalibrateAllFsrsCommand());
-    break;
-
-  case COMM_CODE_GET_SMOOTHING_PARAMS:
-    data_to_send[0] = 1;
-    data_to_send[1] = 1;
-    data_to_send[2] = 1;
-    sendCommandMessage(COMM_CODE_GET_SMOOTHING_PARAMS, data_to_send, 3);
     break;
 
   case COMM_CODE_GET_LEFT_ANKLE_FSR_THRESHOLD:
@@ -196,28 +189,76 @@ void Transceiver::receiveMessage(ExoMessageBuilder* msg_builder, ExoReport* repo
     break;
 
   case COMM_CODE_GET_LEFT_ANKLE_KF:
-    data_to_send[0] = 1;
+    data_to_send[0] = report->left_leg->joint_reports[0]->pid_kf;
     sendCommandMessage(COMM_CODE_GET_LEFT_ANKLE_KF, data_to_send, 1);
     break;
 
+  case COMM_CODE_SET_LEFT_ANKLE_KF:
+    receiveData(data_received, 1);
+    msg_builder->
+      beginLeftLegMessage()->
+      beginJointMessage(0)->
+      addCommand(new SetJointKfCommand(data_received[0]));
+    break;
+
   case COMM_CODE_GET_RIGHT_ANKLE_KF:
-    data_to_send[0] = 1;
+    data_to_send[0] = report->right_leg->joint_reports[0]->pid_kf;
     sendCommandMessage(COMM_CODE_GET_RIGHT_ANKLE_KF, data_to_send, 1);
     break;
 
+  case COMM_CODE_SET_RIGHT_ANKLE_KF:
+    receiveData(data_received, 1);
+    msg_builder->
+      beginRightLegMessage()->
+      beginJointMessage(0)->
+      addCommand(new SetJointKfCommand(data_received[0]));
+    break;
+
   case COMM_CODE_GET_LEFT_ANKLE_PID_PARAMS:
-    data_to_send[0] = 1;
-    data_to_send[1] = 1;
-    data_to_send[2] = 1;
-    sendCommandMessage(COMM_CODE_GET_LEFT_ANKLE_PID_PARAMS, data_to_send,3);
+    sendCommandMessage(COMM_CODE_GET_LEFT_ANKLE_PID_PARAMS, report->left_leg->joint_reports[0]->pid_params,3);
     break;
 
   case COMM_CODE_GET_RIGHT_ANKLE_PID_PARAMS:
-    data_to_send[0] = 1;
-    data_to_send[1] = 1;
-    data_to_send[2] = 1;
-    sendCommandMessage(COMM_CODE_GET_RIGHT_ANKLE_PID_PARAMS, data_to_send,3);
+    sendCommandMessage(COMM_CODE_GET_RIGHT_ANKLE_PID_PARAMS, report->right_leg->joint_reports[0]->pid_params,3);
     break;
 
+  case COMM_CODE_SET_LEFT_PID_PARAMS:
+    receiveData(data_received, 3);
+    msg_builder->
+      beginLeftLegMessage()->
+      beginJointMessage(0)->
+      addCommand(new SetJointPidCommand(data_received[0], data_received[1], data_received[2]));
+    break;
+
+  case COMM_CODE_SET_RIGHT_PID_PARAMS:
+    receiveData(data_received, 3);
+    msg_builder->
+      beginRightLegMessage()->
+      beginJointMessage(0)->
+      addCommand(new SetJointPidCommand(data_received[0], data_received[1], data_received[2]));
+    break;
+
+  case COMM_CODE_GET_SMOOTHING_PARAMS:
+    data_to_send[0] = report->right_leg->joint_reports[0]->smoothing[0];
+    data_to_send[1] = report->right_leg->joint_reports[0]->smoothing[1];
+    data_to_send[2] = report->right_leg->joint_reports[0]->smoothing[2];
+    sendCommandMessage(COMM_CODE_GET_SMOOTHING_PARAMS, data_to_send, 3);
+    break;
+
+  case COMM_CODE_SET_SMOOTHING_PARAMS:
+    receiveData(data_received, 3);
+    (data_received);
+    msg_builder->
+      beginRightLegMessage()->
+      beginJointMessage(0)->
+      addCommand(new SetJointSmoothingParamCommand(SWING, data_received[0]))->
+      addCommand(new SetJointSmoothingParamCommand(LATE_STANCE, data_received[2]))->
+      finishJoint()->
+      finishLeg()->
+      beginLeftLegMessage()->
+      beginJointMessage(0)->
+      addCommand(new SetJointSmoothingParamCommand(SWING, data_received[0]))->
+      addCommand(new SetJointSmoothingParamCommand(LATE_STANCE, data_received[2]));
+    break;
   }
 }
