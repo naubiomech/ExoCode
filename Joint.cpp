@@ -83,8 +83,32 @@ void Joint::setSign(int sign){
   torque_sensor->setSign(sign);
 }
 
+void Joint::setPid(double p, double i, double d){
+  controller->setPid(p,i,d);
+}
+
+void Joint::getPid(double* pid){
+  controller->getPid(pid);
+}
+
 void Joint::processMessage(JointMessage* msg){
   msg->runCommands(this);
+}
+
+double Joint::getKf(){
+  return controller->getKf();
+}
+
+void Joint::setKf(double kf){
+  controller->setKf(kf);
+}
+
+double Joint::getSmoothingParam(StateID state){
+  return controller->getSmoothingParam(state);
+}
+
+void Joint::setSmoothingParam(StateID state, double param){
+  controller->setSmoothingParam(state, param);
 }
 
 JointReport* Joint::generateReport(){
@@ -103,4 +127,9 @@ void Joint::fillReport(JointReport* report){
 
 void Joint::fillLocalReport(JointReport* report){
   report->pid_setpoint = controller->getLastSetpoint();
+  getPid(report->pid_params);
+  report->pid_kf = getKf();
+  report->smoothing[0] = getSmoothingParam(SWING);
+  report->smoothing[1] = 0;
+  report->smoothing[2] = getSmoothingParam(LATE_STANCE);
 }

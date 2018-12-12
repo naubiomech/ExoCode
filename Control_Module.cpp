@@ -134,6 +134,32 @@ void ControlModule::setControlStateMachine(ControlAlgorithm* state_machine, Stat
   current_algorithm = getControlAlgorithm(starting_state);
 }
 
+void ControlModule::getPid(double* pid){
+  pid[0] = this->pid->GetKp();
+  pid[1] = this->pid->GetKi();
+  pid[2] = this->pid->GetKd();
+}
+
+void ControlModule::setPid(double p, double i, double d){
+  pid->SetTunings(p,i,d);
+}
+
+double ControlModule::getKf(){
+  return KF;
+}
+
+void ControlModule::setKf(double kf){
+  KF = kf;
+}
+
+double ControlModule::getSmoothingParam(StateID state){
+  return getControlAlgorithm(state)->getShapingIterations();
+}
+
+void ControlModule::setSmoothingParam(StateID state, double param){
+  getControlAlgorithm(state)->setShapingIterations(param);
+}
+
 ControlModuleBuilder* ControlModuleBuilder::addState(StateID state, ControlAlgorithmType control_type){
   states.append(state);
   control_types.append(control_type);

@@ -37,6 +37,12 @@ public:
   double getTorque();
   void measureTorque();
   void setSign(int sign);
+  void setPid(double p, double i, double d);
+  void getPid(double* pid);
+  double getKf();
+  void setKf(double kf);
+  double getSmoothingParam(StateID state);
+  void setSmoothingParam(StateID state, double param);
   void startTorqueCalibration();
   void updateTorqueCalibration();
   void endTorqueCalibration();

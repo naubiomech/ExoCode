@@ -45,6 +45,12 @@ public:
   void updateKFPIDError(double torque);
   void applyAutoKF();
   double getLastSetpoint();
+  void getPid(double* pid);
+  void setPid(double p, double i, double d);
+  double getKf();
+  void setKf(double kf);
+  double getSmoothingParam(StateID state);
+  void setSmoothingParam(StateID state, double param);
 };
 
 class ControlModuleBuilder{
