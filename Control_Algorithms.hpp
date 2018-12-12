@@ -29,6 +29,7 @@ public:
   void setPreviousControlAlgorithm(ControlAlgorithm* control_algorithm);
   void deleteAlgorithmStateMachine();
   virtual void setDesiredSetpoint(double setpoint);
+  virtual double getDesiredSetpoint();
   virtual double getShapingIterations();
   virtual void setShapingIterations(double iterations);
   virtual void activate();

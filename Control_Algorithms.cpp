@@ -76,6 +76,10 @@ void ControlAlgorithm::setDesiredSetpoint(double setpoint){
   resetIncrementalActivation();
 }
 
+double ControlAlgorithm::getDesiredSetpoint(){
+  return desired_setpoint;
+}
+
 ControlAlgorithm* ControlAlgorithm::getNextAlgorithm(){
   return next;
 }

@@ -20,6 +20,10 @@ void Joint::setDesiredSetpoint(StateID state, double setpoint){
   controller->setAlgorithmDesiredSetpoint(state, setpoint);
 }
 
+double Joint::getDesiredSetpoint(StateID state){
+  return controller->getDesiredSetpoint();
+}
+
 void Joint::measureError(){
   motor->measureError();
 }

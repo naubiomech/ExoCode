@@ -35,6 +35,7 @@ public:
   ~ControlModule();
   void setControlStateMachine(ControlAlgorithm* state_machine, StateID starting_state);
   void setAlgorithmDesiredSetpoint(StateID state, double setpoint);
+  double getAlgorithmDesiredSetpoint(StateID state);
   void setToZero();
   void setDesiredSetpoint(double setpoint);
   void changeState(StateID state_id);

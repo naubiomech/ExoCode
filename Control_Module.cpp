@@ -36,6 +36,10 @@ void ControlModule::setAlgorithmDesiredSetpoint(StateID state, double setpoint){
   getControlAlgorithm(state)->setDesiredSetpoint(setpoint);
 }
 
+double ControlModule::getAlgorithmDesiredSetpoint(StateID state){
+  return getControlAlgorithm(state)->getDesiredSetpoint();
+}
+
 double ControlModule::getControlAdjustment(double torque_input, SensorReport* report){
   double setpoint = getSetpoint(report);
   double adjustment = runPID(torque_input, KF, setpoint);
