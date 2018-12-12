@@ -24,7 +24,10 @@ public:
   JointReport();
   ~JointReport();
 
+  double smoothing[3];
   double pid_setpoint;
+  double pid_kf;
+  double pid_params[3];
   MotorReport* motor_report;
   TorqueSensorReport* torque_sensor_report;
 };
