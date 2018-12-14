@@ -130,10 +130,10 @@ void Joint::fillReport(JointReport* report){
 }
 
 void Joint::fillLocalReport(JointReport* report){
-  report->pid_setpoint = controller->getLastSetpoint();
   getPid(report->pid_params);
   report->pid_kf = getKf();
   report->smoothing[0] = getSmoothingParam(SWING);
   report->smoothing[1] = 0;
   report->smoothing[2] = getSmoothingParam(LATE_STANCE);
+  report->pid_setpoint = getDesiredSetpoint(LATE_STANCE);
 }
