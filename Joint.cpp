@@ -21,7 +21,7 @@ void Joint::setDesiredSetpoint(StateID state, double setpoint){
 }
 
 double Joint::getDesiredSetpoint(StateID state){
-  return controller->getDesiredSetpoint();
+  return controller->getAlgorithmDesiredSetpoint(state);
 }
 
 void Joint::measureError(){

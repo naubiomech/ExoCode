@@ -24,12 +24,12 @@ void testExo(){
   builder.
     beginLeftLegMessage()->
     beginJointMessage(0)->
-    addCommand(new SetJointPid(0,0,0))->
+    addCommand(new SetJointPidCommand(0,0,0))->
     finishJoint()->
     finishLeg()->
     beginLeftLegMessage()->
     beginJointMessage(0)->
-    addCommand(new SetJointPid(0,0,0));
+    addCommand(new SetJointPidCommand(0,0,0));
   ExoMessage* msg = builder.build();
   exo->processMessage(msg);
   delete msg;
