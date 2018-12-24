@@ -269,4 +269,5 @@ Transmission* TransmissionFactory::create(Transceiver* trans, CommandCode code){
 		Serial.print("Command code not implemented: ");
 		Serial.println(code);
 	}
+	return NULL;
 }
