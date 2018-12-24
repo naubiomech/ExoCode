@@ -3,16 +3,16 @@
 #include "Board.hpp"
 #include "Leg.hpp"
 #include "Report.hpp"
-#include "Transceiver.hpp"
+#include "Communications.hpp"
 #include "Message.hpp"
 
-Exoskeleton::Exoskeleton(Leg* left_leg, Leg* right_leg, Transceiver* transceiver,
+Exoskeleton::Exoskeleton(Leg* left_leg, Leg* right_leg, Communications* comms,
                          OutputPort* motor_enable_port, OutputPort* led_port){
   this->left_leg = left_leg;
   this->right_leg = right_leg;
   this->led_port = led_port;
   this->motor_enable_port = motor_enable_port;
-  this->transceiver = transceiver;
+  this->comms = comms;
 
   motor_enable_port->write(0);
   report = generateReport();
@@ -28,7 +28,7 @@ Exoskeleton::~Exoskeleton(){
   delete motor_enable_port;
   delete led_port;
   delete report;
-  delete transceiver;
+  delete comms;
 }
 
 void Exoskeleton::startTrial(){
@@ -57,7 +57,7 @@ void Exoskeleton::sendReport(){
 
     reportDataTimer.reset();
     fillReport(report);
-    transceiver->sendReport(report);
+    comms->sendReport(report);
   }
 }
 
@@ -151,7 +151,7 @@ void Exoskeleton::receiveMessages(){
   if (receiveDataTimer.check() == 1) {
     receiveDataTimer.reset();
     fillReport(report);
-    ExoMessage* msg = transceiver->receiveMessages(report);
+    ExoMessage* msg = comms->receiveMessages(report);
     processMessage(msg);
     delete msg;
   }

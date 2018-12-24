@@ -3,7 +3,7 @@
 #include "Arduino.hpp"
 #include "Leg.hpp"
 #include "Report.hpp"
-#include "Transceiver.hpp"
+#include "Communications.hpp"
 #include "Message.hpp"
 
 class Exoskeleton{
@@ -22,7 +22,7 @@ private:
   Metro reportDataTimer = Metro(10);
   Metro receiveDataTimer = Metro(1);
   ExoReport* report;
-  Transceiver* transceiver;
+  Communications* comms;
   OutputPort* motor_enable_port;
   OutputPort* led_port;
 
@@ -31,7 +31,7 @@ private:
 
 public:
 
-  Exoskeleton(Leg* left_leg, Leg* right_leg, Transceiver* transceiver,
+  Exoskeleton(Leg* left_leg, Leg* right_leg, Communications* comms,
               OutputPort* motor_enable_port, OutputPort* led_port);
   ~Exoskeleton();
   void run();

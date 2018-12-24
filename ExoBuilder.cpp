@@ -93,7 +93,8 @@ Exoskeleton* ExoBuilder::build(){
   delete right_builder;
   right_builder = NULL;
   Transceiver* transceiver = new MatlabTransceiver(tx, rx);
-  Exoskeleton* exo = new Exoskeleton(left_leg, right_leg, transceiver, motor_enable_port, led_port);
+  Communications* comms = new Communications(transceiver);
+  Exoskeleton* exo = new Exoskeleton(left_leg, right_leg, comms, motor_enable_port, led_port);
   return exo;
 }
 
