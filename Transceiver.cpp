@@ -47,6 +47,10 @@ bool MatlabTransceiver::receiveFooter(){
 }
 
 void MatlabTransceiver::receiveData(double* output_data, int doubles_expected){
+	if (doubles_expected <= 0){
+		return;
+	}
+
 	char* output_data_raw_form = (char*) output_data;
 	for(int i = 0; i < doubles_expected; i ++){
 		while (noDataAvailable()){}
@@ -65,6 +69,10 @@ void MatlabTransceiver::sendCommand(CommandCode code){
 }
 
 void MatlabTransceiver::sendData(double* data, int doubles_to_send){
+	if (doubles_to_send <= 0){
+		return;
+	}
+
 	for (int i = 0; i < doubles_to_send; i++){
 		serial->print(data[i]);
 		serial->write(',');
@@ -72,5 +80,6 @@ void MatlabTransceiver::sendData(double* data, int doubles_to_send){
 }
 
 void MatlabTransceiver::sendFooter(){
-	serial->println('Z');
+	serial->write('Z');
+	serial->println();
 }
