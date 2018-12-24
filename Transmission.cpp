@@ -6,6 +6,8 @@ Transmission::Transmission(Transceiver* transceiver, CommandCode code,
 						   unsigned int receive_count, unsigned int send_count){
 	this->code = code;
 	this->transceiver = transceiver;
+	this->send_count = send_count;
+	this->receive_count = receive_count;
 
 	if (send_count > 0){
 		send_data = new double[send_count];
