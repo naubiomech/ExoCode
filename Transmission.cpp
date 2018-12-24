@@ -33,15 +33,19 @@ void Transmission::process(ExoMessageBuilder* builder, ExoReport* report){
 }
 
 void Transmission::getData(){
-	transceiver->receiveData(receive_data, receive_count);
-	transceiver->receiveFooter();
+	if (receive_count > 0){
+		transceiver->receiveData(receive_data, receive_count);
+		transceiver->receiveFooter();
+	}
 }
 
 void Transmission::sendData(){
-	transceiver->sendHeader();
-	transceiver->sendCommand(code);
-	transceiver->sendData(send_data, send_count);
-	transceiver->sendFooter();
+	if (send_count > 0){
+		transceiver->sendHeader();
+		transceiver->sendCommand(code);
+		transceiver->sendData(send_data, send_count);
+		transceiver->sendFooter();
+	}
 }
 
 void Transmission::copyToSend(double* from){
