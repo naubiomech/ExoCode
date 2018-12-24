@@ -8,11 +8,11 @@
 
 class Transceiver{
 public:
-  Transceiver();
   virtual ~Transceiver();
 
   virtual bool dataAvailable() = 0;
   virtual bool noDataAvailable();
+  virtual void clear() = 0;
 
   virtual void sendHeader() = 0;
   virtual void sendData(double* data, int bytes_to_send) = 0;
@@ -33,6 +33,7 @@ public:
   ~MatlabTransceiver();
 
   virtual bool dataAvailable();
+  virtual void clear();
 
   virtual void sendHeader();
   virtual void sendData(double* data, int bytes_to_send);
