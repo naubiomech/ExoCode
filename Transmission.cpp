@@ -65,44 +65,44 @@ void RequestDataTransmission::processData(ExoMessageBuilder* builder, ExoReport*
 	send_data[4] = report->right_leg->sensor_reports->fsr_reports[0]->threshold;
 	send_data[5] = report->right_leg->sensor_reports->fsr_reports[0]->measuredForce;
 
-send_data[6] = report->left_leg->joint_reports[0]->torque_sensor_report->measuredTorque;
-		send_data[7] = report->left_leg->state;
-		send_data[8] = report->left_leg->joint_reports[0]->pid_setpoint;
-		send_data[9] = report->left_leg->joint_reports[0]->pid_setpoint;
-		send_data[10] = report->left_leg->sensor_reports->fsr_reports[0]->threshold;
-		send_data[11] = report->left_leg->sensor_reports->fsr_reports[0]->measuredForce;
+	send_data[6] = report->left_leg->joint_reports[0]->torque_sensor_report->measuredTorque;
+	send_data[7] = report->left_leg->state;
+	send_data[8] = report->left_leg->joint_reports[0]->pid_setpoint;
+	send_data[9] = report->left_leg->joint_reports[0]->pid_setpoint;
+	send_data[10] = report->left_leg->sensor_reports->fsr_reports[0]->threshold;
+	send_data[11] = report->left_leg->sensor_reports->fsr_reports[0]->measuredForce;
 
-		send_data[12] = 0;
-		send_data[13] = 0;
-		send_data[14] = 0;
-		send_data[15] = 0;
-	}
+	send_data[12] = 0;
+	send_data[13] = 0;
+	send_data[14] = 0;
+	send_data[15] = 0;
+}
 
-	StartTrialTransmission::StartTrialTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_START_TRIAL, 0, 0){}
-	void StartTrialTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
-		builder->addPreCommand(new StartTrialCommand());
-	}
+StartTrialTransmission::StartTrialTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_START_TRIAL, 0, 0){}
+void StartTrialTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+	builder->addPreCommand(new StartTrialCommand());
+}
 
-	EndTrialTransmission::EndTrialTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_END_TRIAL, 0, 0){}
-	void EndTrialTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
-		builder->addPreCommand(new EndTrialCommand());
-	}
+EndTrialTransmission::EndTrialTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_END_TRIAL, 0, 0){}
+void EndTrialTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+	builder->addPreCommand(new EndTrialCommand());
+}
 
-	CalibrateTorqueTransmission::CalibrateTorqueTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CALIBRATE_TORQUE, 0, 0){}
-	void CalibrateTorqueTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
-		builder->addPreCommand(new CalibrateAllTorquesCommand());
-	}
+CalibrateTorqueTransmission::CalibrateTorqueTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CALIBRATE_TORQUE, 0, 0){}
+void CalibrateTorqueTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+	builder->addPreCommand(new CalibrateAllTorquesCommand());
+}
 
-	CheckBluetoothTransmission::CheckBluetoothTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CHECK_BLUETOOTH, 0, 3){}
-	void CheckBluetoothTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
-		send_data[0] = 0;
-		send_data[1] = 1;
-		send_data[2] = 2;
-	}
+CheckBluetoothTransmission::CheckBluetoothTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CHECK_BLUETOOTH, 0, 3){}
+void CheckBluetoothTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+	send_data[0] = 0;
+	send_data[1] = 1;
+	send_data[2] = 2;
+}
 
-	CleanBluetoothBufferTransmission::CleanBluetoothBufferTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CLEAN_BLUETOOTH_BUFFER, 0, 0){}
-	void CleanBluetoothBufferTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
-		transceiver->clear();
+CleanBluetoothBufferTransmission::CleanBluetoothBufferTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CLEAN_BLUETOOTH_BUFFER, 0, 0){}
+void CleanBluetoothBufferTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+	transceiver->clear();
 }
 
 GetLeftAnkleSetpointTransmission::GetLeftAnkleSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_LEFT_ANKLE_SETPOINT, 0, 1){}
