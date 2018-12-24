@@ -2,10 +2,12 @@
 
 Communications::Communications(Transceiver* transceiver){
   this->transceiver = transceiver;
+  this->transmission_creator = new TransmissionFactory();
 }
 
 Communications::~Communications(){
   delete transceiver;
+  delete transmission_creator;
 }
 
 ExoMessage* Communications::receiveMessages(ExoReport* report){
