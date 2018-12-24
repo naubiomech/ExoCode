@@ -1,3 +1,5 @@
+#ifndef TRANSMISSION_HEADER
+#define TRANSMISSION_HEADER
 #include "Commands.hpp"
 #include "Command_Codes.hpp"
 #include "Message.hpp"
@@ -197,3 +199,4 @@ class TransmissionFactory{
 public:
 	Transmission* create(Transceiver* transceiver, CommandCode code);
 };
+#endif
