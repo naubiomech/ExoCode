@@ -23,8 +23,8 @@ Transmission::Transmission(Transceiver* transceiver, CommandCode code,
 }
 
 Transmission::~Transmission(){
-	delete send_data;
-	delete receive_data;
+	delete[] send_data;
+	delete[] receive_data;
 }
 
 
