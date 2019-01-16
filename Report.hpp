@@ -43,11 +43,17 @@ public:
   double orientation[3];
 };
 
+class PotReport:public Report{
+public:
+  double angle;
+};
+
 class SensorReport:public Report{
 public:
   ~SensorReport();
   LinkedList<FSRReport*> fsr_reports;
   LinkedList<IMUReport*> imu_reports;
+  LinkedList<PotReport*> pot_reports;
 };
 
 class LegReport:public Report{

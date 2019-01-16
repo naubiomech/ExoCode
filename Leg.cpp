@@ -273,6 +273,9 @@ void Leg::fillSensorReport(SensorReport* report){
   for (unsigned int i = 0; i < imus.size(); i++){
     imus[i]->fillReport(report->imu_reports[i]);
   }
+  for (unsigned int i = 0; i < pots.size(); i++){
+    pots[i]->fillReport(report->pot_reports[i]);
+  }
 }
 
 void Leg::fillLocalReport(LegReport* report){

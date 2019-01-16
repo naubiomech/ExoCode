@@ -15,3 +15,7 @@ void Pot::measure(){
 double Pot::getAngle(){
   return angle;
 }
+
+void Pot::fillReport(PotReport* report){
+  report->angle = this->getAngle();
+}

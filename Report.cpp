@@ -16,6 +16,7 @@ Report::~Report(){}
 SensorReport::~SensorReport(){
   deleteReportList(&fsr_reports);
   deleteReportList(&imu_reports);
+  deleteReportList(&pot_reports);
 }
 
 LegReport::LegReport(){
