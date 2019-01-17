@@ -12,6 +12,7 @@ public:
   ~Pot();
   void measure();
   double getAngle();
+  PotReport* generateReport();
   void fillReport(PotReport* report);
 };
 
