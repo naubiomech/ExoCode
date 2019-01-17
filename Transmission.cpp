@@ -74,7 +74,7 @@ void RequestDataTransmission::processData(ExoMessageBuilder* builder, ExoReport*
   send_data[10] = report->left_leg->sensor_reports->fsr_reports[0]->threshold;
   send_data[11] = report->left_leg->sensor_reports->fsr_reports[0]->measuredForce;
 
-  send_data[12] = report->right_leg->sensor_reports->pot_reports[0]->angle;
+  send_data[12] = 0;
   send_data[13] = 0;
   send_data[14] = 0;
   send_data[15] = 0;
