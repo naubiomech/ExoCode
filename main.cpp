@@ -21,15 +21,7 @@ Exoskeleton* setupSystem(){
 void testExo(){
   Exoskeleton* exo = setupSystem();
   ExoMessageBuilder builder;
-  builder.
-    beginLeftLegMessage()->
-    beginJointMessage(0)->
-    addCommand(new SetJointPidCommand(0,0,0))->
-    finishJoint()->
-    finishLeg()->
-    beginLeftLegMessage()->
-    beginJointMessage(0)->
-    addCommand(new SetJointPidCommand(0,0,0));
+  builder.addPreCommand(new StartTrialCommand());
   ExoMessage* msg = builder.build();
   exo->processMessage(msg);
   delete msg;
