@@ -254,6 +254,9 @@ LegReport* Leg::generateReport(){
   for (unsigned int i = 0; i < imus.size(); i++){
     sensor_report->imu_reports.append(imus[i]->generateReport());
   }
+  for (unsigned int i = 0; i < pots.size(); i++){
+    sensor_report->pot_reports.append(pots[i]->generateReport());
+  }
   return leg_report;
 }
 
