@@ -32,20 +32,20 @@ private:
   double upper;
   double lower;
 public:
-  Clamp(double upper, double lower);
+  Clamp(double lower, double upper);
   double clamp(double value);
 };
 
 class Threshold{
 private:
   double upper_threshold;
-  int crossed_threshold_max;
-  int crossed_threshold_count;
+  double lower_threshold;
   bool state;
 public:
-  Threshold(bool starting_state, double threshold_value, int crossed_threshold_max);
+  Threshold(bool starting_state, double upper_threshold_value, double lower_threshold_value);
   bool getState(double value);
   void setUpperThreshold(double value);
+  void setLowerThreshold(double value);
 };
 
 class Timer{
@@ -71,12 +71,39 @@ public:
   void reset();
 };
 
+class Min{
+private:
+  double minVal;
+public:
+  Min();
+  double getMin();
+  void update(double value);
+  void reset();
+};
+
 class ChangeTrigger{
 private:
   bool state;
 public:
   ChangeTrigger(bool start_state);
   bool update(bool state);
+};
+
+class Range{
+private:
+  double avg;
+  Max* maximum;
+  Min* minimum;
+  double last_max;
+  double last_min;
+  Threshold* threshold;
+  ChangeTrigger* trigger;
+  MovingAverage* avgMax;
+  MovingAverage* avgMin;
+public:
+  double getMax();
+  double getMin();
+  void update(double value);
 };
 
 void updateMax(double* max_val, double val);

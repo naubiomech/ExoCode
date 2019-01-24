@@ -39,6 +39,8 @@ public:
 class LegBuilder{
 private:
   ExoBuilder* return_context;
+  FsrFactory* fsr_factory;
+  FsrGroupFactory* fsr_group_factory;
   int sign;
   State* states;
   LinkedList<InputPort*>* fsr_ports_begin = NULL;

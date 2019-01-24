@@ -34,6 +34,7 @@ public:
   LinkedList<T>& operator=(LinkedList<T>& other);
   ListIterator<T> getIterator();
   ~LinkedList();
+  void deleteItems();
 };
 
 template <class T>
@@ -86,12 +87,10 @@ LinkedList<T>& LinkedList<T>::operator=(LinkedList<T>& other){
 
 template <class T>
 LinkedList<T>* LinkedList<T>::copy(){
-  LinkedList<T> copied = new LinkedList<T>();
+  LinkedList<T>* copied = new LinkedList<T>();
   copyInto(*copied);
   return copied;
 }
-
-
 
 template <class T>
 Node<T>*  LinkedList<T>::getNode(int pos){
@@ -159,6 +158,16 @@ LinkedList<T>::~LinkedList(){
 }
 
 template <class T>
+void LinkedList<T>::deleteItems(){
+
+  ListIterator<T> iter = this->getIterator();
+  while(iter.hasNext()){
+    delete iter.next();
+  }
+  this->clear();
+}
+
+template <class T>
 ListIterator<T>::ListIterator(Node<T>* start_node){
   next_node = start_node;
 }
@@ -174,6 +183,7 @@ template <class T>
 bool ListIterator<T>::hasNext(){
   return next_node != NULL;
 }
+
 
 
 #endif

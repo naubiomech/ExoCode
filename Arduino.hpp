@@ -23,6 +23,7 @@ public:
   void write(const char* str);
   void print(double);
   void print(const char[]);
+  void println();
   void println(const char[]);
   void println(double);
 
@@ -75,6 +76,10 @@ public:
   void SetOutputLimits(int,int);
   void SetSampleTime(int);
   void Compute_KF(double);
+  double GetKp();
+  double GetKi();
+  double GetKd();
+  void SetTunings(double,double,double);
 
 };
 

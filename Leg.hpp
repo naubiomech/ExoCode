@@ -11,6 +11,7 @@ const int dim = 5;
 #include "IMU.hpp"
 #include "Pot.hpp"
 #include "Linked_List.hpp"
+#include "Message.hpp"
 
 class Leg {
 private:
@@ -18,6 +19,7 @@ private:
   void startIncrementalActivation();
   bool isSteadyState();
   void fillLocalReport(LegReport* report);
+  void fillSensorReport(SensorReport* report);
   void measureIMUs();
   void adjustControl();
   void updateMotorSetpoints();
@@ -27,6 +29,7 @@ private:
   LinkedList<IMU*> imus;
   LinkedList<Pot*> pots;
   FSRGroup* foot_fsrs;
+  SensorReport* sensor_report;
 
   bool set_motors_to_zero_torque;
   int step_count;
@@ -66,6 +69,7 @@ public:
   void setToZero();
   void calibrateIMUs();
   void setSign(int sign);
+  void processMessage(LegMessage* msg);
   LegReport* generateReport();
   void fillReport(LegReport* report);
   void setLegSign(int sign);

@@ -1,6 +1,7 @@
 #ifndef CONTROL_ALGORITHMS_HEADER
 #define CONTROL_ALGORITHMS_HEADER
 #include "Utils.hpp"
+#include "Report.hpp"
 #include "States.hpp"
 enum ControlAlgorithmType {zero_torque, bang_bang, balance_control, proportional, pivot_proportional};
 
@@ -28,10 +29,11 @@ public:
   void setPreviousControlAlgorithm(ControlAlgorithm* control_algorithm);
   void deleteAlgorithmStateMachine();
   virtual void setDesiredSetpoint(double setpoint);
+  virtual double getDesiredSetpoint();
   virtual double getShapingIterations();
   virtual void setShapingIterations(double iterations);
   virtual void activate();
-  virtual double getSetpoint(double fsr_percentage, double fsr_max_percentage) = 0;
+  virtual double getSetpoint(SensorReport* report) = 0;
   virtual bool useShapingFunction() = 0;
   virtual ControlAlgorithmType getType() = 0;
   virtual void setToZero();
@@ -45,7 +47,7 @@ public:
 class ZeroTorqueControl:public ControlAlgorithm{
 public:
   ZeroTorqueControl(StateID state_id);
-  double getSetpoint(double fsr_percentage, double fsr_max_percentage);
+  double getSetpoint(SensorReport* report);
   ControlAlgorithmType getType();
   bool useShapingFunction();
 };
@@ -53,7 +55,7 @@ public:
 class BangBangControl:public ControlAlgorithm{
 public:
   BangBangControl(StateID state_id);
-  double getSetpoint(double fsr_percentage, double fsr_max_percentage);
+  double getSetpoint(SensorReport* report);
   ControlAlgorithmType getType();
   bool useShapingFunction();
   void activate();
@@ -62,7 +64,7 @@ public:
 class BalanceControl:public ControlAlgorithm{
 public:
   BalanceControl(StateID state_id);
-  double getSetpoint(double fsr_percentage, double fsr_max_percentage);
+  double getSetpoint(SensorReport* report);
   ControlAlgorithmType getType();
   double getShapingIterations();
   bool useShapingFunction();
@@ -71,7 +73,7 @@ public:
 class ProportionalControl:public ControlAlgorithm{
 public:
   ProportionalControl(StateID state_id);
-  double getSetpoint(double fsr_percentage, double fsr_max_percentage);
+  double getSetpoint(SensorReport* report);
   ControlAlgorithmType getType();
   bool useShapingFunction();
 };
@@ -79,7 +81,7 @@ public:
 class ProportionalPivotControl:public ControlAlgorithm{
 public:
   ProportionalPivotControl(StateID state_id);
-  double getSetpoint(double fsr_percentage, double fsr_max_percentage);
+  double getSetpoint(SensorReport* report);
   ControlAlgorithmType getType();
   bool useShapingFunction();
 };

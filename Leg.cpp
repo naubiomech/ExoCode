@@ -20,30 +20,21 @@ Leg::Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs,
   increment_activation_starting_step = 0;
   set_motors_to_zero_torque = false;
   foot_change = new ChangeTrigger(false);
+  LegReport* report  = generateReport();
+  sensor_report = report->sensor_reports;
+  report->sensor_reports = NULL;
+  delete report;
 }
 
 Leg::~Leg(){
   delete foot_change;
+  delete sensor_report;
+
   state->deleteStateMachine();
-  ListIterator<Joint*> joint_iter = joints.getIterator();
-  while(joint_iter.hasNext()){
-    delete joint_iter.next();
-  }
-
-  ListIterator<FSRGroup*> fsr_iter = fsrs.getIterator();
-  while(fsr_iter.hasNext()){
-    delete fsr_iter.next();
-  }
-
-  ListIterator<IMU*> imu_iter = imus.getIterator();
-  while(imu_iter.hasNext()){
-    delete imu_iter.next();
-  }
-
-  ListIterator<Pot*> pot_iter = pots.getIterator();
-  while(pot_iter.hasNext()){
-    delete pot_iter.next();
-  }
+  joints.deleteItems();
+  fsrs.deleteItems();
+  imus.deleteItems();
+  pots.deleteItems();
 }
 
 void Leg::attemptCalibration(){
@@ -95,11 +86,9 @@ void Leg::resetFSRMaxes(){
 }
 
 void Leg::adjustJointSetpoints(){
-  double FSR_percentage = foot_fsrs->getPercentage();
-  double max_FSR_percentage = foot_fsrs->getMaxPercentage();
-
+  fillSensorReport(sensor_report);
   for(unsigned int i = 0; i < joints.size(); i++){
-    joints[i]->updateMotorOutput(FSR_percentage, max_FSR_percentage);
+    joints[i]->updateMotorOutput(sensor_report);
   }
 }
 
@@ -140,7 +129,7 @@ void Leg::startIncrementalActivation(){
 }
 
 bool Leg::hasStateChanged(){
-  return determine_foot_state_change() && state->getStateTime() > step_time_length / 4;
+  return determine_foot_state_change();
 }
 
 void Leg::changeState(){
@@ -242,31 +231,53 @@ void Leg::setSign(int sign){
   }
 }
 
+void Leg::processMessage(LegMessage* msg){
+  if (msg == NULL){
+    return;
+  }
+  msg->runPreCommands(this);
+  msg->messageJoints(&joints);
+  msg->runPostCommands(this);
+}
+
 LegReport* Leg::generateReport(){
-  LegReport* report = new LegReport(joints.size(), fsrs.size(), imus.size());
-  fillLocalReport(report);
+  LegReport* leg_report = new LegReport();
+  SensorReport* sensor_report = new SensorReport();
+  leg_report->sensor_reports = sensor_report;
+  fillLocalReport(leg_report);
   for (unsigned int i = 0; i < joints.size(); i++){
-    report->joint_reports[i] = joints[i]->generateReport();
+    leg_report->joint_reports.append(joints[i]->generateReport());
   }
   for (unsigned int i = 0; i < fsrs.size(); i++){
-    report->fsr_reports[i] = fsrs[i]->generateReport();
+    sensor_report->fsr_reports.append(fsrs[i]->generateReport());
   }
   for (unsigned int i = 0; i < imus.size(); i++){
-    report->imu_reports[i] = imus[i]->generateReport();
+    sensor_report->imu_reports.append(imus[i]->generateReport());
   }
-  return report;
+  for (unsigned int i = 0; i < pots.size(); i++){
+    sensor_report->pot_reports.append(pots[i]->generateReport());
+  }
+  return leg_report;
 }
 
 void Leg::fillReport(LegReport* report){
   fillLocalReport(report);
+  fillSensorReport(report->sensor_reports);
   for (unsigned int i = 0; i < joints.size(); i++){
     joints[i]->fillReport(report->joint_reports[i]);
   }
+}
+
+void Leg::fillSensorReport(SensorReport* report){
+
   for (unsigned int i = 0; i < fsrs.size(); i++){
     fsrs[i]->fillReport(report->fsr_reports[i]);
   }
   for (unsigned int i = 0; i < imus.size(); i++){
     imus[i]->fillReport(report->imu_reports[i]);
+  }
+  for (unsigned int i = 0; i < pots.size(); i++){
+    pots[i]->fillReport(report->pot_reports[i]);
   }
 }
 

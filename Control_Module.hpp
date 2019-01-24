@@ -26,7 +26,7 @@ private:
   double iter_time_percentage;
 
   ControlAlgorithm* getControlAlgorithm(StateID state_id);
-  double getSetpoint(double fsr_percentage, double fsr_max_percentage);
+  double getSetpoint(SensorReport* report);
   double shapeSetpoint(double new_setpoint);
   double runPID(double torque_input, double kf, double pid_setpoint);
 
@@ -34,16 +34,24 @@ public:
   ControlModule(ControlAlgorithm* state_machine, StateID starting_state);
   ~ControlModule();
   void setControlStateMachine(ControlAlgorithm* state_machine, StateID starting_state);
+  void setAlgorithmDesiredSetpoint(StateID state, double setpoint);
+  double getAlgorithmDesiredSetpoint(StateID state);
   void setToZero();
   void setDesiredSetpoint(double setpoint);
   void changeState(StateID state_id);
-  double getControlAdjustment(double torque_input, double fsr_percentage, double fsr_max_percentage);
+  double getControlAdjustment(double torque_input, SensorReport* report);
   void resetStartingParameters();
   void adjustShapingForTime(double planter_time);
   void changeControl(StateID state_id);
   void updateKFPIDError(double torque);
   void applyAutoKF();
   double getLastSetpoint();
+  void getPid(double* pid);
+  void setPid(double p, double i, double d);
+  double getKf();
+  void setKf(double kf);
+  double getSmoothingParam(StateID state);
+  void setSmoothingParam(StateID state, double param);
 };
 
 class ControlModuleBuilder{

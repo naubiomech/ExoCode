@@ -1,5 +1,6 @@
 #include "Joint.hpp"
 #include "Board.hpp"
+#include "Message.hpp"
 
 Joint::Joint(ControlModule* controller, Motor* motor, TorqueSensor* torque_sensor){
   this->controller = controller;
@@ -13,6 +14,14 @@ Joint::~Joint(){
   delete controller;
   delete motor;
   delete torque_sensor;
+}
+
+void Joint::setDesiredSetpoint(StateID state, double setpoint){
+  controller->setAlgorithmDesiredSetpoint(state, setpoint);
+}
+
+double Joint::getDesiredSetpoint(StateID state){
+  return controller->getAlgorithmDesiredSetpoint(state);
 }
 
 void Joint::measureError(){
@@ -35,9 +44,9 @@ void Joint::changeControl(StateID state_id){
   controller->changeControl(state_id);
 }
 
-void Joint::updateMotorOutput(double FSR_percentage, double max_FSR_percentage){
+void Joint::updateMotorOutput(SensorReport* report){
   double torque = torque_sensor->getTorque();
-  motor_output = controller->getControlAdjustment(torque, FSR_percentage, max_FSR_percentage);
+  motor_output = controller->getControlAdjustment(torque, report);
 }
 
 void Joint::setToZero(){
@@ -78,6 +87,34 @@ void Joint::setSign(int sign){
   torque_sensor->setSign(sign);
 }
 
+void Joint::setPid(double p, double i, double d){
+  controller->setPid(p,i,d);
+}
+
+void Joint::getPid(double* pid){
+  controller->getPid(pid);
+}
+
+void Joint::processMessage(JointMessage* msg){
+  msg->runCommands(this);
+}
+
+double Joint::getKf(){
+  return controller->getKf();
+}
+
+void Joint::setKf(double kf){
+  controller->setKf(kf);
+}
+
+double Joint::getSmoothingParam(StateID state){
+  return controller->getSmoothingParam(state);
+}
+
+void Joint::setSmoothingParam(StateID state, double param){
+  controller->setSmoothingParam(state, param);
+}
+
 JointReport* Joint::generateReport(){
   JointReport* report = new JointReport();
   fillLocalReport(report);
@@ -93,5 +130,10 @@ void Joint::fillReport(JointReport* report){
 }
 
 void Joint::fillLocalReport(JointReport* report){
-  report->pid_setpoint = controller->getLastSetpoint();
+  getPid(report->pid_params);
+  report->pid_kf = getKf();
+  report->smoothing[0] = getSmoothingParam(SWING);
+  report->smoothing[1] = 0;
+  report->smoothing[2] = getSmoothingParam(LATE_STANCE);
+  report->pid_setpoint = getDesiredSetpoint(LATE_STANCE);
 }

@@ -10,7 +10,7 @@ private:
   Adafruit_BNO055* bno;
   double bearings[3];
   bool enabled;
-  Metro imu_measure_limiter = Metro(BNO055_SAMPLERATE_DELAY_MS);
+  Metro* imu_measure_limiter;
 
 public:
   IMU(ImuPort* imu_port, unsigned int address);

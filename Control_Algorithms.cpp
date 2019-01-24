@@ -2,6 +2,7 @@
 #include "Control_Algorithms.hpp"
 #include "Parameters.hpp"
 
+
 ControlAlgorithm::ControlAlgorithm(StateID state_id){
   this->state_id = state_id;
   this->setpoint_clamp = new Clamp(Min_Prop, Max_Prop);
@@ -70,8 +71,13 @@ void ControlAlgorithm::setGain(double gain){
 }
 
 void ControlAlgorithm::setDesiredSetpoint(double setpoint){
-  previous_desired_setpoint = setpoint;
+  previous_desired_setpoint = desired_setpoint;
   desired_setpoint = setpoint;
+  resetIncrementalActivation();
+}
+
+double ControlAlgorithm::getDesiredSetpoint(){
+  return desired_setpoint;
 }
 
 ControlAlgorithm* ControlAlgorithm::getNextAlgorithm(){
@@ -83,7 +89,7 @@ void ControlAlgorithm::activate(){
 }
 
 double ControlAlgorithm::getActivationPercent(){
-  return activation_clamp->clamp(activation_count / ACTIVATION_STEP_COUNT);
+  return activation_clamp->clamp((double) activation_count / (double) ACTIVATION_STEP_COUNT);
 }
 
 double ControlAlgorithm::getShapingIterations(){
@@ -96,7 +102,7 @@ void ControlAlgorithm::setShapingIterations(double iterations){
 
 ZeroTorqueControl::ZeroTorqueControl(StateID state_id):ControlAlgorithm(state_id){}
 
-double ZeroTorqueControl::getSetpoint(double fsr_percentage, double fsr_max_percentage){
+double ZeroTorqueControl::getSetpoint(SensorReport* report){
   return 0;
 }
 
@@ -115,7 +121,7 @@ void BangBangControl::activate(){
   used_setpoint = getActivationPercent() * (desired_setpoint - previous_desired_setpoint) + previous_desired_setpoint;
 }
 
-double BangBangControl::getSetpoint(double fsr_percentage, double fsr_max_percentage){
+double BangBangControl::getSetpoint(SensorReport* report){
   double new_setpoint = used_setpoint;
   return clamp_setpoint(new_setpoint);
 }
@@ -130,7 +136,7 @@ ControlAlgorithmType BangBangControl::getType(){
 
 BalanceControl::BalanceControl(StateID state_id):ControlAlgorithm(state_id){}
 
-double BalanceControl::getSetpoint(double fsr_percentage, double fsr_max_percentage){
+double BalanceControl::getSetpoint(SensorReport* report){
   // TODO implement balance control
   return 0;
 }
@@ -148,7 +154,8 @@ ControlAlgorithmType BalanceControl::getType(){
 }
 
 ProportionalControl::ProportionalControl(StateID state_id):ControlAlgorithm(state_id){}
-double ProportionalControl::getSetpoint(double fsr_percentage, double fsr_max_percentage){
+double ProportionalControl::getSetpoint(SensorReport* report){
+  double fsr_percentage = report->fsr_reports[0]->measuredForce;
   double new_setpoint = desired_setpoint * gain * fsr_percentage;
   return clamp_setpoint(new_setpoint);
 }
@@ -162,7 +169,8 @@ ControlAlgorithmType ProportionalControl::getType(){
 }
 
 ProportionalPivotControl::ProportionalPivotControl(StateID state_id):ControlAlgorithm(state_id){}
-double ProportionalPivotControl::getSetpoint(double fsr_percentage, double fsr_max_percentage){
+double ProportionalPivotControl::getSetpoint(SensorReport* report){
+  double fsr_percentage = report->fsr_reports[0]->measuredForce;
   double new_setpoint = (desired_setpoint) *
     (p_prop[0] * pow(fsr_percentage, 2) + p_prop[1] * (fsr_percentage) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]) ;
   return clamp_setpoint(new_setpoint);

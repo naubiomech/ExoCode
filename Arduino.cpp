@@ -23,6 +23,10 @@ void SoftwareSerial::print(double val){
   printf("%lf", val);
 }
 
+void SoftwareSerial::println(){
+  printf("\n");
+}
+
 void SoftwareSerial::println(const char* str){
   printf("%s\n", str);
 }
@@ -58,6 +62,10 @@ void PID::SetMode(int){}
 void PID::SetOutputLimits(int,int){}
 void PID::SetSampleTime(int){}
 void PID::Compute_KF(double){}
+double PID::GetKp(){return 0;}
+double PID::GetKi(){return 0;}
+double PID::GetKd(){return 0;}
+void PID::SetTunings(double p,double i,double d){};
 
 void delay(double time){usleep(1000 * time);}
 double pow(double, double){return 0;}

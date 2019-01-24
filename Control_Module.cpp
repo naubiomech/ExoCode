@@ -12,7 +12,7 @@ ControlModule::ControlModule(ControlAlgorithm* state_machine, StateID starting_s
   shaping_function = new ShapingFunction();
 
   setControlStateMachine(state_machine, starting_state);
-  this->kf_clamp = new Clamp(MAX_KF, MIN_KF);
+  this->kf_clamp = new Clamp(MIN_KF, MAX_KF);
   adjust_shaping_for_time_clamp = new Clamp(4, 500);
   this->error_average = new RunningAverage();
 
@@ -32,14 +32,22 @@ ControlModule::~ControlModule(){
   delete shaping_function;
 }
 
-double ControlModule::getControlAdjustment(double torque_input, double fsr_percentage, double fsr_max_percentage){
-  double setpoint = getSetpoint(fsr_percentage, fsr_max_percentage);
+void ControlModule::setAlgorithmDesiredSetpoint(StateID state, double setpoint){
+  getControlAlgorithm(state)->setDesiredSetpoint(setpoint);
+}
+
+double ControlModule::getAlgorithmDesiredSetpoint(StateID state){
+  return getControlAlgorithm(state)->getDesiredSetpoint();
+}
+
+double ControlModule::getControlAdjustment(double torque_input, SensorReport* report){
+  double setpoint = getSetpoint(report);
   double adjustment = runPID(torque_input, KF, setpoint);
   return adjustment;
 }
 
-double ControlModule::getSetpoint(double fsr_percentage, double fsr_max_percentage){
-  double new_setpoint = current_algorithm->getSetpoint(fsr_percentage, fsr_max_percentage);
+double ControlModule::getSetpoint(SensorReport* report){
+  double new_setpoint = current_algorithm->getSetpoint(report);
   return shapeSetpoint(new_setpoint);
 }
 
@@ -128,6 +136,32 @@ double ControlModule::getLastSetpoint(){
 void ControlModule::setControlStateMachine(ControlAlgorithm* state_machine, StateID starting_state){
   current_algorithm = state_machine;
   current_algorithm = getControlAlgorithm(starting_state);
+}
+
+void ControlModule::getPid(double* pid){
+  pid[0] = this->pid->GetKp();
+  pid[1] = this->pid->GetKi();
+  pid[2] = this->pid->GetKd();
+}
+
+void ControlModule::setPid(double p, double i, double d){
+  pid->SetTunings(p,i,d);
+}
+
+double ControlModule::getKf(){
+  return KF;
+}
+
+void ControlModule::setKf(double kf){
+  KF = kf;
+}
+
+double ControlModule::getSmoothingParam(StateID state){
+  return getControlAlgorithm(state)->getShapingIterations();
+}
+
+void ControlModule::setSmoothingParam(StateID state, double param){
+  getControlAlgorithm(state)->setShapingIterations(param);
 }
 
 ControlModuleBuilder* ControlModuleBuilder::addState(StateID state, ControlAlgorithmType control_type){

@@ -57,7 +57,7 @@ double MovingAverage::getAverage(){
   return this->average;
 }
 
-Clamp::Clamp(double upper, double lower){
+Clamp::Clamp(double lower, double upper){
   this->upper = upper;
   this->lower = lower;
 }
@@ -72,30 +72,44 @@ void updateMax(double* max_value, double value){
   }
 }
 
-Threshold::Threshold(bool starting_state, double threshold_value, int crossed_threshold_max){
-  this->upper_threshold = threshold_value;
-  this->crossed_threshold_max = crossed_threshold_max;
+Threshold::Threshold(bool starting_state, double upper_threshold_value, double lower_threshold_value){
+  this->upper_threshold = upper_threshold_value;
+  this->lower_threshold = lower_threshold_value;
   this->state = starting_state;
-  this->crossed_threshold_count = 0;
 }
 
 bool Threshold::getState(double value){
-  if((value > upper_threshold) == state){
-    crossed_threshold_count = 0;
-  } else {
-    crossed_threshold_count++;
+  if (state == 0 && value > upper_threshold){
+    state = 1;
+  } else if (state == 1 && value < lower_threshold){
+    state = 0;
   }
-
-  if(crossed_threshold_count == crossed_threshold_max){
-    state = !state;
-    crossed_threshold_count = 0;
-  }
-
   return state;
 }
 
 void Threshold::setUpperThreshold(double threshold){
   upper_threshold = threshold;
+}
+
+void Threshold::setLowerThreshold(double threshold){
+  lower_threshold = threshold;
+}
+
+void Range::update(double value){
+  maximum->update(value);
+  minimum->update(value);
+  avg = (maximum->getMax() + minimum->getMin())/2;
+  threshold->setUpperThreshold(avg);
+  threshold->setLowerThreshold(avg);
+  bool state = threshold->getState(value);
+  bool state_change = trigger->update(state);
+  if(state_change && state == false){
+    avgMax->update(maximum->getMax());
+    maximum->reset();
+  } else if (state_change && state == true){
+    avgMin->update(minimum->getMin());
+    minimum->reset();
+  }
 }
 
 Timer::Timer(){
@@ -138,6 +152,22 @@ void Max::update(double value){
 
 void Max::reset(){
   maxVal = FLT_MIN;
+}
+
+Min::Min(){
+  this->reset();
+}
+
+double Min::getMin(){
+  return this->minVal;
+}
+
+void Min::update(double value){
+  minVal = min(value, minVal);
+}
+
+void Min::reset(){
+  minVal = FLT_MAX;
 }
 
 ChangeTrigger::ChangeTrigger(bool start_state){

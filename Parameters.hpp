@@ -10,8 +10,7 @@ const bool FLAG_PRINT_TORQUES = false;
 const bool FLAG_PID_VALS = false;
 const bool FLAG_TWO_TOE_SENSORS = false;
 
-const double PID_DEFAULTS[] = {0.1, 0, 0};
-
+const double PID_DEFAULTS[] = {4, 0.1, 0};
 const int TORQUE_CALIBRATION_TIME_IN_MS = 1000;
 
 const double MOTOR_ZERO_OFFSET_DEFAULT = 0.0;
@@ -67,5 +66,8 @@ const double DEFAULT_ITER_SWING = 500;
 const double DEFAULT_ITER_LATE_STANCE = 4;
 
 const int FSR_CALIBRATION_PEAK_COUNT = 4;
+const double FSR_UPPER_THRESHOLD = 0.7;
+const double FSR_LOWER_THRESHOLD = 0.3;
+const double VOLTAGE_TO_TORQUE_CONVERSION = 3.3 * 56.5 / 2.1;
 
 #endif
