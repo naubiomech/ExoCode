@@ -74,7 +74,7 @@ void MatlabTransceiver::sendData(double* data, int doubles_to_send){
 	}
 
 	for (int i = 0; i < doubles_to_send; i++){
-		serial->print(data[i]);
+		serial->print((int) (data[i] * 100));
 		serial->write(',');
 	}
 }
