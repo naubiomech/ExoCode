@@ -69,7 +69,7 @@ void RequestDataTransmission::processData(ExoMessageBuilder* builder, ExoReport*
 
   send_data[5] = report->right_leg->sensor_reports->fsr_reports[0]->measuredForce;
 
-  send_data[6] = 0;
+  send_data[6] = report->right_leg->joint_reports[1]->torque_sensor_report->measuredTorque;
   send_data[7] = report->left_leg->state;
   for(int i = 0; i < 3; i++){
     send_data[i + 8] = report->right_leg->sensor_reports->imu_reports[1]->orientation[i];
