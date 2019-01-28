@@ -64,7 +64,7 @@ void RequestDataTransmission::processData(ExoMessageBuilder* builder, ExoReport*
   send_data[1] = report->right_leg->state;
 
   for(int i = 0; i < 3; i++){
-    send_data[i + 2] = report->right_leg->imu_reports[0]->orientation[i];
+    send_data[i + 2] = report->right_leg->sensor_reports->imu_reports[0]->orientation[i];
   }
 
   send_data[5] = report->right_leg->sensor_reports->fsr_reports[0]->measuredForce;
@@ -72,10 +72,10 @@ void RequestDataTransmission::processData(ExoMessageBuilder* builder, ExoReport*
   send_data[6] = 0;
   send_data[7] = report->left_leg->state;
   for(int i = 0; i < 3; i++){
-    send_data[i + 8] = report->right_leg->imu_reports[1]->orientation[i];
+    send_data[i + 8] = report->right_leg->sensor_reports->imu_reports[1]->orientation[i];
   }
   for(int i = 0; i < 3; i++){
-    send_data[i + 11] = report->right_leg->imu_reports[2]->orientation[i];
+    send_data[i + 11] = report->right_leg->sensor_reports->imu_reports[2]->orientation[i];
   }
   send_data[14] = report->right_leg->sensor_reports->pot_reports[0]->angle;
   send_data[15] = 0;
