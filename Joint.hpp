@@ -17,6 +17,8 @@ private:
   double motor_output;
 
   void fillLocalReport(JointReport* report);
+  void measureError();
+  void measureTorque();
 public:
   Joint(ControlModule* controller, Motor* motor, TorqueSensor* torque_sensor);
   ~Joint();
@@ -26,7 +28,7 @@ public:
 
   void setDesiredSetpoint(StateID state, double setpoint);
   double getDesiredSetpoint(StateID state);
-  void measureError();
+  void measureSensors();
   bool hasErrored();
   bool applyTorque();
   void setToZero();
@@ -36,7 +38,6 @@ public:
   void changeControl(StateID state_id);
   void applyAutoKF();
   double getTorque();
-  void measureTorque();
   void setSign(int sign);
   void setPid(double p, double i, double d);
   void getPid(double* pid);

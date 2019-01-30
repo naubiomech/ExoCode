@@ -179,8 +179,7 @@ void Leg::applyStateMachine(){
 
 void Leg::measureSensors(){
   for(unsigned int i = 0; i < joints.size(); i++){
-    this->joints[i]->measureTorque();
-    this->joints[i]->measureError();
+    this->joints[i]->measureSensors();
   }
 
   for (unsigned int i = 0; i < fsrs.size(); i++){

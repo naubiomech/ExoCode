@@ -65,6 +65,11 @@ void Joint::applyAutoKF(){
   controller->applyAutoKF();
 }
 
+void Joint::measureSensors(){
+  this->measureError();
+  this->measureTorque();
+}
+
 void Joint::measureTorque(){
   torque_sensor->measureTorque();
 }
