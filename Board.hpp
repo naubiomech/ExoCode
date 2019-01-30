@@ -28,6 +28,10 @@ private:
   InputPort* motor_error_right_ankle_port;
   InputPort* pot_left_leg_port;
   InputPort* pot_right_leg_port;
+  InputPort* pot_left_knee_port;
+  InputPort* pot_right_knee_port;
+  InputPort* pot_left_ankle_port;
+  InputPort* pot_right_ankle_port;
   ImuPort* imu_slot_0;
   ImuPort* imu_slot_1;
   ImuPort* imu_slot_2;
@@ -59,8 +63,10 @@ public:
   InputPort* takeMotorErrorLeftAnklePort();
   InputPort* takeMotorErrorRightKneePort();
   InputPort* takeMotorErrorRightAnklePort();
-  InputPort* takePotLeftLegPort();
-  InputPort* takePotRightLegPort();
+  InputPort* takePotLeftKneePort();
+  InputPort* takePotRightKneePort();
+  InputPort* takePotLeftAnklePort();
+  InputPort* takePotRightAnklePort();
   ImuPort* getImuSlot0();
   ImuPort* getImuSlot1();
   ImuPort* getImuSlot2();
@@ -87,8 +93,10 @@ public:
   void setMotorErrorLeftAnklePort(InputPort* port);
   void setMotorErrorRightKneePort(InputPort* port);
   void setMotorErrorRightAnklePort(InputPort* port);
-  void setPotLeftLegPort(InputPort* port);
-  void setPotRightLegPort(InputPort* port);
+  void setPotLeftKneePort(InputPort* port);
+  void setPotRightKneePort(InputPort* port);
+  void setPotLeftAnklePort(InputPort* port);
+  void setPotRightAnklePort(InputPort* port);
   void setImuSlot0(ImuPort* port);
   void setImuSlot1(ImuPort* port);
   void setImuSlot2(ImuPort* port);
