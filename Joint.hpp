@@ -3,6 +3,7 @@
 
 #include "Motor.hpp"
 #include "TorqueSensor.hpp"
+#include "Pot.hpp"
 #include "Report.hpp"
 #include "Port.hpp"
 #include "Control_Module.hpp"
@@ -12,6 +13,7 @@ class Joint{
 private:
   Motor* motor;
   TorqueSensor* torque_sensor;
+  Pot* pot;
   ControlModule* controller;
 
   double motor_output;
@@ -19,8 +21,9 @@ private:
   void fillLocalReport(JointReport* report);
   void measureError();
   void measureTorque();
+  void measurePot();
 public:
-  Joint(ControlModule* controller, Motor* motor, TorqueSensor* torque_sensor);
+  Joint(ControlModule* controller, Motor* motor, TorqueSensor* torque_sensor, Pot* pot);
   ~Joint();
   void processMessage(JointMessage* msg);
   JointReport* generateReport();
@@ -29,6 +32,7 @@ public:
   void setDesiredSetpoint(StateID state, double setpoint);
   double getDesiredSetpoint(StateID state);
   void measureSensors();
+  double getAngle();
   bool hasErrored();
   bool applyTorque();
   void setToZero();

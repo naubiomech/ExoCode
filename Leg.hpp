@@ -39,8 +39,7 @@ private:
   ChangeTrigger* foot_change;
 
 public:
-  Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs,
-      LinkedList<IMU*>& imus, LinkedList<Pot*>& pots);
+  Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs, LinkedList<IMU*>& imus);
   ~Leg();
   void measureSensors();
   void measurePots();
