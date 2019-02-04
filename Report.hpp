@@ -19,6 +19,11 @@ public:
   double measuredTorque;
 };
 
+class PotReport:public Report{
+public:
+  double angle;
+};
+
 class JointReport:public Report{
 public:
   JointReport();
@@ -30,6 +35,7 @@ public:
   double pid_params[3];
   MotorReport* motor_report;
   TorqueSensorReport* torque_sensor_report;
+  PotReport* pot_report;
 };
 
 class FSRReport:public Report{
@@ -43,17 +49,11 @@ public:
   double orientation[3];
 };
 
-class PotReport:public Report{
-public:
-  double angle;
-};
-
 class SensorReport:public Report{
 public:
   ~SensorReport();
   LinkedList<FSRReport*> fsr_reports;
   LinkedList<IMUReport*> imu_reports;
-  LinkedList<PotReport*> pot_reports;
 };
 
 class LegReport:public Report{

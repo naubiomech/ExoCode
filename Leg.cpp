@@ -5,8 +5,7 @@
 #include "IMU.hpp"
 #include "Report.hpp"
 
-Leg::Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs,
-         LinkedList<IMU*>& imus, LinkedList<Pot*>& pots){
+Leg::Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs, LinkedList<IMU*>& imus){
   state = states;
   state->setContext(this);
 
@@ -179,8 +178,7 @@ void Leg::applyStateMachine(){
 
 void Leg::measureSensors(){
   for(unsigned int i = 0; i < joints.size(); i++){
-    this->joints[i]->measureTorque();
-    this->joints[i]->measureError();
+    this->joints[i]->measureSensors();
   }
 
   for (unsigned int i = 0; i < fsrs.size(); i++){
@@ -254,9 +252,6 @@ LegReport* Leg::generateReport(){
   for (unsigned int i = 0; i < imus.size(); i++){
     sensor_report->imu_reports.append(imus[i]->generateReport());
   }
-  for (unsigned int i = 0; i < pots.size(); i++){
-    sensor_report->pot_reports.append(pots[i]->generateReport());
-  }
   return leg_report;
 }
 
@@ -275,9 +270,6 @@ void Leg::fillSensorReport(SensorReport* report){
   }
   for (unsigned int i = 0; i < imus.size(); i++){
     imus[i]->fillReport(report->imu_reports[i]);
-  }
-  for (unsigned int i = 0; i < pots.size(); i++){
-    pots[i]->fillReport(report->pot_reports[i]);
   }
 }
 

@@ -26,8 +26,8 @@ Board* QuadBoardDirector::build(){
     ->setMotorErrorLeftAnklePort(25)
     ->setMotorErrorRightKneePort(26)
     ->setMotorErrorRightAnklePort(27)
-    ->setPotRightLegPort(A17)
-    ->setPotLeftLegPort(A16)
+    ->setPotRightAnklePort(A17)
+    ->setPotLeftAnklePort(A16)
     ->setImuSlot0(I2C_PINS_7_8)
     ->setImuSlot2(I2C_PINS_3_4)
     ->setImuAddress0(0x28)
@@ -169,13 +169,23 @@ BoardBuilder* BoardBuilder::setMotorErrorRightAnklePort(unsigned int pin){
   return this;
 }
 
-BoardBuilder* BoardBuilder::setPotLeftLegPort(unsigned int pin){
-  board->setPotLeftLegPort(port_factory->createAnalogInputPort(pin, write_resolution));
+BoardBuilder* BoardBuilder::setPotLeftKneePort(unsigned int pin){
+  board->setPotLeftKneePort(port_factory->createAnalogInputPort(pin, write_resolution));
   return this;
 }
 
-BoardBuilder* BoardBuilder::setPotRightLegPort(unsigned int pin){
-  board->setPotRightLegPort(port_factory->createAnalogInputPort(pin, write_resolution));
+BoardBuilder* BoardBuilder::setPotRightKneePort(unsigned int pin){
+  board->setPotRightKneePort(port_factory->createAnalogInputPort(pin, write_resolution));
+  return this;
+}
+
+BoardBuilder* BoardBuilder::setPotLeftAnklePort(unsigned int pin){
+  board->setPotLeftAnklePort(port_factory->createAnalogInputPort(pin, write_resolution));
+  return this;
+}
+
+BoardBuilder* BoardBuilder::setPotRightAnklePort(unsigned int pin){
+  board->setPotRightAnklePort(port_factory->createAnalogInputPort(pin, write_resolution));
   return this;
 }
 

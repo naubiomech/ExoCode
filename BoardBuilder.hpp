@@ -43,8 +43,10 @@ public:
   BoardBuilder* setMotorErrorLeftAnklePort(unsigned int pin);
   BoardBuilder* setMotorErrorRightKneePort(unsigned int pin);
   BoardBuilder* setMotorErrorRightAnklePort(unsigned int pin);
-  BoardBuilder* setPotLeftLegPort(unsigned int pin);
-  BoardBuilder* setPotRightLegPort(unsigned int pin);
+  BoardBuilder* setPotLeftKneePort(unsigned int pin);
+  BoardBuilder* setPotRightKneePort(unsigned int pin);
+  BoardBuilder* setPotLeftAnklePort(unsigned int pin);
+  BoardBuilder* setPotRightAnklePort(unsigned int pin);
   BoardBuilder* setImuSlot0(i2c_pins pins);
   BoardBuilder* setImuSlot1(i2c_pins pins);
   BoardBuilder* setImuSlot2(i2c_pins pins);

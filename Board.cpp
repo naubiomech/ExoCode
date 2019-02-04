@@ -27,8 +27,10 @@ Board::Board(){
   imu_slot_0 = NULL;
   imu_slot_1 = NULL;
   imu_slot_2 = NULL;
-  pot_left_leg_port = NULL;
-  pot_right_leg_port = NULL;
+  pot_left_knee_port = NULL;
+  pot_right_knee_port = NULL;
+  pot_left_ankle_port = NULL;
+  pot_right_ankle_port = NULL;
 }
 
 Board::~Board(){
@@ -55,8 +57,10 @@ Board::~Board(){
   delete imu_slot_0;
   delete imu_slot_1;
   delete imu_slot_2;
-  delete pot_left_leg_port;
-  delete pot_right_leg_port;
+  delete pot_left_knee_port;
+  delete pot_right_knee_port;
+  delete pot_left_ankle_port;
+  delete pot_right_ankle_port;
 }
 
 void Board::turnOnLed(){
@@ -185,15 +189,27 @@ InputPort* Board::takeMotorErrorRightAnklePort(){
   return port;
 }
 
-InputPort* Board::takePotLeftLegPort(){
-  InputPort* port = pot_left_leg_port;
-  pot_left_leg_port = NULL;
+InputPort* Board::takePotLeftKneePort(){
+  InputPort* port = pot_left_knee_port;
+  pot_left_knee_port = NULL;
   return port;
 }
 
-InputPort* Board::takePotRightLegPort(){
-  InputPort* port = pot_right_leg_port;
-  pot_right_leg_port = NULL;
+InputPort* Board::takePotRightKneePort(){
+  InputPort* port = pot_right_knee_port;
+  pot_right_knee_port = NULL;
+  return port;
+}
+
+InputPort* Board::takePotLeftAnklePort(){
+  InputPort* port = pot_left_ankle_port;
+  pot_left_ankle_port = NULL;
+  return port;
+}
+
+InputPort* Board::takePotRightAnklePort(){
+  InputPort* port = pot_right_ankle_port;
+  pot_right_ankle_port = NULL;
   return port;
 }
 
@@ -297,12 +313,20 @@ void Board::setImuAddress1(int address){
   imu_address_1 = address;
 }
 
-void Board::setPotLeftLegPort(InputPort* port){
-  pot_left_leg_port = port;
+void Board::setPotLeftKneePort(InputPort* port){
+  pot_left_knee_port = port;
 }
 
-void Board::setPotRightLegPort(InputPort* port){
-  pot_right_leg_port = port;
+void Board::setPotRightKneePort(InputPort* port){
+  pot_right_knee_port = port;
+}
+
+void Board::setPotLeftAnklePort(InputPort* port){
+  pot_left_ankle_port = port;
+}
+
+void Board::setPotRightAnklePort(InputPort* port){
+  pot_right_ankle_port = port;
 }
 
 ImuPort* Board::getImuSlot0(){

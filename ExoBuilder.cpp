@@ -38,10 +38,12 @@ Exoskeleton* QuadExoDirector::build(Board* board){
     ->addJoint(board->takeTorqueSensorRightAnklePort(),
                board->takeMotorRightAnklePort(),
                board->takeMotorErrorRightAnklePort(),
+               NULL,
                module_builder->build(LATE_STANCE))
     ->addJoint(board->takeTorqueSensorRightKneePort(),
                board->takeMotorRightKneePort(),
                board->takeMotorErrorRightKneePort(),
+               NULL,
                module_builder->build(LATE_STANCE))
     ->addPot(board->takePotRightLegPort())
     ->beginFSRGroup()
@@ -127,10 +129,11 @@ LegBuilder* LegBuilder::addStateMachine(State* states){
 }
 
 LegBuilder* LegBuilder::addJoint(InputPort* torque_sensor_port, OutputPort* motor_port,
-                                 InputPort* error_port, ControlModule* module){
+                                 InputPort* error_port, InputPort* pot_port, ControlModule* module){
   torque_sensor_ports.append(torque_sensor_port);
   motor_ports.append(motor_port);
   error_ports.append(error_port);
+  pot_ports.append(pot_port);
   controls.append(module);
   return this;
 }
@@ -157,11 +160,6 @@ LegBuilder* LegBuilder::addImu(ImuPort* port,unsigned int address){
   return this;
 }
 
-LegBuilder* LegBuilder::addPot(InputPort* port){
-  pot_ports.append(port);
-  return this;
-}
-
 ExoBuilder* LegBuilder::finishLeg(){
   return return_context;
 }
@@ -171,10 +169,13 @@ Leg* LegBuilder::build(){
   for (unsigned int i = 0; i < motor_ports.size(); i++){
     Motor* motor = new Motor(error_ports[i], motor_ports[i], sign);
     TorqueSensor* torque_sensor = new TorqueSensor(torque_sensor_ports[i], sign);
-    Joint* joint = new Joint(controls[i], motor, torque_sensor);
+    Pot* pot = NULL;
+    if (pot_ports[i] != NULL){
+      pot = new Pot(pot_ports[i]);
+    }
+    Joint* joint = new Joint(controls[i], motor, torque_sensor, pot);
     joints.append(joint);
   }
-
 
   LinkedList<FSRGroup*> fsrs;
   for (unsigned int i = 0; i < fsr_ports.size(); i++){
@@ -194,12 +195,6 @@ Leg* LegBuilder::build(){
     imus.append(new IMU(imu_ports[i], imu_address[i]));
   }
 
-
-  LinkedList<Pot*> pots;
-  for (unsigned int i = 0; i < pot_ports.size(); i++){
-    pots.append(new Pot(pot_ports[i]));
-  }
-
-  Leg* leg = new Leg(states, joints, fsrs, imus, pots);
+  Leg* leg = new Leg(states, joints, fsrs, imus);
   return leg;
 }

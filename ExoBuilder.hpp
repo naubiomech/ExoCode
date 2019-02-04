@@ -56,9 +56,8 @@ public:
   ~LegBuilder();
   LegBuilder(ExoBuilder* return_context, int sign);
   LegBuilder* addStateMachine(State* states);
-  LegBuilder* addPot(InputPort* port);
   LegBuilder* addJoint(InputPort* torque_sensor_port, OutputPort* motor_port,
-                       InputPort* error_port, ControlModule* module);
+                       InputPort* error_port, InputPort* pot_port, ControlModule* module);
   LegBuilder* beginFSRGroup();
   LegBuilder* finishFSRGroup();
   LegBuilder* addFSR(InputPort* fsr_port);
