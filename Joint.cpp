@@ -6,7 +6,7 @@ Joint::Joint(ControlModule* controller, Motor* motor, TorqueSensor* torque_senso
   this->controller = controller;
   this->motor = motor;
   this->torque_sensor = torque_sensor;
-  this->pot = pot;
+  this->pot = pot_sensor;
 
   motor_output = 0;
 }
