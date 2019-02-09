@@ -77,7 +77,7 @@ void RequestDataTransmission::processData(ExoMessageBuilder* builder, ExoReport*
   for(int i = 0; i < 3; i++){
     send_data[i + 11] = report->right_leg->sensor_reports->imu_reports[2]->orientation[i];
   }
-  send_data[14] = report->right_leg->sensor_reports->pot_reports[0]->angle;
+  send_data[14] = report->right_leg->joint_reports[0]->pot_report->angle;
   send_data[15] = 0;
 
 }
