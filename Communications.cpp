@@ -20,7 +20,9 @@ ExoMessage* Communications::receiveMessages(ExoReport* report){
 
 void Communications::processMessage(CommandCode code, ExoMessageBuilder* msg_builder, ExoReport* report){
   Transmission* transmission = transmission_creator->create(transceiver, code);
-  transmission->process(msg_builder, report);
+  if (transmission != NULL){
+	  transmission->process(msg_builder, report);
+  }
   delete transmission;
 }
 
