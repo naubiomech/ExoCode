@@ -27,7 +27,6 @@ private:
   LinkedList<Joint*> joints;
   LinkedList<FSRGroup*> fsrs;
   LinkedList<IMU*> imus;
-  LinkedList<Pot*> pots;
   FSRGroup* foot_fsrs;
   SensorReport* sensor_report;
 
@@ -42,7 +41,6 @@ public:
   Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs, LinkedList<IMU*>& imus);
   ~Leg();
   void measureSensors();
-  void measurePots();
   bool checkMotorErrors();
   void attemptCalibration();
   void adjustSetpoint();

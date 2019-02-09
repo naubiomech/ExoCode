@@ -12,7 +12,6 @@ Leg::Leg(State* states, LinkedList<Joint*>& joints, LinkedList<FSRGroup*>& fsrs,
   this->joints = joints;
   this->fsrs = fsrs;
   this->imus = imus;
-  this->pots = pots;
 
   this->foot_fsrs = fsrs[0];
 
@@ -33,7 +32,6 @@ Leg::~Leg(){
   joints.deleteItems();
   fsrs.deleteItems();
   imus.deleteItems();
-  pots.deleteItems();
 }
 
 void Leg::attemptCalibration(){
@@ -186,8 +184,6 @@ void Leg::measureSensors(){
   }
 
   this->measureIMUs();
-  this->measurePots();
-
 }
 
 bool Leg::applyTorque(){
@@ -208,12 +204,6 @@ void Leg::calibrateIMUs(){
 void Leg::measureIMUs(){
   for (unsigned int i = 0; i < imus.size(); i++){
     imus[i]->measure();
-  }
-}
-
-void Leg::measurePots(){
-  for (unsigned int i = 0; i < pots.size(); i++){
-    pots[i]->measure();
   }
 }
 
