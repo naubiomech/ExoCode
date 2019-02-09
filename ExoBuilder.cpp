@@ -38,14 +38,13 @@ Exoskeleton* QuadExoDirector::build(Board* board){
     ->addJoint(board->takeTorqueSensorRightAnklePort(),
                board->takeMotorRightAnklePort(),
                board->takeMotorErrorRightAnklePort(),
-               NULL,
+               board->takePotRightAnklePort(),
                module_builder->build(LATE_STANCE))
     ->addJoint(board->takeTorqueSensorRightKneePort(),
                board->takeMotorRightKneePort(),
                board->takeMotorErrorRightKneePort(),
                NULL,
                module_builder->build(LATE_STANCE))
-    ->addPot(board->takePotRightLegPort())
     ->beginFSRGroup()
     ->addFSR(board->takeFsrSenseRightToePort())
     ->addFSR(board->takeFsrSenseRightHeelPort())
