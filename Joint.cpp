@@ -15,6 +15,7 @@ Joint::~Joint(){
   delete controller;
   delete motor;
   delete torque_sensor;
+  delete pot;
 }
 
 void Joint::setDesiredSetpoint(StateID state, double setpoint){
