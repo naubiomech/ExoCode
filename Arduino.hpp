@@ -17,6 +17,10 @@
 
 class SoftwareSerial{
 public:
+  const char* readStr;
+  int strLen;
+  int charIndex;
+public:
   SoftwareSerial(int, int);
   bool begin(int);
   void write(char character);
@@ -26,6 +30,7 @@ public:
   void println();
   void println(const char[]);
   void println(double);
+  void setReadString(const char* str);
 
   int read();
   bool available();
