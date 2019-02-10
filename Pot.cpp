@@ -9,7 +9,7 @@ Pot::~Pot(){
 }
 
 void Pot::measure(){
-  angle = port->read() * 180.0;
+  angle = port->read() * 290.0;
 }
 
 double Pot::getAngle(){
