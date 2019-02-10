@@ -26,7 +26,7 @@ Board* QuadBoardDirector::build(){
     ->setMotorErrorLeftAnklePort(25)
     ->setMotorErrorRightKneePort(26)
     ->setMotorErrorRightAnklePort(27)
-    ->setPotRightAnklePort(A17)
+    ->setPotRightAnklePort(A2)
     ->setPotLeftAnklePort(A16)
     ->setImuSlot0(I2C_PINS_7_8)
     ->setImuSlot2(I2C_PINS_3_4)
