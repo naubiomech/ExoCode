@@ -70,15 +70,13 @@ void RequestDataTransmission::processData(ExoMessageBuilder* builder, ExoReport*
   send_data[5] = report->right_leg->sensor_reports->fsr_reports[0]->measuredForce;
 
   send_data[6] = report->right_leg->joint_reports[1]->torque_sensor_report->measuredTorque;
-  send_data[7] = report->left_leg->state;
   for(int i = 0; i < 3; i++){
-    send_data[i + 8] = report->right_leg->sensor_reports->imu_reports[1]->orientation[i];
+    send_data[i + 7] = report->right_leg->sensor_reports->imu_reports[1]->orientation[i];
   }
   for(int i = 0; i < 3; i++){
-    send_data[i + 11] = report->right_leg->sensor_reports->imu_reports[2]->orientation[i];
+    send_data[i + 10] = report->right_leg->sensor_reports->imu_reports[2]->orientation[i];
   }
-  send_data[14] = report->right_leg->joint_reports[0]->pot_report->angle;
-  send_data[15] = 0;
+  send_data[13] = report->right_leg->joint_reports[0]->pot_report->angle;
 
 }
 
@@ -181,6 +179,7 @@ void SetLeftAnkleKFTransmission::processData(ExoMessageBuilder* builder, ExoRepo
 
 GetRightAnklePidParamsTransmission::GetRightAnklePidParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_RIGHT_ANKLE_PID_PARAMS, 0, 3){}
 void GetRightAnklePidParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+  Serial.println(report->right_leg->joint_reports[0]->pid_params[0]);
   copyToSend(report->right_leg->joint_reports[0]->pid_params);
 }
 
