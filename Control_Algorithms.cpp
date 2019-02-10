@@ -102,7 +102,7 @@ void ControlAlgorithm::setShapingIterations(double iterations){
 
 ZeroTorqueControl::ZeroTorqueControl(StateID state_id):ControlAlgorithm(state_id){}
 
-double ZeroTorqueControl::getSetpoint(SensorReport* report){
+double ZeroTorqueControl::getSetpoint(SensorReport*){
   return 0;
 }
 
@@ -121,7 +121,7 @@ void BangBangControl::activate(){
   used_setpoint = getActivationPercent() * (desired_setpoint - previous_desired_setpoint) + previous_desired_setpoint;
 }
 
-double BangBangControl::getSetpoint(SensorReport* report){
+double BangBangControl::getSetpoint(SensorReport*){
   double new_setpoint = used_setpoint;
   return clamp_setpoint(new_setpoint);
 }
@@ -136,7 +136,7 @@ ControlAlgorithmType BangBangControl::getType(){
 
 BalanceControl::BalanceControl(StateID state_id):ControlAlgorithm(state_id){}
 
-double BalanceControl::getSetpoint(SensorReport* report){
+double BalanceControl::getSetpoint(SensorReport*){
   // TODO implement balance control
   return 0;
 }

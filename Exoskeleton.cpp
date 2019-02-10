@@ -184,6 +184,6 @@ void Exoskeleton::fillReport(ExoReport* report){
   right_leg->fillReport(report->right_leg);
 }
 
-void Exoskeleton::fillLocalReport(ExoReport* report){
+void Exoskeleton::fillLocalReport(ExoReport*){
 
 }

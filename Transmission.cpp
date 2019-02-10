@@ -59,7 +59,7 @@ void Transmission::copyFromReceive(double* to){
 }
 
 RequestDataTransmission::RequestDataTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_REQUEST_DATA, 0, 14){}
-void RequestDataTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void RequestDataTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   send_data[0] = report->right_leg->joint_reports[0]->torque_sensor_report->measuredTorque;
   send_data[1] = report->right_leg->state;
 
@@ -81,22 +81,22 @@ void RequestDataTransmission::processData(ExoMessageBuilder* builder, ExoReport*
 }
 
 StartTrialTransmission::StartTrialTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_START_TRIAL, 0, 0){}
-void StartTrialTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void StartTrialTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->addPreCommand(new StartTrialCommand());
 }
 
 EndTrialTransmission::EndTrialTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_END_TRIAL, 0, 0){}
-void EndTrialTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void EndTrialTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->addPreCommand(new EndTrialCommand());
 }
 
 CalibrateTorqueTransmission::CalibrateTorqueTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CALIBRATE_TORQUE, 0, 0){}
-void CalibrateTorqueTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void CalibrateTorqueTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->addPreCommand(new CalibrateAllTorquesCommand());
 }
 
 CheckBluetoothTransmission::CheckBluetoothTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CHECK_BLUETOOTH, 0, 3){}
-void CheckBluetoothTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void CheckBluetoothTransmission::processData(ExoMessageBuilder*, ExoReport*){
   Serial.println("Replying");
   send_data[0] = 0;
   send_data[1] = 1;
@@ -104,22 +104,22 @@ void CheckBluetoothTransmission::processData(ExoMessageBuilder* builder, ExoRepo
 }
 
 CleanBluetoothBufferTransmission::CleanBluetoothBufferTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CLEAN_BLUETOOTH_BUFFER, 0, 0){}
-void CleanBluetoothBufferTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void CleanBluetoothBufferTransmission::processData(ExoMessageBuilder*, ExoReport*){
   transceiver->clear();
 }
 
 GetLeftAnkleSetpointTransmission::GetLeftAnkleSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_LEFT_ANKLE_SETPOINT, 0, 1){}
-void GetLeftAnkleSetpointTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void GetLeftAnkleSetpointTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   send_data[0] = report->left_leg->joint_reports[0]->pid_setpoint;
 }
 
 GetRightAnkleSetpointTransmission::GetRightAnkleSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_RIGHT_ANKLE_SETPOINT, 0, 1){}
-void GetRightAnkleSetpointTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void GetRightAnkleSetpointTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   send_data[0] = report->right_leg->joint_reports[0]->pid_setpoint;
 }
 
 SetLeftAnkleSetpointTransmission::SetLeftAnkleSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_LEFT_ANKLE_SETPOINT, 2, 0){}
-void SetLeftAnkleSetpointTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void SetLeftAnkleSetpointTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->
     beginLeftLegMessage()->
     beginJointMessage(0)->
@@ -128,7 +128,7 @@ void SetLeftAnkleSetpointTransmission::processData(ExoMessageBuilder* builder, E
 }
 
 SetRightAnkleSetpointTransmission::SetRightAnkleSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_RIGHT_ANKLE_SETPOINT, 2, 0){}
-void SetRightAnkleSetpointTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void SetRightAnkleSetpointTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->
     beginRightLegMessage()->
     beginJointMessage(0)->
@@ -137,32 +137,32 @@ void SetRightAnkleSetpointTransmission::processData(ExoMessageBuilder* builder, 
 }
 
 CalibrateFsrTransmission::CalibrateFsrTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CALIBRATE_FSR, 0, 0){}
-void CalibrateFsrTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void CalibrateFsrTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->addPreCommand(new CalibrateAllFsrsCommand());
 }
 
 GetLeftAnkleFsrThresholdTransmission::GetLeftAnkleFsrThresholdTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_LEFT_ANKLE_FSR_THRESHOLD, 0, 1){}
-void GetLeftAnkleFsrThresholdTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void GetLeftAnkleFsrThresholdTransmission::processData(ExoMessageBuilder*, ExoReport*){
   send_data[0] = 1;
 }
 
 GetRightAnkleFsrThresholdTransmission::GetRightAnkleFsrThresholdTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_RIGHT_ANKLE_FSR_THRESHOLD, 0, 1){}
-void GetRightAnkleFsrThresholdTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void GetRightAnkleFsrThresholdTransmission::processData(ExoMessageBuilder*, ExoReport*){
   send_data[0] = 1;
 }
 
 GetRightAnkleKFTransmission::GetRightAnkleKFTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_RIGHT_ANKLE_KF, 0, 1){}
-void GetRightAnkleKFTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void GetRightAnkleKFTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   send_data[0] = report->right_leg->joint_reports[0]->pid_kf;
 }
 
 GetLeftAnkleKFTransmission::GetLeftAnkleKFTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_LEFT_ANKLE_KF, 0, 1){}
-void GetLeftAnkleKFTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void GetLeftAnkleKFTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   send_data[0] = report->left_leg->joint_reports[0]->pid_kf;
 }
 
 SetRightAnkleKFTransmission::SetRightAnkleKFTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_RIGHT_ANKLE_KF, 1, 0){}
-void SetRightAnkleKFTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void SetRightAnkleKFTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->
     beginRightLegMessage()->
     beginJointMessage(0)->
@@ -170,7 +170,7 @@ void SetRightAnkleKFTransmission::processData(ExoMessageBuilder* builder, ExoRep
 }
 
 SetLeftAnkleKFTransmission::SetLeftAnkleKFTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_LEFT_ANKLE_KF, 1, 0){}
-void SetLeftAnkleKFTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void SetLeftAnkleKFTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->
     beginLeftLegMessage()->
     beginJointMessage(0)->
@@ -178,18 +178,18 @@ void SetLeftAnkleKFTransmission::processData(ExoMessageBuilder* builder, ExoRepo
 }
 
 GetRightAnklePidParamsTransmission::GetRightAnklePidParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_RIGHT_ANKLE_PID_PARAMS, 0, 3){}
-void GetRightAnklePidParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void GetRightAnklePidParamsTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   Serial.println(report->right_leg->joint_reports[0]->pid_params[0]);
   copyToSend(report->right_leg->joint_reports[0]->pid_params);
 }
 
 GetLeftAnklePidParamsTransmission::GetLeftAnklePidParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_LEFT_ANKLE_PID_PARAMS, 0, 3){}
-void GetLeftAnklePidParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void GetLeftAnklePidParamsTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   copyToSend(report->left_leg->joint_reports[0]->pid_params);
 }
 
 SetRightAnklePidParamsTransmission::SetRightAnklePidParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_RIGHT_ANKLE_PID_PARAMS, 3, 0){}
-void SetRightAnklePidParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void SetRightAnklePidParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->
     beginRightLegMessage()->
     beginJointMessage(0)->
@@ -197,7 +197,7 @@ void SetRightAnklePidParamsTransmission::processData(ExoMessageBuilder* builder,
 }
 
 SetLeftAnklePidParamsTransmission::SetLeftAnklePidParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_LEFT_ANKLE_PID_PARAMS, 3, 0){}
-void SetLeftAnklePidParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void SetLeftAnklePidParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->
     beginLeftLegMessage()->
     beginJointMessage(0)->
@@ -205,12 +205,12 @@ void SetLeftAnklePidParamsTransmission::processData(ExoMessageBuilder* builder, 
 }
 
 GetSmoothingParamsTransmission::GetSmoothingParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_SMOOTHING_PARAMS, 0, 3){}
-void GetSmoothingParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void GetSmoothingParamsTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   copyToSend(report->right_leg->joint_reports[0]->smoothing);
 }
 
 SetSmoothingParamsTransmission::SetSmoothingParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_SMOOTHING_PARAMS, 3, 0){}
-void SetSmoothingParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+void SetSmoothingParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->
     beginRightLegMessage()->
     beginJointMessage(0)->

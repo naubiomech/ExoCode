@@ -58,8 +58,7 @@ Exoskeleton* QuadExoDirector::build(Board* board){
   Exoskeleton* exo = builder->build();
   delete builder;
   return exo;
-};
-
+}
 
 ExoBuilder* ExoBuilder::addTransceiver(TxPort* tx, RxPort* rx){
   this->rx = rx;

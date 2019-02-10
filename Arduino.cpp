@@ -6,12 +6,12 @@
 
 SoftwareSerial Serial = SoftwareSerial(0,0);
 
-SoftwareSerial::SoftwareSerial(int a, int b){
+SoftwareSerial::SoftwareSerial(int, int){
   readStr = NULL;
   strLen = -1;
   charIndex = 0;
 }
-bool SoftwareSerial::begin(int a){return true;}
+bool SoftwareSerial::begin(int){return true;}
 void SoftwareSerial::write(char str){
   printf("%c", str);
 }
@@ -60,8 +60,7 @@ int SoftwareSerial::read(){
   return val;
 }
 
-bool SoftwareSerial::available(){return strLen > 0;};
-
+bool SoftwareSerial::available(){return strLen > 0;}
 
 Adafruit_BNO055::Adafruit_BNO055(int, int, unsigned int, int, i2c_pins, int, int, int){}
 bool Adafruit_BNO055::begin(){return true;}
@@ -74,7 +73,7 @@ void Adafruit_BNO055::getEvent(sensors_event_t* event){
 }
 
 
-Metro::Metro(unsigned long interval){}
+Metro::Metro(unsigned long){}
 void Metro::reset(){}
 bool Metro::check(){return true;}
 
@@ -86,7 +85,7 @@ void PID::Compute_KF(double){}
 double PID::GetKp(){return 0;}
 double PID::GetKi(){return 0;}
 double PID::GetKd(){return 0;}
-void PID::SetTunings(double p,double i,double d){};
+void PID::SetTunings(double,double,double){}
 
 void delay(double time){usleep(1000 * time);}
 double pow(double, double){return 0;}

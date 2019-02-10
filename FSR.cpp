@@ -44,13 +44,13 @@ double FSR::getForce(){
   return force;
 }
 
-FSRType10::FSRType10(InputPort* port):FSR(port){};
+FSRType10::FSRType10(InputPort* port):FSR(port){}
 
 double FSRType10::adjustForce(double force){
   return force;
 }
 
-FSRType40::FSRType40(InputPort* port):FSR(port){};
+FSRType40::FSRType40(InputPort* port):FSR(port){}
 
 double FSRType40::adjustForce(double force){
   return p[0] * pow(force, 3) + p[1] * pow(force, 2) + p[2] * force + p[3];

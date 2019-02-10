@@ -2,13 +2,13 @@
 #include "Leg.hpp"
 #include "Joint.hpp"
 
-JointMessage::JointMessage(LinkedList<Command<Joint>*>* commands):Message<Joint>(commands){};
+JointMessage::JointMessage(LinkedList<Command<Joint>*>* commands):Message<Joint>(commands){}
 
 LegMessage::LegMessage(LinkedList<Command<Leg>*>* pre_commands,
                        LinkedList<Command<Leg>*>* post_commands,
                        LinkedList<JointMessage*>* joint_msgs):Message<Leg>(pre_commands, post_commands){
                          this->joint_msgs = joint_msgs;
-};
+}
 
 LegMessage::~LegMessage(){
   joint_msgs->deleteItems();
@@ -29,7 +29,7 @@ ExoMessage::ExoMessage(LinkedList<Command<Exoskeleton>*>* pre_commands,
                        LegMessage* left_leg_msg):Message<Exoskeleton>(pre_commands, post_commands){
                          this->right_leg_msg = right_leg_msg;
                          this->left_leg_msg = left_leg_msg;
-};
+}
 
 ExoMessage::~ExoMessage(){
   delete left_leg_msg;
