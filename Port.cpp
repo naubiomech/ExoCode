@@ -112,7 +112,7 @@ void PwmOutputPort::write(double value){
 TxPort::TxPort(unsigned int pin):OutputPort(pin){}
 TxPort::~TxPort(){}
 
-void TxPort::write(double value){}
+void TxPort::write(double){}
 
 unsigned int TxPort::getPin(){
   return OutputPort::getPin();
