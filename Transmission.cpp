@@ -58,26 +58,24 @@ void Transmission::copyFromReceive(double* to){
   memcpy(to, receive_data, sizeof(double) * receive_count);
 }
 
-RequestDataTransmission::RequestDataTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_REQUEST_DATA, 0, 16){}
+RequestDataTransmission::RequestDataTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_REQUEST_DATA, 0, 14){}
 void RequestDataTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
   send_data[0] = report->right_leg->joint_reports[0]->torque_sensor_report->measuredTorque;
   send_data[1] = report->right_leg->state;
   send_data[2] = report->right_leg->joint_reports[0]->pid_setpoint;
-  send_data[3] = report->right_leg->joint_reports[0]->pid_setpoint;
-  send_data[4] = report->right_leg->sensor_reports->fsr_reports[0]->threshold;
-  send_data[5] = report->right_leg->sensor_reports->fsr_reports[0]->measuredForce;
+  send_data[3] = report->right_leg->sensor_reports->fsr_reports[0]->threshold;
+  send_data[4] = report->right_leg->sensor_reports->fsr_reports[0]->measuredForce;
 
-  send_data[6] = report->left_leg->joint_reports[0]->torque_sensor_report->measuredTorque;
-  send_data[7] = report->left_leg->state;
-  send_data[8] = report->left_leg->joint_reports[0]->pid_setpoint;
-  send_data[9] = report->left_leg->joint_reports[0]->pid_setpoint;
-  send_data[10] = report->left_leg->sensor_reports->fsr_reports[0]->threshold;
-  send_data[11] = report->left_leg->sensor_reports->fsr_reports[0]->measuredForce;
+  send_data[5] = report->left_leg->joint_reports[0]->torque_sensor_report->measuredTorque;
+  send_data[6] = report->left_leg->state;
+  send_data[7] = report->left_leg->joint_reports[0]->pid_setpoint;
+  send_data[8] = report->left_leg->sensor_reports->fsr_reports[0]->threshold;
+  send_data[9] = report->left_leg->sensor_reports->fsr_reports[0]->measuredForce;
 
+  send_data[10] = 0;
+  send_data[11] = 0;
   send_data[12] = 0;
   send_data[13] = 0;
-  send_data[14] = 0;
-  send_data[15] = 0;
 }
 
 StartTrialTransmission::StartTrialTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_START_TRIAL, 0, 0){}
@@ -97,6 +95,7 @@ void CalibrateTorqueTransmission::processData(ExoMessageBuilder* builder, ExoRep
 
 CheckBluetoothTransmission::CheckBluetoothTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CHECK_BLUETOOTH, 0, 3){}
 void CheckBluetoothTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+  Serial.println("Replying");
   send_data[0] = 0;
   send_data[1] = 1;
   send_data[2] = 2;
