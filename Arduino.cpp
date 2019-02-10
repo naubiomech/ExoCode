@@ -6,7 +6,11 @@
 
 SoftwareSerial Serial = SoftwareSerial(0,0);
 
-SoftwareSerial::SoftwareSerial(int a, int b){}
+SoftwareSerial::SoftwareSerial(int a, int b){
+  readStr = NULL;
+  strLen = -1;
+  charIndex = 0;
+}
 bool SoftwareSerial::begin(int a){return true;}
 void SoftwareSerial::write(char str){
   printf("%c", str);
@@ -35,11 +39,28 @@ void SoftwareSerial::println(double val){
   printf("%lf\n", val);
 }
 
-int SoftwareSerial::read(){
-  return -1;
+void SoftwareSerial::setReadString(const char* str){
+  readStr = str;
+  strLen = 0;
+  while (readStr[strLen] != '\0'){strLen++;}
+  charIndex = 0;
 }
 
-bool SoftwareSerial::available(){return false;};
+int SoftwareSerial::read(){
+  if (strLen <= 0){
+    return -1;
+  }
+
+  int val = readStr[charIndex++];
+  if (charIndex >= strLen){
+    readStr = NULL;
+    strLen = -1;
+    charIndex = 0;
+  }
+  return val;
+}
+
+bool SoftwareSerial::available(){return strLen > 0;};
 
 
 Adafruit_BNO055::Adafruit_BNO055(int, int, unsigned int, int, i2c_pins, int, int, int){}

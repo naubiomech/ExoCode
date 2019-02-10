@@ -19,15 +19,16 @@ Exoskeleton* setupSystem(){
 }
 
 void testExo(){
+  Serial.setReadString("k");
   Exoskeleton* exo = setupSystem();
   ExoMessageBuilder builder;
   builder.addPreCommand(new StartTrialCommand());
   ExoMessage* msg = builder.build();
   exo->processMessage(msg);
   delete msg;
+  exo->receiveMessages();
   exo->run();
   exo->sendReport();
-  exo->receiveMessages();
   delete exo;
 }
 

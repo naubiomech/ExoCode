@@ -58,7 +58,7 @@ void Transmission::copyFromReceive(double* to){
   memcpy(to, receive_data, sizeof(double) * receive_count);
 }
 
-RequestDataTransmission::RequestDataTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_REQUEST_DATA, 0, 16){}
+RequestDataTransmission::RequestDataTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_REQUEST_DATA, 0, 14){}
 void RequestDataTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
   send_data[0] = report->right_leg->joint_reports[0]->torque_sensor_report->measuredTorque;
   send_data[1] = report->right_leg->state;
@@ -99,6 +99,7 @@ void CalibrateTorqueTransmission::processData(ExoMessageBuilder* builder, ExoRep
 
 CheckBluetoothTransmission::CheckBluetoothTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CHECK_BLUETOOTH, 0, 3){}
 void CheckBluetoothTransmission::processData(ExoMessageBuilder* builder, ExoReport* report){
+  Serial.println("Replying");
   send_data[0] = 0;
   send_data[1] = 1;
   send_data[2] = 2;
