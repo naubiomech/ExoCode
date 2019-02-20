@@ -73,9 +73,12 @@ void MatlabTransceiver::sendData(double* data, int doubles_to_send){
     return;
   }
 
+  char* raw_data = (char*) data;
   for (int i = 0; i < doubles_to_send; i++){
-    serial->print(data[i]);
-    serial->write(',');
+    for(unsigned int j = 0; j < sizeof(double); j++){
+      unsigned int d = raw_data[i * sizeof(double) + j];
+      serial->write(d);
+    }
   }
 }
 
