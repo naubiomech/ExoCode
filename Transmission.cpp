@@ -95,7 +95,6 @@ void CalibrateTorqueTransmission::processData(ExoMessageBuilder* builder, ExoRep
 
 CheckBluetoothTransmission::CheckBluetoothTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CHECK_BLUETOOTH, 0, 3){}
 void CheckBluetoothTransmission::processData(ExoMessageBuilder*, ExoReport*){
-  Serial.println("Replying");
   send_data[0] = 0;
   send_data[1] = 1;
   send_data[2] = 2;
