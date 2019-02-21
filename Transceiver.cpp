@@ -65,20 +65,20 @@ void MatlabTransceiver::sendHeader(){
 
 void MatlabTransceiver::sendCommand(CommandCode code){
   serial->write(code);
-  serial->write(',');
 }
 
 void MatlabTransceiver::sendData(double* data, int doubles_to_send){
   if (doubles_to_send <= 0){
     return;
   }
-
-  char* raw_data = (char*) data;
+  serial->write((char) doubles_to_send);
   for (int i = 0; i < doubles_to_send; i++){
-    for(unsigned int j = 0; j < sizeof(double); j++){
-      unsigned int d = raw_data[i * sizeof(double) + j];
-      serial->write(d);
-    }
+    float float_data = data[i];
+    char* raw_data = (char*) (&float_data);
+	  for (unsigned int j = 0; j < sizeof(float); j++){
+		  unsigned int d = raw_data[j];
+		  serial->write(d);
+	  }
   }
 }
 
