@@ -20,7 +20,7 @@
 // 6 steps = 10N
 //
 // The torque and the shaping function can be adapted as function of the force pressure/Voltage
-// and averaged speed/step duration
+// and averaged speed/step duration. See Control_Mode in Control_Adjustment
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
@@ -75,29 +75,61 @@ SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an 
 
 bool FLAG_PRINT_TORQUES = false;
 bool FLAG_PID_VALS = false;
+
+
+// Sensor placement
 bool FLAG_TWO_TOE_SENSORS = true;
 bool OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
 
+//Variables and flags for Balance control
 bool FLAG_BALANCE = false;
 double FLAG_BALANCE_BASELINE = 0;
+double FLAG_STEADY_BALANCE_BASELINE = 0;
 double count_balance = 0;
+double count_steady_baseline = 0;
 
+// BT autoreconnection
+bool FLAG_AUTO_RECONNECT_BT = false;
+bool flag_done_once_bt = false;
+const unsigned int LED_BT_PIN = A11;
+double LED_BT_Voltage;
+int count_LED_reads;
+int *p_count_LED_reads = &count_LED_reads;
+
+
+// Counter msgs sent via BT
 int counter_msgs = 0;
 
+
+// Variables for the Control Mode
+int Control_Mode = 100; // 1 for time 0 for volt 2 for proportional gain 3 for pivot proportional control
+int Old_Control_Mode = Control_Mode;
+
+//Variables for the check of the motor driver error
+volatile double motor_driver_count_err;
+int time_err_motor;
+int time_err_motor_reboot;
+int flag_enable_catch_error = 1;
+bool motor_error = false;
+
+
+// Variables for auto KF
+int flag_auto_KF = 0;
+
+//----------------------------------------------------------------------------------
+
+
+// Initialize the system
 void setup()
 {
   // set the interrupt
   Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
   Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
   Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
-  //  Timer2.initialize(2000);
-
-  //  Timer2.initialize(2000);
 
   // enable bluetooth
   bluetooth.begin(115200);
   Serial.begin(115200);
-  //while (!Serial) {};
 
   analogWriteResolution(12);                                          //change resolution to 12 bits
   analogReadResolution(12);                                           //ditto
@@ -117,38 +149,11 @@ void setup()
   // Fast torque calibration
   torque_calibration();
 
-  //  left_leg->p_FSR_Array = &left_leg->FSR_Average_array[0];
-  //  right_leg->p_FSR_Array = &right_leg->FSR_Average_array[0];
   digitalWrite(LED_PIN, HIGH);
 
 }
 
-
-int Trq_time_volt = 0; // 1 for time 0 for volt 2 for proportional gain 3 for pivot proportional control
-int Old_Trq_time_volt = Trq_time_volt;
-int flag_13 = 1;
-int flag_count = 0;
-
-int flag_semaphore = 0;
-
-volatile double motor_driver_count_err;
-
-double start_time_callback, start_time_timer;
-
-int time_err_motor;
-int time_err_motor_reboot;
-
-int flag_enable_catch_error = 1;
-
-bool motor_error = false;
-bool flag_done_once_bt = false;
-int flag_auto_KF = 0;
-
-const unsigned int LED_BT_PIN = A11;
-double LED_BT_Voltage;
-int count_LED_reads;
-int *p_count_LED_reads = &count_LED_reads;
-
+//----------------------------------------------------------------------------------
 
 void callback()//executed every 2ms
 {
@@ -163,25 +168,19 @@ void callback()//executed every 2ms
 
   check_Balance_Baseline();
 
-  //
-  //  Serial.print("################################# ANALOG READ GREEN LED ->  ");
-  //  Serial.println(analogRead(A11) * 3.3 / 4096);
-  //  Serial.println(stream);
-
-
-  //    if (stream == 1){
-  //    }// end stream==1
-
-  LED_BT_Voltage=Check_LED_BT(LED_BT_PIN, LED_BT_Voltage, p_count_LED_reads);
+  if (FLAG_AUTO_RECONNECT_BT) {
+    LED_BT_Voltage = Check_LED_BT(LED_BT_PIN, LED_BT_Voltage, p_count_LED_reads);
+  }
 
 }// end callback
+
+//----------------------------------------------------------------------------------
 
 void loop()
 {
 
   if (slowThisDown.check() == 1) // If the time passed is over 1ms is a true statement
   {
-    //    start_time_timer = millis();
     if (bluetooth.available() > 0)
     {
       receive_and_transmit();       //Recieve and transmit was moved here so it will not interfere with the data message
@@ -197,7 +196,10 @@ void loop()
     reset_starting_parameters();
     flag_done_once_bt = false;
   }// End else
-}
+}// end void loop
+
+
+//----------------------------------------------------------------------------------
 
 void resetMotorIfError() {
   //motor_error true I have an error, false I haven't
@@ -249,6 +251,8 @@ void resetMotorIfError() {
   }//end stream==1
 }
 
+//----------------------------------------------------------------------------------
+
 void calculate_leg_average(Leg* leg) {
   //Calc the average value of Torque
 
@@ -290,6 +294,9 @@ void calculate_leg_average(Leg* leg) {
 
 }
 
+
+//----------------------------------------------------------------------------------
+
 void calculate_averages() {
   calculate_leg_average(left_leg);
   calculate_leg_average(right_leg);
@@ -313,6 +320,8 @@ void calculate_averages() {
 
 }
 
+//----------------------------------------------------------------------------------
+
 void check_FSR_calibration() {
 
   if (FSR_CAL_FLAG) {
@@ -328,12 +337,20 @@ void check_FSR_calibration() {
 
 }
 
+//----------------------------------------------------------------------------------
+
 void check_Balance_Baseline() {
   if (FLAG_BALANCE_BASELINE) {
     Balance_Baseline();
   }
+  if (FLAG_STEADY_BALANCE_BASELINE) {
+    Steady_Balance_Baseline();
+  }
 
 }
+
+
+//----------------------------------------------------------------------------------
 
 void rotate_motor() {
 
@@ -409,31 +426,36 @@ void rotate_motor() {
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
 
-    if (Trq_time_volt == 2) {}
+    if (Control_Mode == 2) {}
     else {
       set_2_zero_if_steady_state();
     }
 
-    left_leg->N3 = Ctrl_ADJ(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
-                            left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle,
-                            left_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, left_leg->Prop_Gain,
-                            left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->Max_FSR_Ratio);
-    right_leg->N3 = Ctrl_ADJ(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps,
-                             right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle,
-                             right_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, right_leg->Prop_Gain,
-                             right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio);
+    left_leg->N3 = Control_Adjustment(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
+                                      left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle,
+                                      left_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, left_leg->Prop_Gain,
+                                      left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->Max_FSR_Ratio);
+    right_leg->N3 = Control_Adjustment(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps,
+                                       right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle,
+                                       right_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, right_leg->Prop_Gain,
+                                       right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio);
   }// end if stream==1
 }
+
+
+//----------------------------------------------------------------------------------
+
 
 void reset_starting_parameters() {
   //Reset the starting values
   reset_leg_starting_parameters(left_leg);
   reset_leg_starting_parameters(right_leg);
-
-
-  //  FLAG_TWO_TOE_SENSORS = false;
+  
   FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
 }
+
+
+//----------------------------------------------------------------------------------
 
 void reset_leg_starting_parameters(Leg* leg) {
   leg->p_steps->count_plant = 0;

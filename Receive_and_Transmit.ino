@@ -570,43 +570,59 @@ void receive_and_transmit()
       break;
 
     case '+':
-      if (not(FLAG_TWO_TOE_SENSORS)) {
-        Old_Trq_time_volt = Trq_time_volt;
-        Trq_time_volt = 2;
-        *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-        *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-//        FLAG_TWO_TOE_SENSORS = true;
-        FLAG_BALANCE = true;
-        Serial.println(" Activate Balance Ctrl ");
-      } else {
-        Serial.println(" Cannoct Activate Balance Ctrl ");
-      }
+
+      OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
+      FLAG_TWO_TOE_SENSORS = false;
+      FLAG_BALANCE = true;
+      Serial.println(" Deactivate old Ctrl ");
+      Serial.println(Control_Mode);
+      //      if (not(FLAG_TWO_TOE_SENSORS)) {
+      Old_Control_Mode = Control_Mode;
+      Control_Mode = 2;
+            Serial.println(" activate Balance Ctrl ");
+      Serial.println(Control_Mode);
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      //        FLAG_TWO_TOE_SENSORS = true;
+      FLAG_BALANCE = true;
+      Serial.println(" Activate Balance Ctrl ");
+      //      } else {
+      //        Serial.println(" Cannoct Activate Balance Ctrl ");
+      //      }
       break;
 
     case '=':
-      if (not(FLAG_TWO_TOE_SENSORS)) {
-        Trq_time_volt = Old_Trq_time_volt;
-        right_leg->p_steps->torque_adj = false;
-        left_leg->p_steps->torque_adj = false;
-        *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
-        *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
-        *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-        *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-//        FLAG_TWO_TOE_SENSORS = false;
-        FLAG_BALANCE = false;
-        
-        Serial.println(" Deactivate Balance Ctrl ");
-        Serial.println(Trq_time_volt);
-      } else {
-        Serial.println(" Cannoct Deactivate Balance Ctrl ");
-      }
+
+      //      if (not(FLAG_TWO_TOE_SENSORS)) {
+      Serial.println(" FLAG_TWO_TOE_SENSORS ");
+      Serial.println(FLAG_TWO_TOE_SENSORS);
+      FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
+      FLAG_TWO_TOE_SENSORS = true;
+      FLAG_BALANCE = false;
+      Control_Mode = Old_Control_Mode;
+      right_leg->p_steps->torque_adj = false;
+      left_leg->p_steps->torque_adj = false;
+      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
+      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      //        FLAG_TWO_TOE_SENSORS = false;
+      FLAG_BALANCE = false;
+
+      Serial.println(" Deactivate Balance Ctrl ");
+      Serial.println(Control_Mode);
+      Serial.println(" OLD_FLAG_TWO_TOE_SENSORS ");
+      Serial.println(OLD_FLAG_TWO_TOE_SENSORS);
+      //      } else {
+      //        Serial.println(" Cannoct Deactivate Balance Ctrl ");
+      //      }
       break;
 
 
     case '.':
       flag_auto_KF = 1;
-      left_leg->KF = 1;
-      right_leg->KF = 1;
+//      left_leg->KF = 1;
+//      right_leg->KF = 1;
       Serial.println(" Activate Auto KF ");
       break;
 
@@ -616,15 +632,15 @@ void receive_and_transmit()
       break;
 
     case '#':
-      Old_Trq_time_volt = Trq_time_volt;
-      Trq_time_volt = 3; // activate pivot proportional control
+      Old_Control_Mode = Control_Mode;
+      Control_Mode = 3; // activate pivot proportional control
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
       Serial.println(" Activate Proportional Pivot Ctrl ");
       break;
 
     case '^':
-      Trq_time_volt = Old_Trq_time_volt;
+      Control_Mode = Old_Control_Mode;
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
       *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
@@ -636,14 +652,41 @@ void receive_and_transmit()
 
     case 'B':
       // check baseline
-      Serial.println("Check Baseline");
-      Serial.println(left_leg->p_steps->plant_peak_mean);
-      Serial.println(right_leg->p_steps->plant_peak_mean);
-      left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
-      right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
-      *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
-      *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
-      send_command_message('B', data_to_send_point, 2);
+
+      if (FLAG_BALANCE == false) {
+
+        Serial.println("Check Baseline");
+        Serial.println(left_leg->p_steps->plant_peak_mean);
+        Serial.println(right_leg->p_steps->plant_peak_mean);
+        left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
+        right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
+        *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
+        *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
+        send_command_message('B', data_to_send_point, 2);
+      } else {
+
+        //  volatile double FSR_Toe_Balance_Baseline;
+        //  volatile double FSR_Heel_Balance_Baseline;
+        //  volatile double FSR_Toe_Steady_Balance_Baseline;
+        //  volatile double FSR_Heel_Steady_Balance_Baseline;
+
+
+
+        *(data_to_send_point) = left_leg->FSR_Toe_Steady_Balance_Baseline;
+        *(data_to_send_point + 1) = left_leg->FSR_Heel_Steady_Balance_Baseline;
+        *(data_to_send_point + 2) = right_leg->FSR_Toe_Steady_Balance_Baseline;
+        *(data_to_send_point + 3) = right_leg->FSR_Heel_Steady_Balance_Baseline;
+
+        *(data_to_send_point + 4) = left_leg->FSR_Toe_Balance_Baseline * left_leg->fsr_percent_thresh_Toe;
+        *(data_to_send_point + 5) = left_leg->FSR_Heel_Balance_Baseline * left_leg->fsr_percent_thresh_Toe;
+        *(data_to_send_point + 6) = right_leg->FSR_Toe_Balance_Baseline * right_leg->fsr_percent_thresh_Toe;
+        *(data_to_send_point + 7) = right_leg->FSR_Heel_Balance_Baseline * right_leg->fsr_percent_thresh_Toe;
+
+        send_command_message('B', data_to_send_point, 8);
+
+
+
+      }
       break;
 
     case 'b':
@@ -657,8 +700,8 @@ void receive_and_transmit()
       right_leg->p_steps->count_plant_base = 0;
       right_leg->p_steps->flag_start_plant = false;
       left_leg->p_steps->flag_start_plant = false;
-//      right_leg->p_steps->Setpoint = 0;
-//      left_leg->p_steps->Setpoint = 0;
+      //      right_leg->p_steps->Setpoint = 0;
+      //      left_leg->p_steps->Setpoint = 0;
       break;
 
     case '&':
@@ -666,14 +709,44 @@ void receive_and_transmit()
       Serial.println(FLAG_BALANCE_BASELINE);
       Serial.println("Calc Balance Baseline");
       FLAG_BALANCE_BASELINE = 1;
+
       startTime = millis();
-      Trq_time_volt = Old_Trq_time_volt;// you cannot calibrate if your doing something
+      Control_Mode = Old_Control_Mode;// you cannot calibrate if your doing something
       left_leg->FSR_Toe_Balance_Baseline = 0;
       right_leg->FSR_Toe_Balance_Baseline = 0;
       left_leg->FSR_Heel_Balance_Baseline = 0;
       right_leg->FSR_Heel_Balance_Baseline = 0;
       count_balance = 0;
       break;
+
+    case 'J':
+      Serial.println("");
+      Serial.println(FLAG_STEADY_BALANCE_BASELINE);
+      Serial.println("Calc Steady Balance Baseline");
+      FLAG_STEADY_BALANCE_BASELINE = 1;
+
+      startTime = millis();
+      Control_Mode = Old_Control_Mode;// you cannot calibrate if your doing something
+      left_leg->FSR_Toe_Steady_Balance_Baseline = 0;
+      right_leg->FSR_Toe_Steady_Balance_Baseline = 0;
+      left_leg->FSR_Heel_Steady_Balance_Baseline = 0;
+      right_leg->FSR_Heel_Steady_Balance_Baseline = 0;
+      count_steady_baseline = 0;
+      break;
+
+
+    case '|':
+      Serial.println("");
+      Serial.println("Activate Auto-reconnect BT");
+      FLAG_AUTO_RECONNECT_BT = true;
+      break;
+
+    case '@':
+      Serial.println("");
+      Serial.println("Deactivate Auto-reconnect BT");
+      FLAG_AUTO_RECONNECT_BT = false;
+      break;
+
 
   }
   cmd_from_Gui = 0;

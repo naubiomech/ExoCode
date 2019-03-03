@@ -43,7 +43,45 @@
 //
 //}
 
+//--------------------------------------------------------------------
 
+void Steady_Balance_Baseline() {
+
+
+  if (millis() - startTime < 2000)
+  {
+
+    if ((millis() - startTime) / 100 >= 2 * count_steady_baseline) {
+      left_leg->FSR_Toe_Steady_Balance_Baseline +=  fsr(left_leg->fsr_sense_Toe);
+      right_leg->FSR_Toe_Steady_Balance_Baseline +=  fsr(right_leg->fsr_sense_Toe);
+      left_leg->FSR_Heel_Steady_Balance_Baseline +=  fsr(left_leg->fsr_sense_Heel);
+      right_leg->FSR_Heel_Steady_Balance_Baseline += fsr(right_leg->fsr_sense_Heel);
+
+      count_steady_baseline++;
+    }
+
+  } else {
+
+    left_leg->FSR_Toe_Steady_Balance_Baseline /= count_steady_baseline;
+    left_leg->FSR_Heel_Steady_Balance_Baseline /= count_steady_baseline;
+    right_leg->FSR_Toe_Steady_Balance_Baseline /= count_steady_baseline;
+    right_leg->FSR_Heel_Steady_Balance_Baseline /= count_steady_baseline;
+
+    Serial.println("Steady Balance Baseline");
+    Serial.println(left_leg->FSR_Toe_Steady_Balance_Baseline);
+    Serial.println(left_leg->FSR_Heel_Steady_Balance_Baseline);
+    Serial.println(right_leg->FSR_Toe_Steady_Balance_Baseline);
+    Serial.println(right_leg->FSR_Heel_Steady_Balance_Baseline);
+    FLAG_STEADY_BALANCE_BASELINE = 0;
+
+  }
+
+
+}// end STEADY balance baseline
+
+
+
+//--------------------------------------------------------------------
 
 void Balance_Baseline() {
 
@@ -93,11 +131,11 @@ void Balance_Baseline() {
     //    count_balance++;
   } else {
 
-//    left_leg->FSR_Toe_Balance_Baseline /= count_balance;
-//    left_leg->FSR_Heel_Balance_Baseline /= count_balance;
-//    right_leg->FSR_Toe_Balance_Baseline /= count_balance;
-//    right_leg->FSR_Heel_Balance_Baseline /= count_balance;
-
+    //    left_leg->FSR_Toe_Balance_Baseline /= count_balance;
+    //    left_leg->FSR_Heel_Balance_Baseline /= count_balance;
+    //    right_leg->FSR_Toe_Balance_Baseline /= count_balance;
+    //    right_leg->FSR_Heel_Balance_Baseline /= count_balance;
+    Serial.println("Dynamic Balance Baseline");
     Serial.println(left_leg->FSR_Toe_Balance_Baseline);
     Serial.println(left_leg->FSR_Heel_Balance_Baseline);
     Serial.println(right_leg->FSR_Toe_Balance_Baseline);
@@ -107,9 +145,9 @@ void Balance_Baseline() {
   }
 
 
-}
+}// end balance baseline
 
-
+//-----------------------------------------------------------
 double Balance_Torque_ref(Leg * leg) {
   Serial.print("[ ");
   Serial.print(leg->FSR_Toe_Average);
@@ -119,9 +157,54 @@ double Balance_Torque_ref(Leg * leg) {
   Serial.print(" ");
   Serial.print((leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline) - (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline));
   Serial.print(" -> ");
-  Serial.println(min(1,(leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline)) - min(1,(leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline)));
+  Serial.println(min(1, (leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline)) - min(1, (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline)));
 
-  return (min(1,(leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline)) - min(1,(leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline))) * (leg->Prop_Gain) * (leg->Setpoint_Ankle);
+  return (min(1, (leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline)) - min(1, (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline))) * (leg->Prop_Gain) * (leg->Setpoint_Ankle);
+
+}
+
+
+//-----------------------------------------
+
+double Balance_Torque_ref_based_on_Steady(Leg * leg) {
+  //  Serial.print("[ ");
+  //  Serial.print(leg->FSR_Toe_Average);
+  //  Serial.print(", ");
+  //  Serial.print(leg->FSR_Toe_Balance_Baseline);
+  //  Serial.print("] ");
+  //  Serial.print(" ");
+  //  Serial.print((leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline) - (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline));
+  //  Serial.print(" -> ");
+  //  Serial.println(min(1, (leg->FSR_Toe_Average - leg->FSR_Toe_Steady_Balance_Baseline) / ( leg->FSR_Toe_Balance_Baseline - FSR_Toe_Steady_Balance_Baseline)) - min(1, (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline)));
+
+  leg->COP_Toe_ratio = (leg->FSR_Toe_Average - leg->FSR_Toe_Steady_Balance_Baseline) / ( leg->FSR_Toe_Balance_Baseline - leg->FSR_Toe_Steady_Balance_Baseline);
+  leg->COP_Heel_ratio = (leg->FSR_Heel_Average - leg->FSR_Heel_Steady_Balance_Baseline) / ( leg->FSR_Heel_Balance_Baseline - leg->FSR_Heel_Steady_Balance_Baseline);
+
+  if (leg->state == 3) {
+    leg->COP_Foot_ratio = min(1, max(0, leg->COP_Toe_ratio)) - min(1, max(0, leg->COP_Heel_ratio));
+  } else {
+    leg->COP_Foot_ratio = 0;
+
+  }
+  return (leg->COP_Foot_ratio) * (leg->Prop_Gain) * (leg->Setpoint_Ankle);
+
+}
+
+//-------------------------------------------
+double Balance_Torque_COP_ref(Leg* leg) {
+
+  if (leg->state == 3) {
+    leg->COP = (leg->FSR_Toe_Average * leg->Toe_Pos + leg->FSR_Heel_Average * leg->Heel_Pos) / (leg->FSR_Heel_Average + leg->FSR_Toe_Average);
+  }
+  else {
+    return 0;
+  }
+
+  if (leg->COP >= 0) {
+    return (leg->COP / leg->Toe_Pos) * (leg->Prop_Gain) * (leg->Setpoint_Ankle);
+  } else {
+    return (-leg->COP / leg->Heel_Pos) * (leg->Prop_Gain) * (leg->Setpoint_Ankle); // Heel_Pos is negative
+  }
 
 }
 

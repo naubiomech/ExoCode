@@ -99,7 +99,7 @@
 //    // Adjust the torque reference as a function of the step
 //    ref_step_adj(leg);
 //
-//    if ((Trq_time_volt == 2 || Trq_time_volt == 3) && leg->state == 3) {
+//    if ((Control_Mode == 2 || Control_Mode == 3) && leg->state == 3) {
 //      leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
 //      //    Serial.println("After switch case : ");
 //      //    Serial.println(leg->coef_in_3_steps_Pctrl);
@@ -216,7 +216,7 @@
 //    // Adjust the torque reference as a function of the step
 //    ref_step_adj(leg);
 //
-//    if ((Trq_time_volt == 2 || Trq_time_volt == 3) && leg->state == 3) {
+//    if ((Control_Mode == 2 || Control_Mode == 3) && leg->state == 3) {
 //      leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
 //      //    Serial.println("After switch case : ");
 //      //    Serial.println(leg->coef_in_3_steps_Pctrl);
@@ -358,7 +358,7 @@ void State_Machine_Two_Toe_Sensors(Leg* leg) {
   // Adjust the torque reference as a function of the step
   ref_step_adj(leg);
 
-  if ((Trq_time_volt == 2 || Trq_time_volt == 3) && leg->state == 3) {
+  if ((Control_Mode == 2 || Control_Mode == 3) && leg->state == 3) {
     leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
     //    Serial.println("After switch case : ");
     //    Serial.println(leg->coef_in_3_steps_Pctrl);
@@ -478,7 +478,7 @@ void State_Machine_Heel_Toe_Sensors(Leg* leg) {
   // Adjust the torque reference as a function of the step
   ref_step_adj(leg);
 
-  if ((Trq_time_volt == 2 || Trq_time_volt == 3) && leg->state == 3) {
+  if ((Control_Mode == 2 || Control_Mode == 3) && leg->state == 3) {
     leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
     //    Serial.println("After switch case : ");
     //    Serial.println(leg->coef_in_3_steps_Pctrl);
@@ -607,7 +607,7 @@ void State_Machine_Heel_Toe_Sensors_Balance(Leg* leg) {
   // Adjust the torque reference as a function of the step
   ref_step_adj(leg);
 
-  if ((Trq_time_volt == 2 || Trq_time_volt == 3) && leg->state == 3) {
+  if ((Control_Mode == 2 || Control_Mode == 3) && leg->state == 3) {
     leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
     //    Serial.println("After switch case : ");
     //    Serial.println(leg->coef_in_3_steps_Pctrl);

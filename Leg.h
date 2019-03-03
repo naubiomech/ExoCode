@@ -4,7 +4,7 @@ const int dim_FSR = 30;
 const int dim = 5;
 
 #include "PID_v2.h"
-#include "Torque_Speed_ADJ.h"
+#include "Control_Adjustment.h"
 
 struct Leg {
   int torque_sensor_ankle_pin;
@@ -45,12 +45,17 @@ struct Leg {
 
   volatile double FSR_Toe_Balance_Baseline;
   volatile double FSR_Heel_Balance_Baseline;
+  volatile double FSR_Toe_Steady_Balance_Baseline;
+  volatile double FSR_Heel_Steady_Balance_Baseline;
+
+  volatile double COP_Toe_ratio,COP_Heel_ratio,COP_Foot_ratio;
+
 
   // Auto_KF.h
   double ERR;
   double Max_Measured_Torque;
-  double max_KF=1.5;
-  double min_KF=0.9;
+  double max_KF = 1.5;
+  double min_KF = 0.5;
   int count_err;
   bool auto_KF_update = true;
 
@@ -163,6 +168,10 @@ struct Leg {
   double start_from_1 = 0;
   double start_from_3 = 0;
   double start_time = 0;
+
+  double Heel_Pos = -0.07;
+  double Toe_Pos = 0.20;
+  double COP = 0;
 
   double zero;
 

@@ -8,28 +8,50 @@ void send_data_message_wc() //with COP
   bluetooth.print(',');
 
   // RIGHT
-  bluetooth.print(right_leg->sign * right_leg->Average_Trq);
+  bluetooth.print(right_leg->sign * right_leg->Average_Trq); //1
   bluetooth.print(',');
-  bluetooth.print(right_leg->state);
+  bluetooth.print(right_leg->state); //2
   bluetooth.print(',');
-  bluetooth.print(right_leg->sign * right_leg->PID_Setpoint);
+  bluetooth.print(right_leg->sign * right_leg->PID_Setpoint); //3
   bluetooth.print(',');
+
   if (FLAG_TWO_TOE_SENSORS) {
-    bluetooth.print(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
+    bluetooth.print(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref); //4
     bluetooth.print(',');
+    bluetooth.print(right_leg->FSR_Combined_Average); //5
+    bluetooth.print(',');
+  } else {
     if (FLAG_BALANCE) {
-      bluetooth.print(right_leg->FSR_Toe_Average);
+      bluetooth.print(right_leg->FSR_Toe_Average); //4
+      bluetooth.print(',');
+      bluetooth.print(right_leg->FSR_Heel_Average); //5
       bluetooth.print(',');
     } else {
-      bluetooth.print(right_leg->FSR_Combined_Average);
+      bluetooth.print(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Toe_peak_ref); //4
+      bluetooth.print(',');
+      bluetooth.print(right_leg->FSR_Toe_Average); //5
       bluetooth.print(',');
     }
-  } else {
-    bluetooth.print(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Toe_peak_ref);
-    bluetooth.print(',');
-    bluetooth.print(right_leg->FSR_Toe_Average);
-    bluetooth.print(',');
   }
+
+
+
+  //  if (FLAG_TWO_TOE_SENSORS) {
+  //    bluetooth.print(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
+  //    bluetooth.print(',');
+  //    if (FLAG_BALANCE) {
+  //      bluetooth.print(right_leg->FSR_Toe_Average);
+  //      bluetooth.print(',');
+  //    } else {
+  //      bluetooth.print(right_leg->FSR_Combined_Average);
+  //      bluetooth.print(',');
+  //    }
+  //  } else {
+  //    bluetooth.print(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Toe_peak_ref);
+  //    bluetooth.print(',');
+  //    bluetooth.print(right_leg->FSR_Toe_Average);
+  //    bluetooth.print(',');
+  //  }
 
 
   // LEFT
@@ -39,22 +61,46 @@ void send_data_message_wc() //with COP
   bluetooth.print(',');
   bluetooth.print(left_leg->sign * left_leg->PID_Setpoint);
   bluetooth.print(',');
+
   if (FLAG_TWO_TOE_SENSORS) {
     bluetooth.print(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
     bluetooth.print(',');
+    bluetooth.print(left_leg->FSR_Combined_Average);
+    bluetooth.print(',');
+  } else {
     if (FLAG_BALANCE) {
       bluetooth.print(left_leg->FSR_Toe_Average);
       bluetooth.print(',');
+      bluetooth.print(left_leg->FSR_Heel_Average);
+      bluetooth.print(',');
     } else {
-      bluetooth.print(left_leg->FSR_Combined_Average);
+      bluetooth.print(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Toe_peak_ref);
+      bluetooth.print(',');
+      bluetooth.print(left_leg->FSR_Toe_Average);
       bluetooth.print(',');
     }
-  } else {
-    bluetooth.print(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Toe_peak_ref);
-    bluetooth.print(',');
-    bluetooth.print(left_leg->FSR_Toe_Average);
-    bluetooth.print(',');
   }
+
+  //
+  //
+  //
+  //
+  //  if (FLAG_TWO_TOE_SENSORS) {
+  //    bluetooth.print(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
+  //    bluetooth.print(',');
+  //    if (FLAG_BALANCE) {
+  //      bluetooth.print(left_leg->FSR_Toe_Average);
+  //      bluetooth.print(',');
+  //    } else {
+  //      bluetooth.print(left_leg->FSR_Combined_Average);
+  //      bluetooth.print(',');
+  //    }
+  //  } else {
+  //    bluetooth.print(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Toe_peak_ref);
+  //    bluetooth.print(',');
+  //    bluetooth.print(left_leg->FSR_Toe_Average);
+  //    bluetooth.print(',');
+  //  }
 
 
 
@@ -63,21 +109,32 @@ void send_data_message_wc() //with COP
   //  bluetooth.print(right_leg->Time_error_counter); //SIG2
   //  bluetooth.print(',');
 
-//  bluetooth.print((left_leg->FSR_Heel_Average)); //SIG1
-bluetooth.print((LED_BT_Voltage)); //SIG1
-  
+  //  bluetooth.print((left_leg->FSR_Heel_Average)); //SIG1
+
+  //  bluetooth.print((LED_BT_Voltage)); //SIG1
+  //  bluetooth.print(',');
+  //  bluetooth.print((right_leg->FSR_Heel_Average)); //SIG2
+  //  bluetooth.print(',');
+
+  bluetooth.print(left_leg->COP_Foot_ratio); //SIG1
   bluetooth.print(',');
-  bluetooth.print((right_leg->FSR_Heel_Average)); //SIG2
+  bluetooth.print(right_leg->COP_Foot_ratio); //SIG2
   bluetooth.print(',');
 
-    bluetooth.print(left_leg->FSR_Toe_Average); //SIG3
-    bluetooth.print(',');
-    bluetooth.print(right_leg->FSR_Toe_Average); //SIG4
 
 
-//  bluetooth.print(counter_msgs); //SIG3
-//  bluetooth.print(',');
-//  bluetooth.print(millis() / 1000); //SIG4
+  //    bluetooth.print(left_leg->FSR_Toe_Average); //SIG3
+  //    bluetooth.print(',');
+  //    bluetooth.print(right_leg->FSR_Toe_Average); //SIG4
+
+  bluetooth.print(left_leg->COP); //SIG3
+  bluetooth.print(',');
+  bluetooth.print(right_leg->COP); //SIG4
+
+
+  //  bluetooth.print(counter_msgs); //SIG3
+  //  bluetooth.print(',');
+  //  bluetooth.print(millis() / 1000); //SIG4
 
   bluetooth.print(',');
   bluetooth.println('Z');
