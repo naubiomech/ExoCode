@@ -55,7 +55,7 @@ struct Leg {
   double ERR;
   double Max_Measured_Torque;
   double max_KF = 1.5;
-  double min_KF = 0.5;
+  double min_KF = 0.9;
   int count_err;
   bool auto_KF_update = true;
 

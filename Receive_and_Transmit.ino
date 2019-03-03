@@ -574,13 +574,10 @@ void receive_and_transmit()
       OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
       FLAG_TWO_TOE_SENSORS = false;
       FLAG_BALANCE = true;
-      Serial.println(" Deactivate old Ctrl ");
-      Serial.println(Control_Mode);
+
       //      if (not(FLAG_TWO_TOE_SENSORS)) {
       Old_Control_Mode = Control_Mode;
       Control_Mode = 2;
-            Serial.println(" activate Balance Ctrl ");
-      Serial.println(Control_Mode);
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
       //        FLAG_TWO_TOE_SENSORS = true;
@@ -594,11 +591,8 @@ void receive_and_transmit()
     case '=':
 
       //      if (not(FLAG_TWO_TOE_SENSORS)) {
-      Serial.println(" FLAG_TWO_TOE_SENSORS ");
-      Serial.println(FLAG_TWO_TOE_SENSORS);
       FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
-      FLAG_TWO_TOE_SENSORS = true;
-      FLAG_BALANCE = false;
+
       Control_Mode = Old_Control_Mode;
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
@@ -611,8 +605,6 @@ void receive_and_transmit()
 
       Serial.println(" Deactivate Balance Ctrl ");
       Serial.println(Control_Mode);
-      Serial.println(" OLD_FLAG_TWO_TOE_SENSORS ");
-      Serial.println(OLD_FLAG_TWO_TOE_SENSORS);
       //      } else {
       //        Serial.println(" Cannoct Deactivate Balance Ctrl ");
       //      }
@@ -621,8 +613,8 @@ void receive_and_transmit()
 
     case '.':
       flag_auto_KF = 1;
-//      left_leg->KF = 1;
-//      right_leg->KF = 1;
+      left_leg->KF = 1;
+      right_leg->KF = 1;
       Serial.println(" Activate Auto KF ");
       break;
 
@@ -652,41 +644,14 @@ void receive_and_transmit()
 
     case 'B':
       // check baseline
-
-      if (FLAG_BALANCE == false) {
-
-        Serial.println("Check Baseline");
-        Serial.println(left_leg->p_steps->plant_peak_mean);
-        Serial.println(right_leg->p_steps->plant_peak_mean);
-        left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
-        right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
-        *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
-        *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
-        send_command_message('B', data_to_send_point, 2);
-      } else {
-
-        //  volatile double FSR_Toe_Balance_Baseline;
-        //  volatile double FSR_Heel_Balance_Baseline;
-        //  volatile double FSR_Toe_Steady_Balance_Baseline;
-        //  volatile double FSR_Heel_Steady_Balance_Baseline;
-
-
-
-        *(data_to_send_point) = left_leg->FSR_Toe_Steady_Balance_Baseline;
-        *(data_to_send_point + 1) = left_leg->FSR_Heel_Steady_Balance_Baseline;
-        *(data_to_send_point + 2) = right_leg->FSR_Toe_Steady_Balance_Baseline;
-        *(data_to_send_point + 3) = right_leg->FSR_Heel_Steady_Balance_Baseline;
-
-        *(data_to_send_point + 4) = left_leg->FSR_Toe_Balance_Baseline * left_leg->fsr_percent_thresh_Toe;
-        *(data_to_send_point + 5) = left_leg->FSR_Heel_Balance_Baseline * left_leg->fsr_percent_thresh_Toe;
-        *(data_to_send_point + 6) = right_leg->FSR_Toe_Balance_Baseline * right_leg->fsr_percent_thresh_Toe;
-        *(data_to_send_point + 7) = right_leg->FSR_Heel_Balance_Baseline * right_leg->fsr_percent_thresh_Toe;
-
-        send_command_message('B', data_to_send_point, 8);
-
-
-
-      }
+      Serial.println("Check Baseline");
+      Serial.println(left_leg->p_steps->plant_peak_mean);
+      Serial.println(right_leg->p_steps->plant_peak_mean);
+      left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
+      right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
+      *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
+      *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
+      send_command_message('B', data_to_send_point, 2);
       break;
 
     case 'b':
@@ -733,7 +698,7 @@ void receive_and_transmit()
       right_leg->FSR_Heel_Steady_Balance_Baseline = 0;
       count_steady_baseline = 0;
       break;
-
+      
 
     case '|':
       Serial.println("");

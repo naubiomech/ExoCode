@@ -13,6 +13,5 @@ msg val_msg_receive;
 msg* p_msg_send = &val_msg_send;
 msg* p_msg_receive = &val_msg_receive;
 
-//double data_to_send[8];
-double data_to_send[16];
+double data_to_send[8];
 double *data_to_send_point = &data_to_send[0];
