@@ -99,9 +99,16 @@ struct Leg {
   double torque_calibration_value = 0;
   double T_act;
   int Vol;
-  double kp = 700;
-  double ki = 0;
-  double kd = 3;
+
+  #ifdef ENABLE_PWM   //PID Gains are different for PWM control
+    double kp = 600;
+    double ki = 0;
+    double kd = 3;
+  #else
+    double kp = 700;
+    double ki = 0;
+    double kd = 3;
+  #endif
   double KF = 1;
 
   double PID_Setpoint, Input, Output;

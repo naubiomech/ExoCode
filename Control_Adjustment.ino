@@ -93,7 +93,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
 
           p_steps_l->dorsi_mean = (p_steps_l->dorsi_mean) / n_step_baseline;
           p_steps_l->plant_mean = p_steps_l->plant_mean / n_step_baseline;
-          p_steps_l->plant_peak_mean_temp = 0.9 * (p_steps_l->plant_peak_mean_temp) / n_step_baseline;
+          p_steps_l->plant_peak_mean_temp = 1.0 * (p_steps_l->plant_peak_mean_temp) / n_step_baseline;  //Gain (1.0) was 0.9 2/25/2019 GO
 
           //HERE
 
