@@ -58,6 +58,7 @@ struct Leg {
   double max_KF = 1.5;
   double min_KF = 0.9;
   int count_err;
+  double Mean_Measured_Torque;
   bool auto_KF_update = true;
 
   // Calibrate_and_Read_Sensors.h
@@ -77,8 +78,8 @@ struct Leg {
   double fsr_Heel_peak_ref = 0;
   double fsr_Toe_peak_ref = 0;
 
-  double fsr_percent_thresh_Heel = 0.9;
-  double fsr_percent_thresh_Toe = 0.9;
+  double fsr_percent_thresh_Heel = 0.1;
+  double fsr_percent_thresh_Toe = 0.1;
 
   int FSR_baseline_FLAG = 0;
   int* p_FSR_baseline_FLAG = &FSR_baseline_FLAG;
@@ -192,16 +193,16 @@ struct Leg {
   double Err_max;
   double min_knee_error = 5;
   double Biofeedback_ctrl_max;
-  double Biofeedback_Volume = 0;
+  double Biofeedback_Volume=0;
 
-  bool BIO_BASELINE_FLAG = false;
-  bool NO_Biofeedback = true;
+  bool BIO_BASELINE_FLAG=false;
+  bool NO_Biofeedback=true;
   double start_time_Biofeedback;
-
+  
   char whos = ' ';
 
   double zero;
-  double torque_error_counter = 0;
+  double torque_error_counter;
 
   // Torque_Speed_ADJ.h
   //steps steps;

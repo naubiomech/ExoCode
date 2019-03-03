@@ -1,3 +1,4 @@
+// as a function of the error between the desired torque and the peak of the current torque, the KF is adjusted.
 
 void Auto_KF(Leg* leg) {
 
@@ -28,23 +29,19 @@ void Auto_KF(Leg* leg) {
 
     if (leg->Max_Measured_Torque * leg->Setpoint_Ankle * leg->coef_in_3_steps <= 0) {
       // if the sign are not concord, no auto update of KF
-      leg->auto_KF_update = false; //added after test of 11/7/18
+      leg->auto_KF_update = false; 
       return;
     }
 
-    //    if (leg->Setpoint_Ankle * leg->coef_in_3_steps > 0) {
 
     if ( abs((leg->Max_Measured_Torque - (leg->Setpoint_Ankle * leg->coef_in_3_steps)) / (leg->Setpoint_Ankle * leg->coef_in_3_steps)) < 0.05) {
-      leg->auto_KF_update = false; //added after test of 11/7/18
+      leg->auto_KF_update = false; 
       return;
-    }// if the error is less than the 5% no need 
+    }// if the error is less than the 5% no need
 
+    //update the KF as function of the error
     leg->KF = leg->KF - (leg->Max_Measured_Torque - (leg->Setpoint_Ankle * leg->coef_in_3_steps)) / (leg->Setpoint_Ankle * leg->coef_in_3_steps) * 0.6; //changed from 0.4 to 0.6 after test of 11/7/18
 
-    //    }
-    //    if (leg->Setpoint_Ankle * leg->coef_in_3_steps < 0) {
-    //      leg->KF = leg->KF + (leg->Max_Measured_Torque - (leg->Setpoint_Ankle * leg->coef_in_3_steps)) / (leg->Setpoint_Ankle * leg->coef_in_3_steps) * 0.4;
-    //    }
 
     // Now we have to be prepared for the next step and hence we have to reset the max measured torque variable
     leg->Max_Measured_Torque = 0;

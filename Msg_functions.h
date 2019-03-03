@@ -1,3 +1,5 @@
+// structure to create the messages transmitted and received between arduino and matlab
+
 typedef struct {
   char msg_array[75];
   char *p_msg_array = &msg_array[0];

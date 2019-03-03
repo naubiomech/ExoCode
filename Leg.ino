@@ -1,3 +1,4 @@
+// functions used for the Leg objects
 
 void initialize_leg(Leg* leg) {
   pinMode(leg->pin_err, INPUT);

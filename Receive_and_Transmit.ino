@@ -1,5 +1,5 @@
-// Peek is the variable used to identify the message received by matlab
-// To understand the commands see the file .......... in the folder
+// cmd_from_Gui is the variable used to identify the message received by matlab
+
 double app = 0;
 
 void receive_and_transmit()
@@ -370,24 +370,24 @@ void receive_and_transmit()
       break;
 
     case 'P':
-      left_leg->p_steps->flag_take_baseline = true;
-      Serial.println("Left Freq Baseline ");
+//      left_leg->p_steps->flag_take_baseline = true;
+//      Serial.println("Left Freq Baseline ");
       break;
 
     case 'p':
-      right_leg->p_steps->flag_take_baseline = true;
-      Serial.println("Right Freq Baseline ");
+//      right_leg->p_steps->flag_take_baseline = true;
+//      Serial.println("Right Freq Baseline ");
       break;
 
     case 'O':
-      left_leg->p_steps->flag_N3_adjustment_time = true;
-      Serial.println(" Left N3 Adj ");
+//      left_leg->p_steps->flag_N3_adjustment_time = true;
+//      Serial.println(" Left N3 Adj ");
       break;
 
 
     case 'o':
-      right_leg->p_steps->flag_N3_adjustment_time = true;
-      Serial.println(" Right N3 Adj ");
+//      right_leg->p_steps->flag_N3_adjustment_time = true;
+//      Serial.println(" Right N3 Adj ");
       break;
 
     case 'Q':
@@ -421,17 +421,17 @@ void receive_and_transmit()
       break;
 
     case 'S':
-      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&(left_leg->p_steps->perc_l), &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-      Serial.print("Setting the left_leg->p_steps->perc_l: ");
-      Serial.println(left_leg->p_steps->perc_l);
+//      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+//      memcpy(&(left_leg->p_steps->perc_l), &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+//      Serial.print("Setting the left_leg->p_steps->perc_l: ");
+//      Serial.println(left_leg->p_steps->perc_l);
       break;
 
     case's':
-      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&(right_leg->p_steps->perc_l), &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-      Serial.print("Setting the right_leg->p_steps->perc_l: ");
-      Serial.println(right_leg->p_steps->perc_l);
+//      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+//      memcpy(&(right_leg->p_steps->perc_l), &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+//      Serial.print("Setting the right_leg->p_steps->perc_l: ");
+//      Serial.println(right_leg->p_steps->perc_l);
       break;
 
     case 'C':
@@ -799,6 +799,8 @@ void receive_and_transmit()
     case 'y':
       FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
       FLAG_BIOFEEDBACK = false;
+      if(left_leg->state==2) left_leg->state=1;
+      if(right_leg->state==2) right_leg->state=1;
       Serial.println(" Deactivate Audio BioFeedback ");
       break;
 

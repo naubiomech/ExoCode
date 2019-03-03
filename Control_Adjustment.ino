@@ -1,3 +1,7 @@
+// in this file there are the functions that modify the control strategy both in the strategy and in the shaping factors (N3) when required.
+
+
+// take baseline for some of the controls during the plantarflexion state , i.e. 3
 int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_flag_take_baseline_l) {
 
 
@@ -44,7 +48,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
       if (p_steps_l->plant_time <= step_time_length)
       {
         p_steps_l->flag_start_plant = false;
-        Serial.println("BASE Plant too short");
+        Serial.println("BASE Plant too short"); // it means is a glitch not a real step
         return 0;
       } else {
         p_steps_l->flag_start_plant = false; // you have provided one plant
@@ -133,37 +137,37 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
 }// end take_baseline
 
 
+//------------------------------------------------------------------------------
+
 
 double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l, double* p_Setpoint_Ankle_l, double * p_Setpoint_Ankle_Pctrl_l, int Control_Mode_l, double prop_gain_l, double taking_baseline_l, double *p_FSR_Ratio, double* p_Max_FSR_Ratio) {
 
-  // Speed adjustment -> the smoothing parameters are updated as a function of the plantar time in order to modify the shaping of the torque to the new step time.
-  // It considers the average time of 4 steps. There's a filter of step_time_length on the plantarflexion time in order to cut the noise
-  // The faster you go the more N3 decreases
+  // Control Mode 2: Balance control
+  // Control Mode 3: Joint Moment control, the torque is a percentage of the extimated Ankle moment. The mapping function that estimated the ankle moment use a ratio (p_FSR_Ratio) which depends on the current force of pressure
+  // and the baseline value. The baseline value can be updated several times also during the execution of the task
 
-  // Torque adjustment -> the torque set point is modified as a function of the voltage measured , the faster you go probably the bigger you hit the floor and hence
-  // the voltage increases. It modifies the setpoint at each step.
-
-  if (taking_baseline_l) {
-    //    *p_Setpoint_Ankle_Pctrl_l = 0;
-    //    *p_Setpoint_Ankle_l = 0;
-    //    Serial.println("No ctrl adj");
+  //otherwise Control Mode =  100 implies the classic bang bang whose shaping is based on N3
+  //  Despite control mode 2 and 3 do not uses the N3 the function still returns a number associated to N3 which is not used.
+  
+  if (taking_baseline_l) { // if I am taking the baseline adapt some parameters for the controls
 
     //--------------------------------
     if ((R_state_l == 3) && (R_state_old_l == 1 || R_state_old_l == 2))
     {
-      if (Control_Mode_l == 3) {
+      if (Control_Mode_l == 3) { // JOINT MOMENT CONTROL also known as pivot proportional control while taking the baseline
 
         *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
         if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
-          (*p_Max_FSR_Ratio) = *p_FSR_Ratio;
+          (*p_Max_FSR_Ratio) = *p_FSR_Ratio; // update the max fsr Ratio
 
-        // Second version of pivot proportional Ctrl with polynomial law XXXXX QUI METTERE LEGGE
-        if ((p_steps_l->Setpoint ) > 0) {
-          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
+
+        // while updating the ratio value still continue to provide the control
+        if ((p_steps_l->Setpoint ) > 0) { //depending on the leg the sign changes
+          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]));
           *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
         }
         else if ((p_steps_l->Setpoint ) < 0) {
-          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
+          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]));
           *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
         } else {
           *p_Setpoint_Ankle_Pctrl_l = 0;
@@ -171,13 +175,11 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       }
     }
 
-
-
-
-    //-------------------------------
-
-    return N3_l;
+    return N3_l; //return the previous N3 value whis is not used
   }
+
+
+
   if (taking_baseline_l == 0 && p_steps_l->plant_peak_mean_temp != p_steps_l->plant_peak_mean) {
     Serial.println("Updated peak mean values");
     Serial.print(p_steps_l->plant_peak_mean);
@@ -196,30 +198,20 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       p_steps_l->peak =  p_steps_l->curr_voltage;
 
     *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
+
     if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
       (*p_Max_FSR_Ratio) = *p_FSR_Ratio;
 
 
 
-    if (Control_Mode_l == 2) {
-      //      if ((p_steps_l->Setpoint ) > 0) {
-      //
-      //        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (prop_gain_l) * (*p_FSR_Ratio)); // the difference here is that we do it as a function of the FSR calibration
-      //        *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
-      //      }
-      //      else if ((p_steps_l->Setpoint ) < 0) {
-      //        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (prop_gain_l) * (*p_FSR_Ratio)); // the difference here is that we do it as a function of the FSR calibration
-      //        *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
-      //      } else {
-      //        *p_Setpoint_Ankle_Pctrl_l = 0;
-      //    }
-//      *p_Setpoint_Ankle_Pctrl_l = Balance_Torque_ref(leg);
+    if (Control_Mode_l == 2) { // Balance control
+
       *p_Setpoint_Ankle_Pctrl_l = Balance_Torque_ref_based_on_Steady(leg);
 
-      return N3_l; // No modification in the shaping
+      return N3_l; // No modification in the shaping which is disabled
 
     } else if (Control_Mode_l == 3) {
-      // Second version of pivot proportional Ctrl with polynomial law XXXXX QUI METTERE LEGGE
+      // JOINT MOMENT CONTROL also known as pivot proportional control
       if ((p_steps_l->Setpoint ) > 0) {
         *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
         *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
@@ -231,34 +223,31 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
         *p_Setpoint_Ankle_Pctrl_l = 0;
       }
 
-      return N3_l; // No modification in the shaping
-
-    } else if (Control_Mode_l == 1) {
-
-
-      Serial.print(" Ratios : ");
-      Serial.print(*p_FSR_Ratio);
-      Serial.print(" , ");
-      Serial.print((*p_Max_FSR_Ratio));
-      Serial.println();
-
-      if ((p_steps_l->Setpoint ) > 0) {
-        *p_Setpoint_Ankle_l = max(Min_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow((*p_Max_FSR_Ratio), 2) + p_prop[1] * (*p_Max_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
-        *p_Setpoint_Ankle_l = min(Max_Prop, *p_Setpoint_Ankle_l);
-      }
-      else if ((p_steps_l->Setpoint ) < 0) {
-        *p_Setpoint_Ankle_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow((*p_Max_FSR_Ratio), 2) + p_prop[1] * (*p_Max_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
-        *p_Setpoint_Ankle_l = min(Min_Prop, *p_Setpoint_Ankle_l);
-      } else {
-        *p_Setpoint_Ankle_l = 0;
-      }
-      return 1;
-
-      //      p_steps_l->flag_N3_adjustment_time = true;
-      //      return N3_l;
-
-
+      return N3_l; // No modification in the shaping function which is disabled
     }
+    //    } else if (Control_Mode_l == 1) {
+    //
+    //
+    //      Serial.print(" Ratios : ");
+    //      Serial.print(*p_FSR_Ratio);
+    //      Serial.print(" , ");
+    //      Serial.print((*p_Max_FSR_Ratio));
+    //      Serial.println();
+    //
+    //      if ((p_steps_l->Setpoint ) > 0) {
+    //        *p_Setpoint_Ankle_l = max(Min_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow((*p_Max_FSR_Ratio), 2) + p_prop[1] * (*p_Max_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
+    //        *p_Setpoint_Ankle_l = min(Max_Prop, *p_Setpoint_Ankle_l);
+    //      }
+    //      else if ((p_steps_l->Setpoint ) < 0) {
+    //        *p_Setpoint_Ankle_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow((*p_Max_FSR_Ratio), 2) + p_prop[1] * (*p_Max_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
+    //        *p_Setpoint_Ankle_l = min(Min_Prop, *p_Setpoint_Ankle_l);
+    //      } else {
+    //        *p_Setpoint_Ankle_l = 0;
+    //      }
+    //      return 1;
+    //
+    //
+    //    }
 
     // Otherwise we need to calculate the time
 
@@ -280,56 +269,56 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     }
 
 
-    // Torque adaption as a function of the speed or of the pressure force
-    // If you want to adjust the torque and hence torque_adj = 1
-    //-----------------add 11:49 6/19/18
-    if (p_steps_l->torque_adj)
-    {
-      if (p_steps_l->plant_time <= step_time_length)
-      {
-        p_steps_l->peak = 0;
-        p_steps_l->flag_start_plant = false;
-        Serial.println(" TRQ ADJ plant time too short ");
-        return N3_l;
-      }
-
-
-      // if you use plantar time as reference to increase the torque
-      if (Control_Mode_l == 0)
-      {
-        if (p_steps_l->flag_start_plant == true) {
-          // if you're going use the time as reference to increase also the torque
-
-          if ((p_steps_l->Setpoint ) > 0) {
-            *p_Setpoint_Ankle_l = max(Min_Prop, (p_steps_l->Setpoint ) * (1 / (fabs(p_steps_l->plant_mean / p_steps_l->plant_mean_base))));
-            *p_Setpoint_Ankle_l = min(Max_Prop, *p_Setpoint_Ankle_l);
-          }
-          else if ((p_steps_l->Setpoint ) < 0) {
-            *p_Setpoint_Ankle_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (1 / (fabs(p_steps_l->plant_mean / p_steps_l->plant_mean_base))));
-            *p_Setpoint_Ankle_l = min(Min_Prop, *p_Setpoint_Ankle_l);
-          } else {
-            *p_Setpoint_Ankle_Pctrl_l = 0;
-          }
-        }
-      } else if (Control_Mode_l == 1) // If you use the volt or force value returned by the FSR sensors
-      {
-        if (p_steps_l->flag_start_plant = true) {
-          *p_Setpoint_Ankle_l = (p_steps_l->Setpoint ) * (fabs(p_steps_l->peak / p_steps_l->plant_peak_mean));
-
-          if ((p_steps_l->Setpoint ) > 0) {
-            *p_Setpoint_Ankle_l = max(Min_Prop, (p_steps_l->Setpoint ) * (fabs(p_steps_l->peak / p_steps_l->plant_peak_mean)));
-            *p_Setpoint_Ankle_l = min(Max_Prop, *p_Setpoint_Ankle_l);
-          }
-          else if ((p_steps_l->Setpoint ) < 0) {
-            *p_Setpoint_Ankle_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (fabs(p_steps_l->peak / p_steps_l->plant_peak_mean)));
-            *p_Setpoint_Ankle_l = min(Min_Prop, *p_Setpoint_Ankle_l);
-          } else {
-            *p_Setpoint_Ankle_Pctrl_l = 0;
-          }
-
-        }
-      }
-    }// end torque adj
+    //    // Torque adaption as a function of the speed or of the pressure force
+    //    // If you want to adjust the torque and hence torque_adj = 1
+    //    //-----------------add 11:49 6/19/18
+    //    if (p_steps_l->torque_adj)
+    //    {
+    //      if (p_steps_l->plant_time <= step_time_length)
+    //      {
+    //        p_steps_l->peak = 0;
+    //        p_steps_l->flag_start_plant = false;
+    //        Serial.println(" TRQ ADJ plant time too short ");
+    //        return N3_l;
+    //      }
+    //
+    //
+    //      // if you use plantar time as reference to increase the torque
+    //      if (Control_Mode_l == 0)
+    //      {
+    //        if (p_steps_l->flag_start_plant == true) {
+    //          // if you're going use the time as reference to increase also the torque
+    //
+    //          if ((p_steps_l->Setpoint ) > 0) {
+    //            *p_Setpoint_Ankle_l = max(Min_Prop, (p_steps_l->Setpoint ) * (1 / (fabs(p_steps_l->plant_mean / p_steps_l->plant_mean_base))));
+    //            *p_Setpoint_Ankle_l = min(Max_Prop, *p_Setpoint_Ankle_l);
+    //          }
+    //          else if ((p_steps_l->Setpoint ) < 0) {
+    //            *p_Setpoint_Ankle_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (1 / (fabs(p_steps_l->plant_mean / p_steps_l->plant_mean_base))));
+    //            *p_Setpoint_Ankle_l = min(Min_Prop, *p_Setpoint_Ankle_l);
+    //          } else {
+    //            *p_Setpoint_Ankle_Pctrl_l = 0;
+    //          }
+    //        }
+    //      } else if (Control_Mode_l == 1) // If you use the volt or force value returned by the FSR sensors
+    //      {
+    //        if (p_steps_l->flag_start_plant = true) {
+    //          *p_Setpoint_Ankle_l = (p_steps_l->Setpoint ) * (fabs(p_steps_l->peak / p_steps_l->plant_peak_mean));
+    //
+    //          if ((p_steps_l->Setpoint ) > 0) {
+    //            *p_Setpoint_Ankle_l = max(Min_Prop, (p_steps_l->Setpoint ) * (fabs(p_steps_l->peak / p_steps_l->plant_peak_mean)));
+    //            *p_Setpoint_Ankle_l = min(Max_Prop, *p_Setpoint_Ankle_l);
+    //          }
+    //          else if ((p_steps_l->Setpoint ) < 0) {
+    //            *p_Setpoint_Ankle_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (fabs(p_steps_l->peak / p_steps_l->plant_peak_mean)));
+    //            *p_Setpoint_Ankle_l = min(Min_Prop, *p_Setpoint_Ankle_l);
+    //          } else {
+    //            *p_Setpoint_Ankle_Pctrl_l = 0;
+    //          }
+    //
+    //        }
+    //      }
+    //    }// end torque adj
 
   }// end if you enter in state 3 from state 2 or 1
 
@@ -345,13 +334,13 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       // start dorsiflexion
       p_steps_l->dorsi_time = millis();
 
-      if (p_steps_l->flag_N3_adjustment_time) { // If you wanted to adjust the smoothing as a function of the speed
-        // check for the first step in order to see if everything started properly
-        if (p_steps_l->n_steps == 1) {
-          Serial.println(" N3 Adj activated");
-        }
-        p_steps_l->n_steps++;
-      }
+      //      if (p_steps_l->flag_N3_adjustment_time) { // If you wanted to adjust the smoothing as a function of the speed
+      //        // check for the first step in order to see if everything started properly
+      //        if (p_steps_l->n_steps == 1) {
+      //          Serial.println(" N3 Adj activated");
+      //        }
+      //        p_steps_l->n_steps++;
+      //      }
 
       // calculate plantarflexion
       p_steps_l->plant_time = millis() - (p_steps_l->plant_time);
@@ -391,11 +380,11 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
         p_steps_l->plant_mean = p_steps_l->plant_mean / n_step_baseline;
       }
 
-      if (p_steps_l->flag_N3_adjustment_time) {
-        N3_l = round((p_steps_l->plant_mean) * p_steps_l->perc_l);
-        if (N3_l <= 4) N3_l = 4;
-        if (N3_l >= 500) N3_l = 500;
-      }
+      //      if (p_steps_l->flag_N3_adjustment_time) {
+      //        N3_l = round((p_steps_l->plant_mean) * p_steps_l->perc_l);
+      //        if (N3_l <= 4) N3_l = 4;
+      //        if (N3_l >= 500) N3_l = 500;
+      //      }
 
 
     }//end if R old 3 i.e. finish plantarflexion
