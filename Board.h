@@ -105,6 +105,3 @@ const bool PWM_CONTROL = false;
 
 
 #endif
-
-
-

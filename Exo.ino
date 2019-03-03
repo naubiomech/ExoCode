@@ -1,4 +1,4 @@
-//G:\Team Drives\Biomech_Lab\Giamma\A_EXO_Code\A_Exo_3_0_9\MATLAB// This is the code for the Single board Ankle Exoskeleton -> A_EXO_s
+//G:\Team Drives\Biomech_Lab\Giamma\A_EXO_Code\A_Exo_3_1_0\MATLAB// This is the code for the Single board Ankle Exoskeleton -> A_EXO_s
 //
 // FSR sensors retrieve the sensor voltage related to the foot pressure.
 // The state machine (Left and Right state machine) identify the participant status depending on the voltage.

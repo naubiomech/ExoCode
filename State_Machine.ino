@@ -63,6 +63,24 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
 
           }
 
+          if (Flag_HLO && (leg->Previous_T_Opt <= leg->T_Opt)) {
+
+            leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt)*leg->coef_in_3_steps;
+            Serial.print("Previous T Opt");
+            Serial.print(leg->Previous_T_Opt);
+            Serial.print("Current T Opt");
+            Serial.println(leg->T_Opt_Setpoint);
+
+          } else if (Flag_HLO && (leg->Previous_T_Opt > leg->T_Opt)) {
+
+            leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt)*leg->coef_in_3_steps;
+            Serial.print("Previous T Opt");
+            Serial.print(leg->Previous_T_Opt);
+            Serial.print("Current T Opt");
+            Serial.println(leg->T_Opt_Setpoint);
+            
+          }
+
           leg->state_old = leg->state;
           leg->state = 3;
           leg->state_count_13 = 0;
@@ -178,9 +196,27 @@ void State_Machine_Heel_Toe_Sensors(Leg * leg) {
             leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
 
           } else {
-
+            
             leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
 
+          }
+
+          if (Flag_HLO && (leg->Previous_T_Opt <= leg->T_Opt)) {
+
+            leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt)*leg->coef_in_3_steps;
+            Serial.print("Previous T Opt");
+            Serial.print(leg->Previous_T_Opt);
+            Serial.print("Current T Opt");
+            Serial.println(leg->T_Opt_Setpoint);
+
+          } else if (Flag_HLO && (leg->Previous_T_Opt > leg->T_Opt)) {
+
+            leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt)*leg->coef_in_3_steps;
+            Serial.print("Previous T Opt");
+            Serial.print(leg->Previous_T_Opt);
+            Serial.print("Current T Opt");
+            Serial.println(leg->T_Opt_Setpoint);
+            
           }
 
           leg->state_old = leg->state;

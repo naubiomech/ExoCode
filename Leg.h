@@ -53,6 +53,8 @@ struct Leg {
   double Dynamic_multiplier, Steady_multiplier;
 
   // Auto_KF.h
+  double Torque_Sum_90P;
+  double Mean_Torque_90P;
   double ERR;
   double Max_Measured_Torque;
   double max_KF = 1.5;
@@ -203,6 +205,17 @@ struct Leg {
 
   double zero;
   double torque_error_counter;
+
+  //Optimization-----------------------------------
+  double T_Opt_p,Setpoint_Ankle_Opt;
+  double Previous_T_Opt = 0.1;
+  double T_Opt = 0.1;
+  double T_Opt_Setpoint = 0.1;
+
+  double p0,dp0,ddp0,pf,dpf,ddpf,c0,c1,c2,c3,c4,c5;
+
+  bool FLAG_UPDATE_VALUES=false;
+ //------------------------------------------------
 
   // Torque_Speed_ADJ.h
   //steps steps;
