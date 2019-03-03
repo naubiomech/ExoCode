@@ -574,7 +574,8 @@ void receive_and_transmit()
       OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
       FLAG_TWO_TOE_SENSORS = false;
       FLAG_BALANCE = true;
-
+      Serial.println(" Deactivate old Ctrl ");
+      Serial.println(Control_Mode);
       //      if (not(FLAG_TWO_TOE_SENSORS)) {
       Old_Control_Mode = Control_Mode;
       Control_Mode = 2;
@@ -590,9 +591,11 @@ void receive_and_transmit()
 
     case '=':
 
-      //      if (not(FLAG_TWO_TOE_SENSORS)) {
+      Serial.println(" FLAG_TWO_TOE_SENSORS ");
+      Serial.println(FLAG_TWO_TOE_SENSORS);
       FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
-
+      FLAG_TWO_TOE_SENSORS = true;
+      FLAG_BALANCE = false;
       Control_Mode = Old_Control_Mode;
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
@@ -644,14 +647,36 @@ void receive_and_transmit()
 
     case 'B':
       // check baseline
-      Serial.println("Check Baseline");
-      Serial.println(left_leg->p_steps->plant_peak_mean);
-      Serial.println(right_leg->p_steps->plant_peak_mean);
-      left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
-      right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
-      *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
-      *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
-      send_command_message('B', data_to_send_point, 2);
+
+      if (FLAG_BALANCE == false) {
+
+        Serial.println("Check Baseline");
+        Serial.println(left_leg->p_steps->plant_peak_mean);
+        Serial.println(right_leg->p_steps->plant_peak_mean);
+        left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
+        right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
+        *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
+        *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
+        send_command_message('B', data_to_send_point, 2);
+      } else {
+
+        //  volatile double FSR_Toe_Balance_Baseline;
+        //  volatile double FSR_Heel_Balance_Baseline;
+        //  volatile double FSR_Toe_Steady_Balance_Baseline;
+        //  volatile double FSR_Heel_Steady_Balance_Baseline;
+
+        *(data_to_send_point) = left_leg->FSR_Toe_Steady_Balance_Baseline * left_leg->Steady_multiplier;
+        *(data_to_send_point + 1) = left_leg->FSR_Heel_Steady_Balance_Baseline * left_leg->Steady_multiplier;
+        *(data_to_send_point + 2) = right_leg->FSR_Toe_Steady_Balance_Baseline * right_leg->Steady_multiplier;
+        *(data_to_send_point + 3) = right_leg->FSR_Heel_Steady_Balance_Baseline * right_leg->Steady_multiplier;
+
+        *(data_to_send_point + 4) = left_leg->FSR_Toe_Balance_Baseline * left_leg->Dynamic_multiplier;
+        *(data_to_send_point + 5) = left_leg->FSR_Heel_Balance_Baseline * left_leg->Dynamic_multiplier;
+        *(data_to_send_point + 6) = right_leg->FSR_Toe_Balance_Baseline * right_leg->Dynamic_multiplier;
+        *(data_to_send_point + 7) = right_leg->FSR_Heel_Balance_Baseline * right_leg->Dynamic_multiplier;
+
+        send_command_message('B', data_to_send_point, 8);
+      }
       break;
 
     case 'b':
@@ -698,7 +723,7 @@ void receive_and_transmit()
       right_leg->FSR_Heel_Steady_Balance_Baseline = 0;
       count_steady_baseline = 0;
       break;
-      
+
 
     case '|':
       Serial.println("");
@@ -712,6 +737,40 @@ void receive_and_transmit()
       FLAG_AUTO_RECONNECT_BT = false;
       break;
 
+
+    case 'V':
+      *(data_to_send_point) = left_leg->Steady_multiplier;
+      send_command_message('V', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
+      Serial.print("Checking the Steady multiplier: ");
+      Serial.println(left_leg->Steady_multiplier);
+      break;
+
+    case 'v':
+      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      memcpy(&left_leg->Steady_multiplier, &holdon, 8);
+      memcpy(&right_leg->Steady_multiplier, &holdon, 8);
+      Serial.print("Setting the Steady multiplier: ");
+      Serial.print(left_leg->Steady_multiplier);
+      Serial.print(" , ");
+      Serial.println(right_leg->Steady_multiplier);
+      break;
+
+    case 'A':
+      *(data_to_send_point) = left_leg->Dynamic_multiplier;
+      send_command_message('A', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
+      Serial.print("Checking the Dynamic multiplier: ");
+      Serial.println(left_leg->Dynamic_multiplier);
+      break;
+
+    case 'a':
+      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      memcpy(&left_leg->Dynamic_multiplier, &holdon, 8);
+      memcpy(&right_leg->Dynamic_multiplier, &holdon, 8);
+      Serial.print("Setting the Dynamic multiplier: ");
+      Serial.print(left_leg->Dynamic_multiplier);
+      Serial.print(" , ");
+      Serial.println(right_leg->Dynamic_multiplier);
+      break;
 
   }
   cmd_from_Gui = 0;

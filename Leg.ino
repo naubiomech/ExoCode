@@ -23,6 +23,11 @@ void initialize_left_leg(Leg* left_leg) {
   left_leg->torque_sensor_ankle_pin = TORQUE_SENSOR_LEFT_ANKLE_PIN;
   left_leg->motor_ankle_pin = MOTOR_LEFT_ANKLE_PIN;
   left_leg->baseline_address = address_params + 105 + 5;
+
+  left_leg->Dynamic_multiplier = 1;
+  left_leg->Steady_multiplier = 1;
+
+
   initialize_leg(left_leg);
 }
 
@@ -36,5 +41,11 @@ void initialize_right_leg(Leg* right_leg) {
   right_leg->torque_sensor_ankle_pin = TORQUE_SENSOR_RIGHT_ANKLE_PIN;
   right_leg->motor_ankle_pin = MOTOR_RIGHT_ANKLE_PIN;
   right_leg->baseline_address = address_params + 105 + 5 + 9;
+
+
+
+  right_leg->Dynamic_multiplier = 1;
+  right_leg->Steady_multiplier = 1;
+  
   initialize_leg(right_leg);
 }

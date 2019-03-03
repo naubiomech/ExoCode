@@ -48,8 +48,9 @@ struct Leg {
   volatile double FSR_Toe_Steady_Balance_Baseline;
   volatile double FSR_Heel_Steady_Balance_Baseline;
 
-  volatile double COP_Toe_ratio,COP_Heel_ratio,COP_Foot_ratio;
+  volatile double COP_Toe_ratio, COP_Heel_ratio, COP_Foot_ratio;
 
+  double Dynamic_multiplier, Steady_multiplier;
 
   // Auto_KF.h
   double ERR;

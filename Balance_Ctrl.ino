@@ -177,8 +177,8 @@ double Balance_Torque_ref_based_on_Steady(Leg * leg) {
   //  Serial.print(" -> ");
   //  Serial.println(min(1, (leg->FSR_Toe_Average - leg->FSR_Toe_Steady_Balance_Baseline) / ( leg->FSR_Toe_Balance_Baseline - FSR_Toe_Steady_Balance_Baseline)) - min(1, (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline)));
 
-    leg->COP_Toe_ratio = (leg->FSR_Toe_Average - leg->FSR_Toe_Steady_Balance_Baseline) / ( leg->FSR_Toe_Balance_Baseline - leg->FSR_Toe_Steady_Balance_Baseline);
-    leg->COP_Heel_ratio = (leg->FSR_Heel_Average - leg->FSR_Heel_Steady_Balance_Baseline) / ( leg->FSR_Heel_Balance_Baseline - leg->FSR_Heel_Steady_Balance_Baseline);
+    leg->COP_Toe_ratio = (leg->FSR_Toe_Average - leg->FSR_Toe_Steady_Balance_Baseline*leg->Steady_multiplier) / ( leg->FSR_Toe_Balance_Baseline*leg->Dynamic_multiplier - leg->FSR_Toe_Steady_Balance_Baseline*leg->Steady_multiplier);
+    leg->COP_Heel_ratio = (leg->FSR_Heel_Average - leg->FSR_Heel_Steady_Balance_Baseline*leg->Steady_multiplier) / ( leg->FSR_Heel_Balance_Baseline*leg->Dynamic_multiplier - leg->FSR_Heel_Steady_Balance_Baseline*leg->Steady_multiplier);
   
 
     leg->COP_Foot_ratio = min(1, max(0, leg->COP_Toe_ratio)) - min(1, max(0, leg->COP_Heel_ratio));
