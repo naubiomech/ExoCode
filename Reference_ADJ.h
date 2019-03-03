@@ -21,7 +21,7 @@ void ref_step_adj(Leg* leg) {
 				if (millis() - leg->start_time >= step_time_length) { // if the transition from 3 to 1 lasted more than 0.3 sec it was a step
 					leg->num_3_steps += 1;
 
-					Serial.println(leg->coef_in_3_steps);
+					//Serial.println(leg->coef_in_3_steps);
 				}
 			}
 		}

@@ -8,7 +8,7 @@ void pid(Leg* leg, double input){
   {
     leg->torque_error_counter++;
     if (leg->torque_error_counter >= 10) {
-      leg->KF = 0;
+      //leg->KF = 0;
       double old_L_state_L = leg->state;
       leg->state = 9;
       send_data_message_wc();
@@ -21,12 +21,20 @@ void pid(Leg* leg, double input){
     }
 
   } else {
-    leg->torque_error_counter = 0;
+//    leg->torque_error_counter = 0;
+//    leg->KF = 1;
   }
   leg->Input = input;
   leg->pid.Compute_KF(leg->KF);
 //  Serial.print(" ZERO: ");
 //  Serial.print(leg->zero);
   leg->Vol = leg->Output + leg->zero; //need to map
+
+
+if (PWM_CONTROL){
+    leg->Vol = leg->Vol * 0.8 + 0.1 * 4096.0;
+  }
+
+  
   analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
 }

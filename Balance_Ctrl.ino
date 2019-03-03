@@ -25,11 +25,11 @@ void Steady_Balance_Baseline() {
     right_leg->FSR_Toe_Steady_Balance_Baseline /= count_steady_baseline;
     right_leg->FSR_Heel_Steady_Balance_Baseline /= count_steady_baseline;
     
-    Serial.println("Steady Balance Baseline");
-    Serial.println(left_leg->FSR_Toe_Steady_Balance_Baseline);
-    Serial.println(left_leg->FSR_Heel_Steady_Balance_Baseline);
-    Serial.println(right_leg->FSR_Toe_Steady_Balance_Baseline);
-    Serial.println(right_leg->FSR_Heel_Steady_Balance_Baseline);
+//    Serial.println("Steady Balance Baseline");
+//    Serial.println(left_leg->FSR_Toe_Steady_Balance_Baseline);
+//    Serial.println(left_leg->FSR_Heel_Steady_Balance_Baseline);
+//    Serial.println(right_leg->FSR_Toe_Steady_Balance_Baseline);
+//    Serial.println(right_leg->FSR_Heel_Steady_Balance_Baseline);
     FLAG_STEADY_BALANCE_BASELINE = 0;
 
   }
@@ -66,11 +66,11 @@ void Balance_Baseline() {
     //    left_leg->FSR_Heel_Balance_Baseline /= count_balance;
     //    right_leg->FSR_Toe_Balance_Baseline /= count_balance;
     //    right_leg->FSR_Heel_Balance_Baseline /= count_balance;
-    Serial.println("Dynamic Balance Baseline");
-    Serial.println(left_leg->FSR_Toe_Balance_Baseline);
-    Serial.println(left_leg->FSR_Heel_Balance_Baseline);
-    Serial.println(right_leg->FSR_Toe_Balance_Baseline);
-    Serial.println(right_leg->FSR_Heel_Balance_Baseline);
+//    Serial.println("Dynamic Balance Baseline");
+//    Serial.println(left_leg->FSR_Toe_Balance_Baseline);
+//    Serial.println(left_leg->FSR_Heel_Balance_Baseline);
+//    Serial.println(right_leg->FSR_Toe_Balance_Baseline);
+//    Serial.println(right_leg->FSR_Heel_Balance_Baseline);
     FLAG_BALANCE_BASELINE = 0;
 
   }
@@ -81,15 +81,15 @@ void Balance_Baseline() {
 //-----------------------------------------------------------
 double Balance_Torque_ref(Leg * leg) {
   // first balance control which is linear to the current level of force
-  Serial.print("[ ");
-  Serial.print(leg->FSR_Toe_Average);
-  Serial.print(", ");
-  Serial.print(leg->FSR_Toe_Balance_Baseline);
-  Serial.print("] ");
-  Serial.print(" ");
-  Serial.print((leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline) - (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline));
-  Serial.print(" -> ");
-  Serial.println(min(1, (leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline)) - min(1, (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline)));
+//  Serial.print("[ ");
+//  Serial.print(leg->FSR_Toe_Average);
+//  Serial.print(", ");
+//  Serial.print(leg->FSR_Toe_Balance_Baseline);
+//  Serial.print("] ");
+//  Serial.print(" ");
+//  Serial.print((leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline) - (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline));
+//  Serial.print(" -> ");
+//  Serial.println(min(1, (leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline)) - min(1, (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline)));
 
   return (min(1, (leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline)) - min(1, (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline))) * (leg->Prop_Gain) * (leg->Setpoint_Ankle);
 

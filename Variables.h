@@ -20,7 +20,7 @@ const unsigned int onoff = MOTOR_ENABLE_PIN;
 
 // Single board SQuare (big)
 //const unsigned int onoff = 17;                                             //whatever the zero value is for the PID analogwrite setup
-const unsigned int which_leg_pin = WHICH_LEG_PIN;
+//const unsigned int which_leg_pin = WHICH_LEG_PIN;
 
 //Includes the SoftwareSerial library to be able to use the bluetooth Serial Communication
 int bluetoothTx = 0;                                                 // TX-O pin of bluetooth mate, Teensy D0

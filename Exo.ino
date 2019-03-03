@@ -1,4 +1,4 @@
-// This is the code for the Single board Ankle Exoskeleton -> A_EXO_s
+//G:\Team Drives\Biomech_Lab\Giamma\A_EXO_Code\A_Exo_3_0_9\MATLAB// This is the code for the Single board Ankle Exoskeleton -> A_EXO_s
 //
 // FSR sensors retrieve the sensor voltage related to the foot pressure.
 // The state machine (Left and Right state machine) identify the participant status depending on the voltage.
@@ -85,7 +85,6 @@ void callback()//executed every 2ms
   // reset the motor drivers if you encounter an unexpected current peakz
   resetMotorIfError();
 
-
   // read FSR and torque values and calculate averages in case of necessity
   calculate_averages();
 
@@ -99,10 +98,14 @@ void callback()//executed every 2ms
   check_Balance_Baseline();
 
   // same of FSR but for biofeedback
-  if (left_leg->BIO_BASELINE_FLAG) {
-    BioFeedback_Baseline(left_leg);//just left leg for now
+//  if (left_leg->BIO_BASELINE_FLAG) {
+//    BioFeedback_Baseline(left_leg);//just left leg for now
+//  }
+  
+ if (right_leg->BIO_BASELINE_FLAG) {
+    BioFeedback_Baseline(right_leg);//just left leg for now
   }
-
+  
   // if flag auto reconnect BT is 1, activate the autoreconnect anche check the led voltage
   if (FLAG_AUTO_RECONNECT_BT) {
 //    LED_BT_Voltage = Check_LED_BT(LED_BT_PIN, LED_BT_Voltage, p_count_LED_reads);
@@ -110,16 +113,15 @@ void callback()//executed every 2ms
 
   // if flag biofeedback is 1 update the Frequency of the biofeedback
   if (FLAG_BIOFEEDBACK) {
-    if (left_leg->Frequency >= right_leg->Frequency) {
-      Freq = left_leg->Frequency;
-    } else {
+//    if (left_leg->Frequency >= right_leg->Frequency) {
+//      Freq = left_leg->Frequency;
+//    } else {
+//      Freq = right_leg->Frequency;
+//  }
       Freq = right_leg->Frequency;
-    }
-
-  }
-
+  
+ }//end if(Flag_biofeedback)
 }// end callback
-
 //----------------------------------------------------------------------------------
 // Function that is repeated in loop
 void loop()
@@ -151,10 +153,12 @@ void loop()
 //
 void biofeedback() {
 
-  if (left_leg->NO_Biofeedback || left_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
+//  if (left_leg->NO_Biofeedback || left_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
+    if (right_leg->NO_Biofeedback || right_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
   } else {
 
-    if (abs(left_leg->start_time_Biofeedback - millis()) >= Freq) {
+//    if (abs(left_leg->start_time_Biofeedback - millis()) >= Freq) {
+      if (abs(right_leg->start_time_Biofeedback - millis()) >= Freq) {
       //      Serial.println((left_leg->start_time_Biofeedback) - millis());
 
 
@@ -170,10 +174,11 @@ void biofeedback() {
 
 
 
-      left_leg->start_time_Biofeedback = millis();
+      right_leg->start_time_Biofeedback = millis();
+//      left_leg->start_time_Biofeedback = millis();
       tone(A17, 500, 100);
-      Serial.print(" Freq : ");
-      Serial.println(Freq);
+//      Serial.print(" Freq : ");
+//      Serial.println(Freq);
 
     }
   }
@@ -191,7 +196,7 @@ void resetMotorIfError() {
   motor_error = (left_leg->motor_error || right_leg->motor_error);
 
   if (left_leg->motor_error) {
-   left_leg->Time_error_counter++;
+    left_leg->Time_error_counter++;
   }
 
   if (right_leg->motor_error) {
@@ -239,6 +244,7 @@ void resetMotorIfError() {
   }//end stream==1
 }
 
+//----------------------------------------------------------------------------------
 
 void calculate_leg_average(Leg* leg) {
   //Calc the average value of Torque

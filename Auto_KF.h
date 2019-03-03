@@ -18,13 +18,13 @@ void Auto_KF(Leg* leg) {
 
     // Here we update the KF and then we disable the conditions that activate the if statement
 
-    Serial.print(" Ref ");
-    Serial.print(leg->Setpoint_Ankle * leg->coef_in_3_steps);
-    Serial.print(" , Max Torque measured ");
-    Serial.print(leg->Max_Measured_Torque);
+//    Serial.print(" Ref ");
+//    Serial.print(leg->Setpoint_Ankle * leg->coef_in_3_steps);
+//    Serial.print(" , Max Torque measured ");
+//    Serial.print(leg->Max_Measured_Torque);
     //    Serial.print(" , Coeff: ");
     //    Serial.print(leg->Max_Measured_Torque / (leg->Setpoint_Ankle * leg->coef_in_3_steps));
-    Serial.println(" ");
+//    Serial.println(" ");
 
 
     if (leg->Max_Measured_Torque * leg->Setpoint_Ankle * leg->coef_in_3_steps <= 0) {
@@ -46,8 +46,8 @@ void Auto_KF(Leg* leg) {
     // Now we have to be prepared for the next step and hence we have to reset the max measured torque variable
     leg->Max_Measured_Torque = 0;
 
-    Serial.print("Desired leg->KF ");
-    Serial.println(leg->KF);
+//    Serial.print("Desired leg->KF ");
+//    Serial.println(leg->KF);
 
     if (leg->KF >= leg->max_KF) {
       leg->KF = leg->max_KF;
@@ -57,8 +57,8 @@ void Auto_KF(Leg* leg) {
     }
     else {}
 
-    Serial.print("Actual leg->KF ");
-    Serial.println(leg->KF);
+//    Serial.print("Actual leg->KF ");
+//    Serial.println(leg->KF);
     leg->auto_KF_update = false; // to be able to do this cycle just once every step, i.e. during the whole state 1 I have to execute this cycle just once
   }// end of if state=1
 
