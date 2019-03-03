@@ -1,4 +1,4 @@
-//G:\Team Drives\Biomech_Lab\Giamma\A_EXO_Code\A_Exo_3_1_0\MATLAB// This is the code for the Single board Ankle Exoskeleton -> A_EXO_s
+//A_Exo 3_1_1 This is the code for the Single board Ankle Exoskeleton -> A_EXO_s
 //
 // FSR sensors retrieve the sensor voltage related to the foot pressure.
 // The state machine (Left and Right state machine) identify the participant status depending on the voltage.
@@ -40,6 +40,7 @@ const unsigned int zero = 2048;//1540;
 #include <Metro.h>
 #include "Variables.h"
 #include "Board.h"
+#include "resetMotorIfError.h"
 //----------------------------------------------------------------------------------
 
 
@@ -183,65 +184,6 @@ void biofeedback() {
     }
   }
   return;
-}
-
-//----------------------------------------------------------------------------------
-
-void resetMotorIfError() {
-
-  //motor_error true I have an error, false I haven't
-  left_leg->motor_error = (analogRead(left_leg->pin_err) <= 5);
-  right_leg->motor_error = (analogRead(right_leg->pin_err) <= 5);
-
-  motor_error = (left_leg->motor_error || right_leg->motor_error);
-
-  if (left_leg->motor_error) {
-    left_leg->Time_error_counter++;
-  }
-
-  if (right_leg->motor_error) {
-    right_leg->Time_error_counter++;
-  }
-
-
-  if (stream == 1) {
-
-    // if do not detect an error and the onoff pin is LOW set it HIGH
-    if (not(motor_error) && (digitalRead(onoff) == LOW)) {
-      digitalWrite(onoff, HIGH);
-    }
-
-    // if there's an error and I am not enabled to catch the errors, I am now enabled
-    if (motor_error && (flag_enable_catch_error == 0)) {
-      flag_enable_catch_error = 1;
-    }
-
-    // If I am able to detect an error means that an error exists. if it is just some random noise I do not change the motor state.
-    // otherwise I have a counter that considers a certain amount of time and reboot the motors and disable the capability of catching
-    // the error.
-    if (flag_enable_catch_error) {
-
-      if (time_err_motor == 0) {
-        digitalWrite(onoff, LOW);
-        time_err_motor_reboot = 0;
-      }
-
-      motor_driver_count_err++;
-      time_err_motor++;
-
-      //was time_err_motor >= 4
-      if (time_err_motor >= 8) {
-        digitalWrite(onoff, HIGH);
-        time_err_motor_reboot++;
-        if (time_err_motor_reboot >= 12) {
-          flag_enable_catch_error = 0;
-          time_err_motor = 0;
-        }
-      }
-
-    }// end if flag_enable_catch_error==1;
-
-  }//end stream==1
 }
 
 //----------------------------------------------------------------------------------
