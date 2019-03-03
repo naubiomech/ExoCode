@@ -29,6 +29,11 @@ void initialize_left_leg(Leg* left_leg) {
 
 
   initialize_leg(left_leg);
+
+  
+left_leg->whos = 'L';
+left_leg->Potentiometer_pin=A16;
+
 }
 
 void initialize_right_leg(Leg* right_leg) {
@@ -48,4 +53,7 @@ void initialize_right_leg(Leg* right_leg) {
   right_leg->Steady_multiplier = 1;
   
   initialize_leg(right_leg);
+
+  right_leg->whos = 'R';
+  right_leg->Potentiometer_pin=A17;
 }

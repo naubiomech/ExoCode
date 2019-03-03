@@ -115,22 +115,38 @@ void send_data_message_wc() //with COP
   //  bluetooth.print(',');
   //  bluetooth.print((right_leg->FSR_Heel_Average)); //SIG2
   //  bluetooth.print(',');
+  if (FLAG_BALANCE) {
+    bluetooth.print(left_leg->COP_Foot_ratio); //SIG1
+    bluetooth.print(',');
+    bluetooth.print(right_leg->COP_Foot_ratio); //SIG2
+    bluetooth.print(',');
+  } else if (FLAG_BIOFEEDBACK) {
+    //    (pot(leg->Potentiometer_pin) + leg->Biofeedback_bias)
+    bluetooth.print(pot(left_leg->Potentiometer_pin) + left_leg->Biofeedback_bias); //SIG1
+    bluetooth.print(',');
+    bluetooth.print(pot(right_leg->Potentiometer_pin) + right_leg->Biofeedback_bias); //SIG2
+    bluetooth.print(',');
 
-  bluetooth.print(left_leg->COP_Foot_ratio); //SIG1
-  bluetooth.print(',');
-  bluetooth.print(right_leg->COP_Foot_ratio); //SIG2
-  bluetooth.print(',');
-
-
-
+  }
+  else {
+    bluetooth.print((LED_BT_Voltage)); //SIG1
+    bluetooth.print(',');
+    bluetooth.print((right_leg->FSR_Heel_Average)); //SIG2
+    bluetooth.print(',');
+  }
   //    bluetooth.print(left_leg->FSR_Toe_Average); //SIG3
   //    bluetooth.print(',');
   //    bluetooth.print(right_leg->FSR_Toe_Average); //SIG4
-
-  bluetooth.print(left_leg->COP); //SIG3
-  bluetooth.print(',');
-  bluetooth.print(right_leg->COP); //SIG4
-
+  if (FLAG_BIOFEEDBACK) {
+    bluetooth.print(left_leg->Heel_Strike_baseline); //SIG3
+    bluetooth.print(',');
+    bluetooth.print(Freq); //SIG4
+  }
+  else {
+    bluetooth.print(left_leg->COP); //SIG3
+    bluetooth.print(',');
+    bluetooth.print(right_leg->COP); //SIG4
+  }
 
   //  bluetooth.print(counter_msgs); //SIG3
   //  bluetooth.print(',');

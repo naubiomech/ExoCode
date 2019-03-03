@@ -648,18 +648,16 @@ void receive_and_transmit()
     case 'B':
       // check baseline
 
-      if (FLAG_BALANCE == false) {
+      if (FLAG_BIOFEEDBACK == true) {
 
-        Serial.println("Check Baseline");
-        Serial.println(left_leg->p_steps->plant_peak_mean);
-        Serial.println(right_leg->p_steps->plant_peak_mean);
-        left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
-        right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
-        *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
-        *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
-        send_command_message('B', data_to_send_point, 2);
-      } else {
+        //QUI
+        Serial.println("Check Biofeedback Baseline");
+        Serial.println(left_leg->Heel_Strike_baseline);
+        *(data_to_send_point) = left_leg->Heel_Strike_baseline;
+        send_command_message('B', data_to_send_point, 1);
 
+      } else if (FLAG_BALANCE == true) {
+        Serial.println("Check Balance Baseline");
         //  volatile double FSR_Toe_Balance_Baseline;
         //  volatile double FSR_Heel_Balance_Baseline;
         //  volatile double FSR_Toe_Steady_Balance_Baseline;
@@ -676,7 +674,21 @@ void receive_and_transmit()
         *(data_to_send_point + 7) = right_leg->FSR_Heel_Balance_Baseline * right_leg->Dynamic_multiplier;
 
         send_command_message('B', data_to_send_point, 8);
+
       }
+      else {
+
+        Serial.println("Check Baseline");
+        Serial.println(left_leg->p_steps->plant_peak_mean);
+        Serial.println(right_leg->p_steps->plant_peak_mean);
+        left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
+        right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
+        *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
+        *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
+        send_command_message('B', data_to_send_point, 2);
+      }
+
+
       break;
 
     case 'b':
@@ -771,6 +783,63 @@ void receive_and_transmit()
       Serial.print(" , ");
       Serial.println(right_leg->Dynamic_multiplier);
       break;
+
+
+    case '/':
+      OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
+      FLAG_TWO_TOE_SENSORS = false;
+      FLAG_BIOFEEDBACK = true;
+      Serial.println(" Activate Audio BioFeedback ");
+      //      } else {
+      //        Serial.println(" Cannoct Activate Balance Ctrl ");
+      //      }
+      break;
+
+
+    case 'y':
+      FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
+      FLAG_BIOFEEDBACK = false;
+      Serial.println(" Deactivate Audio BioFeedback ");
+      break;
+
+
+    case 'u':
+      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      memcpy(&left_leg->BioFeedback_desired, &holdon, 8);
+      right_leg->BioFeedback_desired = left_leg->BioFeedback_desired;
+      Serial.print("Set desired both left and right : ");
+      Serial.println(left_leg->BioFeedback_desired);
+      break;
+
+    case '*':
+      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      memcpy(&left_leg->Biofeedback_bias, &holdon, 8);
+      right_leg->Biofeedback_bias = left_leg->Biofeedback_bias;
+      Serial.print("Set bias both left and right : ");
+      Serial.println(left_leg->Biofeedback_bias);
+      break;
+
+
+    case '%':
+
+      break;
+
+    case ':':
+          left_leg->BioFeedback_Baseline_flag = false;
+          right_leg->BioFeedback_Baseline_flag = false;
+      left_leg->BIO_BASELINE_FLAG = true;
+      right_leg->BIO_BASELINE_FLAG = true;
+      left_leg->Heel_Strike = 0;
+      right_leg->Heel_Strike = 0;
+      left_leg->Heel_Strike_Count = 0;
+      right_leg->Heel_Strike_Count = 0;
+      Serial.println(" BIOFEEDBACK BASELINE ");
+      break;
+
+
+    case ',':
+      break;
+
 
   }
   cmd_from_Gui = 0;

@@ -88,6 +88,9 @@ double FLAG_STEADY_BALANCE_BASELINE = 0;
 double count_balance = 0;
 double count_steady_baseline = 0;
 
+bool FLAG_BIOFEEDBACK = false;
+
+
 // BT autoreconnection
 bool FLAG_AUTO_RECONNECT_BT = false;
 bool flag_done_once_bt = false;
@@ -115,6 +118,13 @@ bool motor_error = false;
 
 // Variables for auto KF
 int flag_auto_KF = 0;
+
+volatile double Freq;
+double BioFeedback_Freq_max = 1000;
+double BioFeedback_Freq_min = 200;
+const unsigned int pin_jack = 13;
+unsigned int state = HIGH;
+
 
 //----------------------------------------------------------------------------------
 
@@ -168,8 +178,21 @@ void callback()//executed every 2ms
 
   check_Balance_Baseline();
 
+  if (left_leg->BIO_BASELINE_FLAG) {
+    BioFeedback_Baseline(left_leg);//just left leg for now
+  }
+
   if (FLAG_AUTO_RECONNECT_BT) {
     LED_BT_Voltage = Check_LED_BT(LED_BT_PIN, LED_BT_Voltage, p_count_LED_reads);
+  }
+
+  if (FLAG_BIOFEEDBACK) {
+    if (left_leg->Frequency >= right_leg->Frequency) {
+      Freq = left_leg->Frequency;
+    } else {
+      Freq = right_leg->Frequency;
+    }
+
   }
 
 }// end callback
@@ -190,6 +213,8 @@ void loop()
   }
 
 
+  biofeedback();
+
 
   if (stream != 1)
   {
@@ -197,7 +222,41 @@ void loop()
     flag_done_once_bt = false;
   }// End else
 }// end void loop
+//---------------------------------------------------------------------------------
 
+void biofeedback() {
+
+  if (left_leg->NO_Biofeedback || left_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
+  } else {
+    //    Serial.println((left_leg->start_time_Biofeedback) - millis());
+    if (abs(left_leg->start_time_Biofeedback - millis()) >= Freq) {
+      Serial.println((left_leg->start_time_Biofeedback) - millis());
+      state = digitalRead(LED_PIN);
+      if (state == HIGH) {
+        state = LOW;
+      } else {
+        state = HIGH;
+      }
+      digitalWrite(LED_PIN, state);
+      //        tone(pin_jack, 500, 100);
+      left_leg->start_time_Biofeedback = millis();
+
+//      analogWrite(A17, 5);
+      tone(A17, 500, 100);
+
+
+
+
+      //      if(state==5){state=0;}else{state=5;}
+      Serial.print(" Freq : ");
+      Serial.println(Freq);
+
+      //    } else {
+      //       analogWrite(pin_jack, LOW);
+    }
+  }
+  return;
+}
 
 //----------------------------------------------------------------------------------
 
@@ -450,7 +509,7 @@ void reset_starting_parameters() {
   //Reset the starting values
   reset_leg_starting_parameters(left_leg);
   reset_leg_starting_parameters(right_leg);
-  
+
   FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
 }
 
@@ -479,4 +538,8 @@ void reset_leg_starting_parameters(Leg* leg) {
 
   leg->first_step = 1;
   counter_msgs = 0;
+  //  leg->BIO_BASELINE_FLAG=false;
+  leg->Heel_Strike_Count = 0;
+  leg->Heel_Strike = 0;
+  leg->NO_Biofeedback = true;
 }

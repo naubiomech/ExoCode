@@ -163,6 +163,10 @@ struct Leg {
   int state_old = 1;
   int state_count_13 = 0;
   int state_count_31 = 0;
+  int state_count_12 = 0;
+  int state_count_21 = 0;
+  int state_count_23 = 0;
+  int state_count_32 = 0;
 
   double state_3_start_time = 0;
   double state_1_start_time = 0;
@@ -174,7 +178,30 @@ struct Leg {
   double Toe_Pos = 0.20;
   double COP = 0;
 
+  //BIOFEEDBACK
+  bool BioFeedback_Baseline_flag = false;
+  double Heel_Strike;
+  double Heel_Strike_Count, Heel_Strike_baseline;
+  double Heel_Strike_mean;
+  double n_step_biofeedback = 1;
+  double n_step_biofeedback_base = 4;
+  unsigned int Potentiometer_pin;
+  double Biofeedback_bias;
+  double BioFeedback_desired;
+  double Frequency;
+  double Err_max;
+  double min_knee_error = 5;
+  double Biofeedback_ctrl_max;
+  double Biofeedback_Volume = 0;
+
+  bool BIO_BASELINE_FLAG = false;
+  bool NO_Biofeedback = true;
+  double start_time_Biofeedback;
+
+  char whos = ' ';
+
   double zero;
+  double torque_error_counter = 0;
 
   // Torque_Speed_ADJ.h
   //steps steps;
@@ -190,4 +217,6 @@ Leg* right_leg = &right_leg_value;
 void initialize_leg(Leg* leg);
 void initialize_left_leg(Leg* left_leg);
 void initialize_right_leg(Leg* right_leg);
+
+
 #endif
