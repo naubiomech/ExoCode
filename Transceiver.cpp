@@ -83,6 +83,4 @@ void MatlabTransceiver::sendData(double* data, int doubles_to_send){
 }
 
 void MatlabTransceiver::sendFooter(){
-  serial->write('Z');
-  serial->println();
 }
