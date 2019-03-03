@@ -43,11 +43,16 @@ struct Leg {
   volatile bool motor_error = false;
   volatile int Time_error_counter;
 
+  volatile double FSR_Toe_Balance_Baseline;
+  volatile double FSR_Heel_Balance_Baseline;
+
   // Auto_KF.h
   double ERR;
-  double max_KF;
-  double min_KF;
+  double Max_Measured_Torque;
+  double max_KF=1.5;
+  double min_KF=0.9;
   int count_err;
+  bool auto_KF_update = true;
 
   // Calibrate_and_Read_Sensors.h
   double FSR_Ratio;
@@ -85,18 +90,13 @@ struct Leg {
   double torque_calibration_value = 0;
   double T_act;
   int Vol;
-
-  double kp_ankle = 1000;
-  double ki_ankle = 0;
-  double kd_ankle = 0;
-  double kp_balance = 60;
-  double ki_balance = 0;
-  double kd_balance = 20;
+  double kp = 700;
+  double ki = 0;
+  double kd = 3;
   double KF = 1;
 
   double PID_Setpoint, Input, Output;
-  PID ankle_pid = PID(&Input, &Output, &PID_Setpoint, kp_ankle, ki_ankle, kd_ankle, DIRECT);
-  PID balance_pid = PID(&Input, &Output, &PID_Setpoint, kp_balance, ki_balance, kd_balance, DIRECT);
+  PID pid = PID(&Input, &Output, &PID_Setpoint, kp, ki, kd, DIRECT);
 
   double Setpoint_Ankle, Setpoint_Ankle_Pctrl;
   double Previous_Setpoint_Ankle = 0;
@@ -157,12 +157,6 @@ struct Leg {
   int state_old = 1;
   int state_count_13 = 0;
   int state_count_31 = 0;
-  int state_count_12 = 0;
-  int state_count_21 = 0;
-  int state_count_23 = 0;
-  int state_count_32 = 0;
-
-
 
   double state_3_start_time = 0;
   double state_1_start_time = 0;
@@ -177,6 +171,11 @@ struct Leg {
   steps* p_steps;
 
 };
+
+Leg left_leg_value = Leg();
+Leg right_leg_value = Leg();
+Leg* left_leg = &left_leg_value;
+Leg* right_leg = &right_leg_value;
 
 void initialize_leg(Leg* leg);
 void initialize_left_leg(Leg* left_leg);

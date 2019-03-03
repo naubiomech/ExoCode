@@ -1,4 +1,3 @@
-#include "Read_and_write_EEPROM.h"
 // Functions to check the memory values and to read them
 
 int check_torque_bias(int address_torque_l)
@@ -27,7 +26,7 @@ double read_torque_bias(int address_torque_l)
   double val_t = 0;
   byte array_values[8];
   byte* p_array = array_values;
-  for (unsigned int i = 0; i < sizeof(double); i++)
+  for (int i = 0; i < sizeof(double); i++)
   {
     *(p_array + i) = EEPROM.read(address_torque_l + i);
   }
@@ -37,7 +36,7 @@ double read_torque_bias(int address_torque_l)
 
 int clean_torque_bias(int address_torque_l)
 {
-  for ( unsigned int i = address_torque_l ; i < (sizeof(double) + sizeof(char) + address_torque_l) ; i++ )
+  for ( int i = address_torque_l ; i < (sizeof(double) + sizeof(char) + address_torque_l) ; i++ )
   {
     EEPROM.write(i, 0);
   }
@@ -70,7 +69,7 @@ double read_FSR_values(int address_FSR_l)
   double val_t = 0;
   byte array_values[8];
   byte* p_array = array_values;
-  for (unsigned int i = 0; i < sizeof(double); i++)
+  for (int i = 0; i < sizeof(double); i++)
   {
     *(p_array + i) = EEPROM.read(address_FSR_l + i);
   }
@@ -80,7 +79,7 @@ double read_FSR_values(int address_FSR_l)
 
 int clean_FSR_values(int address_FSR_l)
 {
-  for ( unsigned int i = address_FSR_l ; i < (sizeof(double) + sizeof(char) + address_FSR_l) ; i++ )
+  for ( int i = address_FSR_l ; i < (sizeof(double) + sizeof(char) + address_FSR_l) ; i++ )
   {
     EEPROM.write(i, 0);
   }
@@ -111,17 +110,17 @@ int write_EXP_parameters(int address_params_l)
   EEPROM.put(address_params_l, N3);
   address_params_l += 8;
   Serial.println(N3);
-  EEPROM.put(address_params_l, left_leg->kp_ankle);
+  EEPROM.put(address_params_l, left_leg->kp);
   address_params_l += 8;
-  EEPROM.put(address_params_l, left_leg->kd_ankle);
+  EEPROM.put(address_params_l, left_leg->kd);
   address_params_l += 8;
-  EEPROM.put(address_params_l, left_leg->ki_ankle);
+  EEPROM.put(address_params_l, left_leg->ki);
   address_params_l += 8;
-  EEPROM.put(address_params_l, right_leg->kp_ankle);
+  EEPROM.put(address_params_l, right_leg->kp);
   address_params_l += 8;
-  EEPROM.put(address_params_l, right_leg->kd_ankle);
+  EEPROM.put(address_params_l, right_leg->kd);
   address_params_l += 8;
-  EEPROM.put(address_params_l, right_leg->ki_ankle);
+  EEPROM.put(address_params_l, right_leg->ki);
   address_params_l += 8;
   EEPROM.put(address_params_l, left_leg->fsr_percent_thresh_Toe);
   address_params_l += 8;
@@ -152,7 +151,7 @@ double read_param(int address_l)
   double val_t = 0;
   byte array_values[8];
   byte* p_array = array_values;
-  for (unsigned int i = 0; i < sizeof(double); i++)
+  for (int i = 0; i < sizeof(double); i++)
   {
     *(p_array + i) = EEPROM.read(address_l + i);
   }
@@ -181,18 +180,18 @@ int read_all_params(int address_params_l) {
   right_leg->N2 = N2;
   right_leg->N3 = N3;
 
-  left_leg->kp_ankle = read_param(address_params_l);
+  left_leg->kp = read_param(address_params_l);
   address_params_l += 8;
-  left_leg->kd_ankle = read_param(address_params_l);
+  left_leg->kd = read_param(address_params_l);
   address_params_l += 8;
-  left_leg->ki_ankle = read_param(address_params_l);
+  left_leg->ki = read_param(address_params_l);
   address_params_l += 8;
 
-  right_leg->kp_ankle = read_param(address_params_l);
+  right_leg->kp = read_param(address_params_l);
   address_params_l += 8;
-  right_leg->kd_ankle = read_param(address_params_l);
+  right_leg->kd = read_param(address_params_l);
   address_params_l += 8;
-  right_leg->ki_ankle = read_param(address_params_l);
+  right_leg->ki = read_param(address_params_l);
   address_params_l += 8;
 
   left_leg->fsr_percent_thresh_Toe = read_param(address_params_l);
@@ -208,7 +207,7 @@ int read_all_params(int address_params_l) {
 
 int clean_EXP_Parameters(int address_params_l)
 {
-  for ( unsigned int i = address_params_l ; i < (sizeof(double) * 13 + sizeof(char) + address_params_l) ; i++ )
+  for ( int i = address_params_l ; i < (sizeof(double) * 13 + sizeof(char) + address_params_l) ; i++ )
   {
     EEPROM.write(i, 0);
   }
@@ -230,7 +229,7 @@ double read_baseline(int address_baseline_l)
   double val_t = 0;
   byte array_values[8];
   byte* p_array = array_values;
-  for (unsigned int i = 0; i < sizeof(double); i++)
+  for (int i = 0; i < sizeof(double); i++)
   {
     *(p_array + i) = EEPROM.read(address_baseline_l + i);
   }

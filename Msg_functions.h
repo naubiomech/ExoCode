@@ -1,6 +1,3 @@
-#ifndef MSG_FUNCTIONS_HEADER
-#define MSG_FUNCTIONS_HEADER
-
 typedef struct {
   char msg_array[75];
   char *p_msg_array = &msg_array[0];
@@ -11,7 +8,10 @@ typedef struct {
   int N_double;
 } msg;
 
-void send_data_message_wc(); //with COP
-void send_command_message(char command_char, double* data_point, int number_to_send);
+msg val_msg_send;
+msg val_msg_receive;
+msg* p_msg_send = &val_msg_send;
+msg* p_msg_receive = &val_msg_receive;
 
-#endif
+double data_to_send[8];
+double *data_to_send_point = &data_to_send[0];

@@ -1,4 +1,3 @@
-#include "Steady_State.h"
 // If the participant keeps the state more than 3 seconds, the torque reference is set to 0
 
 

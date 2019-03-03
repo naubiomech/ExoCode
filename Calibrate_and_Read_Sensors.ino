@@ -1,5 +1,4 @@
 // Calibrate the torque sensors, FSR sensors and get the torque and FSR voltage
-#include "Calibrate_and_Read_Sensors.h"
 
 void torque_calibration()
 {
@@ -30,7 +29,7 @@ void FSR_calibration()
   if (FSR_FIRST_Cycle) {
     FSR_FIRST_Cycle = 0;
 
-    fsrCalibrationStartTime = millis();
+    startTime = millis();
     Serial.println("First time");
     right_leg->Curr_Combined = 0;
     left_leg->Curr_Combined = 0;
@@ -44,7 +43,7 @@ void FSR_calibration()
   }
 
 
-  if (millis() - fsrCalibrationStartTime < 5000)
+  if (millis() - startTime < 5000)
   {
     left_leg->Curr_Toe = fsr(left_leg->fsr_sense_Toe);
     right_leg->Curr_Toe = fsr(right_leg->fsr_sense_Toe);

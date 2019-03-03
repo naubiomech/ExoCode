@@ -1,5 +1,3 @@
-#include "receiveVals.h"
-
 void receiveVals(int bytesExpected)
 {
   int k = 0;

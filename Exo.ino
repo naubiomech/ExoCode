@@ -24,8 +24,9 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
-#define IMU_BOARD
+#define TWO_LEG_BOARD
 //The digital pin connected to the motor on/off swich
+const unsigned int zero = 2048;//1540;
 
 #include "Parameters.h"
 #include "Board.h"
@@ -34,33 +35,84 @@
 #include <EEPROM.h>
 #include "TimerOne.h"
 #include <PID_v2.h>
+#include <SoftwareSerial.h>
+//#include <NewSoftSerial.h>
 #include "Reference_ADJ.h"
 #include "Msg_functions.h"
+#include "Proportional_Ctrl.h"
 #include "Auto_KF.h"
-#include "IMU.h"
-#include "System.h"
+#include "Combined_FSR.h"
+#include <Metro.h> // Include the Metro library
+
+
+Metro slowThisDown = Metro(1);  // Set the function to be called at no faster a rate than once per millisecond
+
+//To interrupt and to schedule we take advantage of the
+elapsedMillis timeElapsed;
+double startTime = 0;
+int streamTimerCount = 0;
+
+int stream = 0;
+
+char holdon[24];
+char *holdOnPoint = &holdon[0];
+char Peek = 'a';
+int cmd_from_Gui = 0;
+
+// Single board small
+const unsigned int onoff = MOTOR_ENABLE_PIN;
+
+// Single board SQuare (big)
+//const unsigned int onoff = 17;                                             //whatever the zero value is for the PID analogwrite setup
+const unsigned int which_leg_pin = WHICH_LEG_PIN;
 
 //Includes the SoftwareSerial library to be able to use the bluetooth Serial Communication
+int bluetoothTx = 0;                                                 // TX-O pin of bluetooth mate, Teensy D0
+int bluetoothRx = 1;                                                 // RX-I pin of bluetooth mate, Teensy D1
+SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an object named bluetooth to act as a serial port
 
 
 
 bool FLAG_PRINT_TORQUES = false;
-bool FLAG_PID_VALS = true;
-bool FLAG_TWO_TOE_SENSORS = false;
+bool FLAG_PID_VALS = false;
+bool FLAG_TWO_TOE_SENSORS = true;
+bool OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
 
+bool FLAG_BALANCE = false;
+double FLAG_BALANCE_BASELINE = 0;
+double count_balance = 0;
+
+int counter_msgs = 0;
 
 void setup()
 {
+  // set the interrupt
+  Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
+  Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
+  Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
+  //  Timer2.initialize(2000);
 
-  setupBoard();
+  //  Timer2.initialize(2000);
 
-  setupIMU(&bno);
+  // enable bluetooth
+  bluetooth.begin(115200);
+  Serial.begin(115200);
+  //while (!Serial) {};
 
   analogWriteResolution(12);                                          //change resolution to 12 bits
   analogReadResolution(12);                                           //ditto
 
   initialize_left_leg(left_leg);
   initialize_right_leg(right_leg);
+
+  torque_calibration();
+
+  // The led
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
+  // set pin mode for left and right sides
+  pinMode(onoff, OUTPUT); //Enable disable the motors
+  digitalWrite(onoff, LOW);
 
   // Fast torque calibration
   torque_calibration();
@@ -69,12 +121,34 @@ void setup()
   //  right_leg->p_FSR_Array = &right_leg->FSR_Average_array[0];
   digitalWrite(LED_PIN, HIGH);
 
-  // set the interrupt
-  Timer1.initialize(2000);         // initialize timer1, and set a 10 ms period *note this is 10k microseconds*
-  Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
-  Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
-
 }
+
+
+int Trq_time_volt = 0; // 1 for time 0 for volt 2 for proportional gain 3 for pivot proportional control
+int Old_Trq_time_volt = Trq_time_volt;
+int flag_13 = 1;
+int flag_count = 0;
+
+int flag_semaphore = 0;
+
+volatile double motor_driver_count_err;
+
+double start_time_callback, start_time_timer;
+
+int time_err_motor;
+int time_err_motor_reboot;
+
+int flag_enable_catch_error = 1;
+
+bool motor_error = false;
+bool flag_done_once_bt = false;
+int flag_auto_KF = 0;
+
+const unsigned int LED_BT_PIN = A11;
+double LED_BT_Voltage;
+int count_LED_reads;
+int *p_count_LED_reads = &count_LED_reads;
+
 
 void callback()//executed every 2ms
 {
@@ -86,6 +160,19 @@ void callback()//executed every 2ms
   check_FSR_calibration();
 
   rotate_motor();
+
+  check_Balance_Baseline();
+
+  //
+  //  Serial.print("################################# ANALOG READ GREEN LED ->  ");
+  //  Serial.println(analogRead(A11) * 3.3 / 4096);
+  //  Serial.println(stream);
+
+
+  //    if (stream == 1){
+  //    }// end stream==1
+
+  LED_BT_Voltage=Check_LED_BT(LED_BT_PIN, LED_BT_Voltage, p_count_LED_reads);
 
 }// end callback
 
@@ -103,14 +190,12 @@ void loop()
     slowThisDown.reset();     //Resets the interval
   }
 
-  if (BnoControl.check()) {
-    updateIMU(&bno);
-    BnoControl.reset();
-  }
+
 
   if (stream != 1)
   {
     reset_starting_parameters();
+    flag_done_once_bt = false;
   }// End else
 }
 
@@ -119,7 +204,7 @@ void resetMotorIfError() {
   left_leg->motor_error = (analogRead(left_leg->pin_err) <= 5);
   right_leg->motor_error = (analogRead(right_leg->pin_err) <= 5);
 
-  bool motor_error = (left_leg->motor_error || right_leg->motor_error);
+  motor_error = (left_leg->motor_error || right_leg->motor_error);
 
   if (left_leg->motor_error) {
     left_leg->Time_error_counter++;
@@ -132,8 +217,8 @@ void resetMotorIfError() {
 
   if (stream == 1) {
 
-    if (not(motor_error) && (digitalRead(MOTOR_ENABLE_PIN) == LOW)) {
-      digitalWrite(MOTOR_ENABLE_PIN, HIGH);
+    if (not(motor_error) && (digitalRead(onoff) == LOW)) {
+      digitalWrite(onoff, HIGH);
     }
 
     if (motor_error && (flag_enable_catch_error == 0)) {
@@ -142,7 +227,7 @@ void resetMotorIfError() {
 
     if (flag_enable_catch_error) {
       if (time_err_motor == 0) {
-        digitalWrite(MOTOR_ENABLE_PIN, LOW);
+        digitalWrite(onoff, LOW);
         time_err_motor_reboot = 0;
       }
 
@@ -151,7 +236,7 @@ void resetMotorIfError() {
 
       //was time_err_motor >= 4
       if (time_err_motor >= 8) {
-        digitalWrite(MOTOR_ENABLE_PIN, HIGH);
+        digitalWrite(onoff, HIGH);
         time_err_motor_reboot++;
         if (time_err_motor_reboot >= 12) {
           flag_enable_catch_error = 0;
@@ -243,6 +328,13 @@ void check_FSR_calibration() {
 
 }
 
+void check_Balance_Baseline() {
+  if (FLAG_BALANCE_BASELINE) {
+    Balance_Baseline();
+  }
+
+}
+
 void rotate_motor() {
 
 
@@ -273,20 +365,24 @@ void rotate_motor() {
   {
     if (streamTimerCount >= 5)
     {
+      //            if ( analogRead(A11) * 3.3 / 4096 > 2.5) {
+      //      if(analogRead(A11) * 3.3 / 4096 > 2.5 && flag_done_once_bt == false){
+      counter_msgs++;
       send_data_message_wc();
+      //            }
       streamTimerCount = 0;
     }
 
-    if (streamTimerCount == 1 && flag_auto_KF == 1)
-      Auto_KF();
+    if (streamTimerCount == 1 && flag_auto_KF == 1) {
+      Auto_KF(left_leg);
+      Auto_KF(right_leg);
+    }
+
 
     streamTimerCount++;
 
-    stability_trq = euler.z() - 90;
-    stability_trq *= stability_trq_gain;
-
-    pid(left_leg, left_leg->Average_Trq, -stability_trq);
-    pid(right_leg, right_leg->Average_Trq, stability_trq);
+    pid(left_leg, left_leg->Average_Trq);
+    pid(right_leg, right_leg->Average_Trq);
 
 
     // modification to check the pid
@@ -313,23 +409,30 @@ void rotate_motor() {
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
 
-    set_2_zero_if_steady_state();
+    if (Trq_time_volt == 2) {}
+    else {
+      set_2_zero_if_steady_state();
+    }
 
-    left_leg->N3 = Ctrl_ADJ(left_leg->state, left_leg->state_old, left_leg->p_steps,
+    left_leg->N3 = Ctrl_ADJ(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
                             left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle,
                             left_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, left_leg->Prop_Gain,
                             left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->Max_FSR_Ratio);
-    right_leg->N3 = Ctrl_ADJ(right_leg->state, right_leg->state_old, right_leg->p_steps,
+    right_leg->N3 = Ctrl_ADJ(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps,
                              right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle,
                              right_leg->p_Setpoint_Ankle_Pctrl, Trq_time_volt, right_leg->Prop_Gain,
                              right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio);
-  }
+  }// end if stream==1
 }
 
 void reset_starting_parameters() {
   //Reset the starting values
   reset_leg_starting_parameters(left_leg);
   reset_leg_starting_parameters(right_leg);
+
+
+  //  FLAG_TWO_TOE_SENSORS = false;
+  FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
 }
 
 void reset_leg_starting_parameters(Leg* leg) {
@@ -353,4 +456,5 @@ void reset_leg_starting_parameters(Leg* leg) {
   leg->num_3_steps = 0;
 
   leg->first_step = 1;
+  counter_msgs = 0;
 }
