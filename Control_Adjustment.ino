@@ -225,29 +225,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
       return N3_l; // No modification in the shaping function which is disabled
     }
-    //    } else if (Control_Mode_l == 1) {
-    //
-    //
-    //      Serial.print(" Ratios : ");
-    //      Serial.print(*p_FSR_Ratio);
-    //      Serial.print(" , ");
-    //      Serial.print((*p_Max_FSR_Ratio));
-    //      Serial.println();
-    //
-    //      if ((p_steps_l->Setpoint ) > 0) {
-    //        *p_Setpoint_Ankle_l = max(Min_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow((*p_Max_FSR_Ratio), 2) + p_prop[1] * (*p_Max_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
-    //        *p_Setpoint_Ankle_l = min(Max_Prop, *p_Setpoint_Ankle_l);
-    //      }
-    //      else if ((p_steps_l->Setpoint ) < 0) {
-    //        *p_Setpoint_Ankle_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow((*p_Max_FSR_Ratio), 2) + p_prop[1] * (*p_Max_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
-    //        *p_Setpoint_Ankle_l = min(Min_Prop, *p_Setpoint_Ankle_l);
-    //      } else {
-    //        *p_Setpoint_Ankle_l = 0;
-    //      }
-    //      return 1;
-    //
-    //
-    //    }
+   
 
     // Otherwise we need to calculate the time
 
@@ -269,56 +247,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     }
 
 
-    //    // Torque adaption as a function of the speed or of the pressure force
-    //    // If you want to adjust the torque and hence torque_adj = 1
-    //    //-----------------add 11:49 6/19/18
-    //    if (p_steps_l->torque_adj)
-    //    {
-    //      if (p_steps_l->plant_time <= step_time_length)
-    //      {
-    //        p_steps_l->peak = 0;
-    //        p_steps_l->flag_start_plant = false;
-    //        Serial.println(" TRQ ADJ plant time too short ");
-    //        return N3_l;
-    //      }
-    //
-    //
-    //      // if you use plantar time as reference to increase the torque
-    //      if (Control_Mode_l == 0)
-    //      {
-    //        if (p_steps_l->flag_start_plant == true) {
-    //          // if you're going use the time as reference to increase also the torque
-    //
-    //          if ((p_steps_l->Setpoint ) > 0) {
-    //            *p_Setpoint_Ankle_l = max(Min_Prop, (p_steps_l->Setpoint ) * (1 / (fabs(p_steps_l->plant_mean / p_steps_l->plant_mean_base))));
-    //            *p_Setpoint_Ankle_l = min(Max_Prop, *p_Setpoint_Ankle_l);
-    //          }
-    //          else if ((p_steps_l->Setpoint ) < 0) {
-    //            *p_Setpoint_Ankle_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (1 / (fabs(p_steps_l->plant_mean / p_steps_l->plant_mean_base))));
-    //            *p_Setpoint_Ankle_l = min(Min_Prop, *p_Setpoint_Ankle_l);
-    //          } else {
-    //            *p_Setpoint_Ankle_Pctrl_l = 0;
-    //          }
-    //        }
-    //      } else if (Control_Mode_l == 1) // If you use the volt or force value returned by the FSR sensors
-    //      {
-    //        if (p_steps_l->flag_start_plant = true) {
-    //          *p_Setpoint_Ankle_l = (p_steps_l->Setpoint ) * (fabs(p_steps_l->peak / p_steps_l->plant_peak_mean));
-    //
-    //          if ((p_steps_l->Setpoint ) > 0) {
-    //            *p_Setpoint_Ankle_l = max(Min_Prop, (p_steps_l->Setpoint ) * (fabs(p_steps_l->peak / p_steps_l->plant_peak_mean)));
-    //            *p_Setpoint_Ankle_l = min(Max_Prop, *p_Setpoint_Ankle_l);
-    //          }
-    //          else if ((p_steps_l->Setpoint ) < 0) {
-    //            *p_Setpoint_Ankle_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (fabs(p_steps_l->peak / p_steps_l->plant_peak_mean)));
-    //            *p_Setpoint_Ankle_l = min(Min_Prop, *p_Setpoint_Ankle_l);
-    //          } else {
-    //            *p_Setpoint_Ankle_Pctrl_l = 0;
-    //          }
-    //
-    //        }
-    //      }
-    //    }// end torque adj
+  
 
   }// end if you enter in state 3 from state 2 or 1
 
