@@ -220,6 +220,12 @@ void SetSmoothingParamsTransmission::processData(ExoMessageBuilder* builder, Exo
     addCommand(new SetJointSmoothingParamCommand(LATE_STANCE, receive_data[2]));
 }
 
+CheckMemoryTransmission::CheckMemoryTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CHECK_MEMORY, 0, 3){}
+void CheckMemoryTransmission::processData(ExoMessageBuilder*, ExoReport* report){
+  send_data[0] = 2;
+  send_data[1] = 2;
+  send_data[2] = 2;
+}
 
 Transmission* TransmissionFactory::create(Transceiver* trans, CommandCode code){
   switch (code) {
@@ -269,6 +275,8 @@ Transmission* TransmissionFactory::create(Transceiver* trans, CommandCode code){
     return new GetSmoothingParamsTransmission(trans);
   case COMM_CODE_SET_SMOOTHING_PARAMS:
     return new SetSmoothingParamsTransmission(trans);
+  case COMM_CODE_CHECK_MEMORY:
+	return new CheckMemoryTransmission(trans);
   default:
     Serial.print("Command code not implemented: ");
     Serial.println(code);

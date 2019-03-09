@@ -193,6 +193,12 @@ private:
 	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
+class CheckMemoryTransmission:public Transmission{
+public:
+	CheckMemoryTransmission(Transceiver* transceiver);
+private:
+	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+};
 
 
 class TransmissionFactory{
