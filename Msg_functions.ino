@@ -58,7 +58,7 @@ void send_command_message(char command_char, double* data_to_send, int number_to
 {
   bluetooth.write('S');
   bluetooth.write(command_char);
-  bluetooth.write(number_to_send);
+  bluetooth.write((char) number_to_send);
   float f = 0;
   char* trans = (char*) &f;
   for (int message_iterator = 0; message_iterator < number_to_send; message_iterator++)
