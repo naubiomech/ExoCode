@@ -83,3 +83,5 @@ unsigned int state = HIGH;
 
 // Variables for Human-in-the-Loop Optimization (HLO)
 bool Flag_HLO = false;
+
+bool flag_motor_error_check = true;
