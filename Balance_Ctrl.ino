@@ -25,11 +25,6 @@ void Steady_Balance_Baseline() {
     right_leg->FSR_Toe_Steady_Balance_Baseline /= count_steady_baseline;
     right_leg->FSR_Heel_Steady_Balance_Baseline /= count_steady_baseline;
 
-    //    Serial.println("Steady Balance Baseline");
-    //    Serial.println(left_leg->FSR_Toe_Steady_Balance_Baseline);
-    //    Serial.println(left_leg->FSR_Heel_Steady_Balance_Baseline);
-    //    Serial.println(right_leg->FSR_Toe_Steady_Balance_Baseline);
-    //    Serial.println(right_leg->FSR_Heel_Steady_Balance_Baseline);
     FLAG_STEADY_BALANCE_BASELINE = 0;
 
   }
@@ -58,19 +53,8 @@ void Balance_Baseline() {
 
     if (right_leg->FSR_Heel_Balance_Baseline <= fsr(right_leg->fsr_sense_Heel))
       right_leg->FSR_Heel_Balance_Baseline = fsr(right_leg->fsr_sense_Heel);
-    //
-    //    count_balance++;
   } else {
 
-    //    left_leg->FSR_Toe_Balance_Baseline /= count_balance;
-    //    left_leg->FSR_Heel_Balance_Baseline /= count_balance;
-    //    right_leg->FSR_Toe_Balance_Baseline /= count_balance;
-    //    right_leg->FSR_Heel_Balance_Baseline /= count_balance;
-    //    Serial.println("Dynamic Balance Baseline");
-    //    Serial.println(left_leg->FSR_Toe_Balance_Baseline);
-    //    Serial.println(left_leg->FSR_Heel_Balance_Baseline);
-    //    Serial.println(right_leg->FSR_Toe_Balance_Baseline);
-    //    Serial.println(right_leg->FSR_Heel_Balance_Baseline);
     FLAG_BALANCE_BASELINE = 0;
 
   }
@@ -81,15 +65,6 @@ void Balance_Baseline() {
 //-----------------------------------------------------------
 double Balance_Torque_ref(Leg * leg) {
   // first balance control which is linear to the current level of force
-  //  Serial.print("[ ");
-  //  Serial.print(leg->FSR_Toe_Average);
-  //  Serial.print(", ");
-  //  Serial.print(leg->FSR_Toe_Balance_Baseline);
-  //  Serial.print("] ");
-  //  Serial.print(" ");
-  //  Serial.print((leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline) - (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline));
-  //  Serial.print(" -> ");
-  //  Serial.println(min(1, (leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline)) - min(1, (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline)));
 
   return (min(1, (leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline)) - min(1, (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline))) * (leg->Prop_Gain) * (leg->Setpoint_Ankle);
 
@@ -100,16 +75,6 @@ double Balance_Torque_ref(Leg * leg) {
 
 double Balance_Torque_ref_based_on_Steady(Leg * leg) {
   // balance control which depends on the steady and dynamic baseline.
-
-  //  Serial.print("[ ");
-  //  Serial.print(leg->FSR_Toe_Average);
-  //  Serial.print(", ");
-  //  Serial.print(leg->FSR_Toe_Balance_Baseline);
-  //  Serial.print("] ");
-  //  Serial.print(" ");
-  //  Serial.print((leg->FSR_Toe_Average / leg->FSR_Toe_Balance_Baseline) - (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline));
-  //  Serial.print(" -> ");
-  //  Serial.println(min(1, (leg->FSR_Toe_Average - leg->FSR_Toe_Steady_Balance_Baseline) / ( leg->FSR_Toe_Balance_Baseline - FSR_Toe_Steady_Balance_Baseline)) - min(1, (leg->FSR_Heel_Average / leg->FSR_Heel_Balance_Baseline)));
 
   // Steady_multiplier Dynamic_multiplier to increase or decrease the sentitivitiness of the control to the baseline, it works as a gain that allows to engage the max torque earlier or later.
   // in other words change the reference dimension of the estimated convex hull

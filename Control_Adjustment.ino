@@ -21,11 +21,9 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
       {
         p_steps_l->peak = 0;
         p_steps_l->flag_start_plant = false;
-        //        Serial.println(" BASE Dorsi too short");
         return 0;
       } else {
         p_steps_l->flag_start_plant = true; // Parameters inizialized Start a step
-        //        Serial.println(" BASE Start Plantar");
       }
     }
   }
@@ -37,7 +35,6 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
     // if you transit from 3 to 1 plantar flexion is completed and start dorsiflexion
 
     if ((R_state_old_l == 3) && (R_state_l == 1 || R_state_l == 2)) {
-      //      Serial.println(" BASE Start Dorsi");
 
       // start dorsiflexion
 
@@ -48,21 +45,16 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
       if (p_steps_l->plant_time <= step_time_length)
       {
         p_steps_l->flag_start_plant = false;
-        //        Serial.println("BASE Plant too short"); // it means is a glitch not a real step
         return 0;
       } else {
         p_steps_l->flag_start_plant = false; // you have provided one plant
-        //        Serial.println("Increase Plant number");
         p_steps_l->count_plant_base++; // you have accomplished a step
-        //        Serial.println(p_steps_l->count_plant_base);
       }
 
-      //      Serial.print(" BASE Plant Time = ");
-      //      Serial.println(p_steps_l->plant_time);
 
       if ((p_steps_l->count_plant_base) >= 2) { // avoid the first step just to be sure
 
-        //        // this is the time window of the filter for the dorsiflexion
+        // this is the time window of the filter for the dorsiflexion
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
 
           p_steps_l->dorsi_mean = 0;
@@ -96,12 +88,6 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
           p_steps_l->plant_peak_mean_temp = 1.0 * (p_steps_l->plant_peak_mean_temp) / n_step_baseline;  //Gain (1.0) was 0.9 2/25/2019 GO
 
           //HERE
-
-          //          Serial.println("BASE before return");
-          //          Serial.print(" Peak ");
-          //          Serial.println(p_steps_l->peak);
-          //          Serial.print(" N ");
-          //          Serial.println(p_steps_l->count_plant_base);
         }
         else {
           p_steps_l->four_step_dorsi_time[p_steps_l->count_plant_base - 2] = p_steps_l->dorsi_time;
@@ -109,16 +95,12 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
           p_steps_l->four_step_plant_time[p_steps_l->count_plant_base - 2] = p_steps_l->plant_time;
 
           p_steps_l->four_step_plant_peak[p_steps_l->count_plant_base - 2] = p_steps_l->peak;
-          //          Serial.println("Inside Peak vector ");
 
           for (int i = 0; i < n_step_baseline; i++) {
-            //            Serial.println(p_steps_l->four_step_plant_peak[i]);
           }
         }
 
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
-          //          Serial.print("BASE return peak mean temporary");
-          //          Serial.println(p_steps_l->plant_peak_mean_temp);
         }
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
           (p_steps_l->count_plant_base) = 0;
@@ -181,10 +163,6 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
 
   if (taking_baseline_l == 0 && p_steps_l->plant_peak_mean_temp != p_steps_l->plant_peak_mean) {
-    //    Serial.println("Updated peak mean values");
-    //    Serial.print(p_steps_l->plant_peak_mean);
-    //    Serial.print(" -> ");
-    //    Serial.println(p_steps_l->plant_peak_mean_temp);
     p_steps_l->plant_peak_mean = p_steps_l->plant_peak_mean_temp;
   }
 
@@ -263,14 +241,6 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       // start dorsiflexion
       p_steps_l->dorsi_time = millis();
 
-      //      if (p_steps_l->flag_N3_adjustment_time) { // If you wanted to adjust the smoothing as a function of the speed
-      //        // check for the first step in order to see if everything started properly
-      //        if (p_steps_l->n_steps == 1) {
-      //          Serial.println(" N3 Adj activated");
-      //        }
-      //        p_steps_l->n_steps++;
-      //      }
-
       // calculate plantarflexion
       p_steps_l->plant_time = millis() - (p_steps_l->plant_time);
 
@@ -283,9 +253,6 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       }
 
       p_steps_l->flag_start_plant = false; // you have provided one step
-
-      //      Serial.print(" Plant Time = ");
-      //      Serial.println(p_steps_l->plant_time);
 
       if (p_steps_l->count_plant >= 2) {
         // this is the time window of the filter for the plantarflexion
@@ -308,12 +275,6 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
         p_steps_l->plant_mean = p_steps_l->plant_mean / n_step_baseline;
       }
-
-      //      if (p_steps_l->flag_N3_adjustment_time) {
-      //        N3_l = round((p_steps_l->plant_mean) * p_steps_l->perc_l);
-      //        if (N3_l <= 4) N3_l = 4;
-      //        if (N3_l >= 500) N3_l = 500;
-      //      }
 
 
     }//end if R old 3 i.e. finish plantarflexion

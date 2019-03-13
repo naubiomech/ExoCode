@@ -21,8 +21,6 @@ void pid(Leg* leg, double input) {
     }
 
   } else {
-    //    leg->torque_error_counter = 0;
-    //    leg->KF = 1;
   }
   leg->Input = input;
   leg->pid.Compute_KF(leg->KF);

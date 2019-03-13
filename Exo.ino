@@ -49,7 +49,6 @@ void setup()
 {
   // set the interrupt timer
   Timer1.initialize(2000);         // initialize timer1, and set a 2 ms period *note this is 2k microseconds*
-  //  Timer1.pwm(9, 512);                // setup pwm on pin 9, 50% duty cycle
   Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
 
   // enable bluetooth
@@ -98,27 +97,16 @@ void callback()//executed every 2ms
   // same of FSR but for the balance baseline
   check_Balance_Baseline();
 
-  // same of FSR but for biofeedback
-  //  if (left_leg->BIO_BASELINE_FLAG) {
-  //    BioFeedback_Baseline(left_leg);//just left leg for now
-  //  }
-
   if (right_leg->BIO_BASELINE_FLAG) {
     BioFeedback_Baseline(right_leg);//just left leg for now
   }
 
   // if flag auto reconnect BT is 1, activate the autoreconnect anche check the led voltage
   if (FLAG_AUTO_RECONNECT_BT) {
-    //    LED_BT_Voltage = Check_LED_BT(LED_BT_PIN, LED_BT_Voltage, p_count_LED_reads);
   }
 
   // if flag biofeedback is 1 update the Frequency of the biofeedback
   if (FLAG_BIOFEEDBACK) {
-    //    if (left_leg->Frequency >= right_leg->Frequency) {
-    //      Freq = left_leg->Frequency;
-    //    } else {
-    //      Freq = right_leg->Frequency;
-    //  }
     Freq = right_leg->Frequency;
 
   }//end if(Flag_biofeedback)
@@ -154,13 +142,10 @@ void loop()
 //
 void biofeedback() {
 
-  //  if (left_leg->NO_Biofeedback || left_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
   if (right_leg->NO_Biofeedback || right_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
   } else {
 
-    //    if (abs(left_leg->start_time_Biofeedback - millis()) >= Freq) {
     if (abs(right_leg->start_time_Biofeedback - millis()) >= Freq) {
-      //      Serial.println((left_leg->start_time_Biofeedback) - millis());
 
 
       state = digitalRead(LED_PIN);
@@ -176,10 +161,7 @@ void biofeedback() {
 
 
       right_leg->start_time_Biofeedback = millis();
-      //      left_leg->start_time_Biofeedback = millis();
       tone(A17, 500, 100);
-      //      Serial.print(" Freq : ");
-      //      Serial.println(Freq);
 
     }
   }
@@ -292,29 +274,6 @@ void rotate_motor() {
   // send the data message, adapt KF if required, apply the PID, apply the state machine,
   //adjust some control parameters as a function of the control strategy decided (Control_Adjustment)
 
-  //  // modification to check the pid
-  //  if (FLAG_PID_VALS) {
-  //
-  //    pid(left_leg, left_leg->Average_Trq);
-  //    pid(right_leg, right_leg->Average_Trq);
-  //
-  //    Serial.print("LEFT PID INPUT:");
-  //    Serial.print(left_leg->Input);
-  //    Serial.print(" , AVG: ");
-  //    Serial.print(left_leg->Average_Trq);
-  //    Serial.print(" , VOL: ");
-  //    Serial.println(left_leg->Vol);
-  //    Serial.print("RIGHT PID INPUT:");
-  //    Serial.print(right_leg->Input);
-  //    Serial.print(" , AVG: ");
-  //    Serial.print(right_leg->Average_Trq);
-  //    Serial.print(" , VOL: ");
-  //    Serial.println(right_leg->Vol);
-  //
-  //  }
-  //  // end modification
-
-
   if (stream == 1)
   {
     if (streamTimerCount >= 5) // every 5*2ms, i.e. every .01s
@@ -413,7 +372,6 @@ void reset_leg_starting_parameters(Leg* leg) {
 
   leg->first_step = 1;
   counter_msgs = 0;
-  //  leg->BIO_BASELINE_FLAG=false;
   leg->Heel_Strike_Count = 0;
   leg->Heel_Strike = 0;
   leg->NO_Biofeedback = true;

@@ -90,25 +90,8 @@ void FSR_calibration()
   }
   else {
 
-    //    left_leg->p_steps->voltage_peak_ref = left_leg->fsr_Combined_peak_ref;
-    //    right_leg->p_steps->voltage_peak_ref = right_leg->fsr_Combined_peak_ref;
-
-    // What I need to comment out
-
     FSR_FIRST_Cycle = 1;
     FSR_CAL_FLAG = 0;
-    //    if (FLAG_TWO_TOE_SENSORS) {
-    //      Serial.println(left_leg->fsr_Combined_peak_ref);
-    //      Serial.println(right_leg->fsr_Combined_peak_ref);
-    //      Serial.println(" ");
-    //    } else {
-    //      Serial.println(left_leg->fsr_Toe_peak_ref);
-    //      Serial.println(left_leg->fsr_Heel_peak_ref);
-    //      Serial.println(" ");
-    //      Serial.println(right_leg->fsr_Toe_peak_ref);
-    //      Serial.println(right_leg->fsr_Heel_peak_ref);
-    //      Serial.println(" ");
-    //    }
   }
 }
 
