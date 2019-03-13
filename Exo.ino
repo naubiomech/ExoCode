@@ -1,4 +1,4 @@
-//A_Exo 3_1_2 This is the code for the Single board Ankle Exoskeleton -> A_EXO_s
+//A_Exo 3_1_3 This is the code for the Single board Ankle Exoskeleton -> A_EXO_s
 //
 // FSR sensors retrieve the sensor voltage related to the foot pressure.
 // The state machine (Left and Right state machine) identify the participant status depending on the voltage.
@@ -20,7 +20,7 @@
 // 6 steps = 10N
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
-#define VERSION 311
+#define VERSION 313
 #define TWO_LEG_BOARD
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
