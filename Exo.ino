@@ -99,29 +99,29 @@ void callback()//executed every 2ms
   check_Balance_Baseline();
 
   // same of FSR but for biofeedback
-//  if (left_leg->BIO_BASELINE_FLAG) {
-//    BioFeedback_Baseline(left_leg);//just left leg for now
-//  }
-  
- if (right_leg->BIO_BASELINE_FLAG) {
+  //  if (left_leg->BIO_BASELINE_FLAG) {
+  //    BioFeedback_Baseline(left_leg);//just left leg for now
+  //  }
+
+  if (right_leg->BIO_BASELINE_FLAG) {
     BioFeedback_Baseline(right_leg);//just left leg for now
   }
-  
+
   // if flag auto reconnect BT is 1, activate the autoreconnect anche check the led voltage
   if (FLAG_AUTO_RECONNECT_BT) {
-//    LED_BT_Voltage = Check_LED_BT(LED_BT_PIN, LED_BT_Voltage, p_count_LED_reads);
+    //    LED_BT_Voltage = Check_LED_BT(LED_BT_PIN, LED_BT_Voltage, p_count_LED_reads);
   }
 
   // if flag biofeedback is 1 update the Frequency of the biofeedback
   if (FLAG_BIOFEEDBACK) {
-//    if (left_leg->Frequency >= right_leg->Frequency) {
-//      Freq = left_leg->Frequency;
-//    } else {
-//      Freq = right_leg->Frequency;
-//  }
-      Freq = right_leg->Frequency;
-  
- }//end if(Flag_biofeedback)
+    //    if (left_leg->Frequency >= right_leg->Frequency) {
+    //      Freq = left_leg->Frequency;
+    //    } else {
+    //      Freq = right_leg->Frequency;
+    //  }
+    Freq = right_leg->Frequency;
+
+  }//end if(Flag_biofeedback)
 }// end callback
 //----------------------------------------------------------------------------------
 // Function that is repeated in loop
@@ -154,12 +154,12 @@ void loop()
 //
 void biofeedback() {
 
-//  if (left_leg->NO_Biofeedback || left_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
-    if (right_leg->NO_Biofeedback || right_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
+  //  if (left_leg->NO_Biofeedback || left_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
+  if (right_leg->NO_Biofeedback || right_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
   } else {
 
-//    if (abs(left_leg->start_time_Biofeedback - millis()) >= Freq) {
-      if (abs(right_leg->start_time_Biofeedback - millis()) >= Freq) {
+    //    if (abs(left_leg->start_time_Biofeedback - millis()) >= Freq) {
+    if (abs(right_leg->start_time_Biofeedback - millis()) >= Freq) {
       //      Serial.println((left_leg->start_time_Biofeedback) - millis());
 
 
@@ -176,10 +176,10 @@ void biofeedback() {
 
 
       right_leg->start_time_Biofeedback = millis();
-//      left_leg->start_time_Biofeedback = millis();
+      //      left_leg->start_time_Biofeedback = millis();
       tone(A17, 500, 100);
-//      Serial.print(" Freq : ");
-//      Serial.println(Freq);
+      //      Serial.print(" Freq : ");
+      //      Serial.println(Freq);
 
     }
   }

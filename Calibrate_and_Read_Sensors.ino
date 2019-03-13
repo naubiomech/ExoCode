@@ -16,8 +16,8 @@ void torque_calibration()
 
   left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
-//  Serial.println(left_leg->torque_calibration_value);
-//  Serial.println(right_leg->torque_calibration_value);
+  //  Serial.println(left_leg->torque_calibration_value);
+  //  Serial.println(right_leg->torque_calibration_value);
 }
 
 
@@ -30,7 +30,7 @@ void FSR_calibration()
     FSR_FIRST_Cycle = 0;
 
     startTime = millis();
-//    Serial.println("First time");
+    //    Serial.println("First time");
     right_leg->Curr_Combined = 0;
     left_leg->Curr_Combined = 0;
 
@@ -97,18 +97,18 @@ void FSR_calibration()
 
     FSR_FIRST_Cycle = 1;
     FSR_CAL_FLAG = 0;
-//    if (FLAG_TWO_TOE_SENSORS) {
-//      Serial.println(left_leg->fsr_Combined_peak_ref);
-//      Serial.println(right_leg->fsr_Combined_peak_ref);
-//      Serial.println(" ");
-//    } else {
-//      Serial.println(left_leg->fsr_Toe_peak_ref);
-//      Serial.println(left_leg->fsr_Heel_peak_ref);
-//      Serial.println(" ");
-//      Serial.println(right_leg->fsr_Toe_peak_ref);
-//      Serial.println(right_leg->fsr_Heel_peak_ref);
-//      Serial.println(" ");
-//    }
+    //    if (FLAG_TWO_TOE_SENSORS) {
+    //      Serial.println(left_leg->fsr_Combined_peak_ref);
+    //      Serial.println(right_leg->fsr_Combined_peak_ref);
+    //      Serial.println(" ");
+    //    } else {
+    //      Serial.println(left_leg->fsr_Toe_peak_ref);
+    //      Serial.println(left_leg->fsr_Heel_peak_ref);
+    //      Serial.println(" ");
+    //      Serial.println(right_leg->fsr_Toe_peak_ref);
+    //      Serial.println(right_leg->fsr_Heel_peak_ref);
+    //      Serial.println(" ");
+    //    }
   }
 }
 

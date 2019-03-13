@@ -9,7 +9,7 @@ void state_machine(Leg* leg)
   if (FLAG_TWO_TOE_SENSORS) {
     State_Machine_Two_Toe_Sensors(leg);
   }
-  
+
   if (FLAG_BALANCE) {
     State_Machine_Heel_Toe_Sensors_Balance(leg);
   } else {
@@ -65,7 +65,7 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
 
           if (Flag_HLO && (leg->Previous_T_Opt <= leg->T_Opt)) {
 
-            leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt)*leg->coef_in_3_steps;
+            leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps;
             Serial.print("Previous T Opt");
             Serial.print(leg->Previous_T_Opt);
             Serial.print("Current T Opt");
@@ -73,12 +73,12 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
 
           } else if (Flag_HLO && (leg->Previous_T_Opt > leg->T_Opt)) {
 
-            leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt)*leg->coef_in_3_steps;
+            leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt) * leg->coef_in_3_steps;
             Serial.print("Previous T Opt");
             Serial.print(leg->Previous_T_Opt);
             Serial.print("Current T Opt");
             Serial.println(leg->T_Opt_Setpoint);
-            
+
           }
 
           leg->state_old = leg->state;
@@ -196,14 +196,14 @@ void State_Machine_Heel_Toe_Sensors(Leg * leg) {
             leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
 
           } else {
-            
+
             leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
 
           }
 
           if (Flag_HLO && (leg->Previous_T_Opt <= leg->T_Opt)) {
 
-            leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt)*leg->coef_in_3_steps;
+            leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps;
             Serial.print("Previous T Opt");
             Serial.print(leg->Previous_T_Opt);
             Serial.print("Current T Opt");
@@ -211,12 +211,12 @@ void State_Machine_Heel_Toe_Sensors(Leg * leg) {
 
           } else if (Flag_HLO && (leg->Previous_T_Opt > leg->T_Opt)) {
 
-            leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt)*leg->coef_in_3_steps;
+            leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt) * leg->coef_in_3_steps;
             Serial.print("Previous T Opt");
             Serial.print(leg->Previous_T_Opt);
             Serial.print("Current T Opt");
             Serial.println(leg->T_Opt_Setpoint);
-            
+
           }
 
           leg->state_old = leg->state;
@@ -508,8 +508,8 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
           leg->state_old = leg->state;
           leg->state = 2;
           leg->state_count_12 = 0;
-          
-//          takeHeelStrikeAngle(leg);
+
+          //          takeHeelStrikeAngle(leg);
           takeHeelStrikeAngle(right_leg);
           //          leg->state_count_21 = 0;
         }
@@ -578,21 +578,21 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
 
 
 
-      if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
-        leg->sigm_done = true;
-        leg->Old_PID_Setpoint = leg->PID_Setpoint;
-        leg->state_old = leg->state;
-        leg->New_PID_Setpoint = 0;
-        leg->One_time_set_2_zero = 0;
-        leg->Previous_Setpoint_Ankle = 0;
-        leg->PID_Setpoint = 0;
-        leg->Setpoint_Ankle_Pctrl = 0;
-      }
+          if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
+            leg->sigm_done = true;
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+            leg->state_old = leg->state;
+            leg->New_PID_Setpoint = 0;
+            leg->One_time_set_2_zero = 0;
+            leg->Previous_Setpoint_Ankle = 0;
+            leg->PID_Setpoint = 0;
+            leg->Setpoint_Ankle_Pctrl = 0;
+          }
 
 
 
 
-          
+
           leg->sigm_done = true;
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
           leg->state_old = leg->state;

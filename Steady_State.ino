@@ -13,7 +13,7 @@ void set_2_zero_if_steady_state() {
   } else {
     if (left_leg->stateTimerCount >= 5 / 0.002) { //Stuck in state timer set to 5 seconds
       if (left_leg->store_N1 == 0) {
-       // Serial.println("Steady state, setting to 0Nm , Change N1");
+        // Serial.println("Steady state, setting to 0Nm , Change N1");
         left_leg->set_2_zero = 1;
         left_leg->store_N1 = 1;
         left_leg->activate_in_3_steps = 1;
@@ -41,7 +41,7 @@ void set_2_zero_if_steady_state() {
   } else {
     if (right_leg->stateTimerCount >= 5 / 0.002) {
       if (right_leg->store_N1 == 0) {
-       // Serial.println("Change N1");
+        // Serial.println("Change N1");
         right_leg->set_2_zero = 1;
         right_leg->store_N1 = 1;
         right_leg->activate_in_3_steps = 1;

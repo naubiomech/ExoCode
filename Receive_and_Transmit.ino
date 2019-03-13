@@ -11,33 +11,33 @@ void receive_and_transmit()
     case '?':
       send_data_message_wc();
       break;
-      
 
-            case 'Y':  //ZL ADDED THIS TO RECIEVE MATLAB COMMAND TO FLUSH BLUETOOTH FROM GUI SWITCH
-            bluetooth.flush();
-            //Serial.print("Flushed");
-           // bluetooth.end();
-           // bluetooth.begin(115200);
-            
-            break;
 
-    
+    case 'Y':  //ZL ADDED THIS TO RECIEVE MATLAB COMMAND TO FLUSH BLUETOOTH FROM GUI SWITCH
+      bluetooth.flush();
+      //Serial.print("Flushed");
+      // bluetooth.end();
+      // bluetooth.begin(115200);
+
+      break;
+
+
     case 'D':                                         //if MATLAB sent the character D
       *(data_to_send_point) = left_leg->Setpoint_Ankle;      //MATLAB is expecting to recieve the Torque Parameters
       *(data_to_send_point + 1) = left_leg->Dorsi_Setpoint_Ankle;
       send_command_message('D', data_to_send_point, 2);
-//      Serial.print("Received Left Set ");
-//      Serial.println(left_leg->Setpoint_Ankle);
-//      Serial.println(left_leg->Dorsi_Setpoint_Ankle);
+      //      Serial.print("Received Left Set ");
+      //      Serial.println(left_leg->Setpoint_Ankle);
+      //      Serial.println(left_leg->Dorsi_Setpoint_Ankle);
       break;
 
     case 'd':
       *(data_to_send_point) = right_leg->Setpoint_Ankle;
       *(data_to_send_point + 1) = right_leg->Dorsi_Setpoint_Ankle;
       send_command_message('d', data_to_send_point, 2);     //MATLAB is expecting to receive the Torque Parameters
-//      Serial.print("Received Right Set");
-//      Serial.println(right_leg->Setpoint_Ankle);
-//      Serial.println(right_leg->Dorsi_Setpoint_Ankle);
+      //      Serial.print("Received Right Set");
+      //      Serial.println(right_leg->Setpoint_Ankle);
+      //      Serial.println(right_leg->Dorsi_Setpoint_Ankle);
       break;
 
     case 'F':
@@ -57,7 +57,7 @@ void receive_and_transmit()
         left_leg->first_step = 1;
         left_leg->num_3_steps = 0;
         left_leg->start_step = 0;
-       // Serial.println("Left Setpoint Negative, going to zero");
+        // Serial.println("Left Setpoint Negative, going to zero");
       } else {
         left_leg->Setpoint_Ankle = abs(left_leg->Setpoint_Ankle);                     //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
         left_leg->Dorsi_Setpoint_Ankle = -abs(left_leg->Dorsi_Setpoint_Ankle);
@@ -195,21 +195,21 @@ void receive_and_transmit()
 
         *(data_to_send_point + 1) = 1;
         if (FLAG_TWO_TOE_SENSORS) {
-//          Serial.print("Left values Combined Toe and Heel: ");
-//          Serial.print(left_leg->fsr_Combined_peak_ref);
-//          Serial.print(", ");
-//          Serial.print("Right values: ");
-//          Serial.print(right_leg->fsr_Combined_peak_ref);
+          //          Serial.print("Left values Combined Toe and Heel: ");
+          //          Serial.print(left_leg->fsr_Combined_peak_ref);
+          //          Serial.print(", ");
+          //          Serial.print("Right values: ");
+          //          Serial.print(right_leg->fsr_Combined_peak_ref);
         } else {
-//          Serial.print("Left values Toe and Heel: ");
-//          Serial.print(left_leg->fsr_Toe_peak_ref);
-//          Serial.print(", ");
-//          Serial.print(left_leg->fsr_Heel_peak_ref);
-//          Serial.print(", ");
-//          Serial.print("Right values Toe and Hell: ");
-//          Serial.print(right_leg->fsr_Toe_peak_ref);
-//          Serial.print(", ");
-//          Serial.print(right_leg->fsr_Heel_peak_ref);
+          //          Serial.print("Left values Toe and Heel: ");
+          //          Serial.print(left_leg->fsr_Toe_peak_ref);
+          //          Serial.print(", ");
+          //          Serial.print(left_leg->fsr_Heel_peak_ref);
+          //          Serial.print(", ");
+          //          Serial.print("Right values Toe and Hell: ");
+          //          Serial.print(right_leg->fsr_Toe_peak_ref);
+          //          Serial.print(", ");
+          //          Serial.print(right_leg->fsr_Heel_peak_ref);
         }
       }
       else
@@ -237,10 +237,10 @@ void receive_and_transmit()
       right_leg->p_steps->plant_peak_mean = read_baseline(right_leg->baseline_address);
       left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
       right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
-//      Serial.print("Baseline ");
-//      Serial.print(left_leg->baseline_value);
-//      Serial.print(" , ");
-//      Serial.println(right_leg->baseline_value);
+      //      Serial.print("Baseline ");
+      //      Serial.print(left_leg->baseline_value);
+      //      Serial.print(" , ");
+      //      Serial.println(right_leg->baseline_value);
       break;
 
     case '>':
@@ -259,12 +259,12 @@ void receive_and_transmit()
       }
       else
       {
-       // Serial.println("No clear FSR");
+        // Serial.println("No clear FSR");
       }
       //------------------------------------------
       if (clean_torque_bias(right_leg->torque_address))
       {
-       // Serial.println("Clear Torque ");
+        // Serial.println("Clear Torque ");
       }
       else
       {
@@ -285,11 +285,11 @@ void receive_and_transmit()
       }
       else
       {
-       // Serial.println("No clear FSR");
+        // Serial.println("No clear FSR");
       }
       if (clean_FSR_values(right_leg->address_FSR + sizeof(double) + sizeof(char)))
       {
-       // Serial.println("Clear FSR ");
+        // Serial.println("Clear FSR ");
       }
       else
       {
@@ -319,15 +319,15 @@ void receive_and_transmit()
     case'`':
       *(data_to_send_point) = left_leg->KF;
       send_command_message('`', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
-//      Serial.print("Checking left KF ");
-//      Serial.println(left_leg->KF);
+      //      Serial.print("Checking left KF ");
+      //      Serial.println(left_leg->KF);
       break;
 
     case'~':
       *(data_to_send_point) = right_leg->KF;
       send_command_message('~', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
-//      Serial.print("Checking right KF ");
-//      Serial.println(right_leg->KF);
+      //      Serial.print("Checking right KF ");
+      //      Serial.println(right_leg->KF);
       break;
 
     case')':
@@ -353,14 +353,14 @@ void receive_and_transmit()
       right_leg->old_N2 = right_leg->N2;
       right_leg->old_N1 = right_leg->N1;
 
-//      Serial.print("Set Smooth ");
-//      Serial.print(" ");
-//      Serial.print(N1);
-//      Serial.print(" ");
-//      Serial.print(N2);
-//      Serial.print(" ");
-//      Serial.print(N3);
-//      Serial.println();
+      //      Serial.print("Set Smooth ");
+      //      Serial.print(" ");
+      //      Serial.print(N1);
+      //      Serial.print(" ");
+      //      Serial.print(N2);
+      //      Serial.print(" ");
+      //      Serial.print(N3);
+      //      Serial.println();
       break;
 
     case '(':
@@ -368,85 +368,85 @@ void receive_and_transmit()
       *(data_to_send_point + 1) = N2;
       *(data_to_send_point + 2) = N3;
       send_command_message('(', data_to_send_point, 3);     //MATLAB is expecting to recieve the Torque Parameters
-//      Serial.print("Matlab Get Smooth ");
-//      Serial.print("");
-//      Serial.print(N1);
-//      Serial.print("");
-//      Serial.print(N2);
-//      Serial.print("");
-//      Serial.print(N3);
-//      Serial.println();
+      //      Serial.print("Matlab Get Smooth ");
+      //      Serial.print("");
+      //      Serial.print(N1);
+      //      Serial.print("");
+      //      Serial.print(N2);
+      //      Serial.print("");
+      //      Serial.print(N3);
+      //      Serial.println();
 
       break;
 
     case 'P':
-//      left_leg->p_steps->flag_take_baseline = true;
-//      Serial.println("Left Freq Baseline ");
+      //      left_leg->p_steps->flag_take_baseline = true;
+      //      Serial.println("Left Freq Baseline ");
       break;
 
     case 'p':
-//      right_leg->p_steps->flag_take_baseline = true;
-//      Serial.println("Right Freq Baseline ");
+      //      right_leg->p_steps->flag_take_baseline = true;
+      //      Serial.println("Right Freq Baseline ");
       break;
 
     case 'O':
-//      left_leg->p_steps->flag_N3_adjustment_time = true;
-//      Serial.println(" Left N3 Adj ");
+      //      left_leg->p_steps->flag_N3_adjustment_time = true;
+      //      Serial.println(" Left N3 Adj ");
       break;
 
 
     case 'o':
-//      right_leg->p_steps->flag_N3_adjustment_time = true;
-//      Serial.println(" Right N3 Adj ");
+      //      right_leg->p_steps->flag_N3_adjustment_time = true;
+      //      Serial.println(" Right N3 Adj ");
       break;
 
     case 'Q':
       *(data_to_send_point) = left_leg->fsr_percent_thresh_Toe;
       send_command_message('Q', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
-//      Serial.print("Checking the left_leg->fsr_percent_thresh_Toe: ");
-//      Serial.println(left_leg->fsr_percent_thresh_Toe);
+      //      Serial.print("Checking the left_leg->fsr_percent_thresh_Toe: ");
+      //      Serial.println(left_leg->fsr_percent_thresh_Toe);
       break;
 
     case 'q':
       *(data_to_send_point) = right_leg->fsr_percent_thresh_Toe;
       send_command_message('q', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
-//      Serial.print("Checking the right_leg->fsr_percent_thresh_Toe: ");
-//      Serial.println(right_leg->fsr_percent_thresh_Toe);
+      //      Serial.print("Checking the right_leg->fsr_percent_thresh_Toe: ");
+      //      Serial.println(right_leg->fsr_percent_thresh_Toe);
       break;
 
     case 'R':
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&left_leg->fsr_percent_thresh_Toe, &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       left_leg->p_steps->fsr_percent_thresh_Toe = left_leg->fsr_percent_thresh_Toe;
-//      Serial.print("Setting the left_leg->fsr_percent_thresh_Toe: ");
-//      Serial.println(left_leg->fsr_percent_thresh_Toe);
+      //      Serial.print("Setting the left_leg->fsr_percent_thresh_Toe: ");
+      //      Serial.println(left_leg->fsr_percent_thresh_Toe);
       break;
 
     case 'r':
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&right_leg->fsr_percent_thresh_Toe, &holdon, 8);
       right_leg->p_steps->fsr_percent_thresh_Toe = right_leg->fsr_percent_thresh_Toe;
-//      Serial.print("Setting the fsr_percent_thresh_Rigth_Toe: ");
-//      Serial.println(right_leg->fsr_percent_thresh_Toe);
+      //      Serial.print("Setting the fsr_percent_thresh_Rigth_Toe: ");
+      //      Serial.println(right_leg->fsr_percent_thresh_Toe);
       break;
 
     case 'S':
-//      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-//      memcpy(&(left_leg->p_steps->perc_l), &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-//      Serial.print("Setting the left_leg->p_steps->perc_l: ");
-//      Serial.println(left_leg->p_steps->perc_l);
+      //      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      //      memcpy(&(left_leg->p_steps->perc_l), &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+      //      Serial.print("Setting the left_leg->p_steps->perc_l: ");
+      //      Serial.println(left_leg->p_steps->perc_l);
       break;
 
     case's':
-//      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-//      memcpy(&(right_leg->p_steps->perc_l), &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-//      Serial.print("Setting the right_leg->p_steps->perc_l: ");
-//      Serial.println(right_leg->p_steps->perc_l);
+      //      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      //      memcpy(&(right_leg->p_steps->perc_l), &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+      //      Serial.print("Setting the right_leg->p_steps->perc_l: ");
+      //      Serial.println(right_leg->p_steps->perc_l);
       break;
 
     case 'C':
       while (bluetooth.available() > 0) bluetooth.read();
-    //  Serial.println("Buffer Clean");
+      //  Serial.println("Buffer Clean");
       break;
 
     case 'T':
@@ -458,8 +458,8 @@ void receive_and_transmit()
       left_leg->p_steps->flag_take_baseline = false;
       left_leg->p_steps->torque_adj = false;
       left_leg->N3 = N3;
-     // Serial.print("Stop Left N3 adj, come back to: ");
-     // Serial.println(left_leg->N3);
+      // Serial.print("Stop Left N3 adj, come back to: ");
+      // Serial.println(left_leg->N3);
       break;
 
     case 't':
@@ -471,8 +471,8 @@ void receive_and_transmit()
       right_leg->p_steps->flag_take_baseline = false;
       right_leg->p_steps->torque_adj = false;
       right_leg->N3 = N3;
-     //Serial.print("Stop Right N3 adj, come back to: ");
-     // Serial.println(right_leg->N3);
+      //Serial.print("Stop Right N3 adj, come back to: ");
+      // Serial.println(right_leg->N3);
       break;
 
     case 'I':
@@ -488,12 +488,12 @@ void receive_and_transmit()
       right_leg->p_steps->torque_adj = false;
 
       //Serial.print("Stop Right TRQ adj, come back to: ");
-     // Serial.println(*right_leg->p_Setpoint_Ankle);
+      // Serial.println(*right_leg->p_Setpoint_Ankle);
       break;
 
     case '!':
       if (stream == 1) {
-       // Serial.print("Cannot save data during streaming ");
+        // Serial.print("Cannot save data during streaming ");
       } else {
         //Serial.print("Saving Experimental Parameters ");
         if (FLAG_TWO_TOE_SENSORS) {
@@ -521,11 +521,11 @@ void receive_and_transmit()
       //    Serial.println(" Changed Sign in the Left torque ");
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&app, &holdon, 8);
-//      Serial.print("Modified the left zero of motor from : ");
-//      Serial.print(left_leg->zero);
-//      Serial.print(" to ");
+      //      Serial.print("Modified the left zero of motor from : ");
+      //      Serial.print(left_leg->zero);
+      //      Serial.print(" to ");
       left_leg->zero = zero + app;
-//      Serial.println(left_leg->zero);
+      //      Serial.println(left_leg->zero);
       break;
 
     case 'X':
@@ -533,50 +533,50 @@ void receive_and_transmit()
       //    Serial.println(" Restored the correct Sign the Left torque ");
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&app, &holdon, 8);
-//      Serial.print("Modified the right zero of motor from : ");
-//      Serial.print(right_leg->zero);
-//      Serial.print(" to ");
+      //      Serial.print("Modified the right zero of motor from : ");
+      //      Serial.print(right_leg->zero);
+      //      Serial.print(" to ");
       right_leg->zero = zero + app;
-//      Serial.println(right_leg->zero);
+      //      Serial.println(right_leg->zero);
       break;
 
 
     case 'w':
       right_leg->sign = -1;
-//      Serial.println(" Changed Sign in the Right torque ");
+      //      Serial.println(" Changed Sign in the Right torque ");
       break;
 
     case 'x':
       right_leg->sign = 1;
-//      Serial.println(" Restored the correct Sign the Right torque ");
+      //      Serial.println(" Restored the correct Sign the Right torque ");
       break;
 
     case '[': // Receive Right Gain from GUI
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&right_leg->Prop_Gain, &holdon, 8);
-//      Serial.print(" Settting Right Gain for Proportional Ctrl: ");
-//      Serial.println(right_leg->Prop_Gain);
+      //      Serial.print(" Settting Right Gain for Proportional Ctrl: ");
+      //      Serial.println(right_leg->Prop_Gain);
       break;
 
     case ']': // Send Right Gain to GUI
       *(data_to_send_point) = right_leg->Prop_Gain;
       send_command_message(']', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
-//      Serial.print(" Checking Right Gain for Proportional Ctrl: ");
-//      Serial.println(right_leg->Prop_Gain);
+      //      Serial.print(" Checking Right Gain for Proportional Ctrl: ");
+      //      Serial.println(right_leg->Prop_Gain);
       break;
 
     case '{': // Receive Left Gain from GUI
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&left_leg->Prop_Gain, &holdon, 8);
-//      Serial.print(" Settting Left Gain for Proportional Ctrl: ");
-//      Serial.println(left_leg->Prop_Gain);
+      //      Serial.print(" Settting Left Gain for Proportional Ctrl: ");
+      //      Serial.println(left_leg->Prop_Gain);
       break;
 
     case '}': // Send Left Gain to GUI
       *(data_to_send_point) = left_leg->Prop_Gain;
       send_command_message('}', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
-//      Serial.print(" Checking Left Gain for Proportional Ctrl: ");
-//      Serial.println(left_leg->Prop_Gain);
+      //      Serial.print(" Checking Left Gain for Proportional Ctrl: ");
+      //      Serial.println(left_leg->Prop_Gain);
       break;
 
     case '+':
@@ -584,8 +584,8 @@ void receive_and_transmit()
       OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
       FLAG_TWO_TOE_SENSORS = false;
       FLAG_BALANCE = true;
-//      Serial.println(" Deactivate old Ctrl ");
-//      Serial.println(Control_Mode);
+      //      Serial.println(" Deactivate old Ctrl ");
+      //      Serial.println(Control_Mode);
       //      if (not(FLAG_TWO_TOE_SENSORS)) {
       Old_Control_Mode = Control_Mode;
       Control_Mode = 2;
@@ -593,7 +593,7 @@ void receive_and_transmit()
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
       //        FLAG_TWO_TOE_SENSORS = true;
       FLAG_BALANCE = true;
-    //  Serial.println(" Activate Balance Ctrl ");
+      //  Serial.println(" Activate Balance Ctrl ");
       //      } else {
       //        Serial.println(" Cannoct Activate Balance Ctrl ");
       //      }
@@ -601,8 +601,8 @@ void receive_and_transmit()
 
     case '=':
 
-//      Serial.println(" FLAG_TWO_TOE_SENSORS ");
-//      Serial.println(FLAG_TWO_TOE_SENSORS);
+      //      Serial.println(" FLAG_TWO_TOE_SENSORS ");
+      //      Serial.println(FLAG_TWO_TOE_SENSORS);
       FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
       FLAG_TWO_TOE_SENSORS = true;
       FLAG_BALANCE = false;
@@ -616,8 +616,8 @@ void receive_and_transmit()
       //        FLAG_TWO_TOE_SENSORS = false;
       FLAG_BALANCE = false;
 
-//      Serial.println(" Deactivate Balance Ctrl ");
-//      Serial.println(Control_Mode);
+      //      Serial.println(" Deactivate Balance Ctrl ");
+      //      Serial.println(Control_Mode);
       //      } else {
       //        Serial.println(" Cannoct Deactivate Balance Ctrl ");
       //      }
@@ -630,12 +630,12 @@ void receive_and_transmit()
       right_leg->KF = 1;
       left_leg->ERR = 0;
       right_leg->ERR = 0;
-//      Serial.println(" Activate Auto KF ");
+      //      Serial.println(" Activate Auto KF ");
       break;
 
     case ';':
       flag_auto_KF = 0;
-//      Serial.println(" Deactivate Auto KF ");
+      //      Serial.println(" Deactivate Auto KF ");
       break;
 
     case '#':
@@ -643,7 +643,7 @@ void receive_and_transmit()
       Control_Mode = 3; // activate pivot proportional control
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-//      Serial.println(" Activate Proportional Pivot Ctrl ");
+      //      Serial.println(" Activate Proportional Pivot Ctrl ");
       break;
 
     case '^':
@@ -654,7 +654,7 @@ void receive_and_transmit()
       *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-//      Serial.println(" Deactivate Proportional Pivot Ctrl ");
+      //      Serial.println(" Deactivate Proportional Pivot Ctrl ");
       break;
 
     case 'B':
@@ -663,14 +663,14 @@ void receive_and_transmit()
       if (FLAG_BIOFEEDBACK == true) {
 
         //QUI
-//        Serial.println("Check Biofeedback Baseline");
-//        Serial.println(left_leg->Heel_Strike_baseline);
-//        *(data_to_send_point) = left_leg->Heel_Strike_baseline;
+        //        Serial.println("Check Biofeedback Baseline");
+        //        Serial.println(left_leg->Heel_Strike_baseline);
+        //        *(data_to_send_point) = left_leg->Heel_Strike_baseline;
         *(data_to_send_point) = right_leg->Heel_Strike_baseline;
         send_command_message('B', data_to_send_point, 1);
 
       } else if (FLAG_BALANCE == true) {
-//        Serial.println("Check Balance Baseline");
+        //        Serial.println("Check Balance Baseline");
         //  volatile double FSR_Toe_Balance_Baseline;
         //  volatile double FSR_Heel_Balance_Baseline;
         //  volatile double FSR_Toe_Steady_Balance_Baseline;
@@ -691,9 +691,9 @@ void receive_and_transmit()
       }
       else {
 
-//        Serial.println("Check Baseline");
-//        Serial.println(left_leg->p_steps->plant_peak_mean);
-//        Serial.println(right_leg->p_steps->plant_peak_mean);
+        //        Serial.println("Check Baseline");
+        //        Serial.println(left_leg->p_steps->plant_peak_mean);
+        //        Serial.println(right_leg->p_steps->plant_peak_mean);
         left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
         right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
         *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
@@ -706,7 +706,7 @@ void receive_and_transmit()
 
     case 'b':
       // Calc baseline
-//      Serial.println(" Calc Baseline");
+      //      Serial.println(" Calc Baseline");
       left_leg->FSR_baseline_FLAG = 1;
       right_leg->FSR_baseline_FLAG = 1;
       base_1 = 0;
@@ -720,9 +720,9 @@ void receive_and_transmit()
       break;
 
     case '&':
-//      Serial.println("");
-//      Serial.println(FLAG_BALANCE_BASELINE);
-//      Serial.println("Calc Balance Baseline");
+      //      Serial.println("");
+      //      Serial.println(FLAG_BALANCE_BASELINE);
+      //      Serial.println("Calc Balance Baseline");
       FLAG_BALANCE_BASELINE = 1;
 
       startTime = millis();
@@ -735,9 +735,9 @@ void receive_and_transmit()
       break;
 
     case 'J':
-//      Serial.println("");
-//      Serial.println(FLAG_STEADY_BALANCE_BASELINE);
-//      Serial.println("Calc Steady Balance Baseline");
+      //      Serial.println("");
+      //      Serial.println(FLAG_STEADY_BALANCE_BASELINE);
+      //      Serial.println("Calc Steady Balance Baseline");
       FLAG_STEADY_BALANCE_BASELINE = 1;
 
       startTime = millis();
@@ -751,14 +751,14 @@ void receive_and_transmit()
 
 
     case '|':
-//      Serial.println("");
-//      Serial.println("Activate Auto-reconnect BT");
+      //      Serial.println("");
+      //      Serial.println("Activate Auto-reconnect BT");
       FLAG_AUTO_RECONNECT_BT = true;
       break;
 
     case '@':
-//      Serial.println("");
-//      Serial.println("Deactivate Auto-reconnect BT");
+      //      Serial.println("");
+      //      Serial.println("Deactivate Auto-reconnect BT");
       FLAG_AUTO_RECONNECT_BT = false;
       break;
 
@@ -766,35 +766,35 @@ void receive_and_transmit()
     case 'V':
       *(data_to_send_point) = left_leg->Steady_multiplier;
       send_command_message('V', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
-//      Serial.print("Checking the Steady multiplier: ");
-//      Serial.println(left_leg->Steady_multiplier);
+      //      Serial.print("Checking the Steady multiplier: ");
+      //      Serial.println(left_leg->Steady_multiplier);
       break;
 
     case 'v':
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&left_leg->Steady_multiplier, &holdon, 8);
       memcpy(&right_leg->Steady_multiplier, &holdon, 8);
-//      Serial.print("Setting the Steady multiplier: ");
-//      Serial.print(left_leg->Steady_multiplier);
-//      Serial.print(" , ");
-//      Serial.println(right_leg->Steady_multiplier);
+      //      Serial.print("Setting the Steady multiplier: ");
+      //      Serial.print(left_leg->Steady_multiplier);
+      //      Serial.print(" , ");
+      //      Serial.println(right_leg->Steady_multiplier);
       break;
 
     case 'A':
       *(data_to_send_point) = left_leg->Dynamic_multiplier;
       send_command_message('A', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
-//      Serial.print("Checking the Dynamic multiplier: ");
-//      Serial.println(left_leg->Dynamic_multiplier);
+      //      Serial.print("Checking the Dynamic multiplier: ");
+      //      Serial.println(left_leg->Dynamic_multiplier);
       break;
 
     case 'a':
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&left_leg->Dynamic_multiplier, &holdon, 8);
       memcpy(&right_leg->Dynamic_multiplier, &holdon, 8);
-//      Serial.print("Setting the Dynamic multiplier: ");
-//      Serial.print(left_leg->Dynamic_multiplier);
-//      Serial.print(" , ");
-//      Serial.println(right_leg->Dynamic_multiplier);
+      //      Serial.print("Setting the Dynamic multiplier: ");
+      //      Serial.print(left_leg->Dynamic_multiplier);
+      //      Serial.print(" , ");
+      //      Serial.println(right_leg->Dynamic_multiplier);
       break;
 
 
@@ -802,7 +802,7 @@ void receive_and_transmit()
       OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
       FLAG_TWO_TOE_SENSORS = false;
       FLAG_BIOFEEDBACK = true;
-//      Serial.println(" Activate Audio BioFeedback ");
+      //      Serial.println(" Activate Audio BioFeedback ");
       //      } else {
       //        Serial.println(" Cannoct Activate Balance Ctrl ");
       //      }
@@ -812,9 +812,9 @@ void receive_and_transmit()
     case 'y':
       FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
       FLAG_BIOFEEDBACK = false;
-      if(left_leg->state==2) left_leg->state=1;
-      if(right_leg->state==2) right_leg->state=1;
-//      Serial.println(" Deactivate Audio BioFeedback ");
+      if (left_leg->state == 2) left_leg->state = 1;
+      if (right_leg->state == 2) right_leg->state = 1;
+      //      Serial.println(" Deactivate Audio BioFeedback ");
       break;
 
 
@@ -822,87 +822,87 @@ void receive_and_transmit()
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&left_leg->BioFeedback_desired, &holdon, 8);
       right_leg->BioFeedback_desired = left_leg->BioFeedback_desired;
-//      Serial.print("Set desired both left and right : ");
-//      Serial.println(left_leg->BioFeedback_desired);
+      //      Serial.print("Set desired both left and right : ");
+      //      Serial.println(left_leg->BioFeedback_desired);
       break;
 
     case '*':
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&left_leg->Biofeedback_bias, &holdon, 8);
       memcpy(&right_leg->Biofeedback_bias, &holdon, 8);//added
-//      right_leg->Biofeedback_bias = left_leg->Biofeedback_bias;
-//      Serial.print("Set bias both left and right : ");
-//      Serial.println(left_leg->Biofeedback_bias);
+      //      right_leg->Biofeedback_bias = left_leg->Biofeedback_bias;
+      //      Serial.print("Set bias both left and right : ");
+      //      Serial.println(left_leg->Biofeedback_bias);
       break;
 
-// Optimization ------------------------------------------------
+    // Optimization ------------------------------------------------
 
     case '%':
       Serial.println("Start Optimization");
       Flag_HLO = true;
-    break;
+      break;
 
     case ',':
       Serial.println("End Optimization");
       left_leg->Setpoint_Ankle = 0;
       right_leg->Setpoint_Ankle = 0;
       Flag_HLO = false;
-    break;
+      break;
 
     case '$':
-    if (Flag_HLO) {
-      receiveVals(16);
-      memcpy(&left_leg->Setpoint_Ankle_Opt,holdOnPoint,8);  //Ankle torque setpoint for bang-bang
-      memcpy(&left_leg->T_Opt_p, holdOnPoint+8, 8);         //Ankle torque rise time percentage for bang-bang
-      right_leg->Setpoint_Ankle_Opt = -left_leg->Setpoint_Ankle_Opt;
-      right_leg->T_Opt_p = left_leg->T_Opt_p;
-      Serial.println(left_leg->FLAG_UPDATE_VALUES);
-      left_leg->FLAG_UPDATE_VALUES = true;
-      right_leg->FLAG_UPDATE_VALUES = true;
-      Serial.println(left_leg->FLAG_UPDATE_VALUES);
-      Serial.print("Received these values from HLO : ");
-      Serial.print(left_leg->Setpoint_Ankle_Opt);
-      Serial.print(" , ");
-      Serial.println(left_leg->T_Opt_p);
+      if (Flag_HLO) {
+        receiveVals(16);
+        memcpy(&left_leg->Setpoint_Ankle_Opt, holdOnPoint, 8); //Ankle torque setpoint for bang-bang
+        memcpy(&left_leg->T_Opt_p, holdOnPoint + 8, 8);       //Ankle torque rise time percentage for bang-bang
+        right_leg->Setpoint_Ankle_Opt = -left_leg->Setpoint_Ankle_Opt;
+        right_leg->T_Opt_p = left_leg->T_Opt_p;
+        Serial.println(left_leg->FLAG_UPDATE_VALUES);
+        left_leg->FLAG_UPDATE_VALUES = true;
+        right_leg->FLAG_UPDATE_VALUES = true;
+        Serial.println(left_leg->FLAG_UPDATE_VALUES);
+        Serial.print("Received these values from HLO : ");
+        Serial.print(left_leg->Setpoint_Ankle_Opt);
+        Serial.print(" , ");
+        Serial.println(left_leg->T_Opt_p);
 
-      left_leg->activate_in_3_steps = 1;
-      left_leg->num_3_steps = 0;
-      left_leg->first_step = 1;
-      left_leg->start_step = 0;
+        left_leg->activate_in_3_steps = 1;
+        left_leg->num_3_steps = 0;
+        left_leg->first_step = 1;
+        left_leg->start_step = 0;
 
-      right_leg->activate_in_3_steps = 1;
-      right_leg->num_3_steps = 0;
-      right_leg->first_step = 1;
-      right_leg->start_step = 0;
-    }
+        right_leg->activate_in_3_steps = 1;
+        right_leg->num_3_steps = 0;
+        right_leg->first_step = 1;
+        right_leg->start_step = 0;
+      }
 
     case '"':
-    if (Flag_HLO) {
-      receiveVals(8);
-      memcpy(&left_leg->p_steps->Setpoint,holdOnPoint,8);   //HLO proportional control setpoint
-      right_leg->p_steps->Setpoint = -left_leg->p_steps->Setpoint;
-      left_leg->Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      right_leg->Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      left_leg->FSR_baseline_FLAG = 1;                      //Retake the baseline every new setpoint
-      right_leg->FSR_baseline_FLAG = 1;
-      break;
-    }
-      
-    
+      if (Flag_HLO) {
+        receiveVals(8);
+        memcpy(&left_leg->p_steps->Setpoint, holdOnPoint, 8); //HLO proportional control setpoint
+        right_leg->p_steps->Setpoint = -left_leg->p_steps->Setpoint;
+        left_leg->Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+        right_leg->Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+        left_leg->FSR_baseline_FLAG = 1;                      //Retake the baseline every new setpoint
+        right_leg->FSR_baseline_FLAG = 1;
+        break;
+      }
 
-// ------------------------------------------------------------
-    
+
+
+    // ------------------------------------------------------------
+
 
     case ':':
-          left_leg->BioFeedback_Baseline_flag = false;
-          right_leg->BioFeedback_Baseline_flag = false;
+      left_leg->BioFeedback_Baseline_flag = false;
+      right_leg->BioFeedback_Baseline_flag = false;
       left_leg->BIO_BASELINE_FLAG = true;
       right_leg->BIO_BASELINE_FLAG = true;
       left_leg->Heel_Strike = 0;
       right_leg->Heel_Strike = 0;
       left_leg->Heel_Strike_Count = 0;
       right_leg->Heel_Strike_Count = 0;
-//      Serial.println(" BIOFEEDBACK BASELINE ");
+      //      Serial.println(" BIOFEEDBACK BASELINE ");
       break;
 
     case 'U':

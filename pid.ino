@@ -3,7 +3,7 @@
 // Changing the number 10 we increase or decrease the sensitivity of the system to false positives at the same time we introduce a delay in the stopping action.
 // if the torque measured <25 the counter is reset.
 
-void pid(Leg* leg, double input){
+void pid(Leg* leg, double input) {
   if ((abs(input) > 35)) //Was 25, increased to accomodate large exo
   {
     leg->torque_error_counter++;
@@ -21,20 +21,20 @@ void pid(Leg* leg, double input){
     }
 
   } else {
-//    leg->torque_error_counter = 0;
-//    leg->KF = 1;
+    //    leg->torque_error_counter = 0;
+    //    leg->KF = 1;
   }
   leg->Input = input;
   leg->pid.Compute_KF(leg->KF);
-//  Serial.print(" ZERO: ");
-//  Serial.print(leg->zero);
+  //  Serial.print(" ZERO: ");
+  //  Serial.print(leg->zero);
   leg->Vol = leg->Output + leg->zero; //need to map
 
 
-if (PWM_CONTROL){
+  if (PWM_CONTROL) {
     leg->Vol = leg->Vol * 0.8 + 0.1 * 4096.0;
   }
 
-  
+
   analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
 }

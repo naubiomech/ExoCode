@@ -45,8 +45,8 @@ double Change_PID_Setpoint_Spline(Leg* p_leg_l, double New_PID_Setpoint_l, doubl
   p_leg_l->c5 = -(12 * p_leg_l->c0 - 12 * p_leg_l->pf + 6 * T_l * p_leg_l->c1 - p_leg_l->ddpf * pow(T_l , 2) + 2 * pow(T_l , 2) * p_leg_l->c2 + 6 * p_leg_l->dpf * T_l) / (2 * pow(T_l , 5));
 
   double spl = p_leg_l->c5 * pow(n_iter_l * 0.002, 5) + p_leg_l->c4 * pow(n_iter_l * 0.002, 4) + p_leg_l->c3 * pow(n_iter_l * 0.002, 3) + p_leg_l->c2 * pow(n_iter_l * 0.002, 2) + p_leg_l->c1 * n_iter_l * 0.002 + p_leg_l->c0;
-  if (spl > New_PID_Setpoint_l){
-    spl=New_PID_Setpoint_l;
+  if (spl > New_PID_Setpoint_l) {
+    spl = New_PID_Setpoint_l;
   }
 
   Current_PID_Setpoint = spl;
@@ -66,21 +66,21 @@ void PID_Sigm_Curve(Leg* leg) {
     leg->sig_time_old = leg->sig_time;                                                  //??? records for next time this code runs??
 
 
-    if (abs(leg->New_PID_Setpoint - leg->PID_Setpoint) > 0.1 &&  (leg->sigm_done)) 
+    if (abs(leg->New_PID_Setpoint - leg->PID_Setpoint) > 0.1 &&  (leg->sigm_done))
     {
-        leg->n_iter = 0;
-        leg->sigm_done = false;                                                   //Do not let the code enter this block, until the setpoint transition has finished
-      
+      leg->n_iter = 0;
+      leg->sigm_done = false;                                                   //Do not let the code enter this block, until the setpoint transition has finished
+
       if (leg->state == 3) {
         leg->N_step = leg->N3;                                           //Defines number of steps
       }
-      else if (leg->state == 2) {                                             
+      else if (leg->state == 2) {
         leg->N_step = leg->N2;
       }
       else if (leg->state == 1) {
         leg->N_step = leg->N1;
       }
-  
+
       //Optimization-------------------------------
       if (Flag_HLO) {
         if (leg->state == 3) {
@@ -91,7 +91,7 @@ void PID_Sigm_Curve(Leg* leg) {
         }
       }
       //------------------------------------------
-  
+
       leg->exp_mult = round((10 / Ts) / (leg->N_step - 1));
     } // end if sigm_done
 
@@ -113,7 +113,7 @@ void PID_Sigm_Curve(Leg* leg) {
     }
     //---------------------------------------------------------
 
-    if (leg->sigm_done == false && leg->n_iter < leg->N_step) 
+    if (leg->sigm_done == false && leg->n_iter < leg->N_step)
     {
       //Optimization--------------------------------------------------------
       if (Flag_HLO && leg->state == 3) {
@@ -121,12 +121,12 @@ void PID_Sigm_Curve(Leg* leg) {
       }
       //--------------------------------------------------------------------
       else {
-      // Determines the new intermediate PID Setpoint
-      leg->PID_Setpoint = Change_PID_Setpoint_Sigm(leg->New_PID_Setpoint, leg->PID_Setpoint, leg->Old_PID_Setpoint, Ts, leg->exp_mult, leg->n_iter, leg->N_step);
+        // Determines the new intermediate PID Setpoint
+        leg->PID_Setpoint = Change_PID_Setpoint_Sigm(leg->New_PID_Setpoint, leg->PID_Setpoint, leg->Old_PID_Setpoint, Ts, leg->exp_mult, leg->n_iter, leg->N_step);
       }
       leg->n_iter++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
     }
-    
-        
+
+
   }
 }
