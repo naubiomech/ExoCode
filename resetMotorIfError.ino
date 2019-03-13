@@ -6,8 +6,8 @@ void resetMotorIfError() {
   right_leg->motor_error = !digitalRead(right_leg->pin_err);  //Logical NOT makes it so that an error corresponds to HIGH
 
   motor_error = (left_leg->motor_error || right_leg->motor_error);
- 
- if (stream == 1) { 
+
+  if (stream == 1 && flag_motor_error_check) {
 
           //Enable motors for the first time because intially it is set to low
           if (flag_enable_catch_error == true && (digitalRead(onoff) == LOW)) {

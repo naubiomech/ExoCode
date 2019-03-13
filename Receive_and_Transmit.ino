@@ -905,8 +905,15 @@ void receive_and_transmit()
 //      Serial.println(" BIOFEEDBACK BASELINE ");
       break;
 
-
-    
+    case 'U':
+      data_to_send_point[0] = (double) VERSION;
+      send_command_message('U', data_to_send_point, 1);
+      break;
+    case 'z':
+      flag_motor_error_check = !flag_motor_error_check;
+      data_to_send_point[0] = flag_motor_error_check;
+      send_command_message('z', data_to_send_point, 1);
+      break;
 
   }
   cmd_from_Gui = 0;
