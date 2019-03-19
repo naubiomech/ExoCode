@@ -12,12 +12,10 @@ struct Leg {
   // In A_Exo pre-includes
   double FSR_Average_array[dim_FSR] = {0};
   double* p_FSR_Array = &FSR_Average_array[0];
-  //  double FSR_Average_Toe = 0;
   double Curr_FSR_Toe = 0;
 
   double FSR_Average_array_Heel[dim_FSR] = {0};
   double* p_FSR_Array_Heel = &FSR_Average_array_Heel[0];
-  //  double FSR_Average_Heel = 0;
   double Curr_FSR_Heel = 0;
 
   double Tarray[dim] = {0};
@@ -100,15 +98,15 @@ struct Leg {
   double T_act;
   int Vol;
 
-  #ifdef ENABLE_PWM   //PID Gains are different for PWM control
-    double kp = 600;
-    double ki = 0;
-    double kd = 3;
-  #else
-    double kp = 700;
-    double ki = 0;
-    double kd = 3;
-  #endif
+#ifdef ENABLE_PWM   //PID Gains are different for PWM control
+  double kp = 600;
+  double ki = 0;
+  double kd = 3;
+#else
+  double kp = 700;
+  double ki = 0;
+  double kd = 3;
+#endif
   double KF = 1;
 
   double PID_Setpoint, Input, Output;
@@ -202,27 +200,27 @@ struct Leg {
   double Err_max;
   double min_knee_error = 5;
   double Biofeedback_ctrl_max;
-  double Biofeedback_Volume=0;
+  double Biofeedback_Volume = 0;
 
-  bool BIO_BASELINE_FLAG=false;
-  bool NO_Biofeedback=true;
+  bool BIO_BASELINE_FLAG = false;
+  bool NO_Biofeedback = true;
   double start_time_Biofeedback;
-  
+
   char whos = ' ';
 
   double zero;
   double torque_error_counter;
 
   //Optimization-----------------------------------
-  double T_Opt_p,Setpoint_Ankle_Opt;
+  double T_Opt_p, Setpoint_Ankle_Opt;
   double Previous_T_Opt = 0.1;
   double T_Opt = 0.1;
   double T_Opt_Setpoint = 0.1;
 
-  double p0,dp0,ddp0,pf,dpf,ddpf,c0,c1,c2,c3,c4,c5;
+  double p0, dp0, ddp0, pf, dpf, ddpf, c0, c1, c2, c3, c4, c5;
 
-  bool FLAG_UPDATE_VALUES=false;
- //------------------------------------------------
+  bool FLAG_UPDATE_VALUES = false;
+  //------------------------------------------------
 
   // Torque_Speed_ADJ.h
   //steps steps;

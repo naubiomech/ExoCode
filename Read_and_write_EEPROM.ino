@@ -5,10 +5,8 @@ int check_torque_bias(int address_torque_l)
   byte value = EEPROM.read(address_torque_l);
   if (char(value) == 'y')
   {
-//    Serial.println(" Torque value is present in memory ");
     return 1;
   }
-//  Serial.println(" Torque value is not present in memory ");
   return 0;
 };
 
@@ -48,10 +46,8 @@ int check_FSR_values(int address_FSR_l)
 {
   byte value = EEPROM.read(address_FSR_l);
   if (char(value) == 'y') {
-//    Serial.println(" FSR values are present in memory ");
     return 1;
   }
-//  Serial.println(" FSR values are not present in memory ");
   return 0;
 }
 
@@ -132,9 +128,9 @@ int write_EXP_parameters(int address_params_l)
 }
 
 int check_EXP_parameters(int address_params_l)
-{ 
-//  Serial.print("Checking at pos ");
-//  Serial.println(address_params_l);
+{
+  //  Serial.print("Checking at pos ");
+  //  Serial.println(address_params_l);
   byte value = EEPROM.read(address_params_l);
   Serial.println(char(value));
   if (char(value) == 'y') {
