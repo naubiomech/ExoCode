@@ -61,6 +61,15 @@ public:
   void resume();
 };
 
+class Chrono{
+private:
+  unsigned long start_time, interval_time;
+public:
+  Chrono(unsigned long interval);
+  bool check();
+  void reset();
+};
+
 class Max{
 private:
   double maxVal;

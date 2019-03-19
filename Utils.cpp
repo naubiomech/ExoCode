@@ -138,6 +138,25 @@ void Timer::resume(){
   pause_time = 0;
 }
 
+Chrono::Chrono(unsigned long interval){
+  this->start_time = millis();
+  this->interval_time = interval;
+}
+
+bool Chrono::check(){
+  unsigned long current_time = millis();
+  unsigned long diff_time = current_time - this->start_time;
+  if (diff_time > this->interval_time){
+    this->start_time += this->interval_time;
+    return true;
+  }
+  return false;
+}
+
+void Chrono::reset(){
+  start_time = millis();
+}
+
 Max::Max(){
   this->reset();
 }
