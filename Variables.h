@@ -68,7 +68,6 @@ int Old_Control_Mode = Control_Mode;
 volatile double motor_driver_count_err;
 int time_err_motor;
 int time_err_motor_reboot;
-int flag_enable_catch_error = 1;
 bool motor_error = false;
 
 

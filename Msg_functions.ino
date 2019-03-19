@@ -43,9 +43,10 @@ void send_data_message_wc() //with COP
         Signal_2=(int) 100*(pot(right_leg->Potentiometer_pin) + right_leg->Biofeedback_bias);
       }
       else {
-        //Signal_1=(int) 100*(LED_BT_Voltage);//Signal_2=(int) 100*(right_leg->FSR_Heel_Average);
-        Signal_1=(int) 100*(left_leg->Time_error_counter);
-        Signal_2=(int) 100*(right_leg->Time_error_counter);
+        Signal_1=(int) 100*(left_leg->motor_error);
+        Signal_2=(int) 100*(right_leg->motor_error);
+        //Signal_1=(int) 100*(left_leg->Time_error_counter);
+        //Signal_2=(int) 100*(right_leg->Time_error_counter);
         
       }
       if (FLAG_BIOFEEDBACK) {
