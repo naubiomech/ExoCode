@@ -66,7 +66,6 @@ void IMU::measure(){
     this->bearings[0] = event.orientation.x;
     this->bearings[1] = event.orientation.y;
     this->bearings[2] = event.orientation.z;
-    imu_measure_limiter->reset();
   }
 }
 
