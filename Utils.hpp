@@ -50,8 +50,8 @@ public:
 
 class Timer{
 private:
-  double start_time;
-  double pause_time;
+  unsigned long start_time;
+  unsigned long pause_time;
 public:
   Timer();
   double lap();
