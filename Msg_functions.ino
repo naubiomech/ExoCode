@@ -55,7 +55,7 @@ void send_data_message_wc() //with COP
     data_to_send[12] = (left_leg->COP);
     data_to_send[13] = (right_leg->COP);
   }
-
+  send_command_message('?', data_to_send, 14);
 }
 
 
