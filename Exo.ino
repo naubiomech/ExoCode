@@ -1,4 +1,4 @@
-//A_Exo 3_1_1 This is the code for the Single board Ankle Exoskeleton -> A_EXO_s
+//A_Exo 3_1_2 This is the code for the Single board Ankle Exoskeleton -> A_EXO_s
 //
 // FSR sensors retrieve the sensor voltage related to the foot pressure.
 // The state machine (Left and Right state machine) identify the participant status depending on the voltage.
