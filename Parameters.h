@@ -63,7 +63,7 @@ double p_prop[3] = {128.1, -50.82, 22.06};
 double FSR_Ratio;
 
 // ===== Proportional Control Parameters =====
-double Max_Prop = 18;
+double Max_Prop = 25;
 double Min_Prop = 0;
 
 // ===== Auto KF Parameters =====

@@ -82,3 +82,5 @@ double BioFeedback_Freq_min = 200;
 const unsigned int pin_jack = 13;
 unsigned int state = HIGH;
 
+// Variables for Human-in-the-Loop Optimization (HLO)
+bool Flag_HLO = false;

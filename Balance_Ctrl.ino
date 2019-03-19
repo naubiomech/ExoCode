@@ -141,4 +141,3 @@ double Balance_Torque_COP_ref(Leg* leg) {
   }
 
 }
-

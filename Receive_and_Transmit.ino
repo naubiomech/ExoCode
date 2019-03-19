@@ -628,6 +628,8 @@ void receive_and_transmit()
       flag_auto_KF = 1;
       left_leg->KF = 1;
       right_leg->KF = 1;
+      left_leg->ERR = 0;
+      right_leg->ERR = 0;
 //      Serial.println(" Activate Auto KF ");
       break;
 
@@ -833,10 +835,63 @@ void receive_and_transmit()
 //      Serial.println(left_leg->Biofeedback_bias);
       break;
 
+// Optimization ------------------------------------------------
 
     case '%':
+      Serial.println("Start Optimization");
+      Flag_HLO = true;
+    break;
 
+    case ',':
+      Serial.println("End Optimization");
+      left_leg->Setpoint_Ankle = 0;
+      right_leg->Setpoint_Ankle = 0;
+      Flag_HLO = false;
+    break;
+
+    case '$':
+    if (Flag_HLO) {
+      receiveVals(16);
+      memcpy(&left_leg->Setpoint_Ankle_Opt,holdOnPoint,8);  //Ankle torque setpoint for bang-bang
+      memcpy(&left_leg->T_Opt_p, holdOnPoint+8, 8);         //Ankle torque rise time percentage for bang-bang
+      right_leg->Setpoint_Ankle_Opt = -left_leg->Setpoint_Ankle_Opt;
+      right_leg->T_Opt_p = left_leg->T_Opt_p;
+      Serial.println(left_leg->FLAG_UPDATE_VALUES);
+      left_leg->FLAG_UPDATE_VALUES = true;
+      right_leg->FLAG_UPDATE_VALUES = true;
+      Serial.println(left_leg->FLAG_UPDATE_VALUES);
+      Serial.print("Received these values from HLO : ");
+      Serial.print(left_leg->Setpoint_Ankle_Opt);
+      Serial.print(" , ");
+      Serial.println(left_leg->T_Opt_p);
+
+      left_leg->activate_in_3_steps = 1;
+      left_leg->num_3_steps = 0;
+      left_leg->first_step = 1;
+      left_leg->start_step = 0;
+
+      right_leg->activate_in_3_steps = 1;
+      right_leg->num_3_steps = 0;
+      right_leg->first_step = 1;
+      right_leg->start_step = 0;
+    }
+
+    case '"':
+    if (Flag_HLO) {
+      receiveVals(8);
+      memcpy(&left_leg->p_steps->Setpoint,holdOnPoint,8);   //HLO proportional control setpoint
+      right_leg->p_steps->Setpoint = -left_leg->p_steps->Setpoint;
+      left_leg->Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      right_leg->Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+      left_leg->FSR_baseline_FLAG = 1;                      //Retake the baseline every new setpoint
+      right_leg->FSR_baseline_FLAG = 1;
       break;
+    }
+      
+    
+
+// ------------------------------------------------------------
+    
 
     case ':':
           left_leg->BioFeedback_Baseline_flag = false;
@@ -851,9 +906,7 @@ void receive_and_transmit()
       break;
 
 
-    case ',':
-      break;
-
+    
 
   }
   cmd_from_Gui = 0;

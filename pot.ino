@@ -3,4 +3,3 @@ double pot(const unsigned int pin_l) {
   // for the conversions from bit to V from V to deg.
   return 3.3 * analogRead(pin_l) / 4096 * 300 / 3.3; 
 }
-
