@@ -11,7 +11,7 @@ void send_data_message_wc() //with COP
   if (FLAG_TWO_TOE_SENSORS) {
     data_to_send[3] = (right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
     data_to_send[4] = (right_leg->FSR_Combined_Average);
-  } elseif (FLAG_BALANCE) {
+  } else if (FLAG_BALANCE) {
     data_to_send[3] = (right_leg->FSR_Toe_Average);
     data_to_send[4] = (right_leg->FSR_Heel_Average);
   } else {
@@ -27,7 +27,7 @@ void send_data_message_wc() //with COP
   if (FLAG_TWO_TOE_SENSORS) {
     data_to_send[8] = (left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
     data_to_send[9] = (left_leg->FSR_Combined_Average);
-  } elseif (FLAG_BALANCE) {
+  } else if (FLAG_BALANCE) {
     data_to_send[8] = (left_leg->FSR_Toe_Average);
     data_to_send[9] = (left_leg->FSR_Heel_Average);
   } else {
