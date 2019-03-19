@@ -8,12 +8,14 @@ void send_data_message_wc() //with COP
       Sig_3=(int) 100* (right_leg->sign * right_leg->PID_Setpoint);
       
       if (FLAG_TWO_TOE_SENSORS) {
-      Sig_4=(int) 100*(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
-      Sig_5=(int) 100*(right_leg->FSR_Combined_Average);
-        }    
-      else
-      {Sig_4=(int) 100*(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Toe_peak_ref);
-       Sig_5=(int) 100*(right_leg->FSR_Toe_Average);
+        Sig_4=(int) 100*(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
+        Sig_5=(int) 100*(right_leg->FSR_Combined_Average);
+      } elseif (FLAG_BALANCE) {
+        Sig_4=(int) 100* (right_leg->FSR_Toe_Average);
+        Sig_5=(int) 100* (right_leg->FSR_Heel_Average);
+      } else {
+        Sig_4=(int) 100*(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Toe_peak_ref);
+        Sig_5=(int) 100*(right_leg->FSR_Toe_Average);
       }
 
 //Left Leg
@@ -22,12 +24,14 @@ void send_data_message_wc() //with COP
       Sig_8=(int) 100* (left_leg->sign * left_leg->PID_Setpoint);
       
       if (FLAG_TWO_TOE_SENSORS) {
-      Sig_9=(int) 100*(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
-      Sig_10=(int) 100*(left_leg->FSR_Combined_Average);
-        } 
-      else
-      {Sig_9=(int) 100*(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Toe_peak_ref);
-       Sig_10=(int) 100*(left_leg->FSR_Toe_Average);
+        Sig_9=(int) 100*(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
+        Sig_10=(int) 100*(left_leg->FSR_Combined_Average);
+      } elseif (FLAG_BALANCE) {
+        Sig_9=(int) 100* (left_leg->FSR_Toe_Average);
+        Sig_10=(int) 100* (left_leg->FSR_Heel_Average);
+      } else {
+        Sig_9=(int) 100*(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Toe_peak_ref);
+        Sig_10=(int) 100*(left_leg->FSR_Toe_Average);
       }
 
 // Signals
