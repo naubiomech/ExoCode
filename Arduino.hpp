@@ -11,7 +11,13 @@
 #include <Adafruit_BNO055_t3.h>
 #include <utility/imumaths.h>
 
+#elif ROS
+
+#include "ros/ros.h"
+#include "ArduinoInterface.hpp"
+
 #else
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -109,7 +115,6 @@ void delay(double);
 double pow(double, double);
 double exp(double);
 double round(double);
-double abs(double);
 double max(double, double);
 double min(double, double);
 unsigned long millis();

@@ -91,7 +91,6 @@ void delay(double time){usleep(1000 * time);}
 double pow(double, double){return 0;}
 double exp(double){return 0;}
 double round(double){return 0;}
-double abs(double){return 0;}
 double max(double a, double b){return (a>b) ? a : b;}
 double min(double a, double b){return (a<b) ? a : b;}
 unsigned long int millis(){
@@ -105,12 +104,13 @@ unsigned long int millis(){
 
   return millisecondsSinceEpoch;
 }
-void pinMode(int, int){}
 void analogReadResolution(int){}
 void analogWriteResolution(int){}
+#ifndef ROS
+void pinMode(int, int){}
 int analogRead(int){return 0;}
 void analogWrite(int, int){}
 int digitalRead(int){return 0;}
 void digitalWrite(int, int){}
-
+#endif
 #endif
