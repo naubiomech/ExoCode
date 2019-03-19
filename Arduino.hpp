@@ -6,7 +6,6 @@
 #include <Arduino.h>
 #include <i2c_t3.h>
 #include <SoftwareSerial.h>
-#include <Metro.h>
 #include "PID_v2.h"
 #include <Adafruit_BNO055_t3.h>
 #include <utility/imumaths.h>
@@ -71,13 +70,6 @@ public:
   void getCalibration(uint8_t*, uint8_t*, uint8_t*, uint8_t*);
   bool isFullyCalibrated();
 
-};
-
-class Metro{
-public:
-  Metro(unsigned long interval);
-  void reset();
-  bool check();
 };
 
 class PID{

@@ -4,13 +4,14 @@
 #include "Parameters.hpp"
 #include "Report.hpp"
 #include "Port.hpp"
+#include "Utils.hpp"
 
 class IMU{
 private:
   Adafruit_BNO055* bno;
   double bearings[3];
   bool enabled;
-  Metro* imu_measure_limiter;
+  Chrono* imu_measure_limiter;
 
 public:
   IMU(ImuPort* imu_port, unsigned int address);

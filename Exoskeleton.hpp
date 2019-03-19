@@ -4,6 +4,7 @@
 #include "Leg.hpp"
 #include "Report.hpp"
 #include "Communications.hpp"
+#include "Utils.hpp"
 #include "Message.hpp"
 
 class Exoskeleton{
@@ -15,12 +16,12 @@ private:
   void applyControl();
 
   bool resetting_motors = false;
-  Metro motor_shutdown = Metro(16);
-  Metro motor_startup = Metro(8);
+  Chrono motor_shutdown = Chrono(16);
+  Chrono motor_startup = Chrono(8);
 
   bool trialStarted = false;
-  Metro reportDataTimer = Metro(10);
-  Metro receiveDataTimer = Metro(1);
+  Chrono reportDataTimer = Chrono(10);
+  Chrono receiveDataTimer = Chrono(1);
   ExoReport* report;
   Communications* comms;
   OutputPort* motor_enable_port;

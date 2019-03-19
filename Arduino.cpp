@@ -73,10 +73,6 @@ void Adafruit_BNO055::getEvent(sensors_event_t* event){
 }
 
 
-Metro::Metro(unsigned long){}
-void Metro::reset(){}
-bool Metro::check(){return true;}
-
 PID::PID(double*, double*, double*, double, double, double, int){}
 void PID::SetMode(int){}
 void PID::SetOutputLimits(int,int){}
