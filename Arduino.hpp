@@ -10,12 +10,15 @@
 #include <Adafruit_BNO055_t3.h>
 #include <utility/imumaths.h>
 
-#elif ROS
+#else
 
+
+#ifdef ROS
 #include "ros/ros.h"
 #include "ArduinoInterface.hpp"
-
 #else
+typedef int uint8_t;
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,7 +54,6 @@ enum i2c_pins {I2C_PINS_3_4 = 0,
                I2C_PINS_37_38};
 enum i2c_bus {WIRE_BUS, WIRE1_BUS};
 
-typedef int uint8_t;
 struct sensors_event_t{
   struct {
     double x;
