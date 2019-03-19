@@ -40,8 +40,6 @@ public:
   int read();
   bool available();
 };
-#define REVERSE 1
-#define AUTOMATIC 1
 
 #define I2C_MASTER 1
 #define I2C_PULLUP_EXT 1
@@ -73,22 +71,33 @@ public:
 };
 
 
-#define INPUT 1
+#define INPUT 0
 #define OUTPUT 1
+
 #define LOW 0
 #define HIGH 1
-#define A1 101
-#define A2 102
-#define A3 103
-#define A0 100
-#define A5 105
-#define A6 106
-#define A12 112
-#define A13 113
-#define A14 114
-#define A15 115
-#define A16 116
-#define A17 117
+
+#define A0 14
+#define A1 15
+#define A2 16
+#define A3 17
+#define A4 18
+#define A5 19
+#define A6 20
+#define A7 21
+#define A8 22
+#define A9 23
+#define A12 31
+#define A13 32
+#define A14 33
+#define A15 34
+#define A16 35
+#define A17 36
+#define A18 37
+#define A19 38
+#define A20 39
+#define A21 40
+#define A22 41
 
 void delay(double);
 double pow(double, double);
