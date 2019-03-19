@@ -42,12 +42,13 @@ i2c_bus ImuPort::getBus(){
   return imu_bus;
 }
 
-InputPort::InputPort(unsigned int pin):Port(pin){}
+InputPort::InputPort(unsigned int pin):Port(pin){
+  pinMode(pin, INPUT);
+}
 InputPort::~InputPort(){}
 
 AnalogInputPort::AnalogInputPort(unsigned int pin, unsigned int resolution_bits):InputPort(pin){
   resolution = calculateResolution(resolution_bits);
-  pinMode(pin, INPUT);
 }
 
 AnalogInputPort::~AnalogInputPort(){}
@@ -58,7 +59,6 @@ double AnalogInputPort::read(){
 }
 
 DigitalInputPort::DigitalInputPort(unsigned int pin):InputPort(pin){
-  pinMode(pin, INPUT);
 }
 DigitalInputPort::~DigitalInputPort(){}
 
@@ -77,7 +77,9 @@ unsigned int RxPort::getPin(){
   return InputPort::getPin();
 }
 
-OutputPort::OutputPort(unsigned int pin):Port(pin){}
+OutputPort::OutputPort(unsigned int pin):Port(pin){
+  pinMode(pin, OUTPUT);
+}
 OutputPort::~OutputPort(){}
 
 AnalogOutputPort::AnalogOutputPort(unsigned int pin, unsigned int resolution_bits):OutputPort(pin){
@@ -91,9 +93,7 @@ void AnalogOutputPort::write(double value){
   analogWrite(getPin(), output);
 }
 
-DigitalOutputPort::DigitalOutputPort(unsigned int pin):OutputPort(pin){
-  pinMode(pin, OUTPUT);
-}
+DigitalOutputPort::DigitalOutputPort(unsigned int pin):OutputPort(pin){}
 
 DigitalOutputPort::~DigitalOutputPort(){}
 
