@@ -5,6 +5,7 @@
 #include "Control_Algorithms.hpp"
 #include "Shaping_Functions.hpp"
 #include "Utils.hpp"
+#include "PID.hpp"
 #include "Linked_List.hpp"
 
 class ControlModule{

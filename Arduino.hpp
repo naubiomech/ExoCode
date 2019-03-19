@@ -72,19 +72,6 @@ public:
 
 };
 
-class PID{
-public:
-  PID(double*, double*, double*, double, double, double, int);
-  void SetMode(int);
-  void SetOutputLimits(int,int);
-  void SetSampleTime(int);
-  void Compute_KF(double);
-  double GetKp();
-  double GetKi();
-  double GetKd();
-  void SetTunings(double,double,double);
-
-};
 
 #define INPUT 1
 #define OUTPUT 1

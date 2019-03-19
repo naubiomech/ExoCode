@@ -72,17 +72,6 @@ void Adafruit_BNO055::getEvent(sensors_event_t* event){
   event->orientation.z = 0;
 }
 
-
-PID::PID(double*, double*, double*, double, double, double, int){}
-void PID::SetMode(int){}
-void PID::SetOutputLimits(int,int){}
-void PID::SetSampleTime(int){}
-void PID::Compute_KF(double){}
-double PID::GetKp(){return 0;}
-double PID::GetKi(){return 0;}
-double PID::GetKd(){return 0;}
-void PID::SetTunings(double,double,double){}
-
 void delay(double time){usleep(1000 * time);}
 double pow(double, double){return 0;}
 double exp(double){return 0;}
