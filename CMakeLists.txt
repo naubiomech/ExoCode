@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 2.8.3)
 project (biomech_exo)
+add_compile_options(-std=c++11)
 
 include_directories(./)
 #set(SOURCES main.cpp)
