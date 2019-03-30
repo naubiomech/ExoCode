@@ -18,10 +18,6 @@
 #include "ArduinoInterface.hpp"
 #else
 typedef int uint8_t;
-#endif
-
-#include <stdio.h>
-#include <stdlib.h>
 
 class SoftwareSerial{
 public:
@@ -43,6 +39,11 @@ public:
   int read();
   bool available();
 };
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+
 
 #define I2C_MASTER 1
 #define I2C_PULLUP_EXT 1
