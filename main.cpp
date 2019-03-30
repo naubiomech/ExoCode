@@ -1,4 +1,5 @@
 #ifndef ARDUINO
+#ifndef ROS
 #include "Arduino.hpp"
 #include "ExoBuilder.hpp"
 #include "BoardBuilder.hpp"
@@ -35,4 +36,5 @@ void testExo(){
 int main(){
   testExo();
 }
+#endif
 #endif
