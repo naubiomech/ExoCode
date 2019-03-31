@@ -37,7 +37,7 @@ public:
   void setReadString(const char* str);
 
   int read();
-  bool available();
+  int available();
 };
 #endif
 

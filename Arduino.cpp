@@ -97,7 +97,7 @@ int SoftwareSerial::read(){
   return val;
 }
 
-bool SoftwareSerial::available(){return strLen > 0;}
+int SoftwareSerial::available(){return strLen;}
 
 #endif
 #endif
