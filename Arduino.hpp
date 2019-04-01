@@ -6,7 +6,6 @@
 #include <Arduino.h>
 #include <i2c_t3.h>
 #include <SoftwareSerial.h>
-#include "PID_v2.h"
 #include <Adafruit_BNO055_t3.h>
 #include <utility/imumaths.h>
 
