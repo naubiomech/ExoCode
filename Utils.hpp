@@ -98,21 +98,22 @@ public:
   bool update(bool state);
 };
 
+
 class Range{
 private:
-  double avg;
   Max* maximum;
   Min* minimum;
-  double last_max;
-  double last_min;
-  Threshold* threshold;
-  ChangeTrigger* trigger;
-  MovingAverage* avgMax;
-  MovingAverage* avgMin;
+  RunningAverage* min_avg;
+  RunningAverage* max_avg;
+  double threshold;
+  double calculateThreshold();
 public:
+  Range(double first_min, double first_max);
   double getMax();
   double getMin();
   void update(double value);
+  void reset(double min, double max);
+  void reset();
 };
 
 void updateMax(double* max_val, double val);
