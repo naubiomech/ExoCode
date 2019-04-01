@@ -5,7 +5,7 @@
 
 enum StateType {SWING = 1, LATE_STANCE = 3};
 
-typedef StateType StateID;
+typedef int StateID;
 
 class Leg;
 class State{
