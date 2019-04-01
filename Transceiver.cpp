@@ -53,7 +53,7 @@ void MatlabTransceiver::receiveData(double* output_data, int doubles_expected){
   doubles_expected *= sizeof(double);
 
   char* output_data_raw_form = new char[doubles_expected * sizeof(double)];
-  for(int i = 0; i < doubles_expected; i ++){
+  for(unsigned int i = 0; i < doubles_expected * sizeof(double); i ++){
 	  while (noDataAvailable()){}
 	  int data = serial->read();
     output_data_raw_form[i] = data;
@@ -84,7 +84,7 @@ void MatlabTransceiver::sendData(double* data, int doubles_to_send){
 
   byte_transcriber.encodeFloat(bytes, floats, doubles_to_send);
 
-  for (int i = 0; i < doubles_to_send * sizeof(float); i++){
+  for (unsigned int i = 0; i < doubles_to_send * sizeof(float); i++){
 	  unsigned int d = bytes[i];
 	  serial->write(d);
   }

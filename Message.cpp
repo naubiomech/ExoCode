@@ -89,7 +89,7 @@ LegMessageBuilder* LegMessageBuilder::addPostCommand(Command<Leg>* command){
 }
 
 JointMessageBuilder* LegMessageBuilder::beginJointMessage(JointID id){
-  while (id >= joint_builders.size()){
+  while (id >= (int) joint_builders.size()){
     joint_builders.append(new JointMessageBuilder(this));
   }
   return joint_builders[id];
