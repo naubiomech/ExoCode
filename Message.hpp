@@ -4,6 +4,7 @@
 #include "Report.hpp"
 #include "Linked_List.hpp"
 #include "Commands.hpp"
+#include "JointSelect.hpp"
 
 class Exoskeleton;
 class Leg;
@@ -47,6 +48,7 @@ public:
   ExoMessage(LinkedList<Command<Exoskeleton>*>* pre_commands, LinkedList<Command<Exoskeleton>*>* post_commands,
              LegMessage* right_leg_msg, LegMessage* left_leg_msg);
   ~ExoMessage();
+  void messageArea(AreaID id);
   void messageRightLeg(Leg* right);
   void messageLeftLeg(Leg* left);
 };
@@ -100,7 +102,7 @@ public:
   ~LegMessageBuilder();
   LegMessageBuilder* addPreCommand(Command<Leg>* command);
   LegMessageBuilder* addPostCommand(Command<Leg>* command);
-  JointMessageBuilder* beginJointMessage(unsigned int id);
+  JointMessageBuilder* beginJointMessage(JointID id);
   ExoMessageBuilder* finishLeg();
   LegMessage* build();
 };
@@ -114,9 +116,11 @@ public:
   ~ExoMessageBuilder();
   ExoMessageBuilder* addPreCommand(Command<Exoskeleton>* command);
   ExoMessageBuilder* addPostCommand(Command<Exoskeleton>* command);
+  LegMessageBuilder* beginAreaMessage(AreaID id);
   LegMessageBuilder* beginLeftLegMessage();
   LegMessageBuilder* beginRightLegMessage();
   ExoMessage* build();
+	JointSelect joint_select;
 };
 
 template<class Context>

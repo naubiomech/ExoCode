@@ -3,10 +3,12 @@
 #include <cstddef>
 #include "States.hpp"
 #include "Linked_List.hpp"
+#include "JointSelect.hpp"
 
 class Report{
 public:
   virtual ~Report();
+	JointSelect joint_select;
 };
 
 class MotorReport:public Report{
@@ -60,6 +62,8 @@ class LegReport:public Report{
 public:
   LegReport();
   ~LegReport();
+  JointReport* getJointReport(JointID id);
+
   SensorReport* sensor_reports;
   LinkedList<JointReport*> joint_reports;
   int state;
@@ -70,6 +74,8 @@ class ExoReport:public Report{
 public:
   ExoReport();
   ~ExoReport();
+  LegReport* getAreaReport(AreaID id);
+
   LegReport* left_leg;
   LegReport* right_leg;
 };

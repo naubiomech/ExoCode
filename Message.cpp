@@ -1,6 +1,7 @@
 #include "Message.hpp"
 #include "Leg.hpp"
 #include "Joint.hpp"
+#include "JointSelect.hpp"
 
 JointMessage::JointMessage(LinkedList<Command<Joint>*>* commands):Message<Joint>(commands){}
 
@@ -87,7 +88,7 @@ LegMessageBuilder* LegMessageBuilder::addPostCommand(Command<Leg>* command){
   return this;
 }
 
-JointMessageBuilder* LegMessageBuilder::beginJointMessage(unsigned int id){
+JointMessageBuilder* LegMessageBuilder::beginJointMessage(JointID id){
   while (id >= joint_builders.size()){
     joint_builders.append(new JointMessageBuilder(this));
   }
@@ -131,6 +132,15 @@ ExoMessageBuilder* ExoMessageBuilder::addPreCommand(Command<Exoskeleton>* comman
 ExoMessageBuilder* ExoMessageBuilder::addPostCommand(Command<Exoskeleton>* command){
   MessageBuilder<Exoskeleton>::addPostCommand(command);
   return this;
+}
+
+LegMessageBuilder* ExoMessageBuilder::beginAreaMessage(AreaID id){
+	if (id == joint_select.area_id.LEFT_LEG){
+		return beginLeftLegMessage();
+	} else if (id == joint_select.area_id.RIGHT_LEG){
+		return beginRightLegMessage();
+	}
+	return NULL;
 }
 
 LegMessageBuilder* ExoMessageBuilder::beginLeftLegMessage(){

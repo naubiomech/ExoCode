@@ -51,12 +51,16 @@ void MatlabTransceiver::receiveData(double* output_data, int doubles_expected){
     return;
   }
   doubles_expected *= sizeof(double);
-  char* output_data_raw_form = (char*) output_data;
+
+  char* output_data_raw_form = new char[doubles_expected * sizeof(double)];
   for(int i = 0; i < doubles_expected; i ++){
-    while (noDataAvailable()){}
-    int data = serial->read();
+	  while (noDataAvailable()){}
+	  int data = serial->read();
     output_data_raw_form[i] = data;
   }
+
+  byte_transcriber.decodeDoubles(output_data, output_data_raw_form, doubles_expected);
+  delete[] output_data_raw_form;
 }
 
 void MatlabTransceiver::sendHeader(){
@@ -72,14 +76,21 @@ void MatlabTransceiver::sendData(double* data, int doubles_to_send){
     return;
   }
   serial->write((char) doubles_to_send);
-  for (int i = 0; i < doubles_to_send; i++){
-    float float_data = data[i];
-    char* raw_data = (char*) (&float_data);
-	  for (unsigned int j = 0; j < sizeof(float); j++){
-		  unsigned int d = raw_data[j];
-		  serial->write(d);
-	  }
+  char* bytes = new char[doubles_to_send * sizeof(float)];
+  float* floats = new float[doubles_to_send];
+  for(int i = 0; i < doubles_to_send; i++){
+	  floats[i] = data[i];
   }
+
+  byte_transcriber.encodeFloat(bytes, floats, doubles_to_send);
+
+  for (int i = 0; i < doubles_to_send * sizeof(float); i++){
+	  unsigned int d = bytes[i];
+	  serial->write(d);
+  }
+
+  delete[] bytes;
+  delete[] floats;
 }
 
 void MatlabTransceiver::sendFooter(){

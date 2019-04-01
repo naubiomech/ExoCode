@@ -1,5 +1,6 @@
 #include "Transmission.hpp"
 #include "Transceiver.hpp"
+#include "JointSelect.hpp"
 #include <string.h>
 
 Transmission::Transmission(Transceiver* transceiver, CommandCode code,
@@ -33,6 +34,11 @@ void Transmission::process(ExoMessageBuilder* builder, ExoReport* report){
   processData(builder, report);
   sendData();
 }
+
+void Transmission::decodeJointSelect(int* selects, double encoded_select){
+  byte_transcriber.decodeJointSelect(selects, encoded_select);
+}
+
 
 void Transmission::getData(){
   if (receive_count > 0){
@@ -105,32 +111,23 @@ void CleanBluetoothBufferTransmission::processData(ExoMessageBuilder*, ExoReport
   transceiver->clear();
 }
 
-GetLeftAnkleSetpointTransmission::GetLeftAnkleSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_LEFT_ANKLE_SETPOINT, 0, 1){}
-void GetLeftAnkleSetpointTransmission::processData(ExoMessageBuilder*, ExoReport* report){
-  send_data[0] = report->left_leg->joint_reports[0]->pid_setpoint;
+GetSetpointTransmission::GetSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_SETPOINT, 1, 1){}
+void GetSetpointTransmission::processData(ExoMessageBuilder*, ExoReport* report){
+  int selects[3];
+  decodeJointSelect(selects, receive_data[0]);
+
+  send_data[0] = report->getAreaReport(selects[0])->getJointReport(selects[1])->pid_setpoint;
 }
 
-GetRightAnkleSetpointTransmission::GetRightAnkleSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_RIGHT_ANKLE_SETPOINT, 0, 1){}
-void GetRightAnkleSetpointTransmission::processData(ExoMessageBuilder*, ExoReport* report){
-  send_data[0] = report->right_leg->joint_reports[0]->pid_setpoint;
-}
-
-SetLeftAnkleSetpointTransmission::SetLeftAnkleSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_LEFT_ANKLE_SETPOINT, 2, 0){}
-void SetLeftAnkleSetpointTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
+SetSetpointTransmission::SetSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_SETPOINT, 3, 0){}
+void SetSetpointTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
+  int selects[3];
+  decodeJointSelect(selects, receive_data[0]);
   builder->
-    beginLeftLegMessage()->
-    beginJointMessage(0)->
-    addCommand(new SetJointSetpointCommand(LATE_STANCE, receive_data[0]))->
-    addCommand(new SetJointSetpointCommand(SWING, receive_data[1]));
-}
-
-SetRightAnkleSetpointTransmission::SetRightAnkleSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_RIGHT_ANKLE_SETPOINT, 2, 0){}
-void SetRightAnkleSetpointTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
-  builder->
-    beginRightLegMessage()->
-    beginJointMessage(0)->
-    addCommand(new SetJointSetpointCommand(LATE_STANCE, receive_data[0]))->
-    addCommand(new SetJointSetpointCommand(SWING, receive_data[1]));
+    beginAreaMessage(selects[0])->
+    beginJointMessage(selects[1])->
+    addCommand(new SetJointSetpointCommand(LATE_STANCE, receive_data[1]))->
+    addCommand(new SetJointSetpointCommand(SWING, receive_data[2]));
 }
 
 CalibrateFsrTransmission::CalibrateFsrTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CALIBRATE_FSR, 0, 0){}
@@ -138,86 +135,66 @@ void CalibrateFsrTransmission::processData(ExoMessageBuilder* builder, ExoReport
   builder->addPreCommand(new CalibrateAllFsrsCommand());
 }
 
-GetLeftAnkleFsrThresholdTransmission::GetLeftAnkleFsrThresholdTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_LEFT_ANKLE_FSR_THRESHOLD, 0, 1){}
-void GetLeftAnkleFsrThresholdTransmission::processData(ExoMessageBuilder*, ExoReport*){
+GetFsrThresholdTransmission::GetFsrThresholdTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_FSR_THRESHOLD, 0, 1){}
+void GetFsrThresholdTransmission::processData(ExoMessageBuilder*, ExoReport*){
   send_data[0] = 1;
 }
 
-GetRightAnkleFsrThresholdTransmission::GetRightAnkleFsrThresholdTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_RIGHT_ANKLE_FSR_THRESHOLD, 0, 1){}
-void GetRightAnkleFsrThresholdTransmission::processData(ExoMessageBuilder*, ExoReport*){
-  send_data[0] = 1;
+GetKFTransmission::GetKFTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_KF, 1, 1){}
+void GetKFTransmission::processData(ExoMessageBuilder*, ExoReport* report){
+  int selects[3];
+  decodeJointSelect(selects, receive_data[0]);
+
+  send_data[0] = report->getAreaReport(selects[0])->getJointReport(selects[1])->pid_kf;
 }
 
-GetRightAnkleKFTransmission::GetRightAnkleKFTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_RIGHT_ANKLE_KF, 0, 1){}
-void GetRightAnkleKFTransmission::processData(ExoMessageBuilder*, ExoReport* report){
-  send_data[0] = report->right_leg->joint_reports[0]->pid_kf;
-}
-
-GetLeftAnkleKFTransmission::GetLeftAnkleKFTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_LEFT_ANKLE_KF, 0, 1){}
-void GetLeftAnkleKFTransmission::processData(ExoMessageBuilder*, ExoReport* report){
-  send_data[0] = report->left_leg->joint_reports[0]->pid_kf;
-}
-
-SetRightAnkleKFTransmission::SetRightAnkleKFTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_RIGHT_ANKLE_KF, 1, 0){}
-void SetRightAnkleKFTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
+SetKFTransmission::SetKFTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_KF, 2, 0){}
+void SetKFTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
+  int selects[3];
+  decodeJointSelect(selects, receive_data[0]);
   builder->
-    beginRightLegMessage()->
-    beginJointMessage(0)->
-    addCommand(new SetJointKfCommand(receive_data[0]));
+    beginAreaMessage(selects[0])->
+    beginJointMessage(selects[1])->
+    addCommand(new SetJointKfCommand(receive_data[1]));
 }
 
-SetLeftAnkleKFTransmission::SetLeftAnkleKFTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_LEFT_ANKLE_KF, 1, 0){}
-void SetLeftAnkleKFTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
+GetPidParamsTransmission::GetPidParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_PID_PARAMS, 1, 3){}
+void GetPidParamsTransmission::processData(ExoMessageBuilder*, ExoReport* report){
+  int selects[3];
+  decodeJointSelect(selects, receive_data[0]);
+
+  copyToSend(report->getAreaReport(selects[0])->getJointReport(selects[1])->pid_params);
+}
+
+SetPidParamsTransmission::SetPidParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_PID_PARAMS, 4, 0){}
+void SetPidParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
+  int selects[3];
+  decodeJointSelect(selects, receive_data[0]);
+
   builder->
-    beginLeftLegMessage()->
-    beginJointMessage(0)->
-    addCommand(new SetJointKfCommand(receive_data[0]));
+    beginAreaMessage(selects[0])->
+    beginJointMessage(selects[1])->
+    addCommand(new SetJointPidCommand(receive_data[1], receive_data[2], receive_data[3]));
 }
 
-GetRightAnklePidParamsTransmission::GetRightAnklePidParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_RIGHT_ANKLE_PID_PARAMS, 0, 3){}
-void GetRightAnklePidParamsTransmission::processData(ExoMessageBuilder*, ExoReport* report){
-  copyToSend(report->right_leg->joint_reports[0]->pid_params);
-}
-
-GetLeftAnklePidParamsTransmission::GetLeftAnklePidParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_LEFT_ANKLE_PID_PARAMS, 0, 3){}
-void GetLeftAnklePidParamsTransmission::processData(ExoMessageBuilder*, ExoReport* report){
-  copyToSend(report->left_leg->joint_reports[0]->pid_params);
-}
-
-SetRightAnklePidParamsTransmission::SetRightAnklePidParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_RIGHT_ANKLE_PID_PARAMS, 3, 0){}
-void SetRightAnklePidParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
-  builder->
-    beginRightLegMessage()->
-    beginJointMessage(0)->
-    addCommand(new SetJointPidCommand(receive_data[0], receive_data[1], receive_data[2]));
-}
-
-SetLeftAnklePidParamsTransmission::SetLeftAnklePidParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_LEFT_ANKLE_PID_PARAMS, 3, 0){}
-void SetLeftAnklePidParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
-  builder->
-    beginLeftLegMessage()->
-    beginJointMessage(0)->
-    addCommand(new SetJointPidCommand(receive_data[0], receive_data[1], receive_data[2]));
-}
-
-GetSmoothingParamsTransmission::GetSmoothingParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_SMOOTHING_PARAMS, 0, 3){}
+GetSmoothingParamsTransmission::GetSmoothingParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_SMOOTHING_PARAMS, 1, 3){}
 void GetSmoothingParamsTransmission::processData(ExoMessageBuilder*, ExoReport* report){
-  copyToSend(report->right_leg->joint_reports[0]->smoothing);
+  int selects[3];
+  decodeJointSelect(selects, receive_data[0]);
+
+  copyToSend(report->getAreaReport(selects[0])->getJointReport(selects[1])->smoothing);
 }
 
 SetSmoothingParamsTransmission::SetSmoothingParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_SMOOTHING_PARAMS, 3, 0){}
 void SetSmoothingParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
+
+  int selects[3];
+  decodeJointSelect(selects, receive_data[0]);
+
   builder->
-    beginRightLegMessage()->
-    beginJointMessage(0)->
-    addCommand(new SetJointSmoothingParamCommand(SWING, receive_data[0]))->
-    addCommand(new SetJointSmoothingParamCommand(LATE_STANCE, receive_data[2]))->
-    finishJoint()->
-    finishLeg()->
-    beginLeftLegMessage()->
-    beginJointMessage(0)->
-    addCommand(new SetJointSmoothingParamCommand(SWING, receive_data[0]))->
-    addCommand(new SetJointSmoothingParamCommand(LATE_STANCE, receive_data[2]));
+    beginAreaMessage(selects[0])->
+    beginJointMessage(selects[1])->
+    addCommand(new SetJointSmoothingParamCommand(selects[2], receive_data[1]));
 }
 
 CheckMemoryTransmission::CheckMemoryTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CHECK_MEMORY, 0, 3){}
@@ -241,45 +218,31 @@ Transmission* TransmissionFactory::create(Transceiver* trans, CommandCode code){
     return new CheckBluetoothTransmission(trans);
   case COMM_CODE_CLEAN_BLUETOOTH_BUFFER:
     return new CleanBluetoothBufferTransmission(trans);
-  case COMM_CODE_GET_LEFT_ANKLE_SETPOINT:
-    return new GetLeftAnkleSetpointTransmission(trans);
-  case COMM_CODE_GET_RIGHT_ANKLE_SETPOINT:
-    return new GetRightAnkleSetpointTransmission(trans);
-  case COMM_CODE_SET_LEFT_ANKLE_SETPOINT:
-    return new SetLeftAnkleSetpointTransmission(trans);
-  case COMM_CODE_SET_RIGHT_ANKLE_SETPOINT:
-    return new SetRightAnkleSetpointTransmission(trans);
+  case COMM_CODE_GET_SETPOINT:
+    return new GetSetpointTransmission(trans);
+  case COMM_CODE_SET_SETPOINT:
+    return new SetSetpointTransmission(trans);
   case COMM_CODE_CALIBRATE_FSR:
     return new CalibrateFsrTransmission(trans);
-  case COMM_CODE_GET_LEFT_ANKLE_FSR_THRESHOLD:
-    return new GetLeftAnkleFsrThresholdTransmission(trans);
-  case COMM_CODE_GET_RIGHT_ANKLE_FSR_THRESHOLD:
-    return new GetRightAnkleFsrThresholdTransmission(trans);
-  case COMM_CODE_GET_LEFT_ANKLE_KF:
-    return new GetLeftAnkleKFTransmission(trans);
-  case COMM_CODE_GET_RIGHT_ANKLE_KF:
-    return new GetRightAnkleKFTransmission(trans);
-  case COMM_CODE_SET_LEFT_ANKLE_KF:
-    return new SetLeftAnkleKFTransmission(trans);
-  case COMM_CODE_SET_RIGHT_ANKLE_KF:
-    return new SetRightAnkleKFTransmission(trans);
-  case COMM_CODE_GET_LEFT_ANKLE_PID_PARAMS:
-    return new GetLeftAnklePidParamsTransmission(trans);
-  case COMM_CODE_GET_RIGHT_ANKLE_PID_PARAMS:
-    return new GetRightAnklePidParamsTransmission(trans);
-  case COMM_CODE_SET_LEFT_ANKLE_PID_PARAMS:
-    return new SetLeftAnklePidParamsTransmission(trans);
-  case COMM_CODE_SET_RIGHT_ANKLE_PID_PARAMS:
-    return new SetRightAnklePidParamsTransmission(trans);
+  case COMM_CODE_GET_FSR_THRESHOLD:
+    return new GetFsrThresholdTransmission(trans);
+  case COMM_CODE_GET_KF:
+    return new GetKFTransmission(trans);
+  case COMM_CODE_SET_KF:
+    return new SetKFTransmission(trans);
+  case COMM_CODE_GET_PID_PARAMS:
+    return new GetPidParamsTransmission(trans);
+  case COMM_CODE_SET_PID_PARAMS:
+    return new SetPidParamsTransmission(trans);
   case COMM_CODE_GET_SMOOTHING_PARAMS:
     return new GetSmoothingParamsTransmission(trans);
   case COMM_CODE_SET_SMOOTHING_PARAMS:
     return new SetSmoothingParamsTransmission(trans);
   case COMM_CODE_CHECK_MEMORY:
-	return new CheckMemoryTransmission(trans);
+    return new CheckMemoryTransmission(trans);
   default:
     Serial.print("Command code not implemented: ");
     Serial.println(code);
   }
-  return NULL;
+	return NULL;
 }

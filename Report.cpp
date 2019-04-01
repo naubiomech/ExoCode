@@ -1,4 +1,5 @@
 #include "Report.hpp"
+#include "JointSelect.hpp"
 #include <cstddef>
 
 template <class T>
@@ -27,6 +28,10 @@ LegReport::~LegReport(){
   delete sensor_reports;
 }
 
+JointReport* LegReport::getJointReport(JointID id){
+  return joint_reports[id];
+}
+
 JointReport::JointReport(){
   motor_report = NULL;
   torque_sensor_report = NULL;
@@ -46,4 +51,14 @@ ExoReport::ExoReport(){
 ExoReport::~ExoReport(){
   delete left_leg;
   delete right_leg;
+}
+
+LegReport* ExoReport::getAreaReport(AreaID id){
+
+  if (id == joint_select.area_id.LEFT_LEG){
+    return left_leg;
+  } else if (id == joint_select.area_id.RIGHT_LEG){
+    return right_leg;
+  }
+  return NULL;
 }

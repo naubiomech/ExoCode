@@ -5,204 +5,156 @@
 #include "Message.hpp"
 #include "Transceiver.hpp"
 #include "Report.hpp"
+#include "JointSelect.hpp"
 
 
 class Transmission{
 private:
-	unsigned int send_count;
-	unsigned int receive_count;
-	CommandCode code;
+  unsigned int send_count;
+  unsigned int receive_count;
+  CommandCode code;
 
-	void getData();
-	void sendData();
+  void getData();
+  void sendData();
 protected:
-	Transceiver* transceiver;
-	double* send_data;
-	double* receive_data;
+  Transceiver* transceiver;
+  double* send_data;
+  double* receive_data;
 
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report) = 0;
-	void copyToSend(double* from);
-	void copyFromReceive(double* to);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report) = 0;
+  void copyToSend(double* from);
+  void copyFromReceive(double* to);
+  void decodeJointSelect(int* selects, double encoded_select);
 public:
-	Transmission(Transceiver* transceiver, CommandCode code,
-				 unsigned int receive_count, unsigned int send_count);
-	virtual ~Transmission();
-	void process(ExoMessageBuilder* builder, ExoReport* report);
+  Transmission(Transceiver* transceiver, CommandCode code,
+               unsigned int receive_count, unsigned int send_count);
+  virtual ~Transmission();
+  void process(ExoMessageBuilder* builder, ExoReport* report);
+  TeensyByteTranscriber byte_transcriber;
 };
 
 class RequestDataTransmission:public Transmission{
 public:
-	RequestDataTransmission(Transceiver* transceiver);
+  RequestDataTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class StartTrialTransmission:public Transmission{
 public:
-	StartTrialTransmission(Transceiver* transceiver);
+  StartTrialTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class EndTrialTransmission:public Transmission{
 public:
-	EndTrialTransmission(Transceiver* transceiver);
+  EndTrialTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class CalibrateTorqueTransmission:public Transmission{
 public:
-	CalibrateTorqueTransmission(Transceiver* transceiver);
+  CalibrateTorqueTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class CheckBluetoothTransmission:public Transmission{
 public:
-	CheckBluetoothTransmission(Transceiver* transceiver);
+  CheckBluetoothTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class CleanBluetoothBufferTransmission:public Transmission{
 public:
-	CleanBluetoothBufferTransmission(Transceiver* transceiver);
+  CleanBluetoothBufferTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
-class GetLeftAnkleSetpointTransmission:public Transmission{
+class GetSetpointTransmission:public Transmission{
 public:
-	GetLeftAnkleSetpointTransmission(Transceiver* transceiver);
+  GetSetpointTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
-class GetRightAnkleSetpointTransmission:public Transmission{
+class SetSetpointTransmission:public Transmission{
 public:
-	GetRightAnkleSetpointTransmission(Transceiver* transceiver);
+  SetSetpointTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
-};
-
-class SetLeftAnkleSetpointTransmission:public Transmission{
-public:
-	SetLeftAnkleSetpointTransmission(Transceiver* transceiver);
-private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
-};
-
-class SetRightAnkleSetpointTransmission:public Transmission{
-public:
-	SetRightAnkleSetpointTransmission(Transceiver* transceiver);
-private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class CalibrateFsrTransmission:public Transmission{
 public:
-	CalibrateFsrTransmission(Transceiver* transceiver);
+  CalibrateFsrTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
-class GetLeftAnkleFsrThresholdTransmission:public Transmission{
+class GetFsrThresholdTransmission:public Transmission{
 public:
-	GetLeftAnkleFsrThresholdTransmission(Transceiver* transceiver);
+  GetFsrThresholdTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
-class GetRightAnkleFsrThresholdTransmission:public Transmission{
+class GetKFTransmission:public Transmission{
 public:
-	GetRightAnkleFsrThresholdTransmission(Transceiver* transceiver);
+  GetKFTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
-class GetLeftAnkleKFTransmission:public Transmission{
+class SetKFTransmission:public Transmission{
 public:
-	GetLeftAnkleKFTransmission(Transceiver* transceiver);
+  SetKFTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
-class GetRightAnkleKFTransmission:public Transmission{
+class GetPidParamsTransmission:public Transmission{
 public:
-	GetRightAnkleKFTransmission(Transceiver* transceiver);
+  GetPidParamsTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
-class SetLeftAnkleKFTransmission:public Transmission{
+class SetPidParamsTransmission:public Transmission{
 public:
-	SetLeftAnkleKFTransmission(Transceiver* transceiver);
+  SetPidParamsTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
-
-class SetRightAnkleKFTransmission:public Transmission{
-public:
-	SetRightAnkleKFTransmission(Transceiver* transceiver);
-private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
-};
-
-
-class GetLeftAnklePidParamsTransmission:public Transmission{
-public:
-	GetLeftAnklePidParamsTransmission(Transceiver* transceiver);
-private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
-};
-
-class GetRightAnklePidParamsTransmission:public Transmission{
-public:
-	GetRightAnklePidParamsTransmission(Transceiver* transceiver);
-private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
-};
-
-class SetLeftAnklePidParamsTransmission:public Transmission{
-public:
-	SetLeftAnklePidParamsTransmission(Transceiver* transceiver);
-private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
-};
-
-class SetRightAnklePidParamsTransmission:public Transmission{
-public:
-	SetRightAnklePidParamsTransmission(Transceiver* transceiver);
-private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
-};
-
 
 class GetSmoothingParamsTransmission:public Transmission{
 public:
-	GetSmoothingParamsTransmission(Transceiver* transceiver);
+  GetSmoothingParamsTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class SetSmoothingParamsTransmission:public Transmission{
 public:
-	SetSmoothingParamsTransmission(Transceiver* transceiver);
+  SetSmoothingParamsTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class CheckMemoryTransmission:public Transmission{
 public:
-	CheckMemoryTransmission(Transceiver* transceiver);
+  CheckMemoryTransmission(Transceiver* transceiver);
 private:
-	virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
+  virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 
 class TransmissionFactory{
 public:
-	Transmission* create(Transceiver* transceiver, CommandCode code);
+  Transmission* create(Transceiver* transceiver, CommandCode code);
 };
 #endif

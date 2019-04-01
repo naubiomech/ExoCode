@@ -5,6 +5,7 @@
 #include "Command_Codes.hpp"
 #include "Report.hpp"
 #include "Message.hpp"
+#include "ByteTranscriber.hpp"
 
 class Transceiver{
 public:
@@ -23,6 +24,8 @@ public:
   virtual CommandCode receiveCommand() = 0;
   virtual void receiveData(double* data_output, int bytes_expected) = 0;
   virtual bool  receiveFooter() = 0;
+
+  TeensyByteTranscriber byte_transcriber;
 };
 
 class MatlabTransceiver:public Transceiver{
