@@ -190,6 +190,17 @@ void calculate_leg_average(Leg* leg) {
   }
 
   leg->Average_Trq = leg->Average / dim;
+  if (leg->Average_Trq == leg->TarrayPoint[dim]) //When torque sensor is unplugged we see the same values for several seconds
+  {
+      double old_L_state_L = leg->state;
+      leg->state = 9;
+      send_data_message_wc();
+
+      digitalWrite(onoff, LOW);
+      stream = 0;
+      digitalWrite(LED_PIN, LOW);
+      leg->state = old_L_state_L;
+  }
   leg->p_steps->torque_average = leg->Average / dim;
 
   leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
