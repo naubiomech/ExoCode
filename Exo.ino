@@ -198,7 +198,7 @@ void calculate_leg_average(Leg* leg) {
 
       digitalWrite(onoff, LOW);
       stream = 0;
-      digitalWrite(LED_PIN, LOW);
+      digitalWrite(LED_PIN, LOW);,
       leg->state = old_L_state_L;
   }
   leg->p_steps->torque_average = leg->Average / dim;
