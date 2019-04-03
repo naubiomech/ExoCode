@@ -111,7 +111,7 @@ void CleanBluetoothBufferTransmission::processData(ExoMessageBuilder*, ExoReport
   transceiver->clear();
 }
 
-GetSetpointTransmission::GetSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_SETPOINT, 1, 1){}
+GetSetpointTransmission::GetSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_TORQUE_SETPOINT, 1, 1){}
 void GetSetpointTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   int selects[3];
   decodeJointSelect(selects, receive_data[0]);
@@ -119,7 +119,7 @@ void GetSetpointTransmission::processData(ExoMessageBuilder*, ExoReport* report)
   send_data[0] = report->getAreaReport(selects[0])->getJointReport(selects[1])->pid_setpoint;
 }
 
-SetSetpointTransmission::SetSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_SETPOINT, 3, 0){}
+SetSetpointTransmission::SetSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_TORQUE_SETPOINT, 3, 0){}
 void SetSetpointTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   int selects[3];
   decodeJointSelect(selects, receive_data[0]);

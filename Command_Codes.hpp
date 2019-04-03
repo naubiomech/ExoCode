@@ -4,8 +4,8 @@
 typedef char CommandCode;
 
 const CommandCode COMM_CODE_REQUEST_DATA = '?';
-const CommandCode COMM_CODE_GET_SETPOINT = 'D';
-const CommandCode COMM_CODE_SET_SETPOINT = 'F';
+const CommandCode COMM_CODE_GET_TORQUE_SETPOINT = 'D';
+const CommandCode COMM_CODE_SET_TORQUE_SETPOINT = 'F';
 const CommandCode COMM_CODE_START_TRIAL = 'E';
 const CommandCode COMM_CODE_END_TRIAL = 'G';
 const CommandCode COMM_CODE_CALIBRATE_TORQUE = 'H';
