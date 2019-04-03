@@ -198,12 +198,12 @@ void calculate_leg_average(Leg* leg) {
 
       digitalWrite(onoff, LOW);
       stream = 0;
-      digitalWrite(LED_PIN, LOW);,
+      digitalWrite(LED_PIN, LOW);
       leg->state = old_L_state_L;
   }
   leg->p_steps->torque_average = leg->Average / dim;
 
-  leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
+  leg->FSR_Toe_Average = 5*fsr(leg->fsr_sense_Toe);
   leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
 
   // in case of two toe sensors we use the combined averate, i.e. the sum of the averages.
@@ -213,9 +213,15 @@ void calculate_leg_average(Leg* leg) {
   if (FLAG_TWO_TOE_SENSORS)
   {
     leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
+    leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
+    leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
+    leg->p_steps->curr_voltage_AnkID = ((leg->FSR_Toe_Average * leg->Toe_Moment_Arm) + (leg->FSR_Heel_Average * leg->Heel_Moment_Arm))/(leg->Toe_Moment_Arm + leg->Heel_Moment_Arm);//Sara's edition
   }
   else {
     leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
+    leg->p_steps->curr_voltage_AnkID = leg->FSR_Toe_Average;
+    leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
+    leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
   }
 
 
