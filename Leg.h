@@ -59,7 +59,8 @@ struct Leg {
   double min_KF = 0.9;
   int count_err;
   double Mean_Measured_Torque;
-  bool auto_KF_update = true;
+  double MaxPropSetpoint;
+  bool auto_KF_update = false;
 
   // Calibrate_and_Read_Sensors.h
   double FSR_Ratio;

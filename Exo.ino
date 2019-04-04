@@ -190,6 +190,10 @@ void calculate_leg_average(Leg* leg) {
   }
 
   leg->Average_Trq = leg->Average / dim;
+  if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
+    leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
+  }
+  
   if (leg->Average_Trq == leg->TarrayPoint[dim]) //When torque sensor is unplugged we see the same values for several seconds
   {
       double old_L_state_L = leg->state;

@@ -492,6 +492,10 @@ void receive_and_transmit()
 
     case ';':
       flag_auto_KF = 0;
+      left_leg->KF = 1;
+      right_leg->KF = 1;
+      left_leg->ERR = 0;
+      right_leg->ERR = 0;
       break;
 
     case '#':

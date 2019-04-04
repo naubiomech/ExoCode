@@ -13,13 +13,8 @@ void Auto_KF(Leg* leg, int Control_Mode) {
     }
   } else if (leg->state == 3 && Control_Mode == 3) //If proportional
   {
-    if (abs(leg->Input) > abs(leg->Average_Trq)) { //If torque is not reaching the input
-      leg->Max_Measured_Torque = leg->Average_Trq;
+    if (abs(leg->MaxPropSetpoint) != abs(leg->Max_Measured_Torque)) { //If torque is under or over the setpoint
       leg->auto_KF_update = true;
-      Serial.print("Setpoint_Ankle: ");
-      Serial.println(leg->Input);
-      Serial.print("Max_Measured_Torque: ");
-      Serial.println(leg->Max_Measured_Torque);
     }
   } // end if state=3
   //
@@ -51,25 +46,23 @@ void Auto_KF(Leg* leg, int Control_Mode) {
     }
   } else if (Control_Mode == 3) { //If proportional
 
-    if (leg->Max_Measured_Torque * leg->Input <= 0) {
+    if (leg->Max_Measured_Torque * leg->MaxPropSetpoint <= 0) {
       leg->auto_KF_update = false;
       return;
       //If signs are not concord no update of auto-KF
     }
 
-    if (abs((leg->Max_Measured_Torque - (leg->Input)) / (leg->Input)) < 0.01) {
+    if (abs((leg->Max_Measured_Torque - (leg->MaxPropSetpoint)) / (leg->MaxPropSetpoint)) < 0.01) {
       leg -> auto_KF_update = false;
       //If error is less than 1 % no need to update KF
       return;
     }
-
-    Serial.println("Update KF Prop");
-    leg->KF = leg->KF - (leg->Max_Measured_Torque - (leg->Input)) / (leg->Input) * 0.6;
+    
+    leg->KF = leg->KF - (leg->Max_Measured_Torque - (leg->MaxPropSetpoint)) / (leg->MaxPropSetpoint) * 0.6;
         
   } else {}
 
   if isnan(leg->KF) {
-    Serial.println("NAN KF");
     leg->KF = 1;
   }
 
@@ -80,25 +73,12 @@ void Auto_KF(Leg* leg, int Control_Mode) {
     leg->KF = leg->min_KF;
   }
   else {}
-  
-  if (Control_Mode == 100) {
-    Serial.print("ERR: ");
-    Serial.println(leg->ERR);
-    Serial.print("KF: ");
-    Serial.println(leg->KF);
-    Serial.println(leg->Mean_Torque_90P);
-  }
-  
-  if (Control_Mode == 3) {
-    Serial.print("KF: ");
-    Serial.println(leg->KF);
-  }
 
-  Serial.println("Done, KF OFF");
   leg->Mean_Torque_90P = 0;
   leg->Torque_Sum_90P = 0;
   leg->count_err = 0;
   leg->Max_Measured_Torque = 0;
+  leg->MaxPropSetpoint = 0;
   leg->auto_KF_update = false; // to be able to do this cycle just once every step, i.e. during the whole state 1 I have to execute this cycle just once
 }
 
