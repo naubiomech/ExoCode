@@ -218,9 +218,9 @@ Transmission* TransmissionFactory::create(Transceiver* trans, CommandCode code){
     return new CheckBluetoothTransmission(trans);
   case COMM_CODE_CLEAN_BLUETOOTH_BUFFER:
     return new CleanBluetoothBufferTransmission(trans);
-  case COMM_CODE_GET_SETPOINT:
+  case COMM_CODE_GET_TORQUE_SETPOINT:
     return new GetSetpointTransmission(trans);
-  case COMM_CODE_SET_SETPOINT:
+  case COMM_CODE_SET_TORQUE_SETPOINT:
     return new SetSetpointTransmission(trans);
   case COMM_CODE_CALIBRATE_FSR:
     return new CalibrateFsrTransmission(trans);
