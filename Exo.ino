@@ -295,8 +295,8 @@ void rotate_motor() {
     }
 
     if (streamTimerCount == 1 && flag_auto_KF == 1) {
-      Auto_KF(left_leg);
-      Auto_KF(right_leg);
+      Auto_KF(left_leg, Control_Mode);
+      Auto_KF(right_leg, Control_Mode);
     }
 
 
