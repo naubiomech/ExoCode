@@ -1,0 +1,10 @@
+diff a/State_Machine.ino b/State_Machine.ino	(rejected hunks)
+@@ -268,7 +268,7 @@
+   // Adjust the torque reference as a function of the step
+   ref_step_adj(leg);
+ 
+-  if ((Control_Mode == 2 || Control_Mode == 3) && leg->state == 3) {
++  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) {
+     leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
+   }
+   else {
