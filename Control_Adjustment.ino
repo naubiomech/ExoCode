@@ -9,9 +9,15 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
   {
 
     // update the voltage peak
+    if (Control_Mode == 3) {
     if (p_steps_l->curr_voltage > p_steps_l->peak)
       p_steps_l->peak =  p_steps_l->curr_voltage;
-
+    }
+    else if (Control_Mode == 4) {
+      if (p_steps_l->curr_voltage_AnkID > p_steps_l->peak)
+      p_steps_l->peak =  p_steps_l->curr_voltage_AnkID;
+    }
+    
     if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
     {
       p_steps_l->plant_time = millis(); // start the plantarflexion
@@ -196,6 +202,22 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       }
       else if ((p_steps_l->Setpoint ) < 0) {
         *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
+        *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
+      } else {
+        *p_Setpoint_Ankle_Pctrl_l = 0;
+      }
+
+      return N3_l; // No modification in the shaping function which is disabled
+    }
+
+    else if (Control_Mode_l == 4)  {
+      //Serial.println("****************Control_Mode is 4***************");
+      if ((p_steps_l->Setpoint ) > 0) {
+        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio)); // the difference here is that we do it as a function of the FSR calibration
+        *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
+      }
+      else if ((p_steps_l->Setpoint ) < 0) {
+        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio)); // the difference here is that we do it as a function of the FSR calibration
         *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
       } else {
         *p_Setpoint_Ankle_Pctrl_l = 0;

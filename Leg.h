@@ -32,6 +32,9 @@ struct Leg {
   double previous_curr_voltage;
   double previous_torque_average;
 
+  double Heel_Moment_Arm;
+  double Toe_Moment_Arm;
+
   volatile double Average_Volt;
   volatile double Average_Volt_Heel;
   volatile double Average_Trq;
