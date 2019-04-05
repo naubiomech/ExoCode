@@ -207,7 +207,7 @@ void Max::update(double value){
 }
 
 void Max::reset(){
-  maxVal = FLT_MIN;
+  maxVal = -FLT_MAX;
 }
 
 Min::Min(){
