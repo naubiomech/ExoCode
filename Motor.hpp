@@ -21,13 +21,13 @@ private:
 
 public:
   Motor(InputPort* motor_error_port, OutputPort* motor_port, int output_sign);
-  ~Motor();
-  void measureError();
-  bool hasErrored();
-  void write(double value);
-  void setSign(int sign);
-  MotorReport* generateReport();
-  void fillReport(MotorReport* report);
+  virtual ~Motor();
+  virtual void measureError();
+  virtual bool hasErrored();
+  virtual void write(double value);
+  virtual void setSign(int sign);
+  virtual MotorReport* generateReport();
+  virtual void fillReport(MotorReport* report);
 };
 
 #endif
