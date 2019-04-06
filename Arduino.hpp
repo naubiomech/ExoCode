@@ -16,7 +16,8 @@
 #include "ros/ros.h"
 #include "ArduinoInterface.hpp"
 #else
-typedef int uint8_t;
+#include <stdint.h>
+#include <math.h>
 
 class SoftwareSerial{
 public:
@@ -102,9 +103,6 @@ public:
 #define A22 41
 
 void delay(double);
-double pow(double, double);
-double exp(double);
-double round(double);
 double max(double, double);
 double min(double, double);
 unsigned long millis();
