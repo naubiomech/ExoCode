@@ -10,7 +10,7 @@ int streamTimerCount = 0;
 int stream = 0;
 
 //variables used to receive and send the data from and to the gui
-char holdon[24];
+char holdon[96];
 char *holdOnPoint = &holdon[0];
 char Peek = 'a';
 int cmd_from_Gui = 0;

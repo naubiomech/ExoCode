@@ -647,7 +647,7 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
   // Adjust the torque reference as a function of the step
   ref_step_adj(leg);
 
-  if ((Control_Mode == 2 || Control_Mode == 3) && leg->state == 3) {
+  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) {
     leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
   }
   else {

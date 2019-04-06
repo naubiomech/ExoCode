@@ -93,7 +93,18 @@ void callback()//executed every 2ms
 
   // apply the PID ctrl to the motors
   rotate_motor();
-
+    Serial.print(" Control Mode: ");
+    Serial.println(Control_Mode);
+    Serial.print("Left_leg->p_steps->plant_peak_mean");
+    Serial.println(left_leg->p_steps->plant_peak_mean);
+    Serial.print("Left_leg->p_steps->plant_peak_mean_temp");
+    Serial.println(left_leg->p_steps->plant_peak_mean_temp);
+    
+    Serial.print("Right_leg->p_steps->plant_peak_mean");
+    Serial.println(right_leg->p_steps->plant_peak_mean);
+    
+    Serial.print("Right_leg->p_steps->plant_peak_mean_temp");
+    Serial.println(right_leg->p_steps->plant_peak_mean_temp);
   // same of FSR but for the balance baseline
   check_Balance_Baseline();
 
@@ -215,7 +226,7 @@ void calculate_leg_average(Leg* leg) {
     leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
     leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
     leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
-    leg->p_steps->curr_voltage_AnkID = ((leg->FSR_Toe_Average * leg->Toe_Moment_Arm);// + (leg->FSR_Heel_Average * leg->Heel_Moment_Arm))/(leg->Toe_Moment_Arm + leg->Heel_Moment_Arm);//Sara's edition
+    leg->p_steps->curr_voltage_AnkID = ((leg->FSR_Toe_Average * leg->Toe_Moment_Arm));// + (leg->FSR_Heel_Average * leg->Heel_Moment_Arm))/(leg->Toe_Moment_Arm + leg->Heel_Moment_Arm);//Sara's edition
   }
   else {
     leg->p_steps->curr_voltage = leg->FSR_Toe_Average;

@@ -161,6 +161,26 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
           *p_Setpoint_Ankle_Pctrl_l = 0;
         }
       }
+      if (Control_Mode_l == 4) { // JOINT MOMENT CONTROL also known as pivot proportional control while taking the baseline
+
+        *p_FSR_Ratio = fabs(p_steps_l->curr_voltage_AnkID / p_steps_l->plant_peak_mean);
+        if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
+          (*p_Max_FSR_Ratio) = *p_FSR_Ratio; // update the max fsr Ratio
+
+
+        // while updating the ratio value still continue to provide the control
+        if ((p_steps_l->Setpoint ) > 0) { //depending on the leg the sign changes
+          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio));
+          *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
+        }
+        else if ((p_steps_l->Setpoint ) < 0) {
+          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio));
+          *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
+        } else {
+          *p_Setpoint_Ankle_Pctrl_l = 0;
+        }
+      }
+    
     }
 
     return N3_l; //return the previous N3 value whis is not used
@@ -178,10 +198,18 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
 
     // update the voltage peak to update torque in case of Bang Bang ctrl
+    if (Control_Mode_l == 3) {
     if (p_steps_l->curr_voltage > p_steps_l->peak)
       p_steps_l->peak =  p_steps_l->curr_voltage;
 
     *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
+    }
+    else if (Control_Mode_l == 4) {
+     if (p_steps_l->curr_voltage_AnkID > p_steps_l->peak)
+      p_steps_l->peak =  p_steps_l->curr_voltage_AnkID;
+
+    *p_FSR_Ratio = fabs(p_steps_l->curr_voltage_AnkID / p_steps_l->plant_peak_mean);
+    }
 
     if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
       (*p_Max_FSR_Ratio) = *p_FSR_Ratio;
