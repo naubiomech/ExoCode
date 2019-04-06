@@ -80,28 +80,6 @@ public:
 #define LOW 0
 #define HIGH 1
 
-#define A0 14
-#define A1 15
-#define A2 16
-#define A3 17
-#define A4 18
-#define A5 19
-#define A6 20
-#define A7 21
-#define A8 22
-#define A9 23
-#define A12 31
-#define A13 32
-#define A14 33
-#define A15 34
-#define A16 35
-#define A17 36
-#define A18 37
-#define A19 38
-#define A20 39
-#define A21 40
-#define A22 41
-
 void delay(double);
 double max(double, double);
 double min(double, double);
