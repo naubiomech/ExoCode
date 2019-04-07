@@ -1,7 +1,15 @@
 #ifndef UTILITES_HEADER
 #define UTILITES_HEADER
 
-class RunningAverage{
+class Average{
+public:
+  virtual double update(double value) = 0;
+  virtual double getAverage() = 0;
+  virtual void reset() = 0;
+  virtual void reset(double value) = 0;
+};
+
+class RunningAverage:public Average{
 private:
   double avg;
   double count;
@@ -14,7 +22,7 @@ public:
   void reset(double value);
 };
 
-class MovingAverage{
+class MovingAverage: public Average{
 private:
   double* previous_values;
   double total;
