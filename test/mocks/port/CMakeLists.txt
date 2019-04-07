@@ -9,6 +9,6 @@ find_package(biomech_exo)
 ################################
 # Link test executable against gtest & gtest_main
 
-add_library(${PROJECT_NAME}_analog_input STATIC )
+add_library(${PROJECT_NAME}_analog_input STATIC mockInputPort.hpp)
 target_link_libraries(${PROJECT_NAME}_analog_input gtest gmock biomech_exo)
 target_include_directories(${PROJECT_NAME}_analog_input PUBLIC . )
