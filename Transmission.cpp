@@ -198,7 +198,7 @@ void SetSmoothingParamsTransmission::processData(ExoMessageBuilder* builder, Exo
 }
 
 CheckMemoryTransmission::CheckMemoryTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CHECK_MEMORY, 0, 3){}
-void CheckMemoryTransmission::processData(ExoMessageBuilder*, ExoReport* report){
+void CheckMemoryTransmission::processData(ExoMessageBuilder*, ExoReport*){
   send_data[0] = 2;
   send_data[1] = 2;
   send_data[2] = 2;
@@ -244,5 +244,5 @@ Transmission* TransmissionFactory::create(Transceiver* trans, CommandCode code){
     Serial.print("Command code not implemented: ");
     Serial.println(code);
   }
-	return NULL;
+  return NULL;
 }
