@@ -2,6 +2,8 @@
 #include "Utils.hpp"
 #include <float.h>
 
+Average::~Average(){}
+
 RunningAverage::RunningAverage(){
   reset();
 }

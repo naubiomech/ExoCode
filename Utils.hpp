@@ -3,6 +3,7 @@
 
 class Average{
 public:
+  virtual ~Average();
   virtual double update(double value) = 0;
   virtual double getAverage() = 0;
   virtual void reset() = 0;
