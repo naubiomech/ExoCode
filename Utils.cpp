@@ -3,8 +3,8 @@
 #include <float.h>
 
 RunningAverage::RunningAverage(){
-  avg = 0;
-  count = 0;
+  reset();
+}
 }
 
 double RunningAverage::update(double value){
