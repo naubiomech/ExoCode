@@ -16,13 +16,13 @@ public:
   virtual void clear() = 0;
 
   virtual void sendHeader() = 0;
-  virtual void sendData(double* data, int bytes_to_send) = 0;
+  virtual void sendData(double* data, unsigned int bytes_to_send) = 0;
   virtual void sendCommand(CommandCode code) = 0;
   virtual void sendFooter() = 0;
 
   virtual bool  receiveHeader() = 0;
   virtual CommandCode receiveCommand() = 0;
-  virtual void receiveData(double* data_output, int bytes_expected) = 0;
+  virtual void receiveData(double* data_output, unsigned int bytes_expected) = 0;
   virtual bool  receiveFooter() = 0;
 
   TeensyByteTranscriber byte_transcriber;
@@ -39,12 +39,12 @@ public:
   virtual void clear();
 
   virtual void sendHeader();
-  virtual void sendData(double* data, int bytes_to_send);
+  virtual void sendData(double* data, unsigned int bytes_to_send);
   virtual void sendCommand(CommandCode code);
   virtual void sendFooter();
 
   virtual bool  receiveHeader();
-  virtual void receiveData(double* data_output, int bytes_expected);
+  virtual void receiveData(double* data_output, unsigned int bytes_expected);
   virtual CommandCode receiveCommand();
   virtual bool  receiveFooter();
 };
