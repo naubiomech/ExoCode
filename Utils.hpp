@@ -23,10 +23,12 @@ private:
   int size;
 public:
   MovingAverage(int size);
+  MovingAverage(int size, double initial);
   ~MovingAverage();
   double update(double value);
   double getAverage();
   void reset();
+  void reset(double value);
 };
 
 class Clamp{
