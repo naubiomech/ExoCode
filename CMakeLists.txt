@@ -12,6 +12,9 @@ add_library(biomech_exo STATIC ${SOURCES})
 add_executable(exo ${SOURCES})
 target_link_libraries(biomech_exo PUBLIC coverage_config)
 target_link_libraries(exo PUBLIC coverage_config)
+target_compile_options(exo PRIVATE -Wall -Werror -Wextra -pedantic-errors
+  #-Wconversion -Wsign-conversion
+  )
 
 option(BUILD_TESTS "Enable testing" OFF)
 if (BUILD_TESTS)
