@@ -33,6 +33,7 @@ private:
   SoftwareSerial* serial;
 public:
   MatlabTransceiver(TxPort* tx, RxPort* rx);
+  MatlabTransceiver(SoftwareSerial* serial);
   ~MatlabTransceiver();
 
   virtual bool dataAvailable();

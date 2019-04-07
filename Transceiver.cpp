@@ -25,6 +25,11 @@ MatlabTransceiver::MatlabTransceiver(TxPort* tx, RxPort* rx){
   delete rx;
 }
 
+MatlabTransceiver::MatlabTransceiver(SoftwareSerial* serial){
+  this->serial = serial;
+  serial->begin(115200);
+}
+
 MatlabTransceiver::~MatlabTransceiver(){
   // Commented command serial delete until software serial allows deletion
   /* delete command_serial; */
