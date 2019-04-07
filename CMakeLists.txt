@@ -40,6 +40,7 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 	NAME coverage
 	EXECUTABLE ctest -j ${n_cores} # Executable in PROJECT_BINARY_DIR
 	DEPENDENCIES
+	test_motor
 	test_utils_min
 	test_utils_range
 	test_utils_max)
