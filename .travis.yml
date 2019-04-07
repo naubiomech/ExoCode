@@ -1,0 +1,60 @@
+# Use new trusty images, should yield newer compilers and packages
+sudo: required
+dist: xenial
+language: cpp
+
+env:
+  global:
+    # Ubuntu version
+    - LINUX_DIST=trusty
+    - DEPS_DIR=${TRAVIS_BUILD_DIR}/deps
+    # Global build options and C++ flags
+    # Misc
+    - RUN_TESTS=true
+    - COVERAGE=false
+
+matrix:
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-6
+            - valgrind
+            - lcov
+      env: COMPILER=g++-6
+
+before_install:
+  - sudo apt-get update -qq
+  - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
+  - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
+
+install:
+    - sudo pip install codecov
+    # Download and install recent cmake
+    - |
+      if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then
+        CMAKE_URL="http://www.cmake.org/files/v3.5/cmake-3.5.1-Linux-x86_64.tar.gz"
+        mkdir -p ${DEPS_DIR}/cmake
+        travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR}/cmake
+        export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+      fi
+
+    - echo ${PATH}
+    - echo ${CXX}
+    - ${CXX} --version
+    - ${CXX} -v
+    - cmake --version
+
+script:
+  - mkdir build
+  - cd build
+  - cmake ${CMAKE_OPTIONS} -j ${nproc} -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DCODE_COVERAGE=ON .. && make -j ${nproc}
+  - make test -j ${nproc}
+
+after_success:
+
+  - make coverage -j ${nproc}
+  - codecov -t a438b66c-0b19-4bcc-a566-4fe3840d83fe -X gcov

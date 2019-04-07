@@ -14,8 +14,6 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 ################################
 # Link test executable against gtest & gtest_main
 
-# add_library(test_utils_range STATIC ${SOURCES})
-
 add_executable(test_utils_range testRange.cpp)
 target_link_libraries(test_utils_range gtest gtest_main biomech_exo)
 gtest_add_tests(test_utils_range "" AUTO)
