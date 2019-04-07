@@ -44,11 +44,15 @@ MovingAverage::~MovingAverage(){
 }
 
 void MovingAverage::reset(){
-  for(int i = 0; i < size;i++){
-    previous_values[i] = 0;
+  reset(0.0);
+}
+
+void MovingAverage::reset(double initial){
+  for(int i = 0; i < size; i++){
+    previous_values[i] = initial;
   }
-  this->total = 0;
-  this->average = 0;
+  this->total = initial * size;
+  this->average = initial;
   this->index = 0;
 }
 
