@@ -74,9 +74,14 @@ void SoftwareSerial::println(double val){
 }
 
 void SoftwareSerial::setReadString(const char* str){
+  unsigned int len = 0;
+  while (str[strLen] != '\0'){len++;}
+  setReadString(str, len);
+}
+
+void SoftwareSerial::setReadString(const char* str, unsigned int size){
   readStr = str;
-  strLen = 0;
-  while (readStr[strLen] != '\0'){strLen++;}
+  strLen = size;
   charIndex = 0;
 }
 
@@ -94,7 +99,7 @@ int SoftwareSerial::read(){
   return val;
 }
 
-int SoftwareSerial::available(){return strLen;}
+int SoftwareSerial::available(){return strLen - charIndex;}
 
 #endif
 #endif

@@ -35,6 +35,7 @@ public:
   void println(const char[]);
   void println(double);
   void setReadString(const char* str);
+  void setReadString(const char* str, unsigned int size);
 
   int read();
   int available();
