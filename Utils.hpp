@@ -7,9 +7,11 @@ private:
   double count;
 public:
   RunningAverage();
+  RunningAverage(double initial);
   double update(double value);
   double getAverage();
   void reset();
+  void reset(double value);
 };
 
 class MovingAverage{

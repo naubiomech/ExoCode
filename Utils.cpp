@@ -5,6 +5,9 @@
 RunningAverage::RunningAverage(){
   reset();
 }
+
+RunningAverage::RunningAverage(double initial){
+  reset(initial);
 }
 
 double RunningAverage::update(double value){
@@ -23,6 +26,11 @@ double RunningAverage::getAverage(){
 void RunningAverage::reset(){
   avg = 0;
   count = 0;
+}
+
+void RunningAverage::reset(double initial){
+  avg = initial;
+  count = 1;
 }
 
 MovingAverage::MovingAverage(int size){
