@@ -26,6 +26,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
       if (p_steps_l->dorsi_time <= step_time_length / 4) // if <50ms probably it is noise
       {
         p_steps_l->peak = 0;
+        p_steps_l->peak_AnkID = 0;
         p_steps_l->flag_start_plant = false;
         return 0;
       } else {
