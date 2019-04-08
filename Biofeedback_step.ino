@@ -34,3 +34,12 @@ void biofeedback_step_update (Leg* leg) {
   }
   return;
 }
+
+void biofeedback_step_state(Leg* leg) {
+  if (leg->BioFeedback_Baseline_flag = true){
+    biofeedback_step_update(leg);
+  }else{
+    biofeedback_step_baseline(leg);
+  }
+  return;
+}
