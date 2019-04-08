@@ -121,7 +121,7 @@ void callback()//executed every 2ms
   if (left_leg->BIO_BASELINE_FLAG) {
     biofeedback_step_baseline(left_leg);
   }
-  
+
   // if flag auto reconnect BT is 1, activate the autoreconnect anche check the led voltage
   if (FLAG_AUTO_RECONNECT_BT) {
   }
