@@ -11,7 +11,7 @@ Transmission::Transmission(Transceiver* transceiver, CommandCode code,
   this->receive_count = receive_count;
 
   if (send_count > 0){
-    send_data = new double[send_count];
+    send_data = new float[send_count];
   } else {
     send_data = NULL;
   }
@@ -39,6 +39,9 @@ void Transmission::decodeJointSelect(int* selects, double encoded_select){
   byte_transcriber.decodeJointSelect(selects, encoded_select);
 }
 
+float Transmission::encodeJointSelect(int* selects){
+  return byte_transcriber.encodeJointSelect(selects);
+}
 
 void Transmission::getData(){
   if (receive_count > 0){
@@ -111,12 +114,17 @@ void CleanBluetoothBufferTransmission::processData(ExoMessageBuilder*, ExoReport
   transceiver->clear();
 }
 
-GetSetpointTransmission::GetSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_TORQUE_SETPOINT, 1, 1){}
+GetSetpointTransmission::GetSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_TORQUE_SETPOINT, 1, 2){}
 void GetSetpointTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   int selects[3];
   decodeJointSelect(selects, receive_data[0]);
+  Serial.println(selects[0]);
+  Serial.println(selects[1]);
+  Serial.println(selects[2]);
 
-  send_data[0] = report->getAreaReport(selects[0])->getJointReport(selects[1])->pid_setpoint;
+  send_data[0] = encodeJointSelect(selects);
+  send_data[1] = report->getAreaReport(selects[0])->getJointReport(selects[1])->pid_setpoint;
+
 }
 
 SetSetpointTransmission::SetSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_TORQUE_SETPOINT, 3, 0){}

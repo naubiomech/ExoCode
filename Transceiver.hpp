@@ -16,7 +16,7 @@ public:
   virtual void clear() = 0;
 
   virtual void sendHeader() = 0;
-  virtual void sendData(double* data, unsigned int bytes_to_send) = 0;
+  virtual void sendData(float* data, unsigned int bytes_to_send) = 0;
   virtual void sendCommand(CommandCode code) = 0;
   virtual void sendFooter() = 0;
 
@@ -40,7 +40,7 @@ public:
   virtual void clear();
 
   virtual void sendHeader();
-  virtual void sendData(double* data, unsigned int bytes_to_send);
+  virtual void sendData(float* data, unsigned int bytes_to_send);
   virtual void sendCommand(CommandCode code);
   virtual void sendFooter();
 

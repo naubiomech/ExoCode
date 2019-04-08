@@ -77,26 +77,21 @@ void MatlabTransceiver::sendCommand(CommandCode code){
   serial->write(code);
 }
 
-void MatlabTransceiver::sendData(double* data, unsigned int doubles_to_send){
-  if (doubles_to_send <= 0){
-    return;
-  }
-  serial->write((char) doubles_to_send);
-  char* bytes = new char[doubles_to_send * sizeof(float)];
-  float* floats = new float[doubles_to_send];
-  for(unsigned int i = 0; i < doubles_to_send; i++){
-    floats[i] = data[i];
-  }
+void MatlabTransceiver::sendData(float* data, unsigned int doubles_to_send){
+	if (doubles_to_send <= 0){
+		return;
+	}
+	serial->write((char) doubles_to_send);
+	char* bytes = new char[doubles_to_send * sizeof(float)];
 
-  byte_transcriber.encodeFloat(bytes, floats, doubles_to_send);
+	byte_transcriber.encodeFloat(bytes, data, doubles_to_send);
 
-  for (unsigned int i = 0; i < doubles_to_send * sizeof(float); i++){
-    unsigned int d = bytes[i];
+	for (unsigned int i = 0; i < doubles_to_send * sizeof(float); i++){
+		unsigned int d = bytes[i];
     serial->write(d);
   }
 
   delete[] bytes;
-  delete[] floats;
 }
 
 void MatlabTransceiver::sendFooter(){

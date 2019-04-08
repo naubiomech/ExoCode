@@ -18,13 +18,14 @@ private:
   void sendData();
 protected:
   Transceiver* transceiver;
-  double* send_data;
+  float* send_data;
   double* receive_data;
 
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report) = 0;
   void copyToSend(double* from);
   void copyFromReceive(double* to);
   void decodeJointSelect(int* selects, double encoded_select);
+  float encodeJointSelect(int* selects);
 public:
   Transmission(Transceiver* transceiver, CommandCode code,
                unsigned int receive_count, unsigned int send_count);
