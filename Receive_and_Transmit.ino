@@ -495,8 +495,19 @@ void receive_and_transmit()
       break;
 
     case '#':
+      OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
+      FLAG_TWO_TOE_SENSORS = true;
       Old_Control_Mode = Control_Mode;
       Control_Mode = 3; // activate pivot proportional control
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      break;
+
+    case 'c':
+      OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
+      FLAG_TWO_TOE_SENSORS = true;
+      Old_Control_Mode = Control_Mode;
+      Control_Mode = 4; // activate Inverse Dynamic proportional control
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
       break;
@@ -715,6 +726,117 @@ void receive_and_transmit()
       data_to_send_point[0] = flag_motor_error_check;
       send_command_message('z', data_to_send_point, 1);
       break;
+
+      
+     case 'e':
+
+      bluetooth.print('S');
+      bluetooth.print('P');
+      bluetooth.print(',');
+      bluetooth.print(left_leg->p_steps->plant_peak_mean); 
+      bluetooth.print(',');
+      bluetooth.print(right_leg->p_steps->plant_peak_mean); 
+      bluetooth.print(',');
+      bluetooth.print(left_leg->Curr_Combined); 
+      bluetooth.print(',');
+      bluetooth.print(right_leg->Curr_Combined);
+      bluetooth.print(',');
+      bluetooth.print(left_leg->fsr_Combined_peak_ref);
+      bluetooth.print(',');
+      bluetooth.print(right_leg->fsr_Combined_peak_ref);
+      bluetooth.print(',');
+      bluetooth.print(left_leg->fsr_Toe_peak_ref);
+      bluetooth.print(',');
+      bluetooth.print(right_leg->fsr_Toe_peak_ref);
+      bluetooth.print(',');
+      bluetooth.print(left_leg->fsr_Heel_peak_ref);
+      bluetooth.print(',');
+      bluetooth.print(right_leg->fsr_Heel_peak_ref);
+      bluetooth.print(',');
+      bluetooth.print(left_leg->torque_calibration_value);
+      bluetooth.print(',');
+      bluetooth.print(right_leg->torque_calibration_value);
+      bluetooth.print(',');
+      bluetooth.println('Z');
+  
+
+//      *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
+//      *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
+//      send_command_message('P', data_to_send_point, 2);
+
+//      Serial.println(left_leg->p_steps->plant_peak_mean);
+//      Serial.println(right_leg->p_steps->plant_peak_mean);
+//      Serial.println(left_leg->Curr_Combined);
+//      Serial.println(right_leg->Curr_Combined);
+//      Serial.println(left_leg->fsr_Combined_peak_ref);
+//      Serial.println(right_leg->fsr_Combined_peak_ref);
+//      Serial.println(left_leg->fsr_Toe_peak_ref);
+//      Serial.println(right_leg->fsr_Toe_peak_ref);
+//      Serial.println(left_leg->fsr_Heel_peak_ref);
+//      Serial.println(right_leg->fsr_Heel_peak_ref);
+//      Serial.println(left_leg->torque_calibration_value);
+//      Serial.println(right_leg->torque_calibration_value);
+
+
+      
+      break;
+
+
+     case 'g':
+      receiveVals(96);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      memcpy(&left_leg->p_steps->plant_peak_mean, holdOnPoint, 8);
+      //delay(10);
+      //receiveVals(8);
+      memcpy(&right_leg->p_steps->plant_peak_mean, holdOnPoint + 8, 8);//added
+      //delay(10);
+      //receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      memcpy(&left_leg->Curr_Combined, holdOnPoint + 16, 8);
+//      delay(10);
+//      receiveVals(8);
+      memcpy(&right_leg->Curr_Combined, holdOnPoint + 24, 8);//added
+//      delay(10);
+//      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      memcpy(&left_leg->fsr_Combined_peak_ref, holdOnPoint + 32, 8);
+//      delay(10);
+//      receiveVals(8);
+      memcpy(&right_leg->fsr_Combined_peak_ref, holdOnPoint + 40, 8);//added
+//      delay(10);
+//      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      memcpy(&left_leg->fsr_Toe_peak_ref, holdOnPoint + 48, 8);
+//      delay(10);
+//      receiveVals(8);
+      memcpy(&right_leg->fsr_Toe_peak_ref, holdOnPoint + 56, 8);//added
+//      delay(10);
+//      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      memcpy(&left_leg->fsr_Heel_peak_ref, holdOnPoint + 64, 8);
+//      delay(10);
+//      receiveVals(8);
+      memcpy(&right_leg->fsr_Heel_peak_ref, holdOnPoint + 72, 8);//added
+//      delay(10);
+//      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      memcpy(&left_leg->torque_calibration_value, holdOnPoint + 80, 8);
+//      delay(10);
+//      receiveVals(8);
+      memcpy(&right_leg->torque_calibration_value, holdOnPoint + 88, 8);//added
+     
+      Serial.println("Old left_leg->p_steps->plant_peak_mean");
+      Serial.println(left_leg->p_steps->plant_peak_mean);
+      Serial.println("Old right_leg->p_steps->plant_peak_mean");
+      Serial.println(right_leg->p_steps->plant_peak_mean);
+      Serial.println(left_leg->Curr_Combined);
+      Serial.println(right_leg->Curr_Combined);
+      Serial.println(left_leg->fsr_Combined_peak_ref);
+      Serial.println(right_leg->fsr_Combined_peak_ref);
+      Serial.println(left_leg->fsr_Toe_peak_ref);
+      Serial.println(right_leg->fsr_Toe_peak_ref);
+      Serial.println(left_leg->fsr_Heel_peak_ref);
+      Serial.println(right_leg->fsr_Heel_peak_ref);
+      Serial.println(left_leg->torque_calibration_value);
+      Serial.println(right_leg->torque_calibration_value);
+
+      
+      break;
+
 
   }
   cmd_from_Gui = 0;

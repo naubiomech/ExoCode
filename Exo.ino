@@ -93,7 +93,24 @@ void callback()//executed every 2ms
 
   // apply the PID ctrl to the motors
   rotate_motor();
+    Serial.print(" Control Mode: ");
+    Serial.println(Control_Mode);
+    
+    Serial.print("Left_leg->p_steps->plant_peak_mean ");
+    Serial.println(left_leg->p_steps->plant_peak_mean);
+   
+    
+    Serial.print("Right_leg->p_steps->plant_peak_mean ");
+    Serial.println(right_leg->p_steps->plant_peak_mean);
+    
+   
+    Serial.print("Right_leg->p_steps->peak ");
+    Serial.println(right_leg->p_steps->peak);
 
+    Serial.print("Right_leg->p_steps->peak_AnkID ");
+    Serial.println(right_leg->p_steps->peak_AnkID);
+
+    
   // same of FSR but for the balance baseline
   check_Balance_Baseline();
 
@@ -203,7 +220,7 @@ void calculate_leg_average(Leg* leg) {
   }
   leg->p_steps->torque_average = leg->Average / dim;
 
-  leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
+  leg->FSR_Toe_Average = 5*fsr(leg->fsr_sense_Toe);
   leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
 
   // in case of two toe sensors we use the combined averate, i.e. the sum of the averages.
@@ -213,9 +230,15 @@ void calculate_leg_average(Leg* leg) {
   if (FLAG_TWO_TOE_SENSORS)
   {
     leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
+    leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
+    leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
+    leg->p_steps->curr_voltage_AnkID = ((leg->FSR_Toe_Average * leg->Toe_Moment_Arm));// + (leg->FSR_Heel_Average * leg->Heel_Moment_Arm))/(leg->Toe_Moment_Arm + leg->Heel_Moment_Arm);//Sara's edition
   }
   else {
     leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
+    leg->p_steps->curr_voltage_AnkID = leg->FSR_Toe_Average;
+    leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
+    leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
   }
 
 
