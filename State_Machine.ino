@@ -297,7 +297,7 @@ void State_Machine_Heel_Toe_Sensors(Leg * leg) {
     }
 
   }
-  
+
 }// end function
 
 
@@ -479,7 +479,8 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
           leg->state = 2;
           leg->state_count_12 = 0;
 
-          takeHeelStrikeAngle(right_leg);
+          biofeedback_step_state(left_leg);
+          biofeedback_step_state(right_leg);
         }
 
       }// end if heel sensor > threshold
@@ -676,5 +677,5 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
     }
 
   }
-  
+
 }// end function
