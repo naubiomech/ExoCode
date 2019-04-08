@@ -41,6 +41,7 @@ const unsigned int zero = 2048;//1540;
 #include "Variables.h"
 #include "Board.h"
 #include "resetMotorIfError.h"
+#include "Biofeedback_step.h"
 //----------------------------------------------------------------------------------
 
 
