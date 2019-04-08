@@ -87,9 +87,15 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
           p_steps_l->four_step_plant_time[n_step_baseline - 1] = p_steps_l->plant_time;
           p_steps_l->plant_mean += p_steps_l->plant_time;
 
+          if (Control_Mode = 3) {
           p_steps_l->four_step_plant_peak[n_step_baseline - 1] = p_steps_l->peak;
           p_steps_l->plant_peak_mean_temp += p_steps_l->peak;
-
+          }
+          else if (Control_Mode = 4) {
+          p_steps_l->four_step_plant_peak[n_step_baseline - 1] = p_steps_l->peak_AnkID;
+          p_steps_l->plant_peak_mean_temp += p_steps_l->peak_AnkID;
+          }
+          
           p_steps_l->dorsi_mean = (p_steps_l->dorsi_mean) / n_step_baseline;
           p_steps_l->plant_mean = p_steps_l->plant_mean / n_step_baseline;
           p_steps_l->plant_peak_mean_temp = 1.0 * (p_steps_l->plant_peak_mean_temp) / n_step_baseline;  //Gain (1.0) was 0.9 2/25/2019 GO
