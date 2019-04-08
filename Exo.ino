@@ -95,16 +95,22 @@ void callback()//executed every 2ms
   rotate_motor();
     Serial.print(" Control Mode: ");
     Serial.println(Control_Mode);
-    Serial.print("Left_leg->p_steps->plant_peak_mean");
-    Serial.println(left_leg->p_steps->plant_peak_mean);
-    Serial.print("Left_leg->p_steps->plant_peak_mean_temp");
-    Serial.println(left_leg->p_steps->plant_peak_mean_temp);
     
-    Serial.print("Right_leg->p_steps->plant_peak_mean");
+    Serial.print("Left_leg->p_steps->plant_peak_mean ");
+    Serial.println(left_leg->p_steps->plant_peak_mean);
+   
+    
+    Serial.print("Right_leg->p_steps->plant_peak_mean ");
     Serial.println(right_leg->p_steps->plant_peak_mean);
     
-    Serial.print("Right_leg->p_steps->plant_peak_mean_temp");
-    Serial.println(right_leg->p_steps->plant_peak_mean_temp);
+   
+    Serial.print("Right_leg->p_steps->peak ");
+    Serial.println(right_leg->p_steps->peak);
+
+    Serial.print("Right_leg->p_steps->peak_AnkID ");
+    Serial.println(right_leg->p_steps->peak_AnkID);
+
+    
   // same of FSR but for the balance baseline
   check_Balance_Baseline();
 
