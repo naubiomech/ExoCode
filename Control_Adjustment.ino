@@ -14,8 +14,8 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
       p_steps_l->peak =  p_steps_l->curr_voltage;
     }
     else if (Control_Mode == 4) {
-      if (p_steps_l->curr_voltage_AnkID > p_steps_l->peak)
-      p_steps_l->peak =  p_steps_l->curr_voltage_AnkID;
+      if (p_steps_l->curr_voltage_AnkID > p_steps_l->peak_AnkID)
+      p_steps_l->peak_AnkID =  p_steps_l->curr_voltage_AnkID;
     }
     
     if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
