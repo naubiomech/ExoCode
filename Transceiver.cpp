@@ -55,10 +55,11 @@ void MatlabTransceiver::receiveData(double* output_data, unsigned int doubles_ex
   if (doubles_expected <= 0){
     return;
   }
-  doubles_expected *= sizeof(double);
 
-  char* output_data_raw_form = new char[doubles_expected * sizeof(double)];
-  for(unsigned int i = 0; i < doubles_expected * sizeof(double); i ++){
+  unsigned int bytes_expected = doubles_expected * sizeof(double);
+
+  char* output_data_raw_form = new char[bytes_expected];
+  for(unsigned int i = 0; i < bytes_expected; i ++){
     while (noDataAvailable()){}
     int data = serial->read();
     output_data_raw_form[i] = data;
