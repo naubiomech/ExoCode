@@ -93,24 +93,24 @@ void callback()//executed every 2ms
 
   // apply the PID ctrl to the motors
   rotate_motor();
-    Serial.print(" Control Mode: ");
-    Serial.println(Control_Mode);
-    
-    Serial.print("Left_leg->p_steps->plant_peak_mean ");
-    Serial.println(left_leg->p_steps->plant_peak_mean);
-   
-    
-    Serial.print("Right_leg->p_steps->plant_peak_mean ");
-    Serial.println(right_leg->p_steps->plant_peak_mean);
-    
-   
-    Serial.print("Right_leg->p_steps->peak ");
-    Serial.println(right_leg->p_steps->peak);
+  Serial.print(" Control Mode: ");
+  Serial.println(Control_Mode);
 
-    Serial.print("Right_leg->p_steps->peak_AnkID ");
-    Serial.println(right_leg->p_steps->peak_AnkID);
+  Serial.print("Left_leg->p_steps->plant_peak_mean ");
+  Serial.println(left_leg->p_steps->plant_peak_mean);
 
-    
+
+  Serial.print("Right_leg->p_steps->plant_peak_mean ");
+  Serial.println(right_leg->p_steps->plant_peak_mean);
+
+
+  Serial.print("Right_leg->p_steps->peak ");
+  Serial.println(right_leg->p_steps->peak);
+
+  Serial.print("Right_leg->p_steps->peak_AnkID ");
+  Serial.println(right_leg->p_steps->peak_AnkID);
+
+
   // same of FSR but for the balance baseline
   check_Balance_Baseline();
 
@@ -166,25 +166,22 @@ void biofeedback() {
   if (right_leg->NO_Biofeedback || right_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
   } else {
 
-    if (abs(right_leg->start_time_Biofeedback - millis()) >= Freq) {
 
+    state = digitalRead(LED_PIN);
 
-      state = digitalRead(LED_PIN);
-
-      if (state == HIGH) {
-        state = LOW;
-      } else {
-        state = HIGH;
-      }
-
-      digitalWrite(LED_PIN, state);
-
-
-
-      right_leg->start_time_Biofeedback = millis();
-      tone(A17, 500, 100);
-
+    if (state == HIGH) {
+      state = LOW;
+    } else {
+      state = HIGH;
     }
+
+    digitalWrite(LED_PIN, state);
+
+
+
+    right_leg->start_time_Biofeedback = millis();
+    tone(A17, 500, 100);
+
   }
   return;
 }
@@ -213,18 +210,18 @@ void calculate_leg_average(Leg* leg) {
   leg->Average_Trq = leg->Average / dim;
   if (leg->Average_Trq == leg->TarrayPoint[dim]) //When torque sensor is unplugged we see the same values for several seconds
   {
-      double old_L_state_L = leg->state;
-      leg->state = 9;
-      send_data_message_wc();
+    double old_L_state_L = leg->state;
+    leg->state = 9;
+    send_data_message_wc();
 
-      digitalWrite(onoff, LOW);
-      stream = 0;
-      digitalWrite(LED_PIN, LOW);
-      leg->state = old_L_state_L;
+    digitalWrite(onoff, LOW);
+    stream = 0;
+    digitalWrite(LED_PIN, LOW);
+    leg->state = old_L_state_L;
   }
   leg->p_steps->torque_average = leg->Average / dim;
 
-  leg->FSR_Toe_Average = 5*fsr(leg->fsr_sense_Toe);
+  leg->FSR_Toe_Average = 5 * fsr(leg->fsr_sense_Toe);
   leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
 
   // in case of two toe sensors we use the combined averate, i.e. the sum of the averages.
