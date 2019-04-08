@@ -107,8 +107,11 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
 
           p_steps_l->four_step_plant_time[p_steps_l->count_plant_base - 2] = p_steps_l->plant_time;
 
+        if (Control_Mode = 3) 
           p_steps_l->four_step_plant_peak[p_steps_l->count_plant_base - 2] = p_steps_l->peak;
-
+        else if (Control_Mode = 4)
+          p_steps_l->four_step_plant_peak[p_steps_l->count_plant_base - 2] = p_steps_l->peak_AnkID;
+ 
           for (int i = 0; i < n_step_baseline; i++) {
           }
         }
@@ -129,6 +132,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
 
   if (((R_state_l == 1) || (R_state_l == 2)) && R_state_old_l == 3)
     p_steps_l->peak = 0;
+    p_steps_l->peak_AnkID = 0;
 }// end take_baseline
 
 
@@ -212,8 +216,8 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
     }
     else if (Control_Mode_l == 4) {
-     if (p_steps_l->curr_voltage_AnkID > p_steps_l->peak)
-      p_steps_l->peak =  p_steps_l->curr_voltage_AnkID;
+     if (p_steps_l->curr_voltage_AnkID > p_steps_l->peak_AnkID)
+      p_steps_l->peak_AnkID =  p_steps_l->curr_voltage_AnkID;
 
     *p_FSR_Ratio = fabs(p_steps_l->curr_voltage_AnkID / p_steps_l->plant_peak_mean);
     }
@@ -273,6 +277,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       if (p_steps_l->dorsi_time <= step_time_length / 4) // if <50ms probably it is noise
       {
         p_steps_l->peak = 0;
+        p_steps_l->peak_AnkID = 0;
         p_steps_l->flag_start_plant = false;
         //        Serial.println(" SPD ADJ dorsi time too short ");
         return N3_l;
@@ -340,6 +345,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
   // During the all dorsiflexion set the voltage peak to 0, probably we just need to do it one time
   if (((R_state_l == 1) || (R_state_l == 2)) && R_state_old_l == 3) {
     p_steps_l->peak = 0;
+    p_steps_l->peak_AnkID = 0;
     p_Max_FSR_Ratio = 0;
   }
 
