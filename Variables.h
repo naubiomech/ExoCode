@@ -78,6 +78,8 @@ double BioFeedback_Freq_max = 1000;
 double BioFeedback_Freq_min = 200;
 const unsigned int pin_jack = 13;
 unsigned int state = HIGH;
+double right_stride_time, left_stride_time;
+double treadmill_speed = 0.6;//subject to change
 
 // Variables for Human-in-the-Loop Optimization (HLO)
 bool Flag_HLO = false;

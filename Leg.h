@@ -213,6 +213,12 @@ struct Leg {
 
   double zero;
   double torque_error_counter;
+  double stridetime_update, stridelength_update;
+  double stridetime_baseline, stridelength_baseline;
+  double HS1, HS4;
+  double stridetime_target;
+  double stridetime;
+
 
   //Optimization-----------------------------------
   double T_Opt_p, Setpoint_Ankle_Opt;

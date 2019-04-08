@@ -41,7 +41,6 @@ const unsigned int zero = 2048;//1540;
 #include "Variables.h"
 #include "Board.h"
 #include "resetMotorIfError.h"
-#include "Biofeedback_step.h"
 //----------------------------------------------------------------------------------
 
 
@@ -116,17 +115,21 @@ void callback()//executed every 2ms
   check_Balance_Baseline();
 
   if (right_leg->BIO_BASELINE_FLAG) {
-    BioFeedback_Baseline(right_leg);//just left leg for now
+    biofeedback_step_baseline(right_leg);
   }
 
+  if (left_leg->BIO_BASELINE_FLAG) {
+    biofeedback_step_baseline(left_leg);
+  }
+  
   // if flag auto reconnect BT is 1, activate the autoreconnect anche check the led voltage
   if (FLAG_AUTO_RECONNECT_BT) {
   }
 
-  // if flag biofeedback is 1 update the Frequency of the biofeedback
+  // if flag biofeedback is 1 update the step length of the biofeedback
   if (FLAG_BIOFEEDBACK) {
-    Freq = right_leg->Frequency;
-
+    right_stride_time = right_leg->stridetime_update;
+    left_stride_time = left_leg->stridetime_update;
   }//end if(Flag_biofeedback)
 }// end callback
 //----------------------------------------------------------------------------------
