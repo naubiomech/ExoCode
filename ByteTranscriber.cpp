@@ -14,5 +14,5 @@ void TeensyByteTranscriber::decodeDoubles(double* doubles, char* bytes, int amou
 }
 
 void TeensyByteTranscriber::encodeFloat(char* bytes, float* vals, int amount){
-	memcpy(vals, bytes, sizeof(double) * amount);
+	memcpy(bytes, vals, sizeof(float) * amount);
 }
