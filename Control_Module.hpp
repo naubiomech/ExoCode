@@ -14,7 +14,8 @@ private:
   ShapingFunction* shaping_function;
   double clamp_setpoint(double raw_setpoint);
   ControlAlgorithm* current_algorithm;
-  bool adjust_shaping_for_time = false;
+  bool adjust_shaping_for_time;
+  bool set_to_zero;
   Clamp* kf_clamp;
   Clamp* adjust_shaping_for_time_clamp;
 
@@ -28,6 +29,7 @@ private:
 
   ControlAlgorithm* getControlAlgorithm(StateID state_id);
   double getSetpoint(SensorReport* report);
+  double zeroSetpointIfSetToZero(double setpoint);
   double shapeSetpoint(double new_setpoint);
   double runPID(double torque_input, double kf, double pid_setpoint);
 

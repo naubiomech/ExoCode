@@ -4,6 +4,8 @@
 
 ControlModule::ControlModule(ControlAlgorithm* state_machine, StateID starting_state){
 
+  set_to_zero = false;
+  adjust_shaping_for_time = false;
   KF = 1;
   current_pid_setpoint = 0;
   pid_input = 0;
@@ -48,7 +50,13 @@ double ControlModule::getControlAdjustment(double torque_input, SensorReport* re
 
 double ControlModule::getSetpoint(SensorReport* report){
   double new_setpoint = current_algorithm->getSetpoint(report);
-  return shapeSetpoint(new_setpoint);
+  double shaped_setpoint = shapeSetpoint(new_setpoint);
+  double setpoint = zeroSetpointIfSetToZero(shaped_setpoint);
+  return setpoint;
+}
+
+double ControlModule::zeroSetpointIfSetToZero(double setpoint){
+  return set_to_zero ? 0 : setpoint;
 }
 
 double ControlModule::shapeSetpoint(double new_setpoint){
@@ -78,11 +86,7 @@ ControlAlgorithm* ControlModule::getControlAlgorithm(StateID state_id){
 }
 
 void ControlModule::setToZero(){
-  ControlAlgorithm* alg = current_algorithm;
-  while (alg->getNextAlgorithm() != current_algorithm){
-    alg->setToZero();
-    alg = alg->getNextAlgorithm();
-  }
+  set_to_zero = true;
 }
 
 void ControlModule::resetStartingParameters(){
@@ -105,6 +109,7 @@ void ControlModule::adjustShapingForTime(double planter_time){
 }
 
 void ControlModule::changeControl(StateID state_id){
+  set_to_zero = false;
   last_control_pid_setpoint = current_pid_setpoint;
   current_algorithm = getControlAlgorithm(state_id);
   current_algorithm->activate();
