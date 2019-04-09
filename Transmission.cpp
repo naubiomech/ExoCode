@@ -171,8 +171,8 @@ void SetSetpointTransmission::processData(ExoMessageBuilder* builder, ExoReport*
   builder->
     beginAreaMessage(selects[0])->
     beginJointMessage(selects[1])->
-    addCommand(new SetJointSetpointCommand(LATE_STANCE, receive_data[0]))->
-    addCommand(new SetJointSetpointCommand(SWING, receive_data[1]));
+    addCommand((new SetJointSetpointCommand())->setParams(LATE_STANCE, receive_data[0]))->
+    addCommand((new SetJointSetpointCommand())->setParams(SWING, receive_data[1]));
 }
 
 CalibrateFsrTransmission::CalibrateFsrTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CALIBRATE_FSR, 0, 0){}
@@ -195,7 +195,7 @@ void SetKFTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->
     beginAreaMessage(selects[0])->
     beginJointMessage(selects[1])->
-    addCommand(new SetJointKfCommand(receive_data[0]));
+    addCommand((new SetJointKfCommand())->setParams(receive_data[0]));
 }
 
 GetPidParamsTransmission::GetPidParamsTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_GET_PID_PARAMS, 0, true, 3, true){}
@@ -208,7 +208,7 @@ void SetPidParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport
   builder->
     beginAreaMessage(selects[0])->
     beginJointMessage(selects[1])->
-    addCommand(new SetJointPidCommand(receive_data[0], receive_data[1], receive_data[2]));
+    addCommand((new SetJointPidCommand())->setParams(receive_data[0], receive_data[1], receive_data[2]));
 }
 
 GetSmoothingParamsTransmission::GetSmoothingParamsTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_GET_SMOOTHING_PARAMS,0, true, 3, true){}
@@ -221,7 +221,7 @@ void SetSmoothingParamsTransmission::processData(ExoMessageBuilder* builder, Exo
   builder->
     beginAreaMessage(selects[0])->
     beginJointMessage(selects[1])->
-    addCommand(new SetJointSmoothingParamCommand(selects[2], receive_data[1]));
+    addCommand((new SetJointSmoothingParamCommand())->setParams(selects[2], receive_data[1]));
 }
 
 CheckMemoryTransmission::CheckMemoryTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CHECK_MEMORY, 0, 3){}
