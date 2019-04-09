@@ -116,10 +116,14 @@ void callback()//executed every 2ms
 
   if (right_leg->BIO_BASELINE_FLAG) {
     biofeedback_step_baseline(right_leg);
+    Serial.print("Right_leg biofeedback baseline");
+    Serial.println(right_leg->stridetime_baseline);
   }
 
   if (left_leg->BIO_BASELINE_FLAG) {
     biofeedback_step_baseline(left_leg);
+    Serial.print("Left_leg biofeedback baseline");
+    Serial.println(left_leg->stridetime_baseline);
   }
 
   // if flag auto reconnect BT is 1, activate the autoreconnect anche check the led voltage
@@ -128,8 +132,7 @@ void callback()//executed every 2ms
 
   // if flag biofeedback is 1 update the step length of the biofeedback
   if (FLAG_BIOFEEDBACK) {
-    right_stride_time = right_leg->stridetime_update;
-    left_stride_time = left_leg->stridetime_update;
+    takestridetime();
   }//end if(Flag_biofeedback)
 }// end callback
 //----------------------------------------------------------------------------------
@@ -163,10 +166,14 @@ void loop()
 //
 void biofeedback() {
 
-  if (right_leg->NO_Biofeedback || right_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
+  if (left_leg->NO_Biofeedback || left_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
   } else {
 
-
+    Serial.print("Right_leg biofeedback baseline");
+    Serial.println(right_leg->stridetime_baseline);
+    Serial.print("Left_leg biofeedback baseline");
+    Serial.println(left_leg->stridetime_baseline);
+    
     state = digitalRead(LED_PIN);
 
     if (state == HIGH) {
