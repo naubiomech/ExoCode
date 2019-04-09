@@ -192,7 +192,7 @@ struct Leg {
   //BIOFEEDBACK
   bool BioFeedback_Baseline_flag = false;
   double Heel_Strike;
-  double Heel_Strike_Count, Heel_Strike_baseline;
+  int Heel_Strike_Count, Heel_Strike_baseline;
   double Heel_Strike_mean;
   double n_step_biofeedback = 1;
   double n_step_biofeedback_base = 4;
