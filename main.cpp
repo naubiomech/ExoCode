@@ -33,18 +33,31 @@ void testExo(){
 }
 
 void testComms(){
-  char readStr[25] = {70,11,0,0,0,0,0,0,0,0,0,0,0,0,0,-16,63,0,0,0,0,0,0,-16,63};
-  Serial.setReadString(readStr, 25);
+  const int sizeSet = 49;
+  char readStrSet[sizeSet] = {77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -16, 63,
+                              0, 0, 0, 0, 0, 0, 8, 64, 0, 0, 0, 0, 0, 0, -16, 63, 0,
+                              0, 0, 0, 0, 0, -16, 63, 0, 0, 0, 0, 0, 0, -16, 63};
+  Serial.setReadString(readStrSet, sizeSet);
+  Exoskeleton* exo = setupSystem();
   MatlabTransceiver* trans = new MatlabTransceiver(&Serial);
   Communications* comms = new Communications(trans);
   ExoMessage* msg = comms->receiveMessages(NULL);
-  delete comms;
+  exo->processMessage(msg);
   delete msg;
+
+  const int sizeGet = 25;
+  char readStrGet[sizeGet] = {75, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0, -16, 63, 0, 0, 0, 0, 0, 0, 8, 64};
+  Serial.setReadString(readStrGet, sizeGet);
+  ExoReport* report = exo->generateReport();
+  msg = comms->receiveMessages(report);
+  delete msg;
+  delete comms;
 }
 
 int main(){
-  testExo();
-  testComms();
+	testExo();
+	testComms();
 }
 #endif
 #endif
