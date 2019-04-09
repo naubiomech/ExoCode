@@ -11,7 +11,7 @@ State::~State(){
 }
 
 void State::deleteStateMachine(){
-  if (this == NULL || next_state == NULL){
+  if (next_state == NULL){
     return;
   }
 

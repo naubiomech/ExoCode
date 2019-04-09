@@ -21,7 +21,7 @@ ControlAlgorithm::~ControlAlgorithm(){
 }
 
 void ControlAlgorithm::deleteAlgorithmStateMachine(){
-  if(this == NULL || next == NULL){
+  if(next == NULL){
     return;
   }
 

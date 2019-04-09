@@ -26,7 +26,9 @@ ControlModule::ControlModule(ControlAlgorithm* state_machine, StateID starting_s
 }
 
 ControlModule::~ControlModule(){
-  current_algorithm->deleteAlgorithmStateMachine();
+  if (current_algorithm != NULL){
+    current_algorithm->deleteAlgorithmStateMachine();
+  }
   delete pid;
   delete kf_clamp;
   delete adjust_shaping_for_time_clamp;

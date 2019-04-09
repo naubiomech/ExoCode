@@ -61,10 +61,6 @@ LegMessageBuilder* JointMessageBuilder::finishJoint(){
 }
 
 JointMessage* JointMessageBuilder::build(){
-  if (this == NULL){
-    return NULL;
-  }
-
   JointMessage* joint_msg = new JointMessage(getCommands().copy());
   clearCommands();
   return joint_msg;
@@ -100,14 +96,12 @@ ExoMessageBuilder* LegMessageBuilder::finishLeg(){
 }
 
 LegMessage* LegMessageBuilder::build(){
-  if (this == NULL){
-    return NULL;
-  }
 
   LinkedList<JointMessage*>* joint_msgs = new LinkedList<JointMessage*>();
   ListIterator<JointMessageBuilder*> joint_builder_iter = joint_builders.getIterator();
   while(joint_builder_iter.hasNext()){
-    joint_msgs->append(joint_builder_iter.next()->build());
+    JointMessageBuilder* builder = joint_builder_iter.next();
+    joint_msgs->append((builder == NULL) ? NULL : builder->build());
   }
   LegMessage* leg_msg = new LegMessage(getPreCommands().copy(), getPostCommands().copy(), joint_msgs);
   clearCommands();
@@ -135,12 +129,12 @@ ExoMessageBuilder* ExoMessageBuilder::addPostCommand(Command<Exoskeleton>* comma
 }
 
 LegMessageBuilder* ExoMessageBuilder::beginAreaMessage(AreaID id){
-	if (id == joint_select.area_id.LEFT_LEG){
-		return beginLeftLegMessage();
-	} else if (id == joint_select.area_id.RIGHT_LEG){
-		return beginRightLegMessage();
-	}
-	return NULL;
+  if (id == joint_select.area_id.LEFT_LEG){
+    return beginLeftLegMessage();
+  } else if (id == joint_select.area_id.RIGHT_LEG){
+    return beginRightLegMessage();
+  }
+  return NULL;
 }
 
 LegMessageBuilder* ExoMessageBuilder::beginLeftLegMessage(){
@@ -158,12 +152,8 @@ LegMessageBuilder* ExoMessageBuilder::beginRightLegMessage(){
 }
 
 ExoMessage* ExoMessageBuilder::build(){
-  if (this == NULL){
-    return NULL;
-  }
-
-  LegMessage* left_msg = left_builder->build();
-  LegMessage* right_msg = right_builder->build();
+  LegMessage* left_msg = (left_builder == NULL) ? NULL : left_builder->build();
+  LegMessage* right_msg = (right_builder == NULL) ? NULL : right_builder->build();
 
   ExoMessage* exo_msg = new ExoMessage(getPreCommands().copy(), getPostCommands().copy(), right_msg, left_msg);
   this->clearCommands();

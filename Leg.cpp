@@ -28,7 +28,9 @@ Leg::~Leg(){
   delete foot_change;
   delete sensor_report;
 
-  state->deleteStateMachine();
+  if (state != NULL){
+    state->deleteStateMachine();
+  }
   joints.deleteItems();
   fsrs.deleteItems();
   imus.deleteItems();
