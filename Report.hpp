@@ -8,7 +8,7 @@
 class Report{
 public:
   virtual ~Report();
-	JointSelect joint_select;
+  JointSelect joint_select;
 };
 
 class MotorReport:public Report{
@@ -29,6 +29,7 @@ public:
 class JointReport:public Report{
 public:
   JointReport();
+  JointReport(TorqueSensorReport* torque_sensor, MotorReport* motor, PotReport* pot);
   ~JointReport();
 
   double smoothing[3];
@@ -61,6 +62,7 @@ public:
 class LegReport:public Report{
 public:
   LegReport();
+  LegReport(LinkedList<JointReport*>& joitn_reports, SensorReport* sensor_report);
   ~LegReport();
   JointReport* getJointReport(JointID id);
 
@@ -73,6 +75,7 @@ public:
 class ExoReport:public Report{
 public:
   ExoReport();
+  ExoReport(LegReport* left, LegReport* right);
   ~ExoReport();
   LegReport* getAreaReport(AreaID id);
 

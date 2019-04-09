@@ -32,9 +32,16 @@ JointReport* LegReport::getJointReport(JointID id){
   return joint_reports[id];
 }
 
+JointReport::JointReport(TorqueSensorReport* torque_sensor, MotorReport* motor, PotReport* pot){
+  this->motor_report = motor;
+  this->torque_sensor_report = torque_sensor;
+  this->pot_report = pot;
+}
+
 JointReport::JointReport(){
   motor_report = NULL;
   torque_sensor_report = NULL;
+  pot_report = NULL;
 }
 
 JointReport::~JointReport(){
@@ -46,6 +53,11 @@ JointReport::~JointReport(){
 ExoReport::ExoReport(){
   left_leg = NULL;
   right_leg = NULL;
+}
+
+ExoReport::ExoReport(LegReport* left, LegReport* right){
+  left_leg = left;
+  right_leg = right;
 }
 
 ExoReport::~ExoReport(){
