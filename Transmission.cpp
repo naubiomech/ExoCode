@@ -28,20 +28,17 @@ Transmission::~Transmission(){
   delete[] receive_data;
 }
 
+void Transmission::preprocessData(){}
 
 void Transmission::process(ExoMessageBuilder* builder, ExoReport* report){
   getData();
+  preprocessData();
   processData(builder, report);
+  postprocessData();
   sendData();
 }
 
-void Transmission::decodeJointSelect(int* selects, double encoded_select){
-  byte_transcriber.decodeJointSelect(selects, encoded_select);
-}
-
-float Transmission::encodeJointSelect(int* selects){
-  return byte_transcriber.encodeJointSelect(selects);
-}
+void Transmission::postprocessData(){}
 
 void Transmission::getData(){
   if (receive_count > 0){
@@ -60,12 +57,62 @@ void Transmission::sendData(){
 }
 
 void Transmission::copyToSend(double* from){
-  memcpy(send_data, from, sizeof(double) * send_count);
+  memcpy(send_data, from, sizeof(float) * send_count);
 }
 
 void Transmission::copyFromReceive(double* to){
   memcpy(to, receive_data, sizeof(double) * receive_count);
 }
+
+unsigned int getJointSelectDataCount(unsigned int count, bool include_select, unsigned int select_count){
+  if (include_select){
+    count += select_count;
+  }
+  return count;
+}
+
+JointSelectTransmission::JointSelectTransmission(Transceiver* transceiver, CommandCode code,
+                                                 unsigned int receive_count, bool receive_select,
+                                                 unsigned int send_count, bool send_select):
+Transmission(transceiver, code, getJointSelectDataCount(receive_count, receive_select, select_count),
+             getJointSelectDataCount(send_count, send_select, select_count)){
+
+  this->receive_count = receive_count;
+  this->receive_select = receive_select;
+  this->send_count = send_count;
+  this->send_select = send_select;
+}
+
+void JointSelectTransmission::preprocessData(){
+  if (receive_select){
+    selects[0] = (int) (receive_data[0] + 0.1);
+    selects[1] = (int) (receive_data[1] + 0.1);
+    selects[2] = (int) (receive_data[2] + 0.1);
+    for (unsigned int i = 0; i < receive_count; i++){
+      receive_data[i] = receive_data[i+select_count];
+    }
+  }
+}
+
+void JointSelectTransmission::decodeJointSelect(int* selects, double encoded_select){
+  byte_transcriber.decodeJointSelect(selects, encoded_select);
+}
+
+float JointSelectTransmission::encodeJointSelect(int* selects){
+  return byte_transcriber.encodeJointSelect(selects);
+}
+
+void JointSelectTransmission::postprocessData(){
+  if (send_select){
+    for (int i = send_count - 1; i >= 0; i--){
+      send_data[i+select_count] = send_data[i];
+    }
+    send_data[0] = (float) selects[0];
+    send_data[1] = (float) selects[1];
+    send_data[2] = (float) selects[2];
+  }
+}
+
 
 RequestDataTransmission::RequestDataTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_REQUEST_DATA, 0, 14){}
 void RequestDataTransmission::processData(ExoMessageBuilder*, ExoReport* report){
@@ -114,28 +161,18 @@ void CleanBluetoothBufferTransmission::processData(ExoMessageBuilder*, ExoReport
   transceiver->clear();
 }
 
-GetSetpointTransmission::GetSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_TORQUE_SETPOINT, 1, 2){}
+GetSetpointTransmission::GetSetpointTransmission(Transceiver* trans): JointSelectTransmission(trans, COMM_CODE_GET_TORQUE_SETPOINT, 0,true, 1, true){}
 void GetSetpointTransmission::processData(ExoMessageBuilder*, ExoReport* report){
-  int selects[3];
-  decodeJointSelect(selects, receive_data[0]);
-  Serial.println(selects[0]);
-  Serial.println(selects[1]);
-  Serial.println(selects[2]);
-
-  send_data[0] = encodeJointSelect(selects);
-  send_data[1] = report->getAreaReport(selects[0])->getJointReport(selects[1])->pid_setpoint;
-
+  send_data[0] = report->getAreaReport(selects[0])->getJointReport(selects[1])->pid_setpoint;
 }
 
-SetSetpointTransmission::SetSetpointTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_TORQUE_SETPOINT, 3, 0){}
+SetSetpointTransmission::SetSetpointTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_SET_TORQUE_SETPOINT, 2,true, 0, false){}
 void SetSetpointTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
-  int selects[3];
-  decodeJointSelect(selects, receive_data[0]);
   builder->
     beginAreaMessage(selects[0])->
     beginJointMessage(selects[1])->
-    addCommand(new SetJointSetpointCommand(LATE_STANCE, receive_data[1]))->
-    addCommand(new SetJointSetpointCommand(SWING, receive_data[2]));
+    addCommand(new SetJointSetpointCommand(LATE_STANCE, receive_data[0]))->
+    addCommand(new SetJointSetpointCommand(SWING, receive_data[1]));
 }
 
 CalibrateFsrTransmission::CalibrateFsrTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CALIBRATE_FSR, 0, 0){}
@@ -148,57 +185,39 @@ void GetFsrThresholdTransmission::processData(ExoMessageBuilder*, ExoReport*){
   send_data[0] = 1;
 }
 
-GetKFTransmission::GetKFTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_KF, 1, 1){}
+GetKFTransmission::GetKFTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_GET_KF, 0, true, 1, true){}
 void GetKFTransmission::processData(ExoMessageBuilder*, ExoReport* report){
-  int selects[3];
-  decodeJointSelect(selects, receive_data[0]);
-
   send_data[0] = report->getAreaReport(selects[0])->getJointReport(selects[1])->pid_kf;
 }
 
-SetKFTransmission::SetKFTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_KF, 2, 0){}
+SetKFTransmission::SetKFTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_SET_KF, 1, true, 0, false){}
 void SetKFTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
-  int selects[3];
-  decodeJointSelect(selects, receive_data[0]);
   builder->
     beginAreaMessage(selects[0])->
     beginJointMessage(selects[1])->
-    addCommand(new SetJointKfCommand(receive_data[1]));
+    addCommand(new SetJointKfCommand(receive_data[0]));
 }
 
-GetPidParamsTransmission::GetPidParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_PID_PARAMS, 1, 3){}
+GetPidParamsTransmission::GetPidParamsTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_GET_PID_PARAMS, 0, true, 3, true){}
 void GetPidParamsTransmission::processData(ExoMessageBuilder*, ExoReport* report){
-  int selects[3];
-  decodeJointSelect(selects, receive_data[0]);
-
   copyToSend(report->getAreaReport(selects[0])->getJointReport(selects[1])->pid_params);
 }
 
-SetPidParamsTransmission::SetPidParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_PID_PARAMS, 4, 0){}
+SetPidParamsTransmission::SetPidParamsTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_SET_PID_PARAMS, 3, true, 0, false){}
 void SetPidParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
-  int selects[3];
-  decodeJointSelect(selects, receive_data[0]);
-
   builder->
     beginAreaMessage(selects[0])->
     beginJointMessage(selects[1])->
-    addCommand(new SetJointPidCommand(receive_data[1], receive_data[2], receive_data[3]));
+    addCommand(new SetJointPidCommand(receive_data[0], receive_data[1], receive_data[2]));
 }
 
-GetSmoothingParamsTransmission::GetSmoothingParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_SMOOTHING_PARAMS, 1, 3){}
+GetSmoothingParamsTransmission::GetSmoothingParamsTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_GET_SMOOTHING_PARAMS,0, true, 3, true){}
 void GetSmoothingParamsTransmission::processData(ExoMessageBuilder*, ExoReport* report){
-  int selects[3];
-  decodeJointSelect(selects, receive_data[0]);
-
   copyToSend(report->getAreaReport(selects[0])->getJointReport(selects[1])->smoothing);
 }
 
-SetSmoothingParamsTransmission::SetSmoothingParamsTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_SET_SMOOTHING_PARAMS, 3, 0){}
+SetSmoothingParamsTransmission::SetSmoothingParamsTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_SET_SMOOTHING_PARAMS, 3, true, 0, false){}
 void SetSmoothingParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
-
-  int selects[3];
-  decodeJointSelect(selects, receive_data[0]);
-
   builder->
     beginAreaMessage(selects[0])->
     beginJointMessage(selects[1])->
