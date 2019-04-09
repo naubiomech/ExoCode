@@ -62,7 +62,7 @@ public:
 class LegReport:public Report{
 public:
   LegReport();
-  LegReport(LinkedList<JointReport*>& joitn_reports, SensorReport* sensor_report);
+  LegReport(LinkedList<JointReport*>& joint_reports, SensorReport* sensor_report);
   ~LegReport();
   JointReport* getJointReport(JointID id);
 

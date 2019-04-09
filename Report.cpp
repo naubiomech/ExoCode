@@ -23,6 +23,11 @@ LegReport::LegReport(){
   sensor_reports = NULL;
 }
 
+LegReport::LegReport(LinkedList<JointReport*>& joint_reports, SensorReport* sensor){
+  sensor_reports = sensor;
+  this->joint_reports = joint_reports;
+}
+
 LegReport::~LegReport(){
   deleteReportList(&joint_reports);
   delete sensor_reports;
