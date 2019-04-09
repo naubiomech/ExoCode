@@ -20,6 +20,6 @@ public:
   LegReportBuilder();
   void addFSRReport();
   void addIMUReport();
-  void addJointReport();
+  void addJointReport(bool include_pot);
   LegReport* build();
 };
