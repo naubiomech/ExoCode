@@ -95,7 +95,7 @@ public:
   virtual Command<Exoskeleton>* createExoCommand(ExoCommandID) = 0;
 };
 
-class ConcreteCommandFactory{
+class ConcreteCommandFactory : public CommandFactory{
 private:
   ExoCommandIDs exo_ids;
   JointCommandIDs joint_ids;
