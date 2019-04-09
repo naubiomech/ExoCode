@@ -38,8 +38,8 @@ private:
   StateID state;
   double setpoint;
 public:
+SetJointSetpointCommand(StateID state, double setpoint): state(state), setpoint(setpoint){};
   virtual void execute(Joint* joint);
-  virtual Command<Joint>* setParams(StateID state, double setpoint);
 };
 
 class SetJointPidCommand:public Command<Joint>{
@@ -48,16 +48,16 @@ private:
   double i;
   double d;
 public:
+SetJointPidCommand(double p, double i, double d): p(p), i(i), d(d){};
   virtual void execute(Joint* joint);
-  virtual Command<Joint>* setParams(double p, double i, double d);
 };
 
 class SetJointKfCommand:public Command<Joint>{
 private:
   double kf;
 public:
+SetJointKfCommand(double kf): kf(kf){};
   virtual void execute(Joint* joint);
-  virtual Command<Joint>* setParams(double kf);
 };
 
 class SetJointSmoothingParamCommand:public Command<Joint>{
@@ -65,10 +65,9 @@ private:
   StateID state;
   double param;
 public:
+SetJointSmoothingParamCommand(StateID state, double param): state(state), param(param){};
   virtual void execute(Joint* joint);
-  virtual Command<Joint>* setParams(StateID state, double params);
 };
-
 
 typedef int ExoCommandID;
 class ExoCommandIDs{
@@ -80,7 +79,6 @@ public:
 };
 
 typedef int JointCommandID;
-
 class JointCommandIDs{
 public:
   static const JointCommandID SET_SETPOINT = 0;
@@ -91,7 +89,11 @@ public:
 
 class CommandFactory{
 public:
-  virtual Command<Joint>* createJointCommand(JointCommandID id) = 0;
+  CommandFactory();
+  virtual ~CommandFactory();
+  virtual Command<Joint>* createJointCommand(JointCommandID id, StateID state, double value) = 0;
+  virtual Command<Joint>* createJointCommand(JointCommandID id, double, double, double) = 0;
+  virtual Command<Joint>* createJointCommand(JointCommandID id, double) = 0;
   virtual Command<Exoskeleton>* createExoCommand(ExoCommandID) = 0;
 };
 
@@ -100,8 +102,12 @@ private:
   ExoCommandIDs exo_ids;
   JointCommandIDs joint_ids;
 public:
-  virtual Command<Joint>* createJointCommand(JointCommandID id);
+  ConcreteCommandFactory();
+  ~ConcreteCommandFactory();
   virtual Command<Exoskeleton>* createExoCommand(ExoCommandID id);
+  virtual Command<Joint>* createJointCommand(JointCommandID id, StateID state, double value);
+  virtual Command<Joint>* createJointCommand(JointCommandID id, double, double, double);
+  virtual Command<Joint>* createJointCommand(JointCommandID id, double);
 };
 
 #endif

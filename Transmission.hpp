@@ -18,6 +18,9 @@ private:
   void sendData();
 protected:
   Transceiver* transceiver;
+  CommandFactory* cmd_factory;
+  JointCommandIDs joint_cmd_ids;
+  ExoCommandIDs exo_cmd_ids;
   float* send_data;
   double* receive_data;
 
@@ -27,10 +30,10 @@ protected:
   void copyToSend(double* from);
   void copyFromReceive(double* to);
 public:
-  Transmission(Transceiver* transceiver, CommandCode code,
+  Transmission(Transceiver* transceiver, CommandFactory* cmd_factory, CommandCode code,
                unsigned int receive_count, unsigned int send_count);
-	virtual ~Transmission();
-	void process(ExoMessageBuilder* builder, ExoReport* report);
+  virtual ~Transmission();
+  void process(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class JointSelectTransmission:public Transmission{
@@ -39,10 +42,10 @@ private:
   static const int select_count = 3;
   unsigned int send_count;
   unsigned int receive_count;
-	bool send_select;
-	bool receive_select;
+  bool send_select;
+  bool receive_select;
 
-	void separateSelect(int* select, double* receive);
+  void separateSelect(int* select, double* receive);
   void combineSelect(int* select, double* send);
   void decodeJointSelect(int* selects, double encoded_select);
   float encodeJointSelect(int* selects);
@@ -53,126 +56,126 @@ protected:
   virtual void preprocessData();
   virtual void postprocessData();
 public:
-	JointSelectTransmission(Transceiver* transceiver, CommandCode code,
-							unsigned int receive_count, bool receive_select,
-							unsigned int send_count, bool send_select);
+  JointSelectTransmission(Transceiver* transceiver, CommandFactory* cmd, CommandCode code,
+                          unsigned int receive_count, bool receive_select,
+                          unsigned int send_count, bool send_select);
 };
 
 class RequestDataTransmission:public Transmission{
 public:
-  explicit RequestDataTransmission(Transceiver* transceiver);
+  explicit RequestDataTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class StartTrialTransmission:public Transmission{
 public:
-  StartTrialTransmission(Transceiver* transceiver);
+  explicit StartTrialTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class EndTrialTransmission:public Transmission{
 public:
-  explicit EndTrialTransmission(Transceiver* transceiver);
+  explicit EndTrialTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class CalibrateTorqueTransmission:public Transmission{
 public:
-  explicit CalibrateTorqueTransmission(Transceiver* transceiver);
+  explicit CalibrateTorqueTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class CheckBluetoothTransmission:public Transmission{
 public:
-  explicit CheckBluetoothTransmission(Transceiver* transceiver);
+  explicit CheckBluetoothTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class CleanBluetoothBufferTransmission:public Transmission{
 public:
-  explicit CleanBluetoothBufferTransmission(Transceiver* transceiver);
+  explicit CleanBluetoothBufferTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class GetSetpointTransmission:public JointSelectTransmission{
 public:
-  explicit GetSetpointTransmission(Transceiver* transceiver);
+  explicit GetSetpointTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class SetSetpointTransmission:public JointSelectTransmission{
 public:
-  explicit SetSetpointTransmission(Transceiver* transceiver);
+  explicit SetSetpointTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class CalibrateFsrTransmission:public Transmission{
 public:
-  explicit CalibrateFsrTransmission(Transceiver* transceiver);
+  explicit CalibrateFsrTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class GetFsrThresholdTransmission:public Transmission{
 public:
-  explicit GetFsrThresholdTransmission(Transceiver* transceiver);
+  explicit GetFsrThresholdTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class GetKFTransmission:public JointSelectTransmission{
 public:
-  explicit GetKFTransmission(Transceiver* transceiver);
+  explicit GetKFTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class SetKFTransmission:public JointSelectTransmission{
 public:
-  explicit SetKFTransmission(Transceiver* transceiver);
+  explicit SetKFTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class GetPidParamsTransmission:public JointSelectTransmission{
 public:
-  explicit GetPidParamsTransmission(Transceiver* transceiver);
+  explicit GetPidParamsTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class SetPidParamsTransmission:public JointSelectTransmission{
 public:
-  explicit SetPidParamsTransmission(Transceiver* transceiver);
+  explicit SetPidParamsTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class GetSmoothingParamsTransmission:public JointSelectTransmission{
 public:
-  explicit GetSmoothingParamsTransmission(Transceiver* transceiver);
+  explicit GetSmoothingParamsTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class SetSmoothingParamsTransmission:public JointSelectTransmission{
 public:
-  explicit SetSmoothingParamsTransmission(Transceiver* transceiver);
+  explicit SetSmoothingParamsTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
 
 class CheckMemoryTransmission:public Transmission{
 public:
-  explicit CheckMemoryTransmission(Transceiver* transceiver);
+  explicit CheckMemoryTransmission(Transceiver* transceiver, CommandFactory* cmd);
 private:
   virtual void processData(ExoMessageBuilder* builder, ExoReport* report);
 };
@@ -180,6 +183,6 @@ private:
 
 class TransmissionFactory{
 public:
-  Transmission* create(Transceiver* transceiver, CommandCode code);
+  Transmission* create(Transceiver* transceiver, CommandFactory* cmd_factory, CommandCode code);
 };
 #endif

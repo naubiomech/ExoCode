@@ -3,11 +3,13 @@
 Communications::Communications(Transceiver* transceiver){
   this->transceiver = transceiver;
   this->transmission_creator = new TransmissionFactory();
+  this->cmd_factory = new ConcreteCommandFactory();
 }
 
 Communications::~Communications(){
   delete transceiver;
   delete transmission_creator;
+  delete cmd_factory;
 }
 
 ExoMessage* Communications::receiveMessages(ExoReport* report){
@@ -19,7 +21,7 @@ ExoMessage* Communications::receiveMessages(ExoReport* report){
 }
 
 void Communications::processMessage(CommandCode code, ExoMessageBuilder* msg_builder, ExoReport* report){
-  Transmission* transmission = transmission_creator->create(transceiver, code);
+  Transmission* transmission = transmission_creator->create(transceiver, cmd_factory, code);
   if (transmission != NULL){
     transmission->process(msg_builder, report);
   }

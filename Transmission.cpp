@@ -3,10 +3,11 @@
 #include "JointSelect.hpp"
 #include <string.h>
 
-Transmission::Transmission(Transceiver* transceiver, CommandCode code,
+Transmission::Transmission(Transceiver* transceiver,CommandFactory* cmd_factory, CommandCode code,
                            unsigned int receive_count, unsigned int send_count){
   this->code = code;
   this->transceiver = transceiver;
+  this->cmd_factory = cmd_factory;
   this->send_count = send_count;
   this->receive_count = receive_count;
 
@@ -71,16 +72,19 @@ unsigned int getJointSelectDataCount(unsigned int count, bool include_select, un
   return count;
 }
 
-JointSelectTransmission::JointSelectTransmission(Transceiver* transceiver, CommandCode code,
+JointSelectTransmission::JointSelectTransmission(Transceiver* transceiver, CommandFactory* cmd_factory, CommandCode code,
                                                  unsigned int receive_count, bool receive_select,
                                                  unsigned int send_count, bool send_select):
-Transmission(transceiver, code, getJointSelectDataCount(receive_count, receive_select, select_count),
+Transmission(transceiver, cmd_factory, code, getJointSelectDataCount(receive_count, receive_select, select_count),
              getJointSelectDataCount(send_count, send_select, select_count)){
 
   this->receive_count = receive_count;
   this->receive_select = receive_select;
   this->send_count = send_count;
   this->send_select = send_select;
+  for(int i = 0; i < select_count; i++){
+    this->selects[i] = 0;
+  }
 }
 
 void JointSelectTransmission::preprocessData(){
@@ -114,7 +118,7 @@ void JointSelectTransmission::postprocessData(){
 }
 
 
-RequestDataTransmission::RequestDataTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_REQUEST_DATA, 0, 14){}
+RequestDataTransmission::RequestDataTransmission(Transceiver* trans, CommandFactory* cmd_factory):Transmission(trans, cmd_factory, COMM_CODE_REQUEST_DATA, 0, 14){}
 void RequestDataTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   send_data[0] = report->right_leg->joint_reports[0]->torque_sensor_report->measuredTorque;
   send_data[1] = report->right_leg->state;
@@ -134,139 +138,139 @@ void RequestDataTransmission::processData(ExoMessageBuilder*, ExoReport* report)
   send_data[13] = 0;
 }
 
-StartTrialTransmission::StartTrialTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_START_TRIAL, 0, 0){}
+StartTrialTransmission::StartTrialTransmission(Transceiver* trans, CommandFactory* cmd_factory):Transmission(trans, cmd_factory, COMM_CODE_START_TRIAL, 0, 0){}
 void StartTrialTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->addPreCommand(new StartTrialCommand());
 }
 
-EndTrialTransmission::EndTrialTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_END_TRIAL, 0, 0){}
+EndTrialTransmission::EndTrialTransmission(Transceiver* trans, CommandFactory* cmd_factory):Transmission(trans, cmd_factory, COMM_CODE_END_TRIAL, 0, 0){}
 void EndTrialTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->addPreCommand(new EndTrialCommand());
 }
 
-CalibrateTorqueTransmission::CalibrateTorqueTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CALIBRATE_TORQUE, 0, 0){}
+CalibrateTorqueTransmission::CalibrateTorqueTransmission(Transceiver* trans, CommandFactory* cmd_factory):Transmission(trans, cmd_factory, COMM_CODE_CALIBRATE_TORQUE, 0, 0){}
 void CalibrateTorqueTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->addPreCommand(new CalibrateAllTorquesCommand());
 }
 
-CheckBluetoothTransmission::CheckBluetoothTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CHECK_BLUETOOTH, 0, 3){}
+CheckBluetoothTransmission::CheckBluetoothTransmission(Transceiver* trans, CommandFactory* cmd_factory):Transmission(trans, cmd_factory, COMM_CODE_CHECK_BLUETOOTH, 0, 3){}
 void CheckBluetoothTransmission::processData(ExoMessageBuilder*, ExoReport*){
   send_data[0] = 0;
   send_data[1] = 1;
   send_data[2] = 2;
 }
 
-CleanBluetoothBufferTransmission::CleanBluetoothBufferTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CLEAN_BLUETOOTH_BUFFER, 0, 0){}
+CleanBluetoothBufferTransmission::CleanBluetoothBufferTransmission(Transceiver* trans, CommandFactory* cmd_factory):Transmission(trans, cmd_factory, COMM_CODE_CLEAN_BLUETOOTH_BUFFER, 0, 0){}
 void CleanBluetoothBufferTransmission::processData(ExoMessageBuilder*, ExoReport*){
   transceiver->clear();
 }
 
-GetSetpointTransmission::GetSetpointTransmission(Transceiver* trans): JointSelectTransmission(trans, COMM_CODE_GET_TORQUE_SETPOINT, 0,true, 1, true){}
+GetSetpointTransmission::GetSetpointTransmission(Transceiver* trans, CommandFactory* cmd_factory): JointSelectTransmission(trans, cmd_factory, COMM_CODE_GET_TORQUE_SETPOINT, 0,true, 1, true){}
 void GetSetpointTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   send_data[0] = report->getAreaReport(selects[0])->getJointReport(selects[1])->pid_setpoint;
 }
 
-SetSetpointTransmission::SetSetpointTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_SET_TORQUE_SETPOINT, 2,true, 0, false){}
+SetSetpointTransmission::SetSetpointTransmission(Transceiver* trans, CommandFactory* cmd_factory):JointSelectTransmission(trans, cmd_factory, COMM_CODE_SET_TORQUE_SETPOINT, 2,true, 0, false){}
 void SetSetpointTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->
     beginAreaMessage(selects[0])->
     beginJointMessage(selects[1])->
-    addCommand((new SetJointSetpointCommand())->setParams(LATE_STANCE, receive_data[0]))->
-    addCommand((new SetJointSetpointCommand())->setParams(SWING, receive_data[1]));
+    addCommand(cmd_factory->createJointCommand(joint_cmd_ids.SET_SETPOINT, LATE_STANCE, receive_data[0]))->
+    addCommand(cmd_factory->createJointCommand(joint_cmd_ids.SET_SETPOINT, SWING, receive_data[1]));
 }
 
-CalibrateFsrTransmission::CalibrateFsrTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CALIBRATE_FSR, 0, 0){}
+CalibrateFsrTransmission::CalibrateFsrTransmission(Transceiver* trans, CommandFactory* cmd_factory):Transmission(trans, cmd_factory, COMM_CODE_CALIBRATE_FSR, 0, 0){}
 void CalibrateFsrTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
-  builder->addPreCommand(new CalibrateAllFsrsCommand());
+  builder->addPreCommand(cmd_factory->createExoCommand(exo_cmd_ids.CALIBRATE_FSRS));
 }
 
-GetFsrThresholdTransmission::GetFsrThresholdTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_GET_FSR_THRESHOLD, 0, 1){}
+GetFsrThresholdTransmission::GetFsrThresholdTransmission(Transceiver* trans, CommandFactory* cmd_factory):Transmission(trans, cmd_factory, COMM_CODE_GET_FSR_THRESHOLD, 0, 1){}
 void GetFsrThresholdTransmission::processData(ExoMessageBuilder*, ExoReport*){
   send_data[0] = 1;
 }
 
-GetKFTransmission::GetKFTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_GET_KF, 0, true, 1, true){}
+GetKFTransmission::GetKFTransmission(Transceiver* trans, CommandFactory* cmd_factory):JointSelectTransmission(trans, cmd_factory, COMM_CODE_GET_KF, 0, true, 1, true){}
 void GetKFTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   send_data[0] = report->getAreaReport(selects[0])->getJointReport(selects[1])->pid_kf;
 }
 
-SetKFTransmission::SetKFTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_SET_KF, 1, true, 0, false){}
+SetKFTransmission::SetKFTransmission(Transceiver* trans, CommandFactory* cmd_factory):JointSelectTransmission(trans, cmd_factory, COMM_CODE_SET_KF, 1, true, 0, false){}
 void SetKFTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->
     beginAreaMessage(selects[0])->
     beginJointMessage(selects[1])->
-    addCommand((new SetJointKfCommand())->setParams(receive_data[0]));
+    addCommand(cmd_factory->createJointCommand(joint_cmd_ids.SET_KF, receive_data[0]));
 }
 
-GetPidParamsTransmission::GetPidParamsTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_GET_PID_PARAMS, 0, true, 3, true){}
+GetPidParamsTransmission::GetPidParamsTransmission(Transceiver* trans, CommandFactory* cmd_factory):JointSelectTransmission(trans, cmd_factory, COMM_CODE_GET_PID_PARAMS, 0, true, 3, true){}
 void GetPidParamsTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   copyToSend(report->getAreaReport(selects[0])->getJointReport(selects[1])->pid_params);
 }
 
-SetPidParamsTransmission::SetPidParamsTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_SET_PID_PARAMS, 3, true, 0, false){}
+SetPidParamsTransmission::SetPidParamsTransmission(Transceiver* trans, CommandFactory* cmd_factory):JointSelectTransmission(trans, cmd_factory, COMM_CODE_SET_PID_PARAMS, 3, true, 0, false){}
 void SetPidParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->
     beginAreaMessage(selects[0])->
     beginJointMessage(selects[1])->
-    addCommand((new SetJointPidCommand())->setParams(receive_data[0], receive_data[1], receive_data[2]));
+    addCommand(cmd_factory->createJointCommand(joint_cmd_ids.SET_PID, receive_data[0], receive_data[1], receive_data[2]));
 }
 
-GetSmoothingParamsTransmission::GetSmoothingParamsTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_GET_SMOOTHING_PARAMS,0, true, 3, true){}
+GetSmoothingParamsTransmission::GetSmoothingParamsTransmission(Transceiver* trans, CommandFactory* cmd_factory):JointSelectTransmission(trans, cmd_factory, COMM_CODE_GET_SMOOTHING_PARAMS,0, true, 3, true){}
 void GetSmoothingParamsTransmission::processData(ExoMessageBuilder*, ExoReport* report){
   copyToSend(report->getAreaReport(selects[0])->getJointReport(selects[1])->smoothing);
 }
 
-SetSmoothingParamsTransmission::SetSmoothingParamsTransmission(Transceiver* trans):JointSelectTransmission(trans, COMM_CODE_SET_SMOOTHING_PARAMS, 3, true, 0, false){}
+SetSmoothingParamsTransmission::SetSmoothingParamsTransmission(Transceiver* trans, CommandFactory* cmd_factory):JointSelectTransmission(trans, cmd_factory, COMM_CODE_SET_SMOOTHING_PARAMS, 3, true, 0, false){}
 void SetSmoothingParamsTransmission::processData(ExoMessageBuilder* builder, ExoReport*){
   builder->
     beginAreaMessage(selects[0])->
     beginJointMessage(selects[1])->
-    addCommand((new SetJointSmoothingParamCommand())->setParams(selects[2], receive_data[1]));
+    addCommand(cmd_factory->createJointCommand(joint_cmd_ids.SET_SMOOTHING, selects[2], receive_data[1]));
 }
 
-CheckMemoryTransmission::CheckMemoryTransmission(Transceiver* trans):Transmission(trans, COMM_CODE_CHECK_MEMORY, 0, 3){}
+CheckMemoryTransmission::CheckMemoryTransmission(Transceiver* trans, CommandFactory* cmd_factory):Transmission(trans, cmd_factory, COMM_CODE_CHECK_MEMORY, 0, 3){}
 void CheckMemoryTransmission::processData(ExoMessageBuilder*, ExoReport*){
   send_data[0] = 2;
   send_data[1] = 2;
   send_data[2] = 2;
 }
 
-Transmission* TransmissionFactory::create(Transceiver* trans, CommandCode code){
+Transmission* TransmissionFactory::create(Transceiver* trans, CommandFactory* cmd, CommandCode code){
   switch (code) {
   case COMM_CODE_REQUEST_DATA:
-    return new RequestDataTransmission(trans);
+    return new RequestDataTransmission(trans, cmd);
   case COMM_CODE_START_TRIAL:
-    return new StartTrialTransmission(trans);
+    return new StartTrialTransmission(trans, cmd);
   case COMM_CODE_END_TRIAL:
-    return new EndTrialTransmission(trans);
+    return new EndTrialTransmission(trans, cmd);
   case COMM_CODE_CALIBRATE_TORQUE:
-    return new CalibrateTorqueTransmission(trans);
+    return new CalibrateTorqueTransmission(trans, cmd);
   case COMM_CODE_CHECK_BLUETOOTH:
-    return new CheckBluetoothTransmission(trans);
+    return new CheckBluetoothTransmission(trans, cmd);
   case COMM_CODE_CLEAN_BLUETOOTH_BUFFER:
-    return new CleanBluetoothBufferTransmission(trans);
+    return new CleanBluetoothBufferTransmission(trans, cmd);
   case COMM_CODE_GET_TORQUE_SETPOINT:
-    return new GetSetpointTransmission(trans);
+    return new GetSetpointTransmission(trans, cmd);
   case COMM_CODE_SET_TORQUE_SETPOINT:
-    return new SetSetpointTransmission(trans);
+    return new SetSetpointTransmission(trans, cmd);
   case COMM_CODE_CALIBRATE_FSR:
-    return new CalibrateFsrTransmission(trans);
+    return new CalibrateFsrTransmission(trans, cmd);
   case COMM_CODE_GET_FSR_THRESHOLD:
-    return new GetFsrThresholdTransmission(trans);
+    return new GetFsrThresholdTransmission(trans, cmd);
   case COMM_CODE_GET_KF:
-    return new GetKFTransmission(trans);
+    return new GetKFTransmission(trans, cmd);
   case COMM_CODE_SET_KF:
-    return new SetKFTransmission(trans);
+    return new SetKFTransmission(trans, cmd);
   case COMM_CODE_GET_PID_PARAMS:
-    return new GetPidParamsTransmission(trans);
+    return new GetPidParamsTransmission(trans, cmd);
   case COMM_CODE_SET_PID_PARAMS:
-    return new SetPidParamsTransmission(trans);
+    return new SetPidParamsTransmission(trans, cmd);
   case COMM_CODE_GET_SMOOTHING_PARAMS:
-    return new GetSmoothingParamsTransmission(trans);
+    return new GetSmoothingParamsTransmission(trans, cmd);
   case COMM_CODE_SET_SMOOTHING_PARAMS:
-    return new SetSmoothingParamsTransmission(trans);
+    return new SetSmoothingParamsTransmission(trans, cmd);
   case COMM_CODE_CHECK_MEMORY:
-    return new CheckMemoryTransmission(trans);
+    return new CheckMemoryTransmission(trans, cmd);
   default:
     Serial.print("Command code not implemented: ");
     Serial.println(code);

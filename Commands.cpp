@@ -24,42 +24,23 @@ void SetJointSetpointCommand::execute(Joint* joint){
   joint->setDesiredSetpoint(state, setpoint);
 }
 
-Command<Joint>* SetJointSetpointCommand::setParams(StateID state, double setpoint){
-  this->state = state;
-  this->setpoint = setpoint;
-  return this;
-}
-
 void SetJointPidCommand::execute(Joint* joint){
   joint->setPid(p,i,d);
-}
-
-Command<Joint>* SetJointPidCommand::setParams(double p, double i, double d){
-  this->p = p;
-  this->i = i;
-  this->d = d;
-  return this;
 }
 
 void SetJointKfCommand::execute(Joint* joint){
   joint->setKf(kf);
 }
 
-Command<Joint>* SetJointKfCommand::setParams(double kf){
-  this->kf = kf;
-  return this;
-}
-
 void SetJointSmoothingParamCommand::execute(Joint* joint){
   joint->setSmoothingParam(state, param);
 }
 
-Command<Joint>* SetJointSmoothingParamCommand::setParams(StateID state, double param){
-  this->state = state;
-  this->param = param;
-  return this;
-}
+CommandFactory::CommandFactory(){}
+CommandFactory::~CommandFactory(){}
 
+ConcreteCommandFactory::ConcreteCommandFactory():CommandFactory(){}
+ConcreteCommandFactory::~ConcreteCommandFactory(){}
 Command<Exoskeleton>* ConcreteCommandFactory::createExoCommand(ExoCommandID id){
   switch(id){
   case exo_ids.START_TRIAL:
@@ -74,16 +55,32 @@ Command<Exoskeleton>* ConcreteCommandFactory::createExoCommand(ExoCommandID id){
   return NULL;
 }
 
-Command<Joint>* ConcreteCommandFactory::createJointCommand(JointCommandID id){
+Command<Joint>* ConcreteCommandFactory::createJointCommand(JointCommandID id, StateID state, double value){
   switch(id){
   case joint_ids.SET_SETPOINT:
-    return new SetJointSetpointCommand();
-  case joint_ids.SET_PID:
-    return new SetJointPidCommand();
-  case joint_ids.SET_KF:
-    return new SetJointKfCommand();
+    return new SetJointSetpointCommand(state, value);
   case joint_ids.SET_SMOOTHING:
-    return new SetJointSetpointCommand();
+    return new SetJointSmoothingParamCommand(state, value);
+  default:
+    return NULL;
   }
-  return NULL;
+}
+
+Command<Joint>* ConcreteCommandFactory::createJointCommand(JointCommandID id, double v1, double v2, double v3){
+  switch(id){
+  case joint_ids.SET_PID:
+    return new SetJointPidCommand(v1, v2, v3);
+  default:
+    return NULL;
+  }
+}
+
+Command<Joint>* ConcreteCommandFactory::createJointCommand(JointCommandID id, double value){
+
+  switch(id){
+  case joint_ids.SET_KF:
+    return new SetJointKfCommand(value);
+  default:
+    return NULL;
+  }
 }
