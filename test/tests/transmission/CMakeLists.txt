@@ -7,13 +7,14 @@ file(GLOB SOURCES "*.cpp")
 find_package(biomech_exo)
 
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-include_directories(${mock_port_analog_input_SOURCE_DIR})
+include_directories(${mock_transmission_SOURCE_DIR})
+include_directories(${mock_transceiver_SOURCE_DIR})
 
 ################################
 # Unit Tests
 ################################
 # Link test executable against gtest & gtest_main
 
-add_executable(${PROJECT_NAME}_base testBaseTransmission.hpp)
-target_link_libraries(${PROJECT_NAME}_base gtest gtest_main mock_transmission mock_transceiver)
+add_executable(${PROJECT_NAME}_base testBaseTransmission.cpp)
+target_link_libraries(${PROJECT_NAME}_base gtest gtest_main biomech_exo mock_transmission mock_transceiver)
 gtest_add_tests(${PROJECT_NAME}_base "" AUTO)
