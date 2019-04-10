@@ -1,6 +1,7 @@
 #ifndef BOARD_SETTINGS_HEADER
 #define BOARD_SETTINGS_HEADER
 
+#define DUAL_BOARD 4
 #define IMU_BOARD 3
 #define QUAD_BOARD 2
 #define TWO_LEG_BOARD 1
@@ -99,7 +100,7 @@ const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = 27;
 //const int RIGHT_LEG_SIGN = -1;
 #endif
 
-#ifdef DUAL_BOARD
+#if BOARD_VERSION == DUAL_BOARD
 #define ENABLE_PWM
 const unsigned int BLUETOOTH_TX_PIN = 0;
 const unsigned int BLUETOOTH_RX_PIN = 1;
