@@ -160,28 +160,21 @@ void biofeedback() {
 
   if (left_leg->NO_Biofeedback || left_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
   } else {
-<<<<<<< HEAD
 
-    Serial.print("RHS:");
-    Serial.println(right_leg->Heel_Strike_Count);
-=======
->>>>>>> ed4cca19684f2e34ce7459442aba3f150b721365
-    
-    
-//    state = digitalRead(LED_PIN);
-//
-//    if (state == HIGH) {
-//      state = LOW;
-//    } else {
-//      state = HIGH;
-//    }
-//
-//    digitalWrite(LED_PIN, state);
-//
-//
-//
-//    right_leg->start_time_Biofeedback = millis();
-//    tone(A17, 500, 100);
+    state = digitalRead(LED_PIN);
+
+    if (state == HIGH) {
+      state = LOW;
+    } else {
+      state = HIGH;
+    }
+
+    digitalWrite(LED_PIN, state);
+
+
+
+    right_leg->start_time_Biofeedback = millis();
+    tone(A17, 500, 100);
 
   }
   return;
