@@ -104,7 +104,11 @@ void callback()//executed every 2ms
   // if flag biofeedback is 1 update the step length of the biofeedback
   if (FLAG_BIOFEEDBACK) {
     state_machine(left_leg);
-    state_machine(right_leg);    
+    state_machine(right_leg);
+    Serial.println("RHS BASELINE");
+    Serial.println(right_leg->stridetime_baseline);
+    Serial.println("RHS update");
+    Serial.println(right_leg->stridetime_update);   
   }//end if(Flag_biofeedback)
 }// end callback
 //----------------------------------------------------------------------------------
