@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 313
-#define TWO_LEG_BOARD
+#define DUAL_BOARD
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -194,7 +194,7 @@ void calculate_leg_average(Leg* leg) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
   }
   
-  if (leg->Average_Trq == leg->TarrayPoint[dim]) //When torque sensor is unplugged we see the same values for several seconds
+  if (leg->TarrayPoint[dim]>25 && abs(leg->Average_Trq-leg->TarrayPoint[dim])<0.05) //When torque sensor is unplugged we see the same values for several seconds
   {
       double old_L_state_L = leg->state;
       leg->state = 9;
