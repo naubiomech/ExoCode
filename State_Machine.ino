@@ -479,8 +479,9 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
           leg->state = 2;
           leg->state_count_12 = 0;
 
-          biofeedback_step_state(left_leg);
-          biofeedback_step_state(right_leg);
+          takestridetime(leg);
+          Serial.println("state machine");
+          Serial.println(leg->Heel_Strike_Count);
         }
 
       }// end if heel sensor > threshold
