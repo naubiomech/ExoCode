@@ -5,7 +5,6 @@ add_compile_options(-std=c++11)
 file(GLOB SOURCES "*.cpp")
 
 find_package(biomech_exo)
-find_package(GTest)
 
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
