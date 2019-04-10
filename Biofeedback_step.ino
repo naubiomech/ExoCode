@@ -42,14 +42,15 @@ if (leg->HS1==0 || leg->HS4==0) {
     leg->NO_Biofeedback = false;
     leg->Frequency = 500;
   }
-//  return;
+}
+  return;
 }
 
 void biofeedback_step_state(Leg* leg) {
-  if (leg->BioFeedback_Baseline_flag = true) {
-    biofeedback_step_update(leg);
-  } else {
+  if (leg->BIO_BASELINE_FLAG) {
     biofeedback_step_baseline(leg);
+  } else {
+    biofeedback_step_update(leg);
   }
-//  return;
+  return;
 }
