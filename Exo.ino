@@ -93,38 +93,38 @@ void callback()//executed every 2ms
 
   // apply the PID ctrl to the motors
   rotate_motor();
-  Serial.print(" Control Mode: ");
-  Serial.println(Control_Mode);
-
-  Serial.print("Left_leg->p_steps->plant_peak_mean ");
-  Serial.println(left_leg->p_steps->plant_peak_mean);
-
-
-  Serial.print("Right_leg->p_steps->plant_peak_mean ");
-  Serial.println(right_leg->p_steps->plant_peak_mean);
-
-
-  Serial.print("Right_leg->p_steps->peak ");
-  Serial.println(right_leg->p_steps->peak);
-
-  Serial.print("Right_leg->p_steps->peak_AnkID ");
-  Serial.println(right_leg->p_steps->peak_AnkID);
+//  Serial.print(" Control Mode: ");
+//  Serial.println(Control_Mode);
+//
+//  Serial.print("Left_leg->p_steps->plant_peak_mean ");
+//  Serial.println(left_leg->p_steps->plant_peak_mean);
+//
+//
+//  Serial.print("Right_leg->p_steps->plant_peak_mean ");
+//  Serial.println(right_leg->p_steps->plant_peak_mean);
+//
+//
+//  Serial.print("Right_leg->p_steps->peak ");
+//  Serial.println(right_leg->p_steps->peak);
+//
+//  Serial.print("Right_leg->p_steps->peak_AnkID ");
+//  Serial.println(right_leg->p_steps->peak_AnkID);
 
 
   // same of FSR but for the balance baseline
   check_Balance_Baseline();
 
-  if (right_leg->BIO_BASELINE_FLAG) {
-    biofeedback_step_baseline(right_leg);
-    Serial.print("Right_leg biofeedback baseline");
-    Serial.println(right_leg->stridetime_baseline);
-  }
+//  if (right_leg->BIO_BASELINE_FLAG) {
+//    biofeedback_step_baseline(right_leg);
+//    Serial.print("Right_leg stride baseline");
+//    Serial.println(right_leg->stridetime_baseline);
+//  }
 
-  if (left_leg->BIO_BASELINE_FLAG) {
-    biofeedback_step_baseline(left_leg);
-    Serial.print("Left_leg biofeedback baseline");
-    Serial.println(left_leg->stridetime_baseline);
-  }
+//  if (left_leg->BIO_BASELINE_FLAG) {
+//    biofeedback_step_baseline(left_leg);
+//    Serial.print("Left_leg stride baseline");
+//    Serial.println(left_leg->stridetime_baseline);
+//  }
 
   // if flag auto reconnect BT is 1, activate the autoreconnect anche check the led voltage
   if (FLAG_AUTO_RECONNECT_BT) {
@@ -132,7 +132,12 @@ void callback()//executed every 2ms
 
   // if flag biofeedback is 1 update the step length of the biofeedback
   if (FLAG_BIOFEEDBACK) {
-    takestridetime();
+    state_machine(left_leg);
+    state_machine(right_leg);
+    Serial.println("left leg");
+    Serial.println(left_leg->Heel_Strike_Count);
+    Serial.println("right leg");
+    Serial.println(right_leg->Heel_Strike_Count);
   }//end if(Flag_biofeedback)
 }// end callback
 //----------------------------------------------------------------------------------
@@ -169,25 +174,24 @@ void biofeedback() {
   if (left_leg->NO_Biofeedback || left_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
   } else {
 
-    Serial.print("Right_leg biofeedback baseline");
-    Serial.println(right_leg->stridetime_baseline);
-    Serial.print("Left_leg biofeedback baseline");
-    Serial.println(left_leg->stridetime_baseline);
+    Serial.print("RHS:");
+    Serial.println(right_leg->Heel_Strike_Count);
     
-    state = digitalRead(LED_PIN);
-
-    if (state == HIGH) {
-      state = LOW;
-    } else {
-      state = HIGH;
-    }
-
-    digitalWrite(LED_PIN, state);
-
-
-
-    right_leg->start_time_Biofeedback = millis();
-    tone(A17, 500, 100);
+    
+//    state = digitalRead(LED_PIN);
+//
+//    if (state == HIGH) {
+//      state = LOW;
+//    } else {
+//      state = HIGH;
+//    }
+//
+//    digitalWrite(LED_PIN, state);
+//
+//
+//
+//    right_leg->start_time_Biofeedback = millis();
+//    tone(A17, 500, 100);
 
   }
   return;
