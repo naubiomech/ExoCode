@@ -158,9 +158,11 @@ void loop()
 //
 void biofeedback() {
 
-  if (left_leg->NO_Biofeedback || left_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
+  if (right_leg->NO_Biofeedback || right_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
   } else {
 
+    Serial.println("Feedback is ON!");
+    
     state = digitalRead(LED_PIN);
 
     if (state == HIGH) {
