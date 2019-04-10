@@ -93,45 +93,10 @@ void callback()//executed every 2ms
 
   // apply the PID ctrl to the motors
   rotate_motor();
-<<<<<<< HEAD
-//  Serial.print(" Control Mode: ");
-//  Serial.println(Control_Mode);
-//
-//  Serial.print("Left_leg->p_steps->plant_peak_mean ");
-//  Serial.println(left_leg->p_steps->plant_peak_mean);
-//
-//
-//  Serial.print("Right_leg->p_steps->plant_peak_mean ");
-//  Serial.println(right_leg->p_steps->plant_peak_mean);
-//
-//
-//  Serial.print("Right_leg->p_steps->peak ");
-//  Serial.println(right_leg->p_steps->peak);
-//
-//  Serial.print("Right_leg->p_steps->peak_AnkID ");
-//  Serial.println(right_leg->p_steps->peak_AnkID);
-
-=======
->>>>>>> ed4cca19684f2e34ce7459442aba3f150b721365
 
   // same of FSR but for the balance baseline
   check_Balance_Baseline();
 
-<<<<<<< HEAD
-//  if (right_leg->BIO_BASELINE_FLAG) {
-//    biofeedback_step_baseline(right_leg);
-//    Serial.print("Right_leg stride baseline");
-//    Serial.println(right_leg->stridetime_baseline);
-//  }
-
-//  if (left_leg->BIO_BASELINE_FLAG) {
-//    biofeedback_step_baseline(left_leg);
-//    Serial.print("Left_leg stride baseline");
-//    Serial.println(left_leg->stridetime_baseline);
-//  }
-
-=======
->>>>>>> ed4cca19684f2e34ce7459442aba3f150b721365
   // if flag auto reconnect BT is 1, activate the autoreconnect anche check the led voltage
   if (FLAG_AUTO_RECONNECT_BT) {
   }
