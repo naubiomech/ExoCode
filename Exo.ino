@@ -140,17 +140,26 @@ void callback()//executed every 2ms
   if (FLAG_BIOFEEDBACK) {
     state_machine(left_leg);
     state_machine(right_leg);
-<<<<<<< HEAD
-    Serial.println("left leg");
-    Serial.println(left_leg->Heel_Strike_Count);
-    Serial.println("right leg");
-    Serial.println(right_leg->Heel_Strike_Count);
-=======
+    biofeedback_step_state(right_leg);
+    biofeedback_step_state(left_leg);
+    
     Serial.println("RHS BASELINE");
     Serial.println(right_leg->stridetime_baseline);
     Serial.println("RHS update");
-    Serial.println(right_leg->stridetime_update);   
->>>>>>> ed4cca19684f2e34ce7459442aba3f150b721365
+    Serial.println(right_leg->stridetime_update);
+    Serial.println("RHS count");
+    Serial.println(right_leg->Heel_Strike_Count);
+    Serial.println("RHS1");
+    Serial.println(right_leg->HS1);
+    Serial.println("RHS4");
+    Serial.println(right_leg->HS4);
+    Serial.println("BIO_BASELINE");
+    Serial.println(right_leg->BIO_BASELINE_FLAG);
+    Serial.println("BioFeedback_Baseline");
+    Serial.println(right_leg->BioFeedback_Baseline_flag);
+    Serial.println("strike time target");
+    Serial.println(right_leg->stridetime_target);
+    
   }//end if(Flag_biofeedback)
 }// end callback
 //----------------------------------------------------------------------------------
