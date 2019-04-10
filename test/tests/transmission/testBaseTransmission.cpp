@@ -13,7 +13,7 @@ TEST(transmission_base, process_zero_args){
 	MockTransceiver* transceiver = new MockTransceiver();
 	MockBasicTransmission* transmission = new MockBasicTransmission(transceiver, 0, 0);
 	EXPECT_CALL(*transmission, processData(NULL,NULL)).Times(1);
-	transmission->processData(NULL,NULL);
+	transmission->process(NULL,NULL);
 	delete transmission;
 	delete transceiver;
 }
