@@ -32,6 +32,9 @@ struct Leg {
   double previous_curr_voltage;
   double previous_torque_average;
 
+  double Heel_Moment_Arm;
+  double Toe_Moment_Arm;
+
   volatile double Average_Volt;
   volatile double Average_Volt_Heel;
   volatile double Average_Trq;
@@ -190,7 +193,7 @@ struct Leg {
   //BIOFEEDBACK
   bool BioFeedback_Baseline_flag = false;
   double Heel_Strike;
-  double Heel_Strike_Count, Heel_Strike_baseline;
+  int Heel_Strike_Count, Heel_Strike_baseline;
   double Heel_Strike_mean;
   double n_step_biofeedback = 1;
   double n_step_biofeedback_base = 4;
@@ -211,6 +214,12 @@ struct Leg {
 
   double zero;
   double torque_error_counter;
+  double stridetime_update, stridelength_update;
+  double stridetime_baseline, stridelength_baseline, stridelength_target;
+  double HS1, HS3, HS4;
+  double stridetime_target;
+  double stridetime;
+
 
   //Optimization-----------------------------------
   double T_Opt_p, Setpoint_Ankle_Opt;

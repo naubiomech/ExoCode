@@ -40,16 +40,16 @@ void send_data_message_wc() //with COP
     data_to_send[10] = (left_leg->COP_Foot_ratio);
     data_to_send[11] = (right_leg->COP_Foot_ratio);
   } else if (FLAG_BIOFEEDBACK) {
-    data_to_send[10] = (pot(left_leg->Potentiometer_pin) + left_leg->Biofeedback_bias);
-    data_to_send[11] = (pot(right_leg->Potentiometer_pin) + right_leg->Biofeedback_bias);
+    data_to_send[10] = right_leg->stridelength_update;
+    data_to_send[11] = left_leg->stridelength_update;
   }
   else {
     data_to_send[10] = (left_leg->motor_error);
     data_to_send[11] = (right_leg->motor_error);
   }
   if (FLAG_BIOFEEDBACK) {
-    data_to_send[12] = (left_leg->Heel_Strike_baseline);
-    data_to_send[13] = (int)100 * Freq;
+    data_to_send[12] = right_leg->stridelength_target;
+    data_to_send[13] = left_leg->stridelength_target;
   }
   else {
     data_to_send[12] = (left_leg->COP);

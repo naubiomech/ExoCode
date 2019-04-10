@@ -1,7 +1,11 @@
 #ifndef BOARD_SETTINGS_HEADER
 #define BOARD_SETTINGS_HEADER
 
-#ifdef IMU_BOARD
+#define IMU_BOARD 3
+#define QUAD_BOARD 2
+#define TWO_LEG_BOARD 1
+
+#if BOARD_VERSION == IMU_BOARD
 #include <i2c_t3.h>
 const i2c_pins IMU_SLOT_1_PINS = I2C_PINS_3_4;
 const i2c_pins IMU_SLOT_2_PINS = I2C_PINS_7_8;
@@ -31,7 +35,7 @@ const unsigned int MOTOR_ERROR_LEFT_ANKLE_PIN = 20;
 const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = 21;
 #endif
 
-#ifdef TWO_LEG_BOARD
+#if BOARD_VERSION == TWO_LEG_BOARD
 const unsigned int RX1_PIN = 0;
 const unsigned int TX1_PIN = 1;
 
@@ -56,7 +60,7 @@ const unsigned int MOTOR_ERROR_LEFT_ANKLE_PIN = 20;
 const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = 21;
 #endif
 
-#ifdef QUAD_BOARD
+#if BOARD_VERSION == QUAD_BOARD
 #include <i2c_t3.h>
 #define ENABLE_PWM
 const i2c_pins IMU_SLOT_0_PINS = I2C_PINS_7_8;
