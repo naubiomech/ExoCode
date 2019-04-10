@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(mock_transceiver)
+project(mock_transmission)
 add_compile_options(-std=c++11)
 
 find_package(biomech_exo)
@@ -9,6 +9,6 @@ find_package(biomech_exo)
 ################################
 # Link test executable against gtest & gtest_main
 
-add_library(${PROJECT_NAME} STATIC mockTransceiver.hpp)
+add_library(${PROJECT_NAME} STATIC mockBasicTransmission.hpp)
 target_link_libraries(${PROJECT_NAME} gtest gmock biomech_exo)
 target_include_directories(${PROJECT_NAME} PUBLIC . )
