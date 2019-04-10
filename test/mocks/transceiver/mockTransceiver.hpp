@@ -9,9 +9,10 @@ public:
 	MOCK_METHOD0(clear, void());
 	MOCK_METHOD0(sendHeader, void());
 	MOCK_METHOD2(sendData, void(float* data, unsigned int bytes_to_send));
-	MOCK_METHOD(sendFooter, void());
-	MOCK_METHOD(receiveHeader, bool());
-	MOCK_METHOD(receiveCommand, CommandCode());
-	MOCK_METHOD(receiveData, void(double* data_output, unsigned int bytes_expected));
-	MOCK_METHOD(receiveFooter, bool());
-}
+	MOCK_METHOD1(sendCommand, void(CommandCode code));
+	MOCK_METHOD0(sendFooter, void());
+	MOCK_METHOD0(receiveHeader, bool());
+	MOCK_METHOD0(receiveCommand, CommandCode());
+	MOCK_METHOD2(receiveData, void(double* data_output, unsigned int bytes_expected));
+	MOCK_METHOD0(receiveFooter, bool());
+};
