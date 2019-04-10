@@ -16,5 +16,5 @@ include_directories(${mock_transceiver_SOURCE_DIR})
 # Link test executable against gtest & gtest_main
 
 add_executable(${PROJECT_NAME}_base testBaseTransmission.cpp)
-target_link_libraries(${PROJECT_NAME}_base gtest gtest_main biomech_exo mock_transmission mock_transceiver)
+target_link_libraries(${PROJECT_NAME}_base gtest gtest_main gmock biomech_exo mock_transmission mock_transceiver)
 gtest_add_tests(${PROJECT_NAME}_base "" AUTO)
