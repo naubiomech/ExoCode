@@ -625,6 +625,7 @@ void receive_and_transmit()
       OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
       FLAG_TWO_TOE_SENSORS = false;
       FLAG_BIOFEEDBACK = true;
+      right_leg->BIO_BASELINE_FLAG=false;
       break;
 
 
@@ -709,8 +710,8 @@ void receive_and_transmit()
     case ':':
       left_leg->BioFeedback_Baseline_flag = false;
       right_leg->BioFeedback_Baseline_flag = false;
-      left_leg->BIO_BASELINE_FLAG = true;
-      right_leg->BIO_BASELINE_FLAG = true;
+      left_leg->BIO_BASELINE_FLAG=true;
+      right_leg->BIO_BASELINE_FLAG=true;
       left_leg->Heel_Strike = 0;
       right_leg->Heel_Strike = 0;
       left_leg->Heel_Strike_Count = 0;
