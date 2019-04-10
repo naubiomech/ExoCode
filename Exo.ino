@@ -93,6 +93,7 @@ void callback()//executed every 2ms
 
   // apply the PID ctrl to the motors
   rotate_motor();
+<<<<<<< HEAD
 //  Serial.print(" Control Mode: ");
 //  Serial.println(Control_Mode);
 //
@@ -110,10 +111,13 @@ void callback()//executed every 2ms
 //  Serial.print("Right_leg->p_steps->peak_AnkID ");
 //  Serial.println(right_leg->p_steps->peak_AnkID);
 
+=======
+>>>>>>> ed4cca19684f2e34ce7459442aba3f150b721365
 
   // same of FSR but for the balance baseline
   check_Balance_Baseline();
 
+<<<<<<< HEAD
 //  if (right_leg->BIO_BASELINE_FLAG) {
 //    biofeedback_step_baseline(right_leg);
 //    Serial.print("Right_leg stride baseline");
@@ -126,6 +130,8 @@ void callback()//executed every 2ms
 //    Serial.println(left_leg->stridetime_baseline);
 //  }
 
+=======
+>>>>>>> ed4cca19684f2e34ce7459442aba3f150b721365
   // if flag auto reconnect BT is 1, activate the autoreconnect anche check the led voltage
   if (FLAG_AUTO_RECONNECT_BT) {
   }
@@ -134,10 +140,17 @@ void callback()//executed every 2ms
   if (FLAG_BIOFEEDBACK) {
     state_machine(left_leg);
     state_machine(right_leg);
+<<<<<<< HEAD
     Serial.println("left leg");
     Serial.println(left_leg->Heel_Strike_Count);
     Serial.println("right leg");
     Serial.println(right_leg->Heel_Strike_Count);
+=======
+    Serial.println("RHS BASELINE");
+    Serial.println(right_leg->stridetime_baseline);
+    Serial.println("RHS update");
+    Serial.println(right_leg->stridetime_update);   
+>>>>>>> ed4cca19684f2e34ce7459442aba3f150b721365
   }//end if(Flag_biofeedback)
 }// end callback
 //----------------------------------------------------------------------------------
@@ -173,9 +186,12 @@ void biofeedback() {
 
   if (left_leg->NO_Biofeedback || left_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
   } else {
+<<<<<<< HEAD
 
     Serial.print("RHS:");
     Serial.println(right_leg->Heel_Strike_Count);
+=======
+>>>>>>> ed4cca19684f2e34ce7459442aba3f150b721365
     
     
 //    state = digitalRead(LED_PIN);
