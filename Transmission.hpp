@@ -28,6 +28,7 @@ protected:
   virtual void preprocessData();
   virtual void postprocessData();
   void copyToSend(double* from);
+  void copyToSend(float* from);
   void copyFromReceive(double* to);
 public:
   Transmission(Transceiver* transceiver, CommandFactory* cmd_factory, CommandCode code,

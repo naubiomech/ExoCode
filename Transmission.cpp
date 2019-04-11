@@ -58,6 +58,12 @@ void Transmission::sendData(){
 }
 
 void Transmission::copyToSend(double* from){
+  for (unsigned int i = 0; i < send_count; i++){
+    send_data[i] = (float) from[i];
+  }
+}
+
+void Transmission::copyToSend(float* from){
   memcpy(send_data, from, sizeof(float) * send_count);
 }
 
