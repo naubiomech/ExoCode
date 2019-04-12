@@ -70,12 +70,18 @@ double MovingAverage::update(double value){
 double MovingAverage::getAverage(){
   return this->average;
 }
-
+/**
+ * The constructor that takes in the upper and lower bounds that the value will be
+ * constrained within.
+ */
 Clamp::Clamp(double lower, double upper){
   this->upper = upper;
   this->lower = lower;
 }
-
+/**
+ * Constrains the value between the lower and upper value. If value is below lower, it will return lower.
+ * If greater than upper returns upper. Else it will return the value given.
+ */
 double Clamp::clamp(double val){
   return min(max(val, lower),upper);
 }

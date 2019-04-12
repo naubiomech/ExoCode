@@ -40,12 +40,28 @@ public:
   void reset(double value);
 };
 
+/**
+ * @brief A class to clamp values.
+ *
+ * The clamp class will always clamp the given value between the upper and lower values given.
+ */
 class Clamp{
 private:
-  double upper;
-  double lower;
+  double upper; /**< The upper value */
+  double lower; /**< The lower value */
 public:
+  /**
+   * @brief The constructor with upper and lower bounds.
+   * @param lower The lower bound that the value can't be lower than
+   * @param upper The upper bound that the value can't be higher than
+   */
   Clamp(double lower, double upper);
+
+  /**
+   * @brief Clamps the value between lower and upper.
+   * @param value The value to be clamped
+   * @return The clamped value
+   */
   double clamp(double value);
 };
 
