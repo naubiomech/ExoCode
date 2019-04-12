@@ -216,7 +216,7 @@ struct Leg {
   double torque_error_counter;
   double stridetime_update, stridelength_update;
   double stridetime_baseline, stridelength_baseline, stridelength_target;
-  double HS1, HS3, HS4;
+  double HS1, HS2, HS4;
   double stridetime_target;
   double stridetime;
 
