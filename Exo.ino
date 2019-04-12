@@ -103,28 +103,13 @@ void callback()//executed every 2ms
 
   // if flag biofeedback is 1 update the step length of the biofeedback
   if (FLAG_BIOFEEDBACK) {
+    Freq = left_leg->Frequency;
+
     state_machine(left_leg);
     state_machine(right_leg);
     biofeedback_step_state(right_leg);
     biofeedback_step_state(left_leg);
-    
-    Serial.println("RHS BASELINE");
-    Serial.println(right_leg->stridetime_baseline);
-    Serial.println("RHS update");
-    Serial.println(right_leg->stridetime_update);
-    Serial.println("RHS count");
-    Serial.println(right_leg->Heel_Strike_Count);
-    Serial.println("RHS1");
-    Serial.println(right_leg->HS1);
-    Serial.println("RHS4");
-    Serial.println(right_leg->HS4);
-    Serial.println("BIO_BASELINE");
-    Serial.println(right_leg->BIO_BASELINE_FLAG);
-    Serial.println("BioFeedback_Baseline");
-    Serial.println(right_leg->BioFeedback_Baseline_flag);
-    Serial.println("strike time target");
-    Serial.println(right_leg->stridetime_target);
-    
+
   }//end if(Flag_biofeedback)
 }// end callback
 //----------------------------------------------------------------------------------
@@ -158,25 +143,23 @@ void loop()
 //
 void biofeedback() {
 
-  if (right_leg->NO_Biofeedback || right_leg->BioFeedback_Baseline_flag == false || FLAG_BIOFEEDBACK == false) {
+  if (right_leg->NO_Biofeedback && left_leg->NO_Biofeedback) {
   } else {
+    if (left_leg->BioFeedback_Baseline_flag) {
 
-    Serial.println("Feedback is ON!");
-    
-    state = digitalRead(LED_PIN);
+      state = digitalRead(LED_PIN);
 
-    if (state == HIGH) {
-      state = LOW;
-    } else {
-      state = HIGH;
+      if (state == HIGH) {
+        state = LOW;
+      } else {
+        state = HIGH;
+      }
+      digitalWrite(LED_PIN, state);
     }
-
-    digitalWrite(LED_PIN, state);
-
-
-
-    right_leg->start_time_Biofeedback = millis();
-    tone(A17, 500, 100);
+    //
+    //
+    //    right_leg->start_time_Biofeedback = millis();
+    //    tone(A17, 500, 100);
 
   }
   return;
@@ -207,8 +190,8 @@ void calculate_leg_average(Leg* leg) {
   if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
   }
-  
-  if (leg->TarrayPoint[dim]>25 && abs(leg->Average_Trq-leg->TarrayPoint[dim])<0.05) //When torque sensor is unplugged we see the same values for several seconds
+
+  if (leg->TarrayPoint[dim] > 25 && abs(leg->Average_Trq - leg->TarrayPoint[dim]) < 0.05) //When torque sensor is unplugged we see the same values for several seconds
   {
     double old_L_state_L = leg->state;
     leg->state = 9;
