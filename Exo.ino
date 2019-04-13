@@ -204,7 +204,7 @@ void calculate_leg_average(Leg* leg) {
   }
   leg->p_steps->torque_average = leg->Average / dim;
 
-  leg->FSR_Toe_Average = 5 * fsr(leg->fsr_sense_Toe);
+  leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
   leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
 
   // in case of two toe sensors we use the combined averate, i.e. the sum of the averages.
