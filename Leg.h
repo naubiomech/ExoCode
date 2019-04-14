@@ -54,14 +54,10 @@ struct Leg {
   double Dynamic_multiplier, Steady_multiplier;
 
   // Auto_KF.h
-  double Torque_Sum_90P;
-  double Mean_Torque_90P;
   double ERR;
   double Max_Measured_Torque;
   double max_KF = 1.5;
   double min_KF = 0.9;
-  int count_err;
-  double Mean_Measured_Torque;
   double MaxPropSetpoint;
   bool auto_KF_update = false;
 

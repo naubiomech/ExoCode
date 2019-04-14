@@ -37,8 +37,8 @@ void Auto_KF(Leg* leg, int Control_Mode) {
       }// if the error is less than 1% no need to change KF
 
       if (leg->coef_in_3_steps > 0) {
-        //leg->ERR = leg-> ERR + (leg->Max_Measured_Torque - (leg->Setpoint_Ankle * leg->coef_in_3_steps)) / (leg->Setpoint_Ankle * leg->coef_in_3_steps); //Calculate a running sum of the relative error
-        leg->KF = leg->KF - ((leg->Max_Measured_Torque - (leg->Setpoint_Ankle * leg->coef_in_3_steps)) / (leg->Setpoint_Ankle * leg->coef_in_3_steps) * 0.6); //+ leg->ERR * 0.01); //changed from 0.4 to 0.6 after test of 11/7/18
+        leg->ERR = leg-> ERR + (leg->Max_Measured_Torque - (leg->Setpoint_Ankle * leg->coef_in_3_steps)) / (leg->Setpoint_Ankle * leg->coef_in_3_steps); //Calculate a running sum of the relative error
+        leg->KF = leg->KF - ((leg->Max_Measured_Torque - (leg->Setpoint_Ankle * leg->coef_in_3_steps)) / (leg->Setpoint_Ankle * leg->coef_in_3_steps) * 0.6 + leg->ERR * 0.01); //changed from 0.4 to 0.6 after test of 11/7/18
       }
     } else if (Control_Mode == 3) { //If proportional
 
