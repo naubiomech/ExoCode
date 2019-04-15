@@ -660,8 +660,8 @@ void receive_and_transmit()
       Flag_HLO = true;
       break;
 
-    case ',':
-      Serial.println("End Optimization");
+    case 'h':
+      //Serial.println("End Optimization");
       left_leg->Setpoint_Ankle = 0;
       right_leg->Setpoint_Ankle = 0;
       Flag_HLO = false;
@@ -674,14 +674,14 @@ void receive_and_transmit()
         memcpy(&left_leg->T_Opt_p, holdOnPoint + 8, 8);       //Ankle torque rise time percentage for bang-bang
         right_leg->Setpoint_Ankle_Opt = -left_leg->Setpoint_Ankle_Opt;
         right_leg->T_Opt_p = left_leg->T_Opt_p;
-        Serial.println(left_leg->FLAG_UPDATE_VALUES);
+        //Serial.println(left_leg->FLAG_UPDATE_VALUES);
         left_leg->FLAG_UPDATE_VALUES = true;
         right_leg->FLAG_UPDATE_VALUES = true;
-        Serial.println(left_leg->FLAG_UPDATE_VALUES);
-        Serial.print("Received these values from HLO : ");
-        Serial.print(left_leg->Setpoint_Ankle_Opt);
-        Serial.print(" , ");
-        Serial.println(left_leg->T_Opt_p);
+        //Serial.println(left_leg->FLAG_UPDATE_VALUES);
+        //Serial.print("Received these values from HLO : ");
+        //Serial.print(left_leg->Setpoint_Ankle_Opt);
+        //Serial.print(" , ");
+        //Serial.println(left_leg->T_Opt_p);
 
         left_leg->activate_in_3_steps = 1;
         left_leg->num_3_steps = 0;
