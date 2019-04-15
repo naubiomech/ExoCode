@@ -4,20 +4,12 @@
 // take baseline for some of the controls during the plantarflexion state , i.e. 3
 int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_flag_take_baseline_l) {
 
+  // update the voltage peak
 
-  if ((R_state_l == 3) && (R_state_old_l == 1 || R_state_old_l == 2)) // I am in plantarflexion
-  {
-
-    // update the voltage peak
-    if (Control_Mode == 3) {
+ 
     if (p_steps_l->curr_voltage > p_steps_l->peak)
       p_steps_l->peak =  p_steps_l->curr_voltage;
-    }
-    else if (Control_Mode == 4) {
-      if (p_steps_l->curr_voltage_AnkID > p_steps_l->peak_AnkID)
-      p_steps_l->peak_AnkID =  p_steps_l->curr_voltage_AnkID;
-    }
-    
+
     if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
     {
       p_steps_l->plant_time = millis(); // start the plantarflexion
@@ -26,14 +18,15 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
       if (p_steps_l->dorsi_time <= step_time_length / 4) // if <50ms probably it is noise
       {
         p_steps_l->peak = 0;
-        p_steps_l->peak_AnkID = 0;
         p_steps_l->flag_start_plant = false;
+        //        Serial.println(" BASE Dorsi too short");
         return 0;
       } else {
         p_steps_l->flag_start_plant = true; // Parameters inizialized Start a step
+        //        Serial.println(" BASE Start Plantar");
       }
     }
-  }
+  
 
 
 
@@ -42,6 +35,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
     // if you transit from 3 to 1 plantar flexion is completed and start dorsiflexion
 
     if ((R_state_old_l == 3) && (R_state_l == 1 || R_state_l == 2)) {
+      //      Serial.println(" BASE Start Dorsi");
 
       // start dorsiflexion
 
@@ -52,16 +46,21 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
       if (p_steps_l->plant_time <= step_time_length)
       {
         p_steps_l->flag_start_plant = false;
+        //        Serial.println("BASE Plant too short"); // it means is a glitch not a real step
         return 0;
       } else {
         p_steps_l->flag_start_plant = false; // you have provided one plant
+        //        Serial.println("Increase Plant number");
         p_steps_l->count_plant_base++; // you have accomplished a step
+        //        Serial.println(p_steps_l->count_plant_base);
       }
 
+      //      Serial.print(" BASE Plant Time = ");
+      //      Serial.println(p_steps_l->plant_time);
 
       if ((p_steps_l->count_plant_base) >= 2) { // avoid the first step just to be sure
 
-        // this is the time window of the filter for the dorsiflexion
+        //        // this is the time window of the filter for the dorsiflexion
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
 
           p_steps_l->dorsi_mean = 0;
@@ -87,36 +86,37 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
           p_steps_l->four_step_plant_time[n_step_baseline - 1] = p_steps_l->plant_time;
           p_steps_l->plant_mean += p_steps_l->plant_time;
 
-          if (Control_Mode = 3) {
           p_steps_l->four_step_plant_peak[n_step_baseline - 1] = p_steps_l->peak;
           p_steps_l->plant_peak_mean_temp += p_steps_l->peak;
-          }
-          else if (Control_Mode = 4) {
-          p_steps_l->four_step_plant_peak[n_step_baseline - 1] = p_steps_l->peak_AnkID;
-          p_steps_l->plant_peak_mean_temp += p_steps_l->peak_AnkID;
-          }
-          
+
           p_steps_l->dorsi_mean = (p_steps_l->dorsi_mean) / n_step_baseline;
           p_steps_l->plant_mean = p_steps_l->plant_mean / n_step_baseline;
-          p_steps_l->plant_peak_mean_temp = 1.0 * (p_steps_l->plant_peak_mean_temp) / n_step_baseline;  //Gain (1.0) was 0.9 2/25/2019 GO
+          p_steps_l->plant_peak_mean_temp = 0.9 * (p_steps_l->plant_peak_mean_temp) / n_step_baseline;
 
           //HERE
+
+          //          Serial.println("BASE before return");
+          //          Serial.print(" Peak ");
+          //          Serial.println(p_steps_l->peak);
+          //          Serial.print(" N ");
+          //          Serial.println(p_steps_l->count_plant_base);
         }
         else {
           p_steps_l->four_step_dorsi_time[p_steps_l->count_plant_base - 2] = p_steps_l->dorsi_time;
 
           p_steps_l->four_step_plant_time[p_steps_l->count_plant_base - 2] = p_steps_l->plant_time;
 
-        if (Control_Mode = 3) 
           p_steps_l->four_step_plant_peak[p_steps_l->count_plant_base - 2] = p_steps_l->peak;
-        else if (Control_Mode = 4)
-          p_steps_l->four_step_plant_peak[p_steps_l->count_plant_base - 2] = p_steps_l->peak_AnkID;
- 
+          //          Serial.println("Inside Peak vector ");
+
           for (int i = 0; i < n_step_baseline; i++) {
+            //            Serial.println(p_steps_l->four_step_plant_peak[i]);
           }
         }
 
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
+          //          Serial.print("BASE return peak mean temporary");
+          //          Serial.println(p_steps_l->plant_peak_mean_temp);
         }
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
           (p_steps_l->count_plant_base) = 0;
@@ -132,8 +132,10 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
 
   if (((R_state_l == 1) || (R_state_l == 2)) && R_state_old_l == 3)
     p_steps_l->peak = 0;
-    p_steps_l->peak_AnkID = 0;
+
+
 }// end take_baseline
+
 
 
 //------------------------------------------------------------------------------
@@ -174,7 +176,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       }
       if (Control_Mode_l == 4) { // JOINT MOMENT CONTROL also known as pivot proportional control while taking the baseline
 
-        *p_FSR_Ratio = fabs(p_steps_l->curr_voltage_AnkID / p_steps_l->plant_peak_mean);
+        *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
         if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
           (*p_Max_FSR_Ratio) = *p_FSR_Ratio; // update the max fsr Ratio
 
@@ -191,7 +193,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
           *p_Setpoint_Ankle_Pctrl_l = 0;
         }
       }
-    
+
     }
 
     return N3_l; //return the previous N3 value whis is not used
@@ -203,24 +205,19 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     p_steps_l->plant_peak_mean = p_steps_l->plant_peak_mean_temp;
   }
 
+
   // if you transit from state 1 to state 3 dorsiflexion is completed and start plantarflexion
   if ((R_state_l == 3) && (R_state_old_l == 1 || R_state_old_l == 2))
   {
 
 
     // update the voltage peak to update torque in case of Bang Bang ctrl
-    if (Control_Mode_l == 3) {
-    if (p_steps_l->curr_voltage > p_steps_l->peak)
-      p_steps_l->peak =  p_steps_l->curr_voltage;
+ 
+      if (p_steps_l->curr_voltage > p_steps_l->peak)
+        p_steps_l->peak =  p_steps_l->curr_voltage;
 
-    *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
-    }
-    else if (Control_Mode_l == 4) {
-     if (p_steps_l->curr_voltage_AnkID > p_steps_l->peak_AnkID)
-      p_steps_l->peak_AnkID =  p_steps_l->curr_voltage_AnkID;
-
-    *p_FSR_Ratio = fabs(p_steps_l->curr_voltage_AnkID / p_steps_l->plant_peak_mean);
-    }
+      *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
+    
 
     if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
       (*p_Max_FSR_Ratio) = *p_FSR_Ratio;
@@ -238,19 +235,12 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       if ((p_steps_l->Setpoint ) > 0) {
         *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
         *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
-          if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
-            leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; //Get the maximum setpoint for this current stance phase
-          }
       }
       else if ((p_steps_l->Setpoint ) < 0) {
         *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
         *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
-          if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
-            leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; //Get the maximum setpoint for this current stance phase
-          }
       } else {
         *p_Setpoint_Ankle_Pctrl_l = 0;
-        leg->MaxPropSetpoint = 0;
       }
 
       return N3_l; // No modification in the shaping function which is disabled
@@ -284,7 +274,6 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       if (p_steps_l->dorsi_time <= step_time_length / 4) // if <50ms probably it is noise
       {
         p_steps_l->peak = 0;
-        p_steps_l->peak_AnkID = 0;
         p_steps_l->flag_start_plant = false;
         //        Serial.println(" SPD ADJ dorsi time too short ");
         return N3_l;
@@ -352,11 +341,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
   // During the all dorsiflexion set the voltage peak to 0, probably we just need to do it one time
   if (((R_state_l == 1) || (R_state_l == 2)) && R_state_old_l == 3) {
     p_steps_l->peak = 0;
-    p_steps_l->peak_AnkID = 0;
     p_Max_FSR_Ratio = 0;
-    if (leg->auto_KF_update == 0) {
-      leg->MaxPropSetpoint = 0;
-    }
   }
 
   return N3_l;
