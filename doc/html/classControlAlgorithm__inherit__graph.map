@@ -1,0 +1,7 @@
+<map id="ControlAlgorithm" name="ControlAlgorithm">
+<area shape="rect" id="node2" href="$classBalanceControl.html" title="BalanceControl" alt="" coords="198,5,309,32"/>
+<area shape="rect" id="node3" href="$classBangBangControl.html" title="BangBangControl" alt="" coords="191,56,315,83"/>
+<area shape="rect" id="node4" href="$classProportionalControl.html" title="ProportionalControl" alt="" coords="187,107,320,133"/>
+<area shape="rect" id="node5" href="$classProportionalPivotControl.html" title="ProportionalPivotControl" alt="" coords="172,157,335,184"/>
+<area shape="rect" id="node6" href="$classZeroTorqueControl.html" title="ZeroTorqueControl" alt="" coords="188,208,319,235"/>
+</map>

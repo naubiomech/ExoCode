@@ -1,0 +1,7 @@
+<map id="TorqueSensor" name="TorqueSensor">
+<area shape="rect" id="node2" href="$classMovingAverage.html" title="MovingAverage" alt="" coords="5,81,117,108"/>
+<area shape="rect" id="node3" href="$classAverage.html" title="Average" alt="" coords="95,5,166,32"/>
+<area shape="rect" id="node4" href="$classRunningAverage.html" title="RunningAverage" alt="" coords="141,81,259,108"/>
+<area shape="rect" id="node5" href="$classInputPort.html" title="InputPort" alt="" coords="297,81,372,108"/>
+<area shape="rect" id="node6" href="$classPort.html" title="Port" alt="" coords="311,5,358,32"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="ControlModule" name="ControlModule">
+<area shape="rect" id="node2" href="$classControlAlgorithm.html" title="ControlAlgorithm" alt="" coords="137,118,256,145"/>
+<area shape="rect" id="node3" href="$classClamp.html" title="A class to clamp values. " alt="" coords="69,5,129,32"/>
+<area shape="rect" id="node4" href="$classShapingFunction.html" title="ShapingFunction" alt="" coords="333,118,452,145"/>
+<area shape="rect" id="node5" href="$classTimer.html" title="Timer" alt="" coords="365,5,420,32"/>
+<area shape="rect" id="node6" href="$classPID.html" title="PID" alt="" coords="476,118,522,145"/>
+<area shape="rect" id="node7" href="$classRunningAverage.html" title="RunningAverage" alt="" coords="546,118,665,145"/>
+<area shape="rect" id="node8" href="$classAverage.html" title="Average" alt="" coords="570,5,641,32"/>
+</map>

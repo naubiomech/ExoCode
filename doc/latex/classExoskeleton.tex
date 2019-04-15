@@ -1,0 +1,223 @@
+\hypertarget{classExoskeleton}{}\section{Exoskeleton Class Reference}
+\label{classExoskeleton}\index{Exoskeleton@{Exoskeleton}}
+
+
+{\ttfamily \#include $<$Exoskeleton.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classExoskeleton_ad8715617b3ba37cb31cbfa9679ec658f}{Exoskeleton} (\hyperlink{classLeg}{Leg} $\ast$left\+\_\+leg, \hyperlink{classLeg}{Leg} $\ast$right\+\_\+leg, \hyperlink{classCommunications}{Communications} $\ast$comms, \hyperlink{classOutputPort}{Output\+Port} $\ast$motor\+\_\+enable\+\_\+port, \hyperlink{classOutputPort}{Output\+Port} $\ast$led\+\_\+port)
+\item 
+\hyperlink{classExoskeleton_ae1c57b8f0c73de1ba90b0032d322a22e}{$\sim$\+Exoskeleton} ()
+\item 
+void \hyperlink{classExoskeleton_ac72f30ed64b121a89f546e542d3f4b70}{run} ()
+\item 
+void \hyperlink{classExoskeleton_a5c4a24e482efc10effd32ef3ae318843}{measure\+Sensors} ()
+\item 
+bool \hyperlink{classExoskeleton_af6caca71956f565f8c8f11f14b74ab48}{check\+Motor\+Errors} ()
+\item 
+void \hyperlink{classExoskeleton_af5a56800ab2bb98eae7e14470f4e91e0}{disable\+Exo} ()
+\item 
+void \hyperlink{classExoskeleton_a562adb009a9eb74d0b3197ff191561f2}{enable\+Exo} ()
+\item 
+void \hyperlink{classExoskeleton_a861d90cb9820ab25926391ad2c0a1509}{apply\+Torque} ()
+\item 
+void \hyperlink{classExoskeleton_a64f19c7f0a676342f12fbc000efce386}{adjust\+Control} ()
+\item 
+void \hyperlink{classExoskeleton_aae87818791c933e46ad9b991f5f54a31}{reset\+Starting\+Parameters} ()
+\item 
+void \hyperlink{classExoskeleton_a9af6d42deae939186da16188080f1bb4}{calibrate\+Torque} ()
+\item 
+void \hyperlink{classExoskeleton_a16374a659b52484ffd0b025778a0c1bb}{calibrate\+F\+S\+Rs} ()
+\item 
+void \hyperlink{classExoskeleton_ab5aaa55867ccf1ac42688f78b57e9f43}{set\+Zero\+If\+State\+State} ()
+\item 
+void \hyperlink{classExoskeleton_a3cbba1f7a77e5471787a5a777e8a557b}{calibrate\+I\+M\+Us} ()
+\item 
+void \hyperlink{classExoskeleton_aeff1385bc52343f715402cbc8eea5a31}{start\+Trial} ()
+\item 
+void \hyperlink{classExoskeleton_a931729600ee97d5bad706895c5d2d7c7}{end\+Trial} ()
+\item 
+void \hyperlink{classExoskeleton_a1d9f0d9439e4842d499ad58a03a147be}{receive\+Messages} ()
+\item 
+void \hyperlink{classExoskeleton_abb6349a44535117ad0f1f6896c05fd43}{check\+Reset} ()
+\item 
+void \hyperlink{classExoskeleton_a4b3d0bf5319e8fe06b69d31593aac46b}{send\+Report} ()
+\item 
+void \hyperlink{classExoskeleton_a0866b3df92b9579e260846727492cb8a}{process\+Message} (\hyperlink{classExoMessage}{Exo\+Message} $\ast$msg)
+\item 
+\hyperlink{classExoReport}{Exo\+Report} $\ast$ \hyperlink{classExoskeleton_acc42fc15c6ce8375f2bba6eb401e1dee}{generate\+Report} ()
+\item 
+void \hyperlink{classExoskeleton_af02ec7675f5e35d26e94f51024847285}{fill\+Report} (\hyperlink{classExoReport}{Exo\+Report} $\ast$report)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Exoskeleton@{Exoskeleton}!Exoskeleton@{Exoskeleton}}
+\index{Exoskeleton@{Exoskeleton}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{Exoskeleton(\+Leg $\ast$left\+\_\+leg, Leg $\ast$right\+\_\+leg, Communications $\ast$comms, Output\+Port $\ast$motor\+\_\+enable\+\_\+port, Output\+Port $\ast$led\+\_\+port)}{Exoskeleton(Leg *left_leg, Leg *right_leg, Communications *comms, OutputPort *motor_enable_port, OutputPort *led_port)}}]{\setlength{\rightskip}{0pt plus 5cm}Exoskeleton\+::\+Exoskeleton (
+\begin{DoxyParamCaption}
+\item[{{\bf Leg} $\ast$}]{left\+\_\+leg, }
+\item[{{\bf Leg} $\ast$}]{right\+\_\+leg, }
+\item[{{\bf Communications} $\ast$}]{comms, }
+\item[{{\bf Output\+Port} $\ast$}]{motor\+\_\+enable\+\_\+port, }
+\item[{{\bf Output\+Port} $\ast$}]{led\+\_\+port}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_ad8715617b3ba37cb31cbfa9679ec658f}{}\label{classExoskeleton_ad8715617b3ba37cb31cbfa9679ec658f}
+\index{Exoskeleton@{Exoskeleton}!````~Exoskeleton@{$\sim$\+Exoskeleton}}
+\index{````~Exoskeleton@{$\sim$\+Exoskeleton}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{$\sim$\+Exoskeleton()}{~Exoskeleton()}}]{\setlength{\rightskip}{0pt plus 5cm}Exoskeleton\+::$\sim$\+Exoskeleton (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_ae1c57b8f0c73de1ba90b0032d322a22e}{}\label{classExoskeleton_ae1c57b8f0c73de1ba90b0032d322a22e}
+
+
+\subsection{Member Function Documentation}
+\index{Exoskeleton@{Exoskeleton}!adjust\+Control@{adjust\+Control}}
+\index{adjust\+Control@{adjust\+Control}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{adjust\+Control()}{adjustControl()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::adjust\+Control (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_a64f19c7f0a676342f12fbc000efce386}{}\label{classExoskeleton_a64f19c7f0a676342f12fbc000efce386}
+\index{Exoskeleton@{Exoskeleton}!apply\+Torque@{apply\+Torque}}
+\index{apply\+Torque@{apply\+Torque}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{apply\+Torque()}{applyTorque()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::apply\+Torque (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_a861d90cb9820ab25926391ad2c0a1509}{}\label{classExoskeleton_a861d90cb9820ab25926391ad2c0a1509}
+\index{Exoskeleton@{Exoskeleton}!calibrate\+F\+S\+Rs@{calibrate\+F\+S\+Rs}}
+\index{calibrate\+F\+S\+Rs@{calibrate\+F\+S\+Rs}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{calibrate\+F\+S\+Rs()}{calibrateFSRs()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::calibrate\+F\+S\+Rs (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_a16374a659b52484ffd0b025778a0c1bb}{}\label{classExoskeleton_a16374a659b52484ffd0b025778a0c1bb}
+\index{Exoskeleton@{Exoskeleton}!calibrate\+I\+M\+Us@{calibrate\+I\+M\+Us}}
+\index{calibrate\+I\+M\+Us@{calibrate\+I\+M\+Us}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{calibrate\+I\+M\+Us()}{calibrateIMUs()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::calibrate\+I\+M\+Us (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_a3cbba1f7a77e5471787a5a777e8a557b}{}\label{classExoskeleton_a3cbba1f7a77e5471787a5a777e8a557b}
+\index{Exoskeleton@{Exoskeleton}!calibrate\+Torque@{calibrate\+Torque}}
+\index{calibrate\+Torque@{calibrate\+Torque}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{calibrate\+Torque()}{calibrateTorque()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::calibrate\+Torque (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_a9af6d42deae939186da16188080f1bb4}{}\label{classExoskeleton_a9af6d42deae939186da16188080f1bb4}
+\index{Exoskeleton@{Exoskeleton}!check\+Motor\+Errors@{check\+Motor\+Errors}}
+\index{check\+Motor\+Errors@{check\+Motor\+Errors}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{check\+Motor\+Errors()}{checkMotorErrors()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Exoskeleton\+::check\+Motor\+Errors (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_af6caca71956f565f8c8f11f14b74ab48}{}\label{classExoskeleton_af6caca71956f565f8c8f11f14b74ab48}
+\index{Exoskeleton@{Exoskeleton}!check\+Reset@{check\+Reset}}
+\index{check\+Reset@{check\+Reset}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{check\+Reset()}{checkReset()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::check\+Reset (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_abb6349a44535117ad0f1f6896c05fd43}{}\label{classExoskeleton_abb6349a44535117ad0f1f6896c05fd43}
+\index{Exoskeleton@{Exoskeleton}!disable\+Exo@{disable\+Exo}}
+\index{disable\+Exo@{disable\+Exo}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{disable\+Exo()}{disableExo()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::disable\+Exo (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_af5a56800ab2bb98eae7e14470f4e91e0}{}\label{classExoskeleton_af5a56800ab2bb98eae7e14470f4e91e0}
+\index{Exoskeleton@{Exoskeleton}!enable\+Exo@{enable\+Exo}}
+\index{enable\+Exo@{enable\+Exo}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{enable\+Exo()}{enableExo()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::enable\+Exo (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_a562adb009a9eb74d0b3197ff191561f2}{}\label{classExoskeleton_a562adb009a9eb74d0b3197ff191561f2}
+\index{Exoskeleton@{Exoskeleton}!end\+Trial@{end\+Trial}}
+\index{end\+Trial@{end\+Trial}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{end\+Trial()}{endTrial()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::end\+Trial (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_a931729600ee97d5bad706895c5d2d7c7}{}\label{classExoskeleton_a931729600ee97d5bad706895c5d2d7c7}
+\index{Exoskeleton@{Exoskeleton}!fill\+Report@{fill\+Report}}
+\index{fill\+Report@{fill\+Report}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{fill\+Report(\+Exo\+Report $\ast$report)}{fillReport(ExoReport *report)}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::fill\+Report (
+\begin{DoxyParamCaption}
+\item[{{\bf Exo\+Report} $\ast$}]{report}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_af02ec7675f5e35d26e94f51024847285}{}\label{classExoskeleton_af02ec7675f5e35d26e94f51024847285}
+\index{Exoskeleton@{Exoskeleton}!generate\+Report@{generate\+Report}}
+\index{generate\+Report@{generate\+Report}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{generate\+Report()}{generateReport()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Exo\+Report} $\ast$ Exoskeleton\+::generate\+Report (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_acc42fc15c6ce8375f2bba6eb401e1dee}{}\label{classExoskeleton_acc42fc15c6ce8375f2bba6eb401e1dee}
+\index{Exoskeleton@{Exoskeleton}!measure\+Sensors@{measure\+Sensors}}
+\index{measure\+Sensors@{measure\+Sensors}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{measure\+Sensors()}{measureSensors()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::measure\+Sensors (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_a5c4a24e482efc10effd32ef3ae318843}{}\label{classExoskeleton_a5c4a24e482efc10effd32ef3ae318843}
+\index{Exoskeleton@{Exoskeleton}!process\+Message@{process\+Message}}
+\index{process\+Message@{process\+Message}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{process\+Message(\+Exo\+Message $\ast$msg)}{processMessage(ExoMessage *msg)}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::process\+Message (
+\begin{DoxyParamCaption}
+\item[{{\bf Exo\+Message} $\ast$}]{msg}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_a0866b3df92b9579e260846727492cb8a}{}\label{classExoskeleton_a0866b3df92b9579e260846727492cb8a}
+\index{Exoskeleton@{Exoskeleton}!receive\+Messages@{receive\+Messages}}
+\index{receive\+Messages@{receive\+Messages}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{receive\+Messages()}{receiveMessages()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::receive\+Messages (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_a1d9f0d9439e4842d499ad58a03a147be}{}\label{classExoskeleton_a1d9f0d9439e4842d499ad58a03a147be}
+\index{Exoskeleton@{Exoskeleton}!reset\+Starting\+Parameters@{reset\+Starting\+Parameters}}
+\index{reset\+Starting\+Parameters@{reset\+Starting\+Parameters}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{reset\+Starting\+Parameters()}{resetStartingParameters()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::reset\+Starting\+Parameters (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_aae87818791c933e46ad9b991f5f54a31}{}\label{classExoskeleton_aae87818791c933e46ad9b991f5f54a31}
+\index{Exoskeleton@{Exoskeleton}!run@{run}}
+\index{run@{run}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{run()}{run()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::run (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_ac72f30ed64b121a89f546e542d3f4b70}{}\label{classExoskeleton_ac72f30ed64b121a89f546e542d3f4b70}
+\index{Exoskeleton@{Exoskeleton}!send\+Report@{send\+Report}}
+\index{send\+Report@{send\+Report}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{send\+Report()}{sendReport()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::send\+Report (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_a4b3d0bf5319e8fe06b69d31593aac46b}{}\label{classExoskeleton_a4b3d0bf5319e8fe06b69d31593aac46b}
+\index{Exoskeleton@{Exoskeleton}!set\+Zero\+If\+State\+State@{set\+Zero\+If\+State\+State}}
+\index{set\+Zero\+If\+State\+State@{set\+Zero\+If\+State\+State}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{set\+Zero\+If\+State\+State()}{setZeroIfStateState()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::set\+Zero\+If\+State\+State (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_ab5aaa55867ccf1ac42688f78b57e9f43}{}\label{classExoskeleton_ab5aaa55867ccf1ac42688f78b57e9f43}
+\index{Exoskeleton@{Exoskeleton}!start\+Trial@{start\+Trial}}
+\index{start\+Trial@{start\+Trial}!Exoskeleton@{Exoskeleton}}
+\subsubsection[{\texorpdfstring{start\+Trial()}{startTrial()}}]{\setlength{\rightskip}{0pt plus 5cm}void Exoskeleton\+::start\+Trial (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classExoskeleton_aeff1385bc52343f715402cbc8eea5a31}{}\label{classExoskeleton_aeff1385bc52343f715402cbc8eea5a31}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Exoskeleton_8hpp}{Exoskeleton.\+hpp}\item 
+\hyperlink{Exoskeleton_8cpp}{Exoskeleton.\+cpp}\end{DoxyCompactItemize}

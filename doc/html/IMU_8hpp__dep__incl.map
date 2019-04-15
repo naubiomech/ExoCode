@@ -1,0 +1,20 @@
+<map id="IMU.hpp" name="IMU.hpp">
+<area shape="rect" id="node2" href="$Leg_8hpp.html" title="Leg.hpp" alt="" coords="217,80,285,107"/>
+<area shape="rect" id="node16" href="$Leg_8cpp.html" title="Leg.cpp" alt="" coords="461,155,529,181"/>
+<area shape="rect" id="node19" href="$IMU_8cpp.html" title="IMU.cpp" alt="" coords="445,80,517,107"/>
+<area shape="rect" id="node3" href="$Exoskeleton_8hpp.html" title="Exoskeleton.hpp" alt="" coords="318,155,437,181"/>
+<area shape="rect" id="node10" href="$ExoBuilder_8cpp.html" title="ExoBuilder.cpp" alt="" coords="149,379,259,405"/>
+<area shape="rect" id="node11" href="$Exoskeleton_8cpp.html" title="Exoskeleton.cpp" alt="" coords="22,304,141,331"/>
+<area shape="rect" id="node17" href="$Message_8cpp.html" title="Message.cpp" alt="" coords="83,155,183,181"/>
+<area shape="rect" id="node18" href="$States_8cpp.html" title="States.cpp" alt="" coords="208,155,293,181"/>
+<area shape="rect" id="node4" href="$Board_8hpp.html" title="Board.hpp" alt="" coords="494,229,575,256"/>
+<area shape="rect" id="node9" href="$ExoBuilder_8hpp.html" title="ExoBuilder.hpp" alt="" coords="577,304,687,331"/>
+<area shape="rect" id="node14" href="$Commands_8cpp.html" title="Commands.cpp" alt="" coords="216,229,331,256"/>
+<area shape="rect" id="node15" href="$Transceiver_8cpp.html" title="Transceiver.cpp" alt="" coords="355,229,469,256"/>
+<area shape="rect" id="node5" href="$Board_8cpp.html" title="Board.cpp" alt="" coords="371,304,453,331"/>
+<area shape="rect" id="node6" href="$BoardBuilder_8hpp.html" title="BoardBuilder.hpp" alt="" coords="711,304,833,331"/>
+<area shape="rect" id="node12" href="$Joint_8cpp.html" title="Joint.cpp" alt="" coords="477,304,552,331"/>
+<area shape="rect" id="node13" href="$Motor_8cpp.html" title="Motor.cpp" alt="" coords="267,304,347,331"/>
+<area shape="rect" id="node7" href="$BoardBuilder_8cpp.html" title="BoardBuilder.cpp" alt="" coords="711,379,833,405"/>
+<area shape="rect" id="node8" href="$main_8cpp.html" title="main.cpp" alt="" coords="603,379,677,405"/>
+</map>

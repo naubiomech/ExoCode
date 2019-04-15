@@ -1,0 +1,10 @@
+<map id="BoardBuilder" name="BoardBuilder">
+<area shape="rect" id="node2" href="$classBoard.html" title="Board" alt="" coords="284,524,340,551"/>
+<area shape="rect" id="node3" href="$classOutputPort.html" title="OutputPort" alt="" coords="191,81,276,108"/>
+<area shape="rect" id="node5" href="$classTxPort.html" title="TxPort" alt="" coords="203,309,264,335"/>
+<area shape="rect" id="node4" href="$classPort.html" title="Port" alt="" coords="350,5,397,32"/>
+<area shape="rect" id="node7" href="$classInputPort.html" title="InputPort" alt="" coords="336,81,411,108"/>
+<area shape="rect" id="node8" href="$classImuPort.html" title="ImuPort" alt="" coords="502,132,570,159"/>
+<area shape="rect" id="node6" href="$classRxPort.html" title="RxPort" alt="" coords="464,309,526,335"/>
+<area shape="rect" id="node9" href="$classPortFactory.html" title="PortFactory" alt="" coords="364,524,455,551"/>
+</map>

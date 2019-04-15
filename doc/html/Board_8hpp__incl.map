@@ -1,0 +1,29 @@
+<map id="Board.hpp" name="Board.hpp">
+<area shape="rect" id="node2" href="$Parameters_8hpp.html" title="Parameters.hpp" alt="" coords="1312,379,1427,405"/>
+<area shape="rect" id="node3" href="$Exoskeleton_8hpp.html" title="Exoskeleton.hpp" alt="" coords="1409,80,1527,107"/>
+<area shape="rect" id="node20" href="$Port_8hpp.html" title="Port.hpp" alt="" coords="1115,379,1186,405"/>
+<area shape="rect" id="node4" href="$Arduino_8hpp.html" title="Arduino.hpp" alt="" coords="987,677,1077,704"/>
+<area shape="rect" id="node9" href="$Leg_8hpp.html" title="Leg.hpp" alt="" coords="1434,155,1502,181"/>
+<area shape="rect" id="node11" href="$Utils_8hpp.html" title="Utils.hpp" alt="" coords="704,603,779,629"/>
+<area shape="rect" id="node18" href="$Report_8hpp.html" title="Report.hpp" alt="" coords="1623,453,1710,480"/>
+<area shape="rect" id="node25" href="$Message_8hpp.html" title="Message.hpp" alt="" coords="1958,379,2058,405"/>
+<area shape="rect" id="node29" href="$Communications_8hpp.html" title="Communications.hpp" alt="" coords="2079,155,2225,181"/>
+<area shape="rect" id="node10" href="$States_8hpp.html" title="States.hpp" alt="" coords="829,528,915,555"/>
+<area shape="rect" id="node12" href="$Linked__List_8hpp.html" title="Linked_List.hpp" alt="" coords="1705,603,1818,629"/>
+<area shape="rect" id="node14" href="$Joint_8hpp.html" title="Joint.hpp" alt="" coords="1156,229,1231,256"/>
+<area shape="rect" id="node22" href="$Pot_8hpp.html" title="Pot.hpp" alt="" coords="1261,304,1328,331"/>
+<area shape="rect" id="node27" href="$FSR_8hpp.html" title="FSR.hpp" alt="" coords="1555,304,1629,331"/>
+<area shape="rect" id="node28" href="$IMU_8hpp.html" title="IMU.hpp" alt="" coords="1429,304,1501,331"/>
+<area shape="rect" id="node15" href="$Motor_8hpp.html" title="Motor.hpp" alt="" coords="936,304,1016,331"/>
+<area shape="rect" id="node21" href="$TorqueSensor_8hpp.html" title="TorqueSensor.hpp" alt="" coords="784,304,912,331"/>
+<area shape="rect" id="node23" href="$Control__Module_8hpp.html" title="Control_Module.hpp" alt="" coords="349,304,488,331"/>
+<area shape="rect" id="node16" href="$Shaping__Functions_8hpp.html" title="Shaping_Functions.hpp" alt="" coords="545,379,703,405"/>
+<area shape="rect" id="node17" href="$Control__Algorithms_8hpp.html" title="Control_Algorithms.hpp" alt="" coords="779,379,938,405"/>
+<area shape="rect" id="node19" href="$JointSelect_8hpp.html" title="JointSelect.hpp" alt="" coords="2008,528,2120,555"/>
+<area shape="rect" id="node24" href="$PID_8hpp.html" title="PID.hpp" alt="" coords="347,379,418,405"/>
+<area shape="rect" id="node26" href="$Commands_8hpp.html" title="Commands.hpp" alt="" coords="2059,453,2173,480"/>
+<area shape="rect" id="node30" href="$Transceiver_8hpp.html" title="Transceiver.hpp" alt="" coords="2312,304,2427,331"/>
+<area shape="rect" id="node33" href="$Transmission_8hpp.html" title="Transmission.hpp" alt="" coords="2111,229,2236,256"/>
+<area shape="rect" id="node31" href="$Command__Codes_8hpp.html" title="Command_Codes.hpp" alt="" coords="2248,379,2400,405"/>
+<area shape="rect" id="node32" href="$ByteTranscriber_8hpp.html" title="ByteTranscriber.hpp" alt="" coords="2525,379,2664,405"/>
+</map>

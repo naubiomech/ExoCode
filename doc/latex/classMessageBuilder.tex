@@ -1,0 +1,86 @@
+\hypertarget{classMessageBuilder}{}\section{Message\+Builder$<$ T $>$ Class Template Reference}
+\label{classMessageBuilder}\index{Message\+Builder$<$ T $>$@{Message\+Builder$<$ T $>$}}
+
+
+{\ttfamily \#include $<$Message.\+hpp$>$}
+
+
+
+Inheritance diagram for Message\+Builder$<$ T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=217pt]{classMessageBuilder__inherit__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \hyperlink{classMessageBuilder_a1d4818f16ec9c42cd52c99bdf9ffe3ed}{$\sim$\+Message\+Builder} ()
+\item 
+void \hyperlink{classMessageBuilder_a6a7fe8b106d10fb778b1ed44f3d85a84}{add\+Pre\+Command} (\hyperlink{classCommand}{Command}$<$ T $>$ $\ast$command)
+\item 
+void \hyperlink{classMessageBuilder_a519dd5cd924bf4bcae771b8de6778944}{add\+Post\+Command} (\hyperlink{classCommand}{Command}$<$ T $>$ $\ast$command)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classLinkedList}{Linked\+List}$<$ \hyperlink{classCommand}{Command}$<$ T $>$ $\ast$ $>$ \& \hyperlink{classMessageBuilder_a6cc16f4c006c6b8ca8a7f96b55137da0}{get\+Pre\+Commands} ()
+\item 
+\hyperlink{classLinkedList}{Linked\+List}$<$ \hyperlink{classCommand}{Command}$<$ T $>$ $\ast$ $>$ \& \hyperlink{classMessageBuilder_a934c7fbe2a922db44ef63b0c0bf4e572}{get\+Post\+Commands} ()
+\item 
+void \hyperlink{classMessageBuilder_a3831f41693da9ee6b74bdfcd4c760f8e}{clear\+Commands} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Message\+Builder@{Message\+Builder}!````~Message\+Builder@{$\sim$\+Message\+Builder}}
+\index{````~Message\+Builder@{$\sim$\+Message\+Builder}!Message\+Builder@{Message\+Builder}}
+\subsubsection[{\texorpdfstring{$\sim$\+Message\+Builder()}{~MessageBuilder()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf Message\+Builder}$<$ T $>$\+::$\sim${\bf Message\+Builder} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMessageBuilder_a1d4818f16ec9c42cd52c99bdf9ffe3ed}{}\label{classMessageBuilder_a1d4818f16ec9c42cd52c99bdf9ffe3ed}
+
+
+\subsection{Member Function Documentation}
+\index{Message\+Builder@{Message\+Builder}!add\+Post\+Command@{add\+Post\+Command}}
+\index{add\+Post\+Command@{add\+Post\+Command}!Message\+Builder@{Message\+Builder}}
+\subsubsection[{\texorpdfstring{add\+Post\+Command(\+Command$<$ T $>$ $\ast$command)}{addPostCommand(Command< T > *command)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ void {\bf Message\+Builder}$<$ T $>$\+::add\+Post\+Command (
+\begin{DoxyParamCaption}
+\item[{{\bf Command}$<$ T $>$ $\ast$}]{command}
+\end{DoxyParamCaption}
+)}\hypertarget{classMessageBuilder_a519dd5cd924bf4bcae771b8de6778944}{}\label{classMessageBuilder_a519dd5cd924bf4bcae771b8de6778944}
+\index{Message\+Builder@{Message\+Builder}!add\+Pre\+Command@{add\+Pre\+Command}}
+\index{add\+Pre\+Command@{add\+Pre\+Command}!Message\+Builder@{Message\+Builder}}
+\subsubsection[{\texorpdfstring{add\+Pre\+Command(\+Command$<$ T $>$ $\ast$command)}{addPreCommand(Command< T > *command)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T$>$ void {\bf Message\+Builder}$<$ T $>$\+::add\+Pre\+Command (
+\begin{DoxyParamCaption}
+\item[{{\bf Command}$<$ T $>$ $\ast$}]{command}
+\end{DoxyParamCaption}
+)}\hypertarget{classMessageBuilder_a6a7fe8b106d10fb778b1ed44f3d85a84}{}\label{classMessageBuilder_a6a7fe8b106d10fb778b1ed44f3d85a84}
+\index{Message\+Builder@{Message\+Builder}!clear\+Commands@{clear\+Commands}}
+\index{clear\+Commands@{clear\+Commands}!Message\+Builder@{Message\+Builder}}
+\subsubsection[{\texorpdfstring{clear\+Commands()}{clearCommands()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ void {\bf Message\+Builder}$<$ T $>$\+::clear\+Commands (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classMessageBuilder_a3831f41693da9ee6b74bdfcd4c760f8e}{}\label{classMessageBuilder_a3831f41693da9ee6b74bdfcd4c760f8e}
+\index{Message\+Builder@{Message\+Builder}!get\+Post\+Commands@{get\+Post\+Commands}}
+\index{get\+Post\+Commands@{get\+Post\+Commands}!Message\+Builder@{Message\+Builder}}
+\subsubsection[{\texorpdfstring{get\+Post\+Commands()}{getPostCommands()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf Linked\+List}$<$ {\bf Command}$<$ T $>$ $\ast$ $>$ \& {\bf Message\+Builder}$<$ T $>$\+::get\+Post\+Commands (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classMessageBuilder_a934c7fbe2a922db44ef63b0c0bf4e572}{}\label{classMessageBuilder_a934c7fbe2a922db44ef63b0c0bf4e572}
+\index{Message\+Builder@{Message\+Builder}!get\+Pre\+Commands@{get\+Pre\+Commands}}
+\index{get\+Pre\+Commands@{get\+Pre\+Commands}!Message\+Builder@{Message\+Builder}}
+\subsubsection[{\texorpdfstring{get\+Pre\+Commands()}{getPreCommands()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ {\bf Linked\+List}$<$ {\bf Command}$<$ T $>$ $\ast$ $>$ \& {\bf Message\+Builder}$<$ T $>$\+::get\+Pre\+Commands (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classMessageBuilder_a6cc16f4c006c6b8ca8a7f96b55137da0}{}\label{classMessageBuilder_a6cc16f4c006c6b8ca8a7f96b55137da0}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Message_8hpp}{Message.\+hpp}\end{DoxyCompactItemize}

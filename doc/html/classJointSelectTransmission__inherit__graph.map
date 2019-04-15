@@ -1,0 +1,11 @@
+<map id="JointSelectTransmission" name="JointSelectTransmission">
+<area shape="rect" id="node3" href="$classGetKFTransmission.html" title="GetKFTransmission" alt="" coords="411,5,550,32"/>
+<area shape="rect" id="node4" href="$classGetPidParamsTransmission.html" title="GetPidParamsTransmission" alt="" coords="388,56,573,83"/>
+<area shape="rect" id="node5" href="$classGetSetpointTransmission.html" title="GetSetpointTransmission" alt="" coords="396,107,565,133"/>
+<area shape="rect" id="node6" href="$classGetSmoothingParamsTransmission.html" title="GetSmoothingParamsTransmission" alt="" coords="367,157,595,184"/>
+<area shape="rect" id="node7" href="$classSetKFTransmission.html" title="SetKFTransmission" alt="" coords="412,208,549,235"/>
+<area shape="rect" id="node8" href="$classSetPidParamsTransmission.html" title="SetPidParamsTransmission" alt="" coords="389,259,573,285"/>
+<area shape="rect" id="node9" href="$classSetSetpointTransmission.html" title="SetSetpointTransmission" alt="" coords="397,309,565,336"/>
+<area shape="rect" id="node10" href="$classSetSmoothingParamsTransmission.html" title="SetSmoothingParamsTransmission" alt="" coords="367,360,594,387"/>
+<area shape="rect" id="node2" href="$classTransmission.html" title="Transmission" alt="" coords="5,183,105,209"/>
+</map>

@@ -1,0 +1,193 @@
+\hypertarget{classPID}{}\section{P\+ID Class Reference}
+\label{classPID}\index{P\+ID@{P\+ID}}
+
+
+{\ttfamily \#include $<$P\+I\+D.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classPID_a2204e6bc67a6915a557b9c2f03c2d92d}{P\+ID} (double $\ast$, double $\ast$, double $\ast$, double, double, double, int, int)
+\item 
+\hyperlink{classPID_aba833737b9cb8a9da181d392a0306c1b}{P\+ID} (double $\ast$, double $\ast$, double $\ast$, double, double, double, int)
+\item 
+void \hyperlink{classPID_a68074bad88a8cc442ee03a036073d5d5}{Set\+Mode} (int Mode)
+\item 
+bool \hyperlink{classPID_a8d154fe921cba7963c49d7d2b42eccf1}{Compute} ()
+\item 
+bool \hyperlink{classPID_a2b197ba1ea7957ecca01424a965f4b8c}{Compute\+\_\+d} ()
+\item 
+bool \hyperlink{classPID_afdb34367c7ca4b540534d3af95420f03}{Compute\+\_\+\+KF} (double KF)
+\item 
+void \hyperlink{classPID_a1d0630b3aafcf7266c6be8f89595c0f5}{Set\+\_\+\+Enable\+\_\+ki} (bool d)
+\item 
+void \hyperlink{classPID_a5645914427bd740b12faa97cc25a8414}{Set\+Output\+Limits} (double, double)
+\item 
+void \hyperlink{classPID_a848bb1bbeabd59d38c9c955958e3e798}{Set\+Tunings} (double, double, double)
+\item 
+void \hyperlink{classPID_a3f6cf284c8fe43b1714b5b72758dc229}{Set\+Tunings} (double, double, double, int)
+\item 
+void \hyperlink{classPID_a66df966f739e19482aaba38cf9308c4e}{Set\+Controller\+Direction} (int)
+\item 
+void \hyperlink{classPID_aaa1e0e67a0c97571bd62b326e6cf3b2e}{Set\+Sample\+Time} (int)
+\item 
+double \hyperlink{classPID_ae5519c833b2887a0e6aad670d9b3d8b8}{Get\+Kp} ()
+\item 
+double \hyperlink{classPID_ac7ba6bc99c76c4378d699e176c81491c}{Get\+Ki} ()
+\item 
+double \hyperlink{classPID_a62b7e8dca41e724e1ad62dec930058d8}{Get\+Kd} ()
+\item 
+int \hyperlink{classPID_acc325db5e6a140b92c8199a66e03491b}{Get\+Mode} ()
+\item 
+int \hyperlink{classPID_a2a8674f4c8937dfdf859f6a3ad9f45d5}{Get\+Direction} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{P\+ID@{P\+ID}!P\+ID@{P\+ID}}
+\index{P\+ID@{P\+ID}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{P\+I\+D(double $\ast$, double $\ast$, double $\ast$, double, double, double, int, int)}{PID(double *, double *, double *, double, double, double, int, int)}}]{\setlength{\rightskip}{0pt plus 5cm}P\+I\+D\+::\+P\+ID (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{Input, }
+\item[{double $\ast$}]{Output, }
+\item[{double $\ast$}]{Setpoint, }
+\item[{double}]{Kp, }
+\item[{double}]{Ki, }
+\item[{double}]{Kd, }
+\item[{int}]{P\+On, }
+\item[{int}]{Controller\+Direction}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_a2204e6bc67a6915a557b9c2f03c2d92d}{}\label{classPID_a2204e6bc67a6915a557b9c2f03c2d92d}
+\index{P\+ID@{P\+ID}!P\+ID@{P\+ID}}
+\index{P\+ID@{P\+ID}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{P\+I\+D(double $\ast$, double $\ast$, double $\ast$, double, double, double, int)}{PID(double *, double *, double *, double, double, double, int)}}]{\setlength{\rightskip}{0pt plus 5cm}P\+I\+D\+::\+P\+ID (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{Input, }
+\item[{double $\ast$}]{Output, }
+\item[{double $\ast$}]{Setpoint, }
+\item[{double}]{Kp, }
+\item[{double}]{Ki, }
+\item[{double}]{Kd, }
+\item[{int}]{Controller\+Direction}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_aba833737b9cb8a9da181d392a0306c1b}{}\label{classPID_aba833737b9cb8a9da181d392a0306c1b}
+
+
+\subsection{Member Function Documentation}
+\index{P\+ID@{P\+ID}!Compute@{Compute}}
+\index{Compute@{Compute}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Compute()}{Compute()}}]{\setlength{\rightskip}{0pt plus 5cm}bool P\+I\+D\+::\+Compute (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_a8d154fe921cba7963c49d7d2b42eccf1}{}\label{classPID_a8d154fe921cba7963c49d7d2b42eccf1}
+\index{P\+ID@{P\+ID}!Compute\+\_\+d@{Compute\+\_\+d}}
+\index{Compute\+\_\+d@{Compute\+\_\+d}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Compute\+\_\+d()}{Compute_d()}}]{\setlength{\rightskip}{0pt plus 5cm}bool P\+I\+D\+::\+Compute\+\_\+d (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_a2b197ba1ea7957ecca01424a965f4b8c}{}\label{classPID_a2b197ba1ea7957ecca01424a965f4b8c}
+\index{P\+ID@{P\+ID}!Compute\+\_\+\+KF@{Compute\+\_\+\+KF}}
+\index{Compute\+\_\+\+KF@{Compute\+\_\+\+KF}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Compute\+\_\+\+K\+F(double K\+F)}{Compute_KF(double KF)}}]{\setlength{\rightskip}{0pt plus 5cm}bool P\+I\+D\+::\+Compute\+\_\+\+KF (
+\begin{DoxyParamCaption}
+\item[{double}]{KF}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_afdb34367c7ca4b540534d3af95420f03}{}\label{classPID_afdb34367c7ca4b540534d3af95420f03}
+\index{P\+ID@{P\+ID}!Get\+Direction@{Get\+Direction}}
+\index{Get\+Direction@{Get\+Direction}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Get\+Direction()}{GetDirection()}}]{\setlength{\rightskip}{0pt plus 5cm}int P\+I\+D\+::\+Get\+Direction (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_a2a8674f4c8937dfdf859f6a3ad9f45d5}{}\label{classPID_a2a8674f4c8937dfdf859f6a3ad9f45d5}
+\index{P\+ID@{P\+ID}!Get\+Kd@{Get\+Kd}}
+\index{Get\+Kd@{Get\+Kd}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Get\+Kd()}{GetKd()}}]{\setlength{\rightskip}{0pt plus 5cm}double P\+I\+D\+::\+Get\+Kd (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_a62b7e8dca41e724e1ad62dec930058d8}{}\label{classPID_a62b7e8dca41e724e1ad62dec930058d8}
+\index{P\+ID@{P\+ID}!Get\+Ki@{Get\+Ki}}
+\index{Get\+Ki@{Get\+Ki}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Get\+Ki()}{GetKi()}}]{\setlength{\rightskip}{0pt plus 5cm}double P\+I\+D\+::\+Get\+Ki (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_ac7ba6bc99c76c4378d699e176c81491c}{}\label{classPID_ac7ba6bc99c76c4378d699e176c81491c}
+\index{P\+ID@{P\+ID}!Get\+Kp@{Get\+Kp}}
+\index{Get\+Kp@{Get\+Kp}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Get\+Kp()}{GetKp()}}]{\setlength{\rightskip}{0pt plus 5cm}double P\+I\+D\+::\+Get\+Kp (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_ae5519c833b2887a0e6aad670d9b3d8b8}{}\label{classPID_ae5519c833b2887a0e6aad670d9b3d8b8}
+\index{P\+ID@{P\+ID}!Get\+Mode@{Get\+Mode}}
+\index{Get\+Mode@{Get\+Mode}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Get\+Mode()}{GetMode()}}]{\setlength{\rightskip}{0pt plus 5cm}int P\+I\+D\+::\+Get\+Mode (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_acc325db5e6a140b92c8199a66e03491b}{}\label{classPID_acc325db5e6a140b92c8199a66e03491b}
+\index{P\+ID@{P\+ID}!Set\+\_\+\+Enable\+\_\+ki@{Set\+\_\+\+Enable\+\_\+ki}}
+\index{Set\+\_\+\+Enable\+\_\+ki@{Set\+\_\+\+Enable\+\_\+ki}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Set\+\_\+\+Enable\+\_\+ki(bool d)}{Set_Enable_ki(bool d)}}]{\setlength{\rightskip}{0pt plus 5cm}void P\+I\+D\+::\+Set\+\_\+\+Enable\+\_\+ki (
+\begin{DoxyParamCaption}
+\item[{bool}]{d}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_a1d0630b3aafcf7266c6be8f89595c0f5}{}\label{classPID_a1d0630b3aafcf7266c6be8f89595c0f5}
+\index{P\+ID@{P\+ID}!Set\+Controller\+Direction@{Set\+Controller\+Direction}}
+\index{Set\+Controller\+Direction@{Set\+Controller\+Direction}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Set\+Controller\+Direction(int)}{SetControllerDirection(int)}}]{\setlength{\rightskip}{0pt plus 5cm}void P\+I\+D\+::\+Set\+Controller\+Direction (
+\begin{DoxyParamCaption}
+\item[{int}]{Direction}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_a66df966f739e19482aaba38cf9308c4e}{}\label{classPID_a66df966f739e19482aaba38cf9308c4e}
+\index{P\+ID@{P\+ID}!Set\+Mode@{Set\+Mode}}
+\index{Set\+Mode@{Set\+Mode}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Set\+Mode(int Mode)}{SetMode(int Mode)}}]{\setlength{\rightskip}{0pt plus 5cm}void P\+I\+D\+::\+Set\+Mode (
+\begin{DoxyParamCaption}
+\item[{int}]{Mode}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_a68074bad88a8cc442ee03a036073d5d5}{}\label{classPID_a68074bad88a8cc442ee03a036073d5d5}
+\index{P\+ID@{P\+ID}!Set\+Output\+Limits@{Set\+Output\+Limits}}
+\index{Set\+Output\+Limits@{Set\+Output\+Limits}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Set\+Output\+Limits(double, double)}{SetOutputLimits(double, double)}}]{\setlength{\rightskip}{0pt plus 5cm}void P\+I\+D\+::\+Set\+Output\+Limits (
+\begin{DoxyParamCaption}
+\item[{double}]{Min, }
+\item[{double}]{Max}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_a5645914427bd740b12faa97cc25a8414}{}\label{classPID_a5645914427bd740b12faa97cc25a8414}
+\index{P\+ID@{P\+ID}!Set\+Sample\+Time@{Set\+Sample\+Time}}
+\index{Set\+Sample\+Time@{Set\+Sample\+Time}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Set\+Sample\+Time(int)}{SetSampleTime(int)}}]{\setlength{\rightskip}{0pt plus 5cm}void P\+I\+D\+::\+Set\+Sample\+Time (
+\begin{DoxyParamCaption}
+\item[{int}]{New\+Sample\+Time}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_aaa1e0e67a0c97571bd62b326e6cf3b2e}{}\label{classPID_aaa1e0e67a0c97571bd62b326e6cf3b2e}
+\index{P\+ID@{P\+ID}!Set\+Tunings@{Set\+Tunings}}
+\index{Set\+Tunings@{Set\+Tunings}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Set\+Tunings(double, double, double)}{SetTunings(double, double, double)}}]{\setlength{\rightskip}{0pt plus 5cm}void P\+I\+D\+::\+Set\+Tunings (
+\begin{DoxyParamCaption}
+\item[{double}]{Kp, }
+\item[{double}]{Ki, }
+\item[{double}]{Kd}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_a848bb1bbeabd59d38c9c955958e3e798}{}\label{classPID_a848bb1bbeabd59d38c9c955958e3e798}
+\index{P\+ID@{P\+ID}!Set\+Tunings@{Set\+Tunings}}
+\index{Set\+Tunings@{Set\+Tunings}!P\+ID@{P\+ID}}
+\subsubsection[{\texorpdfstring{Set\+Tunings(double, double, double, int)}{SetTunings(double, double, double, int)}}]{\setlength{\rightskip}{0pt plus 5cm}void P\+I\+D\+::\+Set\+Tunings (
+\begin{DoxyParamCaption}
+\item[{double}]{Kp, }
+\item[{double}]{Ki, }
+\item[{double}]{Kd, }
+\item[{int}]{P\+On}
+\end{DoxyParamCaption}
+)}\hypertarget{classPID_a3f6cf284c8fe43b1714b5b72758dc229}{}\label{classPID_a3f6cf284c8fe43b1714b5b72758dc229}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{PID_8hpp}{P\+I\+D.\+hpp}\item 
+\hyperlink{PID_8cpp}{P\+I\+D.\+cpp}\end{DoxyCompactItemize}

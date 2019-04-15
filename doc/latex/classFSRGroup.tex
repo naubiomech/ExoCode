@@ -1,0 +1,212 @@
+\hypertarget{classFSRGroup}{}\section{F\+S\+R\+Group Class Reference}
+\label{classFSRGroup}\index{F\+S\+R\+Group@{F\+S\+R\+Group}}
+
+
+{\ttfamily \#include $<$F\+S\+R.\+hpp$>$}
+
+
+
+Inheritance diagram for F\+S\+R\+Group\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=143pt]{classFSRGroup__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for F\+S\+R\+Group\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=186pt]{classFSRGroup__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classFSRGroup_a14f2398406fea72cc9c42fe38a5209df}{F\+S\+R\+Group} (\hyperlink{classLinkedList}{Linked\+List}$<$ \hyperlink{classFSR}{F\+SR} $\ast$ $>$ $\ast$\hyperlink{classFSRGroup_a818ff1c99f2f1aaa5bd36c6cb701b491}{fsrs})
+\item 
+virtual \hyperlink{classFSRGroup_ace5505a55102264e6bba241f41ab4836}{$\sim$\+F\+S\+R\+Group} ()
+\item 
+bool \hyperlink{classFSRGroup_a6f60094985663d5a19c42b1f402d42e8}{is\+Activated} ()
+\item 
+void \hyperlink{classFSRGroup_a3af851fc34ba3aa756345a6c2cc488c4}{measure\+Force} ()
+\item 
+double \hyperlink{classFSRGroup_a69a95934d542076c08e049e3b0312994}{get\+Force} ()
+\item 
+void \hyperlink{classFSRGroup_a58d86b5460cecb3c006aecfda1dc43ec}{calibrate} ()
+\item 
+double \hyperlink{classFSRGroup_ab8266f4e3ef2bf17a71e59069ff35754}{get\+Threshold} ()
+\item 
+void \hyperlink{classFSRGroup_a9d9e243ad7f7368493c7cf6bf045e54b}{set\+Percentage\+Threshold} (double percent)
+\item 
+void \hyperlink{classFSRGroup_afb080b398697513ea57374be3c14bc6e}{reset\+Maxes} ()
+\item 
+void \hyperlink{classFSRGroup_a8c308ccc00dfe0e999c1e3deb06755be}{update\+Maxes} ()
+\item 
+double \hyperlink{classFSRGroup_a261c1a4bf8fd1ebd9237ec9d1b1b261f}{get\+Percentage} ()
+\item 
+double \hyperlink{classFSRGroup_a095df087d7140fdaa1240150a3b8acda}{get\+Max\+Percentage} ()
+\item 
+void \hyperlink{classFSRGroup_a8896f4f0b2b8b150a1ccff0ee303248a}{update\+Baseline} ()
+\item 
+\hyperlink{classFSRReport}{F\+S\+R\+Report} $\ast$ \hyperlink{classFSRGroup_a791432248f8a588adc292c0eb9e19c38}{generate\+Report} ()
+\item 
+virtual double \hyperlink{classFSRGroup_ae1658e0276de8cf7d9a3c29c84257d3b}{get\+Ratio} ()
+\item 
+virtual double \hyperlink{classFSRGroup_ab12866c42645b5d892a1d69fb7056e4f}{get\+Difference} ()
+\item 
+void \hyperlink{classFSRGroup_a5a59a5ddf09a579d693e1c3687fbff46}{fill\+Report} (\hyperlink{classFSRReport}{F\+S\+R\+Report} $\ast$report)
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classLinkedList}{Linked\+List}$<$ \hyperlink{classFSR}{F\+SR} $\ast$ $>$ \hyperlink{classFSRGroup_a818ff1c99f2f1aaa5bd36c6cb701b491}{fsrs}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{F\+S\+R\+Group(\+Linked\+List$<$ F\+S\+R $\ast$ $>$ $\ast$fsrs)}{FSRGroup(LinkedList< FSR * > *fsrs)}}]{\setlength{\rightskip}{0pt plus 5cm}F\+S\+R\+Group\+::\+F\+S\+R\+Group (
+\begin{DoxyParamCaption}
+\item[{{\bf Linked\+List}$<$ {\bf F\+SR} $\ast$ $>$ $\ast$}]{fsrs}
+\end{DoxyParamCaption}
+)}\hypertarget{classFSRGroup_a14f2398406fea72cc9c42fe38a5209df}{}\label{classFSRGroup_a14f2398406fea72cc9c42fe38a5209df}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!````~F\+S\+R\+Group@{$\sim$\+F\+S\+R\+Group}}
+\index{````~F\+S\+R\+Group@{$\sim$\+F\+S\+R\+Group}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{$\sim$\+F\+S\+R\+Group()}{~FSRGroup()}}]{\setlength{\rightskip}{0pt plus 5cm}F\+S\+R\+Group\+::$\sim$\+F\+S\+R\+Group (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classFSRGroup_ace5505a55102264e6bba241f41ab4836}{}\label{classFSRGroup_ace5505a55102264e6bba241f41ab4836}
+
+
+\subsection{Member Function Documentation}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!calibrate@{calibrate}}
+\index{calibrate@{calibrate}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{calibrate()}{calibrate()}}]{\setlength{\rightskip}{0pt plus 5cm}void F\+S\+R\+Group\+::calibrate (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classFSRGroup_a58d86b5460cecb3c006aecfda1dc43ec}{}\label{classFSRGroup_a58d86b5460cecb3c006aecfda1dc43ec}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!fill\+Report@{fill\+Report}}
+\index{fill\+Report@{fill\+Report}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{fill\+Report(\+F\+S\+R\+Report $\ast$report)}{fillReport(FSRReport *report)}}]{\setlength{\rightskip}{0pt plus 5cm}void F\+S\+R\+Group\+::fill\+Report (
+\begin{DoxyParamCaption}
+\item[{{\bf F\+S\+R\+Report} $\ast$}]{report}
+\end{DoxyParamCaption}
+)}\hypertarget{classFSRGroup_a5a59a5ddf09a579d693e1c3687fbff46}{}\label{classFSRGroup_a5a59a5ddf09a579d693e1c3687fbff46}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!generate\+Report@{generate\+Report}}
+\index{generate\+Report@{generate\+Report}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{generate\+Report()}{generateReport()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf F\+S\+R\+Report} $\ast$ F\+S\+R\+Group\+::generate\+Report (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classFSRGroup_a791432248f8a588adc292c0eb9e19c38}{}\label{classFSRGroup_a791432248f8a588adc292c0eb9e19c38}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!get\+Difference@{get\+Difference}}
+\index{get\+Difference@{get\+Difference}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{get\+Difference()}{getDifference()}}]{\setlength{\rightskip}{0pt plus 5cm}double F\+S\+R\+Group\+::get\+Difference (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classFSRGroup_ab12866c42645b5d892a1d69fb7056e4f}{}\label{classFSRGroup_ab12866c42645b5d892a1d69fb7056e4f}
+
+
+Reimplemented in \hyperlink{classFsrPair_aecd1acaffcf8a0c3ab60d1ddd2ac52bc}{Fsr\+Pair}.
+
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!get\+Force@{get\+Force}}
+\index{get\+Force@{get\+Force}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{get\+Force()}{getForce()}}]{\setlength{\rightskip}{0pt plus 5cm}double F\+S\+R\+Group\+::get\+Force (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classFSRGroup_a69a95934d542076c08e049e3b0312994}{}\label{classFSRGroup_a69a95934d542076c08e049e3b0312994}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!get\+Max\+Percentage@{get\+Max\+Percentage}}
+\index{get\+Max\+Percentage@{get\+Max\+Percentage}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{get\+Max\+Percentage()}{getMaxPercentage()}}]{\setlength{\rightskip}{0pt plus 5cm}double F\+S\+R\+Group\+::get\+Max\+Percentage (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classFSRGroup_a095df087d7140fdaa1240150a3b8acda}{}\label{classFSRGroup_a095df087d7140fdaa1240150a3b8acda}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!get\+Percentage@{get\+Percentage}}
+\index{get\+Percentage@{get\+Percentage}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{get\+Percentage()}{getPercentage()}}]{\setlength{\rightskip}{0pt plus 5cm}double F\+S\+R\+Group\+::get\+Percentage (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classFSRGroup_a261c1a4bf8fd1ebd9237ec9d1b1b261f}{}\label{classFSRGroup_a261c1a4bf8fd1ebd9237ec9d1b1b261f}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!get\+Ratio@{get\+Ratio}}
+\index{get\+Ratio@{get\+Ratio}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{get\+Ratio()}{getRatio()}}]{\setlength{\rightskip}{0pt plus 5cm}double F\+S\+R\+Group\+::get\+Ratio (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classFSRGroup_ae1658e0276de8cf7d9a3c29c84257d3b}{}\label{classFSRGroup_ae1658e0276de8cf7d9a3c29c84257d3b}
+
+
+Reimplemented in \hyperlink{classFsrPair_a002d89d018c91b4e415381a444b30689}{Fsr\+Pair}.
+
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!get\+Threshold@{get\+Threshold}}
+\index{get\+Threshold@{get\+Threshold}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{get\+Threshold()}{getThreshold()}}]{\setlength{\rightskip}{0pt plus 5cm}double F\+S\+R\+Group\+::get\+Threshold (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classFSRGroup_ab8266f4e3ef2bf17a71e59069ff35754}{}\label{classFSRGroup_ab8266f4e3ef2bf17a71e59069ff35754}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!is\+Activated@{is\+Activated}}
+\index{is\+Activated@{is\+Activated}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{is\+Activated()}{isActivated()}}]{\setlength{\rightskip}{0pt plus 5cm}bool F\+S\+R\+Group\+::is\+Activated (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classFSRGroup_a6f60094985663d5a19c42b1f402d42e8}{}\label{classFSRGroup_a6f60094985663d5a19c42b1f402d42e8}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!measure\+Force@{measure\+Force}}
+\index{measure\+Force@{measure\+Force}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{measure\+Force()}{measureForce()}}]{\setlength{\rightskip}{0pt plus 5cm}void F\+S\+R\+Group\+::measure\+Force (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classFSRGroup_a3af851fc34ba3aa756345a6c2cc488c4}{}\label{classFSRGroup_a3af851fc34ba3aa756345a6c2cc488c4}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!reset\+Maxes@{reset\+Maxes}}
+\index{reset\+Maxes@{reset\+Maxes}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{reset\+Maxes()}{resetMaxes()}}]{\setlength{\rightskip}{0pt plus 5cm}void F\+S\+R\+Group\+::reset\+Maxes (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classFSRGroup_afb080b398697513ea57374be3c14bc6e}{}\label{classFSRGroup_afb080b398697513ea57374be3c14bc6e}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!set\+Percentage\+Threshold@{set\+Percentage\+Threshold}}
+\index{set\+Percentage\+Threshold@{set\+Percentage\+Threshold}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{set\+Percentage\+Threshold(double percent)}{setPercentageThreshold(double percent)}}]{\setlength{\rightskip}{0pt plus 5cm}void F\+S\+R\+Group\+::set\+Percentage\+Threshold (
+\begin{DoxyParamCaption}
+\item[{double}]{percent}
+\end{DoxyParamCaption}
+)}\hypertarget{classFSRGroup_a9d9e243ad7f7368493c7cf6bf045e54b}{}\label{classFSRGroup_a9d9e243ad7f7368493c7cf6bf045e54b}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!update\+Baseline@{update\+Baseline}}
+\index{update\+Baseline@{update\+Baseline}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{update\+Baseline()}{updateBaseline()}}]{\setlength{\rightskip}{0pt plus 5cm}void F\+S\+R\+Group\+::update\+Baseline (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classFSRGroup_a8896f4f0b2b8b150a1ccff0ee303248a}{}\label{classFSRGroup_a8896f4f0b2b8b150a1ccff0ee303248a}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!update\+Maxes@{update\+Maxes}}
+\index{update\+Maxes@{update\+Maxes}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{update\+Maxes()}{updateMaxes()}}]{\setlength{\rightskip}{0pt plus 5cm}void F\+S\+R\+Group\+::update\+Maxes (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classFSRGroup_a8c308ccc00dfe0e999c1e3deb06755be}{}\label{classFSRGroup_a8c308ccc00dfe0e999c1e3deb06755be}
+
+
+\subsection{Member Data Documentation}
+\index{F\+S\+R\+Group@{F\+S\+R\+Group}!fsrs@{fsrs}}
+\index{fsrs@{fsrs}!F\+S\+R\+Group@{F\+S\+R\+Group}}
+\subsubsection[{\texorpdfstring{fsrs}{fsrs}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Linked\+List}$<${\bf F\+SR}$\ast$$>$ F\+S\+R\+Group\+::fsrs\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classFSRGroup_a818ff1c99f2f1aaa5bd36c6cb701b491}{}\label{classFSRGroup_a818ff1c99f2f1aaa5bd36c6cb701b491}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{FSR_8hpp}{F\+S\+R.\+hpp}\item 
+\hyperlink{FSR_8cpp}{F\+S\+R.\+cpp}\end{DoxyCompactItemize}

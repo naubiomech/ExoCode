@@ -1,0 +1,4 @@
+<map id="Average" name="Average">
+<area shape="rect" id="node2" href="$classMovingAverage.html" title="MovingAverage" alt="" coords="5,80,117,107"/>
+<area shape="rect" id="node3" href="$classRunningAverage.html" title="RunningAverage" alt="" coords="141,80,259,107"/>
+</map>

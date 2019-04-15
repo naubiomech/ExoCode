@@ -1,0 +1,4 @@
+<map id="JointSelect" name="JointSelect">
+<area shape="rect" id="node2" href="$classAreaIDSelect.html" title="AreaIDSelect" alt="" coords="5,5,105,32"/>
+<area shape="rect" id="node3" href="$classLegJointIDSelect.html" title="LegJointIDSelect" alt="" coords="130,5,253,32"/>
+</map>

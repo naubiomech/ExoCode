@@ -1,0 +1,217 @@
+\hypertarget{classControlModule}{}\section{Control\+Module Class Reference}
+\label{classControlModule}\index{Control\+Module@{Control\+Module}}
+
+
+{\ttfamily \#include $<$Control\+\_\+\+Module.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classControlModule_a4314676da13e7c4f658d042bb8035f38}{Control\+Module} (\hyperlink{classControlAlgorithm}{Control\+Algorithm} $\ast$state\+\_\+machine, \hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} starting\+\_\+state)
+\item 
+\hyperlink{classControlModule_ade41c6a3ce7c8e4df978c611bc0d9fa8}{$\sim$\+Control\+Module} ()
+\item 
+void \hyperlink{classControlModule_aaefdbef057adda0ee6ac86225b974736}{set\+Control\+State\+Machine} (\hyperlink{classControlAlgorithm}{Control\+Algorithm} $\ast$state\+\_\+machine, \hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} starting\+\_\+state)
+\item 
+void \hyperlink{classControlModule_a02cb4c34e322b292577cb31182ea52a4}{set\+Algorithm\+Desired\+Setpoint} (\hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} state, double setpoint)
+\item 
+double \hyperlink{classControlModule_a39e3f7c7bf68975a66ebde771be0fe1e}{get\+Algorithm\+Desired\+Setpoint} (\hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} state)
+\item 
+void \hyperlink{classControlModule_a12080a39a838b7d527d9c0908483cd22}{set\+To\+Zero} ()
+\item 
+void \hyperlink{classControlModule_abe605807dc1f58e4bdea40e49f6f3b12}{set\+Desired\+Setpoint} (double setpoint)
+\item 
+void \hyperlink{classControlModule_a6698998f891f6243cfbf9590ee72c3d7}{change\+State} (\hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} state\+\_\+id)
+\item 
+double \hyperlink{classControlModule_aa3c64f7fe97d2cc67c761770fd7a134a}{get\+Control\+Adjustment} (double torque\+\_\+input, \hyperlink{classSensorReport}{Sensor\+Report} $\ast$report)
+\item 
+void \hyperlink{classControlModule_a19b05cacdc40d708d14c00c5a41142b5}{reset\+Starting\+Parameters} ()
+\item 
+void \hyperlink{classControlModule_aee5754ea42ce1a9bae086da2f2ca029c}{adjust\+Shaping\+For\+Time} (double planter\+\_\+time)
+\item 
+void \hyperlink{classControlModule_affa4c0234bf7883a33b159efb3b1f2dc}{change\+Control} (\hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} state\+\_\+id)
+\item 
+void \hyperlink{classControlModule_a5b296b6354c48e2252e89c83b2399475}{update\+K\+F\+P\+I\+D\+Error} (double torque)
+\item 
+void \hyperlink{classControlModule_a8159eb15ae67becab77531e6080fc6fd}{apply\+Auto\+KF} ()
+\item 
+double \hyperlink{classControlModule_ac66e25402eeae49116dbea00534a4a22}{get\+Last\+Setpoint} ()
+\item 
+void \hyperlink{classControlModule_a143642ed467c636cab3c8bf25bbe354e}{get\+Pid} (double $\ast$pid)
+\item 
+void \hyperlink{classControlModule_a8bab02465545b89adb46b6ccc42ead81}{set\+Pid} (double \hyperlink{Parameters_8hpp_ad1ae3be971981842496c18dabdd2e4c1}{p}, double i, double d)
+\item 
+double \hyperlink{classControlModule_a36a061b2c4c6ccfb4eb9a8f8bd577b89}{get\+Kf} ()
+\item 
+void \hyperlink{classControlModule_af2b5bb6c70236be1b00b43c0c357f07d}{set\+Kf} (double kf)
+\item 
+double \hyperlink{classControlModule_a431dca55f4fcc7935138955183fb5be6}{get\+Smoothing\+Param} (\hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} state)
+\item 
+void \hyperlink{classControlModule_a5ebcc624316224590d8cf7856b7283a8}{set\+Smoothing\+Param} (\hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} state, double param)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Control\+Module@{Control\+Module}!Control\+Module@{Control\+Module}}
+\index{Control\+Module@{Control\+Module}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{Control\+Module(\+Control\+Algorithm $\ast$state\+\_\+machine, State\+I\+D starting\+\_\+state)}{ControlModule(ControlAlgorithm *state_machine, StateID starting_state)}}]{\setlength{\rightskip}{0pt plus 5cm}Control\+Module\+::\+Control\+Module (
+\begin{DoxyParamCaption}
+\item[{{\bf Control\+Algorithm} $\ast$}]{state\+\_\+machine, }
+\item[{{\bf State\+ID}}]{starting\+\_\+state}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_a4314676da13e7c4f658d042bb8035f38}{}\label{classControlModule_a4314676da13e7c4f658d042bb8035f38}
+\index{Control\+Module@{Control\+Module}!````~Control\+Module@{$\sim$\+Control\+Module}}
+\index{````~Control\+Module@{$\sim$\+Control\+Module}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{$\sim$\+Control\+Module()}{~ControlModule()}}]{\setlength{\rightskip}{0pt plus 5cm}Control\+Module\+::$\sim$\+Control\+Module (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_ade41c6a3ce7c8e4df978c611bc0d9fa8}{}\label{classControlModule_ade41c6a3ce7c8e4df978c611bc0d9fa8}
+
+
+\subsection{Member Function Documentation}
+\index{Control\+Module@{Control\+Module}!adjust\+Shaping\+For\+Time@{adjust\+Shaping\+For\+Time}}
+\index{adjust\+Shaping\+For\+Time@{adjust\+Shaping\+For\+Time}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{adjust\+Shaping\+For\+Time(double planter\+\_\+time)}{adjustShapingForTime(double planter_time)}}]{\setlength{\rightskip}{0pt plus 5cm}void Control\+Module\+::adjust\+Shaping\+For\+Time (
+\begin{DoxyParamCaption}
+\item[{double}]{planter\+\_\+time}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_aee5754ea42ce1a9bae086da2f2ca029c}{}\label{classControlModule_aee5754ea42ce1a9bae086da2f2ca029c}
+\index{Control\+Module@{Control\+Module}!apply\+Auto\+KF@{apply\+Auto\+KF}}
+\index{apply\+Auto\+KF@{apply\+Auto\+KF}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{apply\+Auto\+K\+F()}{applyAutoKF()}}]{\setlength{\rightskip}{0pt plus 5cm}void Control\+Module\+::apply\+Auto\+KF (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_a8159eb15ae67becab77531e6080fc6fd}{}\label{classControlModule_a8159eb15ae67becab77531e6080fc6fd}
+\index{Control\+Module@{Control\+Module}!change\+Control@{change\+Control}}
+\index{change\+Control@{change\+Control}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{change\+Control(\+State\+I\+D state\+\_\+id)}{changeControl(StateID state_id)}}]{\setlength{\rightskip}{0pt plus 5cm}void Control\+Module\+::change\+Control (
+\begin{DoxyParamCaption}
+\item[{{\bf State\+ID}}]{state\+\_\+id}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_affa4c0234bf7883a33b159efb3b1f2dc}{}\label{classControlModule_affa4c0234bf7883a33b159efb3b1f2dc}
+\index{Control\+Module@{Control\+Module}!change\+State@{change\+State}}
+\index{change\+State@{change\+State}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{change\+State(\+State\+I\+D state\+\_\+id)}{changeState(StateID state_id)}}]{\setlength{\rightskip}{0pt plus 5cm}void Control\+Module\+::change\+State (
+\begin{DoxyParamCaption}
+\item[{{\bf State\+ID}}]{state\+\_\+id}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_a6698998f891f6243cfbf9590ee72c3d7}{}\label{classControlModule_a6698998f891f6243cfbf9590ee72c3d7}
+\index{Control\+Module@{Control\+Module}!get\+Algorithm\+Desired\+Setpoint@{get\+Algorithm\+Desired\+Setpoint}}
+\index{get\+Algorithm\+Desired\+Setpoint@{get\+Algorithm\+Desired\+Setpoint}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{get\+Algorithm\+Desired\+Setpoint(\+State\+I\+D state)}{getAlgorithmDesiredSetpoint(StateID state)}}]{\setlength{\rightskip}{0pt plus 5cm}double Control\+Module\+::get\+Algorithm\+Desired\+Setpoint (
+\begin{DoxyParamCaption}
+\item[{{\bf State\+ID}}]{state}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_a39e3f7c7bf68975a66ebde771be0fe1e}{}\label{classControlModule_a39e3f7c7bf68975a66ebde771be0fe1e}
+\index{Control\+Module@{Control\+Module}!get\+Control\+Adjustment@{get\+Control\+Adjustment}}
+\index{get\+Control\+Adjustment@{get\+Control\+Adjustment}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{get\+Control\+Adjustment(double torque\+\_\+input, Sensor\+Report $\ast$report)}{getControlAdjustment(double torque_input, SensorReport *report)}}]{\setlength{\rightskip}{0pt plus 5cm}double Control\+Module\+::get\+Control\+Adjustment (
+\begin{DoxyParamCaption}
+\item[{double}]{torque\+\_\+input, }
+\item[{{\bf Sensor\+Report} $\ast$}]{report}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_aa3c64f7fe97d2cc67c761770fd7a134a}{}\label{classControlModule_aa3c64f7fe97d2cc67c761770fd7a134a}
+\index{Control\+Module@{Control\+Module}!get\+Kf@{get\+Kf}}
+\index{get\+Kf@{get\+Kf}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{get\+Kf()}{getKf()}}]{\setlength{\rightskip}{0pt plus 5cm}double Control\+Module\+::get\+Kf (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_a36a061b2c4c6ccfb4eb9a8f8bd577b89}{}\label{classControlModule_a36a061b2c4c6ccfb4eb9a8f8bd577b89}
+\index{Control\+Module@{Control\+Module}!get\+Last\+Setpoint@{get\+Last\+Setpoint}}
+\index{get\+Last\+Setpoint@{get\+Last\+Setpoint}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{get\+Last\+Setpoint()}{getLastSetpoint()}}]{\setlength{\rightskip}{0pt plus 5cm}double Control\+Module\+::get\+Last\+Setpoint (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_ac66e25402eeae49116dbea00534a4a22}{}\label{classControlModule_ac66e25402eeae49116dbea00534a4a22}
+\index{Control\+Module@{Control\+Module}!get\+Pid@{get\+Pid}}
+\index{get\+Pid@{get\+Pid}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{get\+Pid(double $\ast$pid)}{getPid(double *pid)}}]{\setlength{\rightskip}{0pt plus 5cm}void Control\+Module\+::get\+Pid (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{pid}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_a143642ed467c636cab3c8bf25bbe354e}{}\label{classControlModule_a143642ed467c636cab3c8bf25bbe354e}
+\index{Control\+Module@{Control\+Module}!get\+Smoothing\+Param@{get\+Smoothing\+Param}}
+\index{get\+Smoothing\+Param@{get\+Smoothing\+Param}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{get\+Smoothing\+Param(\+State\+I\+D state)}{getSmoothingParam(StateID state)}}]{\setlength{\rightskip}{0pt plus 5cm}double Control\+Module\+::get\+Smoothing\+Param (
+\begin{DoxyParamCaption}
+\item[{{\bf State\+ID}}]{state}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_a431dca55f4fcc7935138955183fb5be6}{}\label{classControlModule_a431dca55f4fcc7935138955183fb5be6}
+\index{Control\+Module@{Control\+Module}!reset\+Starting\+Parameters@{reset\+Starting\+Parameters}}
+\index{reset\+Starting\+Parameters@{reset\+Starting\+Parameters}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{reset\+Starting\+Parameters()}{resetStartingParameters()}}]{\setlength{\rightskip}{0pt plus 5cm}void Control\+Module\+::reset\+Starting\+Parameters (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_a19b05cacdc40d708d14c00c5a41142b5}{}\label{classControlModule_a19b05cacdc40d708d14c00c5a41142b5}
+\index{Control\+Module@{Control\+Module}!set\+Algorithm\+Desired\+Setpoint@{set\+Algorithm\+Desired\+Setpoint}}
+\index{set\+Algorithm\+Desired\+Setpoint@{set\+Algorithm\+Desired\+Setpoint}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{set\+Algorithm\+Desired\+Setpoint(\+State\+I\+D state, double setpoint)}{setAlgorithmDesiredSetpoint(StateID state, double setpoint)}}]{\setlength{\rightskip}{0pt plus 5cm}void Control\+Module\+::set\+Algorithm\+Desired\+Setpoint (
+\begin{DoxyParamCaption}
+\item[{{\bf State\+ID}}]{state, }
+\item[{double}]{setpoint}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_a02cb4c34e322b292577cb31182ea52a4}{}\label{classControlModule_a02cb4c34e322b292577cb31182ea52a4}
+\index{Control\+Module@{Control\+Module}!set\+Control\+State\+Machine@{set\+Control\+State\+Machine}}
+\index{set\+Control\+State\+Machine@{set\+Control\+State\+Machine}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{set\+Control\+State\+Machine(\+Control\+Algorithm $\ast$state\+\_\+machine, State\+I\+D starting\+\_\+state)}{setControlStateMachine(ControlAlgorithm *state_machine, StateID starting_state)}}]{\setlength{\rightskip}{0pt plus 5cm}void Control\+Module\+::set\+Control\+State\+Machine (
+\begin{DoxyParamCaption}
+\item[{{\bf Control\+Algorithm} $\ast$}]{state\+\_\+machine, }
+\item[{{\bf State\+ID}}]{starting\+\_\+state}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_aaefdbef057adda0ee6ac86225b974736}{}\label{classControlModule_aaefdbef057adda0ee6ac86225b974736}
+\index{Control\+Module@{Control\+Module}!set\+Desired\+Setpoint@{set\+Desired\+Setpoint}}
+\index{set\+Desired\+Setpoint@{set\+Desired\+Setpoint}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{set\+Desired\+Setpoint(double setpoint)}{setDesiredSetpoint(double setpoint)}}]{\setlength{\rightskip}{0pt plus 5cm}void Control\+Module\+::set\+Desired\+Setpoint (
+\begin{DoxyParamCaption}
+\item[{double}]{setpoint}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_abe605807dc1f58e4bdea40e49f6f3b12}{}\label{classControlModule_abe605807dc1f58e4bdea40e49f6f3b12}
+\index{Control\+Module@{Control\+Module}!set\+Kf@{set\+Kf}}
+\index{set\+Kf@{set\+Kf}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{set\+Kf(double kf)}{setKf(double kf)}}]{\setlength{\rightskip}{0pt plus 5cm}void Control\+Module\+::set\+Kf (
+\begin{DoxyParamCaption}
+\item[{double}]{kf}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_af2b5bb6c70236be1b00b43c0c357f07d}{}\label{classControlModule_af2b5bb6c70236be1b00b43c0c357f07d}
+\index{Control\+Module@{Control\+Module}!set\+Pid@{set\+Pid}}
+\index{set\+Pid@{set\+Pid}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{set\+Pid(double p, double i, double d)}{setPid(double p, double i, double d)}}]{\setlength{\rightskip}{0pt plus 5cm}void Control\+Module\+::set\+Pid (
+\begin{DoxyParamCaption}
+\item[{double}]{p, }
+\item[{double}]{i, }
+\item[{double}]{d}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_a8bab02465545b89adb46b6ccc42ead81}{}\label{classControlModule_a8bab02465545b89adb46b6ccc42ead81}
+\index{Control\+Module@{Control\+Module}!set\+Smoothing\+Param@{set\+Smoothing\+Param}}
+\index{set\+Smoothing\+Param@{set\+Smoothing\+Param}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{set\+Smoothing\+Param(\+State\+I\+D state, double param)}{setSmoothingParam(StateID state, double param)}}]{\setlength{\rightskip}{0pt plus 5cm}void Control\+Module\+::set\+Smoothing\+Param (
+\begin{DoxyParamCaption}
+\item[{{\bf State\+ID}}]{state, }
+\item[{double}]{param}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_a5ebcc624316224590d8cf7856b7283a8}{}\label{classControlModule_a5ebcc624316224590d8cf7856b7283a8}
+\index{Control\+Module@{Control\+Module}!set\+To\+Zero@{set\+To\+Zero}}
+\index{set\+To\+Zero@{set\+To\+Zero}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{set\+To\+Zero()}{setToZero()}}]{\setlength{\rightskip}{0pt plus 5cm}void Control\+Module\+::set\+To\+Zero (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_a12080a39a838b7d527d9c0908483cd22}{}\label{classControlModule_a12080a39a838b7d527d9c0908483cd22}
+\index{Control\+Module@{Control\+Module}!update\+K\+F\+P\+I\+D\+Error@{update\+K\+F\+P\+I\+D\+Error}}
+\index{update\+K\+F\+P\+I\+D\+Error@{update\+K\+F\+P\+I\+D\+Error}!Control\+Module@{Control\+Module}}
+\subsubsection[{\texorpdfstring{update\+K\+F\+P\+I\+D\+Error(double torque)}{updateKFPIDError(double torque)}}]{\setlength{\rightskip}{0pt plus 5cm}void Control\+Module\+::update\+K\+F\+P\+I\+D\+Error (
+\begin{DoxyParamCaption}
+\item[{double}]{torque}
+\end{DoxyParamCaption}
+)}\hypertarget{classControlModule_a5b296b6354c48e2252e89c83b2399475}{}\label{classControlModule_a5b296b6354c48e2252e89c83b2399475}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Control__Module_8hpp}{Control\+\_\+\+Module.\+hpp}\item 
+\hyperlink{Control__Module_8cpp}{Control\+\_\+\+Module.\+cpp}\end{DoxyCompactItemize}

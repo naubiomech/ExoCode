@@ -1,0 +1,20 @@
+<map id="FSR.hpp" name="FSR.hpp">
+<area shape="rect" id="node2" href="$Leg_8hpp.html" title="Leg.hpp" alt="" coords="346,80,414,107"/>
+<area shape="rect" id="node8" href="$main_8cpp.html" title="main.cpp" alt="" coords="745,379,820,405"/>
+<area shape="rect" id="node10" href="$ExoBuilder_8cpp.html" title="ExoBuilder.cpp" alt="" coords="51,379,162,405"/>
+<area shape="rect" id="node19" href="$FSR_8cpp.html" title="FSR.cpp" alt="" coords="980,80,1055,107"/>
+<area shape="rect" id="node3" href="$Exoskeleton_8hpp.html" title="Exoskeleton.hpp" alt="" coords="95,155,214,181"/>
+<area shape="rect" id="node11" href="$Exoskeleton_8cpp.html" title="Exoskeleton.cpp" alt="" coords="145,304,263,331"/>
+<area shape="rect" id="node16" href="$Leg_8cpp.html" title="Leg.cpp" alt="" coords="238,155,306,181"/>
+<area shape="rect" id="node17" href="$Message_8cpp.html" title="Message.cpp" alt="" coords="330,155,430,181"/>
+<area shape="rect" id="node18" href="$States_8cpp.html" title="States.cpp" alt="" coords="455,155,540,181"/>
+<area shape="rect" id="node4" href="$Board_8hpp.html" title="Board.hpp" alt="" coords="574,229,655,256"/>
+<area shape="rect" id="node9" href="$ExoBuilder_8hpp.html" title="ExoBuilder.hpp" alt="" coords="339,304,450,331"/>
+<area shape="rect" id="node14" href="$Commands_8cpp.html" title="Commands.cpp" alt="" coords="195,229,309,256"/>
+<area shape="rect" id="node15" href="$Transceiver_8cpp.html" title="Transceiver.cpp" alt="" coords="333,229,448,256"/>
+<area shape="rect" id="node5" href="$Board_8cpp.html" title="Board.cpp" alt="" coords="474,304,555,331"/>
+<area shape="rect" id="node6" href="$BoardBuilder_8hpp.html" title="BoardBuilder.hpp" alt="" coords="783,304,905,331"/>
+<area shape="rect" id="node12" href="$Joint_8cpp.html" title="Joint.cpp" alt="" coords="580,304,655,331"/>
+<area shape="rect" id="node13" href="$Motor_8cpp.html" title="Motor.cpp" alt="" coords="679,304,759,331"/>
+<area shape="rect" id="node7" href="$BoardBuilder_8cpp.html" title="BoardBuilder.cpp" alt="" coords="845,379,966,405"/>
+</map>

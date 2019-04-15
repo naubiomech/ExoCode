@@ -1,0 +1,201 @@
+\hypertarget{classMatlabTransceiver}{}\section{Matlab\+Transceiver Class Reference}
+\label{classMatlabTransceiver}\index{Matlab\+Transceiver@{Matlab\+Transceiver}}
+
+
+{\ttfamily \#include $<$Transceiver.\+hpp$>$}
+
+
+
+Inheritance diagram for Matlab\+Transceiver\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=177pt]{classMatlabTransceiver__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Matlab\+Transceiver\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=212pt]{classMatlabTransceiver__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classMatlabTransceiver_ae3855410a8eefe030216c091213b93e1}{Matlab\+Transceiver} (\hyperlink{classTxPort}{Tx\+Port} $\ast$tx, \hyperlink{classRxPort}{Rx\+Port} $\ast$rx)
+\item 
+\hyperlink{classMatlabTransceiver_a0e4f005ea7c7248f554dd59196dc6bff}{Matlab\+Transceiver} (\hyperlink{classSoftwareSerial}{Software\+Serial} $\ast$serial)
+\item 
+\hyperlink{classMatlabTransceiver_a2f0913eafbbbc54e962a9d0a439be83c}{$\sim$\+Matlab\+Transceiver} ()
+\item 
+virtual bool \hyperlink{classMatlabTransceiver_aab65545ebfde63124bf8a9da08087a1a}{data\+Available} ()
+\item 
+virtual void \hyperlink{classMatlabTransceiver_a34cd6eceff55dc5b05cfa8a8a61817c8}{clear} ()
+\item 
+virtual void \hyperlink{classMatlabTransceiver_a4983e5511e1aa32bedc2e1c5e4a0a015}{send\+Header} ()
+\item 
+virtual void \hyperlink{classMatlabTransceiver_a6b2525e36d52c55c23e67b4bfc5220f3}{send\+Data} (float $\ast$data, unsigned int bytes\+\_\+to\+\_\+send)
+\item 
+virtual void \hyperlink{classMatlabTransceiver_ad3ec15346a7e93d65ea2da6f7cda15ef}{send\+Command} (\hyperlink{Command__Codes_8hpp_a59210a0ae0b431bbcaba126ab960fd62}{Command\+Code} code)
+\item 
+virtual void \hyperlink{classMatlabTransceiver_a578396f6e3596252f778f287338d05e6}{send\+Footer} ()
+\item 
+virtual bool \hyperlink{classMatlabTransceiver_a1bc60b8fdb7ae0447c91a92947e678fa}{receive\+Header} ()
+\item 
+virtual void \hyperlink{classMatlabTransceiver_a42551825e635b70c0db97a30f09fd70a}{receive\+Data} (double $\ast$data\+\_\+output, unsigned int bytes\+\_\+expected)
+\item 
+virtual \hyperlink{Command__Codes_8hpp_a59210a0ae0b431bbcaba126ab960fd62}{Command\+Code} \hyperlink{classMatlabTransceiver_aed9f05e71df966ec2840750e4f6e76c7}{receive\+Command} ()
+\item 
+virtual bool \hyperlink{classMatlabTransceiver_a9089a8e457ffab33eb17ecec2d76152b}{receive\+Footer} ()
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\subsubsection[{\texorpdfstring{Matlab\+Transceiver(\+Tx\+Port $\ast$tx, Rx\+Port $\ast$rx)}{MatlabTransceiver(TxPort *tx, RxPort *rx)}}]{\setlength{\rightskip}{0pt plus 5cm}Matlab\+Transceiver\+::\+Matlab\+Transceiver (
+\begin{DoxyParamCaption}
+\item[{{\bf Tx\+Port} $\ast$}]{tx, }
+\item[{{\bf Rx\+Port} $\ast$}]{rx}
+\end{DoxyParamCaption}
+)}\hypertarget{classMatlabTransceiver_ae3855410a8eefe030216c091213b93e1}{}\label{classMatlabTransceiver_ae3855410a8eefe030216c091213b93e1}
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\subsubsection[{\texorpdfstring{Matlab\+Transceiver(\+Software\+Serial $\ast$serial)}{MatlabTransceiver(SoftwareSerial *serial)}}]{\setlength{\rightskip}{0pt plus 5cm}Matlab\+Transceiver\+::\+Matlab\+Transceiver (
+\begin{DoxyParamCaption}
+\item[{{\bf Software\+Serial} $\ast$}]{serial}
+\end{DoxyParamCaption}
+)}\hypertarget{classMatlabTransceiver_a0e4f005ea7c7248f554dd59196dc6bff}{}\label{classMatlabTransceiver_a0e4f005ea7c7248f554dd59196dc6bff}
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!````~Matlab\+Transceiver@{$\sim$\+Matlab\+Transceiver}}
+\index{````~Matlab\+Transceiver@{$\sim$\+Matlab\+Transceiver}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\subsubsection[{\texorpdfstring{$\sim$\+Matlab\+Transceiver()}{~MatlabTransceiver()}}]{\setlength{\rightskip}{0pt plus 5cm}Matlab\+Transceiver\+::$\sim$\+Matlab\+Transceiver (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classMatlabTransceiver_a2f0913eafbbbc54e962a9d0a439be83c}{}\label{classMatlabTransceiver_a2f0913eafbbbc54e962a9d0a439be83c}
+
+
+\subsection{Member Function Documentation}
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!clear@{clear}}
+\index{clear@{clear}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\subsubsection[{\texorpdfstring{clear()}{clear()}}]{\setlength{\rightskip}{0pt plus 5cm}void Matlab\+Transceiver\+::clear (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMatlabTransceiver_a34cd6eceff55dc5b05cfa8a8a61817c8}{}\label{classMatlabTransceiver_a34cd6eceff55dc5b05cfa8a8a61817c8}
+
+
+Implements \hyperlink{classTransceiver_a86e4f870849c74d7c67e4a559e5e9d10}{Transceiver}.
+
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!data\+Available@{data\+Available}}
+\index{data\+Available@{data\+Available}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\subsubsection[{\texorpdfstring{data\+Available()}{dataAvailable()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Matlab\+Transceiver\+::data\+Available (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMatlabTransceiver_aab65545ebfde63124bf8a9da08087a1a}{}\label{classMatlabTransceiver_aab65545ebfde63124bf8a9da08087a1a}
+
+
+Implements \hyperlink{classTransceiver_aece8d7151d91e85bc533441e5caed25a}{Transceiver}.
+
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!receive\+Command@{receive\+Command}}
+\index{receive\+Command@{receive\+Command}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\subsubsection[{\texorpdfstring{receive\+Command()}{receiveCommand()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Command\+Code} Matlab\+Transceiver\+::receive\+Command (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMatlabTransceiver_aed9f05e71df966ec2840750e4f6e76c7}{}\label{classMatlabTransceiver_aed9f05e71df966ec2840750e4f6e76c7}
+
+
+Implements \hyperlink{classTransceiver_a59c31f15c1ad4188b749778d543b491e}{Transceiver}.
+
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!receive\+Data@{receive\+Data}}
+\index{receive\+Data@{receive\+Data}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\subsubsection[{\texorpdfstring{receive\+Data(double $\ast$data\+\_\+output, unsigned int bytes\+\_\+expected)}{receiveData(double *data_output, unsigned int bytes_expected)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matlab\+Transceiver\+::receive\+Data (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{data\+\_\+output, }
+\item[{unsigned int}]{bytes\+\_\+expected}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMatlabTransceiver_a42551825e635b70c0db97a30f09fd70a}{}\label{classMatlabTransceiver_a42551825e635b70c0db97a30f09fd70a}
+
+
+Implements \hyperlink{classTransceiver_a4513225fae13cf3ac2de65e951f8fc76}{Transceiver}.
+
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!receive\+Footer@{receive\+Footer}}
+\index{receive\+Footer@{receive\+Footer}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\subsubsection[{\texorpdfstring{receive\+Footer()}{receiveFooter()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Matlab\+Transceiver\+::receive\+Footer (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMatlabTransceiver_a9089a8e457ffab33eb17ecec2d76152b}{}\label{classMatlabTransceiver_a9089a8e457ffab33eb17ecec2d76152b}
+
+
+Implements \hyperlink{classTransceiver_af5c8b793da6d9af8a2e7da1a235a1883}{Transceiver}.
+
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!receive\+Header@{receive\+Header}}
+\index{receive\+Header@{receive\+Header}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\subsubsection[{\texorpdfstring{receive\+Header()}{receiveHeader()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Matlab\+Transceiver\+::receive\+Header (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMatlabTransceiver_a1bc60b8fdb7ae0447c91a92947e678fa}{}\label{classMatlabTransceiver_a1bc60b8fdb7ae0447c91a92947e678fa}
+
+
+Implements \hyperlink{classTransceiver_acf52c3cc19b7b2b984d11a4f0f281353}{Transceiver}.
+
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!send\+Command@{send\+Command}}
+\index{send\+Command@{send\+Command}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\subsubsection[{\texorpdfstring{send\+Command(\+Command\+Code code)}{sendCommand(CommandCode code)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matlab\+Transceiver\+::send\+Command (
+\begin{DoxyParamCaption}
+\item[{{\bf Command\+Code}}]{code}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMatlabTransceiver_ad3ec15346a7e93d65ea2da6f7cda15ef}{}\label{classMatlabTransceiver_ad3ec15346a7e93d65ea2da6f7cda15ef}
+
+
+Implements \hyperlink{classTransceiver_ac44613ebe7fb8206a9dcdf5b2c359619}{Transceiver}.
+
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!send\+Data@{send\+Data}}
+\index{send\+Data@{send\+Data}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\subsubsection[{\texorpdfstring{send\+Data(float $\ast$data, unsigned int bytes\+\_\+to\+\_\+send)}{sendData(float *data, unsigned int bytes_to_send)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matlab\+Transceiver\+::send\+Data (
+\begin{DoxyParamCaption}
+\item[{float $\ast$}]{data, }
+\item[{unsigned int}]{bytes\+\_\+to\+\_\+send}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMatlabTransceiver_a6b2525e36d52c55c23e67b4bfc5220f3}{}\label{classMatlabTransceiver_a6b2525e36d52c55c23e67b4bfc5220f3}
+
+
+Implements \hyperlink{classTransceiver_a597e59205417428746fd2f5ec9888b29}{Transceiver}.
+
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!send\+Footer@{send\+Footer}}
+\index{send\+Footer@{send\+Footer}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\subsubsection[{\texorpdfstring{send\+Footer()}{sendFooter()}}]{\setlength{\rightskip}{0pt plus 5cm}void Matlab\+Transceiver\+::send\+Footer (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMatlabTransceiver_a578396f6e3596252f778f287338d05e6}{}\label{classMatlabTransceiver_a578396f6e3596252f778f287338d05e6}
+
+
+Implements \hyperlink{classTransceiver_aca78daf93712abb87b88d347744e53a9}{Transceiver}.
+
+\index{Matlab\+Transceiver@{Matlab\+Transceiver}!send\+Header@{send\+Header}}
+\index{send\+Header@{send\+Header}!Matlab\+Transceiver@{Matlab\+Transceiver}}
+\subsubsection[{\texorpdfstring{send\+Header()}{sendHeader()}}]{\setlength{\rightskip}{0pt plus 5cm}void Matlab\+Transceiver\+::send\+Header (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMatlabTransceiver_a4983e5511e1aa32bedc2e1c5e4a0a015}{}\label{classMatlabTransceiver_a4983e5511e1aa32bedc2e1c5e4a0a015}
+
+
+Implements \hyperlink{classTransceiver_ac4c790e133ca87798ea38a35d0396105}{Transceiver}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Transceiver_8hpp}{Transceiver.\+hpp}\item 
+\hyperlink{Transceiver_8cpp}{Transceiver.\+cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,116 @@
+\hypertarget{classConcreteCommandFactory}{}\section{Concrete\+Command\+Factory Class Reference}
+\label{classConcreteCommandFactory}\index{Concrete\+Command\+Factory@{Concrete\+Command\+Factory}}
+
+
+{\ttfamily \#include $<$Commands.\+hpp$>$}
+
+
+
+Inheritance diagram for Concrete\+Command\+Factory\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=214pt]{classConcreteCommandFactory__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Concrete\+Command\+Factory\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=214pt]{classConcreteCommandFactory__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classConcreteCommandFactory_a03b4c73e1f316aad69c80eb9d6a0b542}{Concrete\+Command\+Factory} ()
+\item 
+\hyperlink{classConcreteCommandFactory_a3b01f93525176341f57a5869964576d3}{$\sim$\+Concrete\+Command\+Factory} ()
+\item 
+virtual \hyperlink{classCommand}{Command}$<$ \hyperlink{classExoskeleton}{Exoskeleton} $>$ $\ast$ \hyperlink{classConcreteCommandFactory_a6f7fd417f6959bd0f573ac0127b32631}{create\+Exo\+Command} (\hyperlink{Commands_8hpp_a4a0419b573bf683fef9162331e6ec74e}{Exo\+Command\+ID} id)
+\item 
+virtual \hyperlink{classCommand}{Command}$<$ \hyperlink{classJoint}{Joint} $>$ $\ast$ \hyperlink{classConcreteCommandFactory_a7ea1fcf9dd01008772c74f1d0fda8253}{create\+Joint\+Command} (\hyperlink{Commands_8hpp_a350356b969551ce1a95947b3cec75d56}{Joint\+Command\+ID} id, \hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} state, double value)
+\item 
+virtual \hyperlink{classCommand}{Command}$<$ \hyperlink{classJoint}{Joint} $>$ $\ast$ \hyperlink{classConcreteCommandFactory_a638c86c1d6882d74d1bd53a028235c63}{create\+Joint\+Command} (\hyperlink{Commands_8hpp_a350356b969551ce1a95947b3cec75d56}{Joint\+Command\+ID} id, double, double, double)
+\item 
+virtual \hyperlink{classCommand}{Command}$<$ \hyperlink{classJoint}{Joint} $>$ $\ast$ \hyperlink{classConcreteCommandFactory_a06e6a5295facfa59451db55af04fc320}{create\+Joint\+Command} (\hyperlink{Commands_8hpp_a350356b969551ce1a95947b3cec75d56}{Joint\+Command\+ID} id, double)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Concrete\+Command\+Factory@{Concrete\+Command\+Factory}!Concrete\+Command\+Factory@{Concrete\+Command\+Factory}}
+\index{Concrete\+Command\+Factory@{Concrete\+Command\+Factory}!Concrete\+Command\+Factory@{Concrete\+Command\+Factory}}
+\subsubsection[{\texorpdfstring{Concrete\+Command\+Factory()}{ConcreteCommandFactory()}}]{\setlength{\rightskip}{0pt plus 5cm}Concrete\+Command\+Factory\+::\+Concrete\+Command\+Factory (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classConcreteCommandFactory_a03b4c73e1f316aad69c80eb9d6a0b542}{}\label{classConcreteCommandFactory_a03b4c73e1f316aad69c80eb9d6a0b542}
+\index{Concrete\+Command\+Factory@{Concrete\+Command\+Factory}!````~Concrete\+Command\+Factory@{$\sim$\+Concrete\+Command\+Factory}}
+\index{````~Concrete\+Command\+Factory@{$\sim$\+Concrete\+Command\+Factory}!Concrete\+Command\+Factory@{Concrete\+Command\+Factory}}
+\subsubsection[{\texorpdfstring{$\sim$\+Concrete\+Command\+Factory()}{~ConcreteCommandFactory()}}]{\setlength{\rightskip}{0pt plus 5cm}Concrete\+Command\+Factory\+::$\sim$\+Concrete\+Command\+Factory (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classConcreteCommandFactory_a3b01f93525176341f57a5869964576d3}{}\label{classConcreteCommandFactory_a3b01f93525176341f57a5869964576d3}
+
+
+\subsection{Member Function Documentation}
+\index{Concrete\+Command\+Factory@{Concrete\+Command\+Factory}!create\+Exo\+Command@{create\+Exo\+Command}}
+\index{create\+Exo\+Command@{create\+Exo\+Command}!Concrete\+Command\+Factory@{Concrete\+Command\+Factory}}
+\subsubsection[{\texorpdfstring{create\+Exo\+Command(\+Exo\+Command\+I\+D id)}{createExoCommand(ExoCommandID id)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Command}$<$ {\bf Exoskeleton} $>$ $\ast$ Concrete\+Command\+Factory\+::create\+Exo\+Command (
+\begin{DoxyParamCaption}
+\item[{{\bf Exo\+Command\+ID}}]{id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classConcreteCommandFactory_a6f7fd417f6959bd0f573ac0127b32631}{}\label{classConcreteCommandFactory_a6f7fd417f6959bd0f573ac0127b32631}
+
+
+Implements \hyperlink{classCommandFactory_a9cd75aee1d86b52a0c5da5abada1855e}{Command\+Factory}.
+
+\index{Concrete\+Command\+Factory@{Concrete\+Command\+Factory}!create\+Joint\+Command@{create\+Joint\+Command}}
+\index{create\+Joint\+Command@{create\+Joint\+Command}!Concrete\+Command\+Factory@{Concrete\+Command\+Factory}}
+\subsubsection[{\texorpdfstring{create\+Joint\+Command(\+Joint\+Command\+I\+D id, State\+I\+D state, double value)}{createJointCommand(JointCommandID id, StateID state, double value)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Command}$<$ {\bf Joint} $>$ $\ast$ Concrete\+Command\+Factory\+::create\+Joint\+Command (
+\begin{DoxyParamCaption}
+\item[{{\bf Joint\+Command\+ID}}]{id, }
+\item[{{\bf State\+ID}}]{state, }
+\item[{double}]{value}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classConcreteCommandFactory_a7ea1fcf9dd01008772c74f1d0fda8253}{}\label{classConcreteCommandFactory_a7ea1fcf9dd01008772c74f1d0fda8253}
+
+
+Implements \hyperlink{classCommandFactory_acdc303aaceaf41b5f53d92e7379d851e}{Command\+Factory}.
+
+\index{Concrete\+Command\+Factory@{Concrete\+Command\+Factory}!create\+Joint\+Command@{create\+Joint\+Command}}
+\index{create\+Joint\+Command@{create\+Joint\+Command}!Concrete\+Command\+Factory@{Concrete\+Command\+Factory}}
+\subsubsection[{\texorpdfstring{create\+Joint\+Command(\+Joint\+Command\+I\+D id, double, double, double)}{createJointCommand(JointCommandID id, double, double, double)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Command}$<$ {\bf Joint} $>$ $\ast$ Concrete\+Command\+Factory\+::create\+Joint\+Command (
+\begin{DoxyParamCaption}
+\item[{{\bf Joint\+Command\+ID}}]{id, }
+\item[{double}]{v1, }
+\item[{double}]{v2, }
+\item[{double}]{v3}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classConcreteCommandFactory_a638c86c1d6882d74d1bd53a028235c63}{}\label{classConcreteCommandFactory_a638c86c1d6882d74d1bd53a028235c63}
+
+
+Implements \hyperlink{classCommandFactory_af1813c30ede407362ea395c978f24963}{Command\+Factory}.
+
+\index{Concrete\+Command\+Factory@{Concrete\+Command\+Factory}!create\+Joint\+Command@{create\+Joint\+Command}}
+\index{create\+Joint\+Command@{create\+Joint\+Command}!Concrete\+Command\+Factory@{Concrete\+Command\+Factory}}
+\subsubsection[{\texorpdfstring{create\+Joint\+Command(\+Joint\+Command\+I\+D id, double)}{createJointCommand(JointCommandID id, double)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Command}$<$ {\bf Joint} $>$ $\ast$ Concrete\+Command\+Factory\+::create\+Joint\+Command (
+\begin{DoxyParamCaption}
+\item[{{\bf Joint\+Command\+ID}}]{id, }
+\item[{double}]{value}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classConcreteCommandFactory_a06e6a5295facfa59451db55af04fc320}{}\label{classConcreteCommandFactory_a06e6a5295facfa59451db55af04fc320}
+
+
+Implements \hyperlink{classCommandFactory_accade06a34e2d9424ec9765543617e39}{Command\+Factory}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Commands_8hpp}{Commands.\+hpp}\item 
+\hyperlink{Commands_8cpp}{Commands.\+cpp}\end{DoxyCompactItemize}

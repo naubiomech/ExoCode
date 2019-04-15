@@ -1,0 +1,102 @@
+\hypertarget{classBalanceControl}{}\section{Balance\+Control Class Reference}
+\label{classBalanceControl}\index{Balance\+Control@{Balance\+Control}}
+
+
+{\ttfamily \#include $<$Control\+\_\+\+Algorithms.\+hpp$>$}
+
+
+
+Inheritance diagram for Balance\+Control\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=169pt]{classBalanceControl__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Balance\+Control\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=169pt]{classBalanceControl__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classBalanceControl_ac7ee7f2242e22ec7152fc2c8ff77c6a2}{Balance\+Control} (\hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} state\+\_\+id)
+\item 
+double \hyperlink{classBalanceControl_ab7bc00e4dea77cf34c02ef1f4bb2feec}{get\+Setpoint} (\hyperlink{classSensorReport}{Sensor\+Report} $\ast$report)
+\item 
+\hyperlink{Control__Algorithms_8hpp_afda28772870dd56f60cd7a301337392c}{Control\+Algorithm\+Type} \hyperlink{classBalanceControl_a8314d9b67c800b7e0ca2be07ae7e1343}{get\+Type} ()
+\item 
+double \hyperlink{classBalanceControl_a0ba1c9cd74a877eb0f748325763c02e4}{get\+Shaping\+Iterations} ()
+\item 
+bool \hyperlink{classBalanceControl_a9761db9b15bb15e6d2f19f6d2243c888}{use\+Shaping\+Function} ()
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Balance\+Control@{Balance\+Control}!Balance\+Control@{Balance\+Control}}
+\index{Balance\+Control@{Balance\+Control}!Balance\+Control@{Balance\+Control}}
+\subsubsection[{\texorpdfstring{Balance\+Control(\+State\+I\+D state\+\_\+id)}{BalanceControl(StateID state_id)}}]{\setlength{\rightskip}{0pt plus 5cm}Balance\+Control\+::\+Balance\+Control (
+\begin{DoxyParamCaption}
+\item[{{\bf State\+ID}}]{state\+\_\+id}
+\end{DoxyParamCaption}
+)}\hypertarget{classBalanceControl_ac7ee7f2242e22ec7152fc2c8ff77c6a2}{}\label{classBalanceControl_ac7ee7f2242e22ec7152fc2c8ff77c6a2}
+
+
+\subsection{Member Function Documentation}
+\index{Balance\+Control@{Balance\+Control}!get\+Setpoint@{get\+Setpoint}}
+\index{get\+Setpoint@{get\+Setpoint}!Balance\+Control@{Balance\+Control}}
+\subsubsection[{\texorpdfstring{get\+Setpoint(\+Sensor\+Report $\ast$report)}{getSetpoint(SensorReport *report)}}]{\setlength{\rightskip}{0pt plus 5cm}double Balance\+Control\+::get\+Setpoint (
+\begin{DoxyParamCaption}
+\item[{{\bf Sensor\+Report} $\ast$}]{report}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classBalanceControl_ab7bc00e4dea77cf34c02ef1f4bb2feec}{}\label{classBalanceControl_ab7bc00e4dea77cf34c02ef1f4bb2feec}
+
+
+Implements \hyperlink{classControlAlgorithm_a038ebc5f26c3ae460f04eaf7f0dc0e29}{Control\+Algorithm}.
+
+\index{Balance\+Control@{Balance\+Control}!get\+Shaping\+Iterations@{get\+Shaping\+Iterations}}
+\index{get\+Shaping\+Iterations@{get\+Shaping\+Iterations}!Balance\+Control@{Balance\+Control}}
+\subsubsection[{\texorpdfstring{get\+Shaping\+Iterations()}{getShapingIterations()}}]{\setlength{\rightskip}{0pt plus 5cm}double Balance\+Control\+::get\+Shaping\+Iterations (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classBalanceControl_a0ba1c9cd74a877eb0f748325763c02e4}{}\label{classBalanceControl_a0ba1c9cd74a877eb0f748325763c02e4}
+
+
+Reimplemented from \hyperlink{classControlAlgorithm_a5fd58cfd5b601dc4556170bb620ea7f5}{Control\+Algorithm}.
+
+\index{Balance\+Control@{Balance\+Control}!get\+Type@{get\+Type}}
+\index{get\+Type@{get\+Type}!Balance\+Control@{Balance\+Control}}
+\subsubsection[{\texorpdfstring{get\+Type()}{getType()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Control\+Algorithm\+Type} Balance\+Control\+::get\+Type (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classBalanceControl_a8314d9b67c800b7e0ca2be07ae7e1343}{}\label{classBalanceControl_a8314d9b67c800b7e0ca2be07ae7e1343}
+
+
+Implements \hyperlink{classControlAlgorithm_a432f51282dfe836befccdecaaa9741c5}{Control\+Algorithm}.
+
+\index{Balance\+Control@{Balance\+Control}!use\+Shaping\+Function@{use\+Shaping\+Function}}
+\index{use\+Shaping\+Function@{use\+Shaping\+Function}!Balance\+Control@{Balance\+Control}}
+\subsubsection[{\texorpdfstring{use\+Shaping\+Function()}{useShapingFunction()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Balance\+Control\+::use\+Shaping\+Function (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classBalanceControl_a9761db9b15bb15e6d2f19f6d2243c888}{}\label{classBalanceControl_a9761db9b15bb15e6d2f19f6d2243c888}
+
+
+Implements \hyperlink{classControlAlgorithm_ac9e2b1e3677e4ace7071c540fe035ae4}{Control\+Algorithm}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Control__Algorithms_8hpp}{Control\+\_\+\+Algorithms.\+hpp}\item 
+\hyperlink{Control__Algorithms_8cpp}{Control\+\_\+\+Algorithms.\+cpp}\end{DoxyCompactItemize}

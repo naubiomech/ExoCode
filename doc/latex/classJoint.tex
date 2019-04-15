@@ -1,0 +1,280 @@
+\hypertarget{classJoint}{}\section{Joint Class Reference}
+\label{classJoint}\index{Joint@{Joint}}
+
+
+{\ttfamily \#include $<$Joint.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classJoint_a2e5c866dcb711094af82278e4d44d8b2}{Joint} (\hyperlink{classControlModule}{Control\+Module} $\ast$controller, \hyperlink{classMotor}{Motor} $\ast$motor, \hyperlink{classTorqueSensor}{Torque\+Sensor} $\ast$torque\+\_\+sensor, \hyperlink{classPot}{Pot} $\ast$pot)
+\item 
+\hyperlink{classJoint_a42aca0bd1832136984923713127c28f1}{$\sim$\+Joint} ()
+\item 
+void \hyperlink{classJoint_a33729eeab4588211b7cbe753fb049d59}{process\+Message} (\hyperlink{classJointMessage}{Joint\+Message} $\ast$msg)
+\item 
+\hyperlink{classJointReport}{Joint\+Report} $\ast$ \hyperlink{classJoint_a65c605e61d6e1998d71a3580896ca523}{generate\+Report} ()
+\item 
+void \hyperlink{classJoint_aba8104e0e6b09058c7a744a805bbfa7f}{fill\+Report} (\hyperlink{classJointReport}{Joint\+Report} $\ast$report)
+\item 
+void \hyperlink{classJoint_ae1e7cbd5ec6ff5f8fd8a917b154a0a68}{set\+Desired\+Setpoint} (\hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} state, double setpoint)
+\item 
+double \hyperlink{classJoint_a69a208e0b5e673d335c06d943534724d}{get\+Desired\+Setpoint} (\hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} state)
+\item 
+void \hyperlink{classJoint_af9071b64d69bd951e215f0cf4af7b919}{measure\+Sensors} ()
+\item 
+double \hyperlink{classJoint_ae0204ef60dd8506dbdb94a65faa188fb}{get\+Angle} ()
+\item 
+bool \hyperlink{classJoint_a7fb5248914eb948e6addb4e1398c0819}{has\+Errored} ()
+\item 
+bool \hyperlink{classJoint_a47129449e8b008732e28b4bb0bc52643}{apply\+Torque} ()
+\item 
+void \hyperlink{classJoint_aa6964b1dec64a9c76b7a5a082f700493}{set\+To\+Zero} ()
+\item 
+void \hyperlink{classJoint_a29e0a32427976e087e35ea881fb58449}{reset\+Starting\+Parameters} ()
+\item 
+void \hyperlink{classJoint_ad39647a7d64b22dac562fa977344ecac}{adjust\+Shaping\+For\+Time} (double planter\+Time)
+\item 
+void \hyperlink{classJoint_abed0afe032168f8f554c78e7f82a5394}{update\+Motor\+Output} (\hyperlink{classSensorReport}{Sensor\+Report} $\ast$report)
+\item 
+void \hyperlink{classJoint_a6a4d31e980f795d5b951323ac5fd0626}{change\+Control} (\hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} state\+\_\+id)
+\item 
+void \hyperlink{classJoint_a012a6a79e4ef4951f033b8bdbe49e93d}{apply\+Auto\+KF} ()
+\item 
+double \hyperlink{classJoint_a75111a7b8091c6ca5f0788704a7c1b1c}{get\+Torque} ()
+\item 
+void \hyperlink{classJoint_af1397d8f10d7e4509b14d5291d1c1d11}{set\+Sign} (int sign)
+\item 
+void \hyperlink{classJoint_ae6a96eb43fcdf599bf62fed7f8a09aa2}{set\+Pid} (double \hyperlink{Parameters_8hpp_ad1ae3be971981842496c18dabdd2e4c1}{p}, double i, double d)
+\item 
+void \hyperlink{classJoint_a1b138e33fe58097b42f43ade71bf8f17}{get\+Pid} (double $\ast$pid)
+\item 
+double \hyperlink{classJoint_a6dc498ec465f965d87533a34ee9b62d4}{get\+Kf} ()
+\item 
+void \hyperlink{classJoint_a99cbfdb591d588f8f8f018385f45a52c}{set\+Kf} (double kf)
+\item 
+double \hyperlink{classJoint_ac65cae6a80c68689ecc1e1c23c1f0aca}{get\+Smoothing\+Param} (\hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} state)
+\item 
+void \hyperlink{classJoint_a582b21a00df5a1a5079b3bb8ba8e8af0}{set\+Smoothing\+Param} (\hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} state, double param)
+\item 
+void \hyperlink{classJoint_ab8b007027b56b90bdf0488926f63ddf6}{start\+Torque\+Calibration} ()
+\item 
+void \hyperlink{classJoint_a393c16f6d5aad78c8447b275c46ef201}{update\+Torque\+Calibration} ()
+\item 
+void \hyperlink{classJoint_a4a9f131afc5991affa8e05e3928bf4d8}{end\+Torque\+Calibration} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Joint@{Joint}!Joint@{Joint}}
+\index{Joint@{Joint}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{Joint(\+Control\+Module $\ast$controller, Motor $\ast$motor, Torque\+Sensor $\ast$torque\+\_\+sensor, Pot $\ast$pot)}{Joint(ControlModule *controller, Motor *motor, TorqueSensor *torque_sensor, Pot *pot)}}]{\setlength{\rightskip}{0pt plus 5cm}Joint\+::\+Joint (
+\begin{DoxyParamCaption}
+\item[{{\bf Control\+Module} $\ast$}]{controller, }
+\item[{{\bf Motor} $\ast$}]{motor, }
+\item[{{\bf Torque\+Sensor} $\ast$}]{torque\+\_\+sensor, }
+\item[{{\bf Pot} $\ast$}]{pot}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a2e5c866dcb711094af82278e4d44d8b2}{}\label{classJoint_a2e5c866dcb711094af82278e4d44d8b2}
+\index{Joint@{Joint}!````~Joint@{$\sim$\+Joint}}
+\index{````~Joint@{$\sim$\+Joint}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{$\sim$\+Joint()}{~Joint()}}]{\setlength{\rightskip}{0pt plus 5cm}Joint\+::$\sim$\+Joint (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a42aca0bd1832136984923713127c28f1}{}\label{classJoint_a42aca0bd1832136984923713127c28f1}
+
+
+\subsection{Member Function Documentation}
+\index{Joint@{Joint}!adjust\+Shaping\+For\+Time@{adjust\+Shaping\+For\+Time}}
+\index{adjust\+Shaping\+For\+Time@{adjust\+Shaping\+For\+Time}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{adjust\+Shaping\+For\+Time(double planter\+Time)}{adjustShapingForTime(double planterTime)}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::adjust\+Shaping\+For\+Time (
+\begin{DoxyParamCaption}
+\item[{double}]{planter\+Time}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_ad39647a7d64b22dac562fa977344ecac}{}\label{classJoint_ad39647a7d64b22dac562fa977344ecac}
+\index{Joint@{Joint}!apply\+Auto\+KF@{apply\+Auto\+KF}}
+\index{apply\+Auto\+KF@{apply\+Auto\+KF}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{apply\+Auto\+K\+F()}{applyAutoKF()}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::apply\+Auto\+KF (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a012a6a79e4ef4951f033b8bdbe49e93d}{}\label{classJoint_a012a6a79e4ef4951f033b8bdbe49e93d}
+\index{Joint@{Joint}!apply\+Torque@{apply\+Torque}}
+\index{apply\+Torque@{apply\+Torque}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{apply\+Torque()}{applyTorque()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Joint\+::apply\+Torque (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a47129449e8b008732e28b4bb0bc52643}{}\label{classJoint_a47129449e8b008732e28b4bb0bc52643}
+\index{Joint@{Joint}!change\+Control@{change\+Control}}
+\index{change\+Control@{change\+Control}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{change\+Control(\+State\+I\+D state\+\_\+id)}{changeControl(StateID state_id)}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::change\+Control (
+\begin{DoxyParamCaption}
+\item[{{\bf State\+ID}}]{state\+\_\+id}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a6a4d31e980f795d5b951323ac5fd0626}{}\label{classJoint_a6a4d31e980f795d5b951323ac5fd0626}
+\index{Joint@{Joint}!end\+Torque\+Calibration@{end\+Torque\+Calibration}}
+\index{end\+Torque\+Calibration@{end\+Torque\+Calibration}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{end\+Torque\+Calibration()}{endTorqueCalibration()}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::end\+Torque\+Calibration (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a4a9f131afc5991affa8e05e3928bf4d8}{}\label{classJoint_a4a9f131afc5991affa8e05e3928bf4d8}
+\index{Joint@{Joint}!fill\+Report@{fill\+Report}}
+\index{fill\+Report@{fill\+Report}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{fill\+Report(\+Joint\+Report $\ast$report)}{fillReport(JointReport *report)}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::fill\+Report (
+\begin{DoxyParamCaption}
+\item[{{\bf Joint\+Report} $\ast$}]{report}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_aba8104e0e6b09058c7a744a805bbfa7f}{}\label{classJoint_aba8104e0e6b09058c7a744a805bbfa7f}
+\index{Joint@{Joint}!generate\+Report@{generate\+Report}}
+\index{generate\+Report@{generate\+Report}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{generate\+Report()}{generateReport()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Joint\+Report} $\ast$ Joint\+::generate\+Report (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a65c605e61d6e1998d71a3580896ca523}{}\label{classJoint_a65c605e61d6e1998d71a3580896ca523}
+\index{Joint@{Joint}!get\+Angle@{get\+Angle}}
+\index{get\+Angle@{get\+Angle}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{get\+Angle()}{getAngle()}}]{\setlength{\rightskip}{0pt plus 5cm}double Joint\+::get\+Angle (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_ae0204ef60dd8506dbdb94a65faa188fb}{}\label{classJoint_ae0204ef60dd8506dbdb94a65faa188fb}
+\index{Joint@{Joint}!get\+Desired\+Setpoint@{get\+Desired\+Setpoint}}
+\index{get\+Desired\+Setpoint@{get\+Desired\+Setpoint}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{get\+Desired\+Setpoint(\+State\+I\+D state)}{getDesiredSetpoint(StateID state)}}]{\setlength{\rightskip}{0pt plus 5cm}double Joint\+::get\+Desired\+Setpoint (
+\begin{DoxyParamCaption}
+\item[{{\bf State\+ID}}]{state}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a69a208e0b5e673d335c06d943534724d}{}\label{classJoint_a69a208e0b5e673d335c06d943534724d}
+\index{Joint@{Joint}!get\+Kf@{get\+Kf}}
+\index{get\+Kf@{get\+Kf}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{get\+Kf()}{getKf()}}]{\setlength{\rightskip}{0pt plus 5cm}double Joint\+::get\+Kf (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a6dc498ec465f965d87533a34ee9b62d4}{}\label{classJoint_a6dc498ec465f965d87533a34ee9b62d4}
+\index{Joint@{Joint}!get\+Pid@{get\+Pid}}
+\index{get\+Pid@{get\+Pid}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{get\+Pid(double $\ast$pid)}{getPid(double *pid)}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::get\+Pid (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{pid}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a1b138e33fe58097b42f43ade71bf8f17}{}\label{classJoint_a1b138e33fe58097b42f43ade71bf8f17}
+\index{Joint@{Joint}!get\+Smoothing\+Param@{get\+Smoothing\+Param}}
+\index{get\+Smoothing\+Param@{get\+Smoothing\+Param}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{get\+Smoothing\+Param(\+State\+I\+D state)}{getSmoothingParam(StateID state)}}]{\setlength{\rightskip}{0pt plus 5cm}double Joint\+::get\+Smoothing\+Param (
+\begin{DoxyParamCaption}
+\item[{{\bf State\+ID}}]{state}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_ac65cae6a80c68689ecc1e1c23c1f0aca}{}\label{classJoint_ac65cae6a80c68689ecc1e1c23c1f0aca}
+\index{Joint@{Joint}!get\+Torque@{get\+Torque}}
+\index{get\+Torque@{get\+Torque}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{get\+Torque()}{getTorque()}}]{\setlength{\rightskip}{0pt plus 5cm}double Joint\+::get\+Torque (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a75111a7b8091c6ca5f0788704a7c1b1c}{}\label{classJoint_a75111a7b8091c6ca5f0788704a7c1b1c}
+\index{Joint@{Joint}!has\+Errored@{has\+Errored}}
+\index{has\+Errored@{has\+Errored}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{has\+Errored()}{hasErrored()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Joint\+::has\+Errored (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a7fb5248914eb948e6addb4e1398c0819}{}\label{classJoint_a7fb5248914eb948e6addb4e1398c0819}
+\index{Joint@{Joint}!measure\+Sensors@{measure\+Sensors}}
+\index{measure\+Sensors@{measure\+Sensors}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{measure\+Sensors()}{measureSensors()}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::measure\+Sensors (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_af9071b64d69bd951e215f0cf4af7b919}{}\label{classJoint_af9071b64d69bd951e215f0cf4af7b919}
+\index{Joint@{Joint}!process\+Message@{process\+Message}}
+\index{process\+Message@{process\+Message}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{process\+Message(\+Joint\+Message $\ast$msg)}{processMessage(JointMessage *msg)}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::process\+Message (
+\begin{DoxyParamCaption}
+\item[{{\bf Joint\+Message} $\ast$}]{msg}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a33729eeab4588211b7cbe753fb049d59}{}\label{classJoint_a33729eeab4588211b7cbe753fb049d59}
+\index{Joint@{Joint}!reset\+Starting\+Parameters@{reset\+Starting\+Parameters}}
+\index{reset\+Starting\+Parameters@{reset\+Starting\+Parameters}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{reset\+Starting\+Parameters()}{resetStartingParameters()}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::reset\+Starting\+Parameters (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a29e0a32427976e087e35ea881fb58449}{}\label{classJoint_a29e0a32427976e087e35ea881fb58449}
+\index{Joint@{Joint}!set\+Desired\+Setpoint@{set\+Desired\+Setpoint}}
+\index{set\+Desired\+Setpoint@{set\+Desired\+Setpoint}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{set\+Desired\+Setpoint(\+State\+I\+D state, double setpoint)}{setDesiredSetpoint(StateID state, double setpoint)}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::set\+Desired\+Setpoint (
+\begin{DoxyParamCaption}
+\item[{{\bf State\+ID}}]{state, }
+\item[{double}]{setpoint}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_ae1e7cbd5ec6ff5f8fd8a917b154a0a68}{}\label{classJoint_ae1e7cbd5ec6ff5f8fd8a917b154a0a68}
+\index{Joint@{Joint}!set\+Kf@{set\+Kf}}
+\index{set\+Kf@{set\+Kf}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{set\+Kf(double kf)}{setKf(double kf)}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::set\+Kf (
+\begin{DoxyParamCaption}
+\item[{double}]{kf}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a99cbfdb591d588f8f8f018385f45a52c}{}\label{classJoint_a99cbfdb591d588f8f8f018385f45a52c}
+\index{Joint@{Joint}!set\+Pid@{set\+Pid}}
+\index{set\+Pid@{set\+Pid}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{set\+Pid(double p, double i, double d)}{setPid(double p, double i, double d)}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::set\+Pid (
+\begin{DoxyParamCaption}
+\item[{double}]{p, }
+\item[{double}]{i, }
+\item[{double}]{d}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_ae6a96eb43fcdf599bf62fed7f8a09aa2}{}\label{classJoint_ae6a96eb43fcdf599bf62fed7f8a09aa2}
+\index{Joint@{Joint}!set\+Sign@{set\+Sign}}
+\index{set\+Sign@{set\+Sign}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{set\+Sign(int sign)}{setSign(int sign)}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::set\+Sign (
+\begin{DoxyParamCaption}
+\item[{int}]{sign}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_af1397d8f10d7e4509b14d5291d1c1d11}{}\label{classJoint_af1397d8f10d7e4509b14d5291d1c1d11}
+\index{Joint@{Joint}!set\+Smoothing\+Param@{set\+Smoothing\+Param}}
+\index{set\+Smoothing\+Param@{set\+Smoothing\+Param}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{set\+Smoothing\+Param(\+State\+I\+D state, double param)}{setSmoothingParam(StateID state, double param)}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::set\+Smoothing\+Param (
+\begin{DoxyParamCaption}
+\item[{{\bf State\+ID}}]{state, }
+\item[{double}]{param}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a582b21a00df5a1a5079b3bb8ba8e8af0}{}\label{classJoint_a582b21a00df5a1a5079b3bb8ba8e8af0}
+\index{Joint@{Joint}!set\+To\+Zero@{set\+To\+Zero}}
+\index{set\+To\+Zero@{set\+To\+Zero}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{set\+To\+Zero()}{setToZero()}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::set\+To\+Zero (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_aa6964b1dec64a9c76b7a5a082f700493}{}\label{classJoint_aa6964b1dec64a9c76b7a5a082f700493}
+\index{Joint@{Joint}!start\+Torque\+Calibration@{start\+Torque\+Calibration}}
+\index{start\+Torque\+Calibration@{start\+Torque\+Calibration}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{start\+Torque\+Calibration()}{startTorqueCalibration()}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::start\+Torque\+Calibration (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_ab8b007027b56b90bdf0488926f63ddf6}{}\label{classJoint_ab8b007027b56b90bdf0488926f63ddf6}
+\index{Joint@{Joint}!update\+Motor\+Output@{update\+Motor\+Output}}
+\index{update\+Motor\+Output@{update\+Motor\+Output}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{update\+Motor\+Output(\+Sensor\+Report $\ast$report)}{updateMotorOutput(SensorReport *report)}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::update\+Motor\+Output (
+\begin{DoxyParamCaption}
+\item[{{\bf Sensor\+Report} $\ast$}]{report}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_abed0afe032168f8f554c78e7f82a5394}{}\label{classJoint_abed0afe032168f8f554c78e7f82a5394}
+\index{Joint@{Joint}!update\+Torque\+Calibration@{update\+Torque\+Calibration}}
+\index{update\+Torque\+Calibration@{update\+Torque\+Calibration}!Joint@{Joint}}
+\subsubsection[{\texorpdfstring{update\+Torque\+Calibration()}{updateTorqueCalibration()}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+::update\+Torque\+Calibration (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classJoint_a393c16f6d5aad78c8447b275c46ef201}{}\label{classJoint_a393c16f6d5aad78c8447b275c46ef201}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Joint_8hpp}{Joint.\+hpp}\item 
+\hyperlink{Joint_8cpp}{Joint.\+cpp}\end{DoxyCompactItemize}

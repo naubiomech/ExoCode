@@ -1,0 +1,95 @@
+\hypertarget{classMotor}{}\section{Motor Class Reference}
+\label{classMotor}\index{Motor@{Motor}}
+
+
+{\ttfamily \#include $<$Motor.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classMotor_a261f6bcd243dc3c1b75d3470267cff14}{Motor} (\hyperlink{classInputPort}{Input\+Port} $\ast$motor\+\_\+error\+\_\+port, \hyperlink{classOutputPort}{Output\+Port} $\ast$motor\+\_\+port, int output\+\_\+sign)
+\item 
+virtual \hyperlink{classMotor_a2e57c7b2681efea1d3b7f253ee88ecd4}{$\sim$\+Motor} ()
+\item 
+virtual void \hyperlink{classMotor_a5f4255bf25f573578372e2624004a039}{measure\+Error} ()
+\item 
+virtual bool \hyperlink{classMotor_ae23dc03c27e126392d29242cb90b47dd}{has\+Errored} ()
+\item 
+virtual void \hyperlink{classMotor_acb75763c3b4b97ddd0630dbc9c58c81a}{write} (double value)
+\item 
+virtual void \hyperlink{classMotor_a7fe803d981566a886f02ee1e5b0c47b0}{set\+Sign} (int sign)
+\item 
+virtual \hyperlink{classMotorReport}{Motor\+Report} $\ast$ \hyperlink{classMotor_a738a98b0e1b6df12e23539838982b131}{generate\+Report} ()
+\item 
+virtual void \hyperlink{classMotor_ae83def821afb550743cdb69baea9307f}{fill\+Report} (\hyperlink{classMotorReport}{Motor\+Report} $\ast$report)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Motor@{Motor}!Motor@{Motor}}
+\index{Motor@{Motor}!Motor@{Motor}}
+\subsubsection[{\texorpdfstring{Motor(\+Input\+Port $\ast$motor\+\_\+error\+\_\+port, Output\+Port $\ast$motor\+\_\+port, int output\+\_\+sign)}{Motor(InputPort *motor_error_port, OutputPort *motor_port, int output_sign)}}]{\setlength{\rightskip}{0pt plus 5cm}Motor\+::\+Motor (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{motor\+\_\+error\+\_\+port, }
+\item[{{\bf Output\+Port} $\ast$}]{motor\+\_\+port, }
+\item[{int}]{output\+\_\+sign}
+\end{DoxyParamCaption}
+)}\hypertarget{classMotor_a261f6bcd243dc3c1b75d3470267cff14}{}\label{classMotor_a261f6bcd243dc3c1b75d3470267cff14}
+\index{Motor@{Motor}!````~Motor@{$\sim$\+Motor}}
+\index{````~Motor@{$\sim$\+Motor}!Motor@{Motor}}
+\subsubsection[{\texorpdfstring{$\sim$\+Motor()}{~Motor()}}]{\setlength{\rightskip}{0pt plus 5cm}Motor\+::$\sim$\+Motor (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMotor_a2e57c7b2681efea1d3b7f253ee88ecd4}{}\label{classMotor_a2e57c7b2681efea1d3b7f253ee88ecd4}
+
+
+\subsection{Member Function Documentation}
+\index{Motor@{Motor}!fill\+Report@{fill\+Report}}
+\index{fill\+Report@{fill\+Report}!Motor@{Motor}}
+\subsubsection[{\texorpdfstring{fill\+Report(\+Motor\+Report $\ast$report)}{fillReport(MotorReport *report)}}]{\setlength{\rightskip}{0pt plus 5cm}void Motor\+::fill\+Report (
+\begin{DoxyParamCaption}
+\item[{{\bf Motor\+Report} $\ast$}]{report}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMotor_ae83def821afb550743cdb69baea9307f}{}\label{classMotor_ae83def821afb550743cdb69baea9307f}
+\index{Motor@{Motor}!generate\+Report@{generate\+Report}}
+\index{generate\+Report@{generate\+Report}!Motor@{Motor}}
+\subsubsection[{\texorpdfstring{generate\+Report()}{generateReport()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Motor\+Report} $\ast$ Motor\+::generate\+Report (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMotor_a738a98b0e1b6df12e23539838982b131}{}\label{classMotor_a738a98b0e1b6df12e23539838982b131}
+\index{Motor@{Motor}!has\+Errored@{has\+Errored}}
+\index{has\+Errored@{has\+Errored}!Motor@{Motor}}
+\subsubsection[{\texorpdfstring{has\+Errored()}{hasErrored()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Motor\+::has\+Errored (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMotor_ae23dc03c27e126392d29242cb90b47dd}{}\label{classMotor_ae23dc03c27e126392d29242cb90b47dd}
+\index{Motor@{Motor}!measure\+Error@{measure\+Error}}
+\index{measure\+Error@{measure\+Error}!Motor@{Motor}}
+\subsubsection[{\texorpdfstring{measure\+Error()}{measureError()}}]{\setlength{\rightskip}{0pt plus 5cm}void Motor\+::measure\+Error (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMotor_a5f4255bf25f573578372e2624004a039}{}\label{classMotor_a5f4255bf25f573578372e2624004a039}
+\index{Motor@{Motor}!set\+Sign@{set\+Sign}}
+\index{set\+Sign@{set\+Sign}!Motor@{Motor}}
+\subsubsection[{\texorpdfstring{set\+Sign(int sign)}{setSign(int sign)}}]{\setlength{\rightskip}{0pt plus 5cm}void Motor\+::set\+Sign (
+\begin{DoxyParamCaption}
+\item[{int}]{sign}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMotor_a7fe803d981566a886f02ee1e5b0c47b0}{}\label{classMotor_a7fe803d981566a886f02ee1e5b0c47b0}
+\index{Motor@{Motor}!write@{write}}
+\index{write@{write}!Motor@{Motor}}
+\subsubsection[{\texorpdfstring{write(double value)}{write(double value)}}]{\setlength{\rightskip}{0pt plus 5cm}void Motor\+::write (
+\begin{DoxyParamCaption}
+\item[{double}]{value}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMotor_acb75763c3b4b97ddd0630dbc9c58c81a}{}\label{classMotor_acb75763c3b4b97ddd0630dbc9c58c81a}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Motor_8hpp}{Motor.\+hpp}\item 
+\hyperlink{Motor_8cpp}{Motor.\+cpp}\end{DoxyCompactItemize}

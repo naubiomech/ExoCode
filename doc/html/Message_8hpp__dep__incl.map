@@ -1,0 +1,25 @@
+<map id="Message.hpp" name="Message.hpp">
+<area shape="rect" id="node2" href="$Joint_8hpp.html" title="Joint.hpp" alt="" coords="168,155,243,181"/>
+<area shape="rect" id="node3" href="$Leg_8hpp.html" title="Leg.hpp" alt="" coords="405,229,473,256"/>
+<area shape="rect" id="node4" href="$Exoskeleton_8hpp.html" title="Exoskeleton.hpp" alt="" coords="689,304,807,331"/>
+<area shape="rect" id="node9" href="$main_8cpp.html" title="main.cpp" alt="" coords="1245,528,1320,555"/>
+<area shape="rect" id="node12" href="$Exoskeleton_8cpp.html" title="Exoskeleton.cpp" alt="" coords="582,453,701,480"/>
+<area shape="rect" id="node13" href="$Joint_8cpp.html" title="Joint.cpp" alt="" coords="5,453,80,480"/>
+<area shape="rect" id="node18" href="$Message_8cpp.html" title="Message.cpp" alt="" coords="155,304,255,331"/>
+<area shape="rect" id="node20" href="$Transceiver_8hpp.html" title="Transceiver.hpp" alt="" coords="771,80,885,107"/>
+<area shape="rect" id="node23" href="$Transmission_8hpp.html" title="Transmission.hpp" alt="" coords="665,155,791,181"/>
+<area shape="rect" id="node11" href="$ExoBuilder_8cpp.html" title="ExoBuilder.cpp" alt="" coords="683,528,794,555"/>
+<area shape="rect" id="node17" href="$Leg_8cpp.html" title="Leg.cpp" alt="" coords="441,304,509,331"/>
+<area shape="rect" id="node19" href="$States_8cpp.html" title="States.cpp" alt="" coords="280,304,365,331"/>
+<area shape="rect" id="node5" href="$Board_8hpp.html" title="Board.hpp" alt="" coords="926,379,1007,405"/>
+<area shape="rect" id="node10" href="$ExoBuilder_8hpp.html" title="ExoBuilder.hpp" alt="" coords="1038,453,1149,480"/>
+<area shape="rect" id="node15" href="$Commands_8cpp.html" title="Commands.cpp" alt="" coords="787,379,901,405"/>
+<area shape="rect" id="node16" href="$Transceiver_8cpp.html" title="Transceiver.cpp" alt="" coords="1083,379,1197,405"/>
+<area shape="rect" id="node6" href="$Board_8cpp.html" title="Board.cpp" alt="" coords="777,453,858,480"/>
+<area shape="rect" id="node7" href="$BoardBuilder_8hpp.html" title="BoardBuilder.hpp" alt="" coords="1173,453,1294,480"/>
+<area shape="rect" id="node14" href="$Motor_8cpp.html" title="Motor.cpp" alt="" coords="933,453,1013,480"/>
+<area shape="rect" id="node8" href="$BoardBuilder_8cpp.html" title="BoardBuilder.cpp" alt="" coords="1099,528,1221,555"/>
+<area shape="rect" id="node21" href="$Communications_8hpp.html" title="Communications.hpp" alt="" coords="655,229,801,256"/>
+<area shape="rect" id="node24" href="$Transmission_8cpp.html" title="Transmission.cpp" alt="" coords="825,229,951,256"/>
+<area shape="rect" id="node22" href="$Communications_8cpp.html" title="Communications.cpp" alt="" coords="831,304,977,331"/>
+</map>

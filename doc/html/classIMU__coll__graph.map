@@ -1,0 +1,4 @@
+<map id="IMU" name="IMU">
+<area shape="rect" id="node2" href="$classChrono.html" title="Chrono" alt="" coords="5,5,69,32"/>
+<area shape="rect" id="node3" href="$classAdafruit__BNO055.html" title="Adafruit_BNO055" alt="" coords="131,5,255,32"/>
+</map>

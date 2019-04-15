@@ -1,0 +1,75 @@
+\hypertarget{classMessage}{}\section{Message$<$ Context $>$ Class Template Reference}
+\label{classMessage}\index{Message$<$ Context $>$@{Message$<$ Context $>$}}
+
+
+{\ttfamily \#include $<$Message.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classMessage_a8d87ad3358603478dbb287208fd523a2}{Message} (\hyperlink{classLinkedList}{Linked\+List}$<$ \hyperlink{classCommand}{Command}$<$ Context $>$ $\ast$ $>$ $\ast$commands)
+\item 
+\hyperlink{classMessage_a0a4abb84180ac30c668161eb07eaa3fc}{Message} (\hyperlink{classLinkedList}{Linked\+List}$<$ \hyperlink{classCommand}{Command}$<$ Context $>$ $\ast$ $>$ $\ast$pre\+\_\+commands, \hyperlink{classLinkedList}{Linked\+List}$<$ \hyperlink{classCommand}{Command}$<$ Context $>$ $\ast$ $>$ $\ast$post\+\_\+commands)
+\item 
+virtual \hyperlink{classMessage_ac392dca5e1e9349eaffa8d70ffa85288}{$\sim$\+Message} ()
+\item 
+void \hyperlink{classMessage_a1e10f7421c02733f64a6ee091aaa36bd}{run\+Pre\+Commands} (Context $\ast$context)
+\item 
+void \hyperlink{classMessage_a199e1952ed5b577fc5f0b51cd78b368a}{run\+Commands} (Context $\ast$context)
+\item 
+void \hyperlink{classMessage_a61932d464ce97f5587b7804c509a67d2}{run\+Post\+Commands} (Context $\ast$context)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Message@{Message}!Message@{Message}}
+\index{Message@{Message}!Message@{Message}}
+\subsubsection[{\texorpdfstring{Message(\+Linked\+List$<$ Command$<$ Context $>$ $\ast$ $>$ $\ast$commands)}{Message(LinkedList< Command< Context > * > *commands)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Context$>$ {\bf Message}$<$ Context $>$\+::{\bf Message} (
+\begin{DoxyParamCaption}
+\item[{{\bf Linked\+List}$<$ {\bf Command}$<$ Context $>$ $\ast$ $>$ $\ast$}]{commands}
+\end{DoxyParamCaption}
+)}\hypertarget{classMessage_a8d87ad3358603478dbb287208fd523a2}{}\label{classMessage_a8d87ad3358603478dbb287208fd523a2}
+\index{Message@{Message}!Message@{Message}}
+\index{Message@{Message}!Message@{Message}}
+\subsubsection[{\texorpdfstring{Message(\+Linked\+List$<$ Command$<$ Context $>$ $\ast$ $>$ $\ast$pre\+\_\+commands, Linked\+List$<$ Command$<$ Context $>$ $\ast$ $>$ $\ast$post\+\_\+commands)}{Message(LinkedList< Command< Context > * > *pre_commands, LinkedList< Command< Context > * > *post_commands)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Context$>$ {\bf Message}$<$ Context $>$\+::{\bf Message} (
+\begin{DoxyParamCaption}
+\item[{{\bf Linked\+List}$<$ {\bf Command}$<$ Context $>$ $\ast$ $>$ $\ast$}]{pre\+\_\+commands, }
+\item[{{\bf Linked\+List}$<$ {\bf Command}$<$ Context $>$ $\ast$ $>$ $\ast$}]{post\+\_\+commands}
+\end{DoxyParamCaption}
+)}\hypertarget{classMessage_a0a4abb84180ac30c668161eb07eaa3fc}{}\label{classMessage_a0a4abb84180ac30c668161eb07eaa3fc}
+\index{Message@{Message}!````~Message@{$\sim$\+Message}}
+\index{````~Message@{$\sim$\+Message}!Message@{Message}}
+\subsubsection[{\texorpdfstring{$\sim$\+Message()}{~Message()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Context $>$ {\bf Message}$<$ Context $>$\+::$\sim${\bf Message} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classMessage_ac392dca5e1e9349eaffa8d70ffa85288}{}\label{classMessage_ac392dca5e1e9349eaffa8d70ffa85288}
+
+
+\subsection{Member Function Documentation}
+\index{Message@{Message}!run\+Commands@{run\+Commands}}
+\index{run\+Commands@{run\+Commands}!Message@{Message}}
+\subsubsection[{\texorpdfstring{run\+Commands(\+Context $\ast$context)}{runCommands(Context *context)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Context$>$ void {\bf Message}$<$ Context $>$\+::run\+Commands (
+\begin{DoxyParamCaption}
+\item[{Context $\ast$}]{context}
+\end{DoxyParamCaption}
+)}\hypertarget{classMessage_a199e1952ed5b577fc5f0b51cd78b368a}{}\label{classMessage_a199e1952ed5b577fc5f0b51cd78b368a}
+\index{Message@{Message}!run\+Post\+Commands@{run\+Post\+Commands}}
+\index{run\+Post\+Commands@{run\+Post\+Commands}!Message@{Message}}
+\subsubsection[{\texorpdfstring{run\+Post\+Commands(\+Context $\ast$context)}{runPostCommands(Context *context)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Context$>$ void {\bf Message}$<$ Context $>$\+::run\+Post\+Commands (
+\begin{DoxyParamCaption}
+\item[{Context $\ast$}]{context}
+\end{DoxyParamCaption}
+)}\hypertarget{classMessage_a61932d464ce97f5587b7804c509a67d2}{}\label{classMessage_a61932d464ce97f5587b7804c509a67d2}
+\index{Message@{Message}!run\+Pre\+Commands@{run\+Pre\+Commands}}
+\index{run\+Pre\+Commands@{run\+Pre\+Commands}!Message@{Message}}
+\subsubsection[{\texorpdfstring{run\+Pre\+Commands(\+Context $\ast$context)}{runPreCommands(Context *context)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class Context$>$ void {\bf Message}$<$ Context $>$\+::run\+Pre\+Commands (
+\begin{DoxyParamCaption}
+\item[{Context $\ast$}]{context}
+\end{DoxyParamCaption}
+)}\hypertarget{classMessage_a1e10f7421c02733f64a6ee091aaa36bd}{}\label{classMessage_a1e10f7421c02733f64a6ee091aaa36bd}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Message_8hpp}{Message.\+hpp}\end{DoxyCompactItemize}

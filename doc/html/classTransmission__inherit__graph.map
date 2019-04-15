@@ -1,0 +1,20 @@
+<map id="Transmission" name="Transmission">
+<area shape="rect" id="node2" href="$classCalibrateFsrTransmission.html" title="CalibrateFsrTransmission" alt="" coords="180,5,351,32"/>
+<area shape="rect" id="node3" href="$classCalibrateTorqueTransmission.html" title="CalibrateTorqueTransmission" alt="" coords="169,56,361,83"/>
+<area shape="rect" id="node4" href="$classCheckBluetoothTransmission.html" title="CheckBluetoothTransmission" alt="" coords="169,107,362,133"/>
+<area shape="rect" id="node5" href="$classCheckMemoryTransmission.html" title="CheckMemoryTransmission" alt="" coords="173,157,358,184"/>
+<area shape="rect" id="node6" href="$classCleanBluetoothBufferTransmission.html" title="CleanBluetoothBufferTransmission" alt="" coords="153,208,377,235"/>
+<area shape="rect" id="node7" href="$classEndTrialTransmission.html" title="EndTrialTransmission" alt="" coords="191,259,339,285"/>
+<area shape="rect" id="node8" href="$classGetFsrThresholdTransmission.html" title="GetFsrThresholdTransmission" alt="" coords="167,309,364,336"/>
+<area shape="rect" id="node9" href="$classJointSelectTransmission.html" title="JointSelectTransmission" alt="" coords="183,360,348,387"/>
+<area shape="rect" id="node18" href="$classRequestDataTransmission.html" title="RequestDataTransmission" alt="" coords="177,411,354,437"/>
+<area shape="rect" id="node19" href="$classStartTrialTransmission.html" title="StartTrialTransmission" alt="" coords="189,461,342,488"/>
+<area shape="rect" id="node10" href="$classGetKFTransmission.html" title="GetKFTransmission" alt="" coords="470,183,609,209"/>
+<area shape="rect" id="node11" href="$classGetPidParamsTransmission.html" title="GetPidParamsTransmission" alt="" coords="447,233,632,260"/>
+<area shape="rect" id="node12" href="$classGetSetpointTransmission.html" title="GetSetpointTransmission" alt="" coords="455,284,624,311"/>
+<area shape="rect" id="node13" href="$classGetSmoothingParamsTransmission.html" title="GetSmoothingParamsTransmission" alt="" coords="425,335,653,361"/>
+<area shape="rect" id="node14" href="$classSetKFTransmission.html" title="SetKFTransmission" alt="" coords="471,385,608,412"/>
+<area shape="rect" id="node15" href="$classSetPidParamsTransmission.html" title="SetPidParamsTransmission" alt="" coords="447,436,631,463"/>
+<area shape="rect" id="node16" href="$classSetSetpointTransmission.html" title="SetSetpointTransmission" alt="" coords="455,487,623,513"/>
+<area shape="rect" id="node17" href="$classSetSmoothingParamsTransmission.html" title="SetSmoothingParamsTransmission" alt="" coords="426,537,653,564"/>
+</map>

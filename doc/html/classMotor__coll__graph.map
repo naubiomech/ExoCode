@@ -1,0 +1,5 @@
+<map id="Motor" name="Motor">
+<area shape="rect" id="node2" href="$classOutputPort.html" title="OutputPort" alt="" coords="5,81,91,108"/>
+<area shape="rect" id="node3" href="$classPort.html" title="Port" alt="" coords="85,5,131,32"/>
+<area shape="rect" id="node4" href="$classInputPort.html" title="InputPort" alt="" coords="115,81,189,108"/>
+</map>

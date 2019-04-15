@@ -1,0 +1,104 @@
+\hypertarget{classLegMessageBuilder}{}\section{Leg\+Message\+Builder Class Reference}
+\label{classLegMessageBuilder}\index{Leg\+Message\+Builder@{Leg\+Message\+Builder}}
+
+
+{\ttfamily \#include $<$Message.\+hpp$>$}
+
+
+
+Inheritance diagram for Leg\+Message\+Builder\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=200pt]{classLegMessageBuilder__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Leg\+Message\+Builder\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=200pt]{classLegMessageBuilder__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classLegMessageBuilder_a13c36f02d8d3b0c154401dd48a4e78f1}{Leg\+Message\+Builder} (\hyperlink{classExoMessageBuilder}{Exo\+Message\+Builder} $\ast$return\+\_\+context)
+\item 
+\hyperlink{classLegMessageBuilder_a10149767436b23b722ad03c5b2ad1ba3}{$\sim$\+Leg\+Message\+Builder} ()
+\item 
+\hyperlink{classLegMessageBuilder}{Leg\+Message\+Builder} $\ast$ \hyperlink{classLegMessageBuilder_ae211c44deb6af953331fb63d4905c532}{add\+Pre\+Command} (\hyperlink{classCommand}{Command}$<$ \hyperlink{classLeg}{Leg} $>$ $\ast$command)
+\item 
+\hyperlink{classLegMessageBuilder}{Leg\+Message\+Builder} $\ast$ \hyperlink{classLegMessageBuilder_a3846b2d94304e022f5f213a378e7b7cc}{add\+Post\+Command} (\hyperlink{classCommand}{Command}$<$ \hyperlink{classLeg}{Leg} $>$ $\ast$command)
+\item 
+\hyperlink{classJointMessageBuilder}{Joint\+Message\+Builder} $\ast$ \hyperlink{classLegMessageBuilder_ab6eb2c55d5479f22e41bb2f4fc298f4d}{begin\+Joint\+Message} (\hyperlink{JointSelect_8hpp_a4afd2607cffce38f5ade02dfdc389cc3}{Joint\+ID} id)
+\item 
+\hyperlink{classExoMessageBuilder}{Exo\+Message\+Builder} $\ast$ \hyperlink{classLegMessageBuilder_a38862b9d92f3e1877c3d74f8dcfbf1df}{finish\+Leg} ()
+\item 
+\hyperlink{classLegMessage}{Leg\+Message} $\ast$ \hyperlink{classLegMessageBuilder_ad4342f20929ef314e7fa7800e09a533a}{build} ()
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Leg\+Message\+Builder@{Leg\+Message\+Builder}!Leg\+Message\+Builder@{Leg\+Message\+Builder}}
+\index{Leg\+Message\+Builder@{Leg\+Message\+Builder}!Leg\+Message\+Builder@{Leg\+Message\+Builder}}
+\subsubsection[{\texorpdfstring{Leg\+Message\+Builder(\+Exo\+Message\+Builder $\ast$return\+\_\+context)}{LegMessageBuilder(ExoMessageBuilder *return_context)}}]{\setlength{\rightskip}{0pt plus 5cm}Leg\+Message\+Builder\+::\+Leg\+Message\+Builder (
+\begin{DoxyParamCaption}
+\item[{{\bf Exo\+Message\+Builder} $\ast$}]{return\+\_\+context}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegMessageBuilder_a13c36f02d8d3b0c154401dd48a4e78f1}{}\label{classLegMessageBuilder_a13c36f02d8d3b0c154401dd48a4e78f1}
+\index{Leg\+Message\+Builder@{Leg\+Message\+Builder}!````~Leg\+Message\+Builder@{$\sim$\+Leg\+Message\+Builder}}
+\index{````~Leg\+Message\+Builder@{$\sim$\+Leg\+Message\+Builder}!Leg\+Message\+Builder@{Leg\+Message\+Builder}}
+\subsubsection[{\texorpdfstring{$\sim$\+Leg\+Message\+Builder()}{~LegMessageBuilder()}}]{\setlength{\rightskip}{0pt plus 5cm}Leg\+Message\+Builder\+::$\sim$\+Leg\+Message\+Builder (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegMessageBuilder_a10149767436b23b722ad03c5b2ad1ba3}{}\label{classLegMessageBuilder_a10149767436b23b722ad03c5b2ad1ba3}
+
+
+\subsection{Member Function Documentation}
+\index{Leg\+Message\+Builder@{Leg\+Message\+Builder}!add\+Post\+Command@{add\+Post\+Command}}
+\index{add\+Post\+Command@{add\+Post\+Command}!Leg\+Message\+Builder@{Leg\+Message\+Builder}}
+\subsubsection[{\texorpdfstring{add\+Post\+Command(\+Command$<$ Leg $>$ $\ast$command)}{addPostCommand(Command< Leg > *command)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Leg\+Message\+Builder} $\ast$ Leg\+Message\+Builder\+::add\+Post\+Command (
+\begin{DoxyParamCaption}
+\item[{{\bf Command}$<$ {\bf Leg} $>$ $\ast$}]{command}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegMessageBuilder_a3846b2d94304e022f5f213a378e7b7cc}{}\label{classLegMessageBuilder_a3846b2d94304e022f5f213a378e7b7cc}
+\index{Leg\+Message\+Builder@{Leg\+Message\+Builder}!add\+Pre\+Command@{add\+Pre\+Command}}
+\index{add\+Pre\+Command@{add\+Pre\+Command}!Leg\+Message\+Builder@{Leg\+Message\+Builder}}
+\subsubsection[{\texorpdfstring{add\+Pre\+Command(\+Command$<$ Leg $>$ $\ast$command)}{addPreCommand(Command< Leg > *command)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Leg\+Message\+Builder} $\ast$ Leg\+Message\+Builder\+::add\+Pre\+Command (
+\begin{DoxyParamCaption}
+\item[{{\bf Command}$<$ {\bf Leg} $>$ $\ast$}]{command}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegMessageBuilder_ae211c44deb6af953331fb63d4905c532}{}\label{classLegMessageBuilder_ae211c44deb6af953331fb63d4905c532}
+\index{Leg\+Message\+Builder@{Leg\+Message\+Builder}!begin\+Joint\+Message@{begin\+Joint\+Message}}
+\index{begin\+Joint\+Message@{begin\+Joint\+Message}!Leg\+Message\+Builder@{Leg\+Message\+Builder}}
+\subsubsection[{\texorpdfstring{begin\+Joint\+Message(\+Joint\+I\+D id)}{beginJointMessage(JointID id)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Joint\+Message\+Builder} $\ast$ Leg\+Message\+Builder\+::begin\+Joint\+Message (
+\begin{DoxyParamCaption}
+\item[{{\bf Joint\+ID}}]{id}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegMessageBuilder_ab6eb2c55d5479f22e41bb2f4fc298f4d}{}\label{classLegMessageBuilder_ab6eb2c55d5479f22e41bb2f4fc298f4d}
+\index{Leg\+Message\+Builder@{Leg\+Message\+Builder}!build@{build}}
+\index{build@{build}!Leg\+Message\+Builder@{Leg\+Message\+Builder}}
+\subsubsection[{\texorpdfstring{build()}{build()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Leg\+Message} $\ast$ Leg\+Message\+Builder\+::build (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegMessageBuilder_ad4342f20929ef314e7fa7800e09a533a}{}\label{classLegMessageBuilder_ad4342f20929ef314e7fa7800e09a533a}
+\index{Leg\+Message\+Builder@{Leg\+Message\+Builder}!finish\+Leg@{finish\+Leg}}
+\index{finish\+Leg@{finish\+Leg}!Leg\+Message\+Builder@{Leg\+Message\+Builder}}
+\subsubsection[{\texorpdfstring{finish\+Leg()}{finishLeg()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Exo\+Message\+Builder} $\ast$ Leg\+Message\+Builder\+::finish\+Leg (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegMessageBuilder_a38862b9d92f3e1877c3d74f8dcfbf1df}{}\label{classLegMessageBuilder_a38862b9d92f3e1877c3d74f8dcfbf1df}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Message_8hpp}{Message.\+hpp}\item 
+\hyperlink{Message_8cpp}{Message.\+cpp}\end{DoxyCompactItemize}

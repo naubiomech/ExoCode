@@ -1,0 +1,114 @@
+\hypertarget{classPortFactory}{}\section{Port\+Factory Class Reference}
+\label{classPortFactory}\index{Port\+Factory@{Port\+Factory}}
+
+
+{\ttfamily \#include $<$Port.\+hpp$>$}
+
+
+
+Inheritance diagram for Port\+Factory\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=181pt]{classPortFactory__inherit__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \hyperlink{classPortFactory_a3bbb656dccb31447dd329a35475e8595}{$\sim$\+Port\+Factory} ()
+\item 
+virtual \hyperlink{classRxPort}{Rx\+Port} $\ast$ \hyperlink{classPortFactory_a1def158625545313ffcd00c32b04ac2e}{create\+Rx\+Port} (unsigned int pin)=0
+\item 
+virtual \hyperlink{classTxPort}{Tx\+Port} $\ast$ \hyperlink{classPortFactory_ae174bc69771d208ca6c6689ae9b3e441}{create\+Tx\+Port} (unsigned int pin)=0
+\item 
+virtual \hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classPortFactory_a37f32cc4314eb9bd432a46565de10aea}{create\+Digital\+Input\+Port} (unsigned int pin)=0
+\item 
+virtual \hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classPortFactory_a3b005a67c687bfbfd94a159fb3622ea8}{create\+Analog\+Input\+Port} (unsigned int pin, unsigned int resolution\+\_\+bits)=0
+\item 
+virtual \hyperlink{classOutputPort}{Output\+Port} $\ast$ \hyperlink{classPortFactory_ac4fd7d24cc61b5972c9269ea2de23775}{create\+Digital\+Output\+Port} (unsigned int pin)=0
+\item 
+virtual \hyperlink{classOutputPort}{Output\+Port} $\ast$ \hyperlink{classPortFactory_a325dcb9bf70e873129a946959544a6c8}{create\+Analog\+Output\+Port} (unsigned int pin, unsigned int resolution\+\_\+bits)=0
+\item 
+virtual \hyperlink{classOutputPort}{Output\+Port} $\ast$ \hyperlink{classPortFactory_a21257b8f99f2088cefd0a8f63cbecb45}{create\+Pwm\+Output\+Port} (unsigned int pin, unsigned int resolution\+\_\+bits)=0
+\item 
+virtual \hyperlink{classImuPort}{Imu\+Port} $\ast$ \hyperlink{classPortFactory_a8cd7f7ca5cbee77e9fcac3050f86f6ba}{create\+Imu\+Port} (\hyperlink{Arduino_8hpp_aaa5bce2cb83fc43fec67214bf4feea69}{i2c\+\_\+pins} pins)=0
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Port\+Factory@{Port\+Factory}!````~Port\+Factory@{$\sim$\+Port\+Factory}}
+\index{````~Port\+Factory@{$\sim$\+Port\+Factory}!Port\+Factory@{Port\+Factory}}
+\subsubsection[{\texorpdfstring{$\sim$\+Port\+Factory()}{~PortFactory()}}]{\setlength{\rightskip}{0pt plus 5cm}Port\+Factory\+::$\sim$\+Port\+Factory (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classPortFactory_a3bbb656dccb31447dd329a35475e8595}{}\label{classPortFactory_a3bbb656dccb31447dd329a35475e8595}
+
+
+\subsection{Member Function Documentation}
+\index{Port\+Factory@{Port\+Factory}!create\+Analog\+Input\+Port@{create\+Analog\+Input\+Port}}
+\index{create\+Analog\+Input\+Port@{create\+Analog\+Input\+Port}!Port\+Factory@{Port\+Factory}}
+\subsubsection[{\texorpdfstring{create\+Analog\+Input\+Port(unsigned int pin, unsigned int resolution\+\_\+bits)=0}{createAnalogInputPort(unsigned int pin, unsigned int resolution_bits)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf Input\+Port}$\ast$ Port\+Factory\+::create\+Analog\+Input\+Port (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{pin, }
+\item[{unsigned int}]{resolution\+\_\+bits}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classPortFactory_a3b005a67c687bfbfd94a159fb3622ea8}{}\label{classPortFactory_a3b005a67c687bfbfd94a159fb3622ea8}
+\index{Port\+Factory@{Port\+Factory}!create\+Analog\+Output\+Port@{create\+Analog\+Output\+Port}}
+\index{create\+Analog\+Output\+Port@{create\+Analog\+Output\+Port}!Port\+Factory@{Port\+Factory}}
+\subsubsection[{\texorpdfstring{create\+Analog\+Output\+Port(unsigned int pin, unsigned int resolution\+\_\+bits)=0}{createAnalogOutputPort(unsigned int pin, unsigned int resolution_bits)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf Output\+Port}$\ast$ Port\+Factory\+::create\+Analog\+Output\+Port (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{pin, }
+\item[{unsigned int}]{resolution\+\_\+bits}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classPortFactory_a325dcb9bf70e873129a946959544a6c8}{}\label{classPortFactory_a325dcb9bf70e873129a946959544a6c8}
+\index{Port\+Factory@{Port\+Factory}!create\+Digital\+Input\+Port@{create\+Digital\+Input\+Port}}
+\index{create\+Digital\+Input\+Port@{create\+Digital\+Input\+Port}!Port\+Factory@{Port\+Factory}}
+\subsubsection[{\texorpdfstring{create\+Digital\+Input\+Port(unsigned int pin)=0}{createDigitalInputPort(unsigned int pin)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf Input\+Port}$\ast$ Port\+Factory\+::create\+Digital\+Input\+Port (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{pin}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classPortFactory_a37f32cc4314eb9bd432a46565de10aea}{}\label{classPortFactory_a37f32cc4314eb9bd432a46565de10aea}
+\index{Port\+Factory@{Port\+Factory}!create\+Digital\+Output\+Port@{create\+Digital\+Output\+Port}}
+\index{create\+Digital\+Output\+Port@{create\+Digital\+Output\+Port}!Port\+Factory@{Port\+Factory}}
+\subsubsection[{\texorpdfstring{create\+Digital\+Output\+Port(unsigned int pin)=0}{createDigitalOutputPort(unsigned int pin)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf Output\+Port}$\ast$ Port\+Factory\+::create\+Digital\+Output\+Port (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{pin}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classPortFactory_ac4fd7d24cc61b5972c9269ea2de23775}{}\label{classPortFactory_ac4fd7d24cc61b5972c9269ea2de23775}
+\index{Port\+Factory@{Port\+Factory}!create\+Imu\+Port@{create\+Imu\+Port}}
+\index{create\+Imu\+Port@{create\+Imu\+Port}!Port\+Factory@{Port\+Factory}}
+\subsubsection[{\texorpdfstring{create\+Imu\+Port(i2c\+\_\+pins pins)=0}{createImuPort(i2c_pins pins)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf Imu\+Port}$\ast$ Port\+Factory\+::create\+Imu\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf i2c\+\_\+pins}}]{pins}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classPortFactory_a8cd7f7ca5cbee77e9fcac3050f86f6ba}{}\label{classPortFactory_a8cd7f7ca5cbee77e9fcac3050f86f6ba}
+\index{Port\+Factory@{Port\+Factory}!create\+Pwm\+Output\+Port@{create\+Pwm\+Output\+Port}}
+\index{create\+Pwm\+Output\+Port@{create\+Pwm\+Output\+Port}!Port\+Factory@{Port\+Factory}}
+\subsubsection[{\texorpdfstring{create\+Pwm\+Output\+Port(unsigned int pin, unsigned int resolution\+\_\+bits)=0}{createPwmOutputPort(unsigned int pin, unsigned int resolution_bits)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf Output\+Port}$\ast$ Port\+Factory\+::create\+Pwm\+Output\+Port (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{pin, }
+\item[{unsigned int}]{resolution\+\_\+bits}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classPortFactory_a21257b8f99f2088cefd0a8f63cbecb45}{}\label{classPortFactory_a21257b8f99f2088cefd0a8f63cbecb45}
+\index{Port\+Factory@{Port\+Factory}!create\+Rx\+Port@{create\+Rx\+Port}}
+\index{create\+Rx\+Port@{create\+Rx\+Port}!Port\+Factory@{Port\+Factory}}
+\subsubsection[{\texorpdfstring{create\+Rx\+Port(unsigned int pin)=0}{createRxPort(unsigned int pin)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf Rx\+Port}$\ast$ Port\+Factory\+::create\+Rx\+Port (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{pin}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classPortFactory_a1def158625545313ffcd00c32b04ac2e}{}\label{classPortFactory_a1def158625545313ffcd00c32b04ac2e}
+\index{Port\+Factory@{Port\+Factory}!create\+Tx\+Port@{create\+Tx\+Port}}
+\index{create\+Tx\+Port@{create\+Tx\+Port}!Port\+Factory@{Port\+Factory}}
+\subsubsection[{\texorpdfstring{create\+Tx\+Port(unsigned int pin)=0}{createTxPort(unsigned int pin)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf Tx\+Port}$\ast$ Port\+Factory\+::create\+Tx\+Port (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{pin}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classPortFactory_ae174bc69771d208ca6c6689ae9b3e441}{}\label{classPortFactory_ae174bc69771d208ca6c6689ae9b3e441}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Port_8hpp}{Port.\+hpp}\item 
+\hyperlink{Port_8cpp}{Port.\+cpp}\end{DoxyCompactItemize}

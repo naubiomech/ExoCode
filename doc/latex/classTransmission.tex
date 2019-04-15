@@ -1,0 +1,177 @@
+\hypertarget{classTransmission}{}\section{Transmission Class Reference}
+\label{classTransmission}\index{Transmission@{Transmission}}
+
+
+{\ttfamily \#include $<$Transmission.\+hpp$>$}
+
+
+
+Inheritance diagram for Transmission\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classTransmission__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Transmission\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classTransmission__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classTransmission_ab2df2110cf9f9fc8b331ae656f0cca3a}{Transmission} (\hyperlink{classTransceiver}{Transceiver} $\ast$\hyperlink{classTransmission_a4136f9d979a928565232a2d3d6eb5ac5}{transceiver}, \hyperlink{classCommandFactory}{Command\+Factory} $\ast$\hyperlink{classTransmission_a1f0d106884524b89375804da9bcc7c11}{cmd\+\_\+factory}, \hyperlink{Command__Codes_8hpp_a59210a0ae0b431bbcaba126ab960fd62}{Command\+Code} code, unsigned int receive\+\_\+count, unsigned int send\+\_\+count)
+\item 
+virtual \hyperlink{classTransmission_adcdc6012d99ddb1d0c3159d50984e146}{$\sim$\+Transmission} ()
+\item 
+void \hyperlink{classTransmission_ab4c63999e243d2ac9879d37e7e2f4de6}{process} (\hyperlink{classExoMessageBuilder}{Exo\+Message\+Builder} $\ast$builder, \hyperlink{classExoReport}{Exo\+Report} $\ast$report)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \hyperlink{classTransmission_af20b71b7ca6066a5d23a30ffc2b51b98}{process\+Data} (\hyperlink{classExoMessageBuilder}{Exo\+Message\+Builder} $\ast$builder, \hyperlink{classExoReport}{Exo\+Report} $\ast$report)=0
+\item 
+virtual void \hyperlink{classTransmission_a67efba97be938e7539d9c34e55681e92}{preprocess\+Data} ()
+\item 
+virtual void \hyperlink{classTransmission_a7bc66c569ce579c28dad60a5128998f6}{postprocess\+Data} ()
+\item 
+void \hyperlink{classTransmission_a71f24ce6af40e8b1cbe864a7be9c6265}{copy\+To\+Send} (double $\ast$from)
+\item 
+void \hyperlink{classTransmission_a0b10d5327a7f812a81dce8f80a257c36}{copy\+To\+Send} (float $\ast$from)
+\item 
+void \hyperlink{classTransmission_a94f5ca622dae9ceea5464e3980626a61}{copy\+From\+Receive} (double $\ast$to)
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classTransceiver}{Transceiver} $\ast$ \hyperlink{classTransmission_a4136f9d979a928565232a2d3d6eb5ac5}{transceiver}
+\item 
+\hyperlink{classCommandFactory}{Command\+Factory} $\ast$ \hyperlink{classTransmission_a1f0d106884524b89375804da9bcc7c11}{cmd\+\_\+factory}
+\item 
+\hyperlink{classJointCommandIDs}{Joint\+Command\+I\+Ds} \hyperlink{classTransmission_aac5b5c7c8f0120e84929c5b7a811a52d}{joint\+\_\+cmd\+\_\+ids}
+\item 
+\hyperlink{classExoCommandIDs}{Exo\+Command\+I\+Ds} \hyperlink{classTransmission_af8a957eeae835ede843bded237e86db3}{exo\+\_\+cmd\+\_\+ids}
+\item 
+float $\ast$ \hyperlink{classTransmission_add4a43e6cb4a7598ac9e37f02971371b}{send\+\_\+data}
+\item 
+double $\ast$ \hyperlink{classTransmission_a44d7a92c68f34d7adf32a5f9651fa792}{receive\+\_\+data}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Transmission@{Transmission}!Transmission@{Transmission}}
+\index{Transmission@{Transmission}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{Transmission(\+Transceiver $\ast$transceiver, Command\+Factory $\ast$cmd\+\_\+factory, Command\+Code code, unsigned int receive\+\_\+count, unsigned int send\+\_\+count)}{Transmission(Transceiver *transceiver, CommandFactory *cmd_factory, CommandCode code, unsigned int receive_count, unsigned int send_count)}}]{\setlength{\rightskip}{0pt plus 5cm}Transmission\+::\+Transmission (
+\begin{DoxyParamCaption}
+\item[{{\bf Transceiver} $\ast$}]{transceiver, }
+\item[{{\bf Command\+Factory} $\ast$}]{cmd\+\_\+factory, }
+\item[{{\bf Command\+Code}}]{code, }
+\item[{unsigned int}]{receive\+\_\+count, }
+\item[{unsigned int}]{send\+\_\+count}
+\end{DoxyParamCaption}
+)}\hypertarget{classTransmission_ab2df2110cf9f9fc8b331ae656f0cca3a}{}\label{classTransmission_ab2df2110cf9f9fc8b331ae656f0cca3a}
+\index{Transmission@{Transmission}!````~Transmission@{$\sim$\+Transmission}}
+\index{````~Transmission@{$\sim$\+Transmission}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{$\sim$\+Transmission()}{~Transmission()}}]{\setlength{\rightskip}{0pt plus 5cm}Transmission\+::$\sim$\+Transmission (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classTransmission_adcdc6012d99ddb1d0c3159d50984e146}{}\label{classTransmission_adcdc6012d99ddb1d0c3159d50984e146}
+
+
+\subsection{Member Function Documentation}
+\index{Transmission@{Transmission}!copy\+From\+Receive@{copy\+From\+Receive}}
+\index{copy\+From\+Receive@{copy\+From\+Receive}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{copy\+From\+Receive(double $\ast$to)}{copyFromReceive(double *to)}}]{\setlength{\rightskip}{0pt plus 5cm}void Transmission\+::copy\+From\+Receive (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{to}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classTransmission_a94f5ca622dae9ceea5464e3980626a61}{}\label{classTransmission_a94f5ca622dae9ceea5464e3980626a61}
+\index{Transmission@{Transmission}!copy\+To\+Send@{copy\+To\+Send}}
+\index{copy\+To\+Send@{copy\+To\+Send}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{copy\+To\+Send(double $\ast$from)}{copyToSend(double *from)}}]{\setlength{\rightskip}{0pt plus 5cm}void Transmission\+::copy\+To\+Send (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{from}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classTransmission_a71f24ce6af40e8b1cbe864a7be9c6265}{}\label{classTransmission_a71f24ce6af40e8b1cbe864a7be9c6265}
+\index{Transmission@{Transmission}!copy\+To\+Send@{copy\+To\+Send}}
+\index{copy\+To\+Send@{copy\+To\+Send}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{copy\+To\+Send(float $\ast$from)}{copyToSend(float *from)}}]{\setlength{\rightskip}{0pt plus 5cm}void Transmission\+::copy\+To\+Send (
+\begin{DoxyParamCaption}
+\item[{float $\ast$}]{from}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classTransmission_a0b10d5327a7f812a81dce8f80a257c36}{}\label{classTransmission_a0b10d5327a7f812a81dce8f80a257c36}
+\index{Transmission@{Transmission}!postprocess\+Data@{postprocess\+Data}}
+\index{postprocess\+Data@{postprocess\+Data}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{postprocess\+Data()}{postprocessData()}}]{\setlength{\rightskip}{0pt plus 5cm}void Transmission\+::postprocess\+Data (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}\hypertarget{classTransmission_a7bc66c569ce579c28dad60a5128998f6}{}\label{classTransmission_a7bc66c569ce579c28dad60a5128998f6}
+
+
+Reimplemented in \hyperlink{classJointSelectTransmission_a18339cd55e0e4912f8ef3d0d7e840d3c}{Joint\+Select\+Transmission}.
+
+\index{Transmission@{Transmission}!preprocess\+Data@{preprocess\+Data}}
+\index{preprocess\+Data@{preprocess\+Data}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{preprocess\+Data()}{preprocessData()}}]{\setlength{\rightskip}{0pt plus 5cm}void Transmission\+::preprocess\+Data (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}\hypertarget{classTransmission_a67efba97be938e7539d9c34e55681e92}{}\label{classTransmission_a67efba97be938e7539d9c34e55681e92}
+
+
+Reimplemented in \hyperlink{classJointSelectTransmission_aa07d00b6fe6077fbc019f3c3acb19130}{Joint\+Select\+Transmission}.
+
+\index{Transmission@{Transmission}!process@{process}}
+\index{process@{process}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{process(\+Exo\+Message\+Builder $\ast$builder, Exo\+Report $\ast$report)}{process(ExoMessageBuilder *builder, ExoReport *report)}}]{\setlength{\rightskip}{0pt plus 5cm}void Transmission\+::process (
+\begin{DoxyParamCaption}
+\item[{{\bf Exo\+Message\+Builder} $\ast$}]{builder, }
+\item[{{\bf Exo\+Report} $\ast$}]{report}
+\end{DoxyParamCaption}
+)}\hypertarget{classTransmission_ab4c63999e243d2ac9879d37e7e2f4de6}{}\label{classTransmission_ab4c63999e243d2ac9879d37e7e2f4de6}
+\index{Transmission@{Transmission}!process\+Data@{process\+Data}}
+\index{process\+Data@{process\+Data}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{process\+Data(\+Exo\+Message\+Builder $\ast$builder, Exo\+Report $\ast$report)=0}{processData(ExoMessageBuilder *builder, ExoReport *report)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual void Transmission\+::process\+Data (
+\begin{DoxyParamCaption}
+\item[{{\bf Exo\+Message\+Builder} $\ast$}]{builder, }
+\item[{{\bf Exo\+Report} $\ast$}]{report}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [pure virtual]}}\hypertarget{classTransmission_af20b71b7ca6066a5d23a30ffc2b51b98}{}\label{classTransmission_af20b71b7ca6066a5d23a30ffc2b51b98}
+
+
+Implemented in \hyperlink{classJointSelectTransmission_af0fa553b0acc963288c9b2589d242006}{Joint\+Select\+Transmission}.
+
+
+
+\subsection{Member Data Documentation}
+\index{Transmission@{Transmission}!cmd\+\_\+factory@{cmd\+\_\+factory}}
+\index{cmd\+\_\+factory@{cmd\+\_\+factory}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{cmd\+\_\+factory}{cmd_factory}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Command\+Factory}$\ast$ Transmission\+::cmd\+\_\+factory\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classTransmission_a1f0d106884524b89375804da9bcc7c11}{}\label{classTransmission_a1f0d106884524b89375804da9bcc7c11}
+\index{Transmission@{Transmission}!exo\+\_\+cmd\+\_\+ids@{exo\+\_\+cmd\+\_\+ids}}
+\index{exo\+\_\+cmd\+\_\+ids@{exo\+\_\+cmd\+\_\+ids}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{exo\+\_\+cmd\+\_\+ids}{exo_cmd_ids}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Exo\+Command\+I\+Ds} Transmission\+::exo\+\_\+cmd\+\_\+ids\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classTransmission_af8a957eeae835ede843bded237e86db3}{}\label{classTransmission_af8a957eeae835ede843bded237e86db3}
+\index{Transmission@{Transmission}!joint\+\_\+cmd\+\_\+ids@{joint\+\_\+cmd\+\_\+ids}}
+\index{joint\+\_\+cmd\+\_\+ids@{joint\+\_\+cmd\+\_\+ids}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{joint\+\_\+cmd\+\_\+ids}{joint_cmd_ids}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Joint\+Command\+I\+Ds} Transmission\+::joint\+\_\+cmd\+\_\+ids\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classTransmission_aac5b5c7c8f0120e84929c5b7a811a52d}{}\label{classTransmission_aac5b5c7c8f0120e84929c5b7a811a52d}
+\index{Transmission@{Transmission}!receive\+\_\+data@{receive\+\_\+data}}
+\index{receive\+\_\+data@{receive\+\_\+data}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{receive\+\_\+data}{receive_data}}]{\setlength{\rightskip}{0pt plus 5cm}double$\ast$ Transmission\+::receive\+\_\+data\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classTransmission_a44d7a92c68f34d7adf32a5f9651fa792}{}\label{classTransmission_a44d7a92c68f34d7adf32a5f9651fa792}
+\index{Transmission@{Transmission}!send\+\_\+data@{send\+\_\+data}}
+\index{send\+\_\+data@{send\+\_\+data}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{send\+\_\+data}{send_data}}]{\setlength{\rightskip}{0pt plus 5cm}float$\ast$ Transmission\+::send\+\_\+data\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classTransmission_add4a43e6cb4a7598ac9e37f02971371b}{}\label{classTransmission_add4a43e6cb4a7598ac9e37f02971371b}
+\index{Transmission@{Transmission}!transceiver@{transceiver}}
+\index{transceiver@{transceiver}!Transmission@{Transmission}}
+\subsubsection[{\texorpdfstring{transceiver}{transceiver}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Transceiver}$\ast$ Transmission\+::transceiver\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classTransmission_a4136f9d979a928565232a2d3d6eb5ac5}{}\label{classTransmission_a4136f9d979a928565232a2d3d6eb5ac5}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Transmission_8hpp}{Transmission.\+hpp}\item 
+\hyperlink{Transmission_8cpp}{Transmission.\+cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,179 @@
+\hypertarget{classState}{}\section{State Class Reference}
+\label{classState}\index{State@{State}}
+
+
+{\ttfamily \#include $<$States.\+hpp$>$}
+
+
+
+Inheritance diagram for State\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=254pt]{classState__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for State\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=120pt]{classState__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classState_ab91bb1dd5aa6260ab2a456581daf9ec2}{State} ()
+\item 
+virtual \hyperlink{classState_afab438d92b90dc18d194dbd9c9c8bab3}{$\sim$\+State} ()
+\item 
+void \hyperlink{classState_a2c5a25eff8bd3d3456ad39fb0ad3689b}{delete\+State\+Machine} ()
+\item 
+double \hyperlink{classState_adf6ef04a29b91f231b6d49ed20bf109f}{get\+State\+Time} ()
+\item 
+\hyperlink{classState}{State} $\ast$ \hyperlink{classState_a71b4a661c220bbf591b8515f89ce5684}{change\+State} ()
+\item 
+void \hyperlink{classState_a99860deed7b8a7645a24e3c8ee093edc}{set\+Next\+State} (\hyperlink{classState}{State} $\ast$next\+\_\+phase)
+\item 
+void \hyperlink{classState_aacdb7964e195069bd096794ceb1ae699}{set\+Context} (\hyperlink{classLeg}{Leg} $\ast$\hyperlink{classState_a94c30bb5983561e80a296934c0330144}{leg})
+\item 
+virtual void \hyperlink{classState_a0f58488dbd4415000c7032d3f9d7d579}{trigger\+Start} ()
+\item 
+virtual void \hyperlink{classState_ab87ac976927bb7a765eb82a5ecdee213}{trigger\+End} ()
+\item 
+virtual void \hyperlink{classState_a52100b1159fda58336244ece3c45c3cc}{run} ()=0
+\item 
+virtual \hyperlink{States_8hpp_a1615968a92950438f6e67a28e9d56e5c}{State\+Type} \hyperlink{classState_a7692c115596084c700ce572a571b4332}{get\+State\+Type} ()=0
+\item 
+virtual \hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} \hyperlink{classState_a4117717d54853b6fd7f06ea8c2063efe}{get\+State\+ID} ()=0
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classLeg}{Leg} $\ast$ \hyperlink{classState_a94c30bb5983561e80a296934c0330144}{leg}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{State@{State}!State@{State}}
+\index{State@{State}!State@{State}}
+\subsubsection[{\texorpdfstring{State()}{State()}}]{\setlength{\rightskip}{0pt plus 5cm}State\+::\+State (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classState_ab91bb1dd5aa6260ab2a456581daf9ec2}{}\label{classState_ab91bb1dd5aa6260ab2a456581daf9ec2}
+\index{State@{State}!````~State@{$\sim$\+State}}
+\index{````~State@{$\sim$\+State}!State@{State}}
+\subsubsection[{\texorpdfstring{$\sim$\+State()}{~State()}}]{\setlength{\rightskip}{0pt plus 5cm}State\+::$\sim$\+State (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classState_afab438d92b90dc18d194dbd9c9c8bab3}{}\label{classState_afab438d92b90dc18d194dbd9c9c8bab3}
+
+
+\subsection{Member Function Documentation}
+\index{State@{State}!change\+State@{change\+State}}
+\index{change\+State@{change\+State}!State@{State}}
+\subsubsection[{\texorpdfstring{change\+State()}{changeState()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf State} $\ast$ State\+::change\+State (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classState_a71b4a661c220bbf591b8515f89ce5684}{}\label{classState_a71b4a661c220bbf591b8515f89ce5684}
+\index{State@{State}!delete\+State\+Machine@{delete\+State\+Machine}}
+\index{delete\+State\+Machine@{delete\+State\+Machine}!State@{State}}
+\subsubsection[{\texorpdfstring{delete\+State\+Machine()}{deleteStateMachine()}}]{\setlength{\rightskip}{0pt plus 5cm}void State\+::delete\+State\+Machine (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classState_a2c5a25eff8bd3d3456ad39fb0ad3689b}{}\label{classState_a2c5a25eff8bd3d3456ad39fb0ad3689b}
+\index{State@{State}!get\+State\+ID@{get\+State\+ID}}
+\index{get\+State\+ID@{get\+State\+ID}!State@{State}}
+\subsubsection[{\texorpdfstring{get\+State\+I\+D()=0}{getStateID()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf State\+ID} State\+::get\+State\+ID (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classState_a4117717d54853b6fd7f06ea8c2063efe}{}\label{classState_a4117717d54853b6fd7f06ea8c2063efe}
+
+
+Implemented in \hyperlink{classLateStanceState_ab7db84585570f8b015f99e92894ac830}{Late\+Stance\+State}, and \hyperlink{classSwingState_a30a2ed580cb981e1091b11f693933883}{Swing\+State}.
+
+\index{State@{State}!get\+State\+Time@{get\+State\+Time}}
+\index{get\+State\+Time@{get\+State\+Time}!State@{State}}
+\subsubsection[{\texorpdfstring{get\+State\+Time()}{getStateTime()}}]{\setlength{\rightskip}{0pt plus 5cm}double State\+::get\+State\+Time (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classState_adf6ef04a29b91f231b6d49ed20bf109f}{}\label{classState_adf6ef04a29b91f231b6d49ed20bf109f}
+\index{State@{State}!get\+State\+Type@{get\+State\+Type}}
+\index{get\+State\+Type@{get\+State\+Type}!State@{State}}
+\subsubsection[{\texorpdfstring{get\+State\+Type()=0}{getStateType()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf State\+Type} State\+::get\+State\+Type (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classState_a7692c115596084c700ce572a571b4332}{}\label{classState_a7692c115596084c700ce572a571b4332}
+
+
+Implemented in \hyperlink{classLateStanceState_a84d61b1d7c5f7db7ccc0030fa8f1e62b}{Late\+Stance\+State}, and \hyperlink{classSwingState_ae97ab41925134675cfd2ba84744b7c50}{Swing\+State}.
+
+\index{State@{State}!run@{run}}
+\index{run@{run}!State@{State}}
+\subsubsection[{\texorpdfstring{run()=0}{run()=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual void State\+::run (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{classState_a52100b1159fda58336244ece3c45c3cc}{}\label{classState_a52100b1159fda58336244ece3c45c3cc}
+
+
+Implemented in \hyperlink{classLateStanceState_ae4ff4ae7ed1e5e2f65a8c9ab5dfb4ab4}{Late\+Stance\+State}, and \hyperlink{classSwingState_ad5dc6a0a20bc1df5d69ea465679f4079}{Swing\+State}.
+
+\index{State@{State}!set\+Context@{set\+Context}}
+\index{set\+Context@{set\+Context}!State@{State}}
+\subsubsection[{\texorpdfstring{set\+Context(\+Leg $\ast$leg)}{setContext(Leg *leg)}}]{\setlength{\rightskip}{0pt plus 5cm}void State\+::set\+Context (
+\begin{DoxyParamCaption}
+\item[{{\bf Leg} $\ast$}]{leg}
+\end{DoxyParamCaption}
+)}\hypertarget{classState_aacdb7964e195069bd096794ceb1ae699}{}\label{classState_aacdb7964e195069bd096794ceb1ae699}
+\index{State@{State}!set\+Next\+State@{set\+Next\+State}}
+\index{set\+Next\+State@{set\+Next\+State}!State@{State}}
+\subsubsection[{\texorpdfstring{set\+Next\+State(\+State $\ast$next\+\_\+phase)}{setNextState(State *next_phase)}}]{\setlength{\rightskip}{0pt plus 5cm}void State\+::set\+Next\+State (
+\begin{DoxyParamCaption}
+\item[{{\bf State} $\ast$}]{next\+\_\+phase}
+\end{DoxyParamCaption}
+)}\hypertarget{classState_a99860deed7b8a7645a24e3c8ee093edc}{}\label{classState_a99860deed7b8a7645a24e3c8ee093edc}
+\index{State@{State}!trigger\+End@{trigger\+End}}
+\index{trigger\+End@{trigger\+End}!State@{State}}
+\subsubsection[{\texorpdfstring{trigger\+End()}{triggerEnd()}}]{\setlength{\rightskip}{0pt plus 5cm}void State\+::trigger\+End (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classState_ab87ac976927bb7a765eb82a5ecdee213}{}\label{classState_ab87ac976927bb7a765eb82a5ecdee213}
+
+
+Reimplemented in \hyperlink{classLateStanceState_a0410999b795a898190e0e97570e3d021}{Late\+Stance\+State}.
+
+\index{State@{State}!trigger\+Start@{trigger\+Start}}
+\index{trigger\+Start@{trigger\+Start}!State@{State}}
+\subsubsection[{\texorpdfstring{trigger\+Start()}{triggerStart()}}]{\setlength{\rightskip}{0pt plus 5cm}void State\+::trigger\+Start (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{classState_a0f58488dbd4415000c7032d3f9d7d579}{}\label{classState_a0f58488dbd4415000c7032d3f9d7d579}
+
+
+Reimplemented in \hyperlink{classLateStanceState_a0e13b85fdf9420b1116bbeef4d2c2ca6}{Late\+Stance\+State}.
+
+
+
+\subsection{Member Data Documentation}
+\index{State@{State}!leg@{leg}}
+\index{leg@{leg}!State@{State}}
+\subsubsection[{\texorpdfstring{leg}{leg}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Leg}$\ast$ State\+::leg\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classState_a94c30bb5983561e80a296934c0330144}{}\label{classState_a94c30bb5983561e80a296934c0330144}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{States_8hpp}{States.\+hpp}\item 
+\hyperlink{States_8cpp}{States.\+cpp}\end{DoxyCompactItemize}

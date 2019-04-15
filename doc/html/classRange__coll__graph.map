@@ -1,0 +1,6 @@
+<map id="Range" name="Range">
+<area shape="rect" id="node2" href="$classRunningAverage.html" title="RunningAverage" alt="" coords="5,81,124,108"/>
+<area shape="rect" id="node3" href="$classAverage.html" title="Average" alt="" coords="29,5,100,32"/>
+<area shape="rect" id="node4" href="$classMin.html" title="Min" alt="" coords="149,81,191,108"/>
+<area shape="rect" id="node5" href="$classMax.html" title="Max" alt="" coords="235,81,281,108"/>
+</map>

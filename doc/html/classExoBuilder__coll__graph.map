@@ -1,0 +1,51 @@
+<map id="ExoBuilder" name="ExoBuilder">
+<area shape="rect" id="node7" href="$classLegBuilder.html" title="LegBuilder" alt="" coords="2516,395,2599,421"/>
+<area shape="rect" id="node2" href="$classOutputPort.html" title="OutputPort" alt="" coords="1470,367,1555,393"/>
+<area shape="rect" id="node4" href="$classTxPort.html" title="TxPort" alt="" coords="1868,324,1929,351"/>
+<area shape="rect" id="node24" href="$classNode.html" title="Node\&lt; OutputPort * \&gt;" alt="" coords="1824,491,1973,517"/>
+<area shape="rect" id="node3" href="$classPort.html" title="Port" alt="" coords="555,255,602,281"/>
+<area shape="rect" id="node6" href="$classInputPort.html" title="InputPort" alt="" coords="826,255,901,281"/>
+<area shape="rect" id="node28" href="$classImuPort.html" title="ImuPort" alt="" coords="829,181,897,208"/>
+<area shape="rect" id="node5" href="$classRxPort.html" title="RxPort" alt="" coords="1321,273,1384,300"/>
+<area shape="rect" id="node10" href="$classNode.html" title="Node\&lt; InputPort * \&gt;" alt="" coords="1119,223,1257,249"/>
+<area shape="rect" id="node8" href="$classFsrFactory.html" title="FsrFactory" alt="" coords="2221,16,2306,43"/>
+<area shape="rect" id="node9" href="$classLinkedList.html" title="LinkedList\&lt; InputPort * \&gt;" alt="" coords="1429,223,1596,249"/>
+<area shape="rect" id="node30" href="$classNode.html" title="Node\&lt; LinkedList\&lt; InputPort\l * \&gt; * \&gt;" alt="" coords="1804,157,1993,198"/>
+<area shape="rect" id="node11" href="$classLinkedList.html" title="LinkedList\&lt; ControlModule * \&gt;" alt="" coords="2164,509,2363,536"/>
+<area shape="rect" id="node12" href="$classNode.html" title="Node\&lt; ControlModule * \&gt;" alt="" coords="1813,580,1984,607"/>
+<area shape="rect" id="node13" href="$classControlModule.html" title="ControlModule" alt="" coords="1459,515,1566,541"/>
+<area shape="rect" id="node14" href="$classControlAlgorithm.html" title="ControlAlgorithm" alt="" coords="1129,607,1247,633"/>
+<area shape="rect" id="node15" href="$classClamp.html" title="A class to clamp values. " alt="" coords="833,532,893,559"/>
+<area shape="rect" id="node16" href="$classShapingFunction.html" title="ShapingFunction" alt="" coords="1129,657,1247,684"/>
+<area shape="rect" id="node17" href="$classTimer.html" title="Timer" alt="" coords="836,691,891,717"/>
+<area shape="rect" id="node31" href="$classState.html" title="State" alt="" coords="1161,747,1215,773"/>
+<area shape="rect" id="node18" href="$classPID.html" title="PID" alt="" coords="1165,425,1211,452"/>
+<area shape="rect" id="node19" href="$classRunningAverage.html" title="RunningAverage" alt="" coords="1129,375,1247,401"/>
+<area shape="rect" id="node20" href="$classAverage.html" title="Average" alt="" coords="828,375,899,401"/>
+<area shape="rect" id="node21" href="$classLinkedList.html" title="LinkedList\&lt; unsigned\l int \&gt;" alt="" coords="2191,683,2336,725"/>
+<area shape="rect" id="node22" href="$classNode.html" title="Node\&lt; unsigned int \&gt;" alt="" coords="1825,732,1972,759"/>
+<area shape="rect" id="node23" href="$classLinkedList.html" title="LinkedList\&lt; OutputPort * \&gt;" alt="" coords="2175,455,2352,481"/>
+<area shape="rect" id="node25" href="$classFsrGroupFactory.html" title="FsrGroupFactory" alt="" coords="2203,749,2323,776"/>
+<area shape="rect" id="node26" href="$classLinkedList.html" title="LinkedList\&lt; ImuPort * \&gt;" alt="" coords="1620,125,1780,152"/>
+<area shape="rect" id="node27" href="$classNode.html" title="Node\&lt; ImuPort * \&gt;" alt="" coords="1122,132,1254,159"/>
+<area shape="rect" id="node29" href="$classLinkedList.html" title="LinkedList\&lt; LinkedList\l\&lt; InputPort * \&gt; * \&gt;" alt="" coords="2187,141,2339,182"/>
+<area shape="rect" id="node32" href="$classLeg.html" title="Leg" alt="" coords="1491,869,1534,896"/>
+<area shape="rect" id="node33" href="$classLinkedList.html" title="LinkedList\&lt; IMU * \&gt;" alt="" coords="1119,801,1257,828"/>
+<area shape="rect" id="node34" href="$classNode.html" title="Node\&lt; IMU * \&gt;" alt="" coords="808,801,919,828"/>
+<area shape="rect" id="node35" href="$classIMU.html" title="IMU" alt="" coords="555,801,602,828"/>
+<area shape="rect" id="node36" href="$classFSRGroup.html" title="FSRGroup" alt="" coords="537,869,621,896"/>
+<area shape="rect" id="node42" href="$classNode.html" title="Node\&lt; FSRGroup * \&gt;" alt="" coords="789,941,937,968"/>
+<area shape="rect" id="node37" href="$classThreshold.html" title="Threshold" alt="" coords="223,847,302,873"/>
+<area shape="rect" id="node38" href="$classLinkedList.html" title="LinkedList\&lt; FSR * \&gt;" alt="" coords="192,897,333,924"/>
+<area shape="rect" id="node39" href="$classNode.html" title="Node\&lt; FSR * \&gt;" alt="" coords="5,897,119,924"/>
+<area shape="rect" id="node40" href="$classChangeTrigger.html" title="ChangeTrigger" alt="" coords="1135,953,1241,980"/>
+<area shape="rect" id="node41" href="$classLinkedList.html" title="LinkedList\&lt; FSRGroup * \&gt;" alt="" coords="1100,903,1276,929"/>
+<area shape="rect" id="node43" href="$classSensorReport.html" title="SensorReport" alt="" coords="1137,1028,1239,1055"/>
+<area shape="rect" id="node44" href="$classReport.html" title="Report" alt="" coords="833,992,894,1019"/>
+<area shape="rect" id="node45" href="$classJointSelect.html" title="JointSelect" alt="" coords="535,981,622,1008"/>
+<area shape="rect" id="node46" href="$classLinkedList.html" title="LinkedList\&lt; FSRReport * \&gt;" alt="" coords="773,1043,953,1069"/>
+<area shape="rect" id="node47" href="$classNode.html" title="Node\&lt; FSRReport * \&gt;" alt="" coords="503,1071,655,1097"/>
+<area shape="rect" id="node48" href="$classLinkedList.html" title="LinkedList\&lt; IMUReport * \&gt;" alt="" coords="774,1093,953,1120"/>
+<area shape="rect" id="node49" href="$classLinkedList.html" title="LinkedList\&lt; Joint * \&gt;" alt="" coords="1117,1152,1259,1179"/>
+<area shape="rect" id="node50" href="$classNode.html" title="Node\&lt; Joint * \&gt;" alt="" coords="806,1183,921,1209"/>
+</map>

@@ -1,0 +1,117 @@
+\hypertarget{classLegBuilder}{}\section{Leg\+Builder Class Reference}
+\label{classLegBuilder}\index{Leg\+Builder@{Leg\+Builder}}
+
+
+{\ttfamily \#include $<$Exo\+Builder.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classLegBuilder_a388a349236abdbe1c8bc207d906165f7}{$\sim$\+Leg\+Builder} ()
+\item 
+\hyperlink{classLegBuilder_a40463e0ad0641a870c68683f31d36622}{Leg\+Builder} (\hyperlink{classExoBuilder}{Exo\+Builder} $\ast$return\+\_\+context, int sign)
+\item 
+\hyperlink{classLegBuilder}{Leg\+Builder} $\ast$ \hyperlink{classLegBuilder_a69ed97c456b0b5580477751cab2cdfec}{add\+State\+Machine} (\hyperlink{classState}{State} $\ast$states)
+\item 
+\hyperlink{classLegBuilder}{Leg\+Builder} $\ast$ \hyperlink{classLegBuilder_abc051ab2eadd43da9cc5ad0381b4d9c9}{add\+Joint} (\hyperlink{classInputPort}{Input\+Port} $\ast$torque\+\_\+sensor\+\_\+port, \hyperlink{classOutputPort}{Output\+Port} $\ast$motor\+\_\+port, \hyperlink{classInputPort}{Input\+Port} $\ast$error\+\_\+port, \hyperlink{classInputPort}{Input\+Port} $\ast$pot\+\_\+port, \hyperlink{classControlModule}{Control\+Module} $\ast$module)
+\item 
+\hyperlink{classLegBuilder}{Leg\+Builder} $\ast$ \hyperlink{classLegBuilder_a10e2bc65709a416d8f3af63789b8c6a8}{begin\+F\+S\+R\+Group} ()
+\item 
+\hyperlink{classLegBuilder}{Leg\+Builder} $\ast$ \hyperlink{classLegBuilder_a1108a50a12106f97063c966453a6e2d8}{finish\+F\+S\+R\+Group} ()
+\item 
+\hyperlink{classLegBuilder}{Leg\+Builder} $\ast$ \hyperlink{classLegBuilder_a9dac1f22f6498081a429445f379bd35e}{add\+F\+SR} (\hyperlink{classInputPort}{Input\+Port} $\ast$fsr\+\_\+port)
+\item 
+\hyperlink{classLegBuilder}{Leg\+Builder} $\ast$ \hyperlink{classLegBuilder_a92819625c46896bfb2ec09f382b11fc0}{add\+Imu} (\hyperlink{classImuPort}{Imu\+Port} $\ast$port, unsigned int address)
+\item 
+\hyperlink{classExoBuilder}{Exo\+Builder} $\ast$ \hyperlink{classLegBuilder_ac01adfec217033fbfb20286bfe33fe38}{finish\+Leg} ()
+\item 
+\hyperlink{classLeg}{Leg} $\ast$ \hyperlink{classLegBuilder_a6361be156ebc794ff1d2a9f7b640cb89}{build} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Leg\+Builder@{Leg\+Builder}!````~Leg\+Builder@{$\sim$\+Leg\+Builder}}
+\index{````~Leg\+Builder@{$\sim$\+Leg\+Builder}!Leg\+Builder@{Leg\+Builder}}
+\subsubsection[{\texorpdfstring{$\sim$\+Leg\+Builder()}{~LegBuilder()}}]{\setlength{\rightskip}{0pt plus 5cm}Leg\+Builder\+::$\sim$\+Leg\+Builder (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegBuilder_a388a349236abdbe1c8bc207d906165f7}{}\label{classLegBuilder_a388a349236abdbe1c8bc207d906165f7}
+\index{Leg\+Builder@{Leg\+Builder}!Leg\+Builder@{Leg\+Builder}}
+\index{Leg\+Builder@{Leg\+Builder}!Leg\+Builder@{Leg\+Builder}}
+\subsubsection[{\texorpdfstring{Leg\+Builder(\+Exo\+Builder $\ast$return\+\_\+context, int sign)}{LegBuilder(ExoBuilder *return_context, int sign)}}]{\setlength{\rightskip}{0pt plus 5cm}Leg\+Builder\+::\+Leg\+Builder (
+\begin{DoxyParamCaption}
+\item[{{\bf Exo\+Builder} $\ast$}]{return\+\_\+context, }
+\item[{int}]{sign}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegBuilder_a40463e0ad0641a870c68683f31d36622}{}\label{classLegBuilder_a40463e0ad0641a870c68683f31d36622}
+
+
+\subsection{Member Function Documentation}
+\index{Leg\+Builder@{Leg\+Builder}!add\+F\+SR@{add\+F\+SR}}
+\index{add\+F\+SR@{add\+F\+SR}!Leg\+Builder@{Leg\+Builder}}
+\subsubsection[{\texorpdfstring{add\+F\+S\+R(\+Input\+Port $\ast$fsr\+\_\+port)}{addFSR(InputPort *fsr_port)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Leg\+Builder} $\ast$ Leg\+Builder\+::add\+F\+SR (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{fsr\+\_\+port}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegBuilder_a9dac1f22f6498081a429445f379bd35e}{}\label{classLegBuilder_a9dac1f22f6498081a429445f379bd35e}
+\index{Leg\+Builder@{Leg\+Builder}!add\+Imu@{add\+Imu}}
+\index{add\+Imu@{add\+Imu}!Leg\+Builder@{Leg\+Builder}}
+\subsubsection[{\texorpdfstring{add\+Imu(\+Imu\+Port $\ast$port, unsigned int address)}{addImu(ImuPort *port, unsigned int address)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Leg\+Builder} $\ast$ Leg\+Builder\+::add\+Imu (
+\begin{DoxyParamCaption}
+\item[{{\bf Imu\+Port} $\ast$}]{port, }
+\item[{unsigned int}]{address}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegBuilder_a92819625c46896bfb2ec09f382b11fc0}{}\label{classLegBuilder_a92819625c46896bfb2ec09f382b11fc0}
+\index{Leg\+Builder@{Leg\+Builder}!add\+Joint@{add\+Joint}}
+\index{add\+Joint@{add\+Joint}!Leg\+Builder@{Leg\+Builder}}
+\subsubsection[{\texorpdfstring{add\+Joint(\+Input\+Port $\ast$torque\+\_\+sensor\+\_\+port, Output\+Port $\ast$motor\+\_\+port, Input\+Port $\ast$error\+\_\+port, Input\+Port $\ast$pot\+\_\+port, Control\+Module $\ast$module)}{addJoint(InputPort *torque_sensor_port, OutputPort *motor_port, InputPort *error_port, InputPort *pot_port, ControlModule *module)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Leg\+Builder} $\ast$ Leg\+Builder\+::add\+Joint (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{torque\+\_\+sensor\+\_\+port, }
+\item[{{\bf Output\+Port} $\ast$}]{motor\+\_\+port, }
+\item[{{\bf Input\+Port} $\ast$}]{error\+\_\+port, }
+\item[{{\bf Input\+Port} $\ast$}]{pot\+\_\+port, }
+\item[{{\bf Control\+Module} $\ast$}]{module}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegBuilder_abc051ab2eadd43da9cc5ad0381b4d9c9}{}\label{classLegBuilder_abc051ab2eadd43da9cc5ad0381b4d9c9}
+\index{Leg\+Builder@{Leg\+Builder}!add\+State\+Machine@{add\+State\+Machine}}
+\index{add\+State\+Machine@{add\+State\+Machine}!Leg\+Builder@{Leg\+Builder}}
+\subsubsection[{\texorpdfstring{add\+State\+Machine(\+State $\ast$states)}{addStateMachine(State *states)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Leg\+Builder} $\ast$ Leg\+Builder\+::add\+State\+Machine (
+\begin{DoxyParamCaption}
+\item[{{\bf State} $\ast$}]{states}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegBuilder_a69ed97c456b0b5580477751cab2cdfec}{}\label{classLegBuilder_a69ed97c456b0b5580477751cab2cdfec}
+\index{Leg\+Builder@{Leg\+Builder}!begin\+F\+S\+R\+Group@{begin\+F\+S\+R\+Group}}
+\index{begin\+F\+S\+R\+Group@{begin\+F\+S\+R\+Group}!Leg\+Builder@{Leg\+Builder}}
+\subsubsection[{\texorpdfstring{begin\+F\+S\+R\+Group()}{beginFSRGroup()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Leg\+Builder} $\ast$ Leg\+Builder\+::begin\+F\+S\+R\+Group (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegBuilder_a10e2bc65709a416d8f3af63789b8c6a8}{}\label{classLegBuilder_a10e2bc65709a416d8f3af63789b8c6a8}
+\index{Leg\+Builder@{Leg\+Builder}!build@{build}}
+\index{build@{build}!Leg\+Builder@{Leg\+Builder}}
+\subsubsection[{\texorpdfstring{build()}{build()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Leg} $\ast$ Leg\+Builder\+::build (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegBuilder_a6361be156ebc794ff1d2a9f7b640cb89}{}\label{classLegBuilder_a6361be156ebc794ff1d2a9f7b640cb89}
+\index{Leg\+Builder@{Leg\+Builder}!finish\+F\+S\+R\+Group@{finish\+F\+S\+R\+Group}}
+\index{finish\+F\+S\+R\+Group@{finish\+F\+S\+R\+Group}!Leg\+Builder@{Leg\+Builder}}
+\subsubsection[{\texorpdfstring{finish\+F\+S\+R\+Group()}{finishFSRGroup()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Leg\+Builder} $\ast$ Leg\+Builder\+::finish\+F\+S\+R\+Group (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegBuilder_a1108a50a12106f97063c966453a6e2d8}{}\label{classLegBuilder_a1108a50a12106f97063c966453a6e2d8}
+\index{Leg\+Builder@{Leg\+Builder}!finish\+Leg@{finish\+Leg}}
+\index{finish\+Leg@{finish\+Leg}!Leg\+Builder@{Leg\+Builder}}
+\subsubsection[{\texorpdfstring{finish\+Leg()}{finishLeg()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Exo\+Builder} $\ast$ Leg\+Builder\+::finish\+Leg (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLegBuilder_ac01adfec217033fbfb20286bfe33fe38}{}\label{classLegBuilder_ac01adfec217033fbfb20286bfe33fe38}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{ExoBuilder_8hpp}{Exo\+Builder.\+hpp}\item 
+\hyperlink{ExoBuilder_8cpp}{Exo\+Builder.\+cpp}\end{DoxyCompactItemize}

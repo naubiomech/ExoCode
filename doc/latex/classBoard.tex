@@ -1,0 +1,570 @@
+\hypertarget{classBoard}{}\section{Board Class Reference}
+\label{classBoard}\index{Board@{Board}}
+
+
+{\ttfamily \#include $<$Board.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classBoard_a9ee491d4fea680cf69b033374a9fdfcb}{Board} ()
+\item 
+\hyperlink{classBoard_af73f45730119a1fd8f6670f53f959e68}{$\sim$\+Board} ()
+\item 
+void \hyperlink{classBoard_a022ee938df244ab52f8ce4c3541a7600}{turn\+On\+Led} ()
+\item 
+\hyperlink{classTxPort}{Tx\+Port} $\ast$ \hyperlink{classBoard_a4d2aeef1855a94949426a0004da0d206}{take\+Bluetooth\+Tx\+Port} ()
+\item 
+\hyperlink{classRxPort}{Rx\+Port} $\ast$ \hyperlink{classBoard_a3b0eb16b49af6cecd2615ddebb301a83}{take\+Bluetooth\+Rx\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_af30a08ff2ff3e86e290d8c512907a422}{take\+Fsr\+Sense\+Left\+Toe\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_a21da1fccb5bb27ade658cbfdf05a64f9}{take\+Fsr\+Sense\+Left\+Heel\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_a78a9a73532be37ed05d6d2f12e5b7182}{take\+Fsr\+Sense\+Right\+Toe\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_acea5ca8cba177d604319585260afb1b8}{take\+Fsr\+Sense\+Right\+Heel\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_a77deee0229cdc90dfba844f733738548}{take\+Torque\+Sensor\+Left\+Knee\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_a4a3194002b85e3adea633d849964ce54}{take\+Torque\+Sensor\+Left\+Ankle\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_a425a898e1ebbf15cbb9198f723d8279b}{take\+Torque\+Sensor\+Right\+Knee\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_a2728251277213d1d3b51adc60d57c88c}{take\+Torque\+Sensor\+Right\+Ankle\+Port} ()
+\item 
+\hyperlink{classOutputPort}{Output\+Port} $\ast$ \hyperlink{classBoard_ae11de17a46428a72a2596b0b462193ee}{take\+Motor\+Left\+Knee\+Port} ()
+\item 
+\hyperlink{classOutputPort}{Output\+Port} $\ast$ \hyperlink{classBoard_a7185650a74ca6795c38bf66e6acb0d71}{take\+Motor\+Left\+Ankle\+Port} ()
+\item 
+\hyperlink{classOutputPort}{Output\+Port} $\ast$ \hyperlink{classBoard_af96d2b8c37435f2b0430238cdfabaf13}{take\+Motor\+Right\+Knee\+Port} ()
+\item 
+\hyperlink{classOutputPort}{Output\+Port} $\ast$ \hyperlink{classBoard_aa54cf724971416290d50e807b0afbc19}{take\+Motor\+Right\+Ankle\+Port} ()
+\item 
+\hyperlink{classOutputPort}{Output\+Port} $\ast$ \hyperlink{classBoard_a7771c3fc5e365b4a8f2c3db312792f5a}{take\+Led\+Port} ()
+\item 
+\hyperlink{classOutputPort}{Output\+Port} $\ast$ \hyperlink{classBoard_a4ec97cefdf203ed9fcafddd098bd194f}{take\+Motor\+Enable\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_a55d3bf54fbec7225b507f44e7826a6d1}{take\+Motor\+Error\+Left\+Knee\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_a40da12d162a16f92111525007e28abd5}{take\+Motor\+Error\+Left\+Ankle\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_ac70e1db27663c5b2f55a744d55846b55}{take\+Motor\+Error\+Right\+Knee\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_affcf61ded54f8e2149c014b6147c0bd0}{take\+Motor\+Error\+Right\+Ankle\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_a625f45733819f5e144bceb61ce886831}{take\+Pot\+Left\+Knee\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_a25d4d7b2a40147c681f1bd50c1037557}{take\+Pot\+Right\+Knee\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_a654483cd7d4d93b768d1b8eb981fbff2}{take\+Pot\+Left\+Ankle\+Port} ()
+\item 
+\hyperlink{classInputPort}{Input\+Port} $\ast$ \hyperlink{classBoard_ad580a6bc7986156eeb69ea50a02f1563}{take\+Pot\+Right\+Ankle\+Port} ()
+\item 
+\hyperlink{classImuPort}{Imu\+Port} $\ast$ \hyperlink{classBoard_a732e8cf1e3d1242b89c1f1409131c980}{get\+Imu\+Slot0} ()
+\item 
+\hyperlink{classImuPort}{Imu\+Port} $\ast$ \hyperlink{classBoard_af5f81580ae8f615858fb5cdb74d9f494}{get\+Imu\+Slot1} ()
+\item 
+\hyperlink{classImuPort}{Imu\+Port} $\ast$ \hyperlink{classBoard_a84c16ed6f01fd9075f2f393598df2962}{get\+Imu\+Slot2} ()
+\item 
+int \hyperlink{classBoard_a8ac6af90e1b7c3747dec6a2717e4e0c9}{get\+Imu\+Address0} ()
+\item 
+int \hyperlink{classBoard_a2a5914d7897e0e293a6c270e35a8d770}{get\+Imu\+Address1} ()
+\item 
+void \hyperlink{classBoard_a2dadb15f722d1b1e5326fb016dc5af60}{set\+Bluetooth\+Tx\+Port} (\hyperlink{classTxPort}{Tx\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_aa8f470af0dabf15e8208a8a85f3bfdb6}{set\+Bluetooth\+Rx\+Port} (\hyperlink{classRxPort}{Rx\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_a8c0e8c5827e4119797c421df8374b493}{set\+Fsr\+Sense\+Left\+Toe\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_a5ec129c18aaf991f8f94e981f13a4905}{set\+Fsr\+Sense\+Left\+Heel\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_aad8cd688c1c492c767d8c7e795344389}{set\+Fsr\+Sense\+Right\+Toe\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_a303a71aa15a467f0ffea207e6621b8cd}{set\+Fsr\+Sense\+Right\+Heel\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_ae45adf7a5640338344156fdd32822178}{set\+Torque\+Sensor\+Left\+Knee\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_af667f98775160ebdbc4cc8ee31cbe910}{set\+Torque\+Sensor\+Left\+Ankle\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_a8a4b37dc0833c39a644b99f3edd16b9f}{set\+Torque\+Sensor\+Right\+Knee\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_a269e4e67787dc9e27d472e5c88f0fe83}{set\+Torque\+Sensor\+Right\+Ankle\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_a480facbc78ceaec928897e80be948977}{set\+Motor\+Left\+Knee\+Port} (\hyperlink{classOutputPort}{Output\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_aebeebf46653c0d1009fd0129ba65c2a0}{set\+Motor\+Left\+Ankle\+Port} (\hyperlink{classOutputPort}{Output\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_acdb5c2acbf9de0d43b06558d0b4cd5f1}{set\+Motor\+Right\+Knee\+Port} (\hyperlink{classOutputPort}{Output\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_a0f1b706acf8d29f207773f1d922946b8}{set\+Motor\+Right\+Ankle\+Port} (\hyperlink{classOutputPort}{Output\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_aeb8a60226ae21067632c011dd339b76c}{set\+Led\+Port} (\hyperlink{classOutputPort}{Output\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_ac3bb78d67ffca86fd4c780308d327e45}{set\+Motor\+Enable\+Port} (\hyperlink{classOutputPort}{Output\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_ab36460d8e4b01128ff0060261b086577}{set\+Motor\+Error\+Left\+Knee\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_acdec893b7034bd0175980a6b31c7c611}{set\+Motor\+Error\+Left\+Ankle\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_a944f77aeca71cc0c6afb06355222f01c}{set\+Motor\+Error\+Right\+Knee\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_a703739a87f21444992922b328710f04c}{set\+Motor\+Error\+Right\+Ankle\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_a7016b22924417ccfb6a1932bdd8fc78f}{set\+Pot\+Left\+Knee\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_ad5ad3dc269c1c2f22e1d22e2f69daefc}{set\+Pot\+Right\+Knee\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_ad79af5f3ce4dd29f53127e5b27aa11be}{set\+Pot\+Left\+Ankle\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_a2df5ecd2411c91091b123058f795f7e7}{set\+Pot\+Right\+Ankle\+Port} (\hyperlink{classInputPort}{Input\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_ae7d85b5fac2f08847c82f5a649e92b4e}{set\+Imu\+Slot0} (\hyperlink{classImuPort}{Imu\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_a8393ced57177fe471ec4676890e3bfef}{set\+Imu\+Slot1} (\hyperlink{classImuPort}{Imu\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_aff8ad143ff3c31ebffbdb0a38c613724}{set\+Imu\+Slot2} (\hyperlink{classImuPort}{Imu\+Port} $\ast$port)
+\item 
+void \hyperlink{classBoard_ad19db66886ca758ef9b3dd4a799d3563}{set\+Imu\+Address0} (int address)
+\item 
+void \hyperlink{classBoard_ad7b736a0dc2a01833b0caecbc272b7fa}{set\+Imu\+Address1} (int address)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Board@{Board}!Board@{Board}}
+\index{Board@{Board}!Board@{Board}}
+\subsubsection[{\texorpdfstring{Board()}{Board()}}]{\setlength{\rightskip}{0pt plus 5cm}Board\+::\+Board (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a9ee491d4fea680cf69b033374a9fdfcb}{}\label{classBoard_a9ee491d4fea680cf69b033374a9fdfcb}
+\index{Board@{Board}!````~Board@{$\sim$\+Board}}
+\index{````~Board@{$\sim$\+Board}!Board@{Board}}
+\subsubsection[{\texorpdfstring{$\sim$\+Board()}{~Board()}}]{\setlength{\rightskip}{0pt plus 5cm}Board\+::$\sim$\+Board (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_af73f45730119a1fd8f6670f53f959e68}{}\label{classBoard_af73f45730119a1fd8f6670f53f959e68}
+
+
+\subsection{Member Function Documentation}
+\index{Board@{Board}!get\+Imu\+Address0@{get\+Imu\+Address0}}
+\index{get\+Imu\+Address0@{get\+Imu\+Address0}!Board@{Board}}
+\subsubsection[{\texorpdfstring{get\+Imu\+Address0()}{getImuAddress0()}}]{\setlength{\rightskip}{0pt plus 5cm}int Board\+::get\+Imu\+Address0 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a8ac6af90e1b7c3747dec6a2717e4e0c9}{}\label{classBoard_a8ac6af90e1b7c3747dec6a2717e4e0c9}
+\index{Board@{Board}!get\+Imu\+Address1@{get\+Imu\+Address1}}
+\index{get\+Imu\+Address1@{get\+Imu\+Address1}!Board@{Board}}
+\subsubsection[{\texorpdfstring{get\+Imu\+Address1()}{getImuAddress1()}}]{\setlength{\rightskip}{0pt plus 5cm}int Board\+::get\+Imu\+Address1 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a2a5914d7897e0e293a6c270e35a8d770}{}\label{classBoard_a2a5914d7897e0e293a6c270e35a8d770}
+\index{Board@{Board}!get\+Imu\+Slot0@{get\+Imu\+Slot0}}
+\index{get\+Imu\+Slot0@{get\+Imu\+Slot0}!Board@{Board}}
+\subsubsection[{\texorpdfstring{get\+Imu\+Slot0()}{getImuSlot0()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Imu\+Port} $\ast$ Board\+::get\+Imu\+Slot0 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a732e8cf1e3d1242b89c1f1409131c980}{}\label{classBoard_a732e8cf1e3d1242b89c1f1409131c980}
+\index{Board@{Board}!get\+Imu\+Slot1@{get\+Imu\+Slot1}}
+\index{get\+Imu\+Slot1@{get\+Imu\+Slot1}!Board@{Board}}
+\subsubsection[{\texorpdfstring{get\+Imu\+Slot1()}{getImuSlot1()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Imu\+Port} $\ast$ Board\+::get\+Imu\+Slot1 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_af5f81580ae8f615858fb5cdb74d9f494}{}\label{classBoard_af5f81580ae8f615858fb5cdb74d9f494}
+\index{Board@{Board}!get\+Imu\+Slot2@{get\+Imu\+Slot2}}
+\index{get\+Imu\+Slot2@{get\+Imu\+Slot2}!Board@{Board}}
+\subsubsection[{\texorpdfstring{get\+Imu\+Slot2()}{getImuSlot2()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Imu\+Port} $\ast$ Board\+::get\+Imu\+Slot2 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a84c16ed6f01fd9075f2f393598df2962}{}\label{classBoard_a84c16ed6f01fd9075f2f393598df2962}
+\index{Board@{Board}!set\+Bluetooth\+Rx\+Port@{set\+Bluetooth\+Rx\+Port}}
+\index{set\+Bluetooth\+Rx\+Port@{set\+Bluetooth\+Rx\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Bluetooth\+Rx\+Port(\+Rx\+Port $\ast$port)}{setBluetoothRxPort(RxPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Bluetooth\+Rx\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Rx\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_aa8f470af0dabf15e8208a8a85f3bfdb6}{}\label{classBoard_aa8f470af0dabf15e8208a8a85f3bfdb6}
+\index{Board@{Board}!set\+Bluetooth\+Tx\+Port@{set\+Bluetooth\+Tx\+Port}}
+\index{set\+Bluetooth\+Tx\+Port@{set\+Bluetooth\+Tx\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Bluetooth\+Tx\+Port(\+Tx\+Port $\ast$port)}{setBluetoothTxPort(TxPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Bluetooth\+Tx\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Tx\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a2dadb15f722d1b1e5326fb016dc5af60}{}\label{classBoard_a2dadb15f722d1b1e5326fb016dc5af60}
+\index{Board@{Board}!set\+Fsr\+Sense\+Left\+Heel\+Port@{set\+Fsr\+Sense\+Left\+Heel\+Port}}
+\index{set\+Fsr\+Sense\+Left\+Heel\+Port@{set\+Fsr\+Sense\+Left\+Heel\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Fsr\+Sense\+Left\+Heel\+Port(\+Input\+Port $\ast$port)}{setFsrSenseLeftHeelPort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Fsr\+Sense\+Left\+Heel\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a5ec129c18aaf991f8f94e981f13a4905}{}\label{classBoard_a5ec129c18aaf991f8f94e981f13a4905}
+\index{Board@{Board}!set\+Fsr\+Sense\+Left\+Toe\+Port@{set\+Fsr\+Sense\+Left\+Toe\+Port}}
+\index{set\+Fsr\+Sense\+Left\+Toe\+Port@{set\+Fsr\+Sense\+Left\+Toe\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Fsr\+Sense\+Left\+Toe\+Port(\+Input\+Port $\ast$port)}{setFsrSenseLeftToePort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Fsr\+Sense\+Left\+Toe\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a8c0e8c5827e4119797c421df8374b493}{}\label{classBoard_a8c0e8c5827e4119797c421df8374b493}
+\index{Board@{Board}!set\+Fsr\+Sense\+Right\+Heel\+Port@{set\+Fsr\+Sense\+Right\+Heel\+Port}}
+\index{set\+Fsr\+Sense\+Right\+Heel\+Port@{set\+Fsr\+Sense\+Right\+Heel\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Fsr\+Sense\+Right\+Heel\+Port(\+Input\+Port $\ast$port)}{setFsrSenseRightHeelPort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Fsr\+Sense\+Right\+Heel\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a303a71aa15a467f0ffea207e6621b8cd}{}\label{classBoard_a303a71aa15a467f0ffea207e6621b8cd}
+\index{Board@{Board}!set\+Fsr\+Sense\+Right\+Toe\+Port@{set\+Fsr\+Sense\+Right\+Toe\+Port}}
+\index{set\+Fsr\+Sense\+Right\+Toe\+Port@{set\+Fsr\+Sense\+Right\+Toe\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Fsr\+Sense\+Right\+Toe\+Port(\+Input\+Port $\ast$port)}{setFsrSenseRightToePort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Fsr\+Sense\+Right\+Toe\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_aad8cd688c1c492c767d8c7e795344389}{}\label{classBoard_aad8cd688c1c492c767d8c7e795344389}
+\index{Board@{Board}!set\+Imu\+Address0@{set\+Imu\+Address0}}
+\index{set\+Imu\+Address0@{set\+Imu\+Address0}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Imu\+Address0(int address)}{setImuAddress0(int address)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Imu\+Address0 (
+\begin{DoxyParamCaption}
+\item[{int}]{address}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_ad19db66886ca758ef9b3dd4a799d3563}{}\label{classBoard_ad19db66886ca758ef9b3dd4a799d3563}
+\index{Board@{Board}!set\+Imu\+Address1@{set\+Imu\+Address1}}
+\index{set\+Imu\+Address1@{set\+Imu\+Address1}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Imu\+Address1(int address)}{setImuAddress1(int address)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Imu\+Address1 (
+\begin{DoxyParamCaption}
+\item[{int}]{address}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_ad7b736a0dc2a01833b0caecbc272b7fa}{}\label{classBoard_ad7b736a0dc2a01833b0caecbc272b7fa}
+\index{Board@{Board}!set\+Imu\+Slot0@{set\+Imu\+Slot0}}
+\index{set\+Imu\+Slot0@{set\+Imu\+Slot0}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Imu\+Slot0(\+Imu\+Port $\ast$port)}{setImuSlot0(ImuPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Imu\+Slot0 (
+\begin{DoxyParamCaption}
+\item[{{\bf Imu\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_ae7d85b5fac2f08847c82f5a649e92b4e}{}\label{classBoard_ae7d85b5fac2f08847c82f5a649e92b4e}
+\index{Board@{Board}!set\+Imu\+Slot1@{set\+Imu\+Slot1}}
+\index{set\+Imu\+Slot1@{set\+Imu\+Slot1}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Imu\+Slot1(\+Imu\+Port $\ast$port)}{setImuSlot1(ImuPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Imu\+Slot1 (
+\begin{DoxyParamCaption}
+\item[{{\bf Imu\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a8393ced57177fe471ec4676890e3bfef}{}\label{classBoard_a8393ced57177fe471ec4676890e3bfef}
+\index{Board@{Board}!set\+Imu\+Slot2@{set\+Imu\+Slot2}}
+\index{set\+Imu\+Slot2@{set\+Imu\+Slot2}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Imu\+Slot2(\+Imu\+Port $\ast$port)}{setImuSlot2(ImuPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Imu\+Slot2 (
+\begin{DoxyParamCaption}
+\item[{{\bf Imu\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_aff8ad143ff3c31ebffbdb0a38c613724}{}\label{classBoard_aff8ad143ff3c31ebffbdb0a38c613724}
+\index{Board@{Board}!set\+Led\+Port@{set\+Led\+Port}}
+\index{set\+Led\+Port@{set\+Led\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Led\+Port(\+Output\+Port $\ast$port)}{setLedPort(OutputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Led\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Output\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_aeb8a60226ae21067632c011dd339b76c}{}\label{classBoard_aeb8a60226ae21067632c011dd339b76c}
+\index{Board@{Board}!set\+Motor\+Enable\+Port@{set\+Motor\+Enable\+Port}}
+\index{set\+Motor\+Enable\+Port@{set\+Motor\+Enable\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Motor\+Enable\+Port(\+Output\+Port $\ast$port)}{setMotorEnablePort(OutputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Motor\+Enable\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Output\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_ac3bb78d67ffca86fd4c780308d327e45}{}\label{classBoard_ac3bb78d67ffca86fd4c780308d327e45}
+\index{Board@{Board}!set\+Motor\+Error\+Left\+Ankle\+Port@{set\+Motor\+Error\+Left\+Ankle\+Port}}
+\index{set\+Motor\+Error\+Left\+Ankle\+Port@{set\+Motor\+Error\+Left\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Motor\+Error\+Left\+Ankle\+Port(\+Input\+Port $\ast$port)}{setMotorErrorLeftAnklePort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Motor\+Error\+Left\+Ankle\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_acdec893b7034bd0175980a6b31c7c611}{}\label{classBoard_acdec893b7034bd0175980a6b31c7c611}
+\index{Board@{Board}!set\+Motor\+Error\+Left\+Knee\+Port@{set\+Motor\+Error\+Left\+Knee\+Port}}
+\index{set\+Motor\+Error\+Left\+Knee\+Port@{set\+Motor\+Error\+Left\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Motor\+Error\+Left\+Knee\+Port(\+Input\+Port $\ast$port)}{setMotorErrorLeftKneePort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Motor\+Error\+Left\+Knee\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_ab36460d8e4b01128ff0060261b086577}{}\label{classBoard_ab36460d8e4b01128ff0060261b086577}
+\index{Board@{Board}!set\+Motor\+Error\+Right\+Ankle\+Port@{set\+Motor\+Error\+Right\+Ankle\+Port}}
+\index{set\+Motor\+Error\+Right\+Ankle\+Port@{set\+Motor\+Error\+Right\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Motor\+Error\+Right\+Ankle\+Port(\+Input\+Port $\ast$port)}{setMotorErrorRightAnklePort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Motor\+Error\+Right\+Ankle\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a703739a87f21444992922b328710f04c}{}\label{classBoard_a703739a87f21444992922b328710f04c}
+\index{Board@{Board}!set\+Motor\+Error\+Right\+Knee\+Port@{set\+Motor\+Error\+Right\+Knee\+Port}}
+\index{set\+Motor\+Error\+Right\+Knee\+Port@{set\+Motor\+Error\+Right\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Motor\+Error\+Right\+Knee\+Port(\+Input\+Port $\ast$port)}{setMotorErrorRightKneePort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Motor\+Error\+Right\+Knee\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a944f77aeca71cc0c6afb06355222f01c}{}\label{classBoard_a944f77aeca71cc0c6afb06355222f01c}
+\index{Board@{Board}!set\+Motor\+Left\+Ankle\+Port@{set\+Motor\+Left\+Ankle\+Port}}
+\index{set\+Motor\+Left\+Ankle\+Port@{set\+Motor\+Left\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Motor\+Left\+Ankle\+Port(\+Output\+Port $\ast$port)}{setMotorLeftAnklePort(OutputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Motor\+Left\+Ankle\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Output\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_aebeebf46653c0d1009fd0129ba65c2a0}{}\label{classBoard_aebeebf46653c0d1009fd0129ba65c2a0}
+\index{Board@{Board}!set\+Motor\+Left\+Knee\+Port@{set\+Motor\+Left\+Knee\+Port}}
+\index{set\+Motor\+Left\+Knee\+Port@{set\+Motor\+Left\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Motor\+Left\+Knee\+Port(\+Output\+Port $\ast$port)}{setMotorLeftKneePort(OutputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Motor\+Left\+Knee\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Output\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a480facbc78ceaec928897e80be948977}{}\label{classBoard_a480facbc78ceaec928897e80be948977}
+\index{Board@{Board}!set\+Motor\+Right\+Ankle\+Port@{set\+Motor\+Right\+Ankle\+Port}}
+\index{set\+Motor\+Right\+Ankle\+Port@{set\+Motor\+Right\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Motor\+Right\+Ankle\+Port(\+Output\+Port $\ast$port)}{setMotorRightAnklePort(OutputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Motor\+Right\+Ankle\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Output\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a0f1b706acf8d29f207773f1d922946b8}{}\label{classBoard_a0f1b706acf8d29f207773f1d922946b8}
+\index{Board@{Board}!set\+Motor\+Right\+Knee\+Port@{set\+Motor\+Right\+Knee\+Port}}
+\index{set\+Motor\+Right\+Knee\+Port@{set\+Motor\+Right\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Motor\+Right\+Knee\+Port(\+Output\+Port $\ast$port)}{setMotorRightKneePort(OutputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Motor\+Right\+Knee\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Output\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_acdb5c2acbf9de0d43b06558d0b4cd5f1}{}\label{classBoard_acdb5c2acbf9de0d43b06558d0b4cd5f1}
+\index{Board@{Board}!set\+Pot\+Left\+Ankle\+Port@{set\+Pot\+Left\+Ankle\+Port}}
+\index{set\+Pot\+Left\+Ankle\+Port@{set\+Pot\+Left\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Pot\+Left\+Ankle\+Port(\+Input\+Port $\ast$port)}{setPotLeftAnklePort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Pot\+Left\+Ankle\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_ad79af5f3ce4dd29f53127e5b27aa11be}{}\label{classBoard_ad79af5f3ce4dd29f53127e5b27aa11be}
+\index{Board@{Board}!set\+Pot\+Left\+Knee\+Port@{set\+Pot\+Left\+Knee\+Port}}
+\index{set\+Pot\+Left\+Knee\+Port@{set\+Pot\+Left\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Pot\+Left\+Knee\+Port(\+Input\+Port $\ast$port)}{setPotLeftKneePort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Pot\+Left\+Knee\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a7016b22924417ccfb6a1932bdd8fc78f}{}\label{classBoard_a7016b22924417ccfb6a1932bdd8fc78f}
+\index{Board@{Board}!set\+Pot\+Right\+Ankle\+Port@{set\+Pot\+Right\+Ankle\+Port}}
+\index{set\+Pot\+Right\+Ankle\+Port@{set\+Pot\+Right\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Pot\+Right\+Ankle\+Port(\+Input\+Port $\ast$port)}{setPotRightAnklePort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Pot\+Right\+Ankle\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a2df5ecd2411c91091b123058f795f7e7}{}\label{classBoard_a2df5ecd2411c91091b123058f795f7e7}
+\index{Board@{Board}!set\+Pot\+Right\+Knee\+Port@{set\+Pot\+Right\+Knee\+Port}}
+\index{set\+Pot\+Right\+Knee\+Port@{set\+Pot\+Right\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Pot\+Right\+Knee\+Port(\+Input\+Port $\ast$port)}{setPotRightKneePort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Pot\+Right\+Knee\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_ad5ad3dc269c1c2f22e1d22e2f69daefc}{}\label{classBoard_ad5ad3dc269c1c2f22e1d22e2f69daefc}
+\index{Board@{Board}!set\+Torque\+Sensor\+Left\+Ankle\+Port@{set\+Torque\+Sensor\+Left\+Ankle\+Port}}
+\index{set\+Torque\+Sensor\+Left\+Ankle\+Port@{set\+Torque\+Sensor\+Left\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Torque\+Sensor\+Left\+Ankle\+Port(\+Input\+Port $\ast$port)}{setTorqueSensorLeftAnklePort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Torque\+Sensor\+Left\+Ankle\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_af667f98775160ebdbc4cc8ee31cbe910}{}\label{classBoard_af667f98775160ebdbc4cc8ee31cbe910}
+\index{Board@{Board}!set\+Torque\+Sensor\+Left\+Knee\+Port@{set\+Torque\+Sensor\+Left\+Knee\+Port}}
+\index{set\+Torque\+Sensor\+Left\+Knee\+Port@{set\+Torque\+Sensor\+Left\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Torque\+Sensor\+Left\+Knee\+Port(\+Input\+Port $\ast$port)}{setTorqueSensorLeftKneePort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Torque\+Sensor\+Left\+Knee\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_ae45adf7a5640338344156fdd32822178}{}\label{classBoard_ae45adf7a5640338344156fdd32822178}
+\index{Board@{Board}!set\+Torque\+Sensor\+Right\+Ankle\+Port@{set\+Torque\+Sensor\+Right\+Ankle\+Port}}
+\index{set\+Torque\+Sensor\+Right\+Ankle\+Port@{set\+Torque\+Sensor\+Right\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Torque\+Sensor\+Right\+Ankle\+Port(\+Input\+Port $\ast$port)}{setTorqueSensorRightAnklePort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Torque\+Sensor\+Right\+Ankle\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a269e4e67787dc9e27d472e5c88f0fe83}{}\label{classBoard_a269e4e67787dc9e27d472e5c88f0fe83}
+\index{Board@{Board}!set\+Torque\+Sensor\+Right\+Knee\+Port@{set\+Torque\+Sensor\+Right\+Knee\+Port}}
+\index{set\+Torque\+Sensor\+Right\+Knee\+Port@{set\+Torque\+Sensor\+Right\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{set\+Torque\+Sensor\+Right\+Knee\+Port(\+Input\+Port $\ast$port)}{setTorqueSensorRightKneePort(InputPort *port)}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::set\+Torque\+Sensor\+Right\+Knee\+Port (
+\begin{DoxyParamCaption}
+\item[{{\bf Input\+Port} $\ast$}]{port}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a8a4b37dc0833c39a644b99f3edd16b9f}{}\label{classBoard_a8a4b37dc0833c39a644b99f3edd16b9f}
+\index{Board@{Board}!take\+Bluetooth\+Rx\+Port@{take\+Bluetooth\+Rx\+Port}}
+\index{take\+Bluetooth\+Rx\+Port@{take\+Bluetooth\+Rx\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Bluetooth\+Rx\+Port()}{takeBluetoothRxPort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Rx\+Port} $\ast$ Board\+::take\+Bluetooth\+Rx\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a3b0eb16b49af6cecd2615ddebb301a83}{}\label{classBoard_a3b0eb16b49af6cecd2615ddebb301a83}
+\index{Board@{Board}!take\+Bluetooth\+Tx\+Port@{take\+Bluetooth\+Tx\+Port}}
+\index{take\+Bluetooth\+Tx\+Port@{take\+Bluetooth\+Tx\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Bluetooth\+Tx\+Port()}{takeBluetoothTxPort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Tx\+Port} $\ast$ Board\+::take\+Bluetooth\+Tx\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a4d2aeef1855a94949426a0004da0d206}{}\label{classBoard_a4d2aeef1855a94949426a0004da0d206}
+\index{Board@{Board}!take\+Fsr\+Sense\+Left\+Heel\+Port@{take\+Fsr\+Sense\+Left\+Heel\+Port}}
+\index{take\+Fsr\+Sense\+Left\+Heel\+Port@{take\+Fsr\+Sense\+Left\+Heel\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Fsr\+Sense\+Left\+Heel\+Port()}{takeFsrSenseLeftHeelPort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Fsr\+Sense\+Left\+Heel\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a21da1fccb5bb27ade658cbfdf05a64f9}{}\label{classBoard_a21da1fccb5bb27ade658cbfdf05a64f9}
+\index{Board@{Board}!take\+Fsr\+Sense\+Left\+Toe\+Port@{take\+Fsr\+Sense\+Left\+Toe\+Port}}
+\index{take\+Fsr\+Sense\+Left\+Toe\+Port@{take\+Fsr\+Sense\+Left\+Toe\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Fsr\+Sense\+Left\+Toe\+Port()}{takeFsrSenseLeftToePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Fsr\+Sense\+Left\+Toe\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_af30a08ff2ff3e86e290d8c512907a422}{}\label{classBoard_af30a08ff2ff3e86e290d8c512907a422}
+\index{Board@{Board}!take\+Fsr\+Sense\+Right\+Heel\+Port@{take\+Fsr\+Sense\+Right\+Heel\+Port}}
+\index{take\+Fsr\+Sense\+Right\+Heel\+Port@{take\+Fsr\+Sense\+Right\+Heel\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Fsr\+Sense\+Right\+Heel\+Port()}{takeFsrSenseRightHeelPort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Fsr\+Sense\+Right\+Heel\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_acea5ca8cba177d604319585260afb1b8}{}\label{classBoard_acea5ca8cba177d604319585260afb1b8}
+\index{Board@{Board}!take\+Fsr\+Sense\+Right\+Toe\+Port@{take\+Fsr\+Sense\+Right\+Toe\+Port}}
+\index{take\+Fsr\+Sense\+Right\+Toe\+Port@{take\+Fsr\+Sense\+Right\+Toe\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Fsr\+Sense\+Right\+Toe\+Port()}{takeFsrSenseRightToePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Fsr\+Sense\+Right\+Toe\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a78a9a73532be37ed05d6d2f12e5b7182}{}\label{classBoard_a78a9a73532be37ed05d6d2f12e5b7182}
+\index{Board@{Board}!take\+Led\+Port@{take\+Led\+Port}}
+\index{take\+Led\+Port@{take\+Led\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Led\+Port()}{takeLedPort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Output\+Port} $\ast$ Board\+::take\+Led\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a7771c3fc5e365b4a8f2c3db312792f5a}{}\label{classBoard_a7771c3fc5e365b4a8f2c3db312792f5a}
+\index{Board@{Board}!take\+Motor\+Enable\+Port@{take\+Motor\+Enable\+Port}}
+\index{take\+Motor\+Enable\+Port@{take\+Motor\+Enable\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Motor\+Enable\+Port()}{takeMotorEnablePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Output\+Port} $\ast$ Board\+::take\+Motor\+Enable\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a4ec97cefdf203ed9fcafddd098bd194f}{}\label{classBoard_a4ec97cefdf203ed9fcafddd098bd194f}
+\index{Board@{Board}!take\+Motor\+Error\+Left\+Ankle\+Port@{take\+Motor\+Error\+Left\+Ankle\+Port}}
+\index{take\+Motor\+Error\+Left\+Ankle\+Port@{take\+Motor\+Error\+Left\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Motor\+Error\+Left\+Ankle\+Port()}{takeMotorErrorLeftAnklePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Motor\+Error\+Left\+Ankle\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a40da12d162a16f92111525007e28abd5}{}\label{classBoard_a40da12d162a16f92111525007e28abd5}
+\index{Board@{Board}!take\+Motor\+Error\+Left\+Knee\+Port@{take\+Motor\+Error\+Left\+Knee\+Port}}
+\index{take\+Motor\+Error\+Left\+Knee\+Port@{take\+Motor\+Error\+Left\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Motor\+Error\+Left\+Knee\+Port()}{takeMotorErrorLeftKneePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Motor\+Error\+Left\+Knee\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a55d3bf54fbec7225b507f44e7826a6d1}{}\label{classBoard_a55d3bf54fbec7225b507f44e7826a6d1}
+\index{Board@{Board}!take\+Motor\+Error\+Right\+Ankle\+Port@{take\+Motor\+Error\+Right\+Ankle\+Port}}
+\index{take\+Motor\+Error\+Right\+Ankle\+Port@{take\+Motor\+Error\+Right\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Motor\+Error\+Right\+Ankle\+Port()}{takeMotorErrorRightAnklePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Motor\+Error\+Right\+Ankle\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_affcf61ded54f8e2149c014b6147c0bd0}{}\label{classBoard_affcf61ded54f8e2149c014b6147c0bd0}
+\index{Board@{Board}!take\+Motor\+Error\+Right\+Knee\+Port@{take\+Motor\+Error\+Right\+Knee\+Port}}
+\index{take\+Motor\+Error\+Right\+Knee\+Port@{take\+Motor\+Error\+Right\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Motor\+Error\+Right\+Knee\+Port()}{takeMotorErrorRightKneePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Motor\+Error\+Right\+Knee\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_ac70e1db27663c5b2f55a744d55846b55}{}\label{classBoard_ac70e1db27663c5b2f55a744d55846b55}
+\index{Board@{Board}!take\+Motor\+Left\+Ankle\+Port@{take\+Motor\+Left\+Ankle\+Port}}
+\index{take\+Motor\+Left\+Ankle\+Port@{take\+Motor\+Left\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Motor\+Left\+Ankle\+Port()}{takeMotorLeftAnklePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Output\+Port} $\ast$ Board\+::take\+Motor\+Left\+Ankle\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a7185650a74ca6795c38bf66e6acb0d71}{}\label{classBoard_a7185650a74ca6795c38bf66e6acb0d71}
+\index{Board@{Board}!take\+Motor\+Left\+Knee\+Port@{take\+Motor\+Left\+Knee\+Port}}
+\index{take\+Motor\+Left\+Knee\+Port@{take\+Motor\+Left\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Motor\+Left\+Knee\+Port()}{takeMotorLeftKneePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Output\+Port} $\ast$ Board\+::take\+Motor\+Left\+Knee\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_ae11de17a46428a72a2596b0b462193ee}{}\label{classBoard_ae11de17a46428a72a2596b0b462193ee}
+\index{Board@{Board}!take\+Motor\+Right\+Ankle\+Port@{take\+Motor\+Right\+Ankle\+Port}}
+\index{take\+Motor\+Right\+Ankle\+Port@{take\+Motor\+Right\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Motor\+Right\+Ankle\+Port()}{takeMotorRightAnklePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Output\+Port} $\ast$ Board\+::take\+Motor\+Right\+Ankle\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_aa54cf724971416290d50e807b0afbc19}{}\label{classBoard_aa54cf724971416290d50e807b0afbc19}
+\index{Board@{Board}!take\+Motor\+Right\+Knee\+Port@{take\+Motor\+Right\+Knee\+Port}}
+\index{take\+Motor\+Right\+Knee\+Port@{take\+Motor\+Right\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Motor\+Right\+Knee\+Port()}{takeMotorRightKneePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Output\+Port} $\ast$ Board\+::take\+Motor\+Right\+Knee\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_af96d2b8c37435f2b0430238cdfabaf13}{}\label{classBoard_af96d2b8c37435f2b0430238cdfabaf13}
+\index{Board@{Board}!take\+Pot\+Left\+Ankle\+Port@{take\+Pot\+Left\+Ankle\+Port}}
+\index{take\+Pot\+Left\+Ankle\+Port@{take\+Pot\+Left\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Pot\+Left\+Ankle\+Port()}{takePotLeftAnklePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Pot\+Left\+Ankle\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a654483cd7d4d93b768d1b8eb981fbff2}{}\label{classBoard_a654483cd7d4d93b768d1b8eb981fbff2}
+\index{Board@{Board}!take\+Pot\+Left\+Knee\+Port@{take\+Pot\+Left\+Knee\+Port}}
+\index{take\+Pot\+Left\+Knee\+Port@{take\+Pot\+Left\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Pot\+Left\+Knee\+Port()}{takePotLeftKneePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Pot\+Left\+Knee\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a625f45733819f5e144bceb61ce886831}{}\label{classBoard_a625f45733819f5e144bceb61ce886831}
+\index{Board@{Board}!take\+Pot\+Right\+Ankle\+Port@{take\+Pot\+Right\+Ankle\+Port}}
+\index{take\+Pot\+Right\+Ankle\+Port@{take\+Pot\+Right\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Pot\+Right\+Ankle\+Port()}{takePotRightAnklePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Pot\+Right\+Ankle\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_ad580a6bc7986156eeb69ea50a02f1563}{}\label{classBoard_ad580a6bc7986156eeb69ea50a02f1563}
+\index{Board@{Board}!take\+Pot\+Right\+Knee\+Port@{take\+Pot\+Right\+Knee\+Port}}
+\index{take\+Pot\+Right\+Knee\+Port@{take\+Pot\+Right\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Pot\+Right\+Knee\+Port()}{takePotRightKneePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Pot\+Right\+Knee\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a25d4d7b2a40147c681f1bd50c1037557}{}\label{classBoard_a25d4d7b2a40147c681f1bd50c1037557}
+\index{Board@{Board}!take\+Torque\+Sensor\+Left\+Ankle\+Port@{take\+Torque\+Sensor\+Left\+Ankle\+Port}}
+\index{take\+Torque\+Sensor\+Left\+Ankle\+Port@{take\+Torque\+Sensor\+Left\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Torque\+Sensor\+Left\+Ankle\+Port()}{takeTorqueSensorLeftAnklePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Torque\+Sensor\+Left\+Ankle\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a4a3194002b85e3adea633d849964ce54}{}\label{classBoard_a4a3194002b85e3adea633d849964ce54}
+\index{Board@{Board}!take\+Torque\+Sensor\+Left\+Knee\+Port@{take\+Torque\+Sensor\+Left\+Knee\+Port}}
+\index{take\+Torque\+Sensor\+Left\+Knee\+Port@{take\+Torque\+Sensor\+Left\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Torque\+Sensor\+Left\+Knee\+Port()}{takeTorqueSensorLeftKneePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Torque\+Sensor\+Left\+Knee\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a77deee0229cdc90dfba844f733738548}{}\label{classBoard_a77deee0229cdc90dfba844f733738548}
+\index{Board@{Board}!take\+Torque\+Sensor\+Right\+Ankle\+Port@{take\+Torque\+Sensor\+Right\+Ankle\+Port}}
+\index{take\+Torque\+Sensor\+Right\+Ankle\+Port@{take\+Torque\+Sensor\+Right\+Ankle\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Torque\+Sensor\+Right\+Ankle\+Port()}{takeTorqueSensorRightAnklePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Torque\+Sensor\+Right\+Ankle\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a2728251277213d1d3b51adc60d57c88c}{}\label{classBoard_a2728251277213d1d3b51adc60d57c88c}
+\index{Board@{Board}!take\+Torque\+Sensor\+Right\+Knee\+Port@{take\+Torque\+Sensor\+Right\+Knee\+Port}}
+\index{take\+Torque\+Sensor\+Right\+Knee\+Port@{take\+Torque\+Sensor\+Right\+Knee\+Port}!Board@{Board}}
+\subsubsection[{\texorpdfstring{take\+Torque\+Sensor\+Right\+Knee\+Port()}{takeTorqueSensorRightKneePort()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Input\+Port} $\ast$ Board\+::take\+Torque\+Sensor\+Right\+Knee\+Port (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a425a898e1ebbf15cbb9198f723d8279b}{}\label{classBoard_a425a898e1ebbf15cbb9198f723d8279b}
+\index{Board@{Board}!turn\+On\+Led@{turn\+On\+Led}}
+\index{turn\+On\+Led@{turn\+On\+Led}!Board@{Board}}
+\subsubsection[{\texorpdfstring{turn\+On\+Led()}{turnOnLed()}}]{\setlength{\rightskip}{0pt plus 5cm}void Board\+::turn\+On\+Led (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classBoard_a022ee938df244ab52f8ce4c3541a7600}{}\label{classBoard_a022ee938df244ab52f8ce4c3541a7600}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Board_8hpp}{Board.\+hpp}\item 
+\hyperlink{Board_8cpp}{Board.\+cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,6 @@
+<map id="InputPort" name="InputPort">
+<area shape="rect" id="node3" href="$classAnalogInputPort.html" title="AnalogInputPort" alt="" coords="5,155,120,181"/>
+<area shape="rect" id="node4" href="$classDigitalInputPort.html" title="DigitalInputPort" alt="" coords="144,155,256,181"/>
+<area shape="rect" id="node5" href="$classRxPort.html" title="RxPort" alt="" coords="281,155,343,181"/>
+<area shape="rect" id="node2" href="$classPort.html" title="Port" alt="" coords="177,5,223,32"/>
+</map>

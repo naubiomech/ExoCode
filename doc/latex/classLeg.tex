@@ -1,0 +1,321 @@
+\hypertarget{classLeg}{}\section{Leg Class Reference}
+\label{classLeg}\index{Leg@{Leg}}
+
+
+{\ttfamily \#include $<$Leg.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classLeg_a6d5b28eb9654994965bcfdbf9923ff23}{Leg} (\hyperlink{classState}{State} $\ast$states, \hyperlink{classLinkedList}{Linked\+List}$<$ \hyperlink{classJoint}{Joint} $\ast$ $>$ \&joints, \hyperlink{classLinkedList}{Linked\+List}$<$ \hyperlink{classFSRGroup}{F\+S\+R\+Group} $\ast$ $>$ \&fsrs, \hyperlink{classLinkedList}{Linked\+List}$<$ \hyperlink{classIMU}{I\+MU} $\ast$ $>$ \&imus)
+\item 
+\hyperlink{classLeg_ae8681a2d65842a5665e14a27d05e2269}{$\sim$\+Leg} ()
+\item 
+void \hyperlink{classLeg_a8f7c54d2d11a119d8450d913cc350142}{measure\+Sensors} ()
+\item 
+bool \hyperlink{classLeg_ae78b8472ac3715c6884a5a20b29b2bd3}{check\+Motor\+Errors} ()
+\item 
+void \hyperlink{classLeg_a224e77111da7e058fe78c303831039ea}{attempt\+Calibration} ()
+\item 
+void \hyperlink{classLeg_a7186f2ae6bc0498b85c304125d10f95c}{adjust\+Setpoint} ()
+\item 
+void \hyperlink{classLeg_a91aeace1a207588ed2ee381de3e15bca}{run\+Auto\+KF} ()
+\item 
+void \hyperlink{classLeg_af9e1c41b81595063edfa2c8b1b91868b}{increment\+Step\+Count} ()
+\item 
+bool \hyperlink{classLeg_a649070f138eead80a820a29bbe0f7959}{apply\+Torque} ()
+\item 
+void \hyperlink{classLeg_ac2b402d4f61e692797d548d70e1f992b}{apply\+State\+Machine} ()
+\item 
+void \hyperlink{classLeg_a27223f58b6b0b20cf691251dde86f015}{set\+Zero\+If\+Steady\+State} ()
+\item 
+void \hyperlink{classLeg_a4cc3d9df26638c77b5e827eefb03eadb}{reset\+Starting\+Parameters} ()
+\item 
+void \hyperlink{classLeg_afc669943b31b0fe0d19dc9da140ff2b9}{auto\+KF} ()
+\item 
+void \hyperlink{classLeg_a2a1b6b4345de1e518900e5d0fbeee49c}{adjust\+Joint\+Setpoints} ()
+\item 
+void \hyperlink{classLeg_a2e57891c74878490c6fae9e3a726475a}{start\+Torque\+Calibration} ()
+\item 
+void \hyperlink{classLeg_a02e7dfa847455404aa9e855b2e65d965}{update\+Torque\+Calibration} ()
+\item 
+void \hyperlink{classLeg_a35242d38ec77ff962dee1d41c0b0bb25}{end\+Torque\+Calibration} ()
+\item 
+void \hyperlink{classLeg_a6397dd7adda69b882dc8896befe44521}{calibrate\+F\+S\+Rs} ()
+\item 
+void \hyperlink{classLeg_a090059ad6eb80a0bab1959e11204a9fc}{set\+Zero\+If\+Necessary} ()
+\item 
+void \hyperlink{classLeg_aa94863075e3315241dd38295f17b367a}{change\+State} ()
+\item 
+void \hyperlink{classLeg_a3c17ee6284bad7ffd7ed70ca489be71d}{reset\+F\+S\+R\+Maxes} ()
+\item 
+void \hyperlink{classLeg_a15b64f84ff059dcc5c0e1737713065ef}{adjust\+Shaping\+For\+Time} (double time)
+\item 
+bool \hyperlink{classLeg_ae45181c3f1985d1dd3beaa0a8fdaeb80}{has\+State\+Changed} ()
+\item 
+bool \hyperlink{classLeg_a62516955ed494320f201004efe1db22c}{determine\+\_\+foot\+\_\+state\+\_\+change} ()
+\item 
+void \hyperlink{classLeg_a3f3fee107dde490eba904090ec1c5432}{apply\+Control} ()
+\item 
+void \hyperlink{classLeg_a213af951e26c6c4f5c4fc68d3d4023db}{set\+To\+Zero} ()
+\item 
+void \hyperlink{classLeg_a233cc08e57814cd1ce2ed919fb07a97c}{calibrate\+I\+M\+Us} ()
+\item 
+void \hyperlink{classLeg_a72cdf72c2b9ea17abfa76803fccad197}{set\+Sign} (int sign)
+\item 
+void \hyperlink{classLeg_a3b1fac088cad54b09b479350df64c4bc}{process\+Message} (\hyperlink{classLegMessage}{Leg\+Message} $\ast$msg)
+\item 
+\hyperlink{classLegReport}{Leg\+Report} $\ast$ \hyperlink{classLeg_aa32dd6354841f77f6957a366a66732a9}{generate\+Report} ()
+\item 
+void \hyperlink{classLeg_afea7c9698b1380dc95cd4d691985a216}{fill\+Report} (\hyperlink{classLegReport}{Leg\+Report} $\ast$report)
+\item 
+void \hyperlink{classLeg_ac896449b8a94aaa1bc2e7695e27646eb}{set\+Leg\+Sign} (int sign)
+\item 
+void \hyperlink{classLeg_a37cda412d2d7e8469847ad0c3180de03}{change\+Joint\+Control} (\hyperlink{States_8hpp_a26aafbeccd8f356b39e1809f1ab9cfdc}{State\+ID} state\+\_\+id)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Leg@{Leg}!Leg@{Leg}}
+\index{Leg@{Leg}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{Leg(\+State $\ast$states, Linked\+List$<$ Joint $\ast$ $>$ \&joints, Linked\+List$<$ F\+S\+R\+Group $\ast$ $>$ \&fsrs, Linked\+List$<$ I\+M\+U $\ast$ $>$ \&imus)}{Leg(State *states, LinkedList< Joint * > &joints, LinkedList< FSRGroup * > &fsrs, LinkedList< IMU * > &imus)}}]{\setlength{\rightskip}{0pt plus 5cm}Leg\+::\+Leg (
+\begin{DoxyParamCaption}
+\item[{{\bf State} $\ast$}]{states, }
+\item[{{\bf Linked\+List}$<$ {\bf Joint} $\ast$ $>$ \&}]{joints, }
+\item[{{\bf Linked\+List}$<$ {\bf F\+S\+R\+Group} $\ast$ $>$ \&}]{fsrs, }
+\item[{{\bf Linked\+List}$<$ {\bf I\+MU} $\ast$ $>$ \&}]{imus}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a6d5b28eb9654994965bcfdbf9923ff23}{}\label{classLeg_a6d5b28eb9654994965bcfdbf9923ff23}
+\index{Leg@{Leg}!````~Leg@{$\sim$\+Leg}}
+\index{````~Leg@{$\sim$\+Leg}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{$\sim$\+Leg()}{~Leg()}}]{\setlength{\rightskip}{0pt plus 5cm}Leg\+::$\sim$\+Leg (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_ae8681a2d65842a5665e14a27d05e2269}{}\label{classLeg_ae8681a2d65842a5665e14a27d05e2269}
+
+
+\subsection{Member Function Documentation}
+\index{Leg@{Leg}!adjust\+Joint\+Setpoints@{adjust\+Joint\+Setpoints}}
+\index{adjust\+Joint\+Setpoints@{adjust\+Joint\+Setpoints}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{adjust\+Joint\+Setpoints()}{adjustJointSetpoints()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::adjust\+Joint\+Setpoints (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a2a1b6b4345de1e518900e5d0fbeee49c}{}\label{classLeg_a2a1b6b4345de1e518900e5d0fbeee49c}
+\index{Leg@{Leg}!adjust\+Setpoint@{adjust\+Setpoint}}
+\index{adjust\+Setpoint@{adjust\+Setpoint}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{adjust\+Setpoint()}{adjustSetpoint()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::adjust\+Setpoint (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a7186f2ae6bc0498b85c304125d10f95c}{}\label{classLeg_a7186f2ae6bc0498b85c304125d10f95c}
+\index{Leg@{Leg}!adjust\+Shaping\+For\+Time@{adjust\+Shaping\+For\+Time}}
+\index{adjust\+Shaping\+For\+Time@{adjust\+Shaping\+For\+Time}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{adjust\+Shaping\+For\+Time(double time)}{adjustShapingForTime(double time)}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::adjust\+Shaping\+For\+Time (
+\begin{DoxyParamCaption}
+\item[{double}]{time}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a15b64f84ff059dcc5c0e1737713065ef}{}\label{classLeg_a15b64f84ff059dcc5c0e1737713065ef}
+\index{Leg@{Leg}!apply\+Control@{apply\+Control}}
+\index{apply\+Control@{apply\+Control}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{apply\+Control()}{applyControl()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::apply\+Control (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a3f3fee107dde490eba904090ec1c5432}{}\label{classLeg_a3f3fee107dde490eba904090ec1c5432}
+\index{Leg@{Leg}!apply\+State\+Machine@{apply\+State\+Machine}}
+\index{apply\+State\+Machine@{apply\+State\+Machine}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{apply\+State\+Machine()}{applyStateMachine()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::apply\+State\+Machine (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_ac2b402d4f61e692797d548d70e1f992b}{}\label{classLeg_ac2b402d4f61e692797d548d70e1f992b}
+\index{Leg@{Leg}!apply\+Torque@{apply\+Torque}}
+\index{apply\+Torque@{apply\+Torque}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{apply\+Torque()}{applyTorque()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Leg\+::apply\+Torque (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a649070f138eead80a820a29bbe0f7959}{}\label{classLeg_a649070f138eead80a820a29bbe0f7959}
+\index{Leg@{Leg}!attempt\+Calibration@{attempt\+Calibration}}
+\index{attempt\+Calibration@{attempt\+Calibration}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{attempt\+Calibration()}{attemptCalibration()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::attempt\+Calibration (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a224e77111da7e058fe78c303831039ea}{}\label{classLeg_a224e77111da7e058fe78c303831039ea}
+\index{Leg@{Leg}!auto\+KF@{auto\+KF}}
+\index{auto\+KF@{auto\+KF}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{auto\+K\+F()}{autoKF()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::auto\+KF (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_afc669943b31b0fe0d19dc9da140ff2b9}{}\label{classLeg_afc669943b31b0fe0d19dc9da140ff2b9}
+\index{Leg@{Leg}!calibrate\+F\+S\+Rs@{calibrate\+F\+S\+Rs}}
+\index{calibrate\+F\+S\+Rs@{calibrate\+F\+S\+Rs}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{calibrate\+F\+S\+Rs()}{calibrateFSRs()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::calibrate\+F\+S\+Rs (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a6397dd7adda69b882dc8896befe44521}{}\label{classLeg_a6397dd7adda69b882dc8896befe44521}
+\index{Leg@{Leg}!calibrate\+I\+M\+Us@{calibrate\+I\+M\+Us}}
+\index{calibrate\+I\+M\+Us@{calibrate\+I\+M\+Us}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{calibrate\+I\+M\+Us()}{calibrateIMUs()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::calibrate\+I\+M\+Us (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a233cc08e57814cd1ce2ed919fb07a97c}{}\label{classLeg_a233cc08e57814cd1ce2ed919fb07a97c}
+\index{Leg@{Leg}!change\+Joint\+Control@{change\+Joint\+Control}}
+\index{change\+Joint\+Control@{change\+Joint\+Control}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{change\+Joint\+Control(\+State\+I\+D state\+\_\+id)}{changeJointControl(StateID state_id)}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::change\+Joint\+Control (
+\begin{DoxyParamCaption}
+\item[{{\bf State\+ID}}]{state\+\_\+id}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a37cda412d2d7e8469847ad0c3180de03}{}\label{classLeg_a37cda412d2d7e8469847ad0c3180de03}
+\index{Leg@{Leg}!change\+State@{change\+State}}
+\index{change\+State@{change\+State}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{change\+State()}{changeState()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::change\+State (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_aa94863075e3315241dd38295f17b367a}{}\label{classLeg_aa94863075e3315241dd38295f17b367a}
+\index{Leg@{Leg}!check\+Motor\+Errors@{check\+Motor\+Errors}}
+\index{check\+Motor\+Errors@{check\+Motor\+Errors}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{check\+Motor\+Errors()}{checkMotorErrors()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Leg\+::check\+Motor\+Errors (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_ae78b8472ac3715c6884a5a20b29b2bd3}{}\label{classLeg_ae78b8472ac3715c6884a5a20b29b2bd3}
+\index{Leg@{Leg}!determine\+\_\+foot\+\_\+state\+\_\+change@{determine\+\_\+foot\+\_\+state\+\_\+change}}
+\index{determine\+\_\+foot\+\_\+state\+\_\+change@{determine\+\_\+foot\+\_\+state\+\_\+change}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{determine\+\_\+foot\+\_\+state\+\_\+change()}{determine_foot_state_change()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Leg\+::determine\+\_\+foot\+\_\+state\+\_\+change (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a62516955ed494320f201004efe1db22c}{}\label{classLeg_a62516955ed494320f201004efe1db22c}
+\index{Leg@{Leg}!end\+Torque\+Calibration@{end\+Torque\+Calibration}}
+\index{end\+Torque\+Calibration@{end\+Torque\+Calibration}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{end\+Torque\+Calibration()}{endTorqueCalibration()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::end\+Torque\+Calibration (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a35242d38ec77ff962dee1d41c0b0bb25}{}\label{classLeg_a35242d38ec77ff962dee1d41c0b0bb25}
+\index{Leg@{Leg}!fill\+Report@{fill\+Report}}
+\index{fill\+Report@{fill\+Report}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{fill\+Report(\+Leg\+Report $\ast$report)}{fillReport(LegReport *report)}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::fill\+Report (
+\begin{DoxyParamCaption}
+\item[{{\bf Leg\+Report} $\ast$}]{report}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_afea7c9698b1380dc95cd4d691985a216}{}\label{classLeg_afea7c9698b1380dc95cd4d691985a216}
+\index{Leg@{Leg}!generate\+Report@{generate\+Report}}
+\index{generate\+Report@{generate\+Report}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{generate\+Report()}{generateReport()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Leg\+Report} $\ast$ Leg\+::generate\+Report (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_aa32dd6354841f77f6957a366a66732a9}{}\label{classLeg_aa32dd6354841f77f6957a366a66732a9}
+\index{Leg@{Leg}!has\+State\+Changed@{has\+State\+Changed}}
+\index{has\+State\+Changed@{has\+State\+Changed}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{has\+State\+Changed()}{hasStateChanged()}}]{\setlength{\rightskip}{0pt plus 5cm}bool Leg\+::has\+State\+Changed (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_ae45181c3f1985d1dd3beaa0a8fdaeb80}{}\label{classLeg_ae45181c3f1985d1dd3beaa0a8fdaeb80}
+\index{Leg@{Leg}!increment\+Step\+Count@{increment\+Step\+Count}}
+\index{increment\+Step\+Count@{increment\+Step\+Count}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{increment\+Step\+Count()}{incrementStepCount()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::increment\+Step\+Count (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_af9e1c41b81595063edfa2c8b1b91868b}{}\label{classLeg_af9e1c41b81595063edfa2c8b1b91868b}
+\index{Leg@{Leg}!measure\+Sensors@{measure\+Sensors}}
+\index{measure\+Sensors@{measure\+Sensors}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{measure\+Sensors()}{measureSensors()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::measure\+Sensors (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a8f7c54d2d11a119d8450d913cc350142}{}\label{classLeg_a8f7c54d2d11a119d8450d913cc350142}
+\index{Leg@{Leg}!process\+Message@{process\+Message}}
+\index{process\+Message@{process\+Message}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{process\+Message(\+Leg\+Message $\ast$msg)}{processMessage(LegMessage *msg)}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::process\+Message (
+\begin{DoxyParamCaption}
+\item[{{\bf Leg\+Message} $\ast$}]{msg}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a3b1fac088cad54b09b479350df64c4bc}{}\label{classLeg_a3b1fac088cad54b09b479350df64c4bc}
+\index{Leg@{Leg}!reset\+F\+S\+R\+Maxes@{reset\+F\+S\+R\+Maxes}}
+\index{reset\+F\+S\+R\+Maxes@{reset\+F\+S\+R\+Maxes}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{reset\+F\+S\+R\+Maxes()}{resetFSRMaxes()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::reset\+F\+S\+R\+Maxes (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a3c17ee6284bad7ffd7ed70ca489be71d}{}\label{classLeg_a3c17ee6284bad7ffd7ed70ca489be71d}
+\index{Leg@{Leg}!reset\+Starting\+Parameters@{reset\+Starting\+Parameters}}
+\index{reset\+Starting\+Parameters@{reset\+Starting\+Parameters}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{reset\+Starting\+Parameters()}{resetStartingParameters()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::reset\+Starting\+Parameters (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a4cc3d9df26638c77b5e827eefb03eadb}{}\label{classLeg_a4cc3d9df26638c77b5e827eefb03eadb}
+\index{Leg@{Leg}!run\+Auto\+KF@{run\+Auto\+KF}}
+\index{run\+Auto\+KF@{run\+Auto\+KF}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{run\+Auto\+K\+F()}{runAutoKF()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::run\+Auto\+KF (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a91aeace1a207588ed2ee381de3e15bca}{}\label{classLeg_a91aeace1a207588ed2ee381de3e15bca}
+\index{Leg@{Leg}!set\+Leg\+Sign@{set\+Leg\+Sign}}
+\index{set\+Leg\+Sign@{set\+Leg\+Sign}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{set\+Leg\+Sign(int sign)}{setLegSign(int sign)}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::set\+Leg\+Sign (
+\begin{DoxyParamCaption}
+\item[{int}]{sign}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_ac896449b8a94aaa1bc2e7695e27646eb}{}\label{classLeg_ac896449b8a94aaa1bc2e7695e27646eb}
+\index{Leg@{Leg}!set\+Sign@{set\+Sign}}
+\index{set\+Sign@{set\+Sign}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{set\+Sign(int sign)}{setSign(int sign)}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::set\+Sign (
+\begin{DoxyParamCaption}
+\item[{int}]{sign}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a72cdf72c2b9ea17abfa76803fccad197}{}\label{classLeg_a72cdf72c2b9ea17abfa76803fccad197}
+\index{Leg@{Leg}!set\+To\+Zero@{set\+To\+Zero}}
+\index{set\+To\+Zero@{set\+To\+Zero}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{set\+To\+Zero()}{setToZero()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::set\+To\+Zero (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a213af951e26c6c4f5c4fc68d3d4023db}{}\label{classLeg_a213af951e26c6c4f5c4fc68d3d4023db}
+\index{Leg@{Leg}!set\+Zero\+If\+Necessary@{set\+Zero\+If\+Necessary}}
+\index{set\+Zero\+If\+Necessary@{set\+Zero\+If\+Necessary}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{set\+Zero\+If\+Necessary()}{setZeroIfNecessary()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::set\+Zero\+If\+Necessary (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a090059ad6eb80a0bab1959e11204a9fc}{}\label{classLeg_a090059ad6eb80a0bab1959e11204a9fc}
+\index{Leg@{Leg}!set\+Zero\+If\+Steady\+State@{set\+Zero\+If\+Steady\+State}}
+\index{set\+Zero\+If\+Steady\+State@{set\+Zero\+If\+Steady\+State}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{set\+Zero\+If\+Steady\+State()}{setZeroIfSteadyState()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::set\+Zero\+If\+Steady\+State (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a27223f58b6b0b20cf691251dde86f015}{}\label{classLeg_a27223f58b6b0b20cf691251dde86f015}
+\index{Leg@{Leg}!start\+Torque\+Calibration@{start\+Torque\+Calibration}}
+\index{start\+Torque\+Calibration@{start\+Torque\+Calibration}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{start\+Torque\+Calibration()}{startTorqueCalibration()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::start\+Torque\+Calibration (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a2e57891c74878490c6fae9e3a726475a}{}\label{classLeg_a2e57891c74878490c6fae9e3a726475a}
+\index{Leg@{Leg}!update\+Torque\+Calibration@{update\+Torque\+Calibration}}
+\index{update\+Torque\+Calibration@{update\+Torque\+Calibration}!Leg@{Leg}}
+\subsubsection[{\texorpdfstring{update\+Torque\+Calibration()}{updateTorqueCalibration()}}]{\setlength{\rightskip}{0pt plus 5cm}void Leg\+::update\+Torque\+Calibration (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classLeg_a02e7dfa847455404aa9e855b2e65d965}{}\label{classLeg_a02e7dfa847455404aa9e855b2e65d965}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Leg_8hpp}{Leg.\+hpp}\item 
+\hyperlink{Leg_8cpp}{Leg.\+cpp}\end{DoxyCompactItemize}

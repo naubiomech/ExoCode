@@ -1,0 +1,21 @@
+<map id="TorqueSensor.hpp" name="TorqueSensor.hpp">
+<area shape="rect" id="node2" href="$Joint_8hpp.html" title="Joint.hpp" alt="" coords="320,80,395,107"/>
+<area shape="rect" id="node11" href="$ExoBuilder_8cpp.html" title="ExoBuilder.cpp" alt="" coords="77,453,187,480"/>
+<area shape="rect" id="node20" href="$TorqueSensor_8cpp.html" title="TorqueSensor.cpp" alt="" coords="419,80,547,107"/>
+<area shape="rect" id="node3" href="$Leg_8hpp.html" title="Leg.hpp" alt="" coords="323,155,391,181"/>
+<area shape="rect" id="node13" href="$Joint_8cpp.html" title="Joint.cpp" alt="" coords="879,379,953,405"/>
+<area shape="rect" id="node18" href="$Message_8cpp.html" title="Message.cpp" alt="" coords="731,229,831,256"/>
+<area shape="rect" id="node4" href="$Exoskeleton_8hpp.html" title="Exoskeleton.hpp" alt="" coords="347,229,466,256"/>
+<area shape="rect" id="node12" href="$Exoskeleton_8cpp.html" title="Exoskeleton.cpp" alt="" coords="737,379,855,405"/>
+<area shape="rect" id="node17" href="$Leg_8cpp.html" title="Leg.cpp" alt="" coords="94,229,162,256"/>
+<area shape="rect" id="node19" href="$States_8cpp.html" title="States.cpp" alt="" coords="187,229,272,256"/>
+<area shape="rect" id="node5" href="$Board_8hpp.html" title="Board.hpp" alt="" coords="523,304,605,331"/>
+<area shape="rect" id="node10" href="$ExoBuilder_8hpp.html" title="ExoBuilder.hpp" alt="" coords="195,379,306,405"/>
+<area shape="rect" id="node15" href="$Commands_8cpp.html" title="Commands.cpp" alt="" coords="195,304,309,331"/>
+<area shape="rect" id="node16" href="$Transceiver_8cpp.html" title="Transceiver.cpp" alt="" coords="333,304,448,331"/>
+<area shape="rect" id="node6" href="$Board_8cpp.html" title="Board.cpp" alt="" coords="486,379,567,405"/>
+<area shape="rect" id="node7" href="$BoardBuilder_8hpp.html" title="BoardBuilder.hpp" alt="" coords="591,379,713,405"/>
+<area shape="rect" id="node14" href="$Motor_8cpp.html" title="Motor.cpp" alt="" coords="381,379,461,405"/>
+<area shape="rect" id="node8" href="$BoardBuilder_8cpp.html" title="BoardBuilder.cpp" alt="" coords="591,453,713,480"/>
+<area shape="rect" id="node9" href="$main_8cpp.html" title="main.cpp" alt="" coords="352,453,427,480"/>
+</map>

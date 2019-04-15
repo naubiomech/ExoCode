@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['balance_5fcontrol',['balance_control',['../Control__Algorithms_8hpp.html#afda28772870dd56f60cd7a301337392ca35e733849039f01fae8b84716a7f5860',1,'Control_Algorithms.hpp']]],
+  ['balancecontrol',['BalanceControl',['../classBalanceControl.html',1,'BalanceControl'],['../classBalanceControl.html#ac7ee7f2242e22ec7152fc2c8ff77c6a2',1,'BalanceControl::BalanceControl()']]],
+  ['bang_5fbang',['bang_bang',['../Control__Algorithms_8hpp.html#afda28772870dd56f60cd7a301337392ca9aa259493d67f2390987186c116db2f6',1,'Control_Algorithms.hpp']]],
+  ['bangbangcontrol',['BangBangControl',['../classBangBangControl.html',1,'BangBangControl'],['../classBangBangControl.html#a0b0353ef64816c09b321af53a315975d',1,'BangBangControl::BangBangControl()']]],
+  ['begin',['begin',['../classSoftwareSerial.html#aa2a193a9ec41bba10ed98c3cecdf01ef',1,'SoftwareSerial::begin()'],['../classAdafruit__BNO055.html#ac124f2497d533c75f0238b7eb4b4acea',1,'Adafruit_BNO055::begin()']]],
+  ['beginareamessage',['beginAreaMessage',['../classExoMessageBuilder.html#aabebaab998f701c2c296ef471757e50a',1,'ExoMessageBuilder']]],
+  ['beginfsrgroup',['beginFSRGroup',['../classLegBuilder.html#a10e2bc65709a416d8f3af63789b8c6a8',1,'LegBuilder']]],
+  ['beginjointmessage',['beginJointMessage',['../classLegMessageBuilder.html#ab6eb2c55d5479f22e41bb2f4fc298f4d',1,'LegMessageBuilder']]],
+  ['beginleftleg',['beginLeftLeg',['../classExoBuilder.html#a96c398cb523b039319dba0461e30ac79',1,'ExoBuilder']]],
+  ['beginleftlegmessage',['beginLeftLegMessage',['../classExoMessageBuilder.html#ac6cf79896b47d07f6f7f814d141872db',1,'ExoMessageBuilder']]],
+  ['beginrightleg',['beginRightLeg',['../classExoBuilder.html#a934166b17a4be037b9aa6fcce9295c05',1,'ExoBuilder']]],
+  ['beginrightlegmessage',['beginRightLegMessage',['../classExoMessageBuilder.html#ada1f9ccc3973815c198f80fe249ce5f5',1,'ExoMessageBuilder']]],
+  ['bno055_5fsamplerate_5fdelay_5fms',['BNO055_SAMPLERATE_DELAY_MS',['../Parameters_8hpp.html#afadd94ef41f4e1d98c9a041e87541e0c',1,'Parameters.hpp']]],
+  ['board',['Board',['../classBoard.html',1,'Board'],['../classBoard.html#a9ee491d4fea680cf69b033374a9fdfcb',1,'Board::Board()']]],
+  ['board_2ecpp',['Board.cpp',['../Board_8cpp.html',1,'']]],
+  ['board_2ehpp',['Board.hpp',['../Board_8hpp.html',1,'']]],
+  ['boardbuilder',['BoardBuilder',['../classBoardBuilder.html',1,'BoardBuilder'],['../classBoardBuilder.html#a96de7aa9414b8233c4f8f9f4b0c2378b',1,'BoardBuilder::BoardBuilder()']]],
+  ['boardbuilder_2ecpp',['BoardBuilder.cpp',['../BoardBuilder_8cpp.html',1,'']]],
+  ['boardbuilder_2ehpp',['BoardBuilder.hpp',['../BoardBuilder_8hpp.html',1,'']]],
+  ['boarddirector',['BoardDirector',['../classBoardDirector.html',1,'']]],
+  ['build',['build',['../classBoardDirector.html#a4f63215446ecbb9eee811a5f1b848fff',1,'BoardDirector::build()'],['../classQuadBoardDirector.html#a4f43bce7847e996d4a1043c83d81638c',1,'QuadBoardDirector::build()'],['../classBoardBuilder.html#a54e6fefa54dd28ccefff493340d059b8',1,'BoardBuilder::build()'],['../classControlModuleBuilder.html#ae3e6bd507641754e7d5590859b499fff',1,'ControlModuleBuilder::build()'],['../classExoDirector.html#a47e0aaa6573aee9bfd3cc3d24634adee',1,'ExoDirector::build()'],['../classQuadExoDirector.html#a84ad89c3c1c005ccb40c4b9a91c5e773',1,'QuadExoDirector::build()'],['../classExoBuilder.html#ae121300fd8a1d4f1d8b10093c031d9e2',1,'ExoBuilder::build()'],['../classLegBuilder.html#a6361be156ebc794ff1d2a9f7b640cb89',1,'LegBuilder::build()'],['../classJointMessageBuilder.html#a55d3234eff44de706654c3d706f25db2',1,'JointMessageBuilder::build()'],['../classLegMessageBuilder.html#ad4342f20929ef314e7fa7800e09a533a',1,'LegMessageBuilder::build()'],['../classExoMessageBuilder.html#a500aa272dbefe9161a59cb66b03b84df',1,'ExoMessageBuilder::build()'],['../classExoReportBuilder.html#a7c642afbbba7ea8160e36d045cacba67',1,'ExoReportBuilder::build()'],['../classLegReportBuilder.html#a95291115fa092c71b82dae7c979c86d7',1,'LegReportBuilder::build()'],['../classStateBuilder.html#a122459bef8f7fa790b9d78ce84e0ea69',1,'StateBuilder::build()']]],
+  ['byte_5ftranscriber',['byte_transcriber',['../classTransceiver.html#a126dcfc63c0a937fc758c5c464d3e36a',1,'Transceiver']]],
+  ['bytetranscriber',['ByteTranscriber',['../classByteTranscriber.html',1,'']]],
+  ['bytetranscriber_2ecpp',['ByteTranscriber.cpp',['../ByteTranscriber_8cpp.html',1,'']]],
+  ['bytetranscriber_2ehpp',['ByteTranscriber.hpp',['../ByteTranscriber_8hpp.html',1,'']]]
+];

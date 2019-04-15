@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classCommand.html" title="Command\&lt; Joint \&gt;" alt="" coords="5,81,140,108"/>
+<area shape="rect" id="node2" href="$classSetJointKfCommand.html" title="SetJointKfCommand" alt="" coords="232,5,375,32"/>
+<area shape="rect" id="node3" href="$classSetJointPidCommand.html" title="SetJointPidCommand" alt="" coords="229,56,378,83"/>
+<area shape="rect" id="node4" href="$classSetJointSetpointCommand.html" title="SetJointSetpointCommand" alt="" coords="214,107,393,133"/>
+<area shape="rect" id="node5" href="$classSetJointSmoothingParamCommand.html" title="SetJointSmoothingParamCommand" alt="" coords="188,157,419,184"/>
+</map>

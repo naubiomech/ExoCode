@@ -1,0 +1,237 @@
+\hypertarget{Arduino_8hpp}{}\section{Arduino.\+hpp File Reference}
+\label{Arduino_8hpp}\index{Arduino.\+hpp@{Arduino.\+hpp}}
+{\ttfamily \#include $<$stdint.\+h$>$}\\*
+{\ttfamily \#include $<$math.\+h$>$}\\*
+{\ttfamily \#include $<$stdio.\+h$>$}\\*
+{\ttfamily \#include $<$stdlib.\+h$>$}\\*
+Include dependency graph for Arduino.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=325pt]{Arduino_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Arduino_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classSoftwareSerial}{Software\+Serial}
+\item 
+struct \hyperlink{structsensors__event__t}{sensors\+\_\+event\+\_\+t}
+\item 
+class \hyperlink{classAdafruit__BNO055}{Adafruit\+\_\+\+B\+N\+O055}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{Arduino_8hpp_aa226465ed17b185a4da45c4792d309a8}{I2\+C\+\_\+\+M\+A\+S\+T\+ER}~1
+\item 
+\#define \hyperlink{Arduino_8hpp_abe79abbf782fdb46cf526491bbe9ed8f}{I2\+C\+\_\+\+P\+U\+L\+L\+U\+P\+\_\+\+E\+XT}~1
+\item 
+\#define \hyperlink{Arduino_8hpp_a5b473e586ff786fb13015137c0b76a29}{I2\+C\+\_\+\+R\+A\+T\+E\+\_\+100}~1
+\item 
+\#define \hyperlink{Arduino_8hpp_ab5c2043866ee84ba78d697a13697e6e3}{I2\+C\+\_\+\+O\+P\+\_\+\+M\+O\+D\+E\+\_\+\+I\+SR}~1
+\item 
+\#define \hyperlink{Arduino_8hpp_a1bb283bd7893b9855e2f23013891fc82}{I\+N\+P\+UT}~0
+\item 
+\#define \hyperlink{Arduino_8hpp_a61a3c9a18380aafb6e430e79bf596557}{O\+U\+T\+P\+UT}~1
+\item 
+\#define \hyperlink{Arduino_8hpp_ab811d8c6ff3a505312d3276590444289}{L\+OW}~0
+\item 
+\#define \hyperlink{Arduino_8hpp_a5bb885982ff66a2e0a0a45a8ee9c35e2}{H\+I\+GH}~1
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{Arduino_8hpp_aaa5bce2cb83fc43fec67214bf4feea69}{i2c\+\_\+pins} \{ \hyperlink{Arduino_8hpp_aaa5bce2cb83fc43fec67214bf4feea69a8759673e9ab20efbd7d2d78d7ee296c2}{I2\+C\+\_\+\+P\+I\+N\+S\+\_\+3\+\_\+4} = 0, 
+\hyperlink{Arduino_8hpp_aaa5bce2cb83fc43fec67214bf4feea69a70bf38ec68e6221d651ad5699703f9df}{I2\+C\+\_\+\+P\+I\+N\+S\+\_\+7\+\_\+8}, 
+\hyperlink{Arduino_8hpp_aaa5bce2cb83fc43fec67214bf4feea69a0b29bc6db0d402fc2171c282bd84c7d2}{I2\+C\+\_\+\+P\+I\+N\+S\+\_\+37\+\_\+38}
+ \}
+\item 
+enum \hyperlink{Arduino_8hpp_ab2e3db7382e551f5b0485447adcad03e}{i2c\+\_\+bus} \{ \hyperlink{Arduino_8hpp_ab2e3db7382e551f5b0485447adcad03ea0979a845ee2458640e8e577e98e41bc2}{W\+I\+R\+E\+\_\+\+B\+US}, 
+\hyperlink{Arduino_8hpp_ab2e3db7382e551f5b0485447adcad03eac9fd18190b8305e0637ebb592949bab0}{W\+I\+R\+E1\+\_\+\+B\+US}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{Arduino_8hpp_ac85d0faf6ea14e342ebca4fa6dbaa962}{delay} (double)
+\item 
+double \hyperlink{Arduino_8hpp_ad1286ce446bd24bcbdfecfe85808c943}{max} (double, double)
+\item 
+double \hyperlink{Arduino_8hpp_a5cf9b9042953c6a7944ac9a6490510ba}{min} (double, double)
+\item 
+unsigned long \hyperlink{Arduino_8hpp_a6ff7f2532a22366f0013bc41397129fd}{millis} ()
+\item 
+void \hyperlink{Arduino_8hpp_a5fc313e20cf591fdc90c4c3867ac7717}{pin\+Mode} (int, int)
+\item 
+void \hyperlink{Arduino_8hpp_abce4428ceb4142f48bd7c31e83f6dfc6}{analog\+Read\+Resolution} (int)
+\item 
+void \hyperlink{Arduino_8hpp_add6518a5268381f53406d65b554b1f06}{analog\+Write\+Resolution} (int)
+\item 
+int \hyperlink{Arduino_8hpp_a9812650d249ab11b4c81359fae754ac0}{analog\+Read} (int)
+\item 
+void \hyperlink{Arduino_8hpp_a3f15dff152283e193d4d552e201f782b}{analog\+Write} (int, int)
+\item 
+int \hyperlink{Arduino_8hpp_a22da107357c4027b9b12fc496c9932bb}{digital\+Read} (int)
+\item 
+void \hyperlink{Arduino_8hpp_afb6322a0aff6851765ab32bfaa5080d6}{digital\+Write} (int, int)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classSoftwareSerial}{Software\+Serial} \hyperlink{Arduino_8hpp_a5b6824983e3851801a3420f5977d157d}{Serial}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!H\+I\+GH@{H\+I\+GH}}
+\index{H\+I\+GH@{H\+I\+GH}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{H\+I\+GH}{HIGH}}]{\setlength{\rightskip}{0pt plus 5cm}\#define H\+I\+GH~1}\hypertarget{Arduino_8hpp_a5bb885982ff66a2e0a0a45a8ee9c35e2}{}\label{Arduino_8hpp_a5bb885982ff66a2e0a0a45a8ee9c35e2}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!I2\+C\+\_\+\+M\+A\+S\+T\+ER@{I2\+C\+\_\+\+M\+A\+S\+T\+ER}}
+\index{I2\+C\+\_\+\+M\+A\+S\+T\+ER@{I2\+C\+\_\+\+M\+A\+S\+T\+ER}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{I2\+C\+\_\+\+M\+A\+S\+T\+ER}{I2C_MASTER}}]{\setlength{\rightskip}{0pt plus 5cm}\#define I2\+C\+\_\+\+M\+A\+S\+T\+ER~1}\hypertarget{Arduino_8hpp_aa226465ed17b185a4da45c4792d309a8}{}\label{Arduino_8hpp_aa226465ed17b185a4da45c4792d309a8}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!I2\+C\+\_\+\+O\+P\+\_\+\+M\+O\+D\+E\+\_\+\+I\+SR@{I2\+C\+\_\+\+O\+P\+\_\+\+M\+O\+D\+E\+\_\+\+I\+SR}}
+\index{I2\+C\+\_\+\+O\+P\+\_\+\+M\+O\+D\+E\+\_\+\+I\+SR@{I2\+C\+\_\+\+O\+P\+\_\+\+M\+O\+D\+E\+\_\+\+I\+SR}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{I2\+C\+\_\+\+O\+P\+\_\+\+M\+O\+D\+E\+\_\+\+I\+SR}{I2C_OP_MODE_ISR}}]{\setlength{\rightskip}{0pt plus 5cm}\#define I2\+C\+\_\+\+O\+P\+\_\+\+M\+O\+D\+E\+\_\+\+I\+SR~1}\hypertarget{Arduino_8hpp_ab5c2043866ee84ba78d697a13697e6e3}{}\label{Arduino_8hpp_ab5c2043866ee84ba78d697a13697e6e3}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!I2\+C\+\_\+\+P\+U\+L\+L\+U\+P\+\_\+\+E\+XT@{I2\+C\+\_\+\+P\+U\+L\+L\+U\+P\+\_\+\+E\+XT}}
+\index{I2\+C\+\_\+\+P\+U\+L\+L\+U\+P\+\_\+\+E\+XT@{I2\+C\+\_\+\+P\+U\+L\+L\+U\+P\+\_\+\+E\+XT}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{I2\+C\+\_\+\+P\+U\+L\+L\+U\+P\+\_\+\+E\+XT}{I2C_PULLUP_EXT}}]{\setlength{\rightskip}{0pt plus 5cm}\#define I2\+C\+\_\+\+P\+U\+L\+L\+U\+P\+\_\+\+E\+XT~1}\hypertarget{Arduino_8hpp_abe79abbf782fdb46cf526491bbe9ed8f}{}\label{Arduino_8hpp_abe79abbf782fdb46cf526491bbe9ed8f}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!I2\+C\+\_\+\+R\+A\+T\+E\+\_\+100@{I2\+C\+\_\+\+R\+A\+T\+E\+\_\+100}}
+\index{I2\+C\+\_\+\+R\+A\+T\+E\+\_\+100@{I2\+C\+\_\+\+R\+A\+T\+E\+\_\+100}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{I2\+C\+\_\+\+R\+A\+T\+E\+\_\+100}{I2C_RATE_100}}]{\setlength{\rightskip}{0pt plus 5cm}\#define I2\+C\+\_\+\+R\+A\+T\+E\+\_\+100~1}\hypertarget{Arduino_8hpp_a5b473e586ff786fb13015137c0b76a29}{}\label{Arduino_8hpp_a5b473e586ff786fb13015137c0b76a29}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!I\+N\+P\+UT@{I\+N\+P\+UT}}
+\index{I\+N\+P\+UT@{I\+N\+P\+UT}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{I\+N\+P\+UT}{INPUT}}]{\setlength{\rightskip}{0pt plus 5cm}\#define I\+N\+P\+UT~0}\hypertarget{Arduino_8hpp_a1bb283bd7893b9855e2f23013891fc82}{}\label{Arduino_8hpp_a1bb283bd7893b9855e2f23013891fc82}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!L\+OW@{L\+OW}}
+\index{L\+OW@{L\+OW}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{L\+OW}{LOW}}]{\setlength{\rightskip}{0pt plus 5cm}\#define L\+OW~0}\hypertarget{Arduino_8hpp_ab811d8c6ff3a505312d3276590444289}{}\label{Arduino_8hpp_ab811d8c6ff3a505312d3276590444289}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!O\+U\+T\+P\+UT@{O\+U\+T\+P\+UT}}
+\index{O\+U\+T\+P\+UT@{O\+U\+T\+P\+UT}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{O\+U\+T\+P\+UT}{OUTPUT}}]{\setlength{\rightskip}{0pt plus 5cm}\#define O\+U\+T\+P\+UT~1}\hypertarget{Arduino_8hpp_a61a3c9a18380aafb6e430e79bf596557}{}\label{Arduino_8hpp_a61a3c9a18380aafb6e430e79bf596557}
+
+
+\subsection{Enumeration Type Documentation}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!i2c\+\_\+bus@{i2c\+\_\+bus}}
+\index{i2c\+\_\+bus@{i2c\+\_\+bus}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{i2c\+\_\+bus}{i2c_bus}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf i2c\+\_\+bus}}\hypertarget{Arduino_8hpp_ab2e3db7382e551f5b0485447adcad03e}{}\label{Arduino_8hpp_ab2e3db7382e551f5b0485447adcad03e}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{W\+I\+R\+E\+\_\+\+B\+US@{W\+I\+R\+E\+\_\+\+B\+US}!Arduino.\+hpp@{Arduino.\+hpp}}\index{Arduino.\+hpp@{Arduino.\+hpp}!W\+I\+R\+E\+\_\+\+B\+US@{W\+I\+R\+E\+\_\+\+B\+US}}\item[{\em 
+W\+I\+R\+E\+\_\+\+B\+US\hypertarget{Arduino_8hpp_ab2e3db7382e551f5b0485447adcad03ea0979a845ee2458640e8e577e98e41bc2}{}\label{Arduino_8hpp_ab2e3db7382e551f5b0485447adcad03ea0979a845ee2458640e8e577e98e41bc2}
+}]\index{W\+I\+R\+E1\+\_\+\+B\+US@{W\+I\+R\+E1\+\_\+\+B\+US}!Arduino.\+hpp@{Arduino.\+hpp}}\index{Arduino.\+hpp@{Arduino.\+hpp}!W\+I\+R\+E1\+\_\+\+B\+US@{W\+I\+R\+E1\+\_\+\+B\+US}}\item[{\em 
+W\+I\+R\+E1\+\_\+\+B\+US\hypertarget{Arduino_8hpp_ab2e3db7382e551f5b0485447adcad03eac9fd18190b8305e0637ebb592949bab0}{}\label{Arduino_8hpp_ab2e3db7382e551f5b0485447adcad03eac9fd18190b8305e0637ebb592949bab0}
+}]\end{description}
+\end{Desc}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!i2c\+\_\+pins@{i2c\+\_\+pins}}
+\index{i2c\+\_\+pins@{i2c\+\_\+pins}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{i2c\+\_\+pins}{i2c_pins}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf i2c\+\_\+pins}}\hypertarget{Arduino_8hpp_aaa5bce2cb83fc43fec67214bf4feea69}{}\label{Arduino_8hpp_aaa5bce2cb83fc43fec67214bf4feea69}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{I2\+C\+\_\+\+P\+I\+N\+S\+\_\+3\+\_\+4@{I2\+C\+\_\+\+P\+I\+N\+S\+\_\+3\+\_\+4}!Arduino.\+hpp@{Arduino.\+hpp}}\index{Arduino.\+hpp@{Arduino.\+hpp}!I2\+C\+\_\+\+P\+I\+N\+S\+\_\+3\+\_\+4@{I2\+C\+\_\+\+P\+I\+N\+S\+\_\+3\+\_\+4}}\item[{\em 
+I2\+C\+\_\+\+P\+I\+N\+S\+\_\+3\+\_\+4\hypertarget{Arduino_8hpp_aaa5bce2cb83fc43fec67214bf4feea69a8759673e9ab20efbd7d2d78d7ee296c2}{}\label{Arduino_8hpp_aaa5bce2cb83fc43fec67214bf4feea69a8759673e9ab20efbd7d2d78d7ee296c2}
+}]\index{I2\+C\+\_\+\+P\+I\+N\+S\+\_\+7\+\_\+8@{I2\+C\+\_\+\+P\+I\+N\+S\+\_\+7\+\_\+8}!Arduino.\+hpp@{Arduino.\+hpp}}\index{Arduino.\+hpp@{Arduino.\+hpp}!I2\+C\+\_\+\+P\+I\+N\+S\+\_\+7\+\_\+8@{I2\+C\+\_\+\+P\+I\+N\+S\+\_\+7\+\_\+8}}\item[{\em 
+I2\+C\+\_\+\+P\+I\+N\+S\+\_\+7\+\_\+8\hypertarget{Arduino_8hpp_aaa5bce2cb83fc43fec67214bf4feea69a70bf38ec68e6221d651ad5699703f9df}{}\label{Arduino_8hpp_aaa5bce2cb83fc43fec67214bf4feea69a70bf38ec68e6221d651ad5699703f9df}
+}]\index{I2\+C\+\_\+\+P\+I\+N\+S\+\_\+37\+\_\+38@{I2\+C\+\_\+\+P\+I\+N\+S\+\_\+37\+\_\+38}!Arduino.\+hpp@{Arduino.\+hpp}}\index{Arduino.\+hpp@{Arduino.\+hpp}!I2\+C\+\_\+\+P\+I\+N\+S\+\_\+37\+\_\+38@{I2\+C\+\_\+\+P\+I\+N\+S\+\_\+37\+\_\+38}}\item[{\em 
+I2\+C\+\_\+\+P\+I\+N\+S\+\_\+37\+\_\+38\hypertarget{Arduino_8hpp_aaa5bce2cb83fc43fec67214bf4feea69a0b29bc6db0d402fc2171c282bd84c7d2}{}\label{Arduino_8hpp_aaa5bce2cb83fc43fec67214bf4feea69a0b29bc6db0d402fc2171c282bd84c7d2}
+}]\end{description}
+\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!analog\+Read@{analog\+Read}}
+\index{analog\+Read@{analog\+Read}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{analog\+Read(int)}{analogRead(int)}}]{\setlength{\rightskip}{0pt plus 5cm}int analog\+Read (
+\begin{DoxyParamCaption}
+\item[{int}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{Arduino_8hpp_a9812650d249ab11b4c81359fae754ac0}{}\label{Arduino_8hpp_a9812650d249ab11b4c81359fae754ac0}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!analog\+Read\+Resolution@{analog\+Read\+Resolution}}
+\index{analog\+Read\+Resolution@{analog\+Read\+Resolution}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{analog\+Read\+Resolution(int)}{analogReadResolution(int)}}]{\setlength{\rightskip}{0pt plus 5cm}void analog\+Read\+Resolution (
+\begin{DoxyParamCaption}
+\item[{int}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{Arduino_8hpp_abce4428ceb4142f48bd7c31e83f6dfc6}{}\label{Arduino_8hpp_abce4428ceb4142f48bd7c31e83f6dfc6}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!analog\+Write@{analog\+Write}}
+\index{analog\+Write@{analog\+Write}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{analog\+Write(int, int)}{analogWrite(int, int)}}]{\setlength{\rightskip}{0pt plus 5cm}void analog\+Write (
+\begin{DoxyParamCaption}
+\item[{int}]{, }
+\item[{int}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{Arduino_8hpp_a3f15dff152283e193d4d552e201f782b}{}\label{Arduino_8hpp_a3f15dff152283e193d4d552e201f782b}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!analog\+Write\+Resolution@{analog\+Write\+Resolution}}
+\index{analog\+Write\+Resolution@{analog\+Write\+Resolution}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{analog\+Write\+Resolution(int)}{analogWriteResolution(int)}}]{\setlength{\rightskip}{0pt plus 5cm}void analog\+Write\+Resolution (
+\begin{DoxyParamCaption}
+\item[{int}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{Arduino_8hpp_add6518a5268381f53406d65b554b1f06}{}\label{Arduino_8hpp_add6518a5268381f53406d65b554b1f06}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!delay@{delay}}
+\index{delay@{delay}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{delay(double)}{delay(double)}}]{\setlength{\rightskip}{0pt plus 5cm}void delay (
+\begin{DoxyParamCaption}
+\item[{double}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{Arduino_8hpp_ac85d0faf6ea14e342ebca4fa6dbaa962}{}\label{Arduino_8hpp_ac85d0faf6ea14e342ebca4fa6dbaa962}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!digital\+Read@{digital\+Read}}
+\index{digital\+Read@{digital\+Read}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{digital\+Read(int)}{digitalRead(int)}}]{\setlength{\rightskip}{0pt plus 5cm}int digital\+Read (
+\begin{DoxyParamCaption}
+\item[{int}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{Arduino_8hpp_a22da107357c4027b9b12fc496c9932bb}{}\label{Arduino_8hpp_a22da107357c4027b9b12fc496c9932bb}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!digital\+Write@{digital\+Write}}
+\index{digital\+Write@{digital\+Write}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{digital\+Write(int, int)}{digitalWrite(int, int)}}]{\setlength{\rightskip}{0pt plus 5cm}void digital\+Write (
+\begin{DoxyParamCaption}
+\item[{int}]{, }
+\item[{int}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{Arduino_8hpp_afb6322a0aff6851765ab32bfaa5080d6}{}\label{Arduino_8hpp_afb6322a0aff6851765ab32bfaa5080d6}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!max@{max}}
+\index{max@{max}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{max(double, double)}{max(double, double)}}]{\setlength{\rightskip}{0pt plus 5cm}double max (
+\begin{DoxyParamCaption}
+\item[{double}]{, }
+\item[{double}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{Arduino_8hpp_ad1286ce446bd24bcbdfecfe85808c943}{}\label{Arduino_8hpp_ad1286ce446bd24bcbdfecfe85808c943}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!millis@{millis}}
+\index{millis@{millis}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{millis()}{millis()}}]{\setlength{\rightskip}{0pt plus 5cm}unsigned long millis (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{Arduino_8hpp_a6ff7f2532a22366f0013bc41397129fd}{}\label{Arduino_8hpp_a6ff7f2532a22366f0013bc41397129fd}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!min@{min}}
+\index{min@{min}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{min(double, double)}{min(double, double)}}]{\setlength{\rightskip}{0pt plus 5cm}double min (
+\begin{DoxyParamCaption}
+\item[{double}]{, }
+\item[{double}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{Arduino_8hpp_a5cf9b9042953c6a7944ac9a6490510ba}{}\label{Arduino_8hpp_a5cf9b9042953c6a7944ac9a6490510ba}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!pin\+Mode@{pin\+Mode}}
+\index{pin\+Mode@{pin\+Mode}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{pin\+Mode(int, int)}{pinMode(int, int)}}]{\setlength{\rightskip}{0pt plus 5cm}void pin\+Mode (
+\begin{DoxyParamCaption}
+\item[{int}]{, }
+\item[{int}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{Arduino_8hpp_a5fc313e20cf591fdc90c4c3867ac7717}{}\label{Arduino_8hpp_a5fc313e20cf591fdc90c4c3867ac7717}
+
+
+\subsection{Variable Documentation}
+\index{Arduino.\+hpp@{Arduino.\+hpp}!Serial@{Serial}}
+\index{Serial@{Serial}!Arduino.\+hpp@{Arduino.\+hpp}}
+\subsubsection[{\texorpdfstring{Serial}{Serial}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Software\+Serial} Serial}\hypertarget{Arduino_8hpp_a5b6824983e3851801a3420f5977d157d}{}\label{Arduino_8hpp_a5b6824983e3851801a3420f5977d157d}

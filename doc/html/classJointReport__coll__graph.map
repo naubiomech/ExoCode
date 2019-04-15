@@ -1,0 +1,9 @@
+<map id="JointReport" name="JointReport">
+<area shape="rect" id="node2" href="$classReport.html" title="Report" alt="" coords="111,184,173,211"/>
+<area shape="rect" id="node6" href="$classMotorReport.html" title="MotorReport" alt="" coords="24,260,119,287"/>
+<area shape="rect" id="node7" href="$classTorqueSensorReport.html" title="TorqueSensorReport" alt="" coords="143,260,285,287"/>
+<area shape="rect" id="node8" href="$classPotReport.html" title="PotReport" alt="" coords="309,260,391,287"/>
+<area shape="rect" id="node3" href="$classJointSelect.html" title="JointSelect" alt="" coords="99,95,185,121"/>
+<area shape="rect" id="node4" href="$classAreaIDSelect.html" title="AreaIDSelect" alt="" coords="24,5,124,32"/>
+<area shape="rect" id="node5" href="$classLegJointIDSelect.html" title="LegJointIDSelect" alt="" coords="149,5,271,32"/>
+</map>

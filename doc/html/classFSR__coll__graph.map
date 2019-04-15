@@ -1,0 +1,6 @@
+<map id="FSR" name="FSR">
+<area shape="rect" id="node2" href="$classClamp.html" title="A class to clamp values. " alt="" coords="5,81,65,108"/>
+<area shape="rect" id="node3" href="$classMax.html" title="Max" alt="" coords="119,81,165,108"/>
+<area shape="rect" id="node4" href="$classInputPort.html" title="InputPort" alt="" coords="201,81,275,108"/>
+<area shape="rect" id="node5" href="$classPort.html" title="Port" alt="" coords="215,5,261,32"/>
+</map>

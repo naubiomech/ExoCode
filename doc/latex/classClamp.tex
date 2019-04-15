@@ -1,0 +1,73 @@
+\hypertarget{classClamp}{}\section{Clamp Class Reference}
+\label{classClamp}\index{Clamp@{Clamp}}
+
+
+A class to clamp values.  
+
+
+
+
+{\ttfamily \#include $<$Utils.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classClamp_a728a84cf8827958105210cf776e6497e}{Clamp} (double lower, double upper)
+\begin{DoxyCompactList}\small\item\em The constructor with upper and lower bounds. \end{DoxyCompactList}\item 
+double \hyperlink{classClamp_a0d371f34a552d9fcd9982b8d38ff9e19}{clamp} (double value)
+\begin{DoxyCompactList}\small\item\em Clamps the value between lower and upper. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A class to clamp values. 
+
+The clamp class will always clamp the given value between the upper and lower values given. 
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Clamp@{Clamp}!Clamp@{Clamp}}
+\index{Clamp@{Clamp}!Clamp@{Clamp}}
+\subsubsection[{\texorpdfstring{Clamp(double lower, double upper)}{Clamp(double lower, double upper)}}]{\setlength{\rightskip}{0pt plus 5cm}Clamp\+::\+Clamp (
+\begin{DoxyParamCaption}
+\item[{double}]{lower, }
+\item[{double}]{upper}
+\end{DoxyParamCaption}
+)}\hypertarget{classClamp_a728a84cf8827958105210cf776e6497e}{}\label{classClamp_a728a84cf8827958105210cf776e6497e}
+
+
+The constructor with upper and lower bounds. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lower} & The lower bound that the value can\textquotesingle{}t be lower than \\
+\hline
+{\em upper} & The upper bound that the value can\textquotesingle{}t be higher than\\
+\hline
+\end{DoxyParams}
+The constructor that takes in the upper and lower bounds that the value will be constrained within. 
+
+\subsection{Member Function Documentation}
+\index{Clamp@{Clamp}!clamp@{clamp}}
+\index{clamp@{clamp}!Clamp@{Clamp}}
+\subsubsection[{\texorpdfstring{clamp(double value)}{clamp(double value)}}]{\setlength{\rightskip}{0pt plus 5cm}double Clamp\+::clamp (
+\begin{DoxyParamCaption}
+\item[{double}]{val}
+\end{DoxyParamCaption}
+)}\hypertarget{classClamp_a0d371f34a552d9fcd9982b8d38ff9e19}{}\label{classClamp_a0d371f34a552d9fcd9982b8d38ff9e19}
+
+
+Clamps the value between lower and upper. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The value to be clamped \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The clamped value
+\end{DoxyReturn}
+Constrains the value between the lower and upper value. If value is below lower, it will return lower. If greater than upper returns upper. Else it will return the value given. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Utils_8hpp}{Utils.\+hpp}\item 
+\hyperlink{Utils_8cpp}{Utils.\+cpp}\end{DoxyCompactItemize}

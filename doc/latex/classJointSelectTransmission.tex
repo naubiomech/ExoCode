@@ -1,0 +1,109 @@
+\hypertarget{classJointSelectTransmission}{}\section{Joint\+Select\+Transmission Class Reference}
+\label{classJointSelectTransmission}\index{Joint\+Select\+Transmission@{Joint\+Select\+Transmission}}
+
+
+{\ttfamily \#include $<$Transmission.\+hpp$>$}
+
+
+
+Inheritance diagram for Joint\+Select\+Transmission\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classJointSelectTransmission__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Joint\+Select\+Transmission\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classJointSelectTransmission__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classJointSelectTransmission_a5c0435e9df344f21123bd43db19d5297}{Joint\+Select\+Transmission} (\hyperlink{classTransceiver}{Transceiver} $\ast$\hyperlink{classTransmission_a4136f9d979a928565232a2d3d6eb5ac5}{transceiver}, \hyperlink{classCommandFactory}{Command\+Factory} $\ast$cmd, \hyperlink{Command__Codes_8hpp_a59210a0ae0b431bbcaba126ab960fd62}{Command\+Code} code, unsigned int receive\+\_\+count, bool receive\+\_\+select, unsigned int send\+\_\+count, bool send\+\_\+select)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \hyperlink{classJointSelectTransmission_af0fa553b0acc963288c9b2589d242006}{process\+Data} (\hyperlink{classExoMessageBuilder}{Exo\+Message\+Builder} $\ast$builder, \hyperlink{classExoReport}{Exo\+Report} $\ast$report)=0
+\item 
+virtual void \hyperlink{classJointSelectTransmission_aa07d00b6fe6077fbc019f3c3acb19130}{preprocess\+Data} ()
+\item 
+virtual void \hyperlink{classJointSelectTransmission_a18339cd55e0e4912f8ef3d0d7e840d3c}{postprocess\+Data} ()
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+unsigned int \hyperlink{classJointSelectTransmission_ad36b0b411323435da1eeb48de88f75e6}{selects} \mbox{[}3\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Joint\+Select\+Transmission@{Joint\+Select\+Transmission}!Joint\+Select\+Transmission@{Joint\+Select\+Transmission}}
+\index{Joint\+Select\+Transmission@{Joint\+Select\+Transmission}!Joint\+Select\+Transmission@{Joint\+Select\+Transmission}}
+\subsubsection[{\texorpdfstring{Joint\+Select\+Transmission(\+Transceiver $\ast$transceiver, Command\+Factory $\ast$cmd, Command\+Code code, unsigned int receive\+\_\+count, bool receive\+\_\+select, unsigned int send\+\_\+count, bool send\+\_\+select)}{JointSelectTransmission(Transceiver *transceiver, CommandFactory *cmd, CommandCode code, unsigned int receive_count, bool receive_select, unsigned int send_count, bool send_select)}}]{\setlength{\rightskip}{0pt plus 5cm}Joint\+Select\+Transmission\+::\+Joint\+Select\+Transmission (
+\begin{DoxyParamCaption}
+\item[{{\bf Transceiver} $\ast$}]{transceiver, }
+\item[{{\bf Command\+Factory} $\ast$}]{cmd, }
+\item[{{\bf Command\+Code}}]{code, }
+\item[{unsigned int}]{receive\+\_\+count, }
+\item[{bool}]{receive\+\_\+select, }
+\item[{unsigned int}]{send\+\_\+count, }
+\item[{bool}]{send\+\_\+select}
+\end{DoxyParamCaption}
+)}\hypertarget{classJointSelectTransmission_a5c0435e9df344f21123bd43db19d5297}{}\label{classJointSelectTransmission_a5c0435e9df344f21123bd43db19d5297}
+
+
+\subsection{Member Function Documentation}
+\index{Joint\+Select\+Transmission@{Joint\+Select\+Transmission}!postprocess\+Data@{postprocess\+Data}}
+\index{postprocess\+Data@{postprocess\+Data}!Joint\+Select\+Transmission@{Joint\+Select\+Transmission}}
+\subsubsection[{\texorpdfstring{postprocess\+Data()}{postprocessData()}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+Select\+Transmission\+::postprocess\+Data (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}\hypertarget{classJointSelectTransmission_a18339cd55e0e4912f8ef3d0d7e840d3c}{}\label{classJointSelectTransmission_a18339cd55e0e4912f8ef3d0d7e840d3c}
+
+
+Reimplemented from \hyperlink{classTransmission_a7bc66c569ce579c28dad60a5128998f6}{Transmission}.
+
+\index{Joint\+Select\+Transmission@{Joint\+Select\+Transmission}!preprocess\+Data@{preprocess\+Data}}
+\index{preprocess\+Data@{preprocess\+Data}!Joint\+Select\+Transmission@{Joint\+Select\+Transmission}}
+\subsubsection[{\texorpdfstring{preprocess\+Data()}{preprocessData()}}]{\setlength{\rightskip}{0pt plus 5cm}void Joint\+Select\+Transmission\+::preprocess\+Data (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}\hypertarget{classJointSelectTransmission_aa07d00b6fe6077fbc019f3c3acb19130}{}\label{classJointSelectTransmission_aa07d00b6fe6077fbc019f3c3acb19130}
+
+
+Reimplemented from \hyperlink{classTransmission_a67efba97be938e7539d9c34e55681e92}{Transmission}.
+
+\index{Joint\+Select\+Transmission@{Joint\+Select\+Transmission}!process\+Data@{process\+Data}}
+\index{process\+Data@{process\+Data}!Joint\+Select\+Transmission@{Joint\+Select\+Transmission}}
+\subsubsection[{\texorpdfstring{process\+Data(\+Exo\+Message\+Builder $\ast$builder, Exo\+Report $\ast$report)=0}{processData(ExoMessageBuilder *builder, ExoReport *report)=0}}]{\setlength{\rightskip}{0pt plus 5cm}virtual void Joint\+Select\+Transmission\+::process\+Data (
+\begin{DoxyParamCaption}
+\item[{{\bf Exo\+Message\+Builder} $\ast$}]{builder, }
+\item[{{\bf Exo\+Report} $\ast$}]{report}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [pure virtual]}}\hypertarget{classJointSelectTransmission_af0fa553b0acc963288c9b2589d242006}{}\label{classJointSelectTransmission_af0fa553b0acc963288c9b2589d242006}
+
+
+Implements \hyperlink{classTransmission_af20b71b7ca6066a5d23a30ffc2b51b98}{Transmission}.
+
+
+
+\subsection{Member Data Documentation}
+\index{Joint\+Select\+Transmission@{Joint\+Select\+Transmission}!selects@{selects}}
+\index{selects@{selects}!Joint\+Select\+Transmission@{Joint\+Select\+Transmission}}
+\subsubsection[{\texorpdfstring{selects}{selects}}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int Joint\+Select\+Transmission\+::selects\mbox{[}3\mbox{]}\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{classJointSelectTransmission_ad36b0b411323435da1eeb48de88f75e6}{}\label{classJointSelectTransmission_ad36b0b411323435da1eeb48de88f75e6}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{Transmission_8hpp}{Transmission.\+hpp}\item 
+\hyperlink{Transmission_8cpp}{Transmission.\+cpp}\end{DoxyCompactItemize}

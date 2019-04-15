@@ -1,0 +1,94 @@
+\hypertarget{classIMU}{}\section{I\+MU Class Reference}
+\label{classIMU}\index{I\+MU@{I\+MU}}
+
+
+{\ttfamily \#include $<$I\+M\+U.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classIMU_aaf1bd21ea92633767b28a34b65cbfb80}{I\+MU} (\hyperlink{classImuPort}{Imu\+Port} $\ast$imu\+\_\+port, unsigned int address)
+\item 
+\hyperlink{classIMU_ad1f213d1e6aa08988ff683feab721559}{$\sim$\+I\+MU} ()
+\item 
+void \hyperlink{classIMU_a2be1f7017e9a8747790ffd4a0d116f4c}{calibrate} ()
+\item 
+void \hyperlink{classIMU_a8f433c96a79fce2a0bac01cd1376fca8}{measure} ()
+\item 
+void \hyperlink{classIMU_ae14f358bcda39a1dc54fa932417adcd1}{get\+Orientation} (double $\ast$orientation)
+\item 
+\hyperlink{classIMUReport}{I\+M\+U\+Report} $\ast$ \hyperlink{classIMU_a5a56602778602302d4b4b2f79e25bb87}{generate\+Report} ()
+\item 
+void \hyperlink{classIMU_a5fabb3089472bdf2d697c3487893a031}{fill\+Report} (\hyperlink{classIMUReport}{I\+M\+U\+Report} $\ast$report)
+\item 
+void \hyperlink{classIMU_ac3e9fe8145cddc7b0fee67df0f097f22}{fill\+Local\+Report} (\hyperlink{classIMUReport}{I\+M\+U\+Report} $\ast$report)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{I\+MU@{I\+MU}!I\+MU@{I\+MU}}
+\index{I\+MU@{I\+MU}!I\+MU@{I\+MU}}
+\subsubsection[{\texorpdfstring{I\+M\+U(\+Imu\+Port $\ast$imu\+\_\+port, unsigned int address)}{IMU(ImuPort *imu_port, unsigned int address)}}]{\setlength{\rightskip}{0pt plus 5cm}I\+M\+U\+::\+I\+MU (
+\begin{DoxyParamCaption}
+\item[{{\bf Imu\+Port} $\ast$}]{imu\+\_\+port, }
+\item[{unsigned int}]{address}
+\end{DoxyParamCaption}
+)}\hypertarget{classIMU_aaf1bd21ea92633767b28a34b65cbfb80}{}\label{classIMU_aaf1bd21ea92633767b28a34b65cbfb80}
+\index{I\+MU@{I\+MU}!````~I\+MU@{$\sim$\+I\+MU}}
+\index{````~I\+MU@{$\sim$\+I\+MU}!I\+MU@{I\+MU}}
+\subsubsection[{\texorpdfstring{$\sim$\+I\+M\+U()}{~IMU()}}]{\setlength{\rightskip}{0pt plus 5cm}I\+M\+U\+::$\sim$\+I\+MU (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classIMU_ad1f213d1e6aa08988ff683feab721559}{}\label{classIMU_ad1f213d1e6aa08988ff683feab721559}
+
+
+\subsection{Member Function Documentation}
+\index{I\+MU@{I\+MU}!calibrate@{calibrate}}
+\index{calibrate@{calibrate}!I\+MU@{I\+MU}}
+\subsubsection[{\texorpdfstring{calibrate()}{calibrate()}}]{\setlength{\rightskip}{0pt plus 5cm}void I\+M\+U\+::calibrate (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classIMU_a2be1f7017e9a8747790ffd4a0d116f4c}{}\label{classIMU_a2be1f7017e9a8747790ffd4a0d116f4c}
+\index{I\+MU@{I\+MU}!fill\+Local\+Report@{fill\+Local\+Report}}
+\index{fill\+Local\+Report@{fill\+Local\+Report}!I\+MU@{I\+MU}}
+\subsubsection[{\texorpdfstring{fill\+Local\+Report(\+I\+M\+U\+Report $\ast$report)}{fillLocalReport(IMUReport *report)}}]{\setlength{\rightskip}{0pt plus 5cm}void I\+M\+U\+::fill\+Local\+Report (
+\begin{DoxyParamCaption}
+\item[{{\bf I\+M\+U\+Report} $\ast$}]{report}
+\end{DoxyParamCaption}
+)}\hypertarget{classIMU_ac3e9fe8145cddc7b0fee67df0f097f22}{}\label{classIMU_ac3e9fe8145cddc7b0fee67df0f097f22}
+\index{I\+MU@{I\+MU}!fill\+Report@{fill\+Report}}
+\index{fill\+Report@{fill\+Report}!I\+MU@{I\+MU}}
+\subsubsection[{\texorpdfstring{fill\+Report(\+I\+M\+U\+Report $\ast$report)}{fillReport(IMUReport *report)}}]{\setlength{\rightskip}{0pt plus 5cm}void I\+M\+U\+::fill\+Report (
+\begin{DoxyParamCaption}
+\item[{{\bf I\+M\+U\+Report} $\ast$}]{report}
+\end{DoxyParamCaption}
+)}\hypertarget{classIMU_a5fabb3089472bdf2d697c3487893a031}{}\label{classIMU_a5fabb3089472bdf2d697c3487893a031}
+\index{I\+MU@{I\+MU}!generate\+Report@{generate\+Report}}
+\index{generate\+Report@{generate\+Report}!I\+MU@{I\+MU}}
+\subsubsection[{\texorpdfstring{generate\+Report()}{generateReport()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\+M\+U\+Report} $\ast$ I\+M\+U\+::generate\+Report (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classIMU_a5a56602778602302d4b4b2f79e25bb87}{}\label{classIMU_a5a56602778602302d4b4b2f79e25bb87}
+\index{I\+MU@{I\+MU}!get\+Orientation@{get\+Orientation}}
+\index{get\+Orientation@{get\+Orientation}!I\+MU@{I\+MU}}
+\subsubsection[{\texorpdfstring{get\+Orientation(double $\ast$orientation)}{getOrientation(double *orientation)}}]{\setlength{\rightskip}{0pt plus 5cm}void I\+M\+U\+::get\+Orientation (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{orientation}
+\end{DoxyParamCaption}
+)}\hypertarget{classIMU_ae14f358bcda39a1dc54fa932417adcd1}{}\label{classIMU_ae14f358bcda39a1dc54fa932417adcd1}
+\index{I\+MU@{I\+MU}!measure@{measure}}
+\index{measure@{measure}!I\+MU@{I\+MU}}
+\subsubsection[{\texorpdfstring{measure()}{measure()}}]{\setlength{\rightskip}{0pt plus 5cm}void I\+M\+U\+::measure (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{classIMU_a8f433c96a79fce2a0bac01cd1376fca8}{}\label{classIMU_a8f433c96a79fce2a0bac01cd1376fca8}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{IMU_8hpp}{I\+M\+U.\+hpp}\item 
+\hyperlink{IMU_8cpp}{I\+M\+U.\+cpp}\end{DoxyCompactItemize}

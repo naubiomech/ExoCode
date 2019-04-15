@@ -1,0 +1,19 @@
+<map id="LegReportBuilder" name="LegReportBuilder">
+<area shape="rect" id="node2" href="$classSensorReport.html" title="SensorReport" alt="" coords="1455,108,1558,135"/>
+<area shape="rect" id="node3" href="$classReport.html" title="Report" alt="" coords="451,175,512,201"/>
+<area shape="rect" id="node9" href="$classFSRReport.html" title="FSRReport" alt="" coords="589,73,677,100"/>
+<area shape="rect" id="node12" href="$classIMUReport.html" title="IMUReport" alt="" coords="589,124,676,151"/>
+<area shape="rect" id="node15" href="$classJointReport.html" title="JointReport" alt="" coords="910,225,999,252"/>
+<area shape="rect" id="node16" href="$classMotorReport.html" title="MotorReport" alt="" coords="585,225,680,252"/>
+<area shape="rect" id="node17" href="$classTorqueSensorReport.html" title="TorqueSensorReport" alt="" coords="561,276,704,303"/>
+<area shape="rect" id="node18" href="$classPotReport.html" title="PotReport" alt="" coords="592,327,673,353"/>
+<area shape="rect" id="node4" href="$classJointSelect.html" title="JointSelect" alt="" coords="245,175,332,201"/>
+<area shape="rect" id="node5" href="$classAreaIDSelect.html" title="AreaIDSelect" alt="" coords="17,149,117,176"/>
+<area shape="rect" id="node6" href="$classLegJointIDSelect.html" title="LegJointIDSelect" alt="" coords="5,200,128,227"/>
+<area shape="rect" id="node7" href="$classLinkedList.html" title="LinkedList\&lt; FSRReport * \&gt;" alt="" coords="1115,81,1295,108"/>
+<area shape="rect" id="node8" href="$classNode.html" title="Node\&lt; FSRReport * \&gt;" alt="" coords="879,81,1031,108"/>
+<area shape="rect" id="node10" href="$classLinkedList.html" title="LinkedList\&lt; IMUReport * \&gt;" alt="" coords="1115,132,1294,159"/>
+<area shape="rect" id="node11" href="$classNode.html" title="Node\&lt; IMUReport * \&gt;" alt="" coords="879,171,1030,197"/>
+<area shape="rect" id="node13" href="$classLinkedList.html" title="LinkedList\&lt; JointReport * \&gt;" alt="" coords="1416,171,1597,197"/>
+<area shape="rect" id="node14" href="$classNode.html" title="Node\&lt; JointReport * \&gt;" alt="" coords="1128,223,1281,249"/>
+</map>
