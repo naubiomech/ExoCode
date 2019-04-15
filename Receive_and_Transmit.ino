@@ -664,6 +664,8 @@ void receive_and_transmit()
       //Serial.println("End Optimization");
       left_leg->Setpoint_Ankle = 0;
       right_leg->Setpoint_Ankle = 0;
+      left_leg->Setpoint_Ankle_Pctrl = 0;
+      right_leg->Setpoint_Ankle_Pctrl = 0;
       Flag_HLO = false;
       break;
 
