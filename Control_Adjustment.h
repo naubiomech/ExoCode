@@ -27,7 +27,6 @@ typedef struct {
   double plant_mean_base;
   double dorsi_mean_base;
   double voltage_peak_ref;
-  double curr_voltage_AnkID;
   double curr_voltage;
   double curr_voltage_Toe;
   double curr_voltage_Heel;
