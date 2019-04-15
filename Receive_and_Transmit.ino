@@ -844,6 +844,15 @@ void receive_and_transmit()
       
       break;
 
+      case 'h':
+      Control_Mode = 5;  // Averaged torque profiles
+      Serial.println(Control_Mode);
+
+      Serial.println(right_leg->PID_Setpoint);
+      Serial.println(left_leg->PID_Setpoint);
+
+      break;
+
 
   }
   cmd_from_Gui = 0;
