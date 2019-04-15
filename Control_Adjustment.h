@@ -36,7 +36,6 @@ typedef struct {
   double four_step_plant_peak[n_step_baseline] = {0};
   double plant_peak_mean_temp;
   double peak;
-  double peak_AnkID; // for Inverse Dynamic Proportional Control
   double fsr_Toe;
   double torque_average;
 } steps;
