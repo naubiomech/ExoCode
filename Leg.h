@@ -219,6 +219,7 @@ struct Leg {
   double HS1, HS2, HS4;
   double stridetime_target;
   double stridetime;
+  double score;
 
 
   //Optimization-----------------------------------

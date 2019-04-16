@@ -649,8 +649,7 @@ void receive_and_transmit()
 
     case '*':
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&left_leg->Biofeedback_bias, &holdon, 8);
-      memcpy(&right_leg->Biofeedback_bias, &holdon, 8);//added
+      memcpy(&treadmill_speed,&holdon, 8); //YF
       break;
 
     // Optimization ------------------------------------------------
@@ -722,6 +721,8 @@ void receive_and_transmit()
       right_leg->Heel_Strike = 0;
       left_leg->Heel_Strike_Count = 0;
       right_leg->Heel_Strike_Count = 0;
+      left_leg->score=0;
+      right_leg->score=0;
       break;
 
     case 'U':

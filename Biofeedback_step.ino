@@ -1,3 +1,4 @@
+//YF
 void takestridetime(Leg* leg) { //take the duration of L/R stride
   leg->Heel_Strike_Count++;
   if (leg->Heel_Strike_Count == 1) {
@@ -37,12 +38,14 @@ void biofeedback_step_update (Leg* leg) {
     leg->stridelength_update = treadmill_speed * leg->stridetime_update*100; //unit:cm
     leg->stridelength_target = leg->stridelength_baseline * 1.1; //subject to change
 
-    if (leg->stridetime_update < leg->stridetime_target) {
-      leg->NO_Biofeedback = true;
-    } else {
+    if (leg->stridelength_target!=0 &&leg->stridelength_update >= leg->stridelength_target) {
       leg->NO_Biofeedback = false;
       leg->Frequency = 100;
+      leg->score++;
+    } else {
+      leg->NO_Biofeedback = true;
     }
+    
     leg->Heel_Strike_Count = 0;
     leg->HS1 = 0;
     leg->HS2 = 0;
