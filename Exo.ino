@@ -41,6 +41,7 @@ const unsigned int zero = 2048;//1540;
 #include "Variables.h"
 #include "Board.h"
 #include "resetMotorIfError.h"
+#include "ATP.h"
 //----------------------------------------------------------------------------------
 
 
@@ -213,14 +214,17 @@ void calculate_leg_average(Leg* leg) {
 
   if (FLAG_TWO_TOE_SENSORS)
   {
-    leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
     leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
     leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
-    leg->p_steps->curr_voltage_AnkID = ((leg->FSR_Toe_Average * leg->Toe_Moment_Arm));// + (leg->FSR_Heel_Average * leg->Heel_Moment_Arm))/(leg->Toe_Moment_Arm + leg->Heel_Moment_Arm);//Sara's edition
+    if (Control_Mode == 3) {
+      leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
+    }
+    else if (Control_Mode == 4) {
+      leg->p_steps->curr_voltage = ((leg->FSR_Toe_Average * leg->Toe_Moment_Arm));// + (leg->FSR_Heel_Average * leg->Heel_Moment_Arm))/(leg->Toe_Moment_Arm + leg->Heel_Moment_Arm);//Sara's edition
+    }
   }
   else {
     leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
-    leg->p_steps->curr_voltage_AnkID = leg->FSR_Toe_Average;
     leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
     leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
   }
@@ -336,6 +340,75 @@ void rotate_motor() {
 
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
+
+    if ((left_leg->state == 3) && (left_leg->old_state == 1)) {
+      left_leg->state_3_start_time = millis();
+    }
+
+    if ((left_leg->state == 1) && (left_leg->old_state == 3)) {
+      left_leg->state_3_stop_time = millis();
+    }
+
+    if (left_leg->state_3_stop_time > left_leg->state_3_start_time) {
+      left_leg->state_3_duration = left_leg->state_3_stop_time - left_leg->state_3_start_time;
+    }
+
+    left_leg->old_state = left_leg->state;
+
+    if ((right_leg->state == 3) && (right_leg->old_state == 1)) {
+      right_leg->state_3_start_time = millis();
+    }
+
+    else {
+
+      if ((right_leg->state == 1) && (right_leg->old_state == 3)) {
+
+        right_leg->state_3_stop_time = millis();
+
+
+        if (right_leg->state_3_stop_time > right_leg->state_3_start_time) {
+          right_leg->state_3_duration = right_leg->state_3_stop_time - right_leg->state_3_start_time;
+        }
+      }
+    }
+
+    right_leg->old_state = right_leg->state;
+
+
+    int left_scaling_index = 0;
+    int right_scaling_index = 0;
+
+    if (Control_Mode == 5) {
+
+
+
+      if ((left_leg->state == 3) && (left_leg->state_3_duration > 0)) {
+        left_scaling_index = (millis() - left_leg->state_3_start_time) / (left_leg->state_3_duration / 100);
+        if (left_scaling_index < 101) {
+          left_leg->PID_Setpoint = ATP[left_scaling_index];
+        }
+        else {
+          left_leg->PID_Setpoint = 0;
+        }
+      }
+
+      if ((right_leg->state == 3) && (right_leg->state_3_duration > 0)) {
+        right_scaling_index = (millis() - right_leg->state_3_start_time) / (right_leg->state_3_duration / 100);
+        if (right_scaling_index < 101) {
+          right_leg->PID_Setpoint = ATP[101 + right_scaling_index];
+        }
+        else {
+          right_leg->PID_Setpoint = 0;
+        }
+      }
+
+
+
+    }
+
+
+
+
 
     if (Control_Mode == 2) {}
     else {

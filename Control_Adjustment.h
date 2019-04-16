@@ -27,7 +27,6 @@ typedef struct {
   double plant_mean_base;
   double dorsi_mean_base;
   double voltage_peak_ref;
-  double curr_voltage_AnkID;
   double curr_voltage;
   double curr_voltage_Toe;
   double curr_voltage_Heel;
@@ -37,7 +36,6 @@ typedef struct {
   double four_step_plant_peak[n_step_baseline] = {0};
   double plant_peak_mean_temp;
   double peak;
-  double peak_AnkID; // for Inverse Dynamic Proportional Control
   double fsr_Toe;
   double torque_average;
 } steps;

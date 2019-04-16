@@ -171,7 +171,9 @@ struct Leg {
   boolean signm_done = true;
 
   // State_Machine_Parameters.h
+
   int state = 1;
+  int old_state = 1;
   int state_old = 1;
   int state_count_13 = 0;
   int state_count_31 = 0;
@@ -185,6 +187,8 @@ struct Leg {
   double start_from_1 = 0;
   double start_from_3 = 0;
   double start_time = 0;
+  double state_3_stop_time = 0;
+  double state_3_duration = 0;
 
   double Heel_Pos = -0.07;
   double Toe_Pos = 0.20;
