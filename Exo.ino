@@ -391,6 +391,7 @@ void reset_leg_starting_parameters(Leg* leg) {
   leg->first_step = 1;
   counter_msgs = 0;
   leg->Heel_Strike_Count = 0;
+  leg->score=0;
   leg->Heel_Strike = 0;
   leg->NO_Biofeedback = true;
 }

@@ -720,6 +720,8 @@ void receive_and_transmit()
       right_leg->Heel_Strike = 0;
       left_leg->Heel_Strike_Count = 0;
       right_leg->Heel_Strike_Count = 0;
+      left_leg->score=0;
+      right_leg->score=0;
       break;
 
     case 'U':
