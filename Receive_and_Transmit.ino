@@ -847,7 +847,7 @@ void receive_and_transmit()
       
       break;
 
-      case 'h':
+      case 'j':   // TN
       Control_Mode = 5;  // Averaged torque profiles
       Serial.println(Control_Mode);
 
