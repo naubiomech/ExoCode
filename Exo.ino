@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 313
-#define BOARD_VERSION DUAL_BOARD
+#define BOARD_VERSION TWO_LEG_BOARD
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -435,7 +435,6 @@ void reset_starting_parameters() {
   reset_leg_starting_parameters(left_leg);
   reset_leg_starting_parameters(right_leg);
 
-  FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
 }
 
 
