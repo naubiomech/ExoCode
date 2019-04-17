@@ -435,7 +435,6 @@ void reset_starting_parameters() {
   reset_leg_starting_parameters(left_leg);
   reset_leg_starting_parameters(right_leg);
 
-  FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
 }
 
 
