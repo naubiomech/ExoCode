@@ -32,7 +32,10 @@ void send_data_message_wc() //with COP
   } else if (FLAG_BALANCE) {
     data_to_send[8] = (left_leg->FSR_Toe_Average);
     data_to_send[9] = (left_leg->FSR_Heel_Average);
-  } else {
+  } else if (FLAG_BIOFEEDBACK) { //YF
+    data_to_send[8] = 0;
+    data_to_send[9] = 0;
+  }else {
     data_to_send[8] = (left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Toe_peak_ref);
     data_to_send[9] = (left_leg->FSR_Toe_Average);
   }
