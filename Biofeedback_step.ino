@@ -36,7 +36,7 @@ void biofeedback_step_update (Leg* leg) {
   } else {
     leg->stridetime_update = (leg->HS2 - leg->HS1) / 1000; //unit:s,1 step length
     leg->stridelength_update = treadmill_speed * leg->stridetime_update*100; //unit:cm
-    leg->stridelength_target = leg->stridelength_baseline * 1.1; //subject to change
+    leg->stridelength_target = leg->stridelength_baseline * 0.95; //subject to change
 
     if (leg->stridelength_target!=0 &&leg->stridelength_update >= leg->stridelength_target) {
       leg->NO_Biofeedback = false;
