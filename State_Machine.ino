@@ -97,6 +97,7 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
         leg->One_time_set_2_zero = 0;
         leg->Previous_Setpoint_Ankle = 0;
         leg->PID_Setpoint = 0;
+        leg->Previous_Setpoint_Ankle_Pctrl = 0; //GO 4/18/19
         leg->Setpoint_Ankle_Pctrl = 0;
       }
 
@@ -131,7 +132,25 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
   ref_step_adj(leg);
 
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) {
-    leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl*leg->coef_in_3_steps;
+
+//    leg->PID_Setpoint = leg->New_PID_Setpoint;
+
+    if (abs(leg->Previous_Setpoint_Ankle_Pctrl) <= abs(leg->Setpoint_Ankle)) { //GO 4/18/19
+
+      Serial.print("Prev: ");
+      Serial.println(leg->Previous_Setpoint_Ankle_Pctrl);
+      leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps;
+      Serial.print("Curr: ");
+      Serial.println(leg->PID_Setpoint);
+    } else {
+       Serial.print("Prev: ");
+      Serial.println(leg->Previous_Setpoint_Ankle_Pctrl);
+      leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl - (leg->Previous_Setpoint_Ankle_Pctrl - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
+      //leg->FSR_Ratio = leg->FSR_Ratio * (1 + (leg->Previous_Setpoint_Ankle_Pctrl/leg->Setpoint_Ankle - 1) * (1-leg->coef_in_3_steps));
+      Serial.print("Curr: ");
+      Serial.println(leg->PID_Setpoint);
+    }
+    
   }
   else {
 
@@ -237,6 +256,7 @@ void State_Machine_Heel_Toe_Sensors(Leg * leg) {
         leg->One_time_set_2_zero = 0;
         leg->Previous_Setpoint_Ankle = 0;
         leg->PID_Setpoint = 0;
+        leg->Previous_Setpoint_Ankle_Pctrl = 0; //GO 4/18/19
         leg->Setpoint_Ankle_Pctrl = 0;
       }
 
@@ -269,9 +289,16 @@ void State_Machine_Heel_Toe_Sensors(Leg * leg) {
   ref_step_adj(leg);
 
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) {
-    leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl*leg->coef_in_3_steps;
-  }
-  else {
+
+//  leg->PID_Setpoint = leg->New_PID_Setpoint;
+  
+    if (leg->Previous_Setpoint_Ankle_Pctrl <= leg->Setpoint_Ankle_Pctrl) { //GO 4/18/19
+      leg->PID_Setpoint = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle_Pctrl - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps;
+    } else {
+      leg->PID_Setpoint = leg->Previous_Setpoint_Ankle_Pctrl - (leg->Previous_Setpoint_Ankle_Pctrl - leg->Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps;
+    }
+    
+  } else {
 
     if (N1 < 1 || N2 < 1 || N3 < 1) {
       leg->PID_Setpoint = leg->New_PID_Setpoint;
@@ -389,7 +416,7 @@ void State_Machine_Heel_Toe_Sensors_Balance(Leg * leg) {
   ref_step_adj(leg);
 
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) {
-    leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl*leg->coef_in_3_steps;
+    leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
   }
   else {
 

@@ -217,6 +217,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
         p_steps_l->peak =  p_steps_l->curr_voltage;
 
       *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
+      //*p_FSR_Ratio = *p_FSR_Ratio * (1 + (leg->Previous_Setpoint_Ankle_Pctrl/leg->Setpoint_Ankle - 1)*(1-leg->coef_in_3_steps));
     
 
     if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
