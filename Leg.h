@@ -114,7 +114,6 @@ struct Leg {
 
   double Setpoint_Ankle, Setpoint_Ankle_Pctrl;
   double Previous_Setpoint_Ankle = 0;
-  double Previous_Setpoint_Ankle_Pctrl = 0; //GO 4/18/19
   double* p_Setpoint_Ankle = &Setpoint_Ankle;
   double* p_Setpoint_Ankle_Pctrl = &Setpoint_Ankle_Pctrl;
   double Setpoint_earlyStance = 0.25 * Setpoint_Ankle;
@@ -126,7 +125,6 @@ struct Leg {
 
   // Proportional_Ctrl.h
   double Prop_Gain = 1;
-  double Set;
 
   // Reference_ADJ.h
   double stateTimerCount;
