@@ -98,6 +98,7 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
         leg->Previous_Setpoint_Ankle = 0;
         leg->PID_Setpoint = 0;
         leg->Setpoint_Ankle_Pctrl = 0;
+        leg->Previous_Setpoint_Ankle_Pctrl = 0; //GO 4/21/19
       }
 
       if ((leg->p_steps->curr_voltage < (leg->fsr_percent_thresh_Toe * leg->fsr_Combined_peak_ref)))
@@ -129,9 +130,16 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
   }//end switch
   // Adjust the torque reference as a function of the step
   ref_step_adj(leg);
-
-  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) {
-    leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl*leg->coef_in_3_steps;
+  
+  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) { //GO 4/21/19
+    if (abs(leg->Previous_Setpoint_Ankle_Pctrl) >= abs(leg->Setpoint_Ankle)) {
+      leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps;
+    } else {
+      leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl - (leg->Previous_Setpoint_Ankle_Pctrl - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
+    }
+    if (leg->p_steps->Setpoint == 0) {
+      leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+    }
   }
   else {
 
@@ -269,7 +277,7 @@ void State_Machine_Heel_Toe_Sensors(Leg * leg) {
   ref_step_adj(leg);
 
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) {
-    leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl*leg->coef_in_3_steps;
+    leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
   }
   else {
 
@@ -389,7 +397,7 @@ void State_Machine_Heel_Toe_Sensors_Balance(Leg * leg) {
   ref_step_adj(leg);
 
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) {
-    leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl*leg->coef_in_3_steps;
+    leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
   }
   else {
 
