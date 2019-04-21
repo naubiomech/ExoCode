@@ -192,9 +192,9 @@ void calculate_leg_average(Leg* leg) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
   }
 
-  if (leg->TarrayPoint[dim] > 25 && abs(leg->Average_Trq - leg->TarrayPoint[dim]) < 0.05) //When torque sensor is unplugged we see the same values for several seconds
+  if (abs(leg->TarrayPoint[dim]) > 25 && abs(leg->Average_Trq - leg->TarrayPoint[dim]) < 0.1) //When torque sensor is unplugged we see the same values for several seconds
   {
-    double old_L_state_L = leg->state;
+    double old_L_state_L = leg->state;  
     leg->state = 9;
     send_data_message_wc();
 
