@@ -154,7 +154,11 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
   }
 
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 1) {
-    leg->PID_Setpoint = 0;
+    if (abs(leg->Dorsi_Setpoint_Ankle) > 0) {
+      Serial.println(leg->New_PID_Setpoint);
+      leg->PID_Setpoint = leg->New_PID_Setpoint;
+      PID_Sigm_Curve(leg);
+    }
   }
   else {
 

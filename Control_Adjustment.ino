@@ -246,7 +246,10 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
             leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
           }
       } else {
-        *p_Setpoint_Ankle_Pctrl_l = 0;
+        if (abs(leg->Dorsi_Setpoint_Ankle) > 0) {
+          Serial.println(leg->New_PID_Setpoint);
+          *p_Setpoint_Ankle_Pctrl_l = leg->New_PID_Setpoint;
+        }
         leg->MaxPropSetpoint = 0;
       }
 
