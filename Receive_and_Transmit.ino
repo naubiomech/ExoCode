@@ -520,8 +520,8 @@ void receive_and_transmit()
 
     case '^':
       Control_Mode = Old_Control_Mode;
-      OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
-      FLAG_TWO_TOE_SENSORS = false;
+      OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS; //GO 4/23/19
+      FLAG_TWO_TOE_SENSORS = false; //GO 4/23/19 to return the control to bang-bang (heel-toe)
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
       *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
@@ -701,11 +701,21 @@ void receive_and_transmit()
 
     case '"':
       if (Flag_HLO) {
+        left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+        right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+        left_leg->Previous_Dorsi_Setpoint_Ankle = left_leg->Dorsi_Setpoint_Ankle;
+        right_leg->Previous_Dorsi_Setpoint_Ankle = right_leg->Dorsi_Setpoint_Ankle;
         receiveVals(8);
-        memcpy(&left_leg->p_steps->Setpoint, holdOnPoint, 8); //HLO proportional control setpoint
-        right_leg->p_steps->Setpoint = -left_leg->p_steps->Setpoint;
-        left_leg->Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-        right_leg->Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+        memcpy(&left_leg->Setpoint_Ankle, holdOnPoint, 8); //HLO proportional control setpoint
+        right_leg->Setpoint_Ankle = -left_leg->Setpoint_Ankle;
+        left_leg->activate_in_3_steps = 1;
+        left_leg->num_3_steps = 0;
+        left_leg->first_step = 1;
+        left_leg->start_step = 0;
+        right_leg->activate_in_3_steps = 1;
+        right_leg->num_3_steps = 0;
+        right_leg->first_step = 1;
+        right_leg->start_step = 0;
         left_leg->FSR_baseline_FLAG = 1;                      //Retake the baseline every new setpoint
         right_leg->FSR_baseline_FLAG = 1;
         break;

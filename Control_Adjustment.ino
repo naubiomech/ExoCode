@@ -121,7 +121,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
           (p_steps_l->count_plant_base) = 0;
           *p_flag_take_baseline_l = 0;
-          send_command_message('n',0,1);
+          send_command_message('n',0,1); //GO 4/23/19 to communicate that baseline is done
           return (p_steps_l->count_plant_base);
 
         } // return 1 activate a flag that stops the calc of the baseline
