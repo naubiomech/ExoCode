@@ -212,7 +212,7 @@ void calculate_leg_average(Leg* leg) {
   leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
 
 
-  if (FLAG_TWO_TOE_SENSORS)
+  if (FLAG_ONE_TOE_SENSOR)
   {
     leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
     leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;

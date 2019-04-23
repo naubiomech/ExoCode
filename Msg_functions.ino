@@ -7,7 +7,7 @@ void send_data_message_wc() //with COP
   data_to_send[1] = right_leg->state;
   data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
 
-  if (FLAG_TWO_TOE_SENSORS) {
+  if (FLAG_ONE_TOE_SENSOR) {
     data_to_send[3] = (right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
     data_to_send[4] = (right_leg->FSR_Combined_Average);
   } else if (FLAG_BALANCE) {
@@ -26,7 +26,7 @@ void send_data_message_wc() //with COP
   data_to_send[6] = left_leg->state;
   data_to_send[7] = (left_leg->sign * left_leg->PID_Setpoint);
 
-  if (FLAG_TWO_TOE_SENSORS) {
+  if (FLAG_ONE_TOE_SENSOR) {
     data_to_send[8] = (left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
     data_to_send[9] = (left_leg->FSR_Combined_Average);
   } else if (FLAG_BALANCE) {
