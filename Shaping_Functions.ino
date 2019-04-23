@@ -65,7 +65,6 @@ void PID_Sigm_Curve(Leg* leg) {
   {
     leg->sig_time_old = leg->sig_time;                                                  //??? records for next time this code runs??
 
-
     if (abs(leg->New_PID_Setpoint - leg->PID_Setpoint) > 0.1 &&  (leg->sigm_done))
     {
       leg->n_iter = 0;
@@ -112,7 +111,7 @@ void PID_Sigm_Curve(Leg* leg) {
       leg->FLAG_UPDATE_VALUES = false;
     }
     //---------------------------------------------------------
-
+    
     if (leg->sigm_done == false && leg->n_iter < leg->N_step)
     {
       //Optimization--------------------------------------------------------

@@ -520,6 +520,8 @@ void receive_and_transmit()
 
     case '^':
       Control_Mode = Old_Control_Mode;
+      OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
+      FLAG_TWO_TOE_SENSORS = false;
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
       *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;

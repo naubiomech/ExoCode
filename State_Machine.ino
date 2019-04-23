@@ -31,7 +31,6 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
     case 1: //Swing
       // This flag enables the "set to zero" procedure for the left ankle.
       // When you're for at least 3 seconds in the same state, the torque reference is set to zero
-
       if (leg->set_2_zero == 1) {
         leg->set_2_zero = 0;
         leg->One_time_set_2_zero = 1;
@@ -82,7 +81,6 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
 
       break;
     case 3: //Late Stance
-
       if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
         leg->sigm_done = true;
         leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -229,7 +227,6 @@ void State_Machine_Heel_Toe_Sensors(Leg * leg) {
 
       break;
     case 3: //Late Stance
-
 
       if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
         leg->sigm_done = true;
