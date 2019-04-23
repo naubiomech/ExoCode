@@ -45,12 +45,6 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
           leg->sigm_done = true;
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
 
-          if (abs(leg->Dorsi_Setpoint_Ankle) > 0) {
-            leg->Old_PID_Setpoint = 0;
-          } else {
-            leg->Previous_Dorsi_Setpoint_Ankle = 0;
-          }
-
           if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle) {
 
             leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
@@ -110,8 +104,7 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
           leg->state_old = leg->state;
           //          leg->New_PID_Setpoint = 0 * leg->coef_in_3_steps;
-
-
+          
           if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
 
             leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
@@ -121,7 +114,9 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
             leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
 
           }
-
+          if (leg->New_PID_Setpoint == 0) { //GO 4/22/19
+            leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+          }
           leg->state = 1;
           leg->state_count_31 = 0;
           leg->state_count_13 = 0;
@@ -154,11 +149,7 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
   }
 
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 1) {
-    if (abs(leg->Dorsi_Setpoint_Ankle) > 0) {
-      Serial.println(leg->New_PID_Setpoint);
-      leg->PID_Setpoint = leg->New_PID_Setpoint;
-      PID_Sigm_Curve(leg);
-    }
+      leg->Setpoint_Ankle_Pctrl = leg->New_PID_Setpoint;
   }
   else {
 
@@ -171,7 +162,6 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
     }
 
   }
-
 }// end function
 
 
