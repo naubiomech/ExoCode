@@ -520,8 +520,8 @@ void receive_and_transmit()
 
     case '^':
       Control_Mode = Old_Control_Mode;
-      OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS; //GO 4/23/19
-      FLAG_TWO_TOE_SENSORS = false; //GO 4/23/19 to return the control to bang-bang (heel-toe)
+      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR; //GO 4/23/19
+      FLAG_ONE_TOE_SENSOR = false; //GO 4/23/19 to return the control to bang-bang (heel-toe)
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
       *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
@@ -669,6 +669,8 @@ void receive_and_transmit()
       right_leg->Setpoint_Ankle = 0;
       left_leg->Setpoint_Ankle_Pctrl = 0;
       right_leg->Setpoint_Ankle_Pctrl = 0;
+      left_leg->Dorsi_Setpoint_Ankle = 0;
+      right_leg->Dorsi_Setpoint_Ankle = 0;
       Flag_HLO = false;
       break;
 
