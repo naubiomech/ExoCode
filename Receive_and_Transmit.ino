@@ -351,7 +351,13 @@ void receive_and_transmit()
       break;
 
     case 'S':
-      break;
+      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
+      FLAG_ONE_TOE_SENSOR = true;
+      Old_Control_Mode = Control_Mode;
+      Control_Mode = 6; // activate Resistance Control
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      break; //JL 4/25/19
 
     case's':
       break;

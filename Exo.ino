@@ -222,6 +222,9 @@ void calculate_leg_average(Leg* leg) {
     else if (Control_Mode == 4) {
       leg->p_steps->curr_voltage = ((leg->FSR_Toe_Average * leg->Toe_Moment_Arm));// + (leg->FSR_Heel_Average * leg->Heel_Moment_Arm))/(leg->Toe_Moment_Arm + leg->Heel_Moment_Arm);//Sara's edition
     }
+    else if (Control_Mode == 6) {
+      leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
+    }
   }
   else {
     leg->p_steps->curr_voltage = leg->FSR_Toe_Average;

@@ -124,7 +124,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
   // Adjust the torque reference as a function of the step
   ref_step_adj(leg);
   
-  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) { //GO 4/21/19
+  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) && leg->state == 3) { //GO 4/21/19
     if (abs(leg->Previous_Setpoint_Ankle_Pctrl) <= abs(leg->Setpoint_Ankle)) {
       leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
     } else {
@@ -146,7 +146,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
 
   }
 
-  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 1) {
+  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) && leg->state == 1) {
       leg->Setpoint_Ankle_Pctrl = leg->New_PID_Setpoint;
   }
   else {
@@ -267,7 +267,7 @@ void State_Machine_Heel_Toe_Sensors(Leg * leg) {
   // Adjust the torque reference as a function of the step
   ref_step_adj(leg);
 
-  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) {
+  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) && leg->state == 3) {
     leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
   }
   else {
@@ -282,7 +282,7 @@ void State_Machine_Heel_Toe_Sensors(Leg * leg) {
 
   }
 
-  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 1) {
+  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) && leg->state == 1) {
     leg->PID_Setpoint = 0;
   }
   else {
@@ -387,7 +387,7 @@ void State_Machine_Heel_Toe_Sensors_Balance(Leg * leg) {
   // Adjust the torque reference as a function of the step
   ref_step_adj(leg);
 
-  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) {
+  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) && leg->state == 3) {
     leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
   }
   else {
@@ -402,7 +402,7 @@ void State_Machine_Heel_Toe_Sensors_Balance(Leg * leg) {
 
   }
 
-  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 1) {
+  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) && leg->state == 1) {
     leg->PID_Setpoint = 0;
   }
   else {
@@ -646,7 +646,7 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
   // Adjust the torque reference as a function of the step
   ref_step_adj(leg);
 
-  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) {
+  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) && leg->state == 3) {
     leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
   }
   else {
@@ -661,7 +661,7 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
 
   }
 
-  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 1) {
+  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) && leg->state == 1) {
     leg->PID_Setpoint = 0;
   }
   else {

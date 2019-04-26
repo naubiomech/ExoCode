@@ -6,27 +6,27 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
 
   // update the voltage peak
 
- 
-    if (p_steps_l->curr_voltage > p_steps_l->peak)
-      p_steps_l->peak =  p_steps_l->curr_voltage;
 
-    if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
+  if (p_steps_l->curr_voltage > p_steps_l->peak)
+    p_steps_l->peak =  p_steps_l->curr_voltage;
+
+  if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
+  {
+    p_steps_l->plant_time = millis(); // start the plantarflexion
+    p_steps_l->dorsi_time = millis() - (p_steps_l->dorsi_time); // calculate the dorsiflexion that has just finished
+
+    if (p_steps_l->dorsi_time <= step_time_length / 4) // if <50ms probably it is noise
     {
-      p_steps_l->plant_time = millis(); // start the plantarflexion
-      p_steps_l->dorsi_time = millis() - (p_steps_l->dorsi_time); // calculate the dorsiflexion that has just finished
-
-      if (p_steps_l->dorsi_time <= step_time_length / 4) // if <50ms probably it is noise
-      {
-        p_steps_l->peak = 0;
-        p_steps_l->flag_start_plant = false;
-        //        Serial.println(" BASE Dorsi too short");
-        return 0;
-      } else {
-        p_steps_l->flag_start_plant = true; // Parameters inizialized Start a step
-        //        Serial.println(" BASE Start Plantar");
-      }
+      p_steps_l->peak = 0;
+      p_steps_l->flag_start_plant = false;
+      //        Serial.println(" BASE Dorsi too short");
+      return 0;
+    } else {
+      p_steps_l->flag_start_plant = true; // Parameters inizialized Start a step
+      //        Serial.println(" BASE Start Plantar");
     }
-  
+  }
+
 
 
 
@@ -121,7 +121,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
           (p_steps_l->count_plant_base) = 0;
           *p_flag_take_baseline_l = 0;
-          send_command_message('n',0,1); //GO 4/23/19 to communicate that baseline is done
+          send_command_message('n', 0, 1); //GO 4/23/19 to communicate that baseline is done
           return (p_steps_l->count_plant_base);
 
         } // return 1 activate a flag that stops the calc of the baseline
@@ -194,7 +194,25 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
           *p_Setpoint_Ankle_Pctrl_l = 0;
         }
       }
+      if (Control_Mode_l == 6) { // Resistance Control JL 4/25/19
 
+        *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
+        if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
+          (*p_Max_FSR_Ratio) = *p_FSR_Ratio; // update the max fsr Ratio
+
+
+        // while updating the ratio value still continue to provide the control
+        if ((p_steps_l->Setpoint ) > 0) { //depending on the leg the sign changes
+          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio));
+          *p_Setpoint_Ankle_Pctrl_l = -min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
+        }
+        else if ((p_steps_l->Setpoint ) < 0) {
+          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio));
+          *p_Setpoint_Ankle_Pctrl_l = -min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
+        } else {
+          *p_Setpoint_Ankle_Pctrl_l = 0;
+        }
+      }
     }
 
     return N3_l; //return the previous N3 value whis is not used
@@ -211,14 +229,13 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
   if ((R_state_l == 3) && (R_state_old_l == 1 || R_state_old_l == 2))
   {
 
-
     // update the voltage peak to update torque in case of Bang Bang ctrl
- 
-      if (p_steps_l->curr_voltage > p_steps_l->peak)
-        p_steps_l->peak =  p_steps_l->curr_voltage;
 
-      *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
-    
+    if (p_steps_l->curr_voltage > p_steps_l->peak)
+      p_steps_l->peak =  p_steps_l->curr_voltage;
+
+    *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
+
 
     if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
       (*p_Max_FSR_Ratio) = *p_FSR_Ratio;
@@ -237,15 +254,15 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
         *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
         *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
         if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
-            leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
-          }
+          leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
+        }
       }
       else if ((p_steps_l->Setpoint ) < 0) {
         *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
         *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
         if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
-            leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
-          }
+          leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
+        }
       } else {
         *p_Setpoint_Ankle_Pctrl_l = 0;
         leg->MaxPropSetpoint = 0;
@@ -269,6 +286,26 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
       return N3_l; // No modification in the shaping function which is disabled
     }
+
+     else if (Control_Mode_l == 6) { // Resistance Control JL 4/25/19
+        *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
+        if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
+          (*p_Max_FSR_Ratio) = *p_FSR_Ratio; // update the max fsr Ratio
+
+
+        // while updating the ratio value still continue to provide the control
+        if ((p_steps_l->Setpoint ) > 0) { //depending on the leg the sign changes
+          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio));
+          *p_Setpoint_Ankle_Pctrl_l = -min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
+        }
+        else if ((p_steps_l->Setpoint ) < 0) {
+          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio));
+          *p_Setpoint_Ankle_Pctrl_l = -min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
+        } else {
+          *p_Setpoint_Ankle_Pctrl_l = 0;
+        }
+        return N3_l; // No modification in the shaping function which is disabled
+      }
 
 
     // Otherwise we need to calculate the time
@@ -350,7 +387,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
   if (((R_state_l == 1) || (R_state_l == 2)) && R_state_old_l == 3) {
     p_steps_l->peak = 0;
     p_Max_FSR_Ratio = 0;
-    *p_Setpoint_Ankle_Pctrl_l = New_PID_Setpoint_l; //Dorsiflexion setpoint GO 4/22/19    
+    *p_Setpoint_Ankle_Pctrl_l = New_PID_Setpoint_l; //Dorsiflexion setpoint GO 4/22/19
     if (leg->auto_KF_update == 0) {
       leg->MaxPropSetpoint = 0;
     }
