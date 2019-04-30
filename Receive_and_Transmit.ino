@@ -501,22 +501,44 @@ void receive_and_transmit()
       break;
 
     case '#':
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = true;
-      Old_Control_Mode = Control_Mode;
-      Control_Mode = 3; // activate pivot proportional control
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      //      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
+      //      FLAG_ONE_TOE_SENSOR = true;
+      //      Old_Control_Mode = Control_Mode;
+      //      Control_Mode = 3; // activate pivot proportional control
+      //      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+      //      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      flag_id = false; // TN 04/29/19
+      flag_pivot = true; // TN 04/29/19
+      if (Flag_Prop_Ctrl == true) // TN 04/29/19
+        Control_Mode = 3;
       break;
 
     case 'c':
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = true;
-      Old_Control_Mode = Control_Mode;
-      Control_Mode = 4; // activate Inverse Dynamic proportional control
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      // OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
+      // FLAG_ONE_TOE_SENSOR = true;
+      //Old_Control_Mode = Control_Mode;
+      //      Control_Mode = 4; // activate Inverse Dynamic proportional control
+      //      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+      //      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      flag_id = true; // TN 04/29/19
+      flag_pivot = false; // TN 04/29/19
+      if (Flag_Prop_Ctrl == true) // TN 04/29/19
+        Control_Mode = 4; // TN 04/29/19
       break;
+
+    case 'l': // TN 04/29/19
+      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR; // TN 04/29/19
+      FLAG_ONE_TOE_SENSOR = true; // TN 04/29/19
+      Old_Control_Mode = Control_Mode; // TN 04/29/19
+      Flag_Prop_Ctrl = true; // TN 04/29/19
+      if (flag_pivot == true)   // TN 04/29/19
+        Control_Mode = 3; // activate pivot PC // TN 04/29/19
+      if (flag_id == true) // TN 04/29/19
+        Control_Mode = 4; // activate ID PC // TN 04/29/19
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
+      break;
+
 
     case '^':
       Control_Mode = Old_Control_Mode;
@@ -528,6 +550,9 @@ void receive_and_transmit()
       *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      //      flag_id = false; // TN 04/29/19
+      //      flag_pivot = false; // TN 04/29/19
+      Flag_Prop_Ctrl = false; // TN 04/29/19
       break;
 
     case 'B':
@@ -809,7 +834,7 @@ void receive_and_transmit()
 
 
     case 'g':
-    
+
       receiveVals(96);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&left_leg->p_steps->plant_peak_mean_temp, holdOnPoint, 8);              // send an old value of plant_peak_mean to teensy  // TN 04-26-2019
       //delay(10);
@@ -846,7 +871,7 @@ void receive_and_transmit()
       //      receiveVals(8);
       memcpy(&right_leg->torque_calibration_value, holdOnPoint + 88, 8);//added
 
-      
+
       Serial.println("Old left_leg->p_steps->plant_peak_mean_temp");
       Serial.println(left_leg->p_steps->plant_peak_mean_temp);
       Serial.println("Old right_leg->p_steps->plant_peak_mean_temp");
