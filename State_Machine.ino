@@ -7,7 +7,7 @@
 void state_machine(Leg* leg)
 {
   if (FLAG_ONE_TOE_SENSOR) {
-    State_Machine_One_Toe_Sensor(leg);
+    State_Machine_Heel_Toe_Sensors_BioFeedback(leg);
   }
 
   if (FLAG_BALANCE) {
