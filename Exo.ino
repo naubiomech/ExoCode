@@ -20,7 +20,7 @@
 // 6 steps = 10N
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
-#define VERSION 313
+#define VERSION 314
 #define BOARD_VERSION TWO_LEG_BOARD
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
@@ -192,9 +192,9 @@ void calculate_leg_average(Leg* leg) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
   }
 
-  if (leg->TarrayPoint[dim] > 25 && abs(leg->Average_Trq - leg->TarrayPoint[dim]) < 0.05) //When torque sensor is unplugged we see the same values for several seconds
+  if (abs(leg->TarrayPoint[dim]) > 25 && abs(leg->Average_Trq - leg->TarrayPoint[dim]) < 0.1) //When torque sensor is unplugged we see the same values for several seconds
   {
-    double old_L_state_L = leg->state;
+    double old_L_state_L = leg->state;  
     leg->state = 9;
     send_data_message_wc();
 
@@ -374,6 +374,11 @@ void rotate_motor() {
 
     right_leg->old_state = right_leg->state;
 
+    if (Control_Mode == 3 && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
+      left_leg->PID_Setpoint = left_leg->New_PID_Setpoint;   //Brute force the dorsiflexion set point to proportional control
+    } else if (Control_Mode == 3 && (abs(right_leg->Dorsi_Setpoint_Ankle) > 0 || abs(right_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && right_leg->state == 1) {
+      right_leg->PID_Setpoint = right_leg->New_PID_Setpoint; //Brute force the dorsiflexion set point to proportional control
+    } else {};
 
     int left_scaling_index = 0;
     int right_scaling_index = 0;
@@ -423,6 +428,7 @@ void rotate_motor() {
                                        right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle,
                                        right_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, right_leg->Prop_Gain,
                                        right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio);
+                                        
   }// end if stream==1
 }
 

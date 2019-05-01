@@ -91,7 +91,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
 
           p_steps_l->dorsi_mean = (p_steps_l->dorsi_mean) / n_step_baseline;
           p_steps_l->plant_mean = p_steps_l->plant_mean / n_step_baseline;
-          p_steps_l->plant_peak_mean_temp = 0.9 * (p_steps_l->plant_peak_mean_temp) / n_step_baseline;
+          p_steps_l->plant_peak_mean_temp = 1.0 * (p_steps_l->plant_peak_mean_temp) / n_step_baseline; //Changed from 0.9 to 1.0 by GO on 4/22/19
 
           //HERE
 
@@ -121,6 +121,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
           (p_steps_l->count_plant_base) = 0;
           *p_flag_take_baseline_l = 0;
+          send_command_message('n',0,1); //GO 4/23/19 to communicate that baseline is done
           return (p_steps_l->count_plant_base);
 
         } // return 1 activate a flag that stops the calc of the baseline
@@ -349,10 +350,10 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
   if (((R_state_l == 1) || (R_state_l == 2)) && R_state_old_l == 3) {
     p_steps_l->peak = 0;
     p_Max_FSR_Ratio = 0;
+    *p_Setpoint_Ankle_Pctrl_l = New_PID_Setpoint_l; //Dorsiflexion setpoint GO 4/22/19    
     if (leg->auto_KF_update == 0) {
       leg->MaxPropSetpoint = 0;
     }
   }
-
   return N3_l;
 }
