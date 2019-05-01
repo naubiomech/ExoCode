@@ -190,6 +190,10 @@ struct Leg {
   double Toe_Pos = 0.20;
   double COP = 0;
 
+  //Balance
+  int step_count = 0;
+  int TM_data = 0;
+
   //BIOFEEDBACK
   bool BioFeedback_Baseline_flag = false;
   double Heel_Strike;

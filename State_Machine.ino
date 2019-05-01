@@ -487,6 +487,15 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
       break;
 
     case 2: //Early Stance
+      
+      if (leg->state_old == 1 && leg->state == 2){
+        leg->step_count++;
+      }
+
+      if (leg->state_old = 1 && leg->step_count > 9){
+        leg->TM_data = 1;
+        leg->step_count = 0;
+      }
 
       if ((leg->FSR_Toe_Average > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref))
       {
@@ -517,6 +526,7 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
           leg->state = 3;
           leg->state_count_23 = 0;
           leg->state_count_32 = 0;
+          leg->TM_data = 0;
         }
       }// end if
       if ((leg->FSR_Heel_Average <= leg->fsr_percent_thresh_Toe * leg->fsr_Heel_peak_ref) && (leg->FSR_Heel_Average <= leg->fsr_percent_thresh_Toe * leg->fsr_Heel_peak_ref)) {
@@ -564,6 +574,7 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
           leg->state = 1;
           //            leg->state_count_21 = 0;
           leg->state_count_12 = 0;
+          leg->TM_data = 0;
 
         }
 

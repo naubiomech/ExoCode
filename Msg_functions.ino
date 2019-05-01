@@ -47,7 +47,7 @@ void send_data_message_wc() //with COP
   }
   else {
     data_to_send[10] = (left_leg->motor_error);
-    data_to_send[11] = (right_leg->motor_error);
+    data_to_send[11] = (right_leg->TM_data);
   }
   if (FLAG_BIOFEEDBACK) {
     data_to_send[12] = right_leg->stridelength_target;
