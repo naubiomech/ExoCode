@@ -152,11 +152,11 @@ struct Leg {
   double New_PID_Setpoint = 0.0;
   double Old_PID_Setpoint = 0.0;
 
-  double N3 = 500;
+  double N3 = 200;
   double N2 = 4;
   double N1 = 4;
 
-  double old_N3 = 500;
+  double old_N3 = 200;
   double old_N2 = 4;
   double old_N1 = 4;
 
