@@ -33,7 +33,7 @@ struct Leg {
   double previous_torque_average;
 
   double Heel_Moment_Arm;
-  double Toe_Moment_Arm;
+  double Toe_Moment_Arm = 5;
 
   volatile double Average_Volt;
   volatile double Average_Volt_Heel;
@@ -59,11 +59,16 @@ struct Leg {
   double max_KF = 1.5;
   double min_KF = 0.9;
   double MaxPropSetpoint;
+  double MaxPropSetpointKnee;
   bool auto_KF_update = false;
 
   // Calibrate_and_Read_Sensors.h
   double FSR_Ratio;
+  double FSR_Ratio_Toe;
+  double FSR_Ratio_Heel;
   double Max_FSR_Ratio;
+  double Max_FSR_Ratio_Toe;
+  double Max_FSR_Ratio_Heel;
 
   // Combined_FSR.h
   double fsr_Combined_peak_ref;
@@ -116,6 +121,10 @@ struct Leg {
   double Previous_Setpoint_Ankle = 0;
   double* p_Setpoint_Ankle = &Setpoint_Ankle;
   double* p_Setpoint_Ankle_Pctrl = &Setpoint_Ankle_Pctrl;
+  double Setpoint_Knee, Setpoint_Knee_Pctrl;
+  double Previous_Setpoint_Knee = 0;
+  double* p_Setpoint_Knee = &Setpoint_Knee;
+  double* p_Setpoint_Knee_Pctrl = &Setpoint_Knee_Pctrl;
   double Setpoint_earlyStance = 0.25 * Setpoint_Ankle;
   double Dorsi_Setpoint_Ankle;
   double Previous_Dorsi_Setpoint_Ankle;

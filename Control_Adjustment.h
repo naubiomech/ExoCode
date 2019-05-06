@@ -33,9 +33,18 @@ typedef struct {
   double perc_l = 0.5;
   double fsr_percent_thresh_Toe = 0.9;
   double plant_peak_mean;
+  double plant_peak_mean_Toe;
+  double plant_peak_mean_Heel;
   double four_step_plant_peak[n_step_baseline] = {0};
+  double four_step_plant_peak_Toe[n_step_baseline] = {0};
+  double four_step_plant_peak_Heel[n_step_baseline] = {0};
   double plant_peak_mean_temp;
+  double plant_peak_mean_temp_Toe;
+  double plant_peak_mean_temp_Heel;
   double peak;
+  double peak_Toe;
+  double peak_Heel;
+
   double fsr_Toe;
   double torque_average;
 } steps;
