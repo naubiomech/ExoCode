@@ -315,10 +315,16 @@ void receive_and_transmit()
 
       break;
 
-    case 'P':
+     case 'P':
+      Flag_Ankle_Cfg = true;
+      Flag_Knee_Cfg = false;
+
       break;
 
     case 'p':
+      Flag_Knee_Cfg = true;
+      Flag_Ankle_Cfg = false;
+      
       break;
 
     case 'O':
