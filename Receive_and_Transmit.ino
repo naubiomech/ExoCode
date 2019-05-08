@@ -54,6 +54,7 @@ void receive_and_transmit()
         left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
         left_leg->p_steps->Setpoint = left_leg->sign * left_leg->Setpoint_Ankle;
         left_leg->Setpoint_Ankle_Pctrl = left_leg->Setpoint_Ankle;
+        left_leg->Setpoint_Knee_Pctrl = left_leg->Setpoint_Ankle; // TN 5/8/19
         left_leg->activate_in_3_steps = 1;
         left_leg->num_3_steps = 0;
         left_leg->first_step = 1;
@@ -87,6 +88,7 @@ void receive_and_transmit()
         //Recieved the large data chunk chopped into bytes, a roundabout way was needed
         right_leg->Setpoint_Ankle_Pctrl = right_leg->Setpoint_Ankle;
         right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+        right_leg->Setpoint_Knee_Pctrl = right_leg->Setpoint_Ankle; // TN 5/8/19
         right_leg->p_steps->Setpoint = right_leg->sign * right_leg->Setpoint_Ankle;
         right_leg->activate_in_3_steps = 1;
         right_leg->num_3_steps = 0;
@@ -174,7 +176,7 @@ void receive_and_transmit()
       if (((check_FSR_values(left_leg->address_FSR)) && (check_FSR_values(left_leg->address_FSR + sizeof(double) + 1))) &&
           ((check_FSR_values(right_leg->address_FSR)) && (check_FSR_values(right_leg->address_FSR + sizeof(double) + 1))))
       {
-        if (FLAG_ONE_TOE_SENSOR) {
+        if (FLAG_TOE_HEEL_SENSORS || FLAG_TOE_SENSOR) { // TN 5/8/19
           left_leg->fsr_Combined_peak_ref = read_FSR_values(left_leg->address_FSR) + read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
           right_leg->fsr_Combined_peak_ref = read_FSR_values(right_leg->address_FSR) + read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
         } else {
@@ -185,7 +187,7 @@ void receive_and_transmit()
         }
 
         *(data_to_send_point + 1) = 1;
-        if (FLAG_ONE_TOE_SENSOR) {
+        if (FLAG_TOE_HEEL_SENSORS) {  // TN 5/8/19
         } else {
         }
       }
@@ -208,10 +210,19 @@ void receive_and_transmit()
       send_command_message('<', data_to_send_point, 3);
 
       // add baseline
-      left_leg->p_steps->plant_peak_mean = read_baseline(left_leg->baseline_address);
-      right_leg->p_steps->plant_peak_mean = read_baseline(right_leg->baseline_address);
-      left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
-      right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
+      // TN 5/8/19
+      if (FLAG_TOE_HEEL_SENSORS) {
+        left_leg->p_steps->plant_peak_mean_Toe = read_baseline(left_leg->baseline_address);
+        right_leg->p_steps->plant_peak_mean_Toe = read_baseline(right_leg->baseline_address);
+        left_leg->baseline_value = left_leg->p_steps->plant_peak_mean_Toe;
+        right_leg->baseline_value = right_leg->p_steps->plant_peak_mean_Toe;
+      } else if (FLAG_TOE_SENSOR) {
+        left_leg->p_steps->plant_peak_mean = read_baseline(left_leg->baseline_address);
+        right_leg->p_steps->plant_peak_mean = read_baseline(right_leg->baseline_address);
+        left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
+        right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
+      }
+
       break;
 
     case '>':
@@ -315,7 +326,7 @@ void receive_and_transmit()
 
       break;
 
-     case 'P':
+    case 'P':
       Flag_Ankle_Cfg = true;
       Flag_Knee_Cfg = false;
 
@@ -324,7 +335,7 @@ void receive_and_transmit()
     case 'p':
       Flag_Knee_Cfg = true;
       Flag_Ankle_Cfg = false;
-      
+
       break;
 
     case 'O':
@@ -402,7 +413,7 @@ void receive_and_transmit()
     case '!':
       if (stream == 1) {
       } else {
-        if (FLAG_ONE_TOE_SENSOR) {
+        if  (FLAG_TOE_HEEL_SENSORS || FLAG_TOE_SENSOR) {   // TN 5/8/19
           write_FSR_values(left_leg->address_FSR, left_leg->fsr_Combined_peak_ref / 2);
           write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Combined_peak_ref / 2);
           write_FSR_values(right_leg->address_FSR, right_leg->fsr_Combined_peak_ref / 2);
@@ -464,20 +475,24 @@ void receive_and_transmit()
       break;
 
     case '+':
-
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = false;
+      // TN 5/8/19
+      OLD_FLAG_TOE_HEEL_SENSORS = FLAG_TOE_HEEL_SENSORS;
+      OLD_FLAG_TOE_SENSOR = FLAG_TOE_SENSOR;
+      FLAG_TOE_HEEL_SENSORS = false;
       FLAG_BALANCE = true;
       Old_Control_Mode = Control_Mode;
       Control_Mode = 2;
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint;
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint;
       FLAG_BALANCE = true;
       break;
 
     case '=':
-      FLAG_ONE_TOE_SENSOR = OLD_FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = true;
+      // TN 5/8/19
+      OLD_FLAG_TOE_HEEL_SENSORS = FLAG_TOE_HEEL_SENSORS;
+      FLAG_TOE_HEEL_SENSORS = true;
       FLAG_BALANCE = false;
       Control_Mode = Old_Control_Mode;
       right_leg->p_steps->torque_adj = false;
@@ -486,6 +501,8 @@ void receive_and_transmit()
       *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint;
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint;
       FLAG_BALANCE = false;
       break;
 
@@ -513,6 +530,8 @@ void receive_and_transmit()
       //      Control_Mode = 3; // activate pivot proportional control
       //      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       //      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      OLD_FLAG_TOE_SENSOR = FLAG_TOE_SENSOR; // TN 5/8/19
+      FLAG_TOE_SENSOR = true;   // TN 5/8/19
       flag_id = false; // TN 04/29/19
       flag_pivot = true; // TN 04/29/19
       if (Flag_Prop_Ctrl == true) // TN 04/29/19
@@ -526,6 +545,8 @@ void receive_and_transmit()
       //      Control_Mode = 4; // activate Inverse Dynamic proportional control
       //      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       //      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      OLD_FLAG_TOE_HEEL_SENSORS = FLAG_TOE_HEEL_SENSORS; // TN 5/8/19
+      FLAG_TOE_HEEL_SENSORS = true; // TN 5/8/19
       flag_id = true; // TN 04/29/19
       flag_pivot = false; // TN 04/29/19
       if (Flag_Prop_Ctrl == true) // TN 04/29/19
@@ -533,31 +554,38 @@ void receive_and_transmit()
       break;
 
     case 'l': // TN 04/29/19
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR; // TN 04/29/19
-      FLAG_ONE_TOE_SENSOR = true; // TN 04/29/19
+
       Old_Control_Mode = Control_Mode; // TN 04/29/19
       Flag_Prop_Ctrl = true; // TN 04/29/19
-      if (flag_pivot == true)   // TN 04/29/19
+      if (flag_pivot == true) {  // TN 04/29/19
         Control_Mode = 3; // activate pivot PC // TN 04/29/19
-      if (flag_id == true) // TN 04/29/19
+        *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
+        *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
+      }
+      if (flag_id == true) {// TN 04/29/19
         Control_Mode = 4; // activate ID PC // TN 04/29/19
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
+        *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
+        *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
+        *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint;  // TN 5/8/19
+        *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint;     // TN 5/8/19
+      }
       break;
 
 
     case '^':
       Control_Mode = Old_Control_Mode;
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR; //GO 4/23/19
-      FLAG_ONE_TOE_SENSOR = false; //GO 4/23/19 to return the control to bang-bang (heel-toe)
+      OLD_FLAG_TOE_SENSOR = FLAG_TOE_SENSOR; // TN 5/8/19
+      FLAG_TOE_SENSOR = false; // TN 5/8/19
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
       *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      //      flag_id = false; // TN 04/29/19
-      //      flag_pivot = false; // TN 04/29/19
+      *right_leg->p_Setpoint_Knee = right_leg->p_steps->Setpoint;   // TN 5/8/19
+      *left_leg->p_Setpoint_Knee = left_leg->p_steps->Setpoint;    // TN 5/8/19
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint;    // TN 5/8/19
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint;     // TN 5/8/19
       Flag_Prop_Ctrl = false; // TN 04/29/19
       break;
 
@@ -579,6 +607,13 @@ void receive_and_transmit()
         *(data_to_send_point + 7) = right_leg->FSR_Heel_Balance_Baseline * right_leg->Dynamic_multiplier;
 
         send_command_message('B', data_to_send_point, 8);
+        // TN 5/8/19
+      } else if (FLAG_TOE_HEEL_SENSORS == true) {
+        left_leg->baseline_value = left_leg->p_steps->plant_peak_mean_Toe;
+        right_leg->baseline_value = right_leg->p_steps->plant_peak_mean_Toe;
+        *(data_to_send_point) = left_leg->p_steps->plant_peak_mean_Toe;
+        *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean_Toe;
+        send_command_message('B', data_to_send_point, 2);
 
       }
       else {
@@ -661,15 +696,20 @@ void receive_and_transmit()
 
 
     case '/':
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = false;
+      // TN 5/8/19
+      OLD_FLAG_TOE_HEEL_SENSORS = FLAG_TOE_HEEL_SENSORS;
+      OLD_FLAG_TOE_SENSOR = FLAG_TOE_SENSOR;
+      FLAG_TOE_SENSOR = false;
+      FLAG_TOE_HEEL_SENSORS = false;
       FLAG_BIOFEEDBACK = true;
       right_leg->BIO_BASELINE_FLAG = false;
       break;
 
 
     case 'y':
-      FLAG_ONE_TOE_SENSOR = OLD_FLAG_ONE_TOE_SENSOR;
+      // TN 5/8/19
+      FLAG_TOE_HEEL_SENSORS = OLD_FLAG_TOE_HEEL_SENSORS;
+      FLAG_TOE_SENSOR = OLD_FLAG_TOE_SENSOR;
       FLAG_BIOFEEDBACK = false;
       if (left_leg->state == 2) left_leg->state = 1;
       if (right_leg->state == 2) right_leg->state = 1;
@@ -790,9 +830,17 @@ void receive_and_transmit()
       bluetooth.print('S');
       bluetooth.print('P');
       bluetooth.print(',');
-      bluetooth.print(left_leg->p_steps->plant_peak_mean);
+      if (FLAG_TOE_HEEL_SENSORS == true)   // TN 5/8/19
+        bluetooth.print(left_leg->p_steps->plant_peak_mean_Toe);
+      else
+        bluetooth.print(left_leg->p_steps->plant_peak_mean);
       bluetooth.print(',');
-      bluetooth.print(right_leg->p_steps->plant_peak_mean);
+
+      if (FLAG_TOE_HEEL_SENSORS == true)
+        bluetooth.print(right_leg->p_steps->plant_peak_mean_Toe);
+      else
+        bluetooth.print(right_leg->p_steps->plant_peak_mean);
+
       bluetooth.print(',');
       bluetooth.print(left_leg->Curr_Combined);
       bluetooth.print(',');
@@ -842,10 +890,14 @@ void receive_and_transmit()
     case 'g':
 
       receiveVals(96);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&left_leg->p_steps->plant_peak_mean_temp, holdOnPoint, 8);              // send an old value of plant_peak_mean to teensy  // TN 04-26-2019
-      //delay(10);
-      //receiveVals(8);
-      memcpy(&right_leg->p_steps->plant_peak_mean_temp, holdOnPoint + 8, 8);//added          // send an old value of plant_peak_mean to teensy  // TN 04-26-2019
+      if (FLAG_TOE_HEEL_SENSORS == true)
+        memcpy(&left_leg->p_steps->plant_peak_mean_temp_Toe, holdOnPoint, 8);
+      else
+        memcpy(&left_leg->p_steps->plant_peak_mean_temp, holdOnPoint, 8);              // send an old value of plant_peak_mean to teensy  // TN 04-26-2019
+      if (FLAG_TOE_HEEL_SENSORS == true)   // TN 5/8/19
+        memcpy(&right_leg->p_steps->plant_peak_mean_temp_Toe, holdOnPoint + 8, 8);//added
+      else
+        memcpy(&right_leg->p_steps->plant_peak_mean_temp, holdOnPoint + 8, 8);//added          // send an old value of plant_peak_mean to teensy  // TN 04-26-2019
       //delay(10);
       //receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&left_leg->Curr_Combined, holdOnPoint + 16, 8);
@@ -881,7 +933,11 @@ void receive_and_transmit()
       Serial.println("Old left_leg->p_steps->plant_peak_mean_temp");
       Serial.println(left_leg->p_steps->plant_peak_mean_temp);
       Serial.println("Old right_leg->p_steps->plant_peak_mean_temp");
-      Serial.println(right_leg->p_steps->plant_peak_mean_temp);
+      if (FLAG_TOE_HEEL_SENSORS == true)  // TN 5/8/19
+        Serial.println(right_leg->p_steps->plant_peak_mean_temp_Toe);
+      else
+        Serial.println(right_leg->p_steps->plant_peak_mean_temp);
+
       Serial.println(left_leg->Curr_Combined);
       Serial.println(right_leg->Curr_Combined);
       Serial.println(left_leg->fsr_Combined_peak_ref);
