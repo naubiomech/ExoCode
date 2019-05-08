@@ -134,7 +134,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
 
     if (((R_state_l == 1) || (R_state_l == 2)) && R_state_old_l == 3)
       p_steps_l->peak = 0;
-  }
+  
 
 
 }// end take_baseline
