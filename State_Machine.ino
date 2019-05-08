@@ -6,8 +6,11 @@
 // in case of no contact of both the sensors
 void state_machine(Leg* leg)
 {
-  if (FLAG_ONE_TOE_SENSOR) {
-    State_Machine_One_Toe_Sensor(leg);
+  // TN 5/8/19
+  if (FLAG_TOE_HEEL_SENSORS || FLAG_TOE_SENSOR) {
+    State_Machine_Toe_Heel_Sensors(leg);
+  } else if (FLAG_TOE_SENSOR) {
+    State_Machine_Toe_Sensor(leg);
   }
 
   if (FLAG_BALANCE) {
@@ -25,7 +28,7 @@ void state_machine(Leg* leg)
 
 
 //-----------------------------------------------------------------------------------------------------
-void State_Machine_One_Toe_Sensor(Leg * leg) {
+void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
   switch (leg->state)
   {
     case 1: //Swing
@@ -88,9 +91,12 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
         leg->New_PID_Setpoint = 0;
         leg->One_time_set_2_zero = 0;
         leg->Previous_Setpoint_Ankle = 0;
+        leg->Previous_Setpoint_Knee = 0;  // TN 5/8/19
         leg->PID_Setpoint = 0;
         leg->Setpoint_Ankle_Pctrl = 0;
+        leg->Setpoint_Knee_Pctrl = 0;
         leg->Previous_Setpoint_Ankle_Pctrl = 0; //GO 4/21/19
+
       }
 
       if ((leg->p_steps->curr_voltage < (leg->fsr_percent_thresh_Toe * leg->fsr_Combined_peak_ref)))
@@ -102,7 +108,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
           leg->state_old = leg->state;
           //          leg->New_PID_Setpoint = 0 * leg->coef_in_3_steps;
-          
+
           if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
 
             leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
@@ -123,7 +129,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
   }//end switch
   // Adjust the torque reference as a function of the step
   ref_step_adj(leg);
-  
+
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) { //GO 4/21/19
     if (abs(leg->Previous_Setpoint_Ankle_Pctrl) <= abs(leg->Setpoint_Ankle)) {
       leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
@@ -147,7 +153,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
   }
 
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 1) {
-      leg->Setpoint_Ankle_Pctrl = leg->New_PID_Setpoint;
+    leg->Setpoint_Ankle_Pctrl = leg->New_PID_Setpoint;
   }
   else {
 
@@ -162,6 +168,145 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
   }
 }// end function
 
+// TN 5/8/19
+
+
+void State_Machine_Toe_Sensor(Leg * leg) {
+  switch (leg->state)
+  {
+    case 1: //Swing
+      // This flag enables the "set to zero" procedure for the left ankle.
+      // When you're for at least 3 seconds in the same state, the torque reference is set to zero
+
+      if (leg->set_2_zero == 1) {
+        leg->set_2_zero = 0;
+        leg->One_time_set_2_zero = 1;
+      }
+      else if ((leg->p_steps->curr_voltage > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref))
+      {
+        leg->state_count_13++;
+        // if you're in the same state for more than state_counter_th it means that it is not noise
+        if (leg->state_count_13 >= state_counter_th)
+        {
+          leg->sigm_done = true;
+          leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+          if (abs(leg->Dorsi_Setpoint_Ankle) > 0) {
+            leg->Old_PID_Setpoint = 0;
+          } else {
+            leg->Previous_Dorsi_Setpoint_Ankle = 0;
+          }
+
+          if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle) {
+
+            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+
+          } else {
+
+            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
+
+          }
+
+          if (Flag_HLO && (leg->Previous_T_Opt <= leg->T_Opt)) {
+
+            leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps;
+            Serial.print("Previous T Opt");
+            Serial.print(leg->Previous_T_Opt);
+            Serial.print("Current T Opt");
+            Serial.println(leg->T_Opt_Setpoint);
+
+          } else if (Flag_HLO && (leg->Previous_T_Opt > leg->T_Opt)) {
+
+            leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt) * leg->coef_in_3_steps;
+            Serial.print("Previous T Opt");
+            Serial.print(leg->Previous_T_Opt);
+            Serial.print("Current T Opt");
+            Serial.println(leg->T_Opt_Setpoint);
+
+          }
+
+          leg->state_old = leg->state;
+          leg->state = 3;
+          leg->state_count_13 = 0;
+          leg->state_count_31 = 0;
+        }
+      }
+
+      break;
+    case 3: //Late Stance
+
+      if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
+        leg->sigm_done = true;
+        leg->Old_PID_Setpoint = leg->PID_Setpoint;
+        leg->state_old = leg->state;
+        leg->New_PID_Setpoint = 0;
+        leg->One_time_set_2_zero = 0;
+        leg->Previous_Setpoint_Ankle = 0;
+        leg->PID_Setpoint = 0;
+        leg->Setpoint_Ankle_Pctrl = 0;
+      }
+
+      if ((leg->p_steps->curr_voltage < (leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)))
+      {
+        leg->state_count_31++;
+        if (leg->state_count_31 >= state_counter_th)
+        {
+          leg->sigm_done = true;
+          leg->Old_PID_Setpoint = leg->PID_Setpoint;
+          leg->state_old = leg->state;
+          //          leg->New_PID_Setpoint = 0 * leg->coef_in_3_steps;
+
+
+          if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
+
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+
+          } else {
+
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+
+          }
+
+          leg->state = 1;
+          leg->state_count_31 = 0;
+          leg->state_count_13 = 0;
+        }
+      }
+  }//end switch
+  // Adjust the torque reference as a function of the step
+  ref_step_adj(leg);
+
+  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) {
+    leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl*leg->coef_in_3_steps;
+  }
+  else {
+
+    if (N1 < 1 || N2 < 1 || N3 < 1) {
+      leg->PID_Setpoint = leg->New_PID_Setpoint;
+    }
+    else {
+      // Create the smoothed reference and call the PID
+      PID_Sigm_Curve(leg);
+    }
+
+  }
+
+  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 1) {
+    leg->PID_Setpoint = 0;
+  }
+  else {
+
+    if (N1 < 1 || N2 < 1 || N3 < 1) {
+      leg->PID_Setpoint = leg->New_PID_Setpoint;
+    }
+    else {
+      // Create the smoothed reference and call the PID
+      PID_Sigm_Curve(leg);
+    }
+
+  }
+
+}// end function
 
 void State_Machine_Heel_Toe_Sensors(Leg * leg) {
 
