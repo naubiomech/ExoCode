@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD
+#define BOARD_VERSION QUAD_BOARD
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -211,17 +211,22 @@ void calculate_leg_average(Leg* leg) {
   // in case of two toe sensors we use the combined averate, i.e. the sum of the averages.
   leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
 
+  // TN 5/8/19
 
-  if (FLAG_ONE_TOE_SENSOR)
+  leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
+  leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
+
+  if (FLAG_TOE_HEEL_SENSORS || FLAG_TOE_SENSOR)
   {
-    leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
-    leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
-    leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
+    if (Control_Mode == 3) {
+      leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
+    }
+    else if (Control_Mode == 4) {
+      leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
+    }
   }
   else {
-    leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
-    leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
-    leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
+    leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
   }
 
 
@@ -337,10 +342,10 @@ void rotate_motor() {
     state_machine(right_leg);  //for RL
 
 
-    Serial.println("Left_leg->p_steps->plant_peak_mean");
-    Serial.println(left_leg->p_steps->plant_peak_mean);
-    Serial.println("Right_leg->p_steps->plant_peak_mean");
-    Serial.println(right_leg->p_steps->plant_peak_mean);
+    //    Serial.println("Left_leg->p_steps->plant_peak_mean");
+    //    Serial.println(left_leg->p_steps->plant_peak_mean);
+    //    Serial.println("Right_leg->p_steps->plant_peak_mean");
+    //    Serial.println(right_leg->p_steps->plant_peak_mean);
 
 
     if ((left_leg->state == 3) && (left_leg->old_state == 1)) {
@@ -422,14 +427,18 @@ void rotate_motor() {
       set_2_zero_if_steady_state();
     }
 
+    // TN 5/8/19
+
     left_leg->N3 = Control_Adjustment(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
-                                      left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle,
-                                      left_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, left_leg->Prop_Gain,
-                                      left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->Max_FSR_Ratio);
+                                      left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle_Pctrl,
+                                      left_leg->p_Setpoint_Knee_Pctrl, Control_Mode, left_leg->Prop_Gain,
+                                      left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->FSR_Ratio_Toe, &left_leg->FSR_Ratio_Heel,
+                                      &left_leg->Max_FSR_Ratio, &left_leg->Max_FSR_Ratio_Toe, &left_leg->Max_FSR_Ratio_Heel);
     right_leg->N3 = Control_Adjustment(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps,
-                                       right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle,
-                                       right_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, right_leg->Prop_Gain,
-                                       right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio);
+                                       right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle_Pctrl,
+                                       right_leg->p_Setpoint_Knee_Pctrl, Control_Mode, right_leg->Prop_Gain,
+                                       right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->FSR_Ratio_Toe, &right_leg->FSR_Ratio_Heel,
+                                       &right_leg->Max_FSR_Ratio, &right_leg->Max_FSR_Ratio_Toe, &right_leg->Max_FSR_Ratio_Heel);
 
   }// end if stream==1
 }
@@ -464,6 +473,7 @@ void reset_leg_starting_parameters(Leg* leg) {
   leg->p_steps->perc_l = 0.5;
   leg->activate_in_3_steps = 1;
   leg->Previous_Setpoint_Ankle = 0;
+  leg->Previous_Setpoint_Knee = 0;  // TN 5/8/19
 
   leg->coef_in_3_steps = 0;
   leg->num_3_steps = 0;
