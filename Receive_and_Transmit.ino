@@ -576,6 +576,8 @@ void receive_and_transmit()
       Control_Mode = Old_Control_Mode;
       OLD_FLAG_TOE_SENSOR = FLAG_TOE_SENSOR; // TN 5/8/19
       FLAG_TOE_SENSOR = false; // TN 5/8/19
+      OLD_FLAG_TOE_HEEL_SENSORS = FLAG_TOE_HEEL_SENSORS; // TN 5/8/19
+      FLAG_TOE_HEEL_SENSORS = false; // TN 5/8/19
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
       *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
