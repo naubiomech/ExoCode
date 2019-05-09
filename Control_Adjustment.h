@@ -24,6 +24,7 @@ typedef struct {
   bool flag_take_baseline = false;
   bool torque_adj = false;
   double Setpoint;
+  double Setpoint_K; // TN 5/9/19
   double plant_mean_base;
   double dorsi_mean_base;
   double voltage_peak_ref;
@@ -32,6 +33,7 @@ typedef struct {
   double curr_voltage_Heel;
   double perc_l = 0.5;
   double fsr_percent_thresh_Toe = 0.9;
+  double fsr_percent_thresh_Heel = 0.9; // TN 5/9/19
   double plant_peak_mean;
   double plant_peak_mean_Toe;
   double plant_peak_mean_Heel;
@@ -47,6 +49,7 @@ typedef struct {
 
   double fsr_Toe;
   double torque_average;
+  double torque_average_K; // TN 5/9/19
 } steps;
 
 steps val_L;

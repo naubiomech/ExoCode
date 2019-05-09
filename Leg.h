@@ -8,6 +8,7 @@ const int dim = 5;
 
 struct Leg {
   int torque_sensor_ankle_pin;
+  int torque_sensor_knee_pin;  // TN 5/9/19
   int motor_ankle_pin;
   // In A_Exo pre-includes
   double FSR_Average_array[dim_FSR] = {0};
@@ -21,6 +22,10 @@ struct Leg {
   double Tarray[dim] = {0};
   double* TarrayPoint = &Tarray[0];
   double Average = 0;
+
+  double Tarray_Knee[dim] = {0};   // TN 5/9/19
+  double* TarrayPoint_Knee = &Tarray_Knee[0];   // TN 5/9/19
+  double Average_K = 0;   // TN 5/9/19
 
   double sign = 1;
 
@@ -38,6 +43,7 @@ struct Leg {
   volatile double Average_Volt;
   volatile double Average_Volt_Heel;
   volatile double Average_Trq;
+  volatile double Average_Trq_Knee;  // TN 5/9/19
   volatile double FSR_Combined_Average;
   volatile double FSR_Toe_Average;
   volatile double FSR_Heel_Average;
@@ -59,8 +65,14 @@ struct Leg {
   double max_KF = 1.5;
   double min_KF = 0.9;
   double MaxPropSetpoint;
-  double MaxPropSetpointKnee; // TN 5/8/19
   bool auto_KF_update = false;
+
+  // TN 5/9/19
+  double Max_Measured_Torque_Knee;
+  double max_KF_Knee = 1.5;
+  double min_KF_Knee = 0.9;
+  double MaxPropSetpoint_Knee;
+  bool auto_KF_Knee_update = false;
 
   // Calibrate_and_Read_Sensors.h
   double FSR_Ratio;
@@ -98,8 +110,12 @@ struct Leg {
   int baseline_address;
   double baseline_value;
 
+  int baseline_address_Knee;  // TN 5/9/19
+  double baseline_value_Knee;  // TN 5/9/19
+
   // PID_and_Ctrl_Parameters.h
   double torque_calibration_value = 0;
+  double torque_calibration_value_Knee = 0;   // TN 5/9/19
   double T_act;
   int Vol;
 
@@ -107,15 +123,27 @@ struct Leg {
   double kp = 600;
   double ki = 0;
   double kd = 3;
+  //PWM Gains for Knee control:  // TN 5/9/19
+  double kp_K = 600;
+  double ki_K = 0;
+  double kd_K = 3;
 #else
   double kp = 700;
   double ki = 0;
   double kd = 3;
+  //PID Gains for Knee control:  // TN 5/9/19
+  double kp_K = 700;
+  double ki_K = 0;
+  double kd_K = 3;
 #endif
   double KF = 1;
+  double KF_Knee = 1;  // TN 5/9/19
 
   double PID_Setpoint, Input, Output;
   PID pid = PID(&Input, &Output, &PID_Setpoint, kp, ki, kd, DIRECT);
+
+  double PID_Setpoint_Knee, Input_Knee, Output_Knee;   // TN 5/9/19
+  PID pid_Knee = PID(&Input_Knee, &Output_Knee, &PID_Setpoint_Knee, kp_K, ki_K, kd_K, DIRECT);   // TN 5/9/19
 
   double Setpoint_Ankle, Setpoint_Ankle_Pctrl;
   double Previous_Setpoint_Ankle = 0;
@@ -124,13 +152,22 @@ struct Leg {
   double* p_Setpoint_Ankle_Pctrl = &Setpoint_Ankle_Pctrl;
   double Setpoint_Knee, Setpoint_Knee_Pctrl; // TN 5/8/19
   double Previous_Setpoint_Knee = 0;
+  double Previous_Setpoint_Knee_Pctrl = 0;  // TN 5/8/19
   double* p_Setpoint_Knee = &Setpoint_Knee;
   double* p_Setpoint_Knee_Pctrl = &Setpoint_Knee_Pctrl;
+
   double Setpoint_earlyStance = 0.25 * Setpoint_Ankle;
   double Dorsi_Setpoint_Ankle;
   double Previous_Dorsi_Setpoint_Ankle;
   double* p_Dorsi_Setpoint_Ankle = &Dorsi_Setpoint_Ankle;
   double* p_Previous_Dorsi_Setpoint_Ankle = &Previous_Dorsi_Setpoint_Ankle;
+
+  // TN 5/8/19
+  double Setpoint_earlyStance_Knee = 0.25 * Setpoint_Knee;
+  double Dorsi_Setpoint_Knee;
+  double Previous_Dorsi_Setpoint_Knee;
+  double* p_Dorsi_Setpoint_Knee = &Dorsi_Setpoint_Knee;
+  double* p_Previous_Dorsi_Setpoint_Knee = &Previous_Dorsi_Setpoint_Knee;
 
 
   // Proportional_Ctrl.h
@@ -160,6 +197,9 @@ struct Leg {
 
   double New_PID_Setpoint = 0.0;
   double Old_PID_Setpoint = 0.0;
+
+  double New_PID_Setpoint_Knee = 0.0;  // TN 5/9/19
+  double Old_PID_Setpoint_Knee = 0.0;  // TN 5/9/19
 
   double N3 = 200;
   double N2 = 4;
@@ -221,6 +261,7 @@ struct Leg {
   double start_time_Biofeedback;
 
   char whos = ' ';
+  char AorK = ' ';  // TN 5/9/19
 
   double zero;
   double torque_error_counter;

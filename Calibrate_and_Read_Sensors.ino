@@ -96,8 +96,15 @@ void FSR_calibration()
 }
 
 double get_torq(Leg* leg) {
-  double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value);
-  return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
+  // TN 5/9/19
+  if (leg->AorK == 'A') {
+    double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value);
+    return -Torq;//neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
+  }
+  if (leg->AorK == 'K') {
+    double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_knee_pin) * (3.3 / 4096) - leg->torque_calibration_value_Knee);
+    return -Torq;//neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
+  }
 }
 
 double get_LL_torq()

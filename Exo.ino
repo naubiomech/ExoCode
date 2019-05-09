@@ -177,19 +177,31 @@ void calculate_leg_average(Leg* leg) {
     leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
   }
   //Get the torque
-  leg->TarrayPoint[0] = get_torq(leg);
+  leg->AorK = 'A';  // TN 5/9/19
+  leg->TarrayPoint[0] = get_torq(leg);  // TN 5/9/19
+  leg->AorK = 'K';  // TN 5/9/19
+  leg->TarrayPoint_Knee[0] = get_torq(leg); // TN 5/9/19
+
   leg->FSR_Toe_Average = 0;
   leg->FSR_Heel_Average = 0;
   leg->Average = 0;
+  leg->Average_K = 0;  // TN 5/9/19
+
 
   for (int i = 0; i < dim; i++)
   {
     leg->Average =  leg->Average + leg->TarrayPoint[i];
+    leg->Average_K =  leg->Average + leg->TarrayPoint_Knee[i];   // TN 5/9/19
   }
 
   leg->Average_Trq = leg->Average / dim;
+  leg->Average_Trq_Knee = leg->Average_K / dim;     // TN 5/9/19
   if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
+  }
+  // TN 5/9/19
+  if (abs(leg->Average_Trq_Knee) > abs(leg->Max_Measured_Torque_Knee)) {
+    leg->Max_Measured_Torque_Knee = leg->Average_Trq_Knee;  //Get max measured torque during
   }
 
   if (abs(leg->TarrayPoint[dim]) > 25 && abs(leg->Average_Trq - leg->TarrayPoint[dim]) < 0.1) //When torque sensor is unplugged we see the same values for several seconds
@@ -204,6 +216,7 @@ void calculate_leg_average(Leg* leg) {
     leg->state = old_L_state_L;
   }
   leg->p_steps->torque_average = leg->Average / dim;
+  leg->p_steps->torque_average_K = leg->Average_K / dim;    // TN 5/9/19
 
   leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
   leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
@@ -427,16 +440,16 @@ void rotate_motor() {
       set_2_zero_if_steady_state();
     }
 
-    // TN 5/8/19
+    // TN 5/9/19
 
     left_leg->N3 = Control_Adjustment(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
                                       left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle_Pctrl,
-                                      left_leg->p_Setpoint_Knee_Pctrl, Control_Mode, left_leg->Prop_Gain,
+                                      left_leg->New_PID_Setpoint_Knee, left_leg->p_Setpoint_Knee_Pctrl, Control_Mode, left_leg->Prop_Gain,
                                       left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->FSR_Ratio_Toe, &left_leg->FSR_Ratio_Heel,
                                       &left_leg->Max_FSR_Ratio, &left_leg->Max_FSR_Ratio_Toe, &left_leg->Max_FSR_Ratio_Heel);
     right_leg->N3 = Control_Adjustment(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps,
                                        right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle_Pctrl,
-                                       right_leg->p_Setpoint_Knee_Pctrl, Control_Mode, right_leg->Prop_Gain,
+                                       right_leg->New_PID_Setpoint_Knee, right_leg->p_Setpoint_Knee_Pctrl, Control_Mode, right_leg->Prop_Gain,
                                        right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->FSR_Ratio_Toe, &right_leg->FSR_Ratio_Heel,
                                        &right_leg->Max_FSR_Ratio, &right_leg->Max_FSR_Ratio_Toe, &right_leg->Max_FSR_Ratio_Heel);
 
