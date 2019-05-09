@@ -273,7 +273,9 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     p_steps_l->plant_peak_mean_Toe = p_steps_l->plant_peak_mean_temp_Toe;
   }
 
-
+  if (taking_baseline_l == 0 && p_steps_l->plant_peak_mean_temp_Heel != p_steps_l->plant_peak_mean_Heel) {
+    p_steps_l->plant_peak_mean_Heel = p_steps_l->plant_peak_mean_temp_Heel;
+  }
 
   // if you transit from state 1 to state 3 dorsiflexion is completed and start plantarflexion
   if ((R_state_l == 3) && (R_state_old_l == 1 || R_state_old_l == 2))
