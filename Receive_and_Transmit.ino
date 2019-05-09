@@ -18,15 +18,27 @@ void receive_and_transmit()
       break;
 
 
-    case 'D':                                         //if MATLAB sent the character D
-      *(data_to_send_point) = left_leg->Setpoint_Ankle;      //MATLAB is expecting to recieve the Torque Parameters
-      *(data_to_send_point + 1) = left_leg->Dorsi_Setpoint_Ankle;
+    case 'D':      // TN 5/9/19                                   //if MATLAB sent the character D
+      if (Flag_Ankle_Cfg) {
+        *(data_to_send_point) = left_leg->Setpoint_Ankle;      //MATLAB is expecting to recieve the Torque Parameters
+        *(data_to_send_point + 1) = left_leg->Dorsi_Setpoint_Ankle;
+      }
+      if (Flag_Knee_Cfg) {
+        *(data_to_send_point) = left_leg->Setpoint_Knee;      //MATLAB is expecting to recieve the Torque Parameters
+        *(data_to_send_point + 1) = left_leg->Dorsi_Setpoint_Knee;
+      }
       send_command_message('D', data_to_send_point, 2);
       break;
 
-    case 'd':
-      *(data_to_send_point) = right_leg->Setpoint_Ankle;
-      *(data_to_send_point + 1) = right_leg->Dorsi_Setpoint_Ankle;
+    case 'd':  // TN 5/9/19
+      if (Flag_Ankle_Cfg) {
+        *(data_to_send_point) = right_leg->Setpoint_Ankle;
+        *(data_to_send_point + 1) = right_leg->Dorsi_Setpoint_Ankle;
+      }
+      if (Flag_Knee_Cfg) {
+        *(data_to_send_point) = right_leg->Setpoint_Knee;
+        *(data_to_send_point + 1) = right_leg->Dorsi_Setpoint_Knee;
+      }
       send_command_message('d', data_to_send_point, 2);     //MATLAB is expecting to receive the Torque Parameters
       break;
 
@@ -311,27 +323,23 @@ void receive_and_transmit()
 
       // add baseline
       // TN 5/9/19
-      if (Flag_Ankle_Cfg) {
+      
         if (FLAG_TOE_HEEL_SENSORS) {
           left_leg->p_steps->plant_peak_mean_Toe = read_baseline(left_leg->baseline_address);
           right_leg->p_steps->plant_peak_mean_Toe = read_baseline(right_leg->baseline_address);
           left_leg->baseline_value = left_leg->p_steps->plant_peak_mean_Toe;
           right_leg->baseline_value = right_leg->p_steps->plant_peak_mean_Toe;
+              left_leg->p_steps->plant_peak_mean_Heel = read_baseline(left_leg->baseline_address_Knee);
+          right_leg->p_steps->plant_peak_mean_Heel = read_baseline(right_leg->baseline_address_Knee);
+          left_leg->baseline_value_Knee = left_leg->p_steps->plant_peak_mean_Heel;
+          right_leg->baseline_value_Knee = right_leg->p_steps->plant_peak_mean_Heel;
         } else if (FLAG_TOE_SENSOR) {
           left_leg->p_steps->plant_peak_mean = read_baseline(left_leg->baseline_address);
           right_leg->p_steps->plant_peak_mean = read_baseline(right_leg->baseline_address);
           left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
           right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
         }
-      }
-      if (Flag_Knee_Cfg) {
-        if (FLAG_TOE_HEEL_SENSORS) {
-          left_leg->p_steps->plant_peak_mean_Heel = read_baseline(left_leg->baseline_address_Knee);
-          right_leg->p_steps->plant_peak_mean_Heel = read_baseline(right_leg->baseline_address_Knee);
-          left_leg->baseline_value_Knee = left_leg->p_steps->plant_peak_mean_Heel;
-          right_leg->baseline_value_Knee = right_leg->p_steps->plant_peak_mean_Heel;
-        }
-      }
+      
 
       break;
 
@@ -626,23 +634,35 @@ void receive_and_transmit()
       right_leg->sign = 1;
       break;
 
-    case '[': // Receive Right Gain from GUI
+    case '[': // Receive Right Gain from GUI   // TN 5/9/19
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&right_leg->Prop_Gain, &holdon, 8);
+      if (Flag_Ankle_Cfg)
+        memcpy(&right_leg->Prop_Gain, &holdon, 8);
+      if (Flag_Knee_Cfg)
+        memcpy(&right_leg->Prop_Gain_Knee, &holdon, 8);
       break;
 
-    case ']': // Send Right Gain to GUI
-      *(data_to_send_point) = right_leg->Prop_Gain;
+    case ']': // Send Right Gain to GUI  // TN 5/9/19
+      if (Flag_Ankle_Cfg)
+        *(data_to_send_point) = right_leg->Prop_Gain;
+      if (Flag_Knee_Cfg)
+        *(data_to_send_point) = right_leg->Prop_Gain_Knee;
       send_command_message(']', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
       break;
 
-    case '{': // Receive Left Gain from GUI
+    case '{': // Receive Left Gain from GUI  // TN 5/9/19
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&left_leg->Prop_Gain, &holdon, 8);
+      if (Flag_Ankle_Cfg)
+        memcpy(&left_leg->Prop_Gain, &holdon, 8);
+      if (Flag_Knee_Cfg)
+        memcpy(&left_leg->Prop_Gain_Knee, &holdon, 8);
       break;
 
-    case '}': // Send Left Gain to GUI
-      *(data_to_send_point) = left_leg->Prop_Gain;
+    case '}': // Send Left Gain to GUI  // TN 5/9/19
+      if (Flag_Ankle_Cfg)
+        *(data_to_send_point) = left_leg->Prop_Gain;
+      if (Flag_Knee_Cfg)
+        *(data_to_send_point) = left_leg->Prop_Gain_Knee;
       send_command_message('}', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
       break;
 
@@ -656,8 +676,8 @@ void receive_and_transmit()
       Control_Mode = 2;
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint;
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_K;   // TN 5/9/19
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_K;    // TN 5/9/19
       FLAG_BALANCE = true;
       break;
 
@@ -673,24 +693,37 @@ void receive_and_transmit()
       *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint;
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_K;  // TN 5/9/19
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_K;   // TN 5/9/19
       FLAG_BALANCE = false;
       break;
 
 
-    case '.':
+    case '.':  // TN 5/9/19
       flag_auto_KF = 1;
-      left_leg->KF = 1;
-      right_leg->KF = 1;
+      if (Flag_Ankle_Cfg) {
+        left_leg->KF = 1;
+        right_leg->KF = 1;
+      }
+      if (Flag_Knee_Cfg) {
+        left_leg->KF_Knee = 1;
+        right_leg->KF_Knee = 1;
+      }
       left_leg->ERR = 0;
       right_leg->ERR = 0;
       break;
 
-    case ';':
+    case ';':  // TN 5/9/19
       flag_auto_KF = 0;
-      left_leg->KF = 1;
-      right_leg->KF = 1;
+      if (Flag_Ankle_Cfg) {
+        left_leg->KF = 1;
+        right_leg->KF = 1;
+      }
+      if (Flag_Knee_Cfg) {
+        left_leg->KF_Knee = 1;
+        right_leg->KF_Knee = 1;
+      }
+
       left_leg->ERR = 0;
       right_leg->ERR = 0;
       break;
@@ -785,6 +818,8 @@ void receive_and_transmit()
       } else if (FLAG_TOE_HEEL_SENSORS == true) {
         left_leg->baseline_value = left_leg->p_steps->plant_peak_mean_Toe;
         right_leg->baseline_value = right_leg->p_steps->plant_peak_mean_Toe;
+        left_leg->baseline_value_Knee = left_leg->p_steps->plant_peak_mean_Heel;
+        right_leg->baseline_value_Knee = right_leg->p_steps->plant_peak_mean_Heel;
         *(data_to_send_point) = left_leg->p_steps->plant_peak_mean_Toe;
         *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean_Toe;
         *(data_to_send_point + 2) = left_leg->p_steps->plant_peak_mean_Heel; // TN 5/8/19
