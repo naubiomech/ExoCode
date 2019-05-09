@@ -615,7 +615,9 @@ void receive_and_transmit()
         right_leg->baseline_value = right_leg->p_steps->plant_peak_mean_Toe;
         *(data_to_send_point) = left_leg->p_steps->plant_peak_mean_Toe;
         *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean_Toe;
-        send_command_message('B', data_to_send_point, 2);
+        *(data_to_send_point + 2) = left_leg->p_steps->plant_peak_mean_Heel; // TN 5/8/19
+        *(data_to_send_point + 3) = right_leg->p_steps->plant_peak_mean_Heel; // TN 5/8/19
+        send_command_message('B', data_to_send_point, 4);
 
       }
       else {
