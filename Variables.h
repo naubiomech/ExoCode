@@ -30,6 +30,8 @@ SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an 
 bool FLAG_PRINT_TORQUES = false;
 bool FLAG_PID_VALS = false;
 
+bool Flag_Ankle_Cfg = true;
+bool Flag_Knee_Cfg = false;
 
 // Variables depending on the sensor placement that are used in the state machine
 bool FLAG_TOE_HEEL_SENSORS = false;

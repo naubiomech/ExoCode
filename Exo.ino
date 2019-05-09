@@ -11,7 +11,7 @@
 // In case of too long steady state the torque reference is set to zero
 // In case of new torque reference the torque amount is provided gradually as function of the steps.
 //
-// Ex: Torque ref = 10N
+// Ex: Torque ref = 10N 
 // 1 step = 0N
 // 2 steps = 2N
 // 3 steps = 4N
@@ -117,7 +117,7 @@ void callback()//executed every 2ms
 // Function that is repeated in loop
 void loop()
 {
-
+   
   if (slowThisDown.check() == 1) // If the time passed is over 1ms is a true statement
   {
     if (bluetooth.available() > 0) // If bluetooth buffer contains something
@@ -177,19 +177,30 @@ void calculate_leg_average(Leg* leg) {
     leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
   }
   //Get the torque
+  leg->AorK = 'A';
   leg->TarrayPoint[0] = get_torq(leg);
+  
+  leg->AorK = 'K';
+  leg->TarrayPoint_Knee[0] = get_torq(leg);
+  
   leg->FSR_Toe_Average = 0;
   leg->FSR_Heel_Average = 0;
   leg->Average = 0;
+  leg->Average_K = 0;
 
   for (int i = 0; i < dim; i++)
   {
     leg->Average =  leg->Average + leg->TarrayPoint[i];
+    leg->Average_K =  leg->Average + leg->TarrayPoint_Knee[i];
   }
 
   leg->Average_Trq = leg->Average / dim;
+  leg->Average_Trq_Knee = leg->Average_K / dim;
   if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
+  }
+  if (abs(leg->Average_Trq_Knee) > abs(leg->Max_Measured_Torque_Knee)) {
+    leg->Max_Measured_Torque_Knee = leg->Average_Trq_Knee;  //Get max measured torque during
   }
 
   if (leg->TarrayPoint[dim] > 25 && abs(leg->Average_Trq - leg->TarrayPoint[dim]) < 0.05) //When torque sensor is unplugged we see the same values for several seconds
@@ -204,6 +215,8 @@ void calculate_leg_average(Leg* leg) {
     leg->state = old_L_state_L;
   }
   leg->p_steps->torque_average = leg->Average / dim;
+  leg->p_steps->torque_average_K = leg->Average_K / dim;
+
 
   leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
   leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
@@ -217,13 +230,13 @@ void calculate_leg_average(Leg* leg) {
 
   if (FLAG_TOE_HEEL_SENSORS || FLAG_TOE_SENSOR)
   {
-      if (Control_Mode == 3){ 
+      if (Control_Mode == 3)
       leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
-    }
-    else if (Control_Mode == 4){
+        
+        else if (Control_Mode == 4)
       leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
-    }
-  }
+     
+     }
   else {
     leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
   }
@@ -416,12 +429,12 @@ void rotate_motor() {
 
     left_leg->N3 = Control_Adjustment(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
                                       left_leg->N3, left_leg->New_PID_Setpoint,left_leg->p_Setpoint_Ankle_Pctrl, 
-                                      left_leg->p_Setpoint_Knee_Pctrl, Control_Mode, left_leg->Prop_Gain,
+                                      left_leg->New_PID_Setpoint_Knee, left_leg->p_Setpoint_Knee_Pctrl, Control_Mode, left_leg->Prop_Gain,
                                       left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->FSR_Ratio_Toe, &left_leg->FSR_Ratio_Heel,
                                       &left_leg->Max_FSR_Ratio, &left_leg->Max_FSR_Ratio_Toe, &left_leg->Max_FSR_Ratio_Heel);
     right_leg->N3 = Control_Adjustment(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps,
                                        right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle_Pctrl,
-                                       right_leg->p_Setpoint_Knee_Pctrl, Control_Mode, right_leg->Prop_Gain,
+                                       right_leg->New_PID_Setpoint_Knee, right_leg->p_Setpoint_Knee_Pctrl, Control_Mode, right_leg->Prop_Gain,
                                        right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->FSR_Ratio_Toe, &right_leg->FSR_Ratio_Heel,
                                        &right_leg->Max_FSR_Ratio, &right_leg->Max_FSR_Ratio_Toe, &right_leg->Max_FSR_Ratio_Heel);
   }// end if stream==1
