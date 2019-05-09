@@ -172,6 +172,7 @@ struct Leg {
 
   // Proportional_Ctrl.h
   double Prop_Gain = 1;
+  double Prop_Gain_Knee = 1;  // TN 5/9/19
 
   // Reference_ADJ.h
   double stateTimerCount;
