@@ -243,7 +243,7 @@ void receive_and_transmit()
         memcpy(&left_leg->kp_K, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
         memcpy(&left_leg->kd_K, holdOnPoint + 8, 8);                              //memory space pointed to by the variable kp_L.  Essentially a roundabout way to change a variable value, but since the bluetooth
         memcpy(&left_leg->ki_K, holdOnPoint + 16, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-        left_leg->pid.SetTunings(left_leg->kp_K, left_leg->ki_K, left_leg->kd_K);
+        left_leg->pid_Knee.SetTunings(left_leg->kp_K, left_leg->ki_K, left_leg->kd_K);   // TN 5/13/19
       }
       break;
 
@@ -263,7 +263,7 @@ void receive_and_transmit()
         memcpy(&right_leg->kp_K, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
         memcpy(&right_leg->kd_K, holdOnPoint + 8, 8);                              //memory space pointed to by the variable kp_R.  Essentially a roundabout way to change a variable value, but since the bluetooth
         memcpy(&right_leg->ki_K, holdOnPoint + 16, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-        right_leg->pid.SetTunings(right_leg->kp_K, right_leg->ki_K, right_leg->kd_K);
+        right_leg->pid_Knee.SetTunings(right_leg->kp_K, right_leg->ki_K, right_leg->kd_K);   // TN 5/13/19
       }
       break;
 
@@ -323,23 +323,23 @@ void receive_and_transmit()
 
       // add baseline
       // TN 5/9/19
-      
-        if (FLAG_TOE_HEEL_SENSORS) {
-          left_leg->p_steps->plant_peak_mean_Toe = read_baseline(left_leg->baseline_address);
-          right_leg->p_steps->plant_peak_mean_Toe = read_baseline(right_leg->baseline_address);
-          left_leg->baseline_value = left_leg->p_steps->plant_peak_mean_Toe;
-          right_leg->baseline_value = right_leg->p_steps->plant_peak_mean_Toe;
-              left_leg->p_steps->plant_peak_mean_Heel = read_baseline(left_leg->baseline_address_Knee);
-          right_leg->p_steps->plant_peak_mean_Heel = read_baseline(right_leg->baseline_address_Knee);
-          left_leg->baseline_value_Knee = left_leg->p_steps->plant_peak_mean_Heel;
-          right_leg->baseline_value_Knee = right_leg->p_steps->plant_peak_mean_Heel;
-        } else if (FLAG_TOE_SENSOR) {
-          left_leg->p_steps->plant_peak_mean = read_baseline(left_leg->baseline_address);
-          right_leg->p_steps->plant_peak_mean = read_baseline(right_leg->baseline_address);
-          left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
-          right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
-        }
-      
+
+      if (FLAG_TOE_HEEL_SENSORS) {
+        left_leg->p_steps->plant_peak_mean_Toe = read_baseline(left_leg->baseline_address);
+        right_leg->p_steps->plant_peak_mean_Toe = read_baseline(right_leg->baseline_address);
+        left_leg->baseline_value = left_leg->p_steps->plant_peak_mean_Toe;
+        right_leg->baseline_value = right_leg->p_steps->plant_peak_mean_Toe;
+        left_leg->p_steps->plant_peak_mean_Heel = read_baseline(left_leg->baseline_address_Knee);
+        right_leg->p_steps->plant_peak_mean_Heel = read_baseline(right_leg->baseline_address_Knee);
+        left_leg->baseline_value_Knee = left_leg->p_steps->plant_peak_mean_Heel;
+        right_leg->baseline_value_Knee = right_leg->p_steps->plant_peak_mean_Heel;
+      } else if (FLAG_TOE_SENSOR) {
+        left_leg->p_steps->plant_peak_mean = read_baseline(left_leg->baseline_address);
+        right_leg->p_steps->plant_peak_mean = read_baseline(right_leg->baseline_address);
+        left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
+        right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
+      }
+
 
       break;
 
