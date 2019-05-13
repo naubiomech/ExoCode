@@ -85,3 +85,9 @@ double treadmill_speed = 0.6;//subject to change
 bool Flag_HLO = false;
 
 bool flag_motor_error_check = true;
+
+// Flags for Proportional Control // TN 04/29/2019
+
+bool Flag_Prop_Ctrl = false; // TN 04/29/2019
+bool flag_pivot = false; // TN 04/29/2019
+bool flag_id = false; // TN 04/29/2019
