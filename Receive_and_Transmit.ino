@@ -109,8 +109,6 @@ void receive_and_transmit()
 
     case 'H':
       torque_calibration();
-      write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
-      write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
       break;
 
     case 'K':
@@ -315,10 +313,14 @@ void receive_and_transmit()
 
       break;
 
-    case 'P':
+    case 'p': //GO 5/13/19
+      write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
+      write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
       break;
 
-    case 'p':
+    case 'P': //GO 5/13/19
+      left_leg->torque_calibration_value = read_torque_bias(left_leg->torque_address);
+      right_leg->torque_calibration_value = read_torque_bias(right_leg->torque_address);
       break;
 
     case 'O':
