@@ -238,7 +238,7 @@ void receive_and_transmit()
         memcpy(&left_leg->kp_K, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
         memcpy(&left_leg->kd_K, holdOnPoint + 8, 8);                              //memory space pointed to by the variable kp_L.  Essentially a roundabout way to change a variable value, but since the bluetooth
         memcpy(&left_leg->ki_K, holdOnPoint + 16, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-        left_leg->pid.SetTunings(left_leg->kp_K, left_leg->ki_K, left_leg->kd_K);
+        left_leg->pid_Knee.SetTunings(left_leg->kp_K, left_leg->ki_K, left_leg->kd_K);
       }
       break;
 

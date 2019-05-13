@@ -328,6 +328,9 @@ void rotate_motor() {
     pid(left_leg, left_leg->Average_Trq);
     pid(right_leg, right_leg->Average_Trq);
 
+    pid(left_leg, left_leg->Average_Trq_Knee);
+    pid(right_leg, right_leg->Average_Trq_Knee);
+
 
     // modification to check the pid
     if (FLAG_PID_VALS) {
