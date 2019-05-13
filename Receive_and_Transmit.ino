@@ -550,8 +550,8 @@ void receive_and_transmit()
       *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      //      flag_id = false; // TN 04/29/19
-      //      flag_pivot = false; // TN 04/29/19
+      flag_id = false; // TN 05/13/19
+      flag_pivot = false; // TN 05/13/19
       Flag_Prop_Ctrl = false; // TN 04/29/19
       break;
 
