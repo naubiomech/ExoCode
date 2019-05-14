@@ -46,7 +46,7 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
         {
           leg->sigm_done = true;
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
-           leg->Old_PID_Setpoint_Knee = leg->PID_Setpoint_Knee;  // TN 5/13/19
+          leg->Old_PID_Setpoint_Knee = leg->PID_Setpoint_Knee;  // TN 5/13/19
 
           if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle)  // TN 5/9/19
             leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
@@ -113,7 +113,7 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
         {
           leg->sigm_done = true;
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
-           leg->Old_PID_Setpoint_Knee = leg->PID_Setpoint_Knee;  // TN 5/13/19
+          leg->Old_PID_Setpoint_Knee = leg->PID_Setpoint_Knee;  // TN 5/13/19
           leg->state_old = leg->state;
           //          leg->New_PID_Setpoint = 0 * leg->coef_in_3_steps;
 
@@ -133,7 +133,7 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
           if (leg->New_PID_Setpoint == 0) { //GO 4/22/19
             leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
           }
-           if (leg->New_PID_Setpoint_Knee == 0) { // TN 5/13/19
+          if (leg->New_PID_Setpoint_Knee == 0) { // TN 5/13/19
             leg->Previous_Dorsi_Setpoint_Knee = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
           }
           leg->state = 1;
@@ -143,58 +143,96 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
       }
   }//end switch
   // Adjust the torque reference as a function of the step
-  ref_step_adj(leg);
 
-  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) { //GO 4/21/19
-    if (abs(leg->Previous_Setpoint_Ankle_Pctrl) <= abs(leg->Setpoint_Ankle)) {
-      leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
-    } else {
-      leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl - (leg->Previous_Setpoint_Ankle_Pctrl - leg->Setpoint_Ankle) * leg->coef_in_3_steps; //Decrement when the new setpoint is lower than the old
-    }
-    if (leg->p_steps->Setpoint == 0) {
-      leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
-    }
-    // TN 5/9/19
-    if (abs(leg->Previous_Setpoint_Knee_Pctrl) <= abs(leg->Setpoint_Knee)) {
-      leg->p_steps->Setpoint_K = leg->Previous_Setpoint_Knee_Pctrl + (leg->Setpoint_Knee - leg->Previous_Setpoint_Knee_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
-    } else {
-      leg->p_steps->Setpoint_K = leg->Previous_Setpoint_Knee_Pctrl - (leg->Previous_Setpoint_Knee_Pctrl - leg->Setpoint_Knee) * leg->coef_in_3_steps; //Decrement when the new setpoint is lower than the old
-    }
-    if (leg->p_steps->Setpoint_K == 0) {
-      leg->Previous_Setpoint_Knee_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
-    }
+  ref_step_adj(leg);
+  //
+  //  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) { //GO 4/21/19
+  //    if (abs(leg->Previous_Setpoint_Ankle_Pctrl) <= abs(leg->Setpoint_Ankle)) {
+  //      leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
+  //    } else {
+  //      leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl - (leg->Previous_Setpoint_Ankle_Pctrl - leg->Setpoint_Ankle) * leg->coef_in_3_steps; //Decrement when the new setpoint is lower than the old
+  //    }
+  //    if (leg->p_steps->Setpoint == 0) {
+  //      leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+  //    }
+  //    // TN 5/9/19
+  //    if (abs(leg->Previous_Setpoint_Knee_Pctrl) <= abs(leg->Setpoint_Knee)) {
+  //      leg->p_steps->Setpoint_K = leg->Previous_Setpoint_Knee_Pctrl + (leg->Setpoint_Knee - leg->Previous_Setpoint_Knee_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
+  //    } else {
+  //      leg->p_steps->Setpoint_K = leg->Previous_Setpoint_Knee_Pctrl - (leg->Previous_Setpoint_Knee_Pctrl - leg->Setpoint_Knee) * leg->coef_in_3_steps; //Decrement when the new setpoint is lower than the old
+  //    }
+  //    if (leg->p_steps->Setpoint_K == 0) {
+  //      leg->Previous_Setpoint_Knee_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+  //    }
+  //  }
+  //  else {
+  //
+  //    if (N1 < 1 || N2 < 1 || N3 < 1) {
+  //      leg->PID_Setpoint = leg->New_PID_Setpoint;
+  //      leg->PID_Setpoint_Knee = leg->New_PID_Setpoint_Knee;  // TN 5/9/19
+  //    }
+  //    else {
+  //      // Create the smoothed reference and call the PID
+  //      PID_Sigm_Curve(leg);
+  //      PID_Sigm_Curve_Knee(leg);
+  //    }
+  //
+  //  }
+  //
+  //  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 1) {
+  //    leg->Setpoint_Ankle_Pctrl = 0; // leg->New_PID_Setpoint;  // TN 5/9/19   need to check
+  //    leg->Setpoint_Knee_Pctrl = 0; // leg->New_PID_Setpoint_Knee;  // TN 5/9/19  need to check
+  //  }
+  //  else {
+  //
+  //    if (N1 < 1 || N2 < 1 || N3 < 1) {
+  //      leg->PID_Setpoint = leg->New_PID_Setpoint;
+  //      leg->PID_Setpoint_Knee = leg->New_PID_Setpoint_Knee;  // TN 5/9/19
+  //    }
+  //    else {
+  //      // Create the smoothed reference and call the PID
+  //      PID_Sigm_Curve(leg);
+  //      PID_Sigm_Curve_Knee(leg);
+  //    }
+  //
+  //  }
+
+  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) {
+    leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl * leg->coef_in_3_steps;
+    leg->PID_Setpoint_Knee = leg->Setpoint_Knee_Pctrl * leg->coef_in_3_steps;
+    Serial.print("coef_in_3_steps");
+    Serial.print(leg->coef_in_3_steps);
   }
   else {
 
     if (N1 < 1 || N2 < 1 || N3 < 1) {
       leg->PID_Setpoint = leg->New_PID_Setpoint;
-      leg->PID_Setpoint_Knee = leg->New_PID_Setpoint_Knee;  // TN 5/9/19
+      leg->PID_Setpoint_Knee = leg->New_PID_Setpoint_Knee;
     }
     else {
       // Create the smoothed reference and call the PID
       PID_Sigm_Curve(leg);
-      PID_Sigm_Curve_Knee(leg);
     }
 
   }
 
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 1) {
-    leg->Setpoint_Ankle_Pctrl = 0; // leg->New_PID_Setpoint;  // TN 5/9/19   need to check
-    leg->Setpoint_Knee_Pctrl = 0; // leg->New_PID_Setpoint_Knee;  // TN 5/9/19  need to check
+    leg->PID_Setpoint = 0;
+    leg->PID_Setpoint_Knee = 0;
   }
   else {
 
     if (N1 < 1 || N2 < 1 || N3 < 1) {
       leg->PID_Setpoint = leg->New_PID_Setpoint;
-      leg->PID_Setpoint_Knee = leg->New_PID_Setpoint_Knee;  // TN 5/9/19
+      leg->PID_Setpoint_Knee = leg->New_PID_Setpoint_Knee;
     }
     else {
       // Create the smoothed reference and call the PID
       PID_Sigm_Curve(leg);
-      PID_Sigm_Curve_Knee(leg);
     }
 
   }
+
 }// end function
 
 // TN 5/8/19
