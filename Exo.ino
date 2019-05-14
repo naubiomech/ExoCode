@@ -231,10 +231,10 @@ void calculate_leg_average(Leg* leg) {
 
   if (FLAG_TOE_HEEL_SENSORS || FLAG_TOE_SENSOR)
   {
-    if (Control_Mode == 3) {
+    if ((Flag_Ankle_Cfg)) {
       leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
     }
-    else if (Control_Mode == 4) {
+    else if ((Flag_Knee_Cfg)) {
       leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
     }
   }
