@@ -46,6 +46,7 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
         {
           leg->sigm_done = true;
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
+           leg->Old_PID_Setpoint_Knee = leg->PID_Setpoint_Knee;  // TN 5/13/19
 
           if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle)  // TN 5/9/19
             leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
@@ -112,6 +113,7 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
         {
           leg->sigm_done = true;
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
+           leg->Old_PID_Setpoint_Knee = leg->PID_Setpoint_Knee;  // TN 5/13/19
           leg->state_old = leg->state;
           //          leg->New_PID_Setpoint = 0 * leg->coef_in_3_steps;
 
@@ -130,6 +132,9 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
 
           if (leg->New_PID_Setpoint == 0) { //GO 4/22/19
             leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+          }
+           if (leg->New_PID_Setpoint_Knee == 0) { // TN 5/13/19
+            leg->Previous_Dorsi_Setpoint_Knee = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
           }
           leg->state = 1;
           leg->state_count_31 = 0;
@@ -168,6 +173,7 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
     else {
       // Create the smoothed reference and call the PID
       PID_Sigm_Curve(leg);
+      PID_Sigm_Curve_Knee(leg);
     }
 
   }
@@ -185,6 +191,7 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
     else {
       // Create the smoothed reference and call the PID
       PID_Sigm_Curve(leg);
+      PID_Sigm_Curve_Knee(leg);
     }
 
   }

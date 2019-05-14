@@ -472,6 +472,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     p_Max_FSR_Ratio_Toe = 0;   // TN 5/8/19
     p_Max_FSR_Ratio_Heel = 0;   // TN 5/8/19
     *p_Setpoint_Ankle_Pctrl_l = New_PID_Setpoint_l; //Dorsiflexion setpoint GO 4/22/19
+    *p_Setpoint_Knee_Pctrl_l = New_PID_Setpoint_Knee_l; //Dorsiflexion setpoint TN 5/13/19
     if (leg->auto_KF_update == 0) {
       leg->MaxPropSetpoint = 0;
       leg->MaxPropSetpoint_Knee = 0; // TN 5/9/19

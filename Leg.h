@@ -275,7 +275,7 @@ struct Leg {
 
 
   //Optimization-----------------------------------
-  double T_Opt_p, Setpoint_Ankle_Opt;
+  double T_Opt_p, Setpoint_Ankle_Opt, Setpoint_Knee_Opt;  // TN 5/13/19
   double Previous_T_Opt = 0.1;
   double T_Opt = 0.1;
   double T_Opt_Setpoint = 0.1;

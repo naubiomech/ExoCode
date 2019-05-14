@@ -771,8 +771,8 @@ void receive_and_transmit()
         Control_Mode = 4; // activate ID PC // TN 04/29/19
         *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
         *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
-        *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint;  // TN 5/8/19
-        *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint;     // TN 5/8/19
+        *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_K;  // TN 5/8/19
+        *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_K;     // TN 5/8/19
       }
       break;
 
@@ -789,11 +789,13 @@ void receive_and_transmit()
       *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      *right_leg->p_Setpoint_Knee = right_leg->p_steps->Setpoint;   // TN 5/8/19
-      *left_leg->p_Setpoint_Knee = left_leg->p_steps->Setpoint;    // TN 5/8/19
-      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint;    // TN 5/8/19
-      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint;     // TN 5/8/19
+      *right_leg->p_Setpoint_Knee = right_leg->p_steps->Setpoint_K;   // TN 5/8/19
+      *left_leg->p_Setpoint_Knee = left_leg->p_steps->Setpoint_K;    // TN 5/8/19
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_K;    // TN 5/8/19
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_K;     // TN 5/8/19
       Flag_Prop_Ctrl = false; // TN 04/29/19
+      flag_id == false;  // TN 5//13/19
+      flag_pivot == false;  // TN 5//13/19
       break;
 
     case 'B':
