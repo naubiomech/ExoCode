@@ -264,6 +264,10 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     p_steps_l->plant_peak_mean_Toe = p_steps_l->plant_peak_mean_temp_Toe;
   }
 
+  if (taking_baseline_l == 0 && p_steps_l->plant_peak_mean_temp_Heel != p_steps_l->plant_peak_mean_Heel) {
+    p_steps_l->plant_peak_mean_Heel = p_steps_l->plant_peak_mean_temp_Heel;
+  }
+
 
   // if you transit from state 1 to state 3 dorsiflexion is completed and start plantarflexion
   if ((R_state_l == 3) && (R_state_old_l == 1 || R_state_old_l == 2))
@@ -351,7 +355,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       if ((p_steps_l->Setpoint_K ) > 0) {
         *p_Setpoint_Knee_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_K ) * (*p_FSR_Ratio_Heel)); // the difference here is that we do it as a function of the FSR calibration
         *p_Setpoint_Knee_Pctrl_l = min(Max_Prop, *p_Setpoint_Knee_Pctrl_l);
-        if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {
+        if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {
             leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
           }
       }

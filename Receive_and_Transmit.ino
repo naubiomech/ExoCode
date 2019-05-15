@@ -73,6 +73,7 @@ void receive_and_transmit()
           left_leg->start_step = 0;
         }
       }
+      
       if(Flag_Knee_Cfg){
         receiveVals(16);                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
         left_leg->Previous_Setpoint_Knee = left_leg->Setpoint_Knee;

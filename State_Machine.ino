@@ -6,7 +6,7 @@
 // in case of no contact of both the sensors
 void state_machine(Leg* leg)
 {
-  if (FLAG_TOE_HEEL_SENSORS || FLAG_TOE_SENSOR) {
+  if (FLAG_TOE_HEEL_SENSORS) {
     State_Machine_Toe_Heel_Sensors(leg);
   } else if(FLAG_TOE_SENSOR){
     State_Machine_Toe_Sensor(leg);
@@ -140,6 +140,8 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) {
     leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl*leg->coef_in_3_steps;
     leg->PID_Setpoint_Knee = leg->Setpoint_Knee_Pctrl*leg->coef_in_3_steps;
+    Serial.print("coef_in_3_steps");
+    Serial.print(leg->coef_in_3_steps);
   }
   else {
 
