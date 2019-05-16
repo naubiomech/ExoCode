@@ -38,7 +38,7 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
         leg->set_2_zero = 0;
         leg->One_time_set_2_zero = 1;
       }
-      else if ((leg->p_steps->curr_voltage > leg->fsr_percent_thresh_Toe * leg->fsr_Combined_peak_ref)||(leg->p_steps->curr_voltage > leg->fsr_percent_thresh_Heel * leg->fsr_Combined_peak_ref))
+      else if ((leg->p_steps->curr_voltage > leg->fsr_percent_thresh_Toe * leg->fsr_Combined_peak_ref) || (leg->p_steps->curr_voltage > leg->fsr_percent_thresh_Heel * leg->fsr_Combined_peak_ref))
       {
         leg->state_count_13++;
         // if you're in the same state for more than state_counter_th it means that it is not noise
@@ -106,7 +106,7 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
 
       }
 
-      if ((leg->p_steps->curr_voltage < (leg->fsr_percent_thresh_Toe * leg->fsr_Combined_peak_ref))||(leg->p_steps->curr_voltage < (leg->fsr_percent_thresh_Heel * leg->fsr_Combined_peak_ref)))  // TN 5/15/19
+      if ((leg->p_steps->curr_voltage < (leg->fsr_percent_thresh_Toe * leg->fsr_Combined_peak_ref)) || (leg->p_steps->curr_voltage < (leg->fsr_percent_thresh_Heel * leg->fsr_Combined_peak_ref))) // TN 5/15/19
       {
         leg->state_count_31++;
         if (leg->state_count_31 >= state_counter_th)
@@ -147,23 +147,27 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
   ref_step_adj(leg);
   //
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) { //GO 4/21/19
-    if (abs(leg->Previous_Setpoint_Ankle_Pctrl) <= abs(leg->Setpoint_Ankle)) {
-      leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
-    } else {
-      leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl - (leg->Previous_Setpoint_Ankle_Pctrl - leg->Setpoint_Ankle) * leg->coef_in_3_steps; //Decrement when the new setpoint is lower than the old
-    }
-    if (leg->p_steps->Setpoint == 0) {
-      leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
-    }
-    // TN 5/9/19
-    if (abs(leg->Previous_Setpoint_Knee_Pctrl) <= abs(leg->Setpoint_Knee)) {
-      leg->p_steps->Setpoint_K = leg->Previous_Setpoint_Knee_Pctrl + (leg->Setpoint_Knee - leg->Previous_Setpoint_Knee_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
-    } else {
-      leg->p_steps->Setpoint_K = leg->Previous_Setpoint_Knee_Pctrl - (leg->Previous_Setpoint_Knee_Pctrl - leg->Setpoint_Knee) * leg->coef_in_3_steps; //Decrement when the new setpoint is lower than the old
-    }
-    if (leg->p_steps->Setpoint_K == 0) {
-      leg->Previous_Setpoint_Knee_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
-    }
+    //    if (abs(leg->Previous_Setpoint_Ankle_Pctrl) <= abs(leg->Setpoint_Ankle)) {
+    //      leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
+    //    } else {
+    //      leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl - (leg->Previous_Setpoint_Ankle_Pctrl - leg->Setpoint_Ankle) * leg->coef_in_3_steps; //Decrement when the new setpoint is lower than the old
+    //    }
+    //    if (leg->p_steps->Setpoint == 0) {
+    //      leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+    //    }
+    //    // TN 5/9/19
+    //    if (abs(leg->Previous_Setpoint_Knee_Pctrl) <= abs(leg->Setpoint_Knee)) {
+    //      leg->p_steps->Setpoint_K = leg->Previous_Setpoint_Knee_Pctrl + (leg->Setpoint_Knee - leg->Previous_Setpoint_Knee_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
+    //    } else {
+    //      leg->p_steps->Setpoint_K = leg->Previous_Setpoint_Knee_Pctrl - (leg->Previous_Setpoint_Knee_Pctrl - leg->Setpoint_Knee) * leg->coef_in_3_steps; //Decrement when the new setpoint is lower than the old
+    //    }
+    //    if (leg->p_steps->Setpoint_K == 0) {
+    //      leg->Previous_Setpoint_Knee_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+    //    }
+    leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl * leg->coef_in_3_steps;
+    leg->PID_Setpoint_Knee = leg->Setpoint_Knee_Pctrl * leg->coef_in_3_steps;
+    Serial.print("coef_in_3_steps");
+    Serial.print(leg->coef_in_3_steps);
   }
   else {
 
@@ -180,8 +184,8 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
   }
 
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 1) {
-    leg->Setpoint_Ankle_Pctrl = 0; // leg->New_PID_Setpoint;  // TN 5/9/19   need to check
-    leg->Setpoint_Knee_Pctrl = 0; // leg->New_PID_Setpoint_Knee;  // TN 5/9/19  need to check
+    leg->Setpoint_Ankle_Pctrl =  leg->New_PID_Setpoint;  // TN 5/9/19   need to check
+    leg->Setpoint_Knee_Pctrl =  leg->New_PID_Setpoint_Knee;  // TN 5/9/19  need to check
   }
   else {
 
