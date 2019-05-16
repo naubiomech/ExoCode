@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION TWO_LEG_BOARD
+#define BOARD_VERSION DUAL_BOARD
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -194,7 +194,7 @@ void calculate_leg_average(Leg* leg) {
 
   if (abs(leg->TarrayPoint[dim]) > 25 && abs(leg->Average_Trq - leg->TarrayPoint[dim]) < 0.1) //When torque sensor is unplugged we see the same values for several seconds
   {
-    double old_L_state_L = leg->state;  
+    double old_L_state_L = leg->state;
     leg->state = 9;
     send_data_message_wc();
 
@@ -216,12 +216,7 @@ void calculate_leg_average(Leg* leg) {
   {
     leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
     leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
-    if (Control_Mode == 3) {
-      leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
-    }
-    else if (Control_Mode == 4) {
-      leg->p_steps->curr_voltage = ((leg->FSR_Toe_Average * leg->Toe_Moment_Arm));// + (leg->FSR_Heel_Average * leg->Heel_Moment_Arm))/(leg->Toe_Moment_Arm + leg->Heel_Moment_Arm);//Sara's edition
-    }
+    leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
   }
   else {
     leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
@@ -341,6 +336,13 @@ void rotate_motor() {
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
 
+
+    Serial.println("Left_leg->p_steps->plant_peak_mean");
+    Serial.println(left_leg->p_steps->plant_peak_mean);
+    Serial.println("Right_leg->p_steps->plant_peak_mean");
+    Serial.println(right_leg->p_steps->plant_peak_mean);
+
+
     if ((left_leg->state == 3) && (left_leg->old_state == 1)) {
       left_leg->state_3_start_time = millis();
     }
@@ -374,9 +376,9 @@ void rotate_motor() {
 
     right_leg->old_state = right_leg->state;
 
-    if (Control_Mode == 3 && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
+    if ((Control_Mode == 3 || Control_Mode == 4 ) && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
       left_leg->PID_Setpoint = left_leg->New_PID_Setpoint;   //Brute force the dorsiflexion set point to proportional control
-    } else if (Control_Mode == 3 && (abs(right_leg->Dorsi_Setpoint_Ankle) > 0 || abs(right_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && right_leg->state == 1) {
+    } else if ((Control_Mode == 3 || Control_Mode == 4 ) && (abs(right_leg->Dorsi_Setpoint_Ankle) > 0 || abs(right_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && right_leg->state == 1) {
       right_leg->PID_Setpoint = right_leg->New_PID_Setpoint; //Brute force the dorsiflexion set point to proportional control
     } else {};
 
@@ -428,7 +430,7 @@ void rotate_motor() {
                                        right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle,
                                        right_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, right_leg->Prop_Gain,
                                        right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio);
-                                        
+
   }// end if stream==1
 }
 
@@ -469,7 +471,7 @@ void reset_leg_starting_parameters(Leg* leg) {
   leg->first_step = 1;
   counter_msgs = 0;
   leg->Heel_Strike_Count = 0;
-  leg->score=0;
+  leg->score = 0;
   leg->Heel_Strike = 0;
   leg->NO_Biofeedback = true;
 }
