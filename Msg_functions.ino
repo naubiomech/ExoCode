@@ -46,8 +46,8 @@ void send_data_message_wc() //with COP
     data_to_send[11] = left_leg->stridelength_update;
   }
   else {
-    data_to_send[10] = (left_leg->sign * right_leg->PID_Setpoint_Knee);
-    data_to_send[11] = (left_leg->p_steps->plant_peak_mean_temp_Heel);
+    data_to_send[10] = (right_leg->sign * right_leg->PID_Setpoint_Knee);
+    data_to_send[11] = (right_leg->p_steps->plant_peak_mean_temp_Heel);
 
     //data_to_send[10] = (right_leg->PID_Setpoint_Knee);   // TN 5/13/19
     // data_to_send[11] = (left_leg->PID_Setpoint_Knee);   // TN 5/13/19
