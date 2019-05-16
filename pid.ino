@@ -36,3 +36,38 @@ void pid(Leg* leg, double input) {
 
   analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
 }
+
+
+void pid_Knee(Leg* leg, double input_Knee) {
+  if ((abs(input_Knee) > 35)) //Was 25, increased to accomodate large exo
+  {
+    leg->torque_error_counter++;
+    if (leg->torque_error_counter >= 10) {
+      //leg->KF = 0;
+      double old_L_state_L = leg->state;
+      leg->state = 9;
+      send_data_message_wc();
+
+      digitalWrite(onoff, LOW);
+      stream = 0;
+      digitalWrite(LED_PIN, LOW);
+      leg->state = old_L_state_L;
+      leg->torque_error_counter = 0;
+    }
+
+  } else {
+  }
+  leg->Input_Knee = input_Knee;
+  leg->pid_Knee.Compute_KF(leg->KF_Knee);
+  //  Serial.print(" ZERO: ");
+  //  Serial.print(leg->zero);
+  leg->Vol_Knee = leg->Output_Knee + leg->zero; //need to map
+
+
+  if (PWM_CONTROL) {
+    leg->Vol_Knee = leg->Vol_Knee * 0.8 + 0.1 * 4096.0;
+  }
+
+
+  //analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
+}

@@ -37,6 +37,7 @@ const unsigned int zero = 2048;//1540;
 #include "Reference_ADJ.h"
 #include "Msg_functions.h"
 #include "Auto_KF.h"
+#include "Auto_KF_Knee.h"  // TN 5/15/19
 #include <Metro.h>
 #include "Variables.h"
 #include "Board.h"
@@ -231,10 +232,10 @@ void calculate_leg_average(Leg* leg) {
 
   if (FLAG_TOE_HEEL_SENSORS || FLAG_TOE_SENSOR)
   {
-    if ((Flag_Ankle_Cfg)) {
+    if ((Flag_Ankle_Cfg == true)) {
       leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
     }
-    else if ((Flag_Knee_Cfg)) {
+    else if ((Flag_Knee_Cfg == true)) {
       leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
     }
   }
@@ -323,14 +324,19 @@ void rotate_motor() {
       Auto_KF(right_leg, Control_Mode);
     }
 
+    // TN 5/15/19
+    if (streamTimerCount == 1 && flag_auto_KF == 1) {
+      Auto_KF_Knee(left_leg, Control_Mode);
+      Auto_KF_Knee(right_leg, Control_Mode);
+    }
 
     streamTimerCount++;
 
     pid(left_leg, left_leg->Average_Trq);
     pid(right_leg, right_leg->Average_Trq);
 
-    pid(left_leg, left_leg->Average_Trq_Knee);  // TN 5/13/19
-    pid(right_leg, right_leg->Average_Trq_Knee);  // TN 5/13/19
+    pid_Knee(left_leg, left_leg->Average_Trq_Knee);  // TN 5/13/19
+    pid_Knee(right_leg, right_leg->Average_Trq_Knee);  // TN 5/13/19
 
 
     // modification to check the pid
@@ -357,13 +363,42 @@ void rotate_motor() {
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
 
-
-    Serial.println("Left_leg->p_steps->plant_peak_mean_Heel");
-    Serial.println(left_leg->p_steps->plant_peak_mean_Heel);
-    Serial.println("Right_leg->p_steps->plant_peak_mean_Heel");
+    Serial.println("right_leg->p_steps->plant_peak_mean");
+    Serial.println(right_leg->p_steps->plant_peak_mean);
+    Serial.println("right_leg->p_steps->plant_peak_mean_Toe");
+    Serial.println(right_leg->p_steps->plant_peak_mean_Toe);
+    Serial.println("right_leg->p_steps->plant_peak_mean_Heel");
     Serial.println(right_leg->p_steps->plant_peak_mean_Heel);
+    Serial.println("right_leg->Setpoint_Ankle_Pctrl");
+    Serial.println(right_leg->Setpoint_Ankle_Pctrl);
+    Serial.println("right_leg->PID_Setpoint");
+    Serial.println(right_leg->PID_Setpoint);
+    Serial.println("right_leg->PID_Setpoint_Knee");
+    Serial.println(right_leg->PID_Setpoint_Knee);
+    Serial.println("right_leg->Setpoint_Knee_Pctrl");
+    Serial.println(right_leg->Setpoint_Knee_Pctrl);
+    Serial.println("right_leg->Setpoint_Ankle");
+    Serial.println(right_leg->Setpoint_Ankle);
+    Serial.println("right_leg->Setpoint_Knee");
+    Serial.println(right_leg->Setpoint_Knee);
+    
+    
+
+
+
+
     Serial.println("FLAG_TOE_HEEL_SENSORS");
     Serial.println(FLAG_TOE_HEEL_SENSORS);
+
+    Serial.println("Flag_Prop_Ctrl");
+    Serial.println(Flag_Prop_Ctrl);
+    Serial.println("flag_id");
+    Serial.println(flag_id);
+    Serial.println("flag_pivot");
+    Serial.println(flag_pivot);
+    Serial.println("Control Mode");
+    Serial.println(Control_Mode);
+
 
 
     if ((left_leg->state == 3) && (left_leg->old_state == 1)) {
@@ -398,12 +433,19 @@ void rotate_motor() {
     }
 
     right_leg->old_state = right_leg->state;
-//
-//    if ((Control_Mode == 3 || Control_Mode == 4 ) && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
-//      left_leg->PID_Setpoint = left_leg->New_PID_Setpoint;   //Brute force the dorsiflexion set point to proportional control
-//    } else if ((Control_Mode == 3 || Control_Mode == 4 ) && (abs(right_leg->Dorsi_Setpoint_Ankle) > 0 || abs(right_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && right_leg->state == 1) {
-//      right_leg->PID_Setpoint = right_leg->New_PID_Setpoint; //Brute force the dorsiflexion set point to proportional control
-//    } else {};
+
+    if ((Control_Mode == 3 || Control_Mode == 4 ) && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
+      left_leg->PID_Setpoint = left_leg->New_PID_Setpoint;   //Brute force the dorsiflexion set point to proportional control
+    } else if ((Control_Mode == 3 || Control_Mode == 4 ) && (abs(right_leg->Dorsi_Setpoint_Ankle) > 0 || abs(right_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && right_leg->state == 1) {
+      right_leg->PID_Setpoint = right_leg->New_PID_Setpoint; //Brute force the dorsiflexion set point to proportional control
+    } else {};
+
+    // TN 5/15/19
+    if ((Control_Mode == 3 || Control_Mode == 4 ) && (abs(left_leg->Dorsi_Setpoint_Knee) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Knee) > 0) && left_leg->state == 1) { //GO 4/22/19
+      left_leg->PID_Setpoint_Knee = left_leg->New_PID_Setpoint_Knee;   //Brute force the dorsiflexion set point to proportional control
+    } else if ((Control_Mode == 3 || Control_Mode == 4 ) && (abs(right_leg->Dorsi_Setpoint_Knee) > 0 || abs(right_leg->Previous_Dorsi_Setpoint_Knee) > 0) && right_leg->state == 1) {
+      right_leg->PID_Setpoint_Knee = right_leg->New_PID_Setpoint_Knee; //Brute force the dorsiflexion set point to proportional control
+    } else {};
 
     int left_scaling_index = 0;
     int right_scaling_index = 0;

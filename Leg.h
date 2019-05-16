@@ -117,7 +117,7 @@ struct Leg {
   double torque_calibration_value = 0;
   double torque_calibration_value_Knee = 0;   // TN 5/9/19
   double T_act;
-  int Vol;
+  int Vol, Vol_Knee;
 
 #ifdef ENABLE_PWM   //PID Gains are different for PWM control
   double kp = 600;
