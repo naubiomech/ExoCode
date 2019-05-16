@@ -1,7 +1,7 @@
 // Updated 12/11/2018 to use mean torque instead of max torque
 
 
-void Auto_KF(Leg* leg, int Control_Mode) {
+void Auto_KF_Knee(Leg* leg, int Control_Mode) {
 
   // take error during state 3
   if (leg->state == 3 && Control_Mode == 4) //If ID proportional
@@ -40,11 +40,11 @@ void Auto_KF(Leg* leg, int Control_Mode) {
     if (leg->KF_Knee >= leg->max_KF_Knee)
       leg->KF_Knee = leg->max_KF_Knee;
       else if (leg->KF_Knee <= leg->min_KF_Knee)
-      leg->KF = leg->min_KF;
+      leg->KF_Knee = leg->min_KF_Knee;
 
-    leg->Max_Measured_Torque = 0;
-    leg->MaxPropSetpoint = 0;
-    leg->auto_KF_update = false; // to be able to do this cycle just once every step, i.e. during the whole state 1 I have to execute this cycle just once
+    leg->Max_Measured_Torque_Knee = 0;
+    leg->MaxPropSetpoint_Knee = 0;
+    leg->auto_KF_Knee_update = false; // to be able to do this cycle just once every step, i.e. during the whole state 1 I have to execute this cycle just once
   }
 
   return;
