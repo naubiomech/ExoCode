@@ -54,8 +54,8 @@ void send_data_message_wc() //with COP
     data_to_send[13] = left_leg->stridelength_target;
   }
   else {
-    data_to_send[12] = (left_leg->FSR_Heel_Average);
-    data_to_send[13] = (right_leg->FSR_Heel_Average);
+    data_to_send[12] = (FLAG_ONE_TOE_SENSOR);
+    data_to_send[13] = (Control_Mode);
   }
   send_command_message('?', data_to_send, 14);
 }

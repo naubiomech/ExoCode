@@ -337,10 +337,10 @@ void rotate_motor() {
     state_machine(right_leg);  //for RL
 
 
-    Serial.println("Left_leg->p_steps->plant_peak_mean");
-    Serial.println(left_leg->p_steps->plant_peak_mean);
-    Serial.println("Right_leg->p_steps->plant_peak_mean");
-    Serial.println(right_leg->p_steps->plant_peak_mean);
+//    Serial.println("Left_leg->p_steps->plant_peak_mean");
+//    Serial.println(left_leg->p_steps->plant_peak_mean);
+//    Serial.println("Right_leg->p_steps->plant_peak_mean");
+//    Serial.println(right_leg->p_steps->plant_peak_mean);
 
 
     if ((left_leg->state == 3) && (left_leg->old_state == 1)) {
