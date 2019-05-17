@@ -172,7 +172,7 @@ void receive_and_transmit()
       if (((check_FSR_values(left_leg->address_FSR)) && (check_FSR_values(left_leg->address_FSR + sizeof(double) + 1))) &&
           ((check_FSR_values(right_leg->address_FSR)) && (check_FSR_values(right_leg->address_FSR + sizeof(double) + 1))))
       {
-        if (FLAG_ONE_TOE_SENSOR) {
+        if (FLAG_TWO_TOE_SENSORS) {
           left_leg->fsr_Combined_peak_ref = read_FSR_values(left_leg->address_FSR) + read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
           right_leg->fsr_Combined_peak_ref = read_FSR_values(right_leg->address_FSR) + read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
         } else {
@@ -183,7 +183,7 @@ void receive_and_transmit()
         }
 
         *(data_to_send_point + 1) = 1;
-        if (FLAG_ONE_TOE_SENSOR) {
+        if (FLAG_TWO_TOE_SENSORS) {
         } else {
         }
       }
@@ -398,7 +398,7 @@ void receive_and_transmit()
     case '!':
       if (stream == 1) {
       } else {
-        if (FLAG_ONE_TOE_SENSOR) {
+        if (FLAG_TWO_TOE_SENSORS) {
           write_FSR_values(left_leg->address_FSR, left_leg->fsr_Combined_peak_ref / 2);
           write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Combined_peak_ref / 2);
           write_FSR_values(right_leg->address_FSR, right_leg->fsr_Combined_peak_ref / 2);
@@ -461,8 +461,8 @@ void receive_and_transmit()
 
     case '+':
 
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = false;
+      OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
+      FLAG_TWO_TOE_SENSORS = false;
       FLAG_BALANCE = true;
       Old_Control_Mode = Control_Mode;
       Control_Mode = 2;
@@ -472,8 +472,8 @@ void receive_and_transmit()
       break;
 
     case '=':
-      FLAG_ONE_TOE_SENSOR = OLD_FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = true;
+      FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
+      FLAG_TWO_TOE_SENSORS = true;
       FLAG_BALANCE = false;
       Control_Mode = Old_Control_Mode;
       right_leg->p_steps->torque_adj = false;
@@ -503,8 +503,8 @@ void receive_and_transmit()
       break;
 
     case '#':
-      //      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      //      FLAG_ONE_TOE_SENSOR = true;
+      //      OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
+      //      FLAG_TWO_TOE_SENSORS = true;
       //      Old_Control_Mode = Control_Mode;
       //      Control_Mode = 3; // activate pivot proportional control
       //      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
@@ -516,8 +516,8 @@ void receive_and_transmit()
       break;
 
     case 'c':
-      // OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      // FLAG_ONE_TOE_SENSOR = true;
+      // OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
+      // FLAG_TWO_TOE_SENSORS = true;
       //Old_Control_Mode = Control_Mode;
       //      Control_Mode = 4; // activate Inverse Dynamic proportional control
       //      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
@@ -529,8 +529,8 @@ void receive_and_transmit()
       break;
 
     case 'l': // TN 04/29/19
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR; // TN 04/29/19
-      FLAG_ONE_TOE_SENSOR = true; // TN 04/29/19
+      OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS; // TN 04/29/19
+      FLAG_TWO_TOE_SENSORS = true; // TN 04/29/19
       Old_Control_Mode = Control_Mode; // TN 04/29/19
       Flag_Prop_Ctrl = true; // TN 04/29/19
       if (flag_pivot == true)   // TN 04/29/19
@@ -544,8 +544,8 @@ void receive_and_transmit()
 
     case '^':
       Control_Mode = Old_Control_Mode;
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR; //GO 4/23/19
-      FLAG_ONE_TOE_SENSOR = false; //GO 4/23/19 to return the control to bang-bang (heel-toe)
+      OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS; //GO 4/23/19
+      FLAG_TWO_TOE_SENSORS = false; //GO 4/23/19 to return the control to bang-bang (heel-toe)
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
       *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
@@ -657,15 +657,15 @@ void receive_and_transmit()
 
 
     case '/':
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = false;
+      OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
+      FLAG_TWO_TOE_SENSORS = false;
       FLAG_BIOFEEDBACK = true;
       right_leg->BIO_BASELINE_FLAG = false;
       break;
 
 
     case 'y':
-      FLAG_ONE_TOE_SENSOR = OLD_FLAG_ONE_TOE_SENSOR;
+      FLAG_TWO_TOE_SENSORS = OLD_FLAG_TWO_TOE_SENSORS;
       FLAG_BIOFEEDBACK = false;
       if (left_leg->state == 2) left_leg->state = 1;
       if (right_leg->state == 2) right_leg->state = 1;

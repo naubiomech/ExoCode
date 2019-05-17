@@ -6,7 +6,7 @@
 // in case of no contact of both the sensors
 void state_machine(Leg* leg)
 {
-  if (FLAG_ONE_TOE_SENSOR) {
+  if (FLAG_TWO_TOE_SENSORS) {
     State_Machine_One_Toe_Sensor(leg);
   }
 
