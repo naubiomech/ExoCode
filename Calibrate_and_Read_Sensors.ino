@@ -7,15 +7,28 @@ void torque_calibration()
   left_leg->torque_calibration_value = 0;
   right_leg->torque_calibration_value = 0;
 
+  // TN 5/17/19
+  left_leg->torque_calibration_value_Knee = 0;
+  right_leg->torque_calibration_value_Knee = 0;
+
   while (millis() - torque_calibration_value_time < 1000)
   { //Calibrates the LL for a total time of 1 second,
     left_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
     right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
+    // TN 5/17/19
+    left_leg->torque_calibration_value_Knee += analogRead(TORQUE_SENSOR_LEFT_KNEE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
+    right_leg->torque_calibration_value_Knee += analogRead(TORQUE_SENSOR_RIGHT_KNEE_PIN) * (3.3 / 4096);
+
     torq_cal_count ++;                                                         //Increments count
   }
 
   left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
+
+  // TN 5/17/19
+
+  left_leg->torque_calibration_value_Knee = left_leg->torque_calibration_value_Knee / torq_cal_count;                       // Averages torque over a second
+  right_leg->torque_calibration_value_Knee = right_leg->torque_calibration_value_Knee / torq_cal_count;                       // Averages torque over a second
   //  Serial.println(left_leg->torque_calibration_value);
   //  Serial.println(right_leg->torque_calibration_value);
 }
@@ -97,14 +110,19 @@ void FSR_calibration()
 
 double get_torq(Leg* leg) {
   // TN 5/9/19
-  if (leg->AorK == 'A') {
-    double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value);
-    return -Torq;//neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
-  }
-  if (leg->AorK == 'K') {
-    double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_knee_pin) * (3.3 / 4096) - leg->torque_calibration_value_Knee);
-    return -Torq;//neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
-  }
+
+  double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value);
+  return -Torq;//neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
+
+}
+
+
+// TN 5/17/19
+double get_torq_Knee(Leg* leg) {
+
+  double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_knee_pin) * (3.3 / 4096) - leg->torque_calibration_value_Knee);
+  return -Torq;//neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
+
 }
 
 double get_LL_torq()
@@ -116,6 +134,18 @@ double get_RL_torq()
 { //flexion is positive 8.10.16, gets the torque of the right leg
   return get_torq(right_leg);
 }
+
+// TN 5/17/19
+double get_LL_torq_Knee()
+{ //flexion is positive 8.10.16, gets the torque of the right leg
+  return get_torq_Knee(left_leg);
+}
+
+double get_RL_torq_Knee()
+{ //flexion is positive 8.10.16, gets the torque of the right leg
+  return get_torq_Knee(right_leg);
+}
+
 
 /*FSR Code
 	This code is very basic but is kept as an outside function for clarity. The FSR readings are used to control state based actions based on the part of the gait cycle the patient
