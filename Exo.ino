@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION TWO_LEG_BOARD
+#define BOARD_VERSION QUAD_BOARD
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -178,10 +178,10 @@ void calculate_leg_average(Leg* leg) {
     leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
   }
   //Get the torque
-  leg->AorK = 'A';  // TN 5/9/19
+  //leg->AorK = 'A';  // TN 5/9/19
   leg->TarrayPoint[0] = get_torq(leg);  // TN 5/9/19
-  leg->AorK = 'K';  // TN 5/9/19
-  leg->TarrayPoint_Knee[0] = get_torq(leg); // TN 5/9/19
+  //leg->AorK = 'K';  // TN 5/9/19
+  leg->TarrayPoint_Knee[0] = get_torq_Knee(leg); // TN 5/17/19
 
   leg->FSR_Toe_Average = 0;
   leg->FSR_Heel_Average = 0;
@@ -192,7 +192,7 @@ void calculate_leg_average(Leg* leg) {
   for (int i = 0; i < dim; i++)
   {
     leg->Average =  leg->Average + leg->TarrayPoint[i];
-    leg->Average_K =  leg->Average + leg->TarrayPoint_Knee[i];   // TN 5/9/19
+    leg->Average_K =  leg->Average_K + leg->TarrayPoint_Knee[i];   // TN 5/9/19
   }
 
   leg->Average_Trq = leg->Average / dim;
@@ -201,7 +201,7 @@ void calculate_leg_average(Leg* leg) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
   }
   // TN 5/9/19
-  if (abs(leg->Average_Trq_Knee) > abs(leg->Max_Measured_Torque_Knee)) {
+  if (abs(leg->Average_Trq_Knee) > abs(leg->Max_Measured_Torque_Knee) && leg->state == 3) {
     leg->Max_Measured_Torque_Knee = leg->Average_Trq_Knee;  //Get max measured torque during
   }
 
@@ -363,43 +363,39 @@ void rotate_motor() {
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
 
-    Serial.println("right_leg->p_steps->plant_peak_mean");
-    Serial.println(right_leg->p_steps->plant_peak_mean);
-    Serial.println("right_leg->p_steps->plant_peak_mean_Toe");
-    Serial.println(right_leg->p_steps->plant_peak_mean_Toe);
-    Serial.println("right_leg->p_steps->plant_peak_mean_Heel");
-    Serial.println(right_leg->p_steps->plant_peak_mean_Heel);
-    Serial.println("right_leg->Setpoint_Ankle_Pctrl");
-    Serial.println(right_leg->Setpoint_Ankle_Pctrl);
-    Serial.println("right_leg->PID_Setpoint");
-    Serial.println(right_leg->PID_Setpoint);
-    Serial.println("right_leg->PID_Setpoint_Knee");
-    Serial.println(right_leg->PID_Setpoint_Knee);
-    Serial.println("right_leg->Setpoint_Knee_Pctrl");
-    Serial.println(right_leg->Setpoint_Knee_Pctrl);
-    Serial.println("right_leg->Setpoint_Ankle");
-    Serial.println(right_leg->Setpoint_Ankle);
-    Serial.println("right_leg->Setpoint_Knee");
-    Serial.println(right_leg->Setpoint_Knee);
-    
-    
-
-
-
-
-    Serial.println("FLAG_TOE_HEEL_SENSORS");
-    Serial.println(FLAG_TOE_HEEL_SENSORS);
-
-    Serial.println("Flag_Prop_Ctrl");
-    Serial.println(Flag_Prop_Ctrl);
-    Serial.println("flag_id");
-    Serial.println(flag_id);
-    Serial.println("flag_pivot");
-    Serial.println(flag_pivot);
-    Serial.println("Control Mode");
-    Serial.println(Control_Mode);
-
-
+//    Serial.println("right_leg->p_steps->plant_peak_mean");
+//    Serial.println(right_leg->p_steps->plant_peak_mean);
+//    Serial.println("right_leg->p_steps->plant_peak_mean_Toe");
+//    Serial.println(right_leg->p_steps->plant_peak_mean_Toe);
+//    Serial.println("right_leg->p_steps->plant_peak_mean_Heel");
+//    Serial.println(right_leg->p_steps->plant_peak_mean_Heel);
+//    Serial.println("right_leg->Setpoint_Ankle_Pctrl");
+//    Serial.println(right_leg->Setpoint_Ankle_Pctrl);
+//    Serial.println("right_leg->PID_Setpoint");
+//    Serial.println(right_leg->PID_Setpoint);
+//    Serial.println("right_leg->PID_Setpoint_Knee");
+//    Serial.println(right_leg->PID_Setpoint_Knee);
+//    Serial.println("right_leg->Setpoint_Knee_Pctrl");
+//    Serial.println(right_leg->Setpoint_Knee_Pctrl);
+//    Serial.println("right_leg->Setpoint_Ankle");
+//    Serial.println(right_leg->Setpoint_Ankle);
+//    Serial.println("right_leg->Setpoint_Knee");
+//    Serial.println(right_leg->Setpoint_Knee);
+//    
+//    
+//    Serial.println("FLAG_TOE_HEEL_SENSORS");
+//    Serial.println(FLAG_TOE_HEEL_SENSORS);
+//
+//    Serial.println("Flag_Prop_Ctrl");
+//    Serial.println(Flag_Prop_Ctrl);
+//    Serial.println("flag_id");
+//    Serial.println(flag_id);
+//    Serial.println("flag_pivot");
+//    Serial.println(flag_pivot);
+//    Serial.println("Control Mode");
+//    Serial.println(Control_Mode);
+//
+//
 
     if ((left_leg->state == 3) && (left_leg->old_state == 1)) {
       left_leg->state_3_start_time = millis();

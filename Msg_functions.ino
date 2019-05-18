@@ -45,12 +45,16 @@ void send_data_message_wc() //with COP
     data_to_send[10] = right_leg->stridelength_update;
     data_to_send[11] = left_leg->stridelength_update;
   }
-  else {
-    data_to_send[10] = (right_leg->sign * right_leg->PID_Setpoint_Knee);
-    data_to_send[11] = (right_leg->p_steps->plant_peak_mean_temp_Heel);
+  else if (Flag_Knee_Cfg == true) {  // TN 5/17/19
+    data_to_send[10] = right_leg->sign * right_leg->PID_Setpoint_Knee;
+    data_to_send[11] = left_leg->sign * left_leg->PID_Setpoint_Knee;  // TN 5/17/19
 
     //data_to_send[10] = (right_leg->PID_Setpoint_Knee);   // TN 5/13/19
     // data_to_send[11] = (left_leg->PID_Setpoint_Knee);   // TN 5/13/19
+  }
+  else  {
+    data_to_send[10] = (right_leg->PID_Setpoint_Knee);   // TN 5/13/19
+    data_to_send[11] = (left_leg->PID_Setpoint_Knee);   // TN 5/13/19
   }
 
 
@@ -58,7 +62,7 @@ void send_data_message_wc() //with COP
     data_to_send[12] = right_leg->stridelength_target;
     data_to_send[13] = left_leg->stridelength_target;
   }
-  else if (Flag_Knee_Cfg) {   // TN 5/13/19
+  else if (Flag_Knee_Cfg == true) {  // TN 5/13/19
     data_to_send[12] = right_leg->sign * right_leg->Average_Trq_Knee;   // TN 5/13/19
     data_to_send[13] = left_leg->sign * left_leg->Average_Trq_Knee;    // TN 5/13/19
   }

@@ -69,5 +69,5 @@ void pid_Knee(Leg* leg, double input_Knee) {
   }
 
 
-  //analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
+  analogWrite(leg->motor_knee_pin, leg->Vol_Knee); //0 to 4096 writing for motor to get Input
 }

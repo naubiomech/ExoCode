@@ -48,6 +48,7 @@ typedef struct {
   double peak_Heel;
 
   double fsr_Toe;
+  double fsr_Heel;  // TN 5/17/19
   double torque_average;
   double torque_average_K; // TN 5/9/19
 } steps;

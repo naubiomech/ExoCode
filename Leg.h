@@ -9,7 +9,7 @@ const int dim = 5;
 struct Leg {
   int torque_sensor_ankle_pin;
   int torque_sensor_knee_pin;  // TN 5/9/19
-  int motor_ankle_pin;
+  int motor_ankle_pin, motor_knee_pin;
   // In A_Exo pre-includes
   double FSR_Average_array[dim_FSR] = {0};
   double* p_FSR_Array = &FSR_Average_array[0];
@@ -30,7 +30,7 @@ struct Leg {
   double sign = 1;
 
   // In A_Exo post_includes
-  unsigned int pin_err;
+  unsigned int pin_err, pin_err_Knee;
 
   double store_KF = 0;
 
@@ -262,7 +262,7 @@ struct Leg {
   double start_time_Biofeedback;
 
   char whos = ' ';
-  char AorK = ' ';  // TN 5/9/19
+  //char AorK = ' ';  // TN 5/9/19
 
   double zero;
   double torque_error_counter;
