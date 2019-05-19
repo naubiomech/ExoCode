@@ -73,10 +73,10 @@ const int IMU_ADDRESS_1 = 0x29;
 const unsigned int BLUETOOTH_TX_PIN = 0;
 const unsigned int BLUETOOTH_RX_PIN = 1;
 
-const unsigned int FSR_SENSE_LEFT_TOE_PIN = A13;
-const unsigned int FSR_SENSE_LEFT_HEEL_PIN = A12;
-const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A15;
-const unsigned int FSR_SENSE_RIGHT_HEEL_PIN = A14;
+const unsigned int FSR_SENSE_LEFT_TOE_PIN = A12;
+const unsigned int FSR_SENSE_LEFT_HEEL_PIN = A13;
+const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A14;
+const unsigned int FSR_SENSE_RIGHT_HEEL_PIN = A15;
 
 const unsigned int TORQUE_SENSOR_LEFT_KNEE_PIN = A5;
 const unsigned int TORQUE_SENSOR_LEFT_ANKLE_PIN = A6;
@@ -105,10 +105,10 @@ const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = 27;
 const unsigned int BLUETOOTH_TX_PIN = 0;
 const unsigned int BLUETOOTH_RX_PIN = 1;
 
-const unsigned int FSR_SENSE_LEFT_TOE_PIN = A13;
-const unsigned int FSR_SENSE_LEFT_HEEL_PIN = A12;
-const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A15;
-const unsigned int FSR_SENSE_RIGHT_HEEL_PIN = A14;
+const unsigned int FSR_SENSE_LEFT_TOE_PIN = A12;
+const unsigned int FSR_SENSE_LEFT_HEEL_PIN = A13;
+const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A14;
+const unsigned int FSR_SENSE_RIGHT_HEEL_PIN = A15;
 
 const unsigned int TORQUE_SENSOR_LEFT_ANKLE_PIN = A0;
 const unsigned int TORQUE_SENSOR_RIGHT_ANKLE_PIN = A6;
