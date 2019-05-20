@@ -17,7 +17,7 @@ void initialize_leg(Leg* leg) {
   // TN 13/5/19
   analogWrite(leg->motor_knee_pin, zero);  // TN 5/17/19
   leg->pid_Knee.SetMode(AUTOMATIC);
-  leg->pid_Knee.SetTunings(leg->kp_K, leg->ki_K, leg->kd_K);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
+  leg->pid_Knee.SetTunings(leg->kp_Knee, leg->ki_Knee, leg->kd_Knee);                                      //Kp, Ki, Kd ##COULD BE AUTOTUNED
   leg->pid_Knee.SetOutputLimits(-1500, 1500);                                  //range of Output around 0 ~ 1995 ##THIS IS DIFFERENT NOW AND SHOULD CONCRETELY CONFIRM
   leg->pid_Knee.SetSampleTime(PID_sample_time);
 

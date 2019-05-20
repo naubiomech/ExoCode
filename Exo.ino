@@ -430,19 +430,7 @@ void rotate_motor() {
 
     right_leg->old_state = right_leg->state;
 
-    if ((Control_Mode == 3 || Control_Mode == 4 ) && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
-      left_leg->PID_Setpoint = left_leg->New_PID_Setpoint;   //Brute force the dorsiflexion set point to proportional control
-    } else if ((Control_Mode == 3 || Control_Mode == 4 ) && (abs(right_leg->Dorsi_Setpoint_Ankle) > 0 || abs(right_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && right_leg->state == 1) {
-      right_leg->PID_Setpoint = right_leg->New_PID_Setpoint; //Brute force the dorsiflexion set point to proportional control
-    } else {};
-
-    // TN 5/15/19
-    if ((Control_Mode == 3 || Control_Mode == 4 ) && (abs(left_leg->Dorsi_Setpoint_Knee) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Knee) > 0) && left_leg->state == 1) { //GO 4/22/19
-      left_leg->PID_Setpoint_Knee = left_leg->New_PID_Setpoint_Knee;   //Brute force the dorsiflexion set point to proportional control
-    } else if ((Control_Mode == 3 || Control_Mode == 4 ) && (abs(right_leg->Dorsi_Setpoint_Knee) > 0 || abs(right_leg->Previous_Dorsi_Setpoint_Knee) > 0) && right_leg->state == 1) {
-      right_leg->PID_Setpoint_Knee = right_leg->New_PID_Setpoint_Knee; //Brute force the dorsiflexion set point to proportional control
-    } else {};
-
+ 
     int left_scaling_index = 0;
     int right_scaling_index = 0;
 

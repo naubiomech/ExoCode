@@ -62,7 +62,7 @@ struct Leg {
   // Auto_KF.h
   double ERR;
   double Max_Measured_Torque;
-  double max_KF = 1.5;
+  double max_KF = 3;
   double min_KF = 0.9;
   double MaxPropSetpoint;
   bool auto_KF_update = false;
@@ -124,17 +124,17 @@ struct Leg {
   double ki = 0;
   double kd = 3;
   //PWM Gains for Knee control:  // TN 5/9/19
-  double kp_K = 600;
-  double ki_K = 0;
-  double kd_K = 3;
+  double kp_Knee = 600;
+  double ki_Knee = 0;
+  double kd_Knee = 3;
 #else
   double kp = 700;
   double ki = 0;
   double kd = 3;
   //PID Gains for Knee control:  // TN 5/9/19
-  double kp_K = 700;
-  double ki_K = 0;
-  double kd_K = 3;
+  double kp_Knee = 700;
+  double ki_Knee = 0;
+  double kd_Knee = 3;
 #endif
   double KF = 1;
   double KF_Knee = 1;  // TN 5/9/19
@@ -143,7 +143,7 @@ struct Leg {
   PID pid = PID(&Input, &Output, &PID_Setpoint, kp, ki, kd, DIRECT);
 
   double PID_Setpoint_Knee, Input_Knee, Output_Knee;   // TN 5/9/19
-  PID pid_Knee = PID(&Input_Knee, &Output_Knee, &PID_Setpoint_Knee, kp_K, ki_K, kd_K, DIRECT);   // TN 5/9/19
+  PID pid_Knee = PID(&Input_Knee, &Output_Knee, &PID_Setpoint_Knee, kp_Knee, ki_Knee, kd_Knee, DIRECT);   // TN 5/9/19
 
   double Setpoint_Ankle, Setpoint_Ankle_Pctrl;
   double Previous_Setpoint_Ankle = 0;
@@ -194,7 +194,8 @@ struct Leg {
   // Shaping_Parameters.h
   double exp_mult = 1500.0;
   boolean sigm_flag = true;
-  boolean sigm_done;
+  boolean sigm_flag_Knee  = true;   // TN 5/20/19
+  boolean sigm_done, sigm_done_Knee;   // TN 5/20/19
 
   double New_PID_Setpoint = 0.0;
   double Old_PID_Setpoint = 0.0;

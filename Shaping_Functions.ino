@@ -138,10 +138,10 @@ void PID_Sigm_Curve_Knee(Leg* leg) {
   {
     leg->sig_time_old = leg->sig_time;                                                  //??? records for next time this code runs??
 
-    if (abs(leg->New_PID_Setpoint_Knee - leg->PID_Setpoint_Knee) > 0.1 &&  (leg->sigm_done))
+    if (abs(leg->New_PID_Setpoint_Knee - leg->PID_Setpoint_Knee) > 0.1 &&  (leg->sigm_done_Knee))
     {
       leg->n_iter = 0;
-      leg->sigm_done = false;                                                   //Do not let the code enter this block, until the setpoint transition has finished
+      leg->sigm_done_Knee = false;                                                   //Do not let the code enter this block, until the setpoint transition has finished
 
       if (leg->state == 3) {
         leg->N_step = leg->N3;                                           //Defines number of steps
