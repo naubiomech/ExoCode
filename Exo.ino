@@ -216,7 +216,7 @@ void calculate_leg_average(Leg* leg) {
   {
     leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
     leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
-    leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
+    leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
   }
   else {
     leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
