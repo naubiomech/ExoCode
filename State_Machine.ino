@@ -10,7 +10,7 @@ void state_machine(Leg* leg)
     State_Machine_One_Toe_Sensor(leg);
   }
 
-  if (FLAG_BALANCE) {
+  else if (FLAG_BALANCE) {
     State_Machine_Heel_Toe_Sensors_Balance(leg);
   } else {
     if (FLAG_BIOFEEDBACK) {
@@ -41,35 +41,38 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_13 >= state_counter_th)
         {
-          leg->sigm_done = true;
-          leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
-          if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle) {
-
-            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
-
-          } else {
-
-            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
-
+          if (Control_Mode == 100) { //Increment set point for bang-bang GO - 5/19/19
+            leg->sigm_done = true;
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+            if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle) {
+  
+              leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+  
+            } else {
+  
+              leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
+  
+            }
+  
+            if (Flag_HLO && (leg->Previous_T_Opt <= leg->T_Opt)) {
+  
+              leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps;
+  
+            } else if (Flag_HLO && (leg->Previous_T_Opt > leg->T_Opt)) {
+  
+              leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt) * leg->coef_in_3_steps;
+            }
           }
 
-          if (Flag_HLO && (leg->Previous_T_Opt <= leg->T_Opt)) {
-
-            leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps;
-            Serial.print("Previous T Opt");
-            Serial.print(leg->Previous_T_Opt);
-            Serial.print("Current T Opt");
-            Serial.println(leg->T_Opt_Setpoint);
-
-          } else if (Flag_HLO && (leg->Previous_T_Opt > leg->T_Opt)) {
-
-            leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt) * leg->coef_in_3_steps;
-            Serial.print("Previous T Opt");
-            Serial.print(leg->Previous_T_Opt);
-            Serial.print("Current T Opt");
-            Serial.println(leg->T_Opt_Setpoint);
-
+          else if (Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) { //Increment the max set point for proportional control GO - 5/19/19
+            if (abs(leg->Previous_Setpoint_Ankle_Pctrl) <= abs(leg->Setpoint_Ankle)) {
+              leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
+            } else {
+              leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl - (leg->Previous_Setpoint_Ankle_Pctrl - leg->Setpoint_Ankle) * leg->coef_in_3_steps; //Decrement when the new setpoint is lower than the old
+            }
+            if (leg->p_steps->Setpoint == 0) {
+              leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+            }
           }
 
           leg->state_old = leg->state;
@@ -98,12 +101,12 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
         leg->state_count_31++;
         if (leg->state_count_31 >= state_counter_th)
         {
-          leg->sigm_done = true;
-          leg->Old_PID_Setpoint = leg->PID_Setpoint;
-          leg->state_old = leg->state;
-          //          leg->New_PID_Setpoint = 0 * leg->coef_in_3_steps;
-          
-          if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
+
+          if (Control_Mode == 100) { 
+            leg->sigm_done = true;
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+          }
+          if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) { //Increment Dorsi Setpoint for Bang-Bang & Proportional GO - 5/19/19
 
             leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
 
@@ -114,7 +117,9 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           }
           if (leg->New_PID_Setpoint == 0) { //GO 4/22/19
             leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
-          }
+          }          
+          
+          leg->state_old = leg->state;
           leg->state = 1;
           leg->state_count_31 = 0;
           leg->state_count_13 = 0;
@@ -125,14 +130,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
   ref_step_adj(leg);
   
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 3) { //GO 4/21/19
-    if (abs(leg->Previous_Setpoint_Ankle_Pctrl) <= abs(leg->Setpoint_Ankle)) {
-      leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
-    } else {
-      leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl - (leg->Previous_Setpoint_Ankle_Pctrl - leg->Setpoint_Ankle) * leg->coef_in_3_steps; //Decrement when the new setpoint is lower than the old
-    }
-    if (leg->p_steps->Setpoint == 0) {
-      leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
-    }
+    leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
   }
   else {
 
@@ -147,7 +145,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
   }
 
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 1) {
-      leg->Setpoint_Ankle_Pctrl = leg->New_PID_Setpoint;
+      leg->PID_Setpoint = leg->New_PID_Setpoint;
   }
   else {
 
