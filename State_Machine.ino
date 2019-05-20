@@ -7,7 +7,7 @@
 void state_machine(Leg* leg)
 {
   if (FLAG_TWO_TOE_SENSORS) {
-    State_Machine_One_Toe_Sensor(leg);
+    State_Machine_Two_Toe_Sensors(leg);
   }
 
   else if (FLAG_BALANCE) {
@@ -25,7 +25,7 @@ void state_machine(Leg* leg)
 
 
 //-----------------------------------------------------------------------------------------------------
-void State_Machine_One_Toe_Sensor(Leg * leg) {
+void State_Machine_Two_Toe_Sensors(Leg * leg) {
   switch (leg->state)
   {
     case 1: //Swing
