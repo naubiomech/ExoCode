@@ -17,8 +17,10 @@ void send_data_message_wc() //with COP
     data_to_send[3] = right_leg->score;
     data_to_send[4] = left_leg->score;
   } else {
-    data_to_send[3] = (right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Toe_peak_ref);
-    data_to_send[4] = (right_leg->FSR_Toe_Average);
+//    data_to_send[3] = (right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Toe_peak_ref);
+//    data_to_send[4] = (right_leg->FSR_Toe_Average);
+    data_to_send[3] = (right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
+    data_to_send[4] = (right_leg->FSR_Combined_Average);
   }
 
   //Left Leg
@@ -33,8 +35,10 @@ void send_data_message_wc() //with COP
     data_to_send[8] = (left_leg->FSR_Toe_Average);
     data_to_send[9] = (left_leg->FSR_Heel_Average);
   } else {
-    data_to_send[8] = (left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Toe_peak_ref);
-    data_to_send[9] = (left_leg->FSR_Toe_Average);
+//    data_to_send[8] = (left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Toe_peak_ref);
+//    data_to_send[9] = (left_leg->FSR_Toe_Average);
+    data_to_send[8] = (left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
+    data_to_send[9] = (left_leg->FSR_Combined_Average);
   }
 
   // Signals
@@ -47,6 +51,7 @@ void send_data_message_wc() //with COP
   }
   else {
     data_to_send[10] = (fsr(A10)+fsr(A11));
+    //data_to_send[11] = (-(analogRead(left_leg->torque_sensor_ankle_pin) * (3.3 / 4096) - left_leg->torque_calibration_value));
     data_to_send[11] = (Control_Mode);
   }
   if (FLAG_BIOFEEDBACK) {
