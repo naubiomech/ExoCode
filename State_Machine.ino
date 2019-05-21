@@ -35,7 +35,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
         leg->set_2_zero = 0;
         leg->One_time_set_2_zero = 1;
       }
-      else if ((leg->p_steps->curr_voltage > leg->fsr_percent_thresh_Toe * leg->fsr_Combined_peak_ref)) //If the overall FSR reading is greater than the threshold we need to be in state 3
+      else if ((leg->p_steps->curr_voltage_Toe >= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)) //If the overall FSR reading is greater than the threshold we need to be in state 3
       {
         leg->state_count_13++;
         // if you're in the same state for more than state_counter_th it means that it is not noise
@@ -81,7 +81,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           leg->state_count_31 = 0;
         }
       } 
-      else if ((leg->p_steps->curr_voltage_Heel > leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref && leg->p_steps->curr_voltage_Toe < leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)) { //Heel active but not toe
+      else if ((leg->p_steps->curr_voltage_Heel >= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref && leg->p_steps->curr_voltage_Toe < leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)) { //Heel active but not toe
         leg->state_count_12++;
         if (leg->state_count_12 >= state_counter_th) {
           leg->state_old = leg->state;
@@ -105,7 +105,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
         leg->Setpoint_Ankle_Pctrl = 0;
         leg->Previous_Setpoint_Ankle_Pctrl = 0; 
       }
-      else if ((leg->p_steps->curr_voltage_Toe > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)) {
+      else if ((leg->p_steps->curr_voltage_Toe >= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)) {
         leg->state_count_23++;
         if (leg->state_count_23 >= state_counter_th) {
           
@@ -145,10 +145,35 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           
           leg->state_old = leg->state;
           leg->state = 3;
-          leg->state_count_31 = 0;
-          leg->state_count_13 = 0;
           leg->state_count_23 = 0;
           leg->state_count_32 = 0;
+        }
+      }
+
+      else if ((leg->p_steps->curr_voltage_Heel < leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref && leg->p_steps->curr_voltage_Toe < leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)) {
+        leg->state_count_21++;
+        if (leg->state_count_21 >= 4*state_counter_th) {
+           if (Control_Mode == 100) { 
+            leg->sigm_done = true;
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+          }
+          if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) { //Increment Dorsi Setpoint for Bang-Bang & Proportional GO - 5/19/19
+
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+
+          } else {
+
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+
+          }
+          if (leg->New_PID_Setpoint == 0) { //GO 4/22/19
+            leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+          }          
+          
+          leg->state_old = leg->state;
+          leg->state = 1;
+          leg->state_count_21 = 0;
+          leg->state_count_12 = 0;
         }
       }
       
@@ -167,7 +192,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
         leg->Previous_Setpoint_Ankle_Pctrl = 0; //GO 4/21/19
       }
 
-      else if ((leg->p_steps->curr_voltage < (leg->fsr_percent_thresh_Toe * leg->fsr_Combined_peak_ref)))
+      else if ((leg->p_steps->curr_voltage_Toe < leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel < leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref))
       {
         leg->state_count_31++;
         if (leg->state_count_31 >= state_counter_th)
@@ -195,6 +220,17 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           leg->state_count_31 = 0;
           leg->state_count_13 = 0;
           
+        }
+      }
+      else if ((leg->p_steps->curr_voltage_Heel >= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->p_steps->curr_voltage_Toe < leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)) {
+        leg->state_count_32++;
+        if (leg->state_count_32 >= state_counter_th){
+          leg->state_old = leg->state;
+          leg->state = 2;
+          leg->state_count_32 = 0;
+          leg->state_count_23 = 0;
+          leg->state_count_12 = 0;
+          leg->state_count_21 = 0;
         }
       }
   }//end switch
