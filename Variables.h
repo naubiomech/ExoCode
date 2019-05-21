@@ -33,7 +33,7 @@ bool FLAG_PID_VALS = false;
 
 // Variables depending on the sensor placement that are used in the state machine
 // TN 5/8/19
-bool FLAG_TOE_HEEL_SENSORS = false;
+bool FLAG_TOE_HEEL_SENSORS = true; // tn 5/20/19
 bool OLD_FLAG_TOE_HEEL_SENSORS = FLAG_TOE_HEEL_SENSORS;
 
 bool FLAG_TOE_SENSOR = false;

@@ -735,12 +735,16 @@ void receive_and_transmit()
       //      Control_Mode = 3; // activate pivot proportional control
       //      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
       //      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      OLD_FLAG_TOE_SENSOR = FLAG_TOE_SENSOR; // TN 5/8/19
-      FLAG_TOE_SENSOR = true;   // TN 5/8/19
+
       flag_id = false; // TN 04/29/19
       flag_pivot = true; // TN 04/29/19
       if (Flag_Prop_Ctrl == true) // TN 04/29/19
+      {
         Control_Mode = 3;
+        OLD_FLAG_TOE_SENSOR = FLAG_TOE_SENSOR; // TN 5/8/19
+        FLAG_TOE_SENSOR = true;   // TN 5/8/19
+        FLAG_TOE_HEEL_SENSORS = false; // TN 5/20/19        
+      }
       break;
 
     case 'c':
@@ -752,6 +756,7 @@ void receive_and_transmit()
       //      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
       OLD_FLAG_TOE_HEEL_SENSORS = FLAG_TOE_HEEL_SENSORS; // TN 5/8/19
       FLAG_TOE_HEEL_SENSORS = true; // TN 5/8/19
+      FLAG_TOE_SENSOR = false; // TN 5/20/19
       flag_id = true; // TN 04/29/19
       flag_pivot = false; // TN 04/29/19
       if (Flag_Prop_Ctrl == true) // TN 04/29/19
@@ -766,6 +771,7 @@ void receive_and_transmit()
         Control_Mode = 3; // activate pivot PC // TN 04/29/19
         OLD_FLAG_TOE_SENSOR = FLAG_TOE_SENSOR; // TN 5/8/19
         FLAG_TOE_SENSOR = true;   // TN 5/8/19
+        FLAG_TOE_HEEL_SENSORS = false; // TN 5/20/19
         *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
         *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
       }
@@ -773,6 +779,7 @@ void receive_and_transmit()
         Control_Mode = 4; // activate ID PC // TN 04/29/19
         OLD_FLAG_TOE_HEEL_SENSORS = FLAG_TOE_HEEL_SENSORS; // TN 5/8/19
         FLAG_TOE_HEEL_SENSORS = true; // TN 5/8/19
+        FLAG_TOE_SENSOR = false;  // TN 5/20/19
         *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
         *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
         *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;  // TN 5/8/19
@@ -786,7 +793,7 @@ void receive_and_transmit()
       OLD_FLAG_TOE_SENSOR = FLAG_TOE_SENSOR; // TN 5/8/19
       FLAG_TOE_SENSOR = false; // TN 5/8/19
       OLD_FLAG_TOE_HEEL_SENSORS = FLAG_TOE_HEEL_SENSORS; // TN 5/8/19
-      FLAG_TOE_HEEL_SENSORS = false; // TN 5/8/19
+      //FLAG_TOE_HEEL_SENSORS = false; // TN 5/8/19
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
       *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
