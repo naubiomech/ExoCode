@@ -363,39 +363,41 @@ void rotate_motor() {
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
 
-//    Serial.println("right_leg->p_steps->plant_peak_mean");
-//    Serial.println(right_leg->p_steps->plant_peak_mean);
-//    Serial.println("right_leg->p_steps->plant_peak_mean_Toe");
-//    Serial.println(right_leg->p_steps->plant_peak_mean_Toe);
-//    Serial.println("right_leg->p_steps->plant_peak_mean_Heel");
-//    Serial.println(right_leg->p_steps->plant_peak_mean_Heel);
-//    Serial.println("right_leg->Setpoint_Ankle_Pctrl");
-//    Serial.println(right_leg->Setpoint_Ankle_Pctrl);
-//    Serial.println("right_leg->PID_Setpoint");
-//    Serial.println(right_leg->PID_Setpoint);
-//    Serial.println("right_leg->PID_Setpoint_Knee");
-//    Serial.println(right_leg->PID_Setpoint_Knee);
-//    Serial.println("right_leg->Setpoint_Knee_Pctrl");
-//    Serial.println(right_leg->Setpoint_Knee_Pctrl);
-//    Serial.println("right_leg->Setpoint_Ankle");
-//    Serial.println(right_leg->Setpoint_Ankle);
-//    Serial.println("right_leg->Setpoint_Knee");
-//    Serial.println(right_leg->Setpoint_Knee);
-//    
-//    
-//    Serial.println("FLAG_TOE_HEEL_SENSORS");
-//    Serial.println(FLAG_TOE_HEEL_SENSORS);
-//
-//    Serial.println("Flag_Prop_Ctrl");
-//    Serial.println(Flag_Prop_Ctrl);
-//    Serial.println("flag_id");
-//    Serial.println(flag_id);
-//    Serial.println("flag_pivot");
-//    Serial.println(flag_pivot);
-//    Serial.println("Control Mode");
-//    Serial.println(Control_Mode);
-//
-//
+    //    Serial.println("right_leg->p_steps->plant_peak_mean");
+    //    Serial.println(right_leg->p_steps->plant_peak_mean);
+    //    Serial.println("right_leg->p_steps->plant_peak_mean_Toe");
+    //    Serial.println(right_leg->p_steps->plant_peak_mean_Toe);
+    //    Serial.println("right_leg->p_steps->plant_peak_mean_Heel");
+    //    Serial.println(right_leg->p_steps->plant_peak_mean_Heel);
+    //    Serial.println("right_leg->Setpoint_Ankle_Pctrl");
+    //    Serial.println(right_leg->Setpoint_Ankle_Pctrl);
+    //    Serial.println("right_leg->PID_Setpoint");
+    //    Serial.println(right_leg->PID_Setpoint);
+    //    Serial.println("right_leg->PID_Setpoint_Knee");
+    //    Serial.println(right_leg->PID_Setpoint_Knee);
+    //    Serial.println("right_leg->Setpoint_Knee_Pctrl");
+    //    Serial.println(right_leg->Setpoint_Knee_Pctrl);
+    //    Serial.println("right_leg->Setpoint_Ankle");
+    //    Serial.println(right_leg->Setpoint_Ankle);
+    //    Serial.println("right_leg->Setpoint_Knee");
+    //    Serial.println(right_leg->Setpoint_Knee);
+    //
+    //
+    //    Serial.println("FLAG_TOE_HEEL_SENSORS");
+    //    Serial.println(FLAG_TOE_HEEL_SENSORS);
+    //
+    //    Serial.println("Flag_Prop_Ctrl");
+    //    Serial.println(Flag_Prop_Ctrl);
+    //    Serial.println("flag_id");
+    //    Serial.println(flag_id);
+    //    Serial.println("flag_pivot");
+    //    Serial.println(flag_pivot);
+    Serial.println("Control Mode");
+    Serial.println(Control_Mode);
+    //
+    //
+    Serial.println("FLAG_TOE_HEEL_SENSORS");
+    Serial.println(FLAG_TOE_HEEL_SENSORS);
 
     if ((left_leg->state == 3) && (left_leg->old_state == 1)) {
       left_leg->state_3_start_time = millis();
@@ -430,7 +432,7 @@ void rotate_motor() {
 
     right_leg->old_state = right_leg->state;
 
- 
+
     int left_scaling_index = 0;
     int right_scaling_index = 0;
 
