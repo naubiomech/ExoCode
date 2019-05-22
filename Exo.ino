@@ -212,7 +212,7 @@ void calculate_leg_average(Leg* leg) {
   leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
 
 
-  if (FLAG_TWO_TOE_SENSORS)
+  if (FLAG_ONE_TOE_SENSOR)
   {
     leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
     leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
@@ -264,10 +264,10 @@ void check_FSR_calibration() {
 
   // for the proportional control
   if (right_leg->FSR_baseline_FLAG) {
-    take_baseline(right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);
+    take_baseline(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);
   }
   if (left_leg->FSR_baseline_FLAG) {
-    take_baseline(left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
+    take_baseline(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
   }
 
 }
