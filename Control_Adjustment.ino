@@ -261,12 +261,19 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
         if ((p_steps_l->Setpoint_Knee ) > 0) { //depending on the leg the sign changes
           *p_Setpoint_Knee_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_Heel));
           *p_Setpoint_Knee_Pctrl_l = min(Max_Prop, *p_Setpoint_Knee_Pctrl_l);
+          if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {  // TN 5/22/19
+            leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
+          }
         }
         else if ((p_steps_l->Setpoint_Knee ) < 0) {
           *p_Setpoint_Knee_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_Heel));
           *p_Setpoint_Knee_Pctrl_l = min(Min_Prop, *p_Setpoint_Knee_Pctrl_l);
+          if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {  // TN 5/22/19
+            leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
+          }
         } else {
           *p_Setpoint_Knee_Pctrl_l = 0;
+          leg->MaxPropSetpoint_Knee = 0;  // TN 5/22/19
         }
 
       }
