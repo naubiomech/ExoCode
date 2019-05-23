@@ -2,7 +2,7 @@
 
 
 // take baseline for some of the controls during the plantarflexion state , i.e. 3
-int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_flag_take_baseline_l) {
+int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_flag_take_baseline_l) {
 
   // update the voltage peak
 
@@ -122,6 +122,7 @@ int take_baseline(int R_state_l, int R_state_old_l, steps* p_steps_l, int* p_fla
           if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
             (p_steps_l->count_plant_base) = 0;
             *p_flag_take_baseline_l = 0;
+            leg->baseline_value = p_steps_l->plant_peak_mean;
             send_command_message('n', 0, 1); //GO 4/23/19 to communicate that baseline is done
             return (p_steps_l->count_plant_base);
 
@@ -169,12 +170,19 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
         if ((p_steps_l->Setpoint ) > 0) { //depending on the leg the sign changes
           *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]));
           *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
+          if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
+            leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
+          }
         }
         else if ((p_steps_l->Setpoint ) < 0) {
           *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]));
           *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
+          if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
+            leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
+          }
         } else {
           *p_Setpoint_Ankle_Pctrl_l = 0;
+          leg->MaxPropSetpoint = 0;
         }
       }
       if (Control_Mode_l == 4) { // JOINT MOMENT CONTROL also known as pivot proportional control while taking the baseline
@@ -206,6 +214,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
   if (taking_baseline_l == 0 && p_steps_l->plant_peak_mean_temp != p_steps_l->plant_peak_mean) {
     p_steps_l->plant_peak_mean = p_steps_l->plant_peak_mean_temp;
+    leg->baseline_value = p_steps_l->plant_peak_mean;
   }
 
 

@@ -51,8 +51,7 @@ void receive_and_transmit()
         left_leg->Setpoint_Ankle = abs(left_leg->Setpoint_Ankle);                     //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
         left_leg->Dorsi_Setpoint_Ankle = -abs(left_leg->Dorsi_Setpoint_Ankle);
         //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-        left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-        left_leg->p_steps->Setpoint = left_leg->sign * left_leg->Setpoint_Ankle;
+        left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->Previous_Setpoint_Ankle;
         left_leg->Setpoint_Ankle_Pctrl = left_leg->Setpoint_Ankle;
         left_leg->activate_in_3_steps = 1;
         left_leg->num_3_steps = 0;
@@ -86,8 +85,7 @@ void receive_and_transmit()
         right_leg->Dorsi_Setpoint_Ankle = abs(right_leg->Dorsi_Setpoint_Ankle);
         //Recieved the large data chunk chopped into bytes, a roundabout way was needed
         right_leg->Setpoint_Ankle_Pctrl = right_leg->Setpoint_Ankle;
-        right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-        right_leg->p_steps->Setpoint = right_leg->sign * right_leg->Setpoint_Ankle;
+        right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->Previous_Setpoint_Ankle;
         right_leg->activate_in_3_steps = 1;
         right_leg->num_3_steps = 0;
         right_leg->first_step = 1;
@@ -180,6 +178,8 @@ void receive_and_transmit()
           right_leg->fsr_Toe_peak_ref = read_FSR_values(right_leg->address_FSR);
           left_leg->fsr_Heel_peak_ref = read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
           right_leg->fsr_Heel_peak_ref = read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
+          left_leg->fsr_Combined_peak_ref = left_leg->fsr_Toe_peak_ref + left_leg->fsr_Heel_peak_ref;
+          right_leg->fsr_Combined_peak_ref = right_leg->fsr_Toe_peak_ref + right_leg->fsr_Heel_peak_ref;
         }
 
         *(data_to_send_point + 1) = 1;
@@ -206,8 +206,10 @@ void receive_and_transmit()
       send_command_message('<', data_to_send_point, 3);
 
       // add baseline
-      left_leg->p_steps->plant_peak_mean = read_baseline(left_leg->baseline_address);
-      right_leg->p_steps->plant_peak_mean = read_baseline(right_leg->baseline_address);
+      left_leg->p_steps->plant_peak_mean_temp = read_baseline(left_leg->baseline_address);
+      right_leg->p_steps->plant_peak_mean_temp = read_baseline(right_leg->baseline_address);
+      left_leg->p_steps->plant_peak_mean = left_leg->p_steps->plant_peak_mean;
+      right_leg->p_steps->plant_peak_mean = right_leg->p_steps->plant_peak_mean;
       left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
       right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
       break;
@@ -398,23 +400,20 @@ void receive_and_transmit()
     case '!':
       if (stream == 1) {
       } else {
-        if (FLAG_ONE_TOE_SENSOR) {
-          write_FSR_values(left_leg->address_FSR, left_leg->fsr_Combined_peak_ref / 2);
-          write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Combined_peak_ref / 2);
-          write_FSR_values(right_leg->address_FSR, right_leg->fsr_Combined_peak_ref / 2);
-          write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Combined_peak_ref / 2);
-        } else {
-          write_FSR_values(left_leg->address_FSR, left_leg->fsr_Toe_peak_ref);
-          write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Heel_peak_ref);
-          write_FSR_values(right_leg->address_FSR, right_leg->fsr_Toe_peak_ref);
-          write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Heel_peak_ref);
-        }
+        write_FSR_values(left_leg->address_FSR, left_leg->fsr_Toe_peak_ref);
+        write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Heel_peak_ref);
+        write_FSR_values(right_leg->address_FSR, right_leg->fsr_Toe_peak_ref);
+        write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Heel_peak_ref);
 
         write_baseline(left_leg->baseline_address, left_leg->baseline_value);
+        Serial.println(left_leg->baseline_value);
         write_baseline(right_leg->baseline_address, right_leg->baseline_value);
+        Serial.println(right_leg->baseline_value);
 
         write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
         write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
+
+        write_EXP_parameters(address_params);
       }//end if
       break;
 

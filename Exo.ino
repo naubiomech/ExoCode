@@ -264,10 +264,10 @@ void check_FSR_calibration() {
 
   // for the proportional control
   if (right_leg->FSR_baseline_FLAG) {
-    take_baseline(right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);
+    take_baseline(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);
   }
   if (left_leg->FSR_baseline_FLAG) {
-    take_baseline(left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
+    take_baseline(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
   }
 
 }
@@ -336,13 +336,6 @@ void rotate_motor() {
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
 
-
-    Serial.println("Left_leg->p_steps->plant_peak_mean");
-    Serial.println(left_leg->p_steps->plant_peak_mean);
-    Serial.println("Right_leg->p_steps->plant_peak_mean");
-    Serial.println(right_leg->p_steps->plant_peak_mean);
-
-
     if ((left_leg->state == 3) && (left_leg->old_state == 1)) {
       left_leg->state_3_start_time = millis();
     }
@@ -375,12 +368,6 @@ void rotate_motor() {
     }
 
     right_leg->old_state = right_leg->state;
-
-    if ((Control_Mode == 3 || Control_Mode == 4 ) && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
-      left_leg->PID_Setpoint = left_leg->New_PID_Setpoint;   //Brute force the dorsiflexion set point to proportional control
-    } else if ((Control_Mode == 3 || Control_Mode == 4 ) && (abs(right_leg->Dorsi_Setpoint_Ankle) > 0 || abs(right_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && right_leg->state == 1) {
-      right_leg->PID_Setpoint = right_leg->New_PID_Setpoint; //Brute force the dorsiflexion set point to proportional control
-    } else {};
 
     int left_scaling_index = 0;
     int right_scaling_index = 0;
