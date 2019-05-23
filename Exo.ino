@@ -230,9 +230,18 @@ void calculate_leg_average(Leg* leg) {
   leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
   leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
 
-
-  leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
-
+  if (FLAG_TOE_HEEL_SENSORS || FLAG_TOE_SENSOR)
+  {
+    if ((Flag_Ankle_Cfg == true)) {
+      leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
+    }
+    else if ((Flag_Knee_Cfg == true)) {
+      leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
+    }
+  }
+  else {
+    leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
+  }
 
 
 }
@@ -274,10 +283,10 @@ void check_FSR_calibration() {
 
   // for the proportional control
   if (right_leg->FSR_baseline_FLAG) {
-    take_baseline(right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);
+    take_baseline(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);
   }
   if (left_leg->FSR_baseline_FLAG) {
-    take_baseline(left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
+    take_baseline(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
   }
 
 }
@@ -383,16 +392,10 @@ void rotate_motor() {
     //    Serial.println(flag_id);
     //    Serial.println("flag_pivot");
     //    Serial.println(flag_pivot);
-    Serial.println("Control Mode");
-    Serial.println(Control_Mode);
+    //    Serial.println("Control Mode");
+    //    Serial.println(Control_Mode);
     //
     //
-    Serial.println("FLAG_TOE_HEEL_SENSORS");
-    Serial.println(FLAG_TOE_HEEL_SENSORS);
-
-    Serial.println("right_leg->New_PID_Setpoint_Knee");
-    Serial.println(right_leg->New_PID_Setpoint_Knee);
-
 
     if ((left_leg->state == 3) && (left_leg->old_state == 1)) {
       left_leg->state_3_start_time = millis();

@@ -108,10 +108,10 @@ struct Leg {
   int torque_address;
   int address_FSR;
   int baseline_address;
-  double baseline_value;
+  double baseline_value, baseline_value_Toe;
 
-  int baseline_address_Knee;  // TN 5/9/19
-  double baseline_value_Knee;  // TN 5/9/19
+  int baseline_address_Heel;  // TN 5/9/19
+  double baseline_value_Heel;  // TN 5/9/19
 
   // PID_and_Ctrl_Parameters.h
   double torque_calibration_value = 0;
