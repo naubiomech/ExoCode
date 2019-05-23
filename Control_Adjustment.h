@@ -32,8 +32,8 @@ typedef struct {
   double curr_voltage_Toe;
   double curr_voltage_Heel;
   double perc_l = 0.5;
-  double fsr_percent_thresh_Toe = 0.9;
-  double fsr_percent_thresh_Heel = 0.9; // TN 5/9/19
+  double fsr_percent_thresh_Toe = 0.1;
+  double fsr_percent_thresh_Heel = 0.1; // TN 5/9/19
   double plant_peak_mean;
   double plant_peak_mean_Toe;
   double plant_peak_mean_Heel;

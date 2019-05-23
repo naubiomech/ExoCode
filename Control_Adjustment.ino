@@ -198,7 +198,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
   if (taking_baseline_l) { // if I am taking the baseline adapt some parameters for the controls
 
     //--------------------------------
-    if ((R_state_l == 3) && (R_state_old_l == 1 || R_state_old_l == 2))
+    if ((R_state_l == 3 || R_state_l == 2) )
     {
       if (Control_Mode_l == 3) { // JOINT MOMENT CONTROL also known as pivot proportional control while taking the baseline
 
@@ -305,7 +305,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
   }
 
   // if you transit from state 1 to state 3 dorsiflexion is completed and start plantarflexion
-  if ((R_state_l == 3) && (R_state_old_l == 1 || R_state_old_l == 2))
+  if ((R_state_l == 3 || R_state_l == 2) )
   {
 
 
@@ -490,7 +490,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
   }// end if flag_start_plant
 
   // During the all dorsiflexion set the voltage peak to 0, probably we just need to do it one time
-  if (((R_state_l == 1) || (R_state_l == 2)) && R_state_old_l == 3) {
+  if ((R_state_l == 1) ) {
     p_steps_l->peak = 0;
     p_steps_l->peak_Toe = 0;   // TN 5/8/19
     p_steps_l->peak_Heel = 0;   // TN 5/8/19
