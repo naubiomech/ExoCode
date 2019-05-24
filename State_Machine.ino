@@ -206,7 +206,7 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
       }
       else if ((leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref && leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)) {
         leg->state_count_21++;
-        if (leg->state_count_21 >= state_counter_th) {
+        if (leg->state_count_21 >= 4 * state_counter_th) {
           if (Control_Mode == 100) {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -359,11 +359,14 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
   ref_step_adj(leg);
 
   if (Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) {  // TN 5/20/19 set the knee control in state 2 and 3
-    if (leg->state == 3)
+    if (leg->state == 3) {
       leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl; // * leg->coef_in_3_steps;
-
-    if (leg->state == 3 || leg->state == 2)
+      leg->PID_Setpoint_Knee = 0;
+    }
+    if (leg->state == 2) {
       leg->PID_Setpoint_Knee = leg->Setpoint_Knee_Pctrl; // * leg->coef_in_3_steps;
+      leg->PID_Setpoint = 0;
+    }
     if (leg->state == 1) {
       leg->PID_Setpoint = 0;
       leg->PID_Setpoint_Knee = 0;

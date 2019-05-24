@@ -198,7 +198,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
   if (taking_baseline_l) { // if I am taking the baseline adapt some parameters for the controls
 
     //--------------------------------
-    if ((R_state_l == 3 || R_state_l == 2) )
+    if (R_state_l == 3 && (R_state_old_l == 2 ||  R_state_old_l == 1))
     {
       if (Control_Mode_l == 3) { // JOINT MOMENT CONTROL also known as pivot proportional control while taking the baseline
 
@@ -254,6 +254,15 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
           leg->MaxPropSetpoint = 0;
         }
 
+
+
+      }
+
+    }
+
+    // TN 5/23/19
+    if (R_state_l == 2 && R_state_old_l == 1) {
+      if (Control_Mode_l == 4) {
         //Knee Control Setpoint  // TN 5/8/19
         *p_FSR_Ratio_Heel = fabs(p_steps_l->curr_voltage_Heel / p_steps_l->plant_peak_mean_Heel);
         if (*p_FSR_Ratio_Heel > (*p_Max_FSR_Ratio_Heel))
@@ -305,7 +314,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
   }
 
   // if you transit from state 1 to state 3 dorsiflexion is completed and start plantarflexion
-  if ((R_state_l == 3 || R_state_l == 2) )
+  if (R_state_l == 3 && (R_state_old_l == 2 || R_state_old_l == 1))
   {
 
 
@@ -368,7 +377,6 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
       return N3_l; // No modification in the shaping function which is disabled
     }
-
     else if (Control_Mode_l == 4)  {
 
       if ((p_steps_l->Setpoint ) > 0) {
@@ -389,25 +397,6 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
         leg->MaxPropSetpoint = 0;  // TN 5/8/19
       }
 
-      // TN 5/9/19
-      if ((p_steps_l->Setpoint_Knee ) > 0) {
-        *p_Setpoint_Knee_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_Heel)); // the difference here is that we do it as a function of the FSR calibration
-        *p_Setpoint_Knee_Pctrl_l = min(Max_Prop, *p_Setpoint_Knee_Pctrl_l);
-        if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {
-          leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
-        }
-      }
-      else if ((p_steps_l->Setpoint_Knee ) < 0) {
-
-        *p_Setpoint_Knee_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_Heel)); // the difference here is that we do it as a function of the FSR calibration
-        *p_Setpoint_Knee_Pctrl_l = min(Min_Prop, *p_Setpoint_Knee_Pctrl_l);
-        if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {
-          leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
-        }
-      } else {
-        *p_Setpoint_Knee_Pctrl_l = 0;
-        leg->MaxPropSetpoint_Knee = 0;
-      }
       return N3_l; // No modification in the shaping function which is disabled
     }
 
@@ -437,6 +426,43 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
 
   }// end if you enter in state 3 from state 2 or 1
+
+  // TN 5/23/19 transit from state 1 to state 2 for the knee control
+  if (R_state_l == 2 && R_state_old_l == 1) {
+
+    if (p_steps_l->curr_voltage_Heel > p_steps_l->peak_Heel)
+      p_steps_l->peak_Heel =  p_steps_l->curr_voltage_Heel;
+
+    *p_FSR_Ratio_Heel = fabs(p_steps_l->curr_voltage_Heel / p_steps_l->plant_peak_mean_Heel);
+
+    if (*p_FSR_Ratio_Heel > (*p_Max_FSR_Ratio_Heel))
+      (*p_Max_FSR_Ratio_Heel) = *p_FSR_Ratio_Heel;
+
+    if (Control_Mode_l == 4)  {
+
+      if ((p_steps_l->Setpoint_Knee ) > 0) {
+        *p_Setpoint_Knee_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_Heel)); // the difference here is that we do it as a function of the FSR calibration
+        *p_Setpoint_Knee_Pctrl_l = min(Max_Prop, *p_Setpoint_Knee_Pctrl_l);
+        if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {
+          leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
+        }
+      }
+      else if ((p_steps_l->Setpoint_Knee ) < 0) {
+
+        *p_Setpoint_Knee_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_Heel)); // the difference here is that we do it as a function of the FSR calibration
+        *p_Setpoint_Knee_Pctrl_l = min(Min_Prop, *p_Setpoint_Knee_Pctrl_l);
+        if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {
+          leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
+        }
+      } else {
+        *p_Setpoint_Knee_Pctrl_l = 0;
+        leg->MaxPropSetpoint_Knee = 0;
+      }
+      return N3_l; // No modification in the shaping function which is disabled
+    }
+
+  }
+
 
   // Hence here I am in state 2 or 1
 
@@ -490,7 +516,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
   }// end if flag_start_plant
 
   // During the all dorsiflexion set the voltage peak to 0, probably we just need to do it one time
-  if ((R_state_l == 1) ) {
+  if (((R_state_l == 1) || (R_state_l == 2) ) && (R_state_old_l == 3)) {
     p_steps_l->peak = 0;
     p_steps_l->peak_Toe = 0;   // TN 5/8/19
     p_steps_l->peak_Heel = 0;   // TN 5/8/19
