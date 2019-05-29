@@ -67,6 +67,7 @@ void receive_and_transmit()
           left_leg->Dorsi_Setpoint_Ankle = -abs(left_leg->Dorsi_Setpoint_Ankle);
           //Recieved the large data chunk chopped into bytes, a roundabout way was needed
           left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->Previous_Setpoint_Ankle;
+          left_leg->p_steps->Setpoint_Ankle = left_leg->sign * left_leg->Setpoint_Ankle;
           left_leg->Setpoint_Ankle_Pctrl = left_leg->Setpoint_Ankle;
           left_leg->activate_in_3_steps = 1;
           left_leg->num_3_steps = 0;
@@ -95,6 +96,7 @@ void receive_and_transmit()
           left_leg->Setpoint_Knee = abs(left_leg->Setpoint_Knee);
           left_leg->Dorsi_Setpoint_Knee = -abs(left_leg->Dorsi_Setpoint_Knee);
           left_leg->Previous_Setpoint_Knee_Pctrl = left_leg->Previous_Setpoint_Knee;
+          left_leg->p_steps->Setpoint_Knee = left_leg->sign * left_leg->Setpoint_Knee;
           left_leg->Setpoint_Knee_Pctrl = left_leg->Setpoint_Knee;
           left_leg->activate_in_3_steps = 1;
           left_leg->num_3_steps = 0;
@@ -131,7 +133,9 @@ void receive_and_transmit()
           right_leg->Dorsi_Setpoint_Ankle = abs(right_leg->Dorsi_Setpoint_Ankle);
           //Recieved the large data chunk chopped into bytes, a roundabout way was needed
           right_leg->Setpoint_Ankle_Pctrl = right_leg->Setpoint_Ankle;
-          right_leg->p_steps->Setpoint = right_leg->sign * right_leg->Setpoint_Ankle;
+          right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->Previous_Setpoint_Ankle;
+          //right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle;
+          right_leg->p_steps->Setpoint_Ankle = right_leg->sign * right_leg->Setpoint_Ankle;
           right_leg->activate_in_3_steps = 1;
           right_leg->num_3_steps = 0;
           right_leg->first_step = 1;
@@ -162,6 +166,7 @@ void receive_and_transmit()
           right_leg->Dorsi_Setpoint_Knee = abs(right_leg->Dorsi_Setpoint_Knee);
           //Recieved the large data chunk chopped into bytes, a roundabout way was needed
           right_leg->Setpoint_Knee_Pctrl = right_leg->Setpoint_Knee;
+          right_leg->Previous_Setpoint_Knee_Pctrl = right_leg->Previous_Setpoint_Knee;
           right_leg->p_steps->Setpoint_Knee = right_leg->sign * right_leg->Setpoint_Knee;
           right_leg->activate_in_3_steps = 1;
           right_leg->num_3_steps = 0;
@@ -573,7 +578,7 @@ void receive_and_transmit()
 
     case 'I':  // TN 5/9/19
       if (Flag_Ankle_Cfg == true)
-        *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
+        *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint_Ankle;
       if (Flag_Knee_Cfg == true)
         *left_leg->p_Setpoint_Knee = left_leg->p_steps->Setpoint_Knee;
       left_leg->p_steps->torque_adj = false;
@@ -581,7 +586,7 @@ void receive_and_transmit()
 
     case 'i':  // TN 5/9/19
       if (Flag_Ankle_Cfg == true)
-        *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
+        *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint_Ankle;
       if (Flag_Knee_Cfg == true)
         *right_leg->p_Setpoint_Knee = right_leg->p_steps->Setpoint_Knee;
       right_leg->p_steps->torque_adj = false;
@@ -675,8 +680,8 @@ void receive_and_transmit()
       FLAG_BALANCE = true;
       Old_Control_Mode = Control_Mode;
       Control_Mode = 2;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle;
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle;
       *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;   // TN 5/9/19
       *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_Knee;    // TN 5/9/19
       FLAG_BALANCE = true;
@@ -690,10 +695,10 @@ void receive_and_transmit()
       Control_Mode = Old_Control_Mode;
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
-      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint_Ankle;
+      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint_Ankle;
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle;
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle;
       *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;  // TN 5/9/19
       *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_Knee;   // TN 5/9/19
       FLAG_BALANCE = false;
@@ -770,14 +775,14 @@ void receive_and_transmit()
 
       if (flag_pivot == true) {  // TN 04/29/19
         Control_Mode = 3; // activate pivot PC // TN 04/29/19
-        *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
-        *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
+        *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
+        *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
       }
       if (flag_id == true) {// TN 04/29/19
         Control_Mode = 4; // activate ID PC // TN 04/29/19
 
-        *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
-        *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
+        *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
+        *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
         *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;  // TN 5/8/19
         *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_Knee;     // TN 5/8/19
       }
@@ -790,10 +795,10 @@ void receive_and_transmit()
       //FLAG_TOE_HEEL_SENSORS = false; // TN 5/8/19
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
-      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint_Ankle;
+      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint_Ankle;
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle;
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle;
       *right_leg->p_Setpoint_Knee = right_leg->p_steps->Setpoint_Knee;   // TN 5/8/19
       *left_leg->p_Setpoint_Knee = left_leg->p_steps->Setpoint_Knee;    // TN 5/8/19
       *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;    // TN 5/8/19
@@ -991,8 +996,8 @@ void receive_and_transmit()
 
     case '"':
       if (Flag_HLO) {
-        left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-        right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+        left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle;
+        right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle;
         left_leg->Previous_Dorsi_Setpoint_Ankle = left_leg->Dorsi_Setpoint_Ankle;
         right_leg->Previous_Dorsi_Setpoint_Ankle = right_leg->Dorsi_Setpoint_Ankle;
         receiveVals(8);
