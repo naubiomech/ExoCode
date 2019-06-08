@@ -747,7 +747,13 @@ void receive_and_transmit()
       flag_id = false; // TN 04/29/19
       flag_pivot = true; // TN 04/29/19
       if (Flag_Prop_Ctrl == true) // TN 04/29/19
+
         Control_Mode = 3;
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;  // TN 5/8/19
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_Knee;     // TN 5/8/19
+
       break;
 
     case 'c':
@@ -763,7 +769,13 @@ void receive_and_transmit()
       flag_id = true; // TN 04/29/19
       flag_pivot = false; // TN 04/29/19
       if (Flag_Prop_Ctrl == true) // TN 04/29/19
+
         Control_Mode = 4; // TN 04/29/19
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;  // TN 5/8/19
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_Knee;     // TN 5/8/19
+
       break;
 
     case 'l': // TN 04/29/19
@@ -773,19 +785,18 @@ void receive_and_transmit()
       OLD_FLAG_TOE_HEEL_SENSORS = FLAG_TOE_HEEL_SENSORS; // TN 5/8/19
       FLAG_TOE_HEEL_SENSORS = true; // TN 5/8/19
 
-      if (flag_pivot == true) {  // TN 04/29/19
+      if (flag_pivot == true)   // TN 04/29/19
         Control_Mode = 3; // activate pivot PC // TN 04/29/19
-        *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
-        *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
-      }
-      if (flag_id == true) {// TN 04/29/19
+
+
+      if (flag_id == true) // TN 04/29/19
         Control_Mode = 4; // activate ID PC // TN 04/29/19
 
-        *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
-        *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
-        *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;  // TN 5/8/19
-        *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_Knee;     // TN 5/8/19
-      }
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;  // TN 5/8/19
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_Knee;     // TN 5/8/19
+
       break;
 
 

@@ -404,23 +404,23 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     // Otherwise we need to calculate the time
 
     // Parameters for speed adaption
-    if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
-    {
-      p_steps_l->plant_time = millis(); // start the plantarflexion
-      p_steps_l->dorsi_time = millis() - (p_steps_l->dorsi_time); // calculate the dorsiflexion that has just finished
-
-      if (p_steps_l->dorsi_time <= step_time_length / 4) // if <50ms probably it is noise
-      {
-        p_steps_l->peak = 0;
-        p_steps_l->peak_Toe = 0;  // TN 5/8/19
-        p_steps_l->peak_Heel = 0;  // TN 5/8/19
-        p_steps_l->flag_start_plant = false;
-        //        Serial.println(" SPD ADJ dorsi time too short ");
-        return N3_l;
-      }
-
-      p_steps_l->flag_start_plant = true; // Parameters inizialized Start a step
-    }
+//    if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
+//    {
+//      p_steps_l->plant_time = millis(); // start the plantarflexion
+//      p_steps_l->dorsi_time = millis() - (p_steps_l->dorsi_time); // calculate the dorsiflexion that has just finished
+//
+//      if (p_steps_l->dorsi_time <= step_time_length / 4) // if <50ms probably it is noise
+//      {
+//        p_steps_l->peak = 0;
+//        p_steps_l->peak_Toe = 0;  // TN 5/8/19
+//        p_steps_l->peak_Heel = 0;  // TN 5/8/19
+//        p_steps_l->flag_start_plant = false;
+//        //        Serial.println(" SPD ADJ dorsi time too short ");
+//        return N3_l;
+//      }
+//
+//      p_steps_l->flag_start_plant = true; // Parameters inizialized Start a step
+//    }
 
 
 
@@ -460,6 +460,25 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       }
       return N3_l; // No modification in the shaping function which is disabled
     }
+
+  if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
+    {
+      p_steps_l->plant_time = millis(); // start the plantarflexion
+      p_steps_l->dorsi_time = millis() - (p_steps_l->dorsi_time); // calculate the dorsiflexion that has just finished
+
+      if (p_steps_l->dorsi_time <= step_time_length / 4) // if <50ms probably it is noise
+      {
+        p_steps_l->peak = 0;
+        p_steps_l->peak_Toe = 0;  // TN 5/8/19
+        p_steps_l->peak_Heel = 0;  // TN 5/8/19
+        p_steps_l->flag_start_plant = false;
+        //        Serial.println(" SPD ADJ dorsi time too short ");
+        return N3_l;
+      }
+
+      p_steps_l->flag_start_plant = true; // Parameters inizialized Start a step
+    }
+
 
   }
 
