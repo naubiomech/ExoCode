@@ -627,7 +627,7 @@ void receive_and_transmit()
 
     case '/':
       OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
-      FLAG_TWO_TOE_SENSORS = false;
+      //FLAG_TWO_TOE_SENSORS = false;
       FLAG_BIOFEEDBACK = true;
       right_leg->BIO_BASELINE_FLAG=false;
       break;
@@ -643,13 +643,12 @@ void receive_and_transmit()
 
     case 'u':
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&left_leg->BioFeedback_desired, &holdon, 8);
-      right_leg->BioFeedback_desired = left_leg->BioFeedback_desired;
+      memcpy(&treadmill_speed, &holdon, 8);
       break;
 
     case '*':
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&treadmill_speed,&holdon, 8); //YF
+      memcpy(&BF_scale,&holdon, 8); //YF
       break;
 
     // Optimization ------------------------------------------------
@@ -721,8 +720,8 @@ void receive_and_transmit()
       right_leg->Heel_Strike = 0;
       left_leg->Heel_Strike_Count = 0;
       right_leg->Heel_Strike_Count = 0;
-      left_leg->score=0;
-      right_leg->score=0;
+      //left_leg->score=0; //check if want to reset when taking baseline
+      //right_leg->score=0;
       break;
 
     case 'U':
