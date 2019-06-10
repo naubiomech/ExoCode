@@ -13,12 +13,8 @@ void state_machine(Leg* leg)
   if (FLAG_BALANCE) {
     State_Machine_Heel_Toe_Sensors_Balance(leg);
   } else {
-    if (FLAG_BIOFEEDBACK) {
-      State_Machine_Heel_Toe_Sensors_BioFeedback(leg);
-    } else {
-      State_Machine_Heel_Toe_Sensors(leg);
+       State_Machine_Two_Toe_Sensors(leg);
     }
-  }
 }
 
 
@@ -83,6 +79,9 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
           leg->state = 3;
           leg->state_count_13 = 0;
           leg->state_count_31 = 0;
+
+          takestridetime(leg);
+          
         }
       }
 
@@ -123,7 +122,7 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
 
           leg->state = 1;
           leg->state_count_31 = 0;
-          leg->state_count_13 = 0;
+//          leg->state_count_13 = 0;
         }
       }
   }//end switch
@@ -146,7 +145,8 @@ void State_Machine_Two_Toe_Sensors(Leg * leg) {
   }
 
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 1) {
-    leg->PID_Setpoint = 0;
+//    leg->PID_Setpoint = 0;
+    leg->PID_Setpoint = leg->New_PID_Setpoint;
   }
   else {
 
@@ -479,7 +479,7 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
           leg->state = 2;
           leg->state_count_12 = 0;
 
-          takestridetime(leg);
+          //takestridetime(leg);
         }
 
       }// end if heel sensor > threshold
