@@ -32,8 +32,8 @@ bool FLAG_PID_VALS = false;
 
 
 // Variables depending on the sensor placement that are used in the state machine
-bool FLAG_TWO_TOE_SENSORS = false;
-bool OLD_FLAG_TWO_TOE_SENSORS = FLAG_TWO_TOE_SENSORS;
+bool FLAG_ONE_TOE_SENSOR = false;
+bool OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
 
 //Variables and flags for Balance control
 bool FLAG_BALANCE = false;
@@ -86,3 +86,9 @@ double BF_scale=1;
 bool Flag_HLO = false;
 
 bool flag_motor_error_check = true;
+
+// Flags for Proportional Control // TN 04/29/2019
+
+bool Flag_Prop_Ctrl = false; // TN 04/29/2019
+bool flag_pivot = false; // TN 04/29/2019
+bool flag_id = false; // TN 04/29/2019

@@ -20,7 +20,7 @@
 // 6 steps = 10N
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
-#define VERSION 313
+#define VERSION 314
 #define BOARD_VERSION DUAL_BOARD
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
@@ -104,19 +104,12 @@ void callback()//executed every 2ms
 
   // if flag biofeedback is 1 update the step length of the biofeedback
   if (FLAG_BIOFEEDBACK) {
+    Freq = left_leg->Frequency;
 
     state_machine(left_leg);
     state_machine(right_leg);
     biofeedback_step_state(right_leg);
     biofeedback_step_state(left_leg);
-
-    if (left_leg->stridelength_target != 0 && right_leg->stridelength_target != 0) {
-      left_leg->stridelength_update_scale = left_leg->stridelength_update / left_leg->stridelength_target;
-      right_leg->stridelength_update_scale = right_leg->stridelength_update / right_leg->stridelength_target;
-    } else {
-      left_leg->stridelength_update_scale = 1;
-      right_leg->stridelength_update_scale = 1;
-    }
 
   }//end if(Flag_biofeedback)
 }// end callback
@@ -150,6 +143,27 @@ void loop()
 ////and a reference value (baseline), the Frequency of the sound is changed.
 //
 void biofeedback() {
+
+  if (right_leg->NO_Biofeedback && left_leg->NO_Biofeedback) {
+  } else {
+    if (left_leg->BioFeedback_Baseline_flag) {
+
+      state = digitalRead(LED_PIN);
+
+      if (state == HIGH) {
+        state = LOW;
+      } else {
+        state = HIGH;
+      }
+      digitalWrite(LED_PIN, state);
+    }
+    //
+    //
+    //    right_leg->start_time_Biofeedback = millis();
+    //    tone(A17, 500, 100);
+
+  }
+  return;
 }
 
 //----------------------------------------------------------------------------------
@@ -178,7 +192,7 @@ void calculate_leg_average(Leg* leg) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
   }
 
-  if (leg->TarrayPoint[dim] > 25 && abs(leg->Average_Trq - leg->TarrayPoint[dim]) < 0.05) //When torque sensor is unplugged we see the same values for several seconds
+  if (abs(leg->TarrayPoint[dim]) > 25 && abs(leg->Average_Trq - leg->TarrayPoint[dim]) < 0.1) //When torque sensor is unplugged we see the same values for several seconds
   {
     double old_L_state_L = leg->state;
     leg->state = 9;
@@ -198,16 +212,11 @@ void calculate_leg_average(Leg* leg) {
   leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
 
 
-  if (FLAG_TWO_TOE_SENSORS)
+  if (FLAG_ONE_TOE_SENSOR)
   {
     leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
     leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
-    if (Control_Mode == 3) {
-      leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
-    }
-    else if (Control_Mode == 4) {
-      leg->p_steps->curr_voltage = ((leg->FSR_Toe_Average * leg->Toe_Moment_Arm));// + (leg->FSR_Heel_Average * leg->Heel_Moment_Arm))/(leg->Toe_Moment_Arm + leg->Heel_Moment_Arm);//Sara's edition
-    }
+    leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
   }
   else {
     leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
@@ -255,10 +264,10 @@ void check_FSR_calibration() {
 
   // for the proportional control
   if (right_leg->FSR_baseline_FLAG) {
-    take_baseline(right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);
+    take_baseline(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);
   }
   if (left_leg->FSR_baseline_FLAG) {
-    take_baseline(left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
+    take_baseline(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
   }
 
 }
@@ -360,7 +369,6 @@ void rotate_motor() {
 
     right_leg->old_state = right_leg->state;
 
-
     int left_scaling_index = 0;
     int right_scaling_index = 0;
 
@@ -409,6 +417,7 @@ void rotate_motor() {
                                        right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle,
                                        right_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, right_leg->Prop_Gain,
                                        right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio);
+
   }// end if stream==1
 }
 

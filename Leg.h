@@ -56,7 +56,7 @@ struct Leg {
   // Auto_KF.h
   double ERR;
   double Max_Measured_Torque;
-  double max_KF = 1.5;
+  double max_KF = 2.0;  //GO 5/17/19
   double min_KF = 0.9;
   double MaxPropSetpoint;
   bool auto_KF_update = false;
@@ -114,6 +114,7 @@ struct Leg {
 
   double Setpoint_Ankle, Setpoint_Ankle_Pctrl;
   double Previous_Setpoint_Ankle = 0;
+  double Previous_Setpoint_Ankle_Pctrl = 0;
   double* p_Setpoint_Ankle = &Setpoint_Ankle;
   double* p_Setpoint_Ankle_Pctrl = &Setpoint_Ankle_Pctrl;
   double Setpoint_earlyStance = 0.25 * Setpoint_Ankle;
@@ -151,11 +152,11 @@ struct Leg {
   double New_PID_Setpoint = 0.0;
   double Old_PID_Setpoint = 0.0;
 
-  double N3 = 500;
+  double N3 = 200;
   double N2 = 4;
   double N1 = 4;
 
-  double old_N3 = 500;
+  double old_N3 = 200;
   double old_N2 = 4;
   double old_N1 = 4;
 

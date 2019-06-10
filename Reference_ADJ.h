@@ -10,7 +10,7 @@ void ref_step_adj(Leg* leg) {
       leg->first_step = 0;
     }
 
-    if ((leg->state == 3) && (leg->state_old == 1) && (leg->start_step == 0)) {
+    if ((leg->state == 3) && (leg->state_old == 1 || leg->state_old == 2) && (leg->start_step == 0)) { //GO 5/19/19
       leg->start_step = 1;
       leg->start_time = millis();
     }
