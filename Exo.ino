@@ -104,12 +104,19 @@ void callback()//executed every 2ms
 
   // if flag biofeedback is 1 update the step length of the biofeedback
   if (FLAG_BIOFEEDBACK) {
-    Freq = left_leg->Frequency;
 
     state_machine(left_leg);
     state_machine(right_leg);
     biofeedback_step_state(right_leg);
     biofeedback_step_state(left_leg);
+
+    if (left_leg->stridelength_target != 0 && right_leg->stridelength_target != 0) {
+      left_leg->stridelength_update_scale = left_leg->stridelength_update / left_leg->stridelength_target;
+      right_leg->stridelength_update_scale = right_leg->stridelength_update / right_leg->stridelength_target;
+    } else {
+      left_leg->stridelength_update_scale = 1;
+      right_leg->stridelength_update_scale = 1;
+    }
 
   }//end if(Flag_biofeedback)
 }// end callback
@@ -143,27 +150,6 @@ void loop()
 ////and a reference value (baseline), the Frequency of the sound is changed.
 //
 void biofeedback() {
-
-  if (right_leg->NO_Biofeedback && left_leg->NO_Biofeedback) {
-  } else {
-    if (left_leg->BioFeedback_Baseline_flag) {
-
-      state = digitalRead(LED_PIN);
-
-      if (state == HIGH) {
-        state = LOW;
-      } else {
-        state = HIGH;
-      }
-      digitalWrite(LED_PIN, state);
-    }
-    //
-    //
-    //    right_leg->start_time_Biofeedback = millis();
-    //    tone(A17, 500, 100);
-
-  }
-  return;
 }
 
 //----------------------------------------------------------------------------------
@@ -463,7 +449,7 @@ void reset_leg_starting_parameters(Leg* leg) {
   leg->first_step = 1;
   counter_msgs = 0;
   leg->Heel_Strike_Count = 0;
-  leg->score=0;
+  leg->score = 0;
   leg->Heel_Strike = 0;
   leg->NO_Biofeedback = true;
 }
