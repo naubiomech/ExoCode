@@ -90,6 +90,11 @@ void receive_and_transmit()
         right_leg->first_step = 1;
         right_leg->start_step = 0;
       }
+
+      break;
+
+    case 'f':
+
       break;
 
     case 'E':
