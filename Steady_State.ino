@@ -15,10 +15,10 @@ void set_2_zero_if_steady_state() {
       if (left_leg->store_N1 == 0) {
         left_leg->set_2_zero = 1;
         left_leg->store_N1 = 1;
-        left_leg->activate_in_3_steps = 1;
-        left_leg->num_3_steps = 0;
-        left_leg->first_step = 1;
-        left_leg->start_step = 0;
+        left_leg->activate_in_3_steps_Ankle = 1;
+        left_leg->num_3_steps_Ankle = 0;
+        left_leg->first_step_Ankle = 1;
+        left_leg->start_step_Ankle = 0;
       }
 
     } else {
@@ -42,11 +42,11 @@ void set_2_zero_if_steady_state() {
       if (right_leg->store_N1 == 0) {
         right_leg->set_2_zero = 1;
         right_leg->store_N1 = 1;
-        right_leg->activate_in_3_steps = 1;
-        right_leg->num_3_steps = 0;
+        right_leg->activate_in_3_steps_Ankle = 1;
+        right_leg->num_3_steps_Ankle = 0;
 
-        right_leg->first_step = 1;
-        right_leg->start_step = 0;
+        right_leg->first_step_Ankle = 1;
+        right_leg->start_step_Ankle = 0;
         right_leg->coef_in_3_steps_Pctrl = 0;
       }
     } else {

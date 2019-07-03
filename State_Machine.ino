@@ -37,7 +37,7 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
         leg->set_2_zero = 0;
         leg->One_time_set_2_zero = 1;
       }
-      else if (leg->p_steps->curr_voltage_Toe > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) //&& (leg->p_steps->curr_voltage > leg->fsr_percent_thresh_Heel * leg->fsr_Combined_peak_ref))
+      else if (leg->p_steps->curr_voltage_Toe > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) 
       {
         leg->state_count_13++;
         // if you're in the same state for more than state_counter_th it means that it is not noise
@@ -46,32 +46,26 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
           if (Control_Mode == 100) { //Increment set point for bang-bang GO - 5/19/19
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-            
 
-              leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
 
-            
+            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
+
+
 
             if (Flag_HLO)
 
-              leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps;
+              leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps_Ankle;
 
           }
 
           else if (Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) { //Increment the max set point for proportional control GO - 5/19/19
 
- //           leg->p_steps->Setpoint_Ankle = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
+            leg->p_steps->Setpoint_Ankle = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps_Ankle; //Increment when the new setpoint is higher than the old
 
             if (leg->p_steps->Setpoint_Ankle == 0) {
               leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
             }
             // TN 5/20/19
-//
-//            leg->p_steps->Setpoint_Knee = leg->Previous_Setpoint_Knee_Pctrl + (leg->Setpoint_Knee - leg->Previous_Setpoint_Knee_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
-//
-//            if (leg->p_steps->Setpoint_Knee == 0) {
-//              leg->Previous_Setpoint_Knee_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
-//            }
 
           }
           leg->state_old = leg->state;
@@ -88,14 +82,9 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
           if (leg->state_count_12 >= state_counter_th) {
             if (Control_Mode == 4) { //Increment the max set point for proportional control GO - 5/19/19
 
-//              leg->p_steps->Setpoint_Ankle = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
-//
-//              if (leg->p_steps->Setpoint_Ankle == 0) {
-//                leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
-//              }
-              // TN 5/20/19
 
-    //          leg->p_steps->Setpoint_Knee = leg->Previous_Setpoint_Knee_Pctrl + (leg->Setpoint_Knee - leg->Previous_Setpoint_Knee_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
+
+              leg->p_steps->Setpoint_Knee = leg->Previous_Setpoint_Knee_Pctrl + (leg->Setpoint_Knee - leg->Previous_Setpoint_Knee_Pctrl) * leg->coef_in_3_steps_Knee; //Increment when the new setpoint is higher than the old
 
               if (leg->p_steps->Setpoint_Knee == 0) {
                 leg->Previous_Setpoint_Knee_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
@@ -140,30 +129,26 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
           if (Control_Mode == 100) { //Increment set point for bang-bang GO - 5/19/19
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-            
-              leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
 
-            
+            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
-            if (Flag_HLO) 
 
-              leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps;
+
+            if (Flag_HLO)
+
+              leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps_Ankle;
 
           }
 
           else if (Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) { //Increment the max set point for proportional control GO - 5/19/19
 
-  //          leg->p_steps->Setpoint_Ankle = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
+            leg->p_steps->Setpoint_Ankle = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps_Ankle; //Increment when the new setpoint is higher than the old
 
             if (leg->p_steps->Setpoint_Ankle == 0) {
               leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
             }
             // TN 5/20/19
-//            leg->p_steps->Setpoint_Knee = leg->Previous_Setpoint_Knee_Pctrl + (leg->Setpoint_Knee - leg->Previous_Setpoint_Knee_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
-//
-//            if (leg->p_steps->Setpoint_Knee == 0) {
-//              leg->Previous_Setpoint_Knee_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
-//            }
+
           }
 
           leg->state_old = leg->state;
@@ -183,13 +168,13 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
           }
 
 
-          leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+          leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
 
 
 
 
-          leg->New_PID_Setpoint_Knee = leg->Previous_Dorsi_Setpoint_Knee + (leg->Dorsi_Setpoint_Knee - leg->Previous_Dorsi_Setpoint_Knee) * leg->coef_in_3_steps;
+          leg->New_PID_Setpoint_Knee = leg->Previous_Dorsi_Setpoint_Knee + (leg->Dorsi_Setpoint_Knee - leg->Previous_Dorsi_Setpoint_Knee) * leg->coef_in_3_steps_Knee;
 
 
 
@@ -246,12 +231,12 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
           }
 
 
-          leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+          leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
 
           // TN 5/9/19
 
-          leg->New_PID_Setpoint_Knee = leg->Previous_Dorsi_Setpoint_Knee + (leg->Dorsi_Setpoint_Knee - leg->Previous_Dorsi_Setpoint_Knee) * leg->coef_in_3_steps;
+          leg->New_PID_Setpoint_Knee = leg->Previous_Dorsi_Setpoint_Knee + (leg->Dorsi_Setpoint_Knee - leg->Previous_Dorsi_Setpoint_Knee) * leg->coef_in_3_steps_Knee;
 
 
           if (leg->New_PID_Setpoint == 0) { //GO 4/22/19
@@ -279,15 +264,8 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {  // TN 5/8/19
           if (leg->state_count_32 >= state_counter_th) {
 
             if (Control_Mode == 4) { //Increment the max set point for proportional control GO - 5/19/19
-//
-//              leg->p_steps->Setpoint_Ankle = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
-//
-//              if (leg->p_steps->Setpoint_Ankle == 0) {
-//                leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
-//              }
-              // TN 5/20/19
 
-//              leg->p_steps->Setpoint_Knee = leg->Previous_Setpoint_Knee_Pctrl + (leg->Setpoint_Knee - leg->Previous_Setpoint_Knee_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
+              leg->p_steps->Setpoint_Knee = leg->Previous_Setpoint_Knee_Pctrl + (leg->Setpoint_Knee - leg->Previous_Setpoint_Knee_Pctrl) * leg->coef_in_3_steps_Knee; //Increment when the new setpoint is higher than the old
 
               if (leg->p_steps->Setpoint_Knee == 0) {
                 leg->Previous_Setpoint_Knee_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
@@ -374,21 +352,21 @@ void State_Machine_Toe_Sensor(Leg * leg) {
 
           if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle) {
 
-            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           } else {
 
-            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           }
 
           if (Flag_HLO && (leg->Previous_T_Opt <= leg->T_Opt)) {
 
-            leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps;
+            leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps_Ankle;
 
           } else if (Flag_HLO && (leg->Previous_T_Opt > leg->T_Opt)) {
 
-            leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt) * leg->coef_in_3_steps;
+            leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt) * leg->coef_in_3_steps_Ankle;
 
           }
 
@@ -424,11 +402,11 @@ void State_Machine_Toe_Sensor(Leg * leg) {
 
           if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
 
-            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           } else {
 
-            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           }
 
@@ -501,17 +479,17 @@ void State_Machine_Heel_Toe_Sensors(Leg * leg) {
 
           if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle) {
 
-            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           } else {
 
-            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           }
 
           if (Flag_HLO && (leg->Previous_T_Opt <= leg->T_Opt)) {
 
-            leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps;
+            leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps_Ankle;
             Serial.print("Previous T Opt");
             Serial.print(leg->Previous_T_Opt);
             Serial.print("Current T Opt");
@@ -519,7 +497,7 @@ void State_Machine_Heel_Toe_Sensors(Leg * leg) {
 
           } else if (Flag_HLO && (leg->Previous_T_Opt > leg->T_Opt)) {
 
-            leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt) * leg->coef_in_3_steps;
+            leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt) * leg->coef_in_3_steps_Ankle;
             Serial.print("Previous T Opt");
             Serial.print(leg->Previous_T_Opt);
             Serial.print("Current T Opt");
@@ -559,11 +537,11 @@ void State_Machine_Heel_Toe_Sensors(Leg * leg) {
 
           if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
 
-            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           } else {
 
-            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           }
 
@@ -639,11 +617,11 @@ void State_Machine_Heel_Toe_Sensors_Balance(Leg * leg) {
 
           if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle) {
 
-            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           } else {
 
-            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           }
 
@@ -679,11 +657,11 @@ void State_Machine_Heel_Toe_Sensors_Balance(Leg * leg) {
 
           if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
 
-            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           } else {
 
-            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           }
 
@@ -764,11 +742,11 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
 
           if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle) {
 
-            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           } else {
 
-            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           }
 
@@ -814,11 +792,11 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
 
           if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle) {
 
-            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           } else {
 
-            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           }
 
@@ -862,11 +840,11 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
 
           if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
 
-            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           } else {
 
-            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           }
 
@@ -907,11 +885,11 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
 
           if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
 
-            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           } else {
 
-            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           }
 
@@ -932,11 +910,11 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
 
           if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) {
 
-            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           } else {
 
-            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps;
+            leg->New_PID_Setpoint = leg->Previous_Dorsi_Setpoint_Ankle - (leg->Previous_Dorsi_Setpoint_Ankle - leg->Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
 
           }
 

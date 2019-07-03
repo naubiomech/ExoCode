@@ -57,11 +57,11 @@ void receive_and_transmit()
           left_leg->Previous_Setpoint_Ankle = 0;
           left_leg->Dorsi_Setpoint_Ankle = 0;
           left_leg->Previous_Dorsi_Setpoint_Ankle = 0;
-          left_leg->coef_in_3_steps = 0;
-          left_leg->activate_in_3_steps = 1;
-          left_leg->first_step = 1;
-          left_leg->num_3_steps = 0;
-          left_leg->start_step = 0;
+          left_leg->coef_in_3_steps_Ankle = 0;
+          left_leg->activate_in_3_steps_Ankle = 1;
+          left_leg->first_step_Ankle = 1;
+          left_leg->num_3_steps_Ankle = 0;
+          left_leg->start_step_Ankle = 0;
         } else {
           left_leg->Setpoint_Ankle = abs(left_leg->Setpoint_Ankle);                     //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
           left_leg->Dorsi_Setpoint_Ankle = -abs(left_leg->Dorsi_Setpoint_Ankle);
@@ -69,10 +69,10 @@ void receive_and_transmit()
           left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->Previous_Setpoint_Ankle;
           left_leg->p_steps->Setpoint_Ankle = left_leg->sign * left_leg->Setpoint_Ankle;
           left_leg->Setpoint_Ankle_Pctrl = left_leg->Setpoint_Ankle;
-          left_leg->activate_in_3_steps = 1;
-          left_leg->num_3_steps = 0;
-          left_leg->first_step = 1;
-          left_leg->start_step = 0;
+          left_leg->activate_in_3_steps_Ankle = 1;
+          left_leg->num_3_steps_Ankle = 0;
+          left_leg->first_step_Ankle = 1;
+          left_leg->start_step_Ankle = 0;
         }
       }
       if (Flag_Knee_Cfg == true) {
@@ -87,21 +87,20 @@ void receive_and_transmit()
           left_leg->Previous_Setpoint_Knee = 0;
           left_leg->Dorsi_Setpoint_Knee = 0;
           left_leg->Previous_Dorsi_Setpoint_Knee = 0;
-          left_leg->coef_in_3_steps = 0;
-          left_leg->activate_in_3_steps = 1;
-          left_leg->first_step = 1;
-          left_leg->num_3_steps = 0;
-          left_leg->start_step = 0;
+          left_leg->coef_in_3_steps_Knee  = 0;
+          left_leg->activate_in_3_steps_Knee  = 1;
+          left_leg->first_step_Knee  = 1;
+          left_leg->num_3_steps_Knee  = 0;
+          left_leg->start_step_Knee  = 0;
         } else {
           left_leg->Setpoint_Knee = abs(left_leg->Setpoint_Knee);
           left_leg->Dorsi_Setpoint_Knee = -abs(left_leg->Dorsi_Setpoint_Knee);
           left_leg->Previous_Setpoint_Knee_Pctrl = left_leg->Previous_Setpoint_Knee;
-          left_leg->p_steps->Setpoint_Knee = left_leg->sign * left_leg->Setpoint_Knee;
           left_leg->Setpoint_Knee_Pctrl = left_leg->Setpoint_Knee;
-          left_leg->activate_in_3_steps = 1;
-          left_leg->num_3_steps = 0;
-          left_leg->first_step = 1;
-          left_leg->start_step = 0;
+          left_leg->activate_in_3_steps_Knee  = 1;
+          left_leg->num_3_steps_Knee  = 0;
+          left_leg->first_step_Knee  = 1;
+          left_leg->start_step_Knee  = 0;
         }
       }
       break;
@@ -120,11 +119,11 @@ void receive_and_transmit()
           right_leg->Dorsi_Setpoint_Ankle = 0;
           right_leg->Previous_Setpoint_Ankle = 0;
           right_leg->Previous_Dorsi_Setpoint_Ankle = 0;
-          right_leg->coef_in_3_steps = 0;
-          right_leg->activate_in_3_steps = 1;
-          right_leg->first_step = 1;
-          right_leg->num_3_steps = 0;
-          right_leg->start_step = 0;
+          right_leg->coef_in_3_steps_Ankle = 0;
+          right_leg->activate_in_3_steps_Ankle = 1;
+          right_leg->first_step_Ankle = 1;
+          right_leg->num_3_steps_Ankle = 0;
+          right_leg->start_step_Ankle = 0;
           Serial.println("Right Setpoint Negative, going to zero");
 
         } else {
@@ -134,12 +133,10 @@ void receive_and_transmit()
           //Recieved the large data chunk chopped into bytes, a roundabout way was needed
           right_leg->Setpoint_Ankle_Pctrl = right_leg->Setpoint_Ankle;
           right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->Previous_Setpoint_Ankle;
-          //right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle;
-          right_leg->p_steps->Setpoint_Ankle = right_leg->sign * right_leg->Setpoint_Ankle;
-          right_leg->activate_in_3_steps = 1;
-          right_leg->num_3_steps = 0;
-          right_leg->first_step = 1;
-          right_leg->start_step = 0;
+          right_leg->activate_in_3_steps_Ankle = 1;
+          right_leg->num_3_steps_Ankle = 0;
+          right_leg->first_step_Ankle = 1;
+          right_leg->start_step_Ankle = 0;
         }
       }
       if (Flag_Knee_Cfg == true) {
@@ -154,11 +151,11 @@ void receive_and_transmit()
           right_leg->Dorsi_Setpoint_Knee = 0;
           right_leg->Previous_Setpoint_Knee = 0;
           right_leg->Previous_Dorsi_Setpoint_Knee = 0;
-          right_leg->coef_in_3_steps = 0;
-          right_leg->activate_in_3_steps = 1;
-          right_leg->first_step = 1;
-          right_leg->num_3_steps = 0;
-          right_leg->start_step = 0;
+          right_leg->coef_in_3_steps_Knee = 0;
+          right_leg->activate_in_3_steps_Knee = 1;
+          right_leg->first_step_Knee = 1;
+          right_leg->num_3_steps_Knee = 0;
+          right_leg->start_step_Knee = 0;
           Serial.println("Right Knee Setpoint Negative, going to zero");
 
         } else {
@@ -167,11 +164,10 @@ void receive_and_transmit()
           //Recieved the large data chunk chopped into bytes, a roundabout way was needed
           right_leg->Setpoint_Knee_Pctrl = right_leg->Setpoint_Knee;
           right_leg->Previous_Setpoint_Knee_Pctrl = right_leg->Previous_Setpoint_Knee;
-          right_leg->p_steps->Setpoint_Knee = right_leg->sign * right_leg->Setpoint_Knee;
-          right_leg->activate_in_3_steps = 1;
-          right_leg->num_3_steps = 0;
-          right_leg->first_step = 1;
-          right_leg->start_step = 0;
+          right_leg->activate_in_3_steps_Knee = 1;
+          right_leg->num_3_steps_Knee = 0;
+          right_leg->first_step_Knee = 1;
+          right_leg->start_step_Knee = 0;
         }
       }
       break;
@@ -994,15 +990,15 @@ void receive_and_transmit()
         //Serial.print(" , ");
         //Serial.println(left_leg->T_Opt_p);
 
-        left_leg->activate_in_3_steps = 1;
-        left_leg->num_3_steps = 0;
-        left_leg->first_step = 1;
-        left_leg->start_step = 0;
+        left_leg->activate_in_3_steps_Ankle = 1;
+        left_leg->num_3_steps_Ankle = 0;
+        left_leg->first_step_Ankle = 1;
+        left_leg->start_step_Ankle = 0;
 
-        right_leg->activate_in_3_steps = 1;
-        right_leg->num_3_steps = 0;
-        right_leg->first_step = 1;
-        right_leg->start_step = 0;
+        right_leg->activate_in_3_steps_Ankle = 1;
+        right_leg->num_3_steps_Ankle = 0;
+        right_leg->first_step_Ankle = 1;
+        right_leg->start_step_Ankle = 0;
       }
 
     case '"':
@@ -1014,14 +1010,14 @@ void receive_and_transmit()
         receiveVals(8);
         memcpy(&left_leg->Setpoint_Ankle, holdOnPoint, 8); //HLO proportional control setpoint
         right_leg->Setpoint_Ankle = -left_leg->Setpoint_Ankle;
-        left_leg->activate_in_3_steps = 1;
-        left_leg->num_3_steps = 0;
-        left_leg->first_step = 1;
-        left_leg->start_step = 0;
-        right_leg->activate_in_3_steps = 1;
-        right_leg->num_3_steps = 0;
-        right_leg->first_step = 1;
-        right_leg->start_step = 0;
+        left_leg->activate_in_3_steps_Ankle = 1;
+        left_leg->num_3_steps_Ankle = 0;
+        left_leg->first_step_Ankle = 1;
+        left_leg->start_step_Ankle = 0;
+        right_leg->activate_in_3_steps_Ankle = 1;
+        right_leg->num_3_steps_Ankle = 0;
+        right_leg->first_step_Ankle = 1;
+        right_leg->start_step_Ankle = 0;
         left_leg->FSR_baseline_FLAG = 1;                      //Retake the baseline every new setpoint
         right_leg->FSR_baseline_FLAG = 1;
         break;

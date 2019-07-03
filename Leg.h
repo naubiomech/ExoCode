@@ -179,12 +179,18 @@ struct Leg {
   double flag_1 = 0;
   double time_old_state;
 
-  double activate_in_3_steps = 0;
-  double first_step = 1;
-  double coef_in_3_steps = 0;
-  double start_step = 0;
-  double num_3_steps = 0;
+  double activate_in_3_steps_Ankle = 0;
+  double first_step_Ankle = 1;
+  double coef_in_3_steps_Ankle = 0;
+  double start_step_Ankle = 0;
+  double num_3_steps_Ankle = 0;
   double store_3sec_N1 = N1; // Not sure if this one is needed
+
+  double activate_in_3_steps_Knee = 0;
+  double first_step_Knee = 1;
+  double coef_in_3_steps_Knee = 0;
+  double start_step_Knee = 0;
+  double num_3_steps_Knee = 0;
 
   double coef_in_3_steps_Pctrl = 0;
   double store_N1 = 0;
@@ -234,7 +240,8 @@ struct Leg {
   double state_1_start_time = 0;
   double start_from_1 = 0;
   double start_from_3 = 0;
-  double start_time = 0;
+  double start_time_Ankle = 0;  // TN 7/3/19
+  double start_time_Knee = 0;  // TN 7/3/19
   double state_3_stop_time = 0;
   double state_3_duration = 0;
 

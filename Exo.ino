@@ -383,10 +383,15 @@ void rotate_motor() {
     //    Serial.println(flag_id);
     //    Serial.println("flag_pivot");
     //    Serial.println(flag_pivot);
-    Serial.println("Control Mode");
-    Serial.println(Control_Mode);
+    //    Serial.println("Control Mode");
+    //    Serial.println(Control_Mode);
     //
     //
+
+    //    Serial.println("right_leg->coef_in_3_steps_Ankle");
+    //    Serial.println(right_leg->coef_in_3_steps_Ankle);
+    //    Serial.println("right_leg->num_3_steps_Ankle");
+    //    Serial.println(right_leg->num_3_steps_Ankle);
 
     if ((left_leg->state == 3) && (left_leg->old_state == 1)) {
       left_leg->state_3_start_time = millis();
@@ -506,14 +511,19 @@ void reset_leg_starting_parameters(Leg* leg) {
   leg->N1 = N1;
 
   leg->p_steps->perc_l = 0.5;
-  leg->activate_in_3_steps = 1;
+  leg->activate_in_3_steps_Ankle = 1;
+  leg->activate_in_3_steps_Knee = 1;  // TN 7/3/19
   leg->Previous_Setpoint_Ankle = 0;
   leg->Previous_Setpoint_Knee = 0;  // TN 5/8/19
 
-  leg->coef_in_3_steps = 0;
-  leg->num_3_steps = 0;
+  leg->coef_in_3_steps_Ankle = 0;
+  leg->num_3_steps_Ankle = 0;
 
-  leg->first_step = 1;
+  leg->coef_in_3_steps_Knee = 0;
+  leg->num_3_steps_Knee = 0;
+
+  leg->first_step_Ankle = 1;
+  leg->first_step_Knee = 1;
   counter_msgs = 0;
   leg->Heel_Strike_Count = 0;
   leg->score = 0;
