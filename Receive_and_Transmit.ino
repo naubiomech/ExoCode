@@ -277,14 +277,14 @@ void receive_and_transmit()
       break;
 
 
-    case'`':
+    case'`':  // TN 7/3/19
       *(data_to_send_point) = left_leg->KF;
-      send_command_message('`', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
+      *(data_to_send_point + 1) = right_leg->KF;
+      send_command_message('`', data_to_send_point, 2);     //MATLAB is expecting to recieve the Torque Parameters
       break;
 
     case'~':
-      *(data_to_send_point) = right_leg->KF;
-      send_command_message('~', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
+
       break;
 
     case')':
