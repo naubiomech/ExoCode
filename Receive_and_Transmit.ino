@@ -18,39 +18,44 @@ void receive_and_transmit()
       break;
 
 
-    case 'D':      // TN 5/9/19                                   //if MATLAB sent the character D
+    case 'D':        // TN 7/3/19
       if (Flag_Ankle_Cfg == true) {
         *(data_to_send_point) = left_leg->Setpoint_Ankle;      //MATLAB is expecting to recieve the Torque Parameters
         *(data_to_send_point + 1) = left_leg->Dorsi_Setpoint_Ankle;
+        *(data_to_send_point + 2) = right_leg->Setpoint_Ankle;
+        *(data_to_send_point + 3) = right_leg->Dorsi_Setpoint_Ankle;
+        send_command_message('D', data_to_send_point, 4);
       }
       if (Flag_Knee_Cfg == true) {
         *(data_to_send_point) = left_leg->Setpoint_Knee;      //MATLAB is expecting to recieve the Torque Parameters
         *(data_to_send_point + 1) = left_leg->Dorsi_Setpoint_Knee;
+        *(data_to_send_point + 2) = right_leg->Setpoint_Knee;
+        *(data_to_send_point + 3) = right_leg->Dorsi_Setpoint_Knee;
+        send_command_message('D', data_to_send_point, 4);
       }
-      send_command_message('D', data_to_send_point, 2);
+
       break;
 
-    case 'd':  // TN 5/9/19
-      if (Flag_Ankle_Cfg == true) {
-        *(data_to_send_point) = right_leg->Setpoint_Ankle;
-        *(data_to_send_point + 1) = right_leg->Dorsi_Setpoint_Ankle;
-      }
-      if (Flag_Knee_Cfg == true) {
-        *(data_to_send_point) = right_leg->Setpoint_Knee;
-        *(data_to_send_point + 1) = right_leg->Dorsi_Setpoint_Knee;
-      }
-      send_command_message('d', data_to_send_point, 2);     //MATLAB is expecting to receive the Torque Parameters
+    case 'd':
+
       break;
+
+
+
 
     case 'F':
-
-      // TN 5/9/19
+      receiveVals(32);
+      // TN 7/3/19
       if (Flag_Ankle_Cfg == true) {
-        receiveVals(16);                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
+
         left_leg->Previous_Setpoint_Ankle = left_leg->Setpoint_Ankle;
         left_leg->Previous_Dorsi_Setpoint_Ankle = left_leg->Dorsi_Setpoint_Ankle;
+        right_leg->Previous_Setpoint_Ankle = right_leg->Setpoint_Ankle;
+        right_leg->Previous_Dorsi_Setpoint_Ankle = right_leg->Dorsi_Setpoint_Ankle;
         memcpy(&left_leg->Setpoint_Ankle, holdOnPoint, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
         memcpy(&left_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
+        memcpy(&right_leg->Setpoint_Ankle, holdOnPoint + 16, 8);
+        memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 24, 8);
 
         if (left_leg->Setpoint_Ankle < 0) {
           left_leg->Setpoint_Ankle = 0;
@@ -67,20 +72,46 @@ void receive_and_transmit()
           left_leg->Dorsi_Setpoint_Ankle = -abs(left_leg->Dorsi_Setpoint_Ankle);
           //Recieved the large data chunk chopped into bytes, a roundabout way was needed
           left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->Previous_Setpoint_Ankle;
-          left_leg->p_steps->Setpoint_Ankle = left_leg->sign * left_leg->Setpoint_Ankle;
           left_leg->Setpoint_Ankle_Pctrl = left_leg->Setpoint_Ankle;
           left_leg->activate_in_3_steps_Ankle = 1;
           left_leg->num_3_steps_Ankle = 0;
           left_leg->first_step_Ankle = 1;
           left_leg->start_step_Ankle = 0;
         }
+
+        if (right_leg->Setpoint_Ankle < 0) {
+          right_leg->Setpoint_Ankle = 0;
+          right_leg->Dorsi_Setpoint_Ankle = 0;
+          right_leg->Previous_Setpoint_Ankle = 0;
+          right_leg->Previous_Dorsi_Setpoint_Ankle = 0;
+          right_leg->coef_in_3_steps_Ankle = 0;
+          right_leg->activate_in_3_steps_Ankle = 1;
+          right_leg->first_step_Ankle = 1;
+          right_leg->num_3_steps_Ankle = 0;
+          right_leg->start_step_Ankle = 0;
+          Serial.println("Right Setpoint Negative, going to zero");
+        } else {
+          right_leg->Setpoint_Ankle = -abs(right_leg->Setpoint_Ankle);                    //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
+          right_leg->Dorsi_Setpoint_Ankle = abs(right_leg->Dorsi_Setpoint_Ankle);
+          //Recieved the large data chunk chopped into bytes, a roundabout way was needed
+          right_leg->Setpoint_Ankle_Pctrl = right_leg->Setpoint_Ankle;
+          right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->Previous_Setpoint_Ankle;
+          right_leg->activate_in_3_steps_Ankle = 1;
+          right_leg->num_3_steps_Ankle = 0;
+          right_leg->first_step_Ankle = 1;
+          right_leg->start_step_Ankle = 0;
+        }
       }
       if (Flag_Knee_Cfg == true) {
-        receiveVals(16);                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
+        //MATLAB is only sending 1 value, a double, which is 8 bytes
         left_leg->Previous_Setpoint_Knee = left_leg->Setpoint_Knee;
         left_leg->Previous_Dorsi_Setpoint_Knee = left_leg->Dorsi_Setpoint_Knee;
+        right_leg->Previous_Setpoint_Knee = right_leg->Setpoint_Knee;
+        right_leg->Previous_Dorsi_Setpoint_Knee = right_leg->Dorsi_Setpoint_Knee;
         memcpy(&left_leg->Setpoint_Knee, holdOnPoint, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
         memcpy(&left_leg->Dorsi_Setpoint_Knee, holdOnPoint + 8, 8);
+        memcpy(&right_leg->Setpoint_Knee, holdOnPoint + 16, 8);
+        memcpy(&right_leg->Dorsi_Setpoint_Knee, holdOnPoint + 24, 8);
 
         if (left_leg->Setpoint_Knee < 0) {
           left_leg->Setpoint_Knee = 0;
@@ -102,49 +133,6 @@ void receive_and_transmit()
           left_leg->first_step_Knee  = 1;
           left_leg->start_step_Knee  = 0;
         }
-      }
-      break;
-
-    case 'f':
-      // TN 5/9/19
-      if (Flag_Ankle_Cfg == true) {
-        receiveVals(16);                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
-        right_leg->Previous_Setpoint_Ankle = right_leg->Setpoint_Ankle;
-        right_leg->Previous_Dorsi_Setpoint_Ankle = right_leg->Dorsi_Setpoint_Ankle;
-        memcpy(&right_leg->Setpoint_Ankle, holdOnPoint, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-        memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
-        if (right_leg->Setpoint_Ankle < 0) {
-
-          right_leg->Setpoint_Ankle = 0;
-          right_leg->Dorsi_Setpoint_Ankle = 0;
-          right_leg->Previous_Setpoint_Ankle = 0;
-          right_leg->Previous_Dorsi_Setpoint_Ankle = 0;
-          right_leg->coef_in_3_steps_Ankle = 0;
-          right_leg->activate_in_3_steps_Ankle = 1;
-          right_leg->first_step_Ankle = 1;
-          right_leg->num_3_steps_Ankle = 0;
-          right_leg->start_step_Ankle = 0;
-          Serial.println("Right Setpoint Negative, going to zero");
-
-        } else {
-
-          right_leg->Setpoint_Ankle = -abs(right_leg->Setpoint_Ankle);                    //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
-          right_leg->Dorsi_Setpoint_Ankle = abs(right_leg->Dorsi_Setpoint_Ankle);
-          //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-          right_leg->Setpoint_Ankle_Pctrl = right_leg->Setpoint_Ankle;
-          right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->Previous_Setpoint_Ankle;
-          right_leg->activate_in_3_steps_Ankle = 1;
-          right_leg->num_3_steps_Ankle = 0;
-          right_leg->first_step_Ankle = 1;
-          right_leg->start_step_Ankle = 0;
-        }
-      }
-      if (Flag_Knee_Cfg == true) {
-        receiveVals(16);                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
-        right_leg->Previous_Setpoint_Knee = right_leg->Setpoint_Knee;
-        right_leg->Previous_Dorsi_Setpoint_Knee = right_leg->Dorsi_Setpoint_Knee;
-        memcpy(&right_leg->Setpoint_Knee, holdOnPoint, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-        memcpy(&right_leg->Dorsi_Setpoint_Knee, holdOnPoint + 8, 8);
 
         if (right_leg->Setpoint_Knee < 0) {
           right_leg->Setpoint_Knee = 0;
@@ -157,7 +145,6 @@ void receive_and_transmit()
           right_leg->num_3_steps_Knee = 0;
           right_leg->start_step_Knee = 0;
           Serial.println("Right Knee Setpoint Negative, going to zero");
-
         } else {
           right_leg->Setpoint_Knee = -abs(right_leg->Setpoint_Knee);                    //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
           right_leg->Dorsi_Setpoint_Knee = abs(right_leg->Dorsi_Setpoint_Knee);
@@ -170,6 +157,10 @@ void receive_and_transmit()
           right_leg->start_step_Knee = 0;
         }
       }
+      break;
+
+    case 'f':
+
       break;
 
     case 'E':
@@ -196,30 +187,24 @@ void receive_and_transmit()
         *(data_to_send_point) = left_leg->kp;
         *(data_to_send_point + 1) = left_leg->kd;
         *(data_to_send_point + 2) = left_leg->ki;
-        send_command_message('K', data_to_send_point, 3);     //MATLAB is expecting to recieve the Torque Parameters
+        *(data_to_send_point + 3) = right_leg->kp;
+        *(data_to_send_point + 4) = right_leg->kd;
+        *(data_to_send_point + 5) = right_leg->ki;
+        send_command_message('K', data_to_send_point, 6);     //MATLAB is expecting to recieve the Torque Parameters
       }
       if (Flag_Knee_Cfg) {
         *(data_to_send_point) = left_leg->kp_Knee;
         *(data_to_send_point + 1) = left_leg->kd_Knee;
         *(data_to_send_point + 2) = left_leg->ki_Knee;
-        send_command_message('K', data_to_send_point, 3);     //MATLAB is expecting to recieve the Torque Parameters
+        *(data_to_send_point + 3) = right_leg->kp_Knee;
+        *(data_to_send_point + 4) = right_leg->kd_Knee;
+        *(data_to_send_point + 5) = right_leg->ki_Knee;
+        send_command_message('K', data_to_send_point, 6);     //MATLAB is expecting to recieve the Torque Parameters
       }
       break;
 
     case 'k':
-      // TN 5/9/19
-      if (Flag_Ankle_Cfg) {
-        *(data_to_send_point) = right_leg->kp;
-        *(data_to_send_point + 1) = right_leg->kd;
-        *(data_to_send_point + 2) = right_leg->ki;
-        send_command_message('k', data_to_send_point, 3);     //MATLAB is expecting to recieve the Torque Parameters
-      }
-      if (Flag_Knee_Cfg) {
-        *(data_to_send_point) = right_leg->kp_Knee;
-        *(data_to_send_point + 1) = right_leg->kd_Knee;
-        *(data_to_send_point + 2) = right_leg->ki_Knee;
-        send_command_message('k', data_to_send_point, 3);     //MATLAB is expecting to recieve the Torque Parameters
-      }
+
       break;
 
     case 'L':
@@ -231,41 +216,33 @@ void receive_and_transmit()
     case 'M':
       // TN 5/9/19
       if (Flag_Ankle_Cfg) {
-        receiveVals(24);                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
+        receiveVals(48);                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
         //MATLAB Sent Kp, then Kd, then Ki.
         memcpy(&left_leg->kp, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
         memcpy(&left_leg->kd, holdOnPoint + 8, 8);                              //memory space pointed to by the variable kp_L.  Essentially a roundabout way to change a variable value, but since the bluetooth
         memcpy(&left_leg->ki, holdOnPoint + 16, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
+        memcpy(&right_leg->kp, holdOnPoint + 24, 8);                                //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+        memcpy(&right_leg->kd, holdOnPoint + 32, 8);                              //memory space pointed to by the variable kp_R.  Essentially a roundabout way to change a variable value, but since the bluetooth
+        memcpy(&right_leg->ki, holdOnPoint + 40, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
         left_leg->pid.SetTunings(left_leg->kp, left_leg->ki, left_leg->kd);
+        right_leg->pid.SetTunings(right_leg->kp, right_leg->ki, right_leg->kd);
       }
       if (Flag_Knee_Cfg) {
-        receiveVals(24);                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
+        receiveVals(48);                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
         //MATLAB Sent Kp, then Kd, then Ki.
         memcpy(&left_leg->kp_Knee, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
         memcpy(&left_leg->kd_Knee, holdOnPoint + 8, 8);                              //memory space pointed to by the variable kp_L.  Essentially a roundabout way to change a variable value, but since the bluetooth
         memcpy(&left_leg->ki_Knee, holdOnPoint + 16, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
+        memcpy(&right_leg->kp_Knee, holdOnPoint + 24, 8);                                //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+        memcpy(&right_leg->kd_Knee, holdOnPoint + 32, 8);                              //memory space pointed to by the variable kp_R.  Essentially a roundabout way to change a variable value, but since the bluetooth
+        memcpy(&right_leg->ki_Knee, holdOnPoint + 40, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
         left_leg->pid_Knee.SetTunings(left_leg->kp_Knee, left_leg->ki_Knee, left_leg->kd_Knee);   // TN 5/13/19
+        right_leg->pid_Knee.SetTunings(right_leg->kp_Knee, right_leg->ki_Knee, right_leg->kd_Knee);   // TN 5/13/19
       }
       break;
 
     case 'm':
-      // TN 5/9/19
-      if (Flag_Ankle_Cfg) {
-        receiveVals(24);                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
-        //MATLAB Sent Kp, then Kd, then Ki.
-        memcpy(&right_leg->kp, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-        memcpy(&right_leg->kd, holdOnPoint + 8, 8);                              //memory space pointed to by the variable kp_R.  Essentially a roundabout way to change a variable value, but since the bluetooth
-        memcpy(&right_leg->ki, holdOnPoint + 16, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-        right_leg->pid.SetTunings(right_leg->kp, right_leg->ki, right_leg->kd);
-      }
-      if (Flag_Knee_Cfg) {
-        receiveVals(24);                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
-        //MATLAB Sent Kp, then Kd, then Ki.
-        memcpy(&right_leg->kp_Knee, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-        memcpy(&right_leg->kd_Knee, holdOnPoint + 8, 8);                              //memory space pointed to by the variable kp_R.  Essentially a roundabout way to change a variable value, but since the bluetooth
-        memcpy(&right_leg->ki_Knee, holdOnPoint + 16, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-        right_leg->pid_Knee.SetTunings(right_leg->kp_Knee, right_leg->ki_Knee, right_leg->kd_Knee);   // TN 5/13/19
-      }
+
       break;
 
     case 'N':
@@ -395,49 +372,38 @@ void receive_and_transmit()
       break;
 
     case '_':
-      // TN 5/9/19
+      // TN 7/3/19
       if (Flag_Ankle_Cfg) {
-        receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-        memcpy(&left_leg->KF, &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+        receiveVals(16);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+        memcpy(&left_leg->KF, holdOnPoint, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+        memcpy(&right_leg->KF, holdOnPoint + 8, 8);
       }
       if (Flag_Knee_Cfg) {
-        receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-        memcpy(&left_leg->KF_Knee, &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+        receiveVals(16);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+        memcpy(&left_leg->KF_Knee, holdOnPoint, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+        memcpy(&right_leg->KF_Knee, holdOnPoint + 8, 8);
       }
       break;
 
     case '-':
-      // TN 5/9/19
-      if (Flag_Ankle_Cfg) {
-        receiveVals(8);
-        memcpy(&right_leg->KF, &holdon, 8);
-      }
-      if (Flag_Knee_Cfg) {
-        receiveVals(8);
-        memcpy(&right_leg->KF_Knee, &holdon, 8);
-      }
+
       break;
 
     case'`':   // TN 5/9/19
       if (Flag_Ankle_Cfg) {
         *(data_to_send_point) = left_leg->KF;
-        send_command_message('`', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
+        *(data_to_send_point + 1) = right_leg->KF;
+        send_command_message('`', data_to_send_point, 2);     //MATLAB is expecting to recieve the Torque Parameters
       }
       if (Flag_Knee_Cfg) {
         *(data_to_send_point) = left_leg->KF_Knee;
-        send_command_message('`', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
+        *(data_to_send_point + 1) = right_leg->KF_Knee;
+        send_command_message('`', data_to_send_point, 2);     //MATLAB is expecting to recieve the Torque Parameters
       }
       break;
 
     case'~':   // TN 5/9/19
-      if (Flag_Ankle_Cfg) {
-        *(data_to_send_point) = right_leg->KF;
-        send_command_message('~', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
-      }
-      if (Flag_Knee_Cfg) {
-        *(data_to_send_point) = right_leg->KF_Knee;
-        send_command_message('~', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
-      }
+
       break;
 
     case')':
@@ -473,77 +439,79 @@ void receive_and_transmit()
 
       break;
 
-    case 'P':
-      Flag_Ankle_Cfg = true;
-      Flag_Knee_Cfg = false;
-
+    case 'P': //GO 5/13/19
+      left_leg->torque_calibration_value = read_torque_bias(left_leg->torque_address);
+      right_leg->torque_calibration_value = read_torque_bias(right_leg->torque_address);
       break;
 
-    case 'p':
-      Flag_Knee_Cfg = true;
-      Flag_Ankle_Cfg = false;
-
+    case 'p': //GO 5/13/19
+      write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
+      write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
       break;
+
+
 
     case 'O':
       break;
 
 
     case 'o':
+      Old_Control_Mode = Control_Mode;
+      Control_Mode = 100;
+
+      right_leg->p_steps->torque_adj = false;
+      left_leg->p_steps->torque_adj = false;
+      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint_Ankle;
+      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint_Ankle;
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle;
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle;
       break;
 
-    case 'Q':  // TN 5/9/19
+    case 'Q':  // TN 7/3/19
       if (Flag_Ankle_Cfg == true) {
         *(data_to_send_point) = left_leg->fsr_percent_thresh_Toe;
-        send_command_message('Q', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
+        *(data_to_send_point + 1) = right_leg->fsr_percent_thresh_Toe;
+        send_command_message('Q', data_to_send_point, 2);     //MATLAB is expecting to recieve the Torque Parameters
       }
       if (Flag_Knee_Cfg == true) {
         *(data_to_send_point) = left_leg->fsr_percent_thresh_Heel;
-        send_command_message('Q', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
+        *(data_to_send_point + 1) = right_leg->fsr_percent_thresh_Heel;
+        send_command_message('Q', data_to_send_point, 2);     //MATLAB is expecting to recieve the Torque Parameters
       }
       break;
 
     case 'q':  // TN 5/9/19
-      if (Flag_Ankle_Cfg == true) {
-        *(data_to_send_point) = right_leg->fsr_percent_thresh_Toe;
-        send_command_message('q', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
-      }
-      if (Flag_Knee_Cfg == true) {
-        *(data_to_send_point) = right_leg->fsr_percent_thresh_Heel;
-        send_command_message('q', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
-      }
+
       break;
 
     case 'R':   // TN 5/9/19
       if (Flag_Ankle_Cfg == true) {
-        receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-        memcpy(&left_leg->fsr_percent_thresh_Toe, &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+        receiveVals(16);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+        memcpy(&left_leg->fsr_percent_thresh_Toe, holdOnPoint, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+        memcpy(&right_leg->fsr_percent_thresh_Toe, holdOnPoint + 8, 8);
         left_leg->p_steps->fsr_percent_thresh_Toe = left_leg->fsr_percent_thresh_Toe;
-      }
-      if (Flag_Knee_Cfg == true) {
-        receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-        memcpy(&left_leg->fsr_percent_thresh_Heel, &holdon, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-        left_leg->p_steps->fsr_percent_thresh_Heel = left_leg->fsr_percent_thresh_Heel;
-      }
-      break;
-
-    case 'r':   // TN 5/9/19
-      if (Flag_Ankle_Cfg == true) {
-        receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-        memcpy(&right_leg->fsr_percent_thresh_Toe, &holdon, 8);
         right_leg->p_steps->fsr_percent_thresh_Toe = right_leg->fsr_percent_thresh_Toe;
       }
       if (Flag_Knee_Cfg == true) {
-        receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-        memcpy(&right_leg->fsr_percent_thresh_Heel, &holdon, 8);
+        receiveVals(16);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+        memcpy(&left_leg->fsr_percent_thresh_Heel, holdOnPoint, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+        memcpy(&right_leg->fsr_percent_thresh_Heel, holdOnPoint + 8, 8);
+        left_leg->p_steps->fsr_percent_thresh_Heel = left_leg->fsr_percent_thresh_Heel;
         right_leg->p_steps->fsr_percent_thresh_Heel = right_leg->fsr_percent_thresh_Heel;
       }
       break;
 
-    case 'S':
+    case 'r':   // TN 5/9/19
+
       break;
 
-    case's':
+    case 'S':   // TN 7/3/19
+
+      break;
+
+
+    case 's':  // TN 7/3/19
+
       break;
 
     case 'C':
@@ -572,20 +540,18 @@ void receive_and_transmit()
       right_leg->N3 = N3;
       break;
 
-    case 'I':  // TN 5/9/19
+    case 'I':  // TN 7/3/19
       if (Flag_Ankle_Cfg == true)
         *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint_Ankle;
+      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint_Ankle;
       if (Flag_Knee_Cfg == true)
         *left_leg->p_Setpoint_Knee = left_leg->p_steps->Setpoint_Knee;
+      *right_leg->p_Setpoint_Knee = right_leg->p_steps->Setpoint_Knee;
+      right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
       break;
 
-    case 'i':  // TN 5/9/19
-      if (Flag_Ankle_Cfg == true)
-        *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint_Ankle;
-      if (Flag_Knee_Cfg == true)
-        *right_leg->p_Setpoint_Knee = right_leg->p_steps->Setpoint_Knee;
-      right_leg->p_steps->torque_adj = false;
+    case 'i':
       break;
 
     case '!':  // TN 5/9/19
@@ -637,36 +603,39 @@ void receive_and_transmit()
       right_leg->sign = 1;
       break;
 
-    case '[': // Receive Right Gain from GUI   // TN 5/9/19
-      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      if (Flag_Ankle_Cfg == true)
-        memcpy(&right_leg->Prop_Gain, &holdon, 8);
-      if (Flag_Knee_Cfg == true)
-        memcpy(&right_leg->Prop_Gain_Knee, &holdon, 8);
+    case '[': // Receive Right Gain from GUI   // TN 7/3/19
+      Flag_Ankle_Cfg = true;
+      Flag_Knee_Cfg = false;
       break;
 
-    case ']': // Send Right Gain to GUI  // TN 5/9/19
-      if (Flag_Ankle_Cfg == true)
-        *(data_to_send_point) = right_leg->Prop_Gain;
-      if (Flag_Knee_Cfg == true)
-        *(data_to_send_point) = right_leg->Prop_Gain_Knee;
-      send_command_message(']', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
+    case ']': // TN 7/3/19
+      Flag_Knee_Cfg = true;
+      Flag_Ankle_Cfg = false;
       break;
 
     case '{': // Receive Left Gain from GUI  // TN 5/9/19
-      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      if (Flag_Ankle_Cfg == true)
-        memcpy(&left_leg->Prop_Gain, &holdon, 8);
-      if (Flag_Knee_Cfg == true)
-        memcpy(&left_leg->Prop_Gain_Knee, &holdon, 8);
+      receiveVals(16);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      if (Flag_Ankle_Cfg == true) {
+        memcpy(&left_leg->Prop_Gain, holdOnPoint, 8);
+        memcpy(&right_leg->Prop_Gain, holdOnPoint + 8, 8);
+      }
+      if (Flag_Knee_Cfg == true) {
+        memcpy(&left_leg->Prop_Gain_Knee, holdOnPoint, 8);
+        memcpy(&right_leg->Prop_Gain_Knee, holdOnPoint + 8, 8);
+      }
       break;
 
     case '}': // Send Left Gain to GUI  // TN 5/9/19
-      if (Flag_Ankle_Cfg == true)
+
+      if (Flag_Ankle_Cfg == true) {
         *(data_to_send_point) = left_leg->Prop_Gain;
-      if (Flag_Knee_Cfg == true)
+        *(data_to_send_point + 1) = right_leg->Prop_Gain;
+      }
+      if (Flag_Knee_Cfg == true) {
         *(data_to_send_point) = left_leg->Prop_Gain_Knee;
-      send_command_message('}', data_to_send_point, 1);     //MATLAB is expecting to recieve the Torque Parameters
+        *(data_to_send_point + 1) = right_leg->Prop_Gain_Knee;
+      }
+      send_command_message('}', data_to_send_point, 2);     //MATLAB is expecting to recieve the Torque Parameters
       break;
 
     case '+':
@@ -701,7 +670,7 @@ void receive_and_transmit()
       break;
 
 
-    case '.':  // TN 5/9/19
+    case '.':  // TN 7/3/19
       flag_auto_KF = 1;
       if (Flag_Ankle_Cfg == true) {
         left_leg->KF = 1;
@@ -1055,61 +1024,25 @@ void receive_and_transmit()
 
 
     case 'e':
-
-      bluetooth.print('S');
-      bluetooth.print('P');
-      bluetooth.print(',');
-      if (FLAG_TOE_HEEL_SENSORS == true)   // TN 5/8/19
+      if (FLAG_TOE_HEEL_SENSORS == true) {
+        bluetooth.print('S');
+        bluetooth.print('P');
+        bluetooth.print(',');
         bluetooth.print(left_leg->p_steps->plant_peak_mean_Toe);
-      else
-        bluetooth.print(left_leg->p_steps->plant_peak_mean);
-      bluetooth.print(',');
-
-      if (FLAG_TOE_HEEL_SENSORS == true)
+        bluetooth.print(',');
         bluetooth.print(right_leg->p_steps->plant_peak_mean_Toe);
-      else
-        bluetooth.print(right_leg->p_steps->plant_peak_mean);
+        bluetooth.print(',');
+        bluetooth.print(left_leg->p_steps->plant_peak_mean_Heel);
+        bluetooth.print(',');
+        bluetooth.print(right_leg->p_steps->plant_peak_mean_Heel);
+        bluetooth.print(',');
+        bluetooth.print(left_leg->torque_calibration_value);
+        bluetooth.print(',');
+        bluetooth.print(right_leg->torque_calibration_value);
+        bluetooth.print(',');
+        bluetooth.println('Z');
+      }
 
-      bluetooth.print(',');
-      bluetooth.print(left_leg->Curr_Combined);
-      bluetooth.print(',');
-      bluetooth.print(right_leg->Curr_Combined);
-      bluetooth.print(',');
-      bluetooth.print(left_leg->fsr_Combined_peak_ref);
-      bluetooth.print(',');
-      bluetooth.print(right_leg->fsr_Combined_peak_ref);
-      bluetooth.print(',');
-      bluetooth.print(left_leg->fsr_Toe_peak_ref);
-      bluetooth.print(',');
-      bluetooth.print(right_leg->fsr_Toe_peak_ref);
-      bluetooth.print(',');
-      bluetooth.print(left_leg->fsr_Heel_peak_ref);
-      bluetooth.print(',');
-      bluetooth.print(right_leg->fsr_Heel_peak_ref);
-      bluetooth.print(',');
-      bluetooth.print(left_leg->torque_calibration_value);
-      bluetooth.print(',');
-      bluetooth.print(right_leg->torque_calibration_value);
-      bluetooth.print(',');
-      bluetooth.println('Z');
-
-
-      //      *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
-      //      *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
-      //      send_command_message('P', data_to_send_point, 2);
-
-      //      Serial.println(left_leg->p_steps->plant_peak_mean);
-      //      Serial.println(right_leg->p_steps->plant_peak_mean);
-      //      Serial.println(left_leg->Curr_Combined);
-      //      Serial.println(right_leg->Curr_Combined);
-      //      Serial.println(left_leg->fsr_Combined_peak_ref);
-      //      Serial.println(right_leg->fsr_Combined_peak_ref);
-      //      Serial.println(left_leg->fsr_Toe_peak_ref);
-      //      Serial.println(right_leg->fsr_Toe_peak_ref);
-      //      Serial.println(left_leg->fsr_Heel_peak_ref);
-      //      Serial.println(right_leg->fsr_Heel_peak_ref);
-      //      Serial.println(left_leg->torque_calibration_value);
-      //      Serial.println(right_leg->torque_calibration_value);
 
 
 
@@ -1118,66 +1051,17 @@ void receive_and_transmit()
 
     case 'g':
 
-      receiveVals(96);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      if (FLAG_TOE_HEEL_SENSORS == true)
+      receiveVals(48);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      if (FLAG_TOE_HEEL_SENSORS == true) {
         memcpy(&left_leg->p_steps->plant_peak_mean_temp_Toe, holdOnPoint, 8);
-      else
-        memcpy(&left_leg->p_steps->plant_peak_mean_temp, holdOnPoint, 8);              // send an old value of plant_peak_mean to teensy  // TN 04-26-2019
-      if (FLAG_TOE_HEEL_SENSORS == true)   // TN 5/8/19
         memcpy(&right_leg->p_steps->plant_peak_mean_temp_Toe, holdOnPoint + 8, 8);//added
-      else
-        memcpy(&right_leg->p_steps->plant_peak_mean_temp, holdOnPoint + 8, 8);//added          // send an old value of plant_peak_mean to teensy  // TN 04-26-2019
-      //delay(10);
-      //receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&left_leg->Curr_Combined, holdOnPoint + 16, 8);
-      //      delay(10);
-      //      receiveVals(8);
-      memcpy(&right_leg->Curr_Combined, holdOnPoint + 24, 8);//added
-      //      delay(10);
-      //      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&left_leg->fsr_Combined_peak_ref, holdOnPoint + 32, 8);
-      //      delay(10);
-      //      receiveVals(8);
-      memcpy(&right_leg->fsr_Combined_peak_ref, holdOnPoint + 40, 8);//added
-      //      delay(10);
-      //      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&left_leg->fsr_Toe_peak_ref, holdOnPoint + 48, 8);
-      //      delay(10);
-      //      receiveVals(8);
-      memcpy(&right_leg->fsr_Toe_peak_ref, holdOnPoint + 56, 8);//added
-      //      delay(10);
-      //      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&left_leg->fsr_Heel_peak_ref, holdOnPoint + 64, 8);
-      //      delay(10);
-      //      receiveVals(8);
-      memcpy(&right_leg->fsr_Heel_peak_ref, holdOnPoint + 72, 8);//added
-      //      delay(10);
-      //      receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&left_leg->torque_calibration_value, holdOnPoint + 80, 8);
-      //      delay(10);
-      //      receiveVals(8);
-      memcpy(&right_leg->torque_calibration_value, holdOnPoint + 88, 8);//added
 
+        memcpy(&left_leg->p_steps->plant_peak_mean_temp_Heel, holdOnPoint + 16, 8);             // send an old value of plant_peak_mean to teensy  // TN 04-26-2019
+        memcpy(&right_leg->p_steps->plant_peak_mean_temp_Heel, holdOnPoint + 24, 8);//added          // send an old value of plant_peak_mean to teensy  // TN 04-26-2019
 
-      Serial.println("Old left_leg->p_steps->plant_peak_mean_temp");
-      Serial.println(left_leg->p_steps->plant_peak_mean_temp);
-      Serial.println("Old right_leg->p_steps->plant_peak_mean_temp");
-      if (FLAG_TOE_HEEL_SENSORS == true)  // TN 5/8/19
-        Serial.println(right_leg->p_steps->plant_peak_mean_temp_Toe);
-      else
-        Serial.println(right_leg->p_steps->plant_peak_mean_temp);
-
-      Serial.println(left_leg->Curr_Combined);
-      Serial.println(right_leg->Curr_Combined);
-      Serial.println(left_leg->fsr_Combined_peak_ref);
-      Serial.println(right_leg->fsr_Combined_peak_ref);
-      Serial.println(left_leg->fsr_Toe_peak_ref);
-      Serial.println(right_leg->fsr_Toe_peak_ref);
-      Serial.println(left_leg->fsr_Heel_peak_ref);
-      Serial.println(right_leg->fsr_Heel_peak_ref);
-      Serial.println(left_leg->torque_calibration_value);
-      Serial.println(right_leg->torque_calibration_value);
-
+        memcpy(&left_leg->torque_calibration_value, holdOnPoint + 32, 8);
+        memcpy(&right_leg->torque_calibration_value, holdOnPoint + 40, 8);//added
+      }
 
       break;
 

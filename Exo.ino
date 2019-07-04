@@ -368,10 +368,8 @@ void rotate_motor() {
     //    Serial.println(right_leg->PID_Setpoint_Knee);
     //    Serial.println("right_leg->Setpoint_Knee_Pctrl");
     //    Serial.println(right_leg->Setpoint_Knee_Pctrl);
-    //    Serial.println("right_leg->Setpoint_Ankle");
-    //    Serial.println(right_leg->Setpoint_Ankle);
-    //    Serial.println("right_leg->Setpoint_Knee");
-    //    Serial.println(right_leg->Setpoint_Knee);
+
+
     //
     //
     //    Serial.println("FLAG_TOE_HEEL_SENSORS");
