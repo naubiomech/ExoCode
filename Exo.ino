@@ -401,7 +401,10 @@ void rotate_motor() {
     }
 
 
-
+    Serial.println("right_leg->coef_in_3_steps");
+    Serial.println(right_leg->coef_in_3_steps);
+    Serial.println("right_leg->num_3_steps");
+    Serial.println(right_leg->num_3_steps);
 
 
     if (Control_Mode == 2) {}
