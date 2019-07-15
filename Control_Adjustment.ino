@@ -201,8 +201,11 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     if (R_state_l == 3 && (R_state_old_l == 2 ||  R_state_old_l == 1))
     {
       if (Control_Mode_l == 3) { // JOINT MOMENT CONTROL also known as pivot proportional control while taking the baseline
-
-        *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
+        // TN 7/15/19
+        if (p_steps_l->plant_peak_mean == 0)
+          *p_FSR_Ratio = 0;
+        else
+          *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
         if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
           (*p_Max_FSR_Ratio) = *p_FSR_Ratio; // update the max fsr Ratio
 
@@ -230,7 +233,11 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
         // TN 5/8/19
         //Ankle Control Setpoint
-        *p_FSR_Ratio_Toe = fabs(p_steps_l->curr_voltage_Toe / p_steps_l->plant_peak_mean_Toe);
+        // TN 7/15/19
+        if (p_steps_l->plant_peak_mean_Toe == 0)
+          *p_FSR_Ratio_Toe = 0;
+        else
+          *p_FSR_Ratio_Toe = fabs(p_steps_l->curr_voltage_Toe / p_steps_l->plant_peak_mean_Toe);
         if (*p_FSR_Ratio_Toe > (*p_Max_FSR_Ratio_Toe))
           (*p_Max_FSR_Ratio_Toe) = *p_FSR_Ratio_Toe; // update the max fsr Ratio of Toe
 
@@ -264,7 +271,11 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     if (R_state_l == 2 && R_state_old_l == 1) {
       if (Control_Mode_l == 4) {
         //Knee Control Setpoint  // TN 5/8/19
-        *p_FSR_Ratio_Heel = fabs(p_steps_l->curr_voltage_Heel / p_steps_l->plant_peak_mean_Heel);
+        // TN 7/15/19
+        if (p_steps_l->plant_peak_mean_Heel == 0)
+          *p_FSR_Ratio_Heel = 0;
+        else
+          *p_FSR_Ratio_Heel = fabs(p_steps_l->curr_voltage_Heel / p_steps_l->plant_peak_mean_Heel);
         if (*p_FSR_Ratio_Heel > (*p_Max_FSR_Ratio_Heel))
           (*p_Max_FSR_Ratio_Heel) = *p_FSR_Ratio_Heel; // update the max fsr Ratio of Heel
 
@@ -322,8 +333,11 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
     if (p_steps_l->curr_voltage > p_steps_l->peak)
       p_steps_l->peak =  p_steps_l->curr_voltage;
-
-    *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
+    // TN 7/15/19
+    if (p_steps_l->plant_peak_mean == 0)
+      *p_FSR_Ratio = 0;
+    else
+      *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
 
 
     if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
@@ -333,8 +347,11 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
     if (p_steps_l->curr_voltage_Toe > p_steps_l->peak_Toe)
       p_steps_l->peak_Toe =  p_steps_l->curr_voltage_Toe;
-
-    *p_FSR_Ratio_Toe = fabs(p_steps_l->curr_voltage_Toe / p_steps_l->plant_peak_mean_Toe);
+    // TN 7/15/19
+    if (p_steps_l->plant_peak_mean_Toe == 0)
+      *p_FSR_Ratio_Toe = 0;
+    else
+      *p_FSR_Ratio_Toe = fabs(p_steps_l->curr_voltage_Toe / p_steps_l->plant_peak_mean_Toe);
 
     if (*p_FSR_Ratio_Toe > (*p_Max_FSR_Ratio_Toe))
       (*p_Max_FSR_Ratio_Toe) = *p_FSR_Ratio_Toe;
@@ -342,7 +359,11 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     if (p_steps_l->curr_voltage_Heel > p_steps_l->peak_Heel)
       p_steps_l->peak_Heel =  p_steps_l->curr_voltage_Heel;
 
-    *p_FSR_Ratio_Heel = fabs(p_steps_l->curr_voltage_Heel / p_steps_l->plant_peak_mean_Heel);
+    // TN 7/15/19
+    if (p_steps_l->plant_peak_mean_Heel == 0)
+      *p_FSR_Ratio_Heel = 0;
+    else
+      *p_FSR_Ratio_Heel = fabs(p_steps_l->curr_voltage_Heel / p_steps_l->plant_peak_mean_Heel);
 
     if (*p_FSR_Ratio_Heel > (*p_Max_FSR_Ratio_Heel))
       (*p_Max_FSR_Ratio_Heel) = *p_FSR_Ratio_Heel;
@@ -404,23 +425,23 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     // Otherwise we need to calculate the time
 
     // Parameters for speed adaption
-//    if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
-//    {
-//      p_steps_l->plant_time = millis(); // start the plantarflexion
-//      p_steps_l->dorsi_time = millis() - (p_steps_l->dorsi_time); // calculate the dorsiflexion that has just finished
-//
-//      if (p_steps_l->dorsi_time <= step_time_length / 4) // if <50ms probably it is noise
-//      {
-//        p_steps_l->peak = 0;
-//        p_steps_l->peak_Toe = 0;  // TN 5/8/19
-//        p_steps_l->peak_Heel = 0;  // TN 5/8/19
-//        p_steps_l->flag_start_plant = false;
-//        //        Serial.println(" SPD ADJ dorsi time too short ");
-//        return N3_l;
-//      }
-//
-//      p_steps_l->flag_start_plant = true; // Parameters inizialized Start a step
-//    }
+    //    if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
+    //    {
+    //      p_steps_l->plant_time = millis(); // start the plantarflexion
+    //      p_steps_l->dorsi_time = millis() - (p_steps_l->dorsi_time); // calculate the dorsiflexion that has just finished
+    //
+    //      if (p_steps_l->dorsi_time <= step_time_length / 4) // if <50ms probably it is noise
+    //      {
+    //        p_steps_l->peak = 0;
+    //        p_steps_l->peak_Toe = 0;  // TN 5/8/19
+    //        p_steps_l->peak_Heel = 0;  // TN 5/8/19
+    //        p_steps_l->flag_start_plant = false;
+    //        //        Serial.println(" SPD ADJ dorsi time too short ");
+    //        return N3_l;
+    //      }
+    //
+    //      p_steps_l->flag_start_plant = true; // Parameters inizialized Start a step
+    //    }
 
 
 
@@ -432,8 +453,11 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
     if (p_steps_l->curr_voltage_Heel > p_steps_l->peak_Heel)
       p_steps_l->peak_Heel =  p_steps_l->curr_voltage_Heel;
-
-    *p_FSR_Ratio_Heel = fabs(p_steps_l->curr_voltage_Heel / p_steps_l->plant_peak_mean_Heel);
+    // TN 7/15/19
+    if (p_steps_l->plant_peak_mean_Heel == 0)
+      *p_FSR_Ratio_Heel = 0;
+    else
+      *p_FSR_Ratio_Heel = fabs(p_steps_l->curr_voltage_Heel / p_steps_l->plant_peak_mean_Heel);
 
     if (*p_FSR_Ratio_Heel > (*p_Max_FSR_Ratio_Heel))
       (*p_Max_FSR_Ratio_Heel) = *p_FSR_Ratio_Heel;
@@ -461,7 +485,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       return N3_l; // No modification in the shaping function which is disabled
     }
 
-  if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
+    if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
     {
       p_steps_l->plant_time = millis(); // start the plantarflexion
       p_steps_l->dorsi_time = millis() - (p_steps_l->dorsi_time); // calculate the dorsiflexion that has just finished
