@@ -114,7 +114,7 @@ struct Leg {
   double baseline_value_Heel;  // TN 5/9/19
 
   // PID_and_Ctrl_Parameters.h
-  double torque_calibration_value = 0;
+  double torque_calibration_value_Ankle = 0;
   double torque_calibration_value_Knee = 0;   // TN 5/9/19
   double T_act;
   int Vol, Vol_Knee;

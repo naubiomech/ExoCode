@@ -177,8 +177,8 @@ void receive_and_transmit()
 
     case 'H':
       torque_calibration();
-      write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
-      write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
+      write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value_Ankle);
+      write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value_Ankle);
       break;
 
     case 'K':
@@ -255,8 +255,8 @@ void receive_and_transmit()
     case '<':
       if ((check_torque_bias(left_leg->torque_address)) && (check_torque_bias(right_leg->torque_address)))
       {
-        left_leg->torque_calibration_value = read_torque_bias(left_leg->torque_address);
-        right_leg->torque_calibration_value = read_torque_bias(right_leg->torque_address);
+        left_leg->torque_calibration_value_Ankle = read_torque_bias(left_leg->torque_address);
+        right_leg->torque_calibration_value_Ankle = read_torque_bias(right_leg->torque_address);
         left_leg->Tarray[3] = {0};
         right_leg->Tarray[3] = {0};
         *(data_to_send_point) = 1;
@@ -440,13 +440,13 @@ void receive_and_transmit()
       break;
 
     case 'P': //GO 5/13/19
-      left_leg->torque_calibration_value = read_torque_bias(left_leg->torque_address);
-      right_leg->torque_calibration_value = read_torque_bias(right_leg->torque_address);
+      left_leg->torque_calibration_value_Ankle = read_torque_bias(left_leg->torque_address);
+      right_leg->torque_calibration_value_Ankle = read_torque_bias(right_leg->torque_address);
       break;
 
     case 'p': //GO 5/13/19
-      write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
-      write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
+      write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value_Ankle);
+      write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value_Ankle);
       break;
 
 
@@ -577,8 +577,8 @@ void receive_and_transmit()
           write_baseline(right_leg->baseline_address_Heel, right_leg->baseline_value_Heel);
         }
 
-        write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
-        write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
+        write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value_Ankle);
+        write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value_Ankle);
       }//end if
       break;
 
@@ -1024,24 +1024,28 @@ void receive_and_transmit()
 
 
     case 'e':
-      if (FLAG_TOE_HEEL_SENSORS == true) {
-        bluetooth.print('S');
-        bluetooth.print('P');
-        bluetooth.print(',');
-        bluetooth.print(left_leg->p_steps->plant_peak_mean_Toe);
-        bluetooth.print(',');
-        bluetooth.print(right_leg->p_steps->plant_peak_mean_Toe);
-        bluetooth.print(',');
-        bluetooth.print(left_leg->p_steps->plant_peak_mean_Heel);
-        bluetooth.print(',');
-        bluetooth.print(right_leg->p_steps->plant_peak_mean_Heel);
-        bluetooth.print(',');
-        bluetooth.print(left_leg->torque_calibration_value);
-        bluetooth.print(',');
-        bluetooth.print(right_leg->torque_calibration_value);
-        bluetooth.print(',');
-        bluetooth.println('Z');
-      }
+
+      bluetooth.print('S');
+      bluetooth.print('P');
+      bluetooth.print(',');
+      bluetooth.print(left_leg->p_steps->plant_peak_mean_Toe);
+      bluetooth.print(',');
+      bluetooth.print(right_leg->p_steps->plant_peak_mean_Toe);
+      bluetooth.print(',');
+      bluetooth.print(left_leg->p_steps->plant_peak_mean_Heel);
+      bluetooth.print(',');
+      bluetooth.print(right_leg->p_steps->plant_peak_mean_Heel);
+      bluetooth.print(',');
+      bluetooth.print(left_leg->torque_calibration_value_Ankle);
+      bluetooth.print(',');
+      bluetooth.print(right_leg->torque_calibration_value_Ankle);
+      bluetooth.print(',');
+      bluetooth.print(left_leg->torque_calibration_value_Knee);
+      bluetooth.print(',');
+      bluetooth.print(right_leg->torque_calibration_value_Knee);
+      bluetooth.print(',');
+      bluetooth.println('Z');
+
 
 
 
@@ -1051,7 +1055,7 @@ void receive_and_transmit()
 
     case 'g':
 
-      receiveVals(48);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
+      receiveVals(64);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       if (FLAG_TOE_HEEL_SENSORS == true) {
         memcpy(&left_leg->p_steps->plant_peak_mean_temp_Toe, holdOnPoint, 8);
         memcpy(&right_leg->p_steps->plant_peak_mean_temp_Toe, holdOnPoint + 8, 8);//added
@@ -1059,8 +1063,10 @@ void receive_and_transmit()
         memcpy(&left_leg->p_steps->plant_peak_mean_temp_Heel, holdOnPoint + 16, 8);             // send an old value of plant_peak_mean to teensy  // TN 04-26-2019
         memcpy(&right_leg->p_steps->plant_peak_mean_temp_Heel, holdOnPoint + 24, 8);//added          // send an old value of plant_peak_mean to teensy  // TN 04-26-2019
 
-        memcpy(&left_leg->torque_calibration_value, holdOnPoint + 32, 8);
-        memcpy(&right_leg->torque_calibration_value, holdOnPoint + 40, 8);//added
+        memcpy(&left_leg->torque_calibration_value_Ankle, holdOnPoint + 32, 8);
+        memcpy(&right_leg->torque_calibration_value_Ankle, holdOnPoint + 40, 8);//added
+        memcpy(&left_leg->torque_calibration_value_Knee, holdOnPoint + 48, 8);               // TN 7/15/19
+        memcpy(&right_leg->torque_calibration_value_Knee, holdOnPoint + 54, 8);//added            // TN 7/15/19
       }
 
       break;

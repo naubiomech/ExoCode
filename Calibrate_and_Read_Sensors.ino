@@ -4,8 +4,8 @@ void torque_calibration()
 {
   long torque_calibration_value_time = millis();
   int torq_cal_count = 0;
-  left_leg->torque_calibration_value = 0;
-  right_leg->torque_calibration_value = 0;
+  left_leg->torque_calibration_value_Ankle = 0;
+  right_leg->torque_calibration_value_Ankle = 0;
 
   // TN 5/17/19
   left_leg->torque_calibration_value_Knee = 0;
@@ -13,8 +13,8 @@ void torque_calibration()
 
   while (millis() - torque_calibration_value_time < 1000)
   { //Calibrates the LL for a total time of 1 second,
-    left_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
-    right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
+    left_leg->torque_calibration_value_Ankle += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
+    right_leg->torque_calibration_value_Ankle += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
     // TN 5/17/19
     left_leg->torque_calibration_value_Knee += analogRead(TORQUE_SENSOR_LEFT_KNEE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
     right_leg->torque_calibration_value_Knee += analogRead(TORQUE_SENSOR_RIGHT_KNEE_PIN) * (3.3 / 4096);
@@ -22,8 +22,8 @@ void torque_calibration()
     torq_cal_count ++;                                                         //Increments count
   }
 
-  left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
-  right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
+  left_leg->torque_calibration_value_Ankle = left_leg->torque_calibration_value_Ankle / torq_cal_count;                       // Averages torque over a second
+  right_leg->torque_calibration_value_Ankle = right_leg->torque_calibration_value_Ankle / torq_cal_count;                       // Averages torque over a second
 
   // TN 5/17/19
 
@@ -111,7 +111,7 @@ void FSR_calibration()
 double get_torq(Leg* leg) {
   // TN 5/9/19
 
-  double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value);
+  double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value_Ankle);
   return -Torq;//neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 
 }
