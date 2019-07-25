@@ -55,7 +55,7 @@ void receive_and_transmit()
         left_leg->Setpoint_Ankle = abs(left_leg->Setpoint_Ankle);                     //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
         left_leg->Dorsi_Setpoint_Ankle = -abs(left_leg->Dorsi_Setpoint_Ankle);
         //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-        left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+        left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->Previous_Setpoint_Ankle;  // TN 7/25/19
         left_leg->Setpoint_Ankle_Pctrl = left_leg->Setpoint_Ankle;
         left_leg->activate_in_3_steps = 1;
         left_leg->num_3_steps = 0;
