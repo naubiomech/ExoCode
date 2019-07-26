@@ -52,7 +52,7 @@ int PID_sample_time = 1;                                             //PID opera
 
 // ===== Memory Addrss Parameters =====
 //To store in memory. These are the address of the EEPROM of the Teensy
-int address_params = 54;
+int address_params = 72;   // TN 7/25/19
 int flag_save_EEPROM = 0;
 
 // ===== Calibrate and read Parameters =====

@@ -110,7 +110,7 @@ struct Leg {
   int baseline_address;
   double baseline_value, baseline_value_Toe;
 
-  int baseline_address_Heel;  // TN 5/9/19
+  //int baseline_address_Heel;  // TN 5/9/19
   double baseline_value_Heel;  // TN 5/9/19
 
   // PID_and_Ctrl_Parameters.h

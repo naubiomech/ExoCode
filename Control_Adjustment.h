@@ -35,14 +35,14 @@ typedef struct {
   double fsr_percent_thresh_Toe = 0.1;
   double fsr_percent_thresh_Heel = 0.1; // TN 5/9/19
   double plant_peak_mean;
-  double plant_peak_mean_Toe;
-  double plant_peak_mean_Heel;
+  double plant_peak_mean_Toe = 0;
+  double plant_peak_mean_Heel = 0;
   double four_step_plant_peak[n_step_baseline] = {0};
   double four_step_plant_peak_Toe[n_step_baseline] = {0};
   double four_step_plant_peak_Heel[n_step_baseline] = {0};
   double plant_peak_mean_temp;
-  double plant_peak_mean_temp_Toe;
-  double plant_peak_mean_temp_Heel;
+  double plant_peak_mean_temp_Toe = 0;
+  double plant_peak_mean_temp_Heel = 0;
   double peak;
   double peak_Toe;
   double peak_Heel;

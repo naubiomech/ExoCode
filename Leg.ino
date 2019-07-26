@@ -33,7 +33,7 @@ void initialize_left_leg(Leg* left_leg) {
   left_leg->fsr_sense_Heel = FSR_SENSE_LEFT_HEEL_PIN;
   left_leg->fsr_sense_Toe = FSR_SENSE_LEFT_TOE_PIN;
   left_leg->torque_address = 0;
-  left_leg->address_FSR = 18;
+  left_leg->address_FSR = 36;  // TN 7/25/19
   left_leg->p_steps = &val_L;
   left_leg->torque_sensor_ankle_pin = TORQUE_SENSOR_LEFT_ANKLE_PIN;
   left_leg->torque_sensor_knee_pin = TORQUE_SENSOR_LEFT_KNEE_PIN;  // TN 5/17/19
@@ -58,14 +58,14 @@ void initialize_right_leg(Leg* right_leg) {
   right_leg->pin_err_Knee = MOTOR_ERROR_RIGHT_KNEE_PIN;  // TN 5/17/19
   right_leg->fsr_sense_Heel = FSR_SENSE_RIGHT_HEEL_PIN;
   right_leg->fsr_sense_Toe = FSR_SENSE_RIGHT_TOE_PIN;
-  right_leg->torque_address = 9;
-  right_leg->address_FSR = 36;
+  right_leg->torque_address = 18;  // TN 7/25/19
+  right_leg->address_FSR = 54;   // TN 7/25/19
   right_leg->p_steps = &val_R;
   right_leg->torque_sensor_ankle_pin = TORQUE_SENSOR_RIGHT_ANKLE_PIN;
   right_leg->torque_sensor_knee_pin = TORQUE_SENSOR_RIGHT_KNEE_PIN;   // TN 5/17/19
   right_leg->motor_ankle_pin = MOTOR_RIGHT_ANKLE_PIN;
   right_leg->motor_knee_pin = MOTOR_RIGHT_KNEE_PIN;    // TN 5/17/19
-  right_leg->baseline_address = address_params + 105 + 5 + 9;
+  right_leg->baseline_address = address_params + 105 + 5 + 18;  // TN 7/25/19
 
 
 

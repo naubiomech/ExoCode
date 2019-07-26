@@ -178,7 +178,9 @@ void receive_and_transmit()
     case 'H':
       torque_calibration();
       write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value_Ankle);
+      write_torque_bias(left_leg->torque_address + sizeof(double) + 1, left_leg->torque_calibration_value_Knee);  // TN 7/25/19
       write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value_Ankle);
+      write_torque_bias(right_leg->torque_address + sizeof(double) + 1, right_leg->torque_calibration_value_Knee);   // TN 7/25/19
       break;
 
     case 'K':
@@ -253,10 +255,13 @@ void receive_and_transmit()
       break;
 
     case '<':
-      if ((check_torque_bias(left_leg->torque_address)) && (check_torque_bias(right_leg->torque_address)))
+      if ((check_torque_bias(left_leg->torque_address)) && (check_torque_bias(right_leg->torque_address)) &&
+          ((check_torque_bias(left_leg->torque_address + sizeof(double) + 1))) && (check_torque_bias(right_leg->torque_address + sizeof(double) + 1)))  // Tn 7/25/19
       {
         left_leg->torque_calibration_value_Ankle = read_torque_bias(left_leg->torque_address);
+        left_leg->torque_calibration_value_Knee = read_torque_bias(left_leg->torque_address + sizeof(double) + 1);  // TN 7/25/19
         right_leg->torque_calibration_value_Ankle = read_torque_bias(right_leg->torque_address);
+        right_leg->torque_calibration_value_Knee = read_torque_bias(right_leg->torque_address + sizeof(double) + 1); // TN 7/25/19
         left_leg->Tarray[3] = {0};
         right_leg->Tarray[3] = {0};
         *(data_to_send_point) = 1;
@@ -268,16 +273,16 @@ void receive_and_transmit()
       if (((check_FSR_values(left_leg->address_FSR)) && (check_FSR_values(left_leg->address_FSR + sizeof(double) + 1))) &&
           ((check_FSR_values(right_leg->address_FSR)) && (check_FSR_values(right_leg->address_FSR + sizeof(double) + 1))))
       {
-        if (FLAG_TOE_HEEL_SENSORS) { // TN 5/8/19
-          left_leg->fsr_Combined_peak_ref = read_FSR_values(left_leg->address_FSR) + read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
-          right_leg->fsr_Combined_peak_ref = read_FSR_values(right_leg->address_FSR) + read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
-        } else {
+        if (FLAG_TOE_HEEL_SENSORS) { // TN 7/25/19
           left_leg->fsr_Toe_peak_ref = read_FSR_values(left_leg->address_FSR);
           right_leg->fsr_Toe_peak_ref = read_FSR_values(right_leg->address_FSR);
           left_leg->fsr_Heel_peak_ref = read_FSR_values(left_leg->address_FSR + sizeof(double) + 1);
           right_leg->fsr_Heel_peak_ref = read_FSR_values(right_leg->address_FSR + sizeof(double) + 1);
           left_leg->fsr_Combined_peak_ref = left_leg->fsr_Toe_peak_ref + left_leg->fsr_Heel_peak_ref;
           right_leg->fsr_Combined_peak_ref = right_leg->fsr_Toe_peak_ref + right_leg->fsr_Heel_peak_ref;
+        } else {
+          left_leg->fsr_Toe_peak_ref = read_FSR_values(left_leg->address_FSR);
+          right_leg->fsr_Toe_peak_ref = read_FSR_values(right_leg->address_FSR);
         }
 
         *(data_to_send_point + 1) = 1;
@@ -309,8 +314,8 @@ void receive_and_transmit()
         right_leg->p_steps->plant_peak_mean_Toe = read_baseline(right_leg->baseline_address);
         left_leg->baseline_value_Toe = left_leg->p_steps->plant_peak_mean_Toe;
         right_leg->baseline_value_Toe = right_leg->p_steps->plant_peak_mean_Toe;
-        left_leg->p_steps->plant_peak_mean_Heel = read_baseline(left_leg->baseline_address_Heel);
-        right_leg->p_steps->plant_peak_mean_Heel = read_baseline(right_leg->baseline_address_Heel);
+        left_leg->p_steps->plant_peak_mean_Heel = read_baseline(left_leg->baseline_address + sizeof(double) + 1);
+        right_leg->p_steps->plant_peak_mean_Heel = read_baseline(right_leg->baseline_address + sizeof(double) + 1);
         left_leg->baseline_value_Heel = left_leg->p_steps->plant_peak_mean_Heel;
         right_leg->baseline_value_Heel = right_leg->p_steps->plant_peak_mean_Heel;
       } else if (FLAG_TOE_SENSOR) {
@@ -331,6 +336,12 @@ void receive_and_transmit()
       else
       {
       }
+      if (clean_torque_bias(left_leg->torque_address + sizeof(double) + sizeof(char)))
+      {
+      }
+      else
+      {
+      }
       if (clean_FSR_values(left_leg->address_FSR))
       {
       }
@@ -339,6 +350,12 @@ void receive_and_transmit()
       }
       //------------------------------------------
       if (clean_torque_bias(right_leg->torque_address))
+      {
+      }
+      else
+      {
+      }
+      if (clean_torque_bias(right_leg->torque_address + sizeof(double) + sizeof(char)))
       {
       }
       else
@@ -442,11 +459,15 @@ void receive_and_transmit()
     case 'P': //GO 5/13/19
       left_leg->torque_calibration_value_Ankle = read_torque_bias(left_leg->torque_address);
       right_leg->torque_calibration_value_Ankle = read_torque_bias(right_leg->torque_address);
+      left_leg->torque_calibration_value_Knee = read_torque_bias(left_leg->torque_address + sizeof(double) + 1); // TN 7/25/19
+      right_leg->torque_calibration_value_Knee = read_torque_bias(right_leg->torque_address + sizeof(double) + 1); // TN 7/25/19
       break;
 
     case 'p': //GO 5/13/19
       write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value_Ankle);
       write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value_Ankle);
+      write_torque_bias(left_leg->torque_address + sizeof(double) + 1, left_leg->torque_calibration_value_Knee); // TN 7/25/19
+      write_torque_bias(right_leg->torque_address + sizeof(double) + 1, right_leg->torque_calibration_value_Knee); // TN 7/25/19
       break;
 
 
@@ -558,27 +579,31 @@ void receive_and_transmit()
       if (stream == 1) {
       } else {
         if (FLAG_TOE_HEEL_SENSORS ) {
-          write_FSR_values(left_leg->address_FSR, left_leg->fsr_Combined_peak_ref / 2);
-          write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Combined_peak_ref / 2);
-          write_FSR_values(right_leg->address_FSR, right_leg->fsr_Combined_peak_ref / 2);
-          write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Combined_peak_ref / 2);
-        } else {
           write_FSR_values(left_leg->address_FSR, left_leg->fsr_Toe_peak_ref);
-          write_FSR_values((left_leg->address_FSR + sizeof(double) + sizeof(char)), left_leg->fsr_Heel_peak_ref);
+          write_FSR_values(left_leg->address_FSR + sizeof(double) + sizeof(char), left_leg->fsr_Heel_peak_ref);
           write_FSR_values(right_leg->address_FSR, right_leg->fsr_Toe_peak_ref);
-          write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Heel_peak_ref);
+          write_FSR_values(right_leg->address_FSR + sizeof(double) + sizeof(char), right_leg->fsr_Heel_peak_ref);
         }
-        if (Flag_Ankle_Cfg == true) {
-          write_baseline(left_leg->baseline_address, left_leg->baseline_value);
-          write_baseline(right_leg->baseline_address, right_leg->baseline_value);
-        }
-        if (Flag_Knee_Cfg == true) {
-          write_baseline(left_leg->baseline_address_Heel, left_leg->baseline_value_Heel);
-          write_baseline(right_leg->baseline_address_Heel, right_leg->baseline_value_Heel);
+        else
+        {
+          write_FSR_values(left_leg->address_FSR, left_leg->fsr_Combined_peak_ref / 2);
+          write_FSR_values(left_leg->address_FSR + sizeof(double) + sizeof(char), left_leg->fsr_Combined_peak_ref / 2);
+          write_FSR_values(right_leg->address_FSR, right_leg->fsr_Combined_peak_ref / 2);
+          write_FSR_values(right_leg->address_FSR + sizeof(double) + sizeof(char), right_leg->fsr_Combined_peak_ref / 2);
         }
 
+        // TN 7/25/19
+        write_baseline(left_leg->baseline_address, left_leg->baseline_value);
+        write_baseline(right_leg->baseline_address, right_leg->baseline_value);
+
+        write_baseline(left_leg->baseline_address + sizeof(double) + sizeof(char), left_leg->baseline_value_Heel);
+        write_baseline(right_leg->baseline_address + sizeof(double) + sizeof(char), right_leg->baseline_value_Heel);
+
+
         write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value_Ankle);
-        write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value_Ankle);
+        write_torque_bias(right_leg->torque_address + sizeof(double) + sizeof(char), right_leg->torque_calibration_value_Knee);
+        write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value_Ankle);
+        write_torque_bias(right_leg->torque_address + sizeof(double) + sizeof(char), right_leg->torque_calibration_value_Knee);
       }//end if
       break;
 
