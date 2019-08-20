@@ -385,6 +385,9 @@ void rotate_motor() {
           left_leg->PID_Setpoint = 0;
         }
       }
+      else {
+        right_leg->PID_Setpoint = 0;  // TN 8/20/19
+      }
 
       if ((right_leg->state == 3) && (right_leg->state_3_duration > 0)) {
         right_scaling_index = (millis() - right_leg->state_3_start_time) / (right_leg->state_3_duration / 100);
@@ -394,6 +397,9 @@ void rotate_motor() {
         else {
           right_leg->PID_Setpoint = 0;
         }
+      }
+      else {
+        right_leg->PID_Setpoint = 0;   // TN 8/20/19
       }
 
 
