@@ -1091,7 +1091,7 @@ void receive_and_transmit()
         memcpy(&left_leg->torque_calibration_value_Ankle, holdOnPoint + 32, 8);
         memcpy(&right_leg->torque_calibration_value_Ankle, holdOnPoint + 40, 8);//added
         memcpy(&left_leg->torque_calibration_value_Knee, holdOnPoint + 48, 8);               // TN 7/15/19
-        memcpy(&right_leg->torque_calibration_value_Knee, holdOnPoint + 54, 8);//added            // TN 7/15/19
+        memcpy(&right_leg->torque_calibration_value_Knee, holdOnPoint + 56, 8);//added            // TN 8/28/19
       }
 
       break;
