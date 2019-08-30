@@ -176,12 +176,14 @@ void calculate_leg_average(Leg* leg) {
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
     leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
+    leg->TarrayPoint_Knee[j] = leg->TarrayPoint_Knee[j - 1];                // TN 8/29/19
   }
+  
   //Get the torque
   //leg->AorK = 'A';  // TN 5/9/19
   leg->TarrayPoint[0] = get_torq(leg);  // TN 5/9/19
   //leg->AorK = 'K';  // TN 5/9/19
-  leg->TarrayPoint_Knee[0] = get_torq_Knee(leg); // TN 5/17/19
+  leg->TarrayPoint_Knee[0] = -get_torq_Knee(leg); // TN 8/29/19
 
   leg->FSR_Toe_Average = 0;
   leg->FSR_Heel_Average = 0;
