@@ -707,6 +707,8 @@ void receive_and_transmit()
       }
       left_leg->ERR = 0;
       right_leg->ERR = 0;
+      left_leg->ERR_Knee = 0;   //  TN 8/30/19
+      right_leg->ERR_Knee = 0;   //  TN 8/30/19
       break;
 
     case ';':  // TN 5/9/19
@@ -722,6 +724,8 @@ void receive_and_transmit()
 
       left_leg->ERR = 0;
       right_leg->ERR = 0;
+      left_leg->ERR_Knee = 0;   //  TN 8/30/19
+      right_leg->ERR_Knee = 0;   //  TN 8/30/19
       break;
 
     case '#':

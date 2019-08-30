@@ -60,7 +60,7 @@ struct Leg {
   double Dynamic_multiplier, Steady_multiplier;
 
   // Auto_KF.h
-  double ERR;
+  double ERR, ERR_Knee;
   double Max_Measured_Torque;
   double max_KF = 3;
   double min_KF = 0.9;
