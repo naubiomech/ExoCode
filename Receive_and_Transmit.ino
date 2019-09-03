@@ -264,6 +264,8 @@ void receive_and_transmit()
         right_leg->torque_calibration_value_Knee = read_torque_bias(right_leg->torque_address + sizeof(double) + 1); // TN 7/25/19
         left_leg->Tarray[3] = {0};
         right_leg->Tarray[3] = {0};
+        left_leg->Tarray_Knee[3] = {0};  // TN 9/3/19
+        right_leg->Tarray_Knee[3] = {0};  // TN 9/3/19
         *(data_to_send_point) = 1;
       }
       else
@@ -601,8 +603,8 @@ void receive_and_transmit()
 
 
         write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value_Ankle);
-        write_torque_bias(right_leg->torque_address + sizeof(double) + sizeof(char), right_leg->torque_calibration_value_Knee);
-        write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value_Ankle);
+        write_torque_bias(left_leg->torque_address + sizeof(double) + sizeof(char), left_leg->torque_calibration_value_Knee);   // TN 9/3/19
+        write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value_Ankle);                                // TN 9/3/19
         write_torque_bias(right_leg->torque_address + sizeof(double) + sizeof(char), right_leg->torque_calibration_value_Knee);
       }//end if
       break;

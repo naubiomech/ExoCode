@@ -61,7 +61,7 @@ void pid_Knee(Leg* leg, double input_Knee) {
   leg->pid_Knee.Compute_KF(leg->KF_Knee);
   //  Serial.print(" ZERO: ");
   //  Serial.print(leg->zero);
-  leg->Vol_Knee = leg->Output_Knee + leg->zero; //need to map
+  leg->Vol_Knee = -leg->Output_Knee + leg->zero; //need to map
 
 
   if (PWM_CONTROL) {

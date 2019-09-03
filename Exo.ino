@@ -178,7 +178,7 @@ void calculate_leg_average(Leg* leg) {
     leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
     leg->TarrayPoint_Knee[j] = leg->TarrayPoint_Knee[j - 1];                // TN 8/29/19
   }
-  
+
   //Get the torque
   //leg->AorK = 'A';  // TN 5/9/19
   leg->TarrayPoint[0] = get_torq(leg);  // TN 5/9/19
@@ -208,6 +208,19 @@ void calculate_leg_average(Leg* leg) {
   }
 
   if (abs(leg->TarrayPoint[dim]) > 25 && abs(leg->Average_Trq - leg->TarrayPoint[dim]) < 0.1) //When torque sensor is unplugged we see the same values for several seconds
+  {
+    double old_L_state_L = leg->state;
+    leg->state = 9;
+    send_data_message_wc();
+
+    digitalWrite(onoff, LOW);
+    stream = 0;
+    digitalWrite(LED_PIN, LOW);
+    leg->state = old_L_state_L;
+  }
+
+  // TN 9/3/19
+  if (abs(leg->TarrayPoint_Knee[dim]) > 25 && abs(leg->Average_Trq_Knee - leg->TarrayPoint_Knee[dim]) < 0.1) //When torque sensor is unplugged we see the same values for several seconds
   {
     double old_L_state_L = leg->state;
     leg->state = 9;
@@ -328,8 +341,8 @@ void rotate_motor() {
     pid(left_leg, left_leg->Average_Trq);
     pid(right_leg, right_leg->Average_Trq);
 
-    pid_Knee(left_leg, left_leg->Average_Trq_Knee);  // TN 5/13/19
-    pid_Knee(right_leg, right_leg->Average_Trq_Knee);  // TN 5/13/19
+    pid_Knee(left_leg, -left_leg->Average_Trq_Knee);  // TN 9/3/19
+    pid_Knee(right_leg, -right_leg->Average_Trq_Knee); // TN 9/3/19
 
 
     // modification to check the pid
