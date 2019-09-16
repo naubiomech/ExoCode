@@ -261,6 +261,34 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
           leg->MaxPropSetpoint = 0;
         }
 
+        // TN 9/16/19
+        if (p_steps_l->plant_peak_mean_Heel == 0)
+          *p_FSR_Ratio_Heel = 0;
+        else
+          *p_FSR_Ratio_Heel = fabs(p_steps_l->curr_voltage_Heel / p_steps_l->plant_peak_mean_Heel);
+        if (*p_FSR_Ratio_Heel > (*p_Max_FSR_Ratio_Heel))
+          (*p_Max_FSR_Ratio_Heel) = *p_FSR_Ratio_Heel; // update the max fsr Ratio of Heel
+
+
+        // while updating the ratio value still continue to provide the control  // TN 5/9/19
+        if ((p_steps_l->Setpoint_Knee ) > 0) { //depending on the leg the sign changes
+          *p_Setpoint_Knee_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_Heel));
+          *p_Setpoint_Knee_Pctrl_l = min(Max_Prop, *p_Setpoint_Knee_Pctrl_l);
+          if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {  // TN 5/22/19
+            leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
+          }
+        }
+        else if ((p_steps_l->Setpoint_Knee ) < 0) {
+          *p_Setpoint_Knee_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_Heel));
+          *p_Setpoint_Knee_Pctrl_l = min(Min_Prop, *p_Setpoint_Knee_Pctrl_l);
+          if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {  // TN 5/22/19
+            leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
+          }
+        } else {
+          *p_Setpoint_Knee_Pctrl_l = 0;
+          leg->MaxPropSetpoint_Knee = 0;  // TN 5/22/19
+        }
+
 
 
       }
@@ -417,6 +445,27 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
         *p_Setpoint_Ankle_Pctrl_l = 0;
         leg->MaxPropSetpoint = 0;  // TN 5/8/19
       }
+
+
+        // Tn 9/16/19
+        if ((p_steps_l->Setpoint_Knee ) > 0) { //depending on the leg the sign changes
+          *p_Setpoint_Knee_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_Heel));
+          *p_Setpoint_Knee_Pctrl_l = min(Max_Prop, *p_Setpoint_Knee_Pctrl_l);
+          if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {  // TN 5/22/19
+            leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
+          }
+        }
+        else if ((p_steps_l->Setpoint_Knee ) < 0) {
+          *p_Setpoint_Knee_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_Heel));
+          *p_Setpoint_Knee_Pctrl_l = min(Min_Prop, *p_Setpoint_Knee_Pctrl_l);
+          if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {  // TN 5/22/19
+            leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
+          }
+        } else {
+          *p_Setpoint_Knee_Pctrl_l = 0;
+          leg->MaxPropSetpoint_Knee = 0;  // TN 5/22/19
+        }
+        
 
       return N3_l; // No modification in the shaping function which is disabled
     }
