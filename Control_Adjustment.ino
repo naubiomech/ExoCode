@@ -487,7 +487,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       }
       else if ((p_steps_l->Setpoint_Knee ) < 0) {
         *p_Setpoint_Knee_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_HeelMinusToe)); // the difference here is that we do it as a function of the FSR calibration  // SS 9/10/2019
-        *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Knee_Pctrl_l);
+        *p_Setpoint_Knee_Pctrl_l = min(Min_Prop, *p_Setpoint_Knee_Pctrl_l); // SS 9/17/2019
         if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {
           leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
         }
