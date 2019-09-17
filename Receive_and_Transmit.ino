@@ -316,10 +316,10 @@ void receive_and_transmit()
         right_leg->p_steps->plant_peak_mean_Toe = read_baseline(right_leg->baseline_address);
         left_leg->baseline_value_Toe = left_leg->p_steps->plant_peak_mean_Toe;
         right_leg->baseline_value_Toe = right_leg->p_steps->plant_peak_mean_Toe;
-        left_leg->p_steps->plant_peak_mean_Heel = read_baseline(left_leg->baseline_address + sizeof(double) + 1);
-        right_leg->p_steps->plant_peak_mean_Heel = read_baseline(right_leg->baseline_address + sizeof(double) + 1);
-        left_leg->baseline_value_Heel = left_leg->p_steps->plant_peak_mean_Heel;
-        right_leg->baseline_value_Heel = right_leg->p_steps->plant_peak_mean_Heel;
+        left_leg->p_steps->plant_peak_mean_HeelMinusToe = read_baseline(left_leg->baseline_address + sizeof(double) + 1);
+        right_leg->p_steps->plant_peak_mean_HeelMinusToe = read_baseline(right_leg->baseline_address + sizeof(double) + 1);
+        //left_leg->baseline_value_Heel = left_leg->p_steps->plant_peak_mean_Heel;
+        //right_leg->baseline_value_Heel = right_leg->p_steps->plant_peak_mean_Heel;
         left_leg->baseline_value_HeelMinusToe = left_leg->p_steps->plant_peak_mean_HeelMinusToe;
         right_leg->baseline_value_HeelMinusToe = right_leg->p_steps->plant_peak_mean_HeelMinusToe;
       } else if (FLAG_TOE_SENSOR) {
@@ -855,8 +855,8 @@ void receive_and_transmit()
         right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
         *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
         *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
-        *(data_to_send_point + 2) = left_leg->p_steps->plant_peak_mean_Heel; // TN 5/8/19
-        *(data_to_send_point + 3) = right_leg->p_steps->plant_peak_mean_Heel; // TN 5/8/19
+        *(data_to_send_point + 2) = left_leg->p_steps->plant_peak_mean_HeelMinusToe; // ss 9/17/2019
+        *(data_to_send_point + 3) = right_leg->p_steps->plant_peak_mean_HeelMinusToe; // ss 9/17/2019
         send_command_message('B', data_to_send_point, 4);
       }
 

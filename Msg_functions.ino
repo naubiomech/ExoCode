@@ -56,8 +56,8 @@ void send_data_message_wc() //with COP
     data_to_send[13] = left_leg->stridelength_target;
   }
   else {
-    data_to_send[12] = (left_leg->sign * left_leg->FSR_Heel_Average); // SS 9/17/2019
-    data_to_send[13] = (right_leg->sign *right_leg->FSR_Heel_Average);  // SS 9/17/2019
+    data_to_send[12] = (right_leg->sign * right_leg->Average_Trq_Knee); // SS 9/17/2019
+    data_to_send[13] = (left_leg->sign * left_leg->Average_Trq_Knee);  // SS 9/17/2019
   }
   send_command_message('?', data_to_send, 14);
 }
