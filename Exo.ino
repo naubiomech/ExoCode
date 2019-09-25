@@ -386,7 +386,7 @@ void rotate_motor() {
         }
       }
       else {
-        right_leg->PID_Setpoint = 0;  // TN 8/20/19
+        left_leg->PID_Setpoint = 0;  // TN 9/25/19
       }
 
       if ((right_leg->state == 3) && (right_leg->state_3_duration > 0)) {
