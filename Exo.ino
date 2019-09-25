@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD
+#define BOARD_VERSION TWO_LEG_BOARD
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -385,6 +385,9 @@ void rotate_motor() {
           left_leg->PID_Setpoint = 0;
         }
       }
+      else {
+        right_leg->PID_Setpoint = 0;  // TN 8/20/19
+      }
 
       if ((right_leg->state == 3) && (right_leg->state_3_duration > 0)) {
         right_scaling_index = (millis() - right_leg->state_3_start_time) / (right_leg->state_3_duration / 100);
@@ -395,11 +398,13 @@ void rotate_motor() {
           right_leg->PID_Setpoint = 0;
         }
       }
+      else {
+        right_leg->PID_Setpoint = 0;   // TN 8/20/19
+      }
 
 
 
     }
-
 
 
 
