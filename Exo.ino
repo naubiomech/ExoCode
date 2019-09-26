@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION TWO_LEG_BOARD
+#define BOARD_VERSION DUAL_BOARD
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -336,11 +336,11 @@ void rotate_motor() {
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
 
-    if ((left_leg->state == 3) && (left_leg->old_state == 1)) {
+    if ((left_leg->state == 3) && ((left_leg->old_state == 1) || (left_leg->old_state == 2))) {   // TN 9/26/19
       left_leg->state_3_start_time = millis();
     }
 
-    if ((left_leg->state == 1) && (left_leg->old_state == 3)) {
+    if (((left_leg->state == 1) || (left_leg->state == 2)) && (left_leg->old_state == 3)) {     // TN 9/26/19
       left_leg->state_3_stop_time = millis();
     }
 
@@ -350,16 +350,13 @@ void rotate_motor() {
 
     left_leg->old_state = left_leg->state;
 
-    if ((right_leg->state == 3) && (right_leg->old_state == 1)) {
+    if ((right_leg->state == 3) && ((right_leg->old_state == 1) || (right_leg->old_state == 2))) {    // TN 9/26/19
       right_leg->state_3_start_time = millis();
     }
-
     else {
-
-      if ((right_leg->state == 1) && (right_leg->old_state == 3)) {
+      if (((right_leg->state == 1) || (right_leg->state == 2)) && (right_leg->old_state == 3)) {   // TN 9/26/19
 
         right_leg->state_3_stop_time = millis();
-
 
         if (right_leg->state_3_stop_time > right_leg->state_3_start_time) {
           right_leg->state_3_duration = right_leg->state_3_stop_time - right_leg->state_3_start_time;
@@ -405,7 +402,6 @@ void rotate_motor() {
 
 
     }
-
 
 
 
