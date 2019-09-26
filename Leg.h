@@ -194,6 +194,7 @@ struct Leg {
   //Balance
   int step_count = 0;
   int TM_data = 0;
+  bool allow_inc_flag = false;
 
   //BIOFEEDBACK
   bool BioFeedback_Baseline_flag = false;
