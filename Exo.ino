@@ -216,7 +216,15 @@ void calculate_leg_average(Leg* leg) {
   {
     leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
     leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
-    leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
+    if (Control_Mode == 3) {
+      leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
+    }
+    else if (Control_Mode == 4) {
+      leg->p_steps->curr_voltage = ((leg->FSR_Toe_Average * leg->Toe_Moment_Arm));// + (leg->FSR_Heel_Average * leg->Heel_Moment_Arm))/(leg->Toe_Moment_Arm + leg->Heel_Moment_Arm);//Sara's edition
+    }
+    else if (Control_Mode == 6) {
+      leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
+    }
   }
   else {
     leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
@@ -365,6 +373,12 @@ void rotate_motor() {
     }
 
     right_leg->old_state = right_leg->state;
+    
+    if ((Control_Mode == 3 || Control_Mode == 6) && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
+      left_leg->PID_Setpoint = left_leg->New_PID_Setpoint;   //Brute force the dorsiflexion set point to proportional control
+    } else if ((Control_Mode == 3 || Control_Mode == 6) && (abs(right_leg->Dorsi_Setpoint_Ankle) > 0 || abs(right_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && right_leg->state == 1) {
+      right_leg->PID_Setpoint = right_leg->New_PID_Setpoint; //Brute force the dorsiflexion set point to proportional control
+    } else {};
 
     int left_scaling_index = 0;
     int right_scaling_index = 0;
