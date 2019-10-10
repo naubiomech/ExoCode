@@ -211,30 +211,17 @@ void calculate_leg_average(Leg* leg) {
   // in case of two toe sensors we use the combined averate, i.e. the sum of the averages.
   leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
 
-
+  leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
+  leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
+  
   if (FLAG_ONE_TOE_SENSOR)
   {
-    leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
-    leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
-    if (Control_Mode == 3) {
-      leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
-    }
-    else if (Control_Mode == 4) {
-      leg->p_steps->curr_voltage = ((leg->FSR_Toe_Average * leg->Toe_Moment_Arm));// + (leg->FSR_Heel_Average * leg->Heel_Moment_Arm))/(leg->Toe_Moment_Arm + leg->Heel_Moment_Arm);//Sara's edition
-    }
-    else if (Control_Mode == 6) {
-      leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
-    }
-  }
-  else {
     leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
-    leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
-    leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
+  } else {
+    leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
   }
-
 
 }
-
 
 //----------------------------------------------------------------------------------
 
