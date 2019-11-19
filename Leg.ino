@@ -3,6 +3,7 @@
 void initialize_leg(Leg* leg) {
   pinMode(leg->pin_err, INPUT_PULLUP);          //motor driver error checking needs digital input pulled high
   pinMode(leg->torque_sensor_ankle_pin, INPUT); //enable the torque reading of the left torque sensor
+  pinMode(leg->motor_current_pin, INPUT);
 
   analogWrite(leg->motor_ankle_pin, zero);
   leg->pid.SetMode(AUTOMATIC);
@@ -23,6 +24,7 @@ void initialize_left_leg(Leg* left_leg) {
   left_leg->p_steps = &val_L;
   left_leg->torque_sensor_ankle_pin = TORQUE_SENSOR_LEFT_ANKLE_PIN;
   left_leg->motor_ankle_pin = MOTOR_LEFT_ANKLE_PIN;
+  left_leg->motor_current_pin = MOTOR_CURRENT_LEFT_ANKLE_PIN;
   left_leg->baseline_address = address_params + 105 + 5;
 
   left_leg->Dynamic_multiplier = 1;
@@ -46,6 +48,7 @@ void initialize_right_leg(Leg* right_leg) {
   right_leg->p_steps = &val_R;
   right_leg->torque_sensor_ankle_pin = TORQUE_SENSOR_RIGHT_ANKLE_PIN;
   right_leg->motor_ankle_pin = MOTOR_RIGHT_ANKLE_PIN;
+  right_leg->motor_current_pin = MOTOR_CURRENT_RIGHT_ANKLE_PIN;
   right_leg->baseline_address = address_params + 105 + 5 + 9;
 
 

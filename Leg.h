@@ -9,6 +9,7 @@ const int dim = 5;
 struct Leg {
   int torque_sensor_ankle_pin;
   int motor_ankle_pin;
+  int motor_current_pin;
   // In A_Exo pre-includes
   double FSR_Average_array[dim_FSR] = {0};
   double* p_FSR_Array = &FSR_Average_array[0];
