@@ -136,8 +136,9 @@ double fsr(const unsigned int pin) {
  * This function reads the motor current pin and converts the voltage reading in bits to motor current.
  * For now, assume large motors, 51:1 gearbox, -7A to 7A range (0 to 3.3V)
 */
-double current(const unsigned int pin) {
+float current(const unsigned int pin) {
   //
-  double Co = 7 * (analogRead(pin) - 2048)/2048;
+  int value = analogRead(pin);
+  float Co = 7.0 * (value - 2048.0)/2048.0;
   return Co;
 }
