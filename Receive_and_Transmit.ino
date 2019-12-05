@@ -124,6 +124,8 @@ void receive_and_transmit()
 
     case 'k':
 
+      CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
+
       break;
 
     case 'L':
@@ -521,6 +523,7 @@ void receive_and_transmit()
       //      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
       flag_id = false; // TN 04/29/19
       flag_pivot = true; // TN 04/29/19
+      flag_
       if (Flag_Prop_Ctrl == true) // TN 04/29/19
         Control_Mode = 3;
       break;

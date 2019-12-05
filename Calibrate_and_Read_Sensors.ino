@@ -139,6 +139,6 @@ double fsr(const unsigned int pin) {
 float current(const unsigned int pin) {
   //
   int value = analogRead(pin);
-  float Co = 7.0 * (value - 2048.0)/2048.0;
+  float Co = 7.58 * (value - 2048.0)/2048.0;
   return Co;
 }
