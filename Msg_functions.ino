@@ -48,17 +48,23 @@ void send_data_message_wc() //with COP
   } else if (FLAG_BIOFEEDBACK) {
     data_to_send[10] = right_leg->stridelength_update;
     data_to_send[11] = left_leg->stridelength_update;
+  } else if (CURRENT_CONTROL) {
+    data_to_send[10] = current(right_leg->motor_current_pin);
+    data_to_send[11] =  current(left_leg->motor_current_pin);
   }
   else {
-//    data_to_send[10] = (left_leg->TM_data);
-//    data_to_send[11] = (right_leg->TM_data);
-    data_to_send[10] = current(left_leg->motor_current_pin);
-    data_to_send[11] =  current(right_leg->motor_current_pin);
+    data_to_send[10] = (left_leg->TM_data);
+    data_to_send[11] = (right_leg->TM_data);    
   }
+  
   if (FLAG_BIOFEEDBACK) {
     data_to_send[12] = right_leg->stridelength_target;
     data_to_send[13] = left_leg->stridelength_target;
   }
+//  } else if (CURRENT_CONTROL) {
+//    data_to_send[12] = ankle_speed(right_leg->motor_speed_pin);
+//    data_to_send[13] = ankle_speed(left_leg->motor_speed_pin);
+//  }
   else {
     data_to_send[12] = (left_leg->FSR_Heel_Average);
     data_to_send[13] = (right_leg->FSR_Heel_Average);
