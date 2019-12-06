@@ -27,15 +27,15 @@ void pid(Leg* leg, double input) {
     Serial.print(" ZERO: ");
     Serial.print(leg->zero);
 
-  if (CURRENT_CONTROL) {
-    leg->Vol = (leg->PID_Setpoint/((13.6/1000.0) * 51.0 * (70.4/10.3) * 0.89 * 0.70))/7.58*2048; //Setpoint/(Motor torque constant, gear reduction, pulley reduction, motor eff, gearbox eff)
+  if (CURRENT_CONTROL && leg->PID_Setpoint!=0) {
+    leg->Vol = (leg->PID_Setpoint/((13.6/1000.0) * 51.0 * (70.4/10.3) * 0.89 * 0.70 * 0.50))/7.58*2048; //Setpoint/(Motor torque constant, gear reduction, pulley reduction, motor eff, gearbox eff)
   } else {
     leg->Vol = leg->Output + leg->zero; //need to map
   }
 
-  if (PWM_CONTROL && CURRENT_CONTROL) {
+  if (PWM_CONTROL && CURRENT_CONTROL && leg->PID_Setpoint!=0) {
      leg->Vol = (leg->Vol + leg->zero)*0.8 + 0.1*4096.0; //Map to 0 to 4096 but ensure signal goes from 10% to 90% pulse width
-  } else if (PWM_CONTROL && !CURRENT_CONTROL) {
+  } else if (PWM_CONTROL && (!CURRENT_CONTROL || (CURRENT_CONTROL && leg->PID_Setpoint==0))) {
      leg->Vol = leg->Vol*0.8 + 0.1*4096.0; 
   }
 

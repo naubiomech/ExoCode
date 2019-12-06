@@ -61,7 +61,7 @@ void send_data_message_wc() //with COP
   }
   else {
     data_to_send[12] = ankle_speed(right_leg->motor_speed_pin);
-    data_to_send[13] = expected_ankle_torq(right_leg->motor_current_pin);
+    data_to_send[13] = right_leg->sign * expected_ankle_torq(right_leg->motor_current_pin);
   }
   send_command_message('?', data_to_send, 14);
 }
