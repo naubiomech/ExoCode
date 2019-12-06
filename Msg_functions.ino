@@ -53,15 +53,15 @@ void send_data_message_wc() //with COP
 //    data_to_send[10] = (left_leg->TM_data);
 //    data_to_send[11] = (right_leg->TM_data);
     data_to_send[10] = current(left_leg->motor_current_pin);
-    data_to_send[11] =  current(right_leg->motor_current_pin);
+    data_to_send[11] = current(right_leg->motor_current_pin);
   }
   if (FLAG_BIOFEEDBACK) {
     data_to_send[12] = right_leg->stridelength_target;
     data_to_send[13] = left_leg->stridelength_target;
   }
   else {
-    data_to_send[12] = (left_leg->FSR_Heel_Average);
-    data_to_send[13] = (right_leg->FSR_Heel_Average);
+    data_to_send[12] = ankle_speed(right_leg->motor_speed_pin);
+    data_to_send[13] = expected_ankle_torq(right_leg->motor_current_pin);
   }
   send_command_message('?', data_to_send, 14);
 }

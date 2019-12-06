@@ -126,6 +126,9 @@ const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = 27;
 const unsigned int MOTOR_CURRENT_LEFT_ANKLE_PIN = A7;
 const unsigned int MOTOR_CURRENT_RIGHT_ANKLE_PIN = A4;
 
+const unsigned int MOTOR_SPEED_LEFT_PIN = A1;
+const unsigned int MOTOR_SPEED_RIGHT_PIN = A2;
+
 const unsigned int BREAKOUT_LEFT_PIN = A10;
 const unsigned int BREAKOUT_RIGHT_PIN = A11;
 #endif

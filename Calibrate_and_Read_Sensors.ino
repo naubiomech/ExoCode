@@ -142,3 +142,28 @@ float current(const unsigned int pin) {
   float Co = 7.58 * (value - 2048.0)/2048.0;
   return Co;
 }
+
+/* This code allows us to read the analog output from the motor drivers and gives us the expected torque about the ankle.
+Torque Constant (200W) : 13.6 mNm/A
+Gear Ratio (32HP, 4-8Nm) : 17576/343 
+Large Exo Pulley Ratio: 74/10.3
+*/
+double expected_ankle_torq(const unsigned int pin){
+  double motor_voltage = (analogRead(pin) * (3.3 / 4096.0));
+  double motor_current = map(motor_voltage, 0, 3.3, -7.58, 7.58); 
+  double ankle_torq = motor_current * (13.6/1000.0) * (17576./343.0) *  (74.0/10.3);
+  return ankle_torq;
+}
+
+/* This code allows us to read the analog output from the motor drivers and gives us the expected speed about the ankle.
+Torque Constant (200W) : 700 rpm/V
+Gear Ratio (32HP, 4-8Nm) : 17576/343 
+Large Exo Pulley Ratio: 74/10.3
+*/
+double ankle_speed(const unsigned int pin){
+  double motor_voltage = (analogRead(pin) * (3.3 / 4096.0));
+  double motor_speed = map(motor_voltage, 0, 3.3, -16100, 16100);
+  double shaft_speed = motor_speed * 700 * (343.0/17576.0);
+  double ankle_speed = shaft_speed * (10.3/74.0);
+  return ankle_speed;
+}
