@@ -449,11 +449,11 @@ void receive_and_transmit()
       break;
 
     case '[':
-
+      fixed_state_3_duration_type == false;
       break;
 
     case ']':
-
+      fixed_state_3_duration_type == true;
       break;
 
     // TN 6/13/19
