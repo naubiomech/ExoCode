@@ -91,3 +91,6 @@ bool flag_motor_error_check = true;
 bool Flag_Prop_Ctrl = false; // TN 04/29/2019
 bool flag_pivot = false; // TN 04/29/2019
 bool flag_id = false; // TN 04/29/2019
+
+// Flag for ATP // TN 1/3/20
+bool fixed_state_3_duration_type = false;
