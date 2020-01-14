@@ -340,7 +340,11 @@ void rotate_motor() {
     }
 
     if (left_leg->state_3_stop_time > left_leg->state_3_start_time) {
+      if (fixed_state_3_duration_type == true)
+        left_leg->state_3_duration = state3_time[1];
+      else
       left_leg->state_3_duration = left_leg->state_3_stop_time - left_leg->state_3_start_time;
+      // TN 11/1/19
     }
 
     left_leg->old_state = left_leg->state;
@@ -354,11 +358,13 @@ void rotate_motor() {
         right_leg->state_3_stop_time = millis();
 
         if (right_leg->state_3_stop_time > right_leg->state_3_start_time) {
+          if (fixed_state_3_duration_type == true)
+            right_leg->state_3_duration = state3_time[2];
+          else
           right_leg->state_3_duration = right_leg->state_3_stop_time - right_leg->state_3_start_time;
         }
       }
     }
-
     right_leg->old_state = right_leg->state;
     
     if ((Control_Mode == 3 || Control_Mode == 6) && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
