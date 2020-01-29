@@ -96,7 +96,8 @@ void FSR_calibration()
 }
 
 double get_torq(Leg* leg) {
-  double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value);
+ // double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value);
+  double Torq = analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0) - leg->torque_calibration_value; 
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }
 
@@ -150,8 +151,8 @@ Large Exo Pulley Ratio: 74/10.3
 */
 double expected_ankle_torq(const unsigned int pin){
   double motor_voltage = (analogRead(pin) * (3.3 / 4096.0));
-  double motor_current = map(motor_voltage, 0, 3.3, -7.58, 7.58); 
-  double ankle_torq = motor_current * (13.6/1000.0) * (17576./343.0) *  (74.0/10.3);
+  double motor_current = map(motor_voltage, 0, 3.3, -3.34, 3.34); 
+  double ankle_torq = motor_current * (13.6/1000.0) * (4617./52.0) *  (44.0/10.3);
   return ankle_torq;
 }
 
@@ -162,8 +163,8 @@ Large Exo Pulley Ratio: 74/10.3
 */
 double ankle_speed(const unsigned int pin){
   double motor_voltage = (analogRead(pin) * (3.3 / 4096.0));
-  double motor_speed = map(motor_voltage, 0, 3.3, -16100, 16100);
-  double shaft_speed = motor_speed * 700 * (343.0/17576.0);
-  double ankle_speed = shaft_speed * (10.3/74.0);
+  double motor_speed = map(motor_voltage, 0, 3.3, -15000, 15000);
+  double shaft_speed = motor_speed * 700 * (52.0/4617.0);
+  double ankle_speed = shaft_speed * (10.3/44.0);
   return ankle_speed;
 }
