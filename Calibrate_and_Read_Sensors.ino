@@ -15,8 +15,6 @@ void torque_calibration()
   }
   left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
-  Serial.println(left_leg->torque_calibration_value);
-  Serial.println(right_leg->torque_calibration_value);
 }
 
 
@@ -134,12 +132,11 @@ double fsr(const unsigned int pin) {
 
 /*Motor Current Code
  * This function reads the motor current pin and converts the voltage reading in bits to motor current.
- * For now, assume large motors, 51:1 gearbox, -7A to 7A range (0 to 3.3V)
 */
-float current(const unsigned int pin) {
+double current(const unsigned int pin) {
   //
   int value = analogRead(pin);
-  float Co = 7.58 * (value - 2048.0)/2048.0;
+  double Co = NomCurrent * (value - 2048.0)/2048.0; //Nominal current needs to be set in ESCON, 7.58
   return Co;
 }
 
@@ -149,9 +146,8 @@ Gear Ratio (32HP, 4-8Nm) : 17576/343
 Large Exo Pulley Ratio: 74/10.3
 */
 double expected_ankle_torq(const unsigned int pin){
-  double motor_voltage = (analogRead(pin) * (3.3 / 4096.0));
-  double motor_current = map(motor_voltage, 0, 3.3, -3.34, 3.34); 
-  double ankle_torq = motor_current * (13.6/1000.0) * (4617./52.0) *  (44.0/10.3);
+  double motor_current = current(pin);
+  double ankle_torq = motor_current * TrqConstant * GearRatio * PulleyRatio;
   return ankle_torq;
 }
 
@@ -162,8 +158,7 @@ Large Exo Pulley Ratio: 74/10.3
 */
 double ankle_speed(const unsigned int pin){
   double motor_voltage = (analogRead(pin) * (3.3 / 4096.0));
-  double motor_speed = map(motor_voltage, 0, 3.3, -15000, 15000);
-  double shaft_speed = motor_speed * (52.0/4617.0);
-  double ankle_speed = shaft_speed * (10.3/44.0);
+  double motor_speed = map(motor_voltage, 0, 3.3, -MaxSpeed, MaxSpeed);
+  double ankle_speed = motor_speed * (1/GearRatio) * (1/PulleyRatio);
   return ankle_speed;
 }
