@@ -78,5 +78,12 @@ const double stability_trq_gain = 0.01;
 // ===== Torque Speed Adjust Parameters =====
 const int n_step_baseline = 6;
 
+// ===== Motor Parameters =====
+// Initialize all variables as 1 prior to definition of motor parameters in GUI
+double NomCurrent = 1;
+double TrqConstant = 1;
+double GearRatio = 1;
+double PulleyRatio = 1;
+double MaxSpeed = 1;
 
 #endif
