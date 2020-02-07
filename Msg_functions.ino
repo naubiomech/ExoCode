@@ -3,8 +3,8 @@ void send_data_message_wc() //with COP
 {
 
   //Right Leg
-  //data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
-  data_to_send[0] = right_leg->Average_Trq*69.559*4*0.36/0.22; //Futek load cell
+  data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
+  //data_to_send[0] = right_leg->Average_Trq*69.559*4*0.36/0.22; //Futek load cell
   data_to_send[1] = right_leg->state;
   data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
 
@@ -25,8 +25,8 @@ void send_data_message_wc() //with COP
   }
 
   //Left Leg
-  //data_to_send[5] = (left_leg->sign * left_leg->Average_Trq);
-  data_to_send[5] = left_leg->Average_Trq*100.000; //Transducer raw voltage output
+  data_to_send[5] = (left_leg->sign * left_leg->Average_Trq);
+  //data_to_send[5] = left_leg->Average_Trq*100.000; //Transducer raw voltage output
   data_to_send[6] = left_leg->state;
   data_to_send[7] = (left_leg->sign * left_leg->PID_Setpoint);
 
@@ -55,15 +55,16 @@ void send_data_message_wc() //with COP
 //    data_to_send[10] = (left_leg->TM_data);
 //    data_to_send[11] = (right_leg->TM_data);
     data_to_send[10] = current(left_leg->motor_current_pin);
-    data_to_send[11] = current(right_leg->motor_current_pin);
+    //data_to_send[11] = current(right_leg->motor_current_pin);
+    data_to_send[11] = analogRead(A10)*(3.3/4096);
   }
   if (FLAG_BIOFEEDBACK) {
     data_to_send[12] = right_leg->stridelength_target;
     data_to_send[13] = left_leg->stridelength_target;
   }
   else {
-    data_to_send[12] = right_leg->sign * ankle_speed(right_leg->motor_speed_pin);
-    data_to_send[13] = right_leg->sign * expected_ankle_torq(right_leg->motor_current_pin);
+    data_to_send[12] = right_leg->sign * ankle_speed(left_leg->motor_speed_pin);
+    data_to_send[13] = right_leg->sign * expected_ankle_torq(left_leg->motor_current_pin);
   }
   send_command_message('?', data_to_send, 14);
 }

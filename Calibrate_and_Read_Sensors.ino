@@ -13,11 +13,10 @@ void torque_calibration()
     right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
     torq_cal_count ++;                                                         //Increments count
   }
-
   left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
-  //  Serial.println(left_leg->torque_calibration_value);
-  //  Serial.println(right_leg->torque_calibration_value);
+  Serial.println(left_leg->torque_calibration_value);
+  Serial.println(right_leg->torque_calibration_value);
 }
 
 
@@ -97,8 +96,8 @@ void FSR_calibration()
 
 double get_torq(Leg* leg) {
  // double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value);
-  double Torq = analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0) - leg->torque_calibration_value; 
-  return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
+  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*52.948; 
+  return Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }
 
 double get_LL_torq()
@@ -164,7 +163,7 @@ Large Exo Pulley Ratio: 74/10.3
 double ankle_speed(const unsigned int pin){
   double motor_voltage = (analogRead(pin) * (3.3 / 4096.0));
   double motor_speed = map(motor_voltage, 0, 3.3, -15000, 15000);
-  double shaft_speed = motor_speed * 700 * (52.0/4617.0);
+  double shaft_speed = motor_speed * (52.0/4617.0);
   double ankle_speed = shaft_speed * (10.3/44.0);
   return ankle_speed;
 }

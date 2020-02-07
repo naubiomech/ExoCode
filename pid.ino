@@ -28,8 +28,8 @@ void pid(Leg* leg, double input) {
     Serial.print(leg->zero);
 
   if (CURRENT_CONTROL && leg->PID_Setpoint!=0) {
-    //leg->Vol = (leg->PID_Setpoint/((13.6/1000.0) * (4617.0/52.0) * (44.0/10.3) * 0.89 * 0.70 * 0.50))/3.34*2048; //Setpoint/(Motor torque constant, gear reduction, pulley reduction, motor eff, gearbox eff)
-    leg->Vol = leg->Setpoint_Ankle/7.58*2048.0;  
+    leg->Vol = (leg->PID_Setpoint/((13.6/1000.0) * (103) * (44.0/10.3) * 0.89 * 0.70 * 0.50))/7.54*2048; //Setpoint/(Motor torque constant, gear reduction, pulley reduction, motor eff, gearbox eff)
+    //leg->Vol = leg->Setpoint_Ankle/7.58*2048.0;  
   } else {
     leg->Vol = leg->Output + leg->zero; //need to map
   }
