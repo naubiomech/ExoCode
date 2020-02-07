@@ -93,6 +93,54 @@ void receive_and_transmit()
       break;
 
     case 'f':
+      receiveVals(8);
+      memcpy(&MotorParams, holdOnPoint, 8); //Copy the value sent from MATLAB into the MotorParams variable to define motor parameters
+      
+      if (MotorParams == 0) {
+        // 22mm 90W motor, 22HP gearbox
+        
+        MaxSpeed = 15000; //RPM
+        TrqConstant = 14/1000; //Nm/A
+        GearRatio = 4617.0/52.0; //89:1 gear ratio
+        NomCurrent = 3.34; //A
+        MotorEff = 0.89;
+        GearboxEff = 0.59;
+        PulleyRatio = 1; //Needs to be updated: small sprocket diameter 18mm diameter
+        
+      } else if (MotorParams == 1) {
+        // 22mm 120W motor, 32HP C gearbox
+        
+        MaxSpeed = 15800; //RPM
+        TrqConstant = 13.5/1000; //Nm/A
+        GearRatio = 6877.0/56.0; //123:1 gear ratio
+        NomCurrent = 4.21; //A
+        MotorEff = 0.89;
+        GearboxEff = 0.7;
+        PulleyRatio = 44/10.3; //Small aluminum pulley, large sprocket
+        
+      } else if (MotorParams == 2) {
+        // 30mm 200W motor, 32HP gearbox (51:1)
+        
+        MaxSpeed = 16100; //RPM
+        TrqConstant = 13.6/1000; //Nm/A
+        GearRatio = 17576.0/343.0; //51:1 gear ratio
+        NomCurrent = 7.58; //A
+        MotorEff = 0.89;
+        GearboxEff = 0.7;
+        PulleyRatio = 74/10.3; //Large aluminum pulley, large sprocket
+        
+      } else if (MotorParams == 3) {
+        // 30mm 200W motor, 32HP gearbox (103:1)
+        
+        MaxSpeed = 16100; //RPM
+        TrqConstant = 13.6/1000; //Nm/A
+        GearRatio = 3588.0/35.0; //103:1 gear ratio
+        NomCurrent = 7.58; //A
+        MotorEff = 0.89;
+        GearboxEff = 0.7;
+        PulleyRatio = 30/13.25; //Carbon fiber pulley, motor pulley
+        
+      }
 
       break;
 

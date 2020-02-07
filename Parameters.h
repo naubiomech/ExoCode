@@ -81,6 +81,7 @@ const int n_step_baseline = 6;
 
 // ===== Motor Parameters =====
 // Initialize all variables as 1 prior to definition of motor parameters in GUI
+int MotorParams = 100; 
 double NomCurrent = 1;
 double TrqConstant = 1;
 double GearRatio = 1;
