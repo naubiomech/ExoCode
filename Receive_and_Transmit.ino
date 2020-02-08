@@ -93,9 +93,8 @@ void receive_and_transmit()
       break;
 
     case 'f':
-      receiveVals(8);
-      memcpy(&MotorParams, holdOnPoint, 8); //Copy the value sent from MATLAB into the MotorParams variable to define motor parameters
-      
+      receiveVals(1);
+      memcpy(&MotorParams, holdOnPoint, 1); //Copy the value sent from MATLAB into the MotorParams variable to define motor parameters
       if (MotorParams == 0) {
         // 22mm 90W motor, 22HP gearbox
         
@@ -106,6 +105,7 @@ void receive_and_transmit()
         MotorEff = 0.89;
         GearboxEff = 0.59;
         PulleyRatio = 44/10.3; //Small aluminum pulley, large sprocket
+        Serial.println("22mm 90W");
         
       } else if (MotorParams == 1) {
         // 22mm 120W motor, 32HP C gearbox
@@ -117,6 +117,7 @@ void receive_and_transmit()
         MotorEff = 0.89;
         GearboxEff = 0.7;
         PulleyRatio = 44/10.3; //Small aluminum pulley, large sprocket
+        Serial.println("22mm 120W");
         
       } else if (MotorParams == 2) {
         // 30mm 200W motor, 32HP gearbox (51:1)
@@ -128,6 +129,7 @@ void receive_and_transmit()
         MotorEff = 0.89;
         GearboxEff = 0.7;
         PulleyRatio = 74/10.3; //Large aluminum pulley, large sprocket
+        Serial.println("30mm 200W 51:1");
         
       } else if (MotorParams == 3) {
         // 30mm 200W motor, 32HP gearbox (103:1)
@@ -139,6 +141,7 @@ void receive_and_transmit()
         MotorEff = 0.89;
         GearboxEff = 0.7;
         PulleyRatio = 30/13.25; //Carbon fiber pulley, motor pulley
+        Serial.println("30mm 200W 103:1");
         
       }
 
@@ -171,20 +174,36 @@ void receive_and_transmit()
       break;
 
     case 'k':
-      receiveVals(8);
-      memcpy(&CtrlType,holdOnPoint,8);  //Copy the values that indicate desired open-loop control
+      receiveVals(1);
+      memcpy(&CtrlType,holdOnPoint,1);  //Copy the values that indicate desired open-loop control
+      Serial.println(CtrlType);
       if (CtrlType==0) {
         CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
         CURRENT_DIAGNOSTICS = 0;
         MODEL_CONTROL = 0;
+        if (CURRENT_CONTROL) {
+          Serial.println("Current Control")
+        } else {
+          Serial.println("Torque Control");
+        }
       } else if (CtrlType==1) {
         CURRENT_CONTROL = 0;
         CURRENT_DIAGNOSTICS = !CURRENT_DIAGNOSTICS;
         MODEL_CONTROL = 0;
+        if (CURRENT_DIAGNOSTICS) {
+          Serial.println("Current Diagnostics");
+        } else {
+          Serial.println("Torque Control");
+        }
       } else if (CtrlType==2) {
         CURRENT_CONTROL = 0;
         CURRENT_DIAGNOSTICS = 0;
-        MODEL_CONTROL = !CURRENT_DIAGNOSTICS;
+        MODEL_CONTROL = !MODEL_CONTROL;
+        if (MODEL_CONTROL) {
+          Serial.println("Model Control");
+        } else {
+          Serial.println("Torque Control");
+        }
       }
 
       break;

@@ -24,8 +24,8 @@ void pid(Leg* leg, double input) {
   }
   leg->Input = input;
   leg->pid.Compute_KF(leg->KF);
-    Serial.print(" ZERO: ");
-    Serial.print(leg->zero);
+//    Serial.print(" ZERO: ");
+//    Serial.print(leg->zero);
 
   if (CURRENT_CONTROL && leg->PID_Setpoint!=0 && MotorParams!=100) {
     leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio * MotorEff * GearboxEff))/NomCurrent*2048) + leg->zero; //Setpoint/(Motor torque constant, gear reduction, pulley reduction, motor eff, gearbox eff)
