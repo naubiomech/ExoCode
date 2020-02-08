@@ -27,10 +27,12 @@ void pid(Leg* leg, double input) {
     Serial.print(" ZERO: ");
     Serial.print(leg->zero);
 
-  if (CURRENT_CONTROL && leg->PID_Setpoint!=0) {
+  if (CURRENT_CONTROL && leg->PID_Setpoint!=0 && MotorParams!=100) {
     leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio * MotorEff * GearboxEff))/NomCurrent*2048) + leg->zero; //Setpoint/(Motor torque constant, gear reduction, pulley reduction, motor eff, gearbox eff)
   } else if (CURRENT_DIAGNOSTICS) {
-    leg->Vol = (leg->Setpoint_Ankle/NomCurrent*2048.0) + leg->zero;  
+    leg->Vol = (leg->Setpoint_Ankle/NomCurrent*2048) + leg->zero;
+  } else if (MODEL_CONTROL && MotorParams!=100) {
+    leg->Vol = 0; //Model-based current control goes here  
   } else {
     leg->Vol = leg->Output + leg->zero; //need to map
   }

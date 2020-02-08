@@ -48,6 +48,8 @@ double step_time_length = 150;
 int count = 0;
 int CURRENT_CONTROL = 0;
 int CURRENT_DIAGNOSTICS = 0;
+int MODEL_CONTROL = 0;
+int CtrlType = 100;
 
 //Includes the PID library so we can utilize PID control
 int PID_sample_time = 1;                                             //PID operates at 1000Hz, calling at a freq of 1 ms.

@@ -105,7 +105,7 @@ void receive_and_transmit()
         NomCurrent = 3.34; //A
         MotorEff = 0.89;
         GearboxEff = 0.59;
-        PulleyRatio = 1; //Needs to be updated: small sprocket diameter 18mm diameter
+        PulleyRatio = 44/10.3; //Small aluminum pulley, large sprocket
         
       } else if (MotorParams == 1) {
         // 22mm 120W motor, 32HP C gearbox
@@ -171,8 +171,21 @@ void receive_and_transmit()
       break;
 
     case 'k':
-
-      CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
+      receiveVals(8);
+      memcpy(&CtrlType,holdOnPoint,8);  //Copy the values that indicate desired open-loop control
+      if (CtrlType==0) {
+        CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
+        CURRENT_DIAGNOSTICS = 0;
+        MODEL_CONTROL = 0;
+      } else if (CtrlType==1) {
+        CURRENT_CONTROL = 0;
+        CURRENT_DIAGNOSTICS = !CURRENT_DIAGNOSTICS;
+        MODEL_CONTROL = 0;
+      } else if (CtrlType==2) {
+        CURRENT_CONTROL = 0;
+        CURRENT_DIAGNOSTICS = 0;
+        MODEL_CONTROL = !CURRENT_DIAGNOSTICS;
+      }
 
       break;
 
