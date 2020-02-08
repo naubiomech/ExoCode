@@ -285,7 +285,8 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
       leg->PID_Setpoint = leg->New_PID_Setpoint; //Activate Dorsiflexion during state 1
     }
     else if (leg->state == 2) {
-      leg->PID_Setpoint = 0;    //Deactivate Dorsiflexion during state 2
+      leg->PID_Setpoint = leg->New_PID_Setpoint; //Continue Dorsiflexion during state 2
+      //leg->PID_Setpoint = 0;    //Deactivate Dorsiflexion during state 2
     }
   }
   else {
