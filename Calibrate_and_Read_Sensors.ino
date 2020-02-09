@@ -157,8 +157,7 @@ Gear Ratio (32HP, 4-8Nm) : 17576/343
 Large Exo Pulley Ratio: 74/10.3
 */
 double ankle_speed(const unsigned int pin){
-  double motor_voltage = (analogRead(pin) * (3.3 / 4096.0));
-  double motor_speed = map(motor_voltage, 0, 3.3, -MaxSpeed, MaxSpeed);
+  double motor_speed = MaxSpeed * (analogRead(pin) - 2048.0)/2048.0;
   double ankle_speed = motor_speed * (1/GearRatio) * (1/PulleyRatio);
   return ankle_speed;
 }

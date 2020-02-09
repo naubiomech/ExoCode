@@ -182,7 +182,7 @@ void receive_and_transmit()
         CURRENT_DIAGNOSTICS = 0;
         MODEL_CONTROL = 0;
         if (CURRENT_CONTROL) {
-          Serial.println("Current Control")
+          Serial.println("Current Control");
         } else {
           Serial.println("Torque Control");
         }

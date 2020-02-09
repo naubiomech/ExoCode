@@ -54,9 +54,9 @@ void send_data_message_wc() //with COP
   else {
 //    data_to_send[10] = (left_leg->TM_data);
 //    data_to_send[11] = (right_leg->TM_data);
-    data_to_send[10] = current(left_leg->motor_current_pin);
-    //data_to_send[11] = current(right_leg->motor_current_pin);
-    data_to_send[11] = analogRead(A10)*(3.3/4096);
+    data_to_send[10] = current(right_leg->motor_current_pin);
+    data_to_send[11] = right_leg->sign * ankle_speed(right_leg->motor_speed_pin);
+    //data_to_send[11] = analogRead(A10)*(3.3/4096);
   }
   if (FLAG_BIOFEEDBACK) {
     data_to_send[12] = right_leg->stridelength_target;
