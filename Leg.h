@@ -24,6 +24,10 @@ struct Leg {
   double* TarrayPoint = &Tarray[0];
   double Average = 0;
 
+  double SpeedArray[dim] = {0};
+  double* SpeedArrayPoint = &SpeedArray[0];
+  double AverageSpeed = 0;
+
   double sign = 1;
 
   // In A_Exo post_includes
