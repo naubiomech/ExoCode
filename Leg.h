@@ -79,10 +79,15 @@ struct Leg {
   double FSR_Ratio_Toe; // TN 5/8/19
   double FSR_Ratio_Heel;
   double FSR_Ratio_HeelMinusToe;  // SS 9/10/2019
+  double FSR_Ratio_Ankle;  // SS 2/5/2020
+  double FSR_Ratio_Knee;  // SS 2/5/2020
   double Max_FSR_Ratio;
   double Max_FSR_Ratio_Toe;
   double Max_FSR_Ratio_Heel;
   double Max_FSR_Ratio_HeelMinusToe;  // SS 9/10/2019
+  double Max_FSR_Ratio_Ankle;  // SS 2/5/2020
+  double Max_FSR_Ratio_Knee;  // SS 2/5/2020
+  
 
   // Combined_FSR.h
   double fsr_Combined_peak_ref;
@@ -115,6 +120,8 @@ struct Leg {
   //int baseline_address_Heel;  // TN 5/9/19
   double baseline_value_Heel;  // TN 5/9/19
   double baseline_value_HeelMinusToe;  // SS 9/10/2019
+  double baseline_value_Knee; // SS 2/5/2020
+  double baseline_value_Ankle; // SS 2/5/2020
 
   // PID_and_Ctrl_Parameters.h
   double torque_calibration_value_Ankle = 0;
@@ -167,10 +174,10 @@ struct Leg {
 
   // TN 5/8/19
   double Setpoint_earlyStance_Knee = 0.25 * Setpoint_Knee;
-  double Dorsi_Setpoint_Knee;
-  double Previous_Dorsi_Setpoint_Knee;
-  double* p_Dorsi_Setpoint_Knee = &Dorsi_Setpoint_Knee;
-  double* p_Previous_Dorsi_Setpoint_Knee = &Previous_Dorsi_Setpoint_Knee;
+  double Flexion_Setpoint_Knee;
+  double Previous_Flexion_Setpoint_Knee;
+  double* p_Flexion_Setpoint_Knee = &Flexion_Setpoint_Knee;
+  double* p_Previous_Flexion_Setpoint_Knee = &Previous_Flexion_Setpoint_Knee;
 
 
   // Proportional_Ctrl.h
@@ -202,8 +209,7 @@ struct Leg {
 
   // Shaping_Parameters.h
   double exp_mult = 1500.0;
-  boolean sigm_flag = true;
-  boolean sigm_flag_Knee  = true;   // TN 5/20/19
+  double exp_mult_Knee = 1500.0;
   boolean sigm_done, sigm_done_Knee;   // TN 5/20/19
 
   double New_PID_Setpoint = 0.0;
@@ -213,25 +219,27 @@ struct Leg {
   double Old_PID_Setpoint_Knee = 0.0;  // TN 5/9/19
 
   double N3 = 200;
-  double N2 = 4;
+  double N2 = 200;
   double N1 = 4;
 
   double old_N3 = 200;
-  double old_N2 = 4;
+  double old_N2 = 200;
   double old_N1 = 4;
 
   long sig_time = 0;
   long sig_time_old = 0;
+  long sig_time_Knee = 0;
+  long sig_time_old_Knee = 0;
 
   int n_iter, N_step;
+  int n_iter_Knee, N_step_Knee;
 
-  boolean signm_done = true;
 
   // State_Machine_Parameters.h
 
   int state = 1;
-  int old_state = 1;
-  int state_old = 1;
+  int old_state = 11;
+  int state_old = 11;
   int state_count_13 = 0;
   int state_count_31 = 0;
   int state_count_12 = 0;
@@ -240,6 +248,7 @@ struct Leg {
   int state_count_32 = 0;
 
   double state_3_start_time = 0;
+  double state_2_start_time = 0;
   double state_1_start_time = 0;
   double start_from_1 = 0;
   double start_from_3 = 0;
@@ -247,6 +256,8 @@ struct Leg {
   double start_time_Knee = 0;  // TN 7/3/19
   double state_3_stop_time = 0;
   double state_3_duration = 0;
+  double state_2_stop_time = 0;
+  double state_2_duration = 0;
 
   double Heel_Pos = -0.07;
   double Toe_Pos = 0.20;

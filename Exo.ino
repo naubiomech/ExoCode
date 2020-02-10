@@ -199,11 +199,11 @@ void calculate_leg_average(Leg* leg) {
 
   leg->Average_Trq = leg->Average / dim;
   leg->Average_Trq_Knee = leg->Average_K / dim;     // TN 5/9/19
-  if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
+  if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && (leg->state == 3 || leg->state == 2)) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
   }
   // TN 5/9/19
-  if (abs(leg->Average_Trq_Knee) > abs(leg->Max_Measured_Torque_Knee) && leg->state == 3) {
+  if (abs(leg->Average_Trq_Knee) > abs(leg->Max_Measured_Torque_Knee) &&  (leg->state == 3 || leg->state == 2)) {
     leg->Max_Measured_Torque_Knee = leg->Average_Trq_Knee;  //Get max measured torque during
   }
 
@@ -328,10 +328,6 @@ void rotate_motor() {
     if (streamTimerCount == 1 && flag_auto_KF == 1) {
       Auto_KF(left_leg, Control_Mode);
       Auto_KF(right_leg, Control_Mode);
-    }
-
-    // TN 5/15/19
-    if (streamTimerCount == 1 && flag_auto_KF == 1) {
       Auto_KF_Knee(left_leg, Control_Mode);
       Auto_KF_Knee(right_leg, Control_Mode);
     }
@@ -406,35 +402,51 @@ void rotate_motor() {
     //    Serial.println("right_leg->num_3_steps_Ankle");
     //    Serial.println(right_leg->num_3_steps_Ankle);
 
-    if ((left_leg->state == 3) && (left_leg->old_state == 1)) {
+    if ((left_leg->state == 3) && (left_leg->old_state == 1 || left_leg->old_state == 2)) {// SS 1/27/2020
       left_leg->state_3_start_time = millis();
     }
 
-    if ((left_leg->state == 1) && (left_leg->old_state == 3)) {
+    if ((left_leg->state == 1 || left_leg->old_state == 2) && (left_leg->old_state == 3)) {// SS 1/27/2020
       left_leg->state_3_stop_time = millis();
     }
 
     if (left_leg->state_3_stop_time > left_leg->state_3_start_time) {
       left_leg->state_3_duration = left_leg->state_3_stop_time - left_leg->state_3_start_time;
     }
-
-    left_leg->old_state = left_leg->state;
-
-    if ((right_leg->state == 3) && (right_leg->old_state == 1)) {
-      right_leg->state_3_start_time = millis();
+    if ((left_leg->state == 2) && (left_leg->old_state == 1 || left_leg->old_state == 3)) {// SS 1/27/2020
+      left_leg->state_2_start_time = millis();
     }
 
-    else {
+    if ((left_leg->state == 1 || left_leg->old_state == 3) && (left_leg->old_state == 2)) {// SS 1/27/2020
+      left_leg->state_2_stop_time = millis();
+    }
 
-      if ((right_leg->state == 1) && (right_leg->old_state == 3)) {
+    if (left_leg->state_2_stop_time > left_leg->state_2_start_time) {
+      left_leg->state_2_duration = left_leg->state_2_stop_time - left_leg->state_2_start_time;
+    }
+    
+    left_leg->old_state = left_leg->state;
 
-        right_leg->state_3_stop_time = millis();
+    if ((right_leg->state == 3) && (right_leg->old_state == 1 || right_leg->old_state == 1)) {
+      right_leg->state_3_start_time = millis();
+    }
+    if ((right_leg->state == 1 || right_leg->old_state == 2) && (right_leg->old_state == 3)) {// SS 1/27/2020
+      right_leg->state_3_stop_time = millis();
+    }
 
+    if (right_leg->state_3_stop_time > right_leg->state_3_start_time) {
+      right_leg->state_3_duration = right_leg->state_3_stop_time - right_leg->state_3_start_time;
+    }
+    if ((right_leg->state == 2) && (right_leg->old_state == 1 || right_leg->old_state == 3)) {// SS 1/27/2020
+      right_leg->state_2_start_time = millis();
+    }
 
-        if (right_leg->state_3_stop_time > right_leg->state_3_start_time) {
-          right_leg->state_3_duration = right_leg->state_3_stop_time - right_leg->state_3_start_time;
-        }
-      }
+    if ((right_leg->state == 1 || left_leg->old_state == 3) && (right_leg->old_state == 2)) {// SS 1/27/2020
+      right_leg->state_2_stop_time = millis();
+    }
+
+    if (right_leg->state_2_stop_time > right_leg->state_2_start_time) {
+      right_leg->state_2_duration = right_leg->state_2_stop_time - right_leg->state_2_start_time;
     }
 
     right_leg->old_state = right_leg->state;
@@ -444,9 +456,6 @@ void rotate_motor() {
     int right_scaling_index = 0;
 
     if (Control_Mode == 5) {
-
-
-
       if ((left_leg->state == 3) && (left_leg->state_3_duration > 0)) {
         left_scaling_index = (millis() - left_leg->state_3_start_time) / (left_leg->state_3_duration / 100);
         if (left_scaling_index < 101) {
@@ -466,9 +475,6 @@ void rotate_motor() {
           right_leg->PID_Setpoint = 0;
         }
       }
-
-
-
     }
 
 
@@ -485,13 +491,13 @@ void rotate_motor() {
     left_leg->N3 = Control_Adjustment(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
                                       left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle_Pctrl,
                                       left_leg->New_PID_Setpoint_Knee, left_leg->p_Setpoint_Knee_Pctrl, Control_Mode, left_leg->Prop_Gain,
-                                      left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->FSR_Ratio_Toe, &left_leg->FSR_Ratio_Heel, &left_leg->FSR_Ratio_HeelMinusToe,
-                                      &left_leg->Max_FSR_Ratio, &left_leg->Max_FSR_Ratio_Toe, &left_leg->Max_FSR_Ratio_Heel, &left_leg->Max_FSR_Ratio_HeelMinusToe);
+                                      left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->FSR_Ratio_Toe, &left_leg->FSR_Ratio_Heel, &left_leg->FSR_Ratio_HeelMinusToe, &left_leg->FSR_Ratio_Ankle, &left_leg->FSR_Ratio_Knee,
+                                      &left_leg->Max_FSR_Ratio, &left_leg->Max_FSR_Ratio_Toe, &left_leg->Max_FSR_Ratio_Heel, &left_leg->Max_FSR_Ratio_HeelMinusToe, &left_leg->Max_FSR_Ratio_Ankle, &left_leg->Max_FSR_Ratio_Knee);
     right_leg->N3 = Control_Adjustment(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps,
                                        right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle_Pctrl,
                                        right_leg->New_PID_Setpoint_Knee, right_leg->p_Setpoint_Knee_Pctrl, Control_Mode, right_leg->Prop_Gain,
-                                       right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->FSR_Ratio_Toe, &right_leg->FSR_Ratio_Heel, &right_leg->FSR_Ratio_HeelMinusToe,
-                                       &right_leg->Max_FSR_Ratio, &right_leg->Max_FSR_Ratio_Toe, &right_leg->Max_FSR_Ratio_Heel, &right_leg->Max_FSR_Ratio_HeelMinusToe);
+                                       right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->FSR_Ratio_Toe, &right_leg->FSR_Ratio_Heel, &right_leg->FSR_Ratio_HeelMinusToe, &right_leg->FSR_Ratio_Ankle, &right_leg->FSR_Ratio_Knee,
+                                       &right_leg->Max_FSR_Ratio, &right_leg->Max_FSR_Ratio_Toe, &right_leg->Max_FSR_Ratio_Heel, &right_leg->Max_FSR_Ratio_HeelMinusToe, &right_leg->Max_FSR_Ratio_Ankle, &right_leg->Max_FSR_Ratio_Knee);
 
   }// end if stream==1
 }

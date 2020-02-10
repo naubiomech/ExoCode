@@ -28,9 +28,9 @@ void receive_and_transmit()
       }
       if (Flag_Knee_Cfg == true) {
         *(data_to_send_point) = left_leg->Setpoint_Knee;      //MATLAB is expecting to recieve the Torque Parameters
-        *(data_to_send_point + 1) = left_leg->Dorsi_Setpoint_Knee;
+        *(data_to_send_point + 1) = left_leg->Flexion_Setpoint_Knee;
         *(data_to_send_point + 2) = right_leg->Setpoint_Knee;
-        *(data_to_send_point + 3) = right_leg->Dorsi_Setpoint_Knee;
+        *(data_to_send_point + 3) = right_leg->Flexion_Setpoint_Knee;
         send_command_message('D', data_to_send_point, 4);
       }
 
@@ -105,19 +105,19 @@ void receive_and_transmit()
       if (Flag_Knee_Cfg == true) {
         //MATLAB is only sending 1 value, a double, which is 8 bytes
         left_leg->Previous_Setpoint_Knee = left_leg->Setpoint_Knee;
-        left_leg->Previous_Dorsi_Setpoint_Knee = left_leg->Dorsi_Setpoint_Knee;
+        left_leg->Previous_Flexion_Setpoint_Knee = left_leg->Flexion_Setpoint_Knee;
         right_leg->Previous_Setpoint_Knee = right_leg->Setpoint_Knee;
-        right_leg->Previous_Dorsi_Setpoint_Knee = right_leg->Dorsi_Setpoint_Knee;
+        right_leg->Previous_Flexion_Setpoint_Knee = right_leg->Flexion_Setpoint_Knee;
         memcpy(&left_leg->Setpoint_Knee, holdOnPoint, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-        memcpy(&left_leg->Dorsi_Setpoint_Knee, holdOnPoint + 8, 8);
+        memcpy(&left_leg->Flexion_Setpoint_Knee, holdOnPoint + 8, 8);
         memcpy(&right_leg->Setpoint_Knee, holdOnPoint + 16, 8);
-        memcpy(&right_leg->Dorsi_Setpoint_Knee, holdOnPoint + 24, 8);
+        memcpy(&right_leg->Flexion_Setpoint_Knee, holdOnPoint + 24, 8);
 
         if (left_leg->Setpoint_Knee < 0) {
           left_leg->Setpoint_Knee = 0;
           left_leg->Previous_Setpoint_Knee = 0;
-          left_leg->Dorsi_Setpoint_Knee = 0;
-          left_leg->Previous_Dorsi_Setpoint_Knee = 0;
+          left_leg->Flexion_Setpoint_Knee = 0;
+          left_leg->Previous_Flexion_Setpoint_Knee = 0;
           left_leg->coef_in_3_steps_Knee  = 0;
           left_leg->activate_in_3_steps_Knee  = 1;
           left_leg->first_step_Knee  = 1;
@@ -125,7 +125,7 @@ void receive_and_transmit()
           left_leg->start_step_Knee  = 0;
         } else {
           left_leg->Setpoint_Knee = abs(left_leg->Setpoint_Knee);
-          left_leg->Dorsi_Setpoint_Knee = -abs(left_leg->Dorsi_Setpoint_Knee);
+          left_leg->Flexion_Setpoint_Knee = -abs(left_leg->Flexion_Setpoint_Knee);
           left_leg->Previous_Setpoint_Knee_Pctrl = left_leg->Previous_Setpoint_Knee;
           left_leg->Setpoint_Knee_Pctrl = left_leg->Setpoint_Knee;
           left_leg->activate_in_3_steps_Knee  = 1;
@@ -136,9 +136,9 @@ void receive_and_transmit()
 
         if (right_leg->Setpoint_Knee < 0) {
           right_leg->Setpoint_Knee = 0;
-          right_leg->Dorsi_Setpoint_Knee = 0;
+          right_leg->Flexion_Setpoint_Knee = 0;
           right_leg->Previous_Setpoint_Knee = 0;
-          right_leg->Previous_Dorsi_Setpoint_Knee = 0;
+          right_leg->Previous_Flexion_Setpoint_Knee = 0;
           right_leg->coef_in_3_steps_Knee = 0;
           right_leg->activate_in_3_steps_Knee = 1;
           right_leg->first_step_Knee = 1;
@@ -147,7 +147,7 @@ void receive_and_transmit()
           Serial.println("Right Knee Setpoint Negative, going to zero");
         } else {
           right_leg->Setpoint_Knee = -abs(right_leg->Setpoint_Knee);                    //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
-          right_leg->Dorsi_Setpoint_Knee = abs(right_leg->Dorsi_Setpoint_Knee);
+          right_leg->Flexion_Setpoint_Knee = abs(right_leg->Flexion_Setpoint_Knee);
           //Recieved the large data chunk chopped into bytes, a roundabout way was needed
           right_leg->Setpoint_Knee_Pctrl = right_leg->Setpoint_Knee;
           right_leg->Previous_Setpoint_Knee_Pctrl = right_leg->Previous_Setpoint_Knee;
@@ -316,12 +316,26 @@ void receive_and_transmit()
         right_leg->p_steps->plant_peak_mean_Toe = read_baseline(right_leg->baseline_address);
         left_leg->baseline_value_Toe = left_leg->p_steps->plant_peak_mean_Toe;
         right_leg->baseline_value_Toe = right_leg->p_steps->plant_peak_mean_Toe;
+        left_leg->baseline_value_Ankle = left_leg->baseline_value_Toe;
+        right_leg->baseline_value_Ankle = right_leg->baseline_value_Toe;
+        
         left_leg->p_steps->plant_peak_mean_HeelMinusToe = read_baseline(left_leg->baseline_address + sizeof(double) + 1);
         right_leg->p_steps->plant_peak_mean_HeelMinusToe = read_baseline(right_leg->baseline_address + sizeof(double) + 1);
-        //left_leg->baseline_value_Heel = left_leg->p_steps->plant_peak_mean_Heel;
-        //right_leg->baseline_value_Heel = right_leg->p_steps->plant_peak_mean_Heel;
+        left_leg->p_steps->plant_peak_mean_Heel = read_baseline(left_leg->baseline_address + sizeof(double) + 1);
+        right_leg->p_steps->plant_peak_mean_Heel = read_baseline(right_leg->baseline_address + sizeof(double) + 1);
+        left_leg->baseline_value_Heel = left_leg->p_steps->plant_peak_mean_Heel;
+        right_leg->baseline_value_Heel = right_leg->p_steps->plant_peak_mean_Heel;
         left_leg->baseline_value_HeelMinusToe = left_leg->p_steps->plant_peak_mean_HeelMinusToe;
         right_leg->baseline_value_HeelMinusToe = right_leg->p_steps->plant_peak_mean_HeelMinusToe;
+
+        if(flag_id_KneeHeel){
+          right_leg->baseline_value_Knee = right_leg->baseline_value_Heel;
+          left_leg->baseline_value_Knee = left_leg->baseline_value_Heel;
+        }else{
+          right_leg->baseline_value_Knee = right_leg->baseline_value_HeelMinusToe;
+          left_leg->baseline_value_Knee = left_leg->baseline_value_HeelMinusToe;
+        }
+        
       } else if (FLAG_TOE_SENSOR) {
         left_leg->p_steps->plant_peak_mean = read_baseline(left_leg->baseline_address);
         right_leg->p_steps->plant_peak_mean = read_baseline(right_leg->baseline_address);
@@ -486,10 +500,15 @@ void receive_and_transmit()
 
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
-      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint_Ankle;
-      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint_Ankle;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle;
+      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint_A;
+      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint_A;
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_A;
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_A;
+
+      *right_leg->p_Setpoint_Knee = right_leg->p_steps->Setpoint_K;// SS 1/15/2020
+      *left_leg->p_Setpoint_Knee = left_leg->p_steps->Setpoint_K;// SS 1/15/2020
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_K;// SS 1/15/2020
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_K; // SS 1/15/2020
       break;
 
     case 'Q':  // TN 7/3/19
@@ -535,9 +554,9 @@ void receive_and_transmit()
       break;
 
 
-    case 's':  // TN 7/3/19
-
-      break;
+//    case 's':  // TN 7/3/19
+//
+//      break;
 
     case 'C':
       while (bluetooth.available() > 0) bluetooth.read();
@@ -566,12 +585,14 @@ void receive_and_transmit()
       break;
 
     case 'I':  // TN 7/3/19
-      if (Flag_Ankle_Cfg == true)
-        *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint_Ankle;
-      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint_Ankle;
-      if (Flag_Knee_Cfg == true)
-        *left_leg->p_Setpoint_Knee = left_leg->p_steps->Setpoint_Knee;
-      *right_leg->p_Setpoint_Knee = right_leg->p_steps->Setpoint_Knee;
+      if (Flag_Ankle_Cfg == true){
+        *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint_A;
+        *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint_A;
+      }
+      if (Flag_Knee_Cfg == true){
+        *left_leg->p_Setpoint_Knee = left_leg->p_steps->Setpoint_K;
+        *right_leg->p_Setpoint_Knee = right_leg->p_steps->Setpoint_K;
+      }
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
       break;
@@ -597,11 +618,13 @@ void receive_and_transmit()
         }
 
         // TN 7/25/19
-        write_baseline(left_leg->baseline_address, left_leg->baseline_value);
-        write_baseline(right_leg->baseline_address, right_leg->baseline_value);
+        write_baseline(left_leg->baseline_address, left_leg->baseline_value_Ankle);
+        write_baseline(right_leg->baseline_address, right_leg->baseline_value_Ankle);
 
-        write_baseline(left_leg->baseline_address + sizeof(double) + sizeof(char), left_leg->baseline_value_HeelMinusToe);  // SS 9/10/2019
-        write_baseline(right_leg->baseline_address + sizeof(double) + sizeof(char), right_leg->baseline_value_HeelMinusToe);  // SS 9/10/2019
+        write_baseline(left_leg->baseline_address + sizeof(double) + sizeof(char), left_leg->baseline_value_Knee);
+        write_baseline(right_leg->baseline_address + sizeof(double) + sizeof(char), right_leg->baseline_value_Knee);
+//        write_baseline(left_leg->baseline_address + sizeof(double) + sizeof(char), left_leg->baseline_value_HeelMinusToe);  // SS 9/10/2019
+//        write_baseline(right_leg->baseline_address + sizeof(double) + sizeof(char), right_leg->baseline_value_HeelMinusToe);  // SS 9/10/2019
 
 
         write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value_Ankle);
@@ -674,10 +697,10 @@ void receive_and_transmit()
       FLAG_BALANCE = true;
       Old_Control_Mode = Control_Mode;
       Control_Mode = 2;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle;
-      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;   // TN 5/9/19
-      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_Knee;    // TN 5/9/19
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_A;
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_A;
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_K;   // TN 5/9/19
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_K;    // TN 5/9/19
       FLAG_BALANCE = true;
       break;
 
@@ -689,12 +712,14 @@ void receive_and_transmit()
       Control_Mode = Old_Control_Mode;
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
-      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint_Ankle;
-      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint_Ankle;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle;
-      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;  // TN 5/9/19
-      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_Knee;   // TN 5/9/19
+      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint_A;
+      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint_A;
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_A;
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_A;
+      *right_leg->p_Setpoint_Knee = right_leg->p_steps->Setpoint_K;// SS 1/21/2020
+      *left_leg->p_Setpoint_Knee = left_leg->p_steps->Setpoint_K;// SS 1/21/2020
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_K; // TN 5/9/19
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_K;// TN 5/9/19
       FLAG_BALANCE = false;
       break;
 
@@ -743,14 +768,15 @@ void receive_and_transmit()
       FLAG_TOE_HEEL_SENSORS = true; // TN 5/8/19
 
       flag_id = false; // TN 04/29/19
+      flag_id_KneeHeel = false;  //  SS  2/5/2020
       flag_pivot = true; // TN 04/29/19
       if (Flag_Prop_Ctrl == true) // TN 04/29/19
-
         Control_Mode = 3;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
-      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;  // TN 5/8/19
-      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_Knee;     // TN 5/8/19
+        
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_A; // TN 04/29/19
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_A; // TN 04/29/19
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_K;  // TN 5/8/19
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_K;     // TN 5/8/19
 
       break;
 
@@ -765,14 +791,38 @@ void receive_and_transmit()
       FLAG_TOE_HEEL_SENSORS = true; // TN 5/8/19
 
       flag_id = true; // TN 04/29/19
+      flag_id_KneeHeel = false;  //  SS  2/5/2020
       flag_pivot = false; // TN 04/29/19
       if (Flag_Prop_Ctrl == true) // TN 04/29/19
-
         Control_Mode = 4; // TN 04/29/19
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
-      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;  // TN 5/8/19
-      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_Knee;     // TN 5/8/19
+        
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_A; // TN 04/29/19
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_A; // TN 04/29/19
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_K;  // TN 5/8/19
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_K;     // TN 5/8/19
+
+      break;
+
+      case 's':
+      // OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
+      // FLAG_ONE_TOE_SENSOR = true;
+      //Old_Control_Mode = Control_Mode;
+      //      Control_Mode = 4; // activate Inverse Dynamic proportional control
+      //      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+      //      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+      OLD_FLAG_TOE_HEEL_SENSORS = FLAG_TOE_HEEL_SENSORS; // TN 5/8/19
+      FLAG_TOE_HEEL_SENSORS = true; // TN 5/8/19
+
+      flag_id = true; // TN 04/29/19
+      flag_id_KneeHeel = true;  //  SS  2/5/2020
+      flag_pivot = false; // TN 04/29/19
+      if (Flag_Prop_Ctrl == true) // TN 04/29/19
+        Control_Mode = 4; // TN 04/29/19
+        
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_A; // TN 04/29/19
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_A; // TN 04/29/19
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_K;  // TN 5/8/19
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_K;     // TN 5/8/19
 
       break;
 
@@ -787,13 +837,13 @@ void receive_and_transmit()
         Control_Mode = 3; // activate pivot PC // TN 04/29/19
 
 
-      if (flag_id == true) // TN 04/29/19
+      if (flag_id == true || flag_id_KneeHeel == true) // TN 04/29/19
         Control_Mode = 4; // activate ID PC // TN 04/29/19
 
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle; // TN 04/29/19
-      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;  // TN 5/8/19
-      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_Knee;     // TN 5/8/19
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_A; // TN 04/29/19
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_A; // TN 04/29/19
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_K;  // TN 5/8/19
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_K;     // TN 5/8/19
 
       break;
 
@@ -804,16 +854,17 @@ void receive_and_transmit()
       //FLAG_TOE_HEEL_SENSORS = false; // TN 5/8/19
       right_leg->p_steps->torque_adj = false;
       left_leg->p_steps->torque_adj = false;
-      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint_Ankle;
-      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint_Ankle;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle;
-      *right_leg->p_Setpoint_Knee = right_leg->p_steps->Setpoint_Knee;   // TN 5/8/19
-      *left_leg->p_Setpoint_Knee = left_leg->p_steps->Setpoint_Knee;    // TN 5/8/19
-      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_Knee;    // TN 5/8/19
-      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_Knee;     // TN 5/8/19
+      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint_A;
+      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint_A;
+      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_A;
+      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_A;
+      *right_leg->p_Setpoint_Knee = right_leg->p_steps->Setpoint_K;   // TN 5/8/19
+      *left_leg->p_Setpoint_Knee = left_leg->p_steps->Setpoint_K;    // TN 5/8/19
+      *right_leg->p_Setpoint_Knee_Pctrl = right_leg->p_steps->Setpoint_K;    // TN 5/8/19
+      *left_leg->p_Setpoint_Knee_Pctrl = left_leg->p_steps->Setpoint_K;     // TN 5/8/19
       Flag_Prop_Ctrl = false; // TN 04/29/19
       flag_id = false;  // TN 5//13/19
+      flag_id_KneeHeel = false;   //  SS  2/5/2020
       flag_pivot = false;  // TN 5//13/19
       break;
 
@@ -839,24 +890,38 @@ void receive_and_transmit()
       } else if (FLAG_TOE_HEEL_SENSORS == true) {
         left_leg->baseline_value = left_leg->p_steps->plant_peak_mean_Toe;
         right_leg->baseline_value = right_leg->p_steps->plant_peak_mean_Toe;
+        left_leg->baseline_value_Toe = left_leg->p_steps->plant_peak_mean_Toe;
+        right_leg->baseline_value_Toe = right_leg->p_steps->plant_peak_mean_Toe;
+        left_leg->baseline_value_Ankle = left_leg->p_steps->plant_peak_mean_Toe;
+        right_leg->baseline_value_Ankle = right_leg->p_steps->plant_peak_mean_Toe;
+        
         left_leg->baseline_value_Heel = left_leg->p_steps->plant_peak_mean_Heel;
         right_leg->baseline_value_Heel = right_leg->p_steps->plant_peak_mean_Heel;
         left_leg->baseline_value_HeelMinusToe = left_leg->p_steps->plant_peak_mean_HeelMinusToe;  // ss 9/10/2019
         right_leg->baseline_value_HeelMinusToe = right_leg->p_steps->plant_peak_mean_HeelMinusToe;  // ss 9/10/2019
-        *(data_to_send_point) = left_leg->p_steps->plant_peak_mean_Toe;
-        *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean_Toe;
-        *(data_to_send_point + 2) = left_leg->p_steps->plant_peak_mean_HeelMinusToe; // ss 9/10/2019
-        *(data_to_send_point + 3) = right_leg->p_steps->plant_peak_mean_HeelMinusToe; // ss 9/10/2019
+        if(flag_id_KneeHeel){
+          left_leg->baseline_value_Knee = left_leg->p_steps->plant_peak_mean_Heel;
+          right_leg->baseline_value_Knee = right_leg->p_steps->plant_peak_mean_Heel;
+        }else{
+          left_leg->baseline_value_Knee = left_leg->p_steps->plant_peak_mean_HeelMinusToe;
+          right_leg->baseline_value_Knee = right_leg->p_steps->plant_peak_mean_HeelMinusToe;
+        }
+        
+        
+        *(data_to_send_point) = left_leg->baseline_value_Ankle; // ss 2/5/2020
+        *(data_to_send_point + 1) = right_leg->baseline_value_Ankle; // ss 2/5/2020
+        *(data_to_send_point + 2) = left_leg->baseline_value_Knee; // ss 2/5/2020
+        *(data_to_send_point + 3) = right_leg->baseline_value_Knee; // ss 2/5/2020
         send_command_message('B', data_to_send_point, 4);
 
       }
       else {
         left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
         right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
-        *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
-        *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
-        *(data_to_send_point + 2) = left_leg->p_steps->plant_peak_mean_HeelMinusToe; // ss 9/17/2019
-        *(data_to_send_point + 3) = right_leg->p_steps->plant_peak_mean_HeelMinusToe; // ss 9/17/2019
+         *(data_to_send_point) = left_leg->baseline_value; // ss 2/5/2020
+        *(data_to_send_point + 1) = right_leg->baseline_value; // ss 2/5/2020
+        *(data_to_send_point + 2) = left_leg->baseline_value_Knee; // ss 2/5/2020
+        *(data_to_send_point + 3) = right_leg->baseline_value_Knee; // ss 2/5/2020
         send_command_message('B', data_to_send_point, 4);
       }
 
@@ -1007,8 +1072,8 @@ void receive_and_transmit()
 
     case '"':
       if (Flag_HLO) {
-        left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_Ankle;
-        right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_Ankle;
+        left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint_A;
+        right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint_A;
         left_leg->Previous_Dorsi_Setpoint_Ankle = left_leg->Dorsi_Setpoint_Ankle;
         right_leg->Previous_Dorsi_Setpoint_Ankle = right_leg->Dorsi_Setpoint_Ankle;
         receiveVals(8);
@@ -1098,13 +1163,18 @@ void receive_and_transmit()
         memcpy(&left_leg->p_steps->plant_peak_mean_temp_Heel, holdOnPoint + 16, 8);             // send an old value of plant_peak_mean to teensy  // TN 04-26-2019
         memcpy(&right_leg->p_steps->plant_peak_mean_temp_Heel, holdOnPoint + 24, 8);//added          // send an old value of plant_peak_mean to teensy  // TN 04-26-2019
 
-        memcpy(&left_leg->p_steps->plant_peak_mean_temp_HeelMinusToe, holdOnPoint + 32, 8);             // send an old value of plant_peak_mean to teensy  // SS 9/10/2019
-        memcpy(&right_leg->p_steps->plant_peak_mean_temp_HeelMinusToe, holdOnPoint + 40, 8);//added          // send an old value of plant_peak_mean to teensy  // SS 9/10/2019
-
-        memcpy(&left_leg->torque_calibration_value_Ankle, holdOnPoint + 48, 8);
-        memcpy(&right_leg->torque_calibration_value_Ankle, holdOnPoint + 56, 8);//added
-        memcpy(&left_leg->torque_calibration_value_Knee, holdOnPoint + 64, 8);               // TN 7/15/19
-        memcpy(&right_leg->torque_calibration_value_Knee, holdOnPoint + 72, 8);//added            // TN 8/28/19
+//         memcpy(&left_leg->p_steps->plant_peak_mean_temp_HeelMinusToe, holdOnPoint + 32, 8);             // send an old value of plant_peak_mean to teensy  // SS 9/10/2019
+//        memcpy(&right_leg->p_steps->plant_peak_mean_temp_HeelMinusToe, holdOnPoint + 40, 8);//added          // send an old value of plant_peak_mean to teensy  // SS 9/10/2019
+//
+//        memcpy(&left_leg->torque_calibration_value_Ankle, holdOnPoint + 48, 8);
+//        memcpy(&right_leg->torque_calibration_value_Ankle, holdOnPoint + 56, 8);//added
+//        memcpy(&left_leg->torque_calibration_value_Knee, holdOnPoint + 64, 8);               // TN 7/15/19
+//        memcpy(&right_leg->torque_calibration_value_Knee, holdOnPoint + 72, 8);//added            // TN 8/28/19
+//
+        memcpy(&left_leg->torque_calibration_value_Ankle, holdOnPoint + 32, 8);
+        memcpy(&right_leg->torque_calibration_value_Ankle, holdOnPoint + 40, 8);//added
+        memcpy(&left_leg->torque_calibration_value_Knee, holdOnPoint + 48, 8);               // TN 7/15/19
+        memcpy(&right_leg->torque_calibration_value_Knee, holdOnPoint + 56, 8);//added            // TN 8/28/19
       }
 
       break;

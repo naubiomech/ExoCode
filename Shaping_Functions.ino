@@ -132,71 +132,37 @@ void PID_Sigm_Curve(Leg* leg) {
 
 // TN 5/13/19
 void PID_Sigm_Curve_Knee(Leg* leg) {
-  leg->sig_time = millis();
+  leg->sig_time_Knee = millis();
   //Start time for sig
-  if (leg->sig_time - leg->sig_time_old >= 2)
+  if (leg->sig_time_Knee - leg->sig_time_old_Knee >= 2)
   {
-    leg->sig_time_old = leg->sig_time;                                                  //??? records for next time this code runs??
+    leg->sig_time_old_Knee = leg->sig_time_Knee;                                                  //??? records for next time this code runs??
 
     if (abs(leg->New_PID_Setpoint_Knee - leg->PID_Setpoint_Knee) > 0.1 &&  (leg->sigm_done_Knee))
     {
-      leg->n_iter = 0;
+      leg->n_iter_Knee = 0;
       leg->sigm_done_Knee = false;                                                   //Do not let the code enter this block, until the setpoint transition has finished
 
       if (leg->state == 3) {
-        leg->N_step = leg->N3;                                           //Defines number of steps
+        leg->N_step_Knee = leg->N3;                                           //Defines number of steps
       }
       else if (leg->state == 2) {
-        leg->N_step = leg->N2;
+        leg->N_step_Knee = leg->N2;
       }
       else if (leg->state == 1) {
-        leg->N_step = leg->N1;
+        leg->N_step_Knee = leg->N1;
       }
 
-      //Optimization-------------------------------
-      if (Flag_HLO) {
-        if (leg->state == 3) {
-          leg->N_step = round(leg->T_Opt / 0.002);  // This is because we send a command every 2 ms
-        }
-        else {
-          leg->N_step = 4;
-        }
-      }
-      //------------------------------------------
-
-      leg->exp_mult = round((10 / Ts) / (leg->N_step - 1));
+      
+      leg->exp_mult_Knee = round((10 / Ts) / (leg->N_step_Knee - 1));
     } // end if sigm_done
 
-    //Optimization---------------------------------------------
-    if (Flag_HLO && leg->FLAG_UPDATE_VALUES && not(leg->state == 3))
+    
+    if (leg->sigm_done_Knee == false && leg->n_iter_Knee < leg->N_step_Knee)
     {
-      Serial.print("Update ");
-      leg->Previous_Setpoint_Knee = leg->Setpoint_Knee;
-      leg->Setpoint_Knee = leg->Setpoint_Knee_Opt;
-      leg->Previous_T_Opt = leg->T_Opt;
-      leg->T_Opt = max(0.1, leg->T_Opt_p * 1 * (leg->p_steps->plant_mean) * 0.001); //leg->T_Opt_p is the percentage of the stance phase
-      Serial.print(" - Setpoint: ");
-      Serial.print(leg->Setpoint_Knee);
-      Serial.print(" , Mean Time Stance Phase: ");
-      Serial.print((leg->p_steps->plant_mean) * 0.001);
-      Serial.print(" , Rise Time Optimization: ");
-      Serial.println(leg->T_Opt);
-      leg->FLAG_UPDATE_VALUES = false;
-    }
-    //---------------------------------------------------------
-
-    if (leg->sigm_done == false && leg->n_iter < leg->N_step)
-    {
-      //Optimization--------------------------------------------------------
-      if (Flag_HLO && leg->state == 3) {
-        leg->PID_Setpoint_Knee = Change_PID_Setpoint_Spline(leg, leg->New_PID_Setpoint_Knee, leg->PID_Setpoint_Knee, leg->Old_PID_Setpoint_Knee, Ts, leg->exp_mult, leg->n_iter, leg->N_step, leg->T_Opt_Setpoint);
-      }
-      //--------------------------------------------------------------------
-      else {
         // Determines the new intermediate PID Setpoint
-        leg->PID_Setpoint_Knee = Change_PID_Setpoint_Sigm(leg->New_PID_Setpoint_Knee, leg->PID_Setpoint_Knee, leg->Old_PID_Setpoint_Knee, Ts, leg->exp_mult, leg->n_iter, leg->N_step);
-      }
-      leg->n_iter++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
+        leg->PID_Setpoint_Knee = Change_PID_Setpoint_Sigm(leg->New_PID_Setpoint_Knee, leg->PID_Setpoint_Knee, leg->Old_PID_Setpoint_Knee, Ts, leg->exp_mult_Knee, leg->n_iter_Knee, leg->N_step_Knee);
+      leg->n_iter_Knee++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
     }
 
 

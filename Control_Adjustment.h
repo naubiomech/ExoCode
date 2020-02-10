@@ -23,8 +23,8 @@ typedef struct {
   bool flag_start_plant = false;
   bool flag_take_baseline = false;
   bool torque_adj = false;
-  double Setpoint_Ankle;
-  double Setpoint_Knee; // TN 5/9/19
+  double Setpoint_A;
+  double Setpoint_K;
   double plant_mean_base;
   double dorsi_mean_base;
   double voltage_peak_ref;

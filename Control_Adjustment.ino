@@ -174,6 +174,12 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
           leg->baseline_value_Toe = p_steps_l->plant_peak_mean_Toe;
           leg->baseline_value_Heel = p_steps_l->plant_peak_mean_Heel;
           leg->baseline_value_HeelMinusToe = p_steps_l->plant_peak_mean_HeelMinusToe; // SS 9/10/2019
+          leg->baseline_value_Ankle = leg->baseline_value_Toe;
+          if (flag_id_KneeHeel)
+            leg->baseline_value_Knee = leg->baseline_value_Heel;
+          else
+          leg->baseline_value_Knee = leg->baseline_value_HeelMinusToe;
+        
           send_command_message('n', 0, 1); //GO 4/23/19 to communicate that baseline is done
           return (p_steps_l->count_plant_base);
 
@@ -199,7 +205,7 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
 //------------------------------------------------------------------------------
 
 
-double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l, double * p_Setpoint_Ankle_Pctrl_l, double New_PID_Setpoint_Knee_l, double * p_Setpoint_Knee_Pctrl_l, int Control_Mode_l, double prop_gain_l, double taking_baseline_l, double *p_FSR_Ratio, double *p_FSR_Ratio_Toe, double *p_FSR_Ratio_Heel, double *p_FSR_Ratio_HeelMinusToe, double* p_Max_FSR_Ratio, double* p_Max_FSR_Ratio_Toe, double* p_Max_FSR_Ratio_Heel, double* p_Max_FSR_Ratio_HeelMinusToe) {
+double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l, double * p_Setpoint_Ankle_Pctrl_l, double New_PID_Setpoint_Knee_l, double * p_Setpoint_Knee_Pctrl_l, int Control_Mode_l, double prop_gain_l, double taking_baseline_l, double *p_FSR_Ratio, double *p_FSR_Ratio_Toe, double *p_FSR_Ratio_Heel, double *p_FSR_Ratio_HeelMinusToe, double *p_FSR_Ratio_Ankle, double *p_FSR_Ratio_Knee, double* p_Max_FSR_Ratio, double* p_Max_FSR_Ratio_Toe, double* p_Max_FSR_Ratio_Heel, double* p_Max_FSR_Ratio_HeelMinusToe, double* p_Max_FSR_Ratio_Ankle, double* p_Max_FSR_Ratio_Knee) {
 
   // Control Mode 2: Balance control
   // Control Mode 3: Joint Moment control, the torque is a percentage of the extimated Ankle moment. The mapping function that estimated the ankle moment use a ratio (p_FSR_Ratio) which depends on the current force of pressure
@@ -224,15 +230,15 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
 
         // while updating the ratio value still continue to provide the control
-        if ((p_steps_l->Setpoint_Ankle ) > 0) { //depending on the leg the sign changes
-          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_Ankle ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]));
+        if ((p_steps_l->Setpoint_A ) > 0) { //depending on the leg the sign changes
+          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_A ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]));
           *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
           if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
             leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
           }
         }
-        else if ((p_steps_l->Setpoint_Ankle ) < 0) {
-          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_Ankle ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]));
+        else if ((p_steps_l->Setpoint_A ) < 0) {
+          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_A ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2]));
           *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
           if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
             leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
@@ -254,17 +260,18 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
         if (*p_FSR_Ratio_Toe > (*p_Max_FSR_Ratio_Toe))
           (*p_Max_FSR_Ratio_Toe) = *p_FSR_Ratio_Toe; // update the max fsr Ratio of Toe
 
+        *p_FSR_Ratio_Ankle = *p_FSR_Ratio_Toe;
 
         // while updating the ratio value still continue to provide the control
-        if ((p_steps_l->Setpoint_Ankle ) > 0) { //depending on the leg the sign changes
-          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_Ankle ) * (*p_FSR_Ratio_Toe));  // TN 5/8/19
+        if ((p_steps_l->Setpoint_A ) > 0) { //depending on the leg the sign changes
+          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_A ) * (*p_FSR_Ratio_Ankle));  // TN 5/8/19
           *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
           if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
             leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
           }
         }
-        else if ((p_steps_l->Setpoint_Ankle ) < 0) {
-          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_Ankle ) * (*p_FSR_Ratio_Toe));   // TN 5/8/19
+        else if ((p_steps_l->Setpoint_A ) < 0) {
+          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_A ) * (*p_FSR_Ratio_Ankle));   // TN 5/8/19
           *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
           if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
             leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
@@ -275,6 +282,16 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
         }
         //Knee Control Setpoint
         // SS 9/10/2019
+        if (p_steps_l->plant_peak_mean_Heel == 0)
+          *p_FSR_Ratio_Heel = 0;
+        else
+          *p_FSR_Ratio_Heel = (p_steps_l->curr_voltage_Heel)  / p_steps_l->plant_peak_mean_Heel;  // SS 9/10/2019
+          if (*p_FSR_Ratio_Heel < 0)  // SS  9/10/2019
+            *p_FSR_Ratio_Heel = 0;  // SS 9/10/2019
+            
+        if (*p_FSR_Ratio_Heel > (*p_Max_FSR_Ratio_Heel))
+          *p_Max_FSR_Ratio_Heel = *p_FSR_Ratio_Heel; // update the max fsr Ratio of HeelMinusToe  // SS 9/10/2019
+        
         if (p_steps_l->plant_peak_mean_HeelMinusToe == 0)
           *p_FSR_Ratio_HeelMinusToe = 0;
         else
@@ -283,19 +300,23 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
             *p_FSR_Ratio_HeelMinusToe = 0;  // SS 9/10/2019
             
         if (*p_FSR_Ratio_HeelMinusToe > (*p_Max_FSR_Ratio_HeelMinusToe))
-          (*p_Max_FSR_Ratio_HeelMinusToe) = *p_FSR_Ratio_HeelMinusToe; // update the max fsr Ratio of HeelMinusToe  // SS 9/10/2019
+          *p_Max_FSR_Ratio_HeelMinusToe = *p_FSR_Ratio_HeelMinusToe; // update the max fsr Ratio of HeelMinusToe  // SS 9/10/2019
 
-
+        if (flag_id_KneeHeel)
+          *p_FSR_Ratio_Knee = *p_FSR_Ratio_Heel;
+        else
+          *p_FSR_Ratio_Knee = *p_FSR_Ratio_HeelMinusToe;
+        
         // while updating the ratio value still continue to provide the control 
-        if ((p_steps_l->Setpoint_Knee ) > 0) { //depending on the leg the sign changes
-          *p_Setpoint_Knee_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_HeelMinusToe));  // SS 9/10/2019
+        if ((p_steps_l->Setpoint_K ) > 0) { //depending on the leg the sign changes
+          *p_Setpoint_Knee_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_K ) * (*p_FSR_Ratio_Knee));  // SS 9/10/2019
           *p_Setpoint_Knee_Pctrl_l = min(Max_Prop, *p_Setpoint_Knee_Pctrl_l);
           if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {  // SS 9/10/2019
             leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
           }
         }
-        else if ((p_steps_l->Setpoint_Knee ) < 0) {
-          *p_Setpoint_Knee_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_HeelMinusToe));
+        else if ((p_steps_l->Setpoint_K ) < 0) {
+          *p_Setpoint_Knee_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_K ) * (*p_FSR_Ratio_Knee));
           *p_Setpoint_Knee_Pctrl_l = min(Min_Prop, *p_Setpoint_Knee_Pctrl_l);
           if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {  // SS 9/10/2019
             leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
@@ -323,15 +344,15 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 //
 //
 //        // while updating the ratio value still continue to provide the control  // TN 5/9/19
-//        if ((p_steps_l->Setpoint_Knee ) > 0) { //depending on the leg the sign changes
-//          *p_Setpoint_Knee_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_Heel));
+//        if ((p_steps_l->Setpoint_K ) > 0) { //depending on the leg the sign changes
+//          *p_Setpoint_Knee_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_K ) * (*p_FSR_Ratio_Heel));
 //          *p_Setpoint_Knee_Pctrl_l = min(Max_Prop, *p_Setpoint_Knee_Pctrl_l);
 //          if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {  // TN 5/22/19
 //            leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
 //          }
 //        }
-//        else if ((p_steps_l->Setpoint_Knee ) < 0) {
-//          *p_Setpoint_Knee_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_Heel));
+//        else if ((p_steps_l->Setpoint_K ) < 0) {
+//          *p_Setpoint_Knee_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_K ) * (*p_FSR_Ratio_Heel));
 //          *p_Setpoint_Knee_Pctrl_l = min(Min_Prop, *p_Setpoint_Knee_Pctrl_l);
 //          if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {  // TN 5/22/19
 //            leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
@@ -369,6 +390,13 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     p_steps_l->plant_peak_mean_HeelMinusToe = p_steps_l->plant_peak_mean_temp_HeelMinusToe; // SS 9/10/2019
     leg->baseline_value_HeelMinusToe = p_steps_l->plant_peak_mean_HeelMinusToe; // SS 9/10/2019
   }
+
+  leg->baseline_value_Ankle = leg->baseline_value_Toe;
+  
+  if (flag_id_KneeHeel)
+    leg->baseline_value_Knee = leg->baseline_value_Heel;
+  else
+    leg->baseline_value_Knee = leg->baseline_value_HeelMinusToe;
 
   // if you transit from state 1 to state 3 dorsiflexion is completed and start plantarflexion
   if (R_state_l == 3 && (R_state_old_l == 2 || R_state_old_l == 1))
@@ -427,6 +455,14 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     if (*p_FSR_Ratio_HeelMinusToe > (*p_Max_FSR_Ratio_HeelMinusToe))  // SS 9/10/2019
       (*p_Max_FSR_Ratio_HeelMinusToe) = *p_FSR_Ratio_HeelMinusToe;  // SS 9/10/2019
 
+    if (flag_id_KneeHeel){
+      *p_FSR_Ratio_Knee = *p_FSR_Ratio_Heel;
+      *p_Max_FSR_Ratio_Knee = *p_Max_FSR_Ratio_Heel;
+    }else{
+      *p_FSR_Ratio_Knee = *p_FSR_Ratio_HeelMinusToe;
+      *p_Max_FSR_Ratio_Knee = *p_Max_FSR_Ratio_HeelMinusToe;
+    }
+
     ////////
 
     if (Control_Mode_l == 2) { // Balance control
@@ -437,15 +473,15 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
     } else if (Control_Mode_l == 3) {
       // JOINT MOMENT CONTROL also known as pivot proportional control
-      if ((p_steps_l->Setpoint_Ankle ) > 0) {
-        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_Ankle ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
+      if ((p_steps_l->Setpoint_A ) > 0) {
+        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_A ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
         *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
         if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
           leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
         }
       }
-      else if ((p_steps_l->Setpoint_Ankle ) < 0) {
-        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_Ankle ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
+      else if ((p_steps_l->Setpoint_A ) < 0) {
+        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_A ) * (p_prop[0] * pow(*p_FSR_Ratio, 2) + p_prop[1] * (*p_FSR_Ratio) + p_prop[2]) / (p_prop[0] + p_prop[1] + p_prop[2])); // the difference here is that we do it as a function of the FSR calibration
         *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
         if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
           leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
@@ -459,15 +495,15 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     }
     else if (Control_Mode_l == 4)  {
 
-      if ((p_steps_l->Setpoint_Ankle ) > 0) {
-        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_Ankle ) * (*p_FSR_Ratio_Toe)); // the difference here is that we do it as a function of the FSR calibration  // TN 5/8/19
+      if ((p_steps_l->Setpoint_A ) > 0) {
+        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_A ) * (*p_FSR_Ratio_Ankle)); // the difference here is that we do it as a function of the FSR calibration  // TN 5/8/19
         *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
         if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
           leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
         }
       }
-      else if ((p_steps_l->Setpoint_Ankle ) < 0) {
-        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_Ankle ) * (*p_FSR_Ratio_Toe)); // the difference here is that we do it as a function of the FSR calibration  // TN 5/8/19
+      else if ((p_steps_l->Setpoint_A ) < 0) {
+        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_A ) * (*p_FSR_Ratio_Ankle)); // the difference here is that we do it as a function of the FSR calibration  // TN 5/8/19
         *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
         if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
           leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
@@ -478,15 +514,15 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       }
 
       // SS 9/10/2019
-      if ((p_steps_l->Setpoint_Knee ) > 0) {
-        *p_Setpoint_Knee_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_HeelMinusToe)); // the difference here is that we do it as a function of the FSR calibration  // SS 9/10/2019
+      if ((p_steps_l->Setpoint_K ) > 0) {
+        *p_Setpoint_Knee_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_K ) * (*p_FSR_Ratio_Knee)); // the difference here is that we do it as a function of the FSR calibration  // SS 9/10/2019
         *p_Setpoint_Knee_Pctrl_l = min(Max_Prop, *p_Setpoint_Knee_Pctrl_l);
         if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {
           leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
         }
       }
-      else if ((p_steps_l->Setpoint_Knee ) < 0) {
-        *p_Setpoint_Knee_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_HeelMinusToe)); // the difference here is that we do it as a function of the FSR calibration  // SS 9/10/2019
+      else if ((p_steps_l->Setpoint_K ) < 0) {
+        *p_Setpoint_Knee_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_K ) * (*p_FSR_Ratio_Knee)); // the difference here is that we do it as a function of the FSR calibration  // SS 9/10/2019
         *p_Setpoint_Knee_Pctrl_l = min(Min_Prop, *p_Setpoint_Knee_Pctrl_l); // SS 9/17/2019
         if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {
           leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
@@ -544,16 +580,16 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 //
 //    if (Control_Mode_l == 4)  {
 //
-//      if ((p_steps_l->Setpoint_Knee ) > 0) {
-//        *p_Setpoint_Knee_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_Heel)); // the difference here is that we do it as a function of the FSR calibration
+//      if ((p_steps_l->Setpoint_K ) > 0) {
+//        *p_Setpoint_Knee_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint_K ) * (*p_FSR_Ratio_Heel)); // the difference here is that we do it as a function of the FSR calibration
 //        *p_Setpoint_Knee_Pctrl_l = min(Max_Prop, *p_Setpoint_Knee_Pctrl_l);
 //        if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {
 //          leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
 //        }
 //      }
-//      else if ((p_steps_l->Setpoint_Knee ) < 0) {
+//      else if ((p_steps_l->Setpoint_K ) < 0) {
 //
-//        *p_Setpoint_Knee_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_Knee ) * (*p_FSR_Ratio_Heel)); // the difference here is that we do it as a function of the FSR calibration
+//        *p_Setpoint_Knee_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint_K ) * (*p_FSR_Ratio_Heel)); // the difference here is that we do it as a function of the FSR calibration
 //        *p_Setpoint_Knee_Pctrl_l = min(Min_Prop, *p_Setpoint_Knee_Pctrl_l);
 //        if (abs(leg->Setpoint_Knee_Pctrl) > abs(leg->MaxPropSetpoint_Knee)) {
 //          leg->MaxPropSetpoint_Knee = leg->Setpoint_Knee_Pctrl; // Get max setpoint for current stance phase
@@ -649,6 +685,8 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     p_Max_FSR_Ratio_Toe = 0;   // TN 5/8/19
     p_Max_FSR_Ratio_Heel = 0;   // TN 5/8/19
     p_Max_FSR_Ratio_HeelMinusToe = 0;   // SS 9/10/2019
+    p_Max_FSR_Ratio_Ankle = 0;   // SS 2/5/2020
+    p_Max_FSR_Ratio_Knee = 0;   // SS 2/5/2020
     *p_Setpoint_Ankle_Pctrl_l = New_PID_Setpoint_l; //Dorsiflexion setpoint GO 4/22/19
     *p_Setpoint_Knee_Pctrl_l = New_PID_Setpoint_Knee_l; //Dorsiflexion setpoint TN 5/13/19
     if (leg->auto_KF_update == 0) {

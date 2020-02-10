@@ -95,6 +95,7 @@ bool flag_motor_error_check = true;
 bool Flag_Prop_Ctrl = false; // TN 04/29/2019
 bool flag_pivot = false; // TN 04/29/2019
 bool flag_id = false; // TN 04/29/2019
+bool flag_id_KneeHeel = false;   //  SS  2/5/2020
 
 // Flags for ankle and knee modules // TN 05/06/2019
 

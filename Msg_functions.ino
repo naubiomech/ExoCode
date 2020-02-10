@@ -17,8 +17,8 @@ void send_data_message_wc() //with COP
     data_to_send[3] = right_leg->score;
     data_to_send[4] = left_leg->score;
   } else {
-    data_to_send[3] = (right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Toe_peak_ref);
-    data_to_send[4] = (right_leg->FSR_Toe_Average);
+    data_to_send[3] = (right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
+    data_to_send[4] = (right_leg->FSR_Combined_Average);
   }
 
   //Left Leg
@@ -33,8 +33,8 @@ void send_data_message_wc() //with COP
     data_to_send[8] = (left_leg->FSR_Toe_Average);
     data_to_send[9] = (left_leg->FSR_Heel_Average);
   } else {
-    data_to_send[8] = (left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Toe_peak_ref);
-    data_to_send[9] = (left_leg->FSR_Toe_Average);
+    data_to_send[8] = (left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
+    data_to_send[9] = (left_leg->FSR_Combined_Average);
   }
 
   // Signals
@@ -45,13 +45,19 @@ void send_data_message_wc() //with COP
     data_to_send[10] = right_leg->stridelength_update;
     data_to_send[11] = left_leg->stridelength_update;
   }
+  else if (Flag_Knee_Cfg == true) {  // TN 5/17/19
+    data_to_send[10] = right_leg->sign * right_leg->PID_Setpoint_Knee;
+    data_to_send[11] = left_leg->sign * left_leg->PID_Setpoint_Knee;  // TN 5/17/19
+
+    //data_to_send[10] = (right_leg->PID_Setpoint_Knee);   // TN 5/13/19
+    // data_to_send[11] = (left_leg->PID_Setpoint_Knee);   // TN 5/13/19
+  }
   else  {
-    data_to_send[10] = (right_leg->sign * right_leg->PID_Setpoint_Knee);   // SS 9/17/2019
-    data_to_send[11] = (left_leg->sign * left_leg->PID_Setpoint_Knee);   // SS 9/17/2019
+    data_to_send[10] = (right_leg->sign * right_leg->PID_Setpoint_Knee);   // TN 5/13/19
+    data_to_send[11] = (left_leg->sign * left_leg->PID_Setpoint_Knee);   // TN 5/13/19
   }
 
-
-  if (FLAG_BIOFEEDBACK) {
+if (FLAG_BIOFEEDBACK) {
     data_to_send[12] = right_leg->stridelength_target;
     data_to_send[13] = left_leg->stridelength_target;
   }
@@ -59,6 +65,12 @@ void send_data_message_wc() //with COP
     data_to_send[12] = (right_leg->sign * right_leg->Average_Trq_Knee); // SS 9/17/2019
     data_to_send[13] = (left_leg->sign * left_leg->Average_Trq_Knee);  // SS 9/17/2019
   }
+  
+//  data_to_send[14] = right_leg->FSR_Heel_Average - right_leg->FSR_Toe_Average;  // SS 11/4/2019
+//  data_to_send[15] = left_leg->FSR_Heel_Average - left_leg->FSR_Toe_Average;  // SS 11/4/2019
+//  data_to_send[16] = right_leg->FSR_Toe_Average;  // SS 11/4/2019
+//  data_to_send[17] = left_leg->FSR_Toe_Average;  // SS 11/4/2019
+  
   send_command_message('?', data_to_send, 14);
 }
 
