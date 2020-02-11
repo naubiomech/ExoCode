@@ -429,6 +429,8 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     if (*p_FSR_Ratio_Toe > (*p_Max_FSR_Ratio_Toe))
       (*p_Max_FSR_Ratio_Toe) = *p_FSR_Ratio_Toe;
 
+      *p_FSR_Ratio_Ankle = *p_FSR_Ratio_Toe;// SS 2/11/2020
+
     if (p_steps_l->curr_voltage_Heel > p_steps_l->peak_Heel)
       p_steps_l->peak_Heel =  p_steps_l->curr_voltage_Heel;
 
@@ -451,7 +453,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       *p_FSR_Ratio_HeelMinusToe = (p_steps_l->curr_voltage_Heel - p_steps_l->curr_voltage_Toe) / p_steps_l->plant_peak_mean_HeelMinusToe;  // SS 9/10/2019
       if(*p_FSR_Ratio_HeelMinusToe < 0) // SS 9/10/2019
         *p_FSR_Ratio_HeelMinusToe = 0;  // SS 9/10/2019
-
+    
     if (*p_FSR_Ratio_HeelMinusToe > (*p_Max_FSR_Ratio_HeelMinusToe))  // SS 9/10/2019
       (*p_Max_FSR_Ratio_HeelMinusToe) = *p_FSR_Ratio_HeelMinusToe;  // SS 9/10/2019
 

@@ -122,6 +122,8 @@ void PID_Sigm_Curve(Leg* leg) {
       else {
         // Determines the new intermediate PID Setpoint
         leg->PID_Setpoint = Change_PID_Setpoint_Sigm(leg->New_PID_Setpoint, leg->PID_Setpoint, leg->Old_PID_Setpoint, Ts, leg->exp_mult, leg->n_iter, leg->N_step);
+        if (leg->PID_Setpoint > 35.0)
+          leg->PID_Setpoint = leg->Old_PID_Setpoint;
       }
       leg->n_iter++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
     }
@@ -162,6 +164,8 @@ void PID_Sigm_Curve_Knee(Leg* leg) {
     {
         // Determines the new intermediate PID Setpoint
         leg->PID_Setpoint_Knee = Change_PID_Setpoint_Sigm(leg->New_PID_Setpoint_Knee, leg->PID_Setpoint_Knee, leg->Old_PID_Setpoint_Knee, Ts, leg->exp_mult_Knee, leg->n_iter_Knee, leg->N_step_Knee);
+        if (leg->PID_Setpoint_Knee > 35.0)
+          leg->PID_Setpoint_Knee = leg->Old_PID_Setpoint_Knee;
       leg->n_iter_Knee++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
     }
 
