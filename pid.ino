@@ -29,14 +29,17 @@ void pid(Leg* leg, double input) {
     //leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio * MotorEff * GearboxEff))/NomCurrent*2048) + leg->zero; //Setpoint/(Motor torque constant, gear reduction, pulley reduction, motor eff, gearbox eff)
     leg->Vol = (-0.0549 + 0.2908*(leg->PID_Setpoint))/NomCurrent*2048 + leg->zero; //Regression control, torque only
   } else if (CURRENT_DIAGNOSTICS && MotorParams!=100) {
-//    if (leg->Dorsi_Setpoint_Ankle==0) {
-//      leg->Vol = (leg->Setpoint_Ankle/NomCurrent*2048) + leg->zero;
-//    } else {
-//      leg->Vol = (leg->Dorsi_Setpoint_Ankle/NomCurrent*2048) + leg->zero;
-//    }
-    leg->Vol = (-0.298 + 0.28579*(leg->PID_Setpoint) + 0.058683*(ankle_speed(leg->motor_speed_pin)) + 0.0027133*(leg->PID_Setpoint * ankle_speed(leg->motor_speed_pin)))/NomCurrent*2048 + leg->zero; //Regression control, real-time speed
+    if (leg->Dorsi_Setpoint_Ankle==0) {
+      leg->Vol = (leg->Setpoint_Ankle/NomCurrent*2048) + leg->zero;
+    } else {
+      leg->Vol = (leg->Dorsi_Setpoint_Ankle/NomCurrent*2048) + leg->zero;
+    }
   } else if (MODEL_CONTROL && MotorParams!=100) {
-    leg->Vol = (-0.12379 + 0.28198*(leg->PID_Setpoint) + 0.057932*(leg->AverageSpeed) + 0.0021801*(leg->PID_Setpoint * leg->AverageSpeed))/NomCurrent*2048 + leg->zero; //Regression control, averaged speed 
+    //if (leg->state == 3) {
+      leg->Vol = (-0.12379 + 0.28198*(leg->PID_Setpoint) + 0.057932*(leg->AverageSpeed) + 0.0021801*(leg->PID_Setpoint * leg->AverageSpeed))/NomCurrent*2048 + leg->zero; //Regression control, averaged speed 
+    //} else {
+    //  leg->Vol = (-0.0549 + 0.2908*(leg->PID_Setpoint))/NomCurrent*2048 + leg->zero; //Regression control, torque only
+    //}
   } else {
     leg->Vol = leg->Output + leg->zero; //need to map
   }
