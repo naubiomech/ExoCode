@@ -211,22 +211,17 @@ void calculate_leg_average(Leg* leg) {
   // in case of two toe sensors we use the combined averate, i.e. the sum of the averages.
   leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
 
-
+  leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
+  leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
+  
   if (FLAG_ONE_TOE_SENSOR)
   {
-    leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
-    leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
     leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
+  } else {
+    leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
   }
-  else {
-    leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
-    leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
-    leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
-  }
-
 
 }
-
 
 //----------------------------------------------------------------------------------
 
@@ -336,11 +331,11 @@ void rotate_motor() {
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
 
-    if ((left_leg->state == 3) && (left_leg->old_state == 1)) {
+    if ((left_leg->state == 3) && ((left_leg->old_state == 1) || (left_leg->old_state == 2))) {   // TN 9/26/19
       left_leg->state_3_start_time = millis();
     }
 
-    if ((left_leg->state == 1) && (left_leg->old_state == 3)) {
+    if (((left_leg->state == 1) || (left_leg->state == 2)) && (left_leg->old_state == 3)) {     // TN 9/26/19
       left_leg->state_3_stop_time = millis();
     }
 
@@ -350,16 +345,13 @@ void rotate_motor() {
 
     left_leg->old_state = left_leg->state;
 
-    if ((right_leg->state == 3) && (right_leg->old_state == 1)) {
+    if ((right_leg->state == 3) && ((right_leg->old_state == 1) || (right_leg->old_state == 2))) {    // TN 9/26/19
       right_leg->state_3_start_time = millis();
     }
-
     else {
-
-      if ((right_leg->state == 1) && (right_leg->old_state == 3)) {
+      if (((right_leg->state == 1) || (right_leg->state == 2)) && (right_leg->old_state == 3)) {   // TN 9/26/19
 
         right_leg->state_3_stop_time = millis();
-
 
         if (right_leg->state_3_stop_time > right_leg->state_3_start_time) {
           right_leg->state_3_duration = right_leg->state_3_stop_time - right_leg->state_3_start_time;
@@ -368,6 +360,12 @@ void rotate_motor() {
     }
 
     right_leg->old_state = right_leg->state;
+    
+    if ((Control_Mode == 3 || Control_Mode == 6) && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
+      left_leg->PID_Setpoint = left_leg->New_PID_Setpoint;   //Brute force the dorsiflexion set point to proportional control
+    } else if ((Control_Mode == 3 || Control_Mode == 6) && (abs(right_leg->Dorsi_Setpoint_Ankle) > 0 || abs(right_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && right_leg->state == 1) {
+      right_leg->PID_Setpoint = right_leg->New_PID_Setpoint; //Brute force the dorsiflexion set point to proportional control
+    } else {};
 
     int left_scaling_index = 0;
     int right_scaling_index = 0;
@@ -385,6 +383,9 @@ void rotate_motor() {
           left_leg->PID_Setpoint = 0;
         }
       }
+      else {
+        left_leg->PID_Setpoint = 0;  // TN 9/25/19
+      }
 
       if ((right_leg->state == 3) && (right_leg->state_3_duration > 0)) {
         right_scaling_index = (millis() - right_leg->state_3_start_time) / (right_leg->state_3_duration / 100);
@@ -395,12 +396,13 @@ void rotate_motor() {
           right_leg->PID_Setpoint = 0;
         }
       }
+      else {
+        right_leg->PID_Setpoint = 0;   // TN 8/20/19
+      }
 
 
 
     }
-
-
 
 
 
