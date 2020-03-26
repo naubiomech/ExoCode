@@ -26,16 +26,16 @@ void pid(Leg* leg, double input) {
   leg->pid.Compute_KF(leg->KF);
 
   if (CURRENT_CONTROL && leg->PID_Setpoint!=0 && MotorParams!=100) {
-    //leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio * MotorEff * GearboxEff))/NomCurrent*2048) + leg->zero; //Setpoint/(Motor torque constant, gear reduction, pulley reduction, motor eff, gearbox eff)
-    leg->Vol = (-0.0549 + 0.2908*(leg->PID_Setpoint))/NomCurrent*2048 + leg->zero; //Regression control, torque only
+    leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio * MotorEff * GearboxEff))/NomCurrent*2048) + leg->zero; //Setpoint/(Motor torque constant, gear reduction, pulley reduction, motor eff, gearbox eff)
+    //leg->Vol = (-0.0549 + 0.2908*(leg->PID_Setpoint))/NomCurrent*2048 + leg->zero; //Regression control, torque only
   } else if (CURRENT_DIAGNOSTICS && MotorParams!=100) {
-//    if (leg->Dorsi_Setpoint_Ankle==0) {
-//      leg->Vol = (leg->Setpoint_Ankle/NomCurrent*2048) + leg->zero;
-//    } else {
-//      leg->Vol = (leg->Dorsi_Setpoint_Ankle/NomCurrent*2048) + leg->zero;
-//    }
+    if (leg->Dorsi_Setpoint_Ankle==0) {
+      leg->Vol = (leg->Setpoint_Ankle/NomCurrent*2048) + leg->zero;
+    } else {
+      leg->Vol = (leg->Dorsi_Setpoint_Ankle/NomCurrent*2048) + leg->zero;
+    }
 
-    leg->Vol = (0.76803 + 0.083948*(leg->PID_Setpoint) - 0.35803*(leg->state) + 0.037801*(leg->AverageSpeed) + 0.064451*(leg->PID_Setpoint * leg->state) + 0.002179*(leg->PID_Setpoint * leg->AverageSpeed) + 0.0052462*(leg->state * leg->AverageSpeed))/NomCurrent*2048 + leg->zero; //Regression control, trq avgSpeed state
+    //leg->Vol = (0.76803 + 0.083948*(leg->PID_Setpoint) - 0.35803*(leg->state) + 0.037801*(leg->AverageSpeed) + 0.064451*(leg->PID_Setpoint * leg->state) + 0.002179*(leg->PID_Setpoint * leg->AverageSpeed) + 0.0052462*(leg->state * leg->AverageSpeed))/NomCurrent*2048 + leg->zero; //Regression control, trq avgSpeed state
 
   } else if (MODEL_CONTROL && MotorParams!=100) {
     //if (leg->state == 3) {

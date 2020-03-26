@@ -65,6 +65,7 @@ void send_data_message_wc() //with COP
   else {
     data_to_send[12] = right_leg->sign * expected_ankle_torq(right_leg->motor_current_pin);
     data_to_send[13] = ((right_leg->Vol - 0.1*4096)/0.8 - right_leg->zero) / 2048 * NomCurrent;
+    //data_to_send[13] = 3.3*(analogRead(A16)-2048.0)/2048.0; //Hall Effect sensor reading
   }
   send_command_message('?', data_to_send, 14);
 }
