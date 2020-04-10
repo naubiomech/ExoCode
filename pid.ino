@@ -35,11 +35,11 @@ void pid(Leg* leg, double input) {
       leg->Vol = (leg->Dorsi_Setpoint_Ankle/NomCurrent*2048) + leg->zero;
     }
 
-    //leg->Vol = (0.76803 + 0.083948*(leg->PID_Setpoint) - 0.35803*(leg->state) + 0.037801*(leg->AverageSpeed) + 0.064451*(leg->PID_Setpoint * leg->state) + 0.002179*(leg->PID_Setpoint * leg->AverageSpeed) + 0.0052462*(leg->state * leg->AverageSpeed))/NomCurrent*2048 + leg->zero; //Regression control, trq avgSpeed state
+    //leg->Vol = (0.76803 + 0.083948*(leg->PID_Setpoint) - 0.35803*(leg->state) + 0.037801*(leg->MotorAverageSpeed) + 0.064451*(leg->PID_Setpoint * leg->state) + 0.002179*(leg->PID_Setpoint * leg->MotorAverageSpeed) + 0.0052462*(leg->state * leg->MotorAverageSpeed))/NomCurrent*2048 + leg->zero; //Regression control, trq avgSpeed state
 
   } else if (MODEL_CONTROL && MotorParams!=100) {
     //if (leg->state == 3) {
-      leg->Vol = (-0.12379 + 0.28198*(leg->PID_Setpoint) + 0.057932*(leg->AverageSpeed) + 0.0021801*(leg->PID_Setpoint * leg->AverageSpeed))/NomCurrent*2048 + leg->zero; //Regression control, averaged speed 
+      leg->Vol = (-0.12379 + 0.28198*(leg->PID_Setpoint) + 0.057932*(leg->MotorAverageSpeed) + 0.0021801*(leg->PID_Setpoint * leg->MotorAverageSpeed))/NomCurrent*2048 + leg->zero; //Regression control, averaged speed 
     //} else {
     //  leg->Vol = (-0.0549 + 0.2908*(leg->PID_Setpoint))/NomCurrent*2048 + leg->zero; //Regression control, torque only
     //}

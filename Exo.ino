@@ -175,7 +175,9 @@ void calculate_leg_average(Leg* leg) {
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
     leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
-    leg->SpeedArrayPoint[j] = leg->SpeedArrayPoint[j-1];
+    leg->MotorSpeedArrayPoint[j] = leg->MotorSpeedArrayPoint[j-1];
+    leg->AnkleAngleArrayPoint[j] = leg->AnkleAngleArrayPoint[j-1];
+    leg->AnkleSpeedArrayPoint[j] = leg->AnkleSpeedArrayPoint[j-1];
   }
   //Get the torque
   leg->TarrayPoint[0] = get_torq(leg);
@@ -184,17 +186,38 @@ void calculate_leg_average(Leg* leg) {
   leg->Average = 0;
 
   //Motor Speed
-  leg->SpeedArrayPoint[0] = ankle_speed(leg->motor_speed_pin);
-  leg->AverageSpeed = 0;
-
+  leg->MotorSpeedArrayPoint[0] = motor_ankle_speed(leg->motor_speed_pin);
+  leg->MotorAverageSpeed = 0;
+  
+  //Ankle Angle Sensor
+  leg->AnkleAngleArrayPoint[0] = ankle_angle(leg->ankle_angle_pin);
+  leg->AnkleAverageAngle = 0;
+  
   for (int i = 0; i < dim; i++)
   {
     leg->Average =  leg->Average + leg->TarrayPoint[i];
-    leg->AverageSpeed = leg->AverageSpeed + leg->SpeedArray[i];
+    leg->MotorAverageSpeed = leg->MotorAverageSpeed + leg->MotorSpeedArray[i];
+    leg->AnkleAverageAngle = leg->AnkleAverageAngle + (i+1)*leg->AnkleAngleArray[i];
   }
 
   leg->Average_Trq = leg->Average / dim;
-  leg->AverageSpeed = leg->AverageSpeed / dim;
+  leg->MotorAverageSpeed = leg->MotorAverageSpeed / dim;
+  leg->AnkleAverageAngle = leg->AnkleAverageAngle / (dim*(dim+1)/2);
+
+  //leg->AnkleAverageSpeed = (leg->AnkleAverageAngle - leg->PrevAnkleAngle)/0.002; //Angular Velocity in deg/s
+  //leg->PrevAnkleAngle = leg->AnkleAverageAngle;
+  
+  leg->AnkleSpeedArrayPoint[0] = (leg->AnkleAverageAngle - leg->PrevAnkleAngle)/0.002; //Angular velocity in degrees/s
+  leg->AnkleAverageSpeed = 0;
+  
+  for (int i = 0; i< dim; i++) {
+    //leg->AnkleAverageSpeed = leg->AnkleAverageSpeed + (i+1)*leg->AnkleSpeedArray[i]; //Weighted moving average
+    leg->AnkleAverageSpeed = leg->AnkleAverageSpeed + leg->AnkleSpeedArray[i];
+  }
+  //leg->AnkleAverageSpeed = leg->AnkleAverageSpeed / (dim*(dim+1)/2); //Weighted moving average
+  leg->AnkleAverageSpeed = leg->AnkleAverageSpeed / dim;  
+  leg->PrevAnkleAngle = leg->AnkleAverageAngle;
+  
   if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
   }
