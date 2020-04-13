@@ -238,6 +238,6 @@ double ankle_angle(const unsigned int pin){
   } else if (hall_voltage>=a5 && hall_voltage<a6) {
     func = b51 * pow((hall_voltage - a5),3) + b52*pow((hall_voltage - a5),2) + b53*(hall_voltage - a5) + b54;
   }
-    return func;
+    return hall_voltage;
 }
 

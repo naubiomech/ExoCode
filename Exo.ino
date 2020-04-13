@@ -25,6 +25,8 @@
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
+int j = 0;
+
 #include "Parameters.h"
 #include "Board.h"
 #include "Leg.h"
@@ -42,6 +44,8 @@ const unsigned int zero = 2048;//1540;
 #include "Board.h"
 #include "resetMotorIfError.h"
 #include "ATP.h"
+#include "Wave.h"
+
 //----------------------------------------------------------------------------------
 
 
@@ -77,6 +81,8 @@ void setup()
 
   digitalWrite(LED_PIN, HIGH);
 
+  calculateWave();
+  
 }
 
 //----------------------------------------------------------------------------------
@@ -120,9 +126,11 @@ void loop()
 
   if (slowThisDown.check() == 1) // If the time passed is over 1ms is a true statement
   {
+    
     if (bluetooth.available() > 0) // If bluetooth buffer contains something
     {
       receive_and_transmit();       //Recieve and transmit
+      
     }
 
     slowThisDown.reset();     //Resets the interval counter

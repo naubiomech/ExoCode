@@ -28,12 +28,14 @@ void pid(Leg* leg, double input) {
   if (CURRENT_CONTROL && leg->PID_Setpoint!=0 && MotorParams!=100) {
     leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio * MotorEff * GearboxEff))/NomCurrent*2048) + leg->zero; //Setpoint/(Motor torque constant, gear reduction, pulley reduction, motor eff, gearbox eff)
     //leg->Vol = (-0.0549 + 0.2908*(leg->PID_Setpoint))/NomCurrent*2048 + leg->zero; //Regression control, torque only
-  } else if (CURRENT_DIAGNOSTICS && MotorParams!=100) {
-    if (leg->Dorsi_Setpoint_Ankle==0) {
-      leg->Vol = (leg->Setpoint_Ankle/NomCurrent*2048) + leg->zero;
-    } else {
-      leg->Vol = (leg->Dorsi_Setpoint_Ankle/NomCurrent*2048) + leg->zero;
-    }
+
+    
+  } else if (CURRENT_DIAGNOSTICS) {
+//    if (leg->Dorsi_Setpoint_Ankle==0) {
+//      leg->Vol = (leg->Setpoint_Ankle/NomCurrent*2048) + leg->zero;
+//    } else {
+//      leg->Vol = (leg->Dorsi_Setpoint_Ankle/NomCurrent*2048) + leg->zero;
+//    }
 
     //leg->Vol = (0.76803 + 0.083948*(leg->PID_Setpoint) - 0.35803*(leg->state) + 0.037801*(leg->MotorAverageSpeed) + 0.064451*(leg->PID_Setpoint * leg->state) + 0.002179*(leg->PID_Setpoint * leg->MotorAverageSpeed) + 0.0052462*(leg->state * leg->MotorAverageSpeed))/NomCurrent*2048 + leg->zero; //Regression control, trq avgSpeed state
 
@@ -47,9 +49,18 @@ void pid(Leg* leg, double input) {
     leg->Vol = leg->Output + leg->zero; //need to map
   }
 
-  if (PWM_CONTROL) {
+  if (PWM_CONTROL && !CURRENT_DIAGNOSTICS) {
      leg->Vol = leg->Vol*0.8 + 0.1*4096.0; 
+     analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
+  } else if (PWM_CONTROL && CURRENT_DIAGNOSTICS) {
+    double Vol = (wave[j]/100*2048 + leg->zero)*0.8 + 0.1*4096.0;
+    //Serial.println(Vol);
+    analogWrite(leg->motor_ankle_pin, Vol);
+    j++;
+    if (j>waveLength) {
+      j = 0;
+    }
   }
 
-  analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
+  
 }
