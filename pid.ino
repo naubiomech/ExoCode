@@ -36,7 +36,8 @@ void pid(Leg* leg, double input) {
 //    } else {
 //      leg->Vol = (leg->Dorsi_Setpoint_Ankle/NomCurrent*2048) + leg->zero;
 //    }
-
+    double Vol = map(wave[j],-1,1,409.6,4096.0-409.6);
+    leg->Vol = Vol;
     //leg->Vol = (0.76803 + 0.083948*(leg->PID_Setpoint) - 0.35803*(leg->state) + 0.037801*(leg->MotorAverageSpeed) + 0.064451*(leg->PID_Setpoint * leg->state) + 0.002179*(leg->PID_Setpoint * leg->MotorAverageSpeed) + 0.0052462*(leg->state * leg->MotorAverageSpeed))/NomCurrent*2048 + leg->zero; //Regression control, trq avgSpeed state
 
   } else if (MODEL_CONTROL && MotorParams!=100) {
@@ -46,21 +47,23 @@ void pid(Leg* leg, double input) {
     //  leg->Vol = (-0.0549 + 0.2908*(leg->PID_Setpoint))/NomCurrent*2048 + leg->zero; //Regression control, torque only
     //}
   } else {
-    leg->Vol = leg->Output + leg->zero; //need to map
+    //leg->Vol = leg->Output + leg->zero; //need to map
+    leg->Vol = leg->zero;
   }
 
-  if (PWM_CONTROL && !CURRENT_DIAGNOSTICS) {
-     leg->Vol = leg->Vol*0.8 + 0.1*4096.0; 
-     analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
-  } else if (PWM_CONTROL && CURRENT_DIAGNOSTICS) {
-    double Vol = (wave[j]/100*2048 + leg->zero)*0.8 + 0.1*4096.0;
+  if (PWM_CONTROL) {
+     //leg->Vol = leg->Vol*0.8 + 0.1*4096.0; 
+     //analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
+    
     //Serial.println(Vol);
-    analogWrite(leg->motor_ankle_pin, Vol);
+    //Serial.println(FLAG_BALANCE);
     j++;
-    if (j>waveLength) {
-      j = 0;
+      //double Vol = map(wave[j],(wave[j]*2048 + 2048)*0.8 + 0.1*4096.0;
+      analogWrite(leg->motor_ankle_pin, leg->Vol);
+      if (j>waveLength) {
+        j = 0;
+      }
     }
-  }
 
   
 }

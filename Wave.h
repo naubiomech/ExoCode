@@ -1,18 +1,16 @@
-double spacing = 0.001;
-double waveLength = 10001;
-double x[10001] = {};
-double A[10001] = {};
-double wave[10001] = {};
+const double spacing = PI*0.002;
+const int waveLength = 2*PI/spacing;
+double x[waveLength] = {};
+double A = 0.5;
+double wave[waveLength] = {};
 
 void calculateWave()
 {
   x[0] = 0;
-  A[0] = 10;
   wave[0] = 0;
-  for (int i = 1; i < waveLength; i++) {
+  for (int i = 0; i < waveLength; i++) {
     x[i + 1] = x[i] + spacing;
-    A[i + 1] = 10*floor(x[i+1]) + 10;
-    wave[i+1] = A[i + 1]*sin(8 * PI * x[i + 1]);
+    wave[i+1] = A*sin(x[i+1]);
   }
-  return;
 }
+

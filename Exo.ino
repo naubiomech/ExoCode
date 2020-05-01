@@ -44,7 +44,8 @@ int j = 0;
 #include "Board.h"
 #include "resetMotorIfError.h"
 #include "ATP.h"
-#include "Wave.h"
+//#include "Wave.h"
+#include "Step.h"
 
 //----------------------------------------------------------------------------------
 
@@ -81,7 +82,8 @@ void setup()
 
   digitalWrite(LED_PIN, HIGH);
 
-  calculateWave();
+  //calculateWave();
+  calculateStep();
   
 }
 
@@ -198,14 +200,14 @@ void calculate_leg_average(Leg* leg) {
   leg->MotorAverageSpeed = 0;
   
   //Ankle Angle Sensor
-  leg->AnkleAngleArrayPoint[0] = ankle_angle(leg->ankle_angle_pin);
+  leg->AnkleAngleArrayPoint[0] = ankle_angle(leg);
   leg->AnkleAverageAngle = 0;
   
   for (int i = 0; i < dim; i++)
   {
     leg->Average =  leg->Average + leg->TarrayPoint[i];
     leg->MotorAverageSpeed = leg->MotorAverageSpeed + leg->MotorSpeedArray[i];
-    leg->AnkleAverageAngle = leg->AnkleAverageAngle + (i+1)*leg->AnkleAngleArray[i];
+    leg->AnkleAverageAngle = leg->AnkleAverageAngle + (i+1)*leg->AnkleAngleArray[i]; //Weighted Moving Average
   }
 
   leg->Average_Trq = leg->Average / dim;

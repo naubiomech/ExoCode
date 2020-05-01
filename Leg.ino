@@ -4,6 +4,9 @@ void initialize_leg(Leg* leg) {
   pinMode(leg->pin_err, INPUT_PULLUP);          //motor driver error checking needs digital input pulled high
   pinMode(leg->torque_sensor_ankle_pin, INPUT); //enable the torque reading of the left torque sensor
   pinMode(leg->motor_current_pin, INPUT);
+  pinMode(leg->motor_speed_pin,INPUT);
+  pinMode(leg->ankle_angle_pin,INPUT);
+  
 
   analogWrite(leg->motor_ankle_pin, zero);
   leg->pid.SetMode(AUTOMATIC);

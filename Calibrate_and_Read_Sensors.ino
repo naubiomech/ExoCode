@@ -7,8 +7,8 @@ void torque_calibration()
   left_leg->torque_calibration_value = 0;
   right_leg->torque_calibration_value = 0;
 
-  while (millis() - torque_calibration_value_time < 1000)
-  { //Calibrates the LL for a total time of 1 second,
+  while (millis() - torque_calibration_value_time < 2000)
+  { //Calibrates the LL for a total time of 2 second,
     left_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
     right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
     torq_cal_count ++;                                                         //Increments count
@@ -158,86 +158,227 @@ Gear Ratio (32HP, 4-8Nm) : 17576/343
 Large Exo Pulley Ratio: 74/10.3
 */
 double motor_ankle_speed(const unsigned int pin){
-  double motor_speed = MaxSpeed * (analogRead(pin) - 2048.0)/2048.0;
+  double motor_speed = map(analogRead(pin),0,4096,-MaxSpeed,MaxSpeed);
+  //double motor_speed = MaxSpeed*3.3*(analogRead(pin)-2048)/2048;
   double predicted_ankle_speed = motor_speed * (1/GearRatio) * (1/PulleyRatio);
-  return predicted_ankle_speed;
+  return motor_speed;
 }
 
 /* Read the analog output from the hall sensor at the ankle, convert to degrees, and calculate actual ankle velocity.
  *  Likely needs a calibration but for now just read and convert
  */
-double ankle_angle(const unsigned int pin){
-//  float a1 = -1.4611;
-//  float a2 = 0.0561;
-//  float a3 = 0.1440;
-//  float a4 = 0.5527;
-//  float a5 = 1.2733;
+double ankle_angle(Leg* leg){
 
-//  float b11 = -4.0755;
-//  float b12 = -4.6774;
-//  float b13 = 0;
-//  float b14 = 50;
-//
-//  float b21 = 5.78674*pow(10,4);
-//  float b22 = -7.8396*pow(10,3);
-//  float b23 = -42.3369;
-//  float b24 = 25;
-//
-//  float b31 = -190.4366;
-//  float b32 = 178.7583;
-//  float b33 = -77.9556;
-//  float b34 = 0;
-//
-//  float b41 = 7.1204;
-//  float b42 = 3.8118;
-//  float b43 = -27.2594;
-//  float b44 = -15;
+// Sensor Reading and Normalization
+  double zeroL = 0.5505;
+  double zeroR = 1.2585;
+  double maxPFXL = -0.6475 - zeroL;
+  double maxDFXL = 0.959 - zeroL;
+  double maxPFXR = 0.4375-zeroR;
+  double maxDFXR = 1.5495-zeroR;
+  double zero;
+  double maxPFX;
+  double maxDFX;
 
-  float a1 = -0.3108;
-  float a2 = 0.0719;
-  float a3 = 0.4338;
-  float a4 = 0.4858;
-  float a5 = 0.9448;
-  float a6 = 1.2672;
-
-  float b11 = 37.5394;
-  float b12 = -53.4752;
-  float b13 = -11.1617;
-  float b14 = 50;
-
-  float b21 = -432.3295;
-  float b22 = 102.1936;
-  float b23 = -35.5980;
-  float b24 = 40;
-
-  float b31 = 4.8188*pow(10,5);
-  float b32 = -3.7323*pow(10,4);
-  float b33 = -131.5533;
-  float b34 = 20;
-
-  float b41 = -269.8990;
-  float b42 = 264.5067;
-  float b43 = -108.1225;
-  float b44 = -20;
-
-  float b51 = 3.0111;
-  float b52 = 14.1395;
-  float b53 = -35.8835;
-  float b54 = -40;
-  
-  float hall_voltage = 3.3*((analogRead(pin)-2048.0)/2048.0);
-  double func;
-  if (hall_voltage>=a1 && hall_voltage<a2) {
-    func = b11 * pow((hall_voltage - a1),3) + b12*pow((hall_voltage - a1),2) + b13*(hall_voltage - a1) + b14;
-  } else if (hall_voltage>=a2 && hall_voltage<a3) {
-    func = b21 * pow((hall_voltage - a2),3) + b22*pow((hall_voltage - a2),2) + b23*(hall_voltage - a2) + b24;
-  } else if (hall_voltage>=a3 && hall_voltage<a4) {
-    func = b31 * pow((hall_voltage - a3),3) + b32*pow((hall_voltage - a3),2) + b33*(hall_voltage - a3) + b34;
-  } else if (hall_voltage>=a4 && hall_voltage<a5) {
-    func = b41 * pow((hall_voltage - a4),3) + b42*pow((hall_voltage - a4),2) + b43*(hall_voltage - a4) + b44;
-  } else if (hall_voltage>=a5 && hall_voltage<a6) {
-    func = b51 * pow((hall_voltage - a5),3) + b52*pow((hall_voltage - a5),2) + b53*(hall_voltage - a5) + b54;
-  }
-    return hall_voltage;
+if (leg->whos == 'L') {
+  zero = zeroL;
+  maxPFX = maxPFXL;
+  maxDFX = maxDFXL;
+} else {
+  zero = zeroR;
+  maxPFX = maxPFXR;
+  maxDFX = maxDFXR; 
 }
 
+float hall_voltage = 3.3*((analogRead(leg->ankle_angle_pin)-2048.0)/2048.0) - zero; //Offset by zero 
+if (hall_voltage > 0) {
+  hall_voltage = hall_voltage/abs(maxDFX); //Positive voltage is dorsiflexion
+} else if (hall_voltage < 0) {
+  hall_voltage = hall_voltage/abs(maxPFX); //Negative voltage is plantarflexion
+} else {
+  hall_voltage = 0;
+}
+
+// Piecewise Polynomial
+
+  float p1 = -375.90;
+  float p2 = -1644.23;
+  float p3 = -3451.21;
+  float p4 = -3321.69;
+  float p5 = -1188.87;
+
+  float d1 = -50.23;
+  float d2 = 55.48;
+  float d3 = -30.296;
+
+  double pp;
+  if (hall_voltage > 0) { //If DFX
+    pp = d1*hall_voltage + d2*pow(hall_voltage,2) + d3*pow(hall_voltage,3); //DFX angle in degrees
+  } else if (hall_voltage < 0) { //If PFX
+    pp = p1*hall_voltage + p2*pow(hall_voltage,2) + p3*pow(hall_voltage,3) + p4*pow(hall_voltage,4) + p5*pow(hall_voltage,5);
+  } else {
+    pp = 0;
+  }
+ 
+// Piecewise Spline
+
+float a1;
+float a2;
+float a3;
+float a4;
+float a5;
+float a6;
+float a7;
+float a8;
+
+float b11;
+float b12;
+float b13;
+float b14;
+
+float b21;
+float b22;
+float b23;
+float b24;
+
+float b31;
+float b32;
+float b33;
+float b34;
+
+float b41;
+float b42;
+float b43;
+float b44;
+
+float b51;
+float b52;
+float b53;
+float b54;
+
+float b61;
+float b62;
+float b63;
+float b64;
+
+float b71;
+float b72;
+float b73;
+float b74;
+
+if (leg->whos == 'L') {
+  a1 = -1;
+  a2 = -0.822119380081830;
+  a3 =-0.132447823889784;
+  a4 = -0.0425534772600975;
+  a5 = 0;
+  a6 = 0.228572250345145;
+  a7 = 0.743097100782329;
+  a8 = 1;  
+
+  b11 = 52.1591538064012;
+  b21 = -53.8832744360493;
+  b31 = -1939.52520551072;
+  b41 = 357310.078259034;
+  b51 = -758.088812877682;
+  b61 = -33.5865199919828;
+  b71 = 0.0460180706737880;
+
+  b12 = -1.94798884654023;
+  b22 = 42.0988601150009;
+  b32 = -573.945914179372;
+  b42 = -21686.3733761400;
+  b52 = 414.097071446106;
+  b62 = 34.5328430148431;
+  b72 = -0.0589025149632422;
+
+  b13 = -29.4126246394564;
+  b23 = -25.1544596330330;
+  b33 = -43.9739170299623;
+  b43 = -194.182775003996;
+  b53 = -98.7943847267092;
+  b63 = -28.3118581521727;
+  b73 = -19.4505112835239;
+
+  b14 = 50;
+  b24 = 45;
+  b34 = 30;
+  b44 = 20;
+  b54 = 0;
+  b64 = -10;
+  b74 = -20;
+  
+} else if (leg->whos == 'R') {
+
+  a1 = -1;
+  a2 = -0.881568383616493;
+  a3 = -0.213979299121880;
+  a4 = -0.0869270618031333;
+  a5 = 0;
+  a6 = 0.302716779515782;
+  a7 = 0.805641895865187;
+  a8 = 1;  
+
+  b11 = 546.765433526463;
+  b21 = -59.7643607551202;
+  b31 = -221.946737622983;
+  b41 = 36011.6408726956;
+  b51 = -287.221056358903;
+  b61 = -33.3757793334474;
+  b71 = 32.6884689789540;
+
+  b12 = -39.6283286033024;
+  b22 = 53.5364776994065;
+  b32 = -276.465267423479;
+  b42 = -4385.22188187308;
+  b52 = 199.288228453309;
+  b62 = 27.6480117235190;
+  b72 = -21.0848161699680;
+
+  b13 = -45.1941671968177;
+  b23 = -31.5737869677671;
+  b33 = -39.9995284387991;
+  b43 = -120.998763136911;
+  b53 = -67.0418639960560;
+  b63 = -25.3466969376039;
+  b73 = -22.8625132454442;
+
+  b14 = 50;
+  b24 = 45;
+  b34 = 30;
+  b44 = 20;
+  b54 = 0;
+  b64 = -10;
+  b74 = -20;
+  
+
+} else {
+
+}
+
+  double ps;
+  if (hall_voltage>=a1 && hall_voltage<a2) {
+    ps = b11 * pow((hall_voltage - a1),3) + b12*pow((hall_voltage - a1),2) + b13*(hall_voltage - a1) + b14;
+  } else if (hall_voltage>=a2 && hall_voltage<a3) {
+    ps = b21 * pow((hall_voltage - a2),3) + b22*pow((hall_voltage - a2),2) + b23*(hall_voltage - a2) + b24;
+  } else if (hall_voltage>=a3 && hall_voltage<a4) {
+    ps = b31 * pow((hall_voltage - a3),3) + b32*pow((hall_voltage - a3),2) + b33*(hall_voltage - a3) + b34;
+  } else if (hall_voltage>=a4 && hall_voltage<a5) {
+    ps = b41 * pow((hall_voltage - a4),3) + b42*pow((hall_voltage - a4),2) + b43*(hall_voltage - a4) + b44;
+  } else if (hall_voltage>=a5 && hall_voltage<a6) {
+    ps = b51 * pow((hall_voltage - a5),3) + b52*pow((hall_voltage - a5),2) + b53*(hall_voltage - a5) + b54;
+  } else if (hall_voltage>=a6 && hall_voltage<a7) {
+    ps = b61 * pow((hall_voltage - a6),3) + b62*pow((hall_voltage - a6),2) + b63*(hall_voltage - a6) + b64;
+  } else if (hall_voltage>=a7 && hall_voltage<a8) {
+    ps = b71 * pow((hall_voltage - a7),3) + b72*pow((hall_voltage - a7),2) + b73*(hall_voltage - a7) + b74;
+  }
+
+  // Averaging
+  double angle;
+  if ((hall_voltage>1) || (hall_voltage<-1)) {
+    angle = pp; // Try and predict angle beyond calibrated maximum
+  } else {
+    angle = ps;
+  } 
+  return angle;
+}
