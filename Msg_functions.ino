@@ -63,8 +63,8 @@ void send_data_message_wc() //with COP
     data_to_send[13] = left_leg->stridelength_target;
   }
   else {
-    data_to_send[12] = right_leg->sign * expected_ankle_torq(right_leg->motor_current_pin);
-    data_to_send[13] = ((right_leg->Vol - 0.1*4096)/0.8 - right_leg->zero) / 2048 * NomCurrent;
+    data_to_send[12] = current(left_leg->motor_current_pin);
+    data_to_send[13] = left_leg->sign * ankle_speed(left_leg->motor_speed_pin);
   }
   send_command_message('?', data_to_send, 14);
 }
