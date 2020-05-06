@@ -31,7 +31,7 @@ void send_data_message_wc() //with COP
   data_to_send[7] = left_leg->AnkleAverageSpeed/360*60;//(left_leg->sign * left_leg->PID_Setpoint);
 
   if (FLAG_ONE_TOE_SENSOR) {
-    data_to_send[8] =  left_leg->Vol; //(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
+    data_to_send[8] =  left_leg->Average_Trq; //(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
     data_to_send[9] = current(left_leg->motor_current_pin);// (left_leg->FSR_Combined_Average);
   } else if (FLAG_BALANCE) {
     //data_to_send[8] = (left_leg->FSR_Toe_Average);

@@ -110,13 +110,13 @@ void receive_and_transmit()
       } else if (MotorParams == 1) {
         // 22mm 120W motor, 32HP C gearbox
         
-        MaxSpeed = 15000; //RPM
+        MaxSpeed = 15800; //RPM
         TrqConstant = 13.5/1000; //Nm/A
         GearRatio = 6877.0/56.0; //123:1 gear ratio
-        NomCurrent = 4.21; //A
+        NomCurrent = 7.24; //A
         MotorEff = 0.89;
         GearboxEff = 0.7;
-        PulleyRatio = 30/13.25; //Carbon fiber pulley, motor pulley
+        PulleyRatio = 30/10.3; //Carbon fiber pulley, sprocket
         Serial.println("22mm 120W");
         
       } else if (MotorParams == 2) {
