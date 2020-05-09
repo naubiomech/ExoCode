@@ -39,7 +39,7 @@ void pid(Leg* leg, double input) {
     //double Vol = map(wave[j],-1,1,409.6,4096.0-409.6);
     //leg->Vol = Vol;
     //leg->Vol = (0.76803 + 0.083948*(leg->PID_Setpoint) - 0.35803*(leg->state) + 0.037801*(leg->MotorAverageSpeed) + 0.064451*(leg->PID_Setpoint * leg->state) + 0.002179*(leg->PID_Setpoint * leg->MotorAverageSpeed) + 0.0052462*(leg->state * leg->MotorAverageSpeed))/NomCurrent*2048 + leg->zero; //Regression control, trq avgSpeed state
-
+    leg->Vol = leg->zero;
   } else if (MODEL_CONTROL && MotorParams!=100) {
     //if (leg->state == 3) {
       leg->Vol = (-0.12379 + 0.28198*(leg->PID_Setpoint) + 0.057932*(leg->MotorAverageSpeed) + 0.0021801*(leg->PID_Setpoint * leg->MotorAverageSpeed))/NomCurrent*2048 + leg->zero; //Regression control, averaged speed 
@@ -60,7 +60,7 @@ void pid(Leg* leg, double input) {
     j++;
       //double Vol = map(wave[j],(wave[j]*2048 + 2048)*0.8 + 0.1*4096.0;
       //analogWrite(leg->motor_ankle_pin, leg->Vol);
-      analogWrite(leg->motor_ankle_pin, 2048);
+      analogWrite(leg->motor_ankle_pin, leg->Vol);
       if (j>waveLength) {
         j = 0;
       }

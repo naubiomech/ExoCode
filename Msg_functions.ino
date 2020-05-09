@@ -9,7 +9,7 @@ void send_data_message_wc() //with COP
   data_to_send[2] = right_leg->AnkleAverageSpeed/360*60;//(right_leg->sign * right_leg->PID_Setpoint);
 
   if (FLAG_ONE_TOE_SENSOR) {
-    data_to_send[3] = right_leg->Vol; //(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
+    data_to_send[3] = right_leg->Average_Trq; //(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
     data_to_send[4] = current(right_leg->motor_current_pin);//(right_leg->FSR_Combined_Average);
   } else if (FLAG_BALANCE) {
     //data_to_send[3] = 12;//right_leg->FSR_Toe_Average);
@@ -54,7 +54,7 @@ void send_data_message_wc() //with COP
   else {
 //    data_to_send[10] = (left_leg->TM_data);
 //    data_to_send[11] = (right_leg->TM_data);
-    data_to_send[10] = 100*3.3*(analogRead(right_leg->ankle_angle_pin)-2048)/2048; //(left_leg->COP_Foot_ratio);
+    data_to_send[10] = right_leg->Vol; //(left_leg->COP_Foot_ratio);
     data_to_send[11] = 100*3.3*(analogRead(right_leg->ankle_angle_pin)-2048)/2048; //(right_leg->COP_Foot_ratio);
   //  data_to_send[11] = 100*ankle_angle(left_leg->ankle_angle_pin);
   //data_to_send[11] = left_leg->AnkleAverageAngle; 
@@ -64,7 +64,7 @@ void send_data_message_wc() //with COP
     data_to_send[13] = left_leg->stridelength_target;
   }
   else {
-    data_to_send[12] =  100*3.3*(analogRead(left_leg->ankle_angle_pin)-2048)/2048;//Numerical derivative of angle
+    data_to_send[12] =  left_leg->Vol;//Numerical derivative of angle
     //data_to_send[13] = ((right_leg->Vol - 0.1*4096)/0.8 - right_leg->zero) / 2048 * NomCurrent;
     //data_to_send[13] = right_leg->AnkleAverageAngle; //Ankle angle
     data_to_send[13] = 100*3.3*(analogRead(left_leg->ankle_angle_pin)-2048)/2048;
