@@ -46,6 +46,7 @@ int j = 0;
 #include "ATP.h"
 //#include "Wave.h"
 #include "Step.h"
+#include "Math.h"
 
 //----------------------------------------------------------------------------------
 
@@ -207,12 +208,12 @@ void calculate_leg_average(Leg* leg) {
   {
     leg->Average =  leg->Average + leg->TarrayPoint[i];
     leg->MotorAverageSpeed = leg->MotorAverageSpeed + leg->MotorSpeedArray[i];
-    leg->AnkleAverageAngle = leg->AnkleAverageAngle + (i+1)*leg->AnkleAngleArray[i]; //Weighted Moving Average
+    leg->AnkleAverageAngle = leg->AnkleAverageAngle + leg->AnkleAngleArray[i]; 
   }
 
   leg->Average_Trq = leg->Average / dim;
   leg->MotorAverageSpeed = leg->MotorAverageSpeed / dim;
-  leg->AnkleAverageAngle = leg->AnkleAverageAngle / (dim*(dim+1)/2);
+  leg->AnkleAverageAngle = leg->AnkleAverageAngle / dim;
 
   //leg->AnkleAverageSpeed = (leg->AnkleAverageAngle - leg->PrevAnkleAngle)/0.002; //Angular Velocity in deg/s
   //leg->PrevAnkleAngle = leg->AnkleAverageAngle;
