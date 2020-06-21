@@ -84,8 +84,15 @@ void FSR_calibration()
       right_leg->fsr_Heel_peak_ref = right_leg->Curr_Heel;
     }
 
-  }
-  else {
+  //Automatically take the PJMC basline after FSR calibration
+  left_leg->FSR_baseline_FLAG = 1;
+  right_leg->FSR_baseline_FLAG = 1;
+  left_leg->p_steps->count_plant_base = 0;
+  right_leg->p_steps->count_plant_base = 0;
+  right_leg->p_steps->flag_start_plant = false;
+  left_leg->p_steps->flag_start_plant = false;
+  
+  } else {
 
     FSR_FIRST_Cycle = 1;
     FSR_CAL_FLAG = 0;
@@ -93,8 +100,8 @@ void FSR_calibration()
 }
 
 double get_torq(Leg* leg) {
- // double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value);
-  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*49.39; 
+ // double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value); //  For the TRT-500 Torque Sensor
+  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*49.39; // For the custom anchor sensor
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }
 

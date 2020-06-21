@@ -441,13 +441,13 @@ void receive_and_transmit()
       break;
 
     case 'S':
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = true;
-      Old_Control_Mode = Control_Mode;
-      Control_Mode = 6; // activate Resistance Control
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      break; //JL 4/25/19
+      flag_id = false; 
+      flag_pivot = false; 
+      flag_resist = true;
+      if (Flag_Prop_Ctrl == true) { 
+        Control_Mode = 6;
+      }
+      break;
 
     case's':
       break;
@@ -595,29 +595,21 @@ void receive_and_transmit()
       break;
 
     case '#':
-      //      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      //      FLAG_ONE_TOE_SENSOR = true;
-      //      Old_Control_Mode = Control_Mode;
-      //      Control_Mode = 3; // activate pivot proportional control
-      //      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      //      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
       flag_id = false; // TN 04/29/19
       flag_pivot = true; // TN 04/29/19
-      if (Flag_Prop_Ctrl == true) // TN 04/29/19
+      flag_resist = false; // GO 06/20/2020
+      if (Flag_Prop_Ctrl == true) { // TN 04/29/19
         Control_Mode = 3;
+      }
       break;
 
     case 'c':
-      // OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      // FLAG_ONE_TOE_SENSOR = true;
-      //Old_Control_Mode = Control_Mode;
-      //      Control_Mode = 4; // activate Inverse Dynamic proportional control
-      //      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      //      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
       flag_id = true; // TN 04/29/19
       flag_pivot = false; // TN 04/29/19
-      if (Flag_Prop_Ctrl == true) // TN 04/29/19
+      flag_resist = false;
+      if (Flag_Prop_Ctrl == true) { // TN 04/29/19
         Control_Mode = 4; // TN 04/29/19
+      }
       break;
 
     case 'l': // TN 04/29/19
@@ -625,10 +617,13 @@ void receive_and_transmit()
       FLAG_ONE_TOE_SENSOR = true; // TN 04/29/19
       Old_Control_Mode = Control_Mode; // TN 04/29/19
       Flag_Prop_Ctrl = true; // TN 04/29/19
-      if (flag_pivot == true)   // TN 04/29/19
+      if (flag_pivot == true) {   // TN 04/29/19
         Control_Mode = 3; // activate pivot PC // TN 04/29/19
-      if (flag_id == true) // TN 04/29/19
+      } else if (flag_id == true) { // TN 04/29/19
         Control_Mode = 4; // activate ID PC // TN 04/29/19
+      } else if (flag_resist == true) {
+        Control_Mode = 6; // Activate resistance control //GO 6/20/2020
+      }
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
       break;
@@ -646,6 +641,7 @@ void receive_and_transmit()
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
       flag_id = false; // TN 05/13/19
       flag_pivot = false; // TN 05/13/19
+      flag_resist = false; // GO 6/20/2020
       Flag_Prop_Ctrl = false; // TN 04/29/19
       break;
 

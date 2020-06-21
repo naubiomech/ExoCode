@@ -187,7 +187,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
           leg->MaxPropSetpoint = 0;
         }
       }
-      if (Control_Mode_l == 4) { // JOINT MOMENT CONTROL also known as pivot proportional control while taking the baseline
+      if (Control_Mode_l == 4 || Control_Mode_l == 6) { // JOINT MOMENT CONTROL also known as pivot proportional control while taking the baseline
         // TN 7/15/19
         if (p_steps_l->plant_peak_mean == 0)
           *p_FSR_Ratio = 0;
@@ -212,26 +212,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
           *p_Setpoint_Ankle_Pctrl_l = 0;
         }
       }
-      if (Control_Mode_l == 6) { // Resistance Control JL 4/25/19
-
-        *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
-        if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
-          (*p_Max_FSR_Ratio) = *p_FSR_Ratio; // update the max fsr Ratio
-
-
-        // while updating the ratio value still continue to provide the control
-        if ((p_steps_l->Setpoint ) > 0) { //depending on the leg the sign changes
-          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio));
-          *p_Setpoint_Ankle_Pctrl_l = -min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
-        }
-        else if ((p_steps_l->Setpoint ) < 0) {
-          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio));
-          *p_Setpoint_Ankle_Pctrl_l = -min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
-        } else {
-          *p_Setpoint_Ankle_Pctrl_l = 0;
-        }
-      }
-    }
+   }
 
     return N3_l; //return the previous N3 value whis is not used
   }
@@ -293,8 +274,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       return N3_l; // No modification in the shaping function which is disabled
     }
 
-    else if (Control_Mode_l == 4)  {
-      //Serial.println("****************Control_Mode is 4***************");
+    else if (Control_Mode_l == 4 || Control_Mode_l == 6)  {
       if ((p_steps_l->Setpoint ) > 0) {
         *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio)); // the difference here is that we do it as a function of the FSR calibration
         *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
@@ -315,28 +295,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       return N3_l; // No modification in the shaping function which is disabled
     }
 
-     else if (Control_Mode_l == 6) { // Resistance Control JL 4/25/19
-        *p_FSR_Ratio = fabs(p_steps_l->curr_voltage / p_steps_l->plant_peak_mean);
-        if (*p_FSR_Ratio > (*p_Max_FSR_Ratio))
-          (*p_Max_FSR_Ratio) = *p_FSR_Ratio; // update the max fsr Ratio
-
-
-        // while updating the ratio value still continue to provide the control
-        if ((p_steps_l->Setpoint ) > 0) { //depending on the leg the sign changes
-          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio));
-          *p_Setpoint_Ankle_Pctrl_l = -min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
-        }
-        else if ((p_steps_l->Setpoint ) < 0) {
-          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio));
-          *p_Setpoint_Ankle_Pctrl_l = -min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
-        } else {
-          *p_Setpoint_Ankle_Pctrl_l = 0;
-        }
-        return N3_l; // No modification in the shaping function which is disabled
-      }
-
-
-    // Otherwise we need to calculate the time
+         // Otherwise we need to calculate the time
 
     // Parameters for speed adaption
     if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
@@ -354,8 +313,6 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
       p_steps_l->flag_start_plant = true; // Parameters inizialized Start a step
     }
-
-
 
 
   }// end if you enter in state 3 from state 2 or 1
