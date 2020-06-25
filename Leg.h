@@ -84,8 +84,8 @@ struct Leg {
   double fsr_Heel_peak_ref = 0;
   double fsr_Toe_peak_ref = 0;
 
-  double fsr_percent_thresh_Heel = 0.1;
-  double fsr_percent_thresh_Toe = 0.1;
+  double fsr_percent_thresh_Heel = 0.2;
+  double fsr_percent_thresh_Toe = 0.2;
 
   int FSR_baseline_FLAG = 0;
   int* p_FSR_baseline_FLAG = &FSR_baseline_FLAG;
@@ -105,7 +105,7 @@ struct Leg {
   int Vol;
 
 #ifdef ENABLE_PWM   //PID Gains are different for PWM control
-  double kp = 600;
+  double kp = 300;
   double ki = 0;
   double kd = 3;
 #else
