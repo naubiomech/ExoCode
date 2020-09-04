@@ -42,6 +42,7 @@ const unsigned int zero = 2048;//1540;
 #include "Board.h"
 #include "resetMotorIfError.h"
 #include "ATP.h"
+bool iOS_Flag = 1;
 //----------------------------------------------------------------------------------
 
 
@@ -53,8 +54,17 @@ void setup()
   Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
 
   // enable bluetooth
+  if (iOS_Flag) 
+  {
+  bluetooth.begin(9600);
+  Serial.begin(9600);
+  }
+  else if (!iOS_Flag) 
+  {
   bluetooth.begin(115200);
   Serial.begin(115200);
+  }
+  
 
   //set the resolution
   analogWriteResolution(12);                                          //change resolution to 12 bits
