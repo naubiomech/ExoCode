@@ -7,8 +7,8 @@
 #define TWO_LEG_BOARD 1
 
 #if BOARD_VERSION == DUAL_BOARD_REV3
-const unsigned int BLUETOOTH_TX_PIN = 35;
-const unsigned int BLUETOOTH_RX_PIN = 34;
+const unsigned int BLUETOOTH_TX_PIN = 34;
+const unsigned int BLUETOOTH_RX_PIN = 35;
 
 const unsigned int FSR_SENSE_LEFT_TOE_PIN = A12;
 const unsigned int FSR_SENSE_LEFT_HEEL_PIN = A13;

@@ -2,19 +2,23 @@
 
 void torque_calibration()
 {
+  noInterrupts();
   long torque_calibration_value_time = millis();
+  Serial.println(torque_calibration_value_time);
   int torq_cal_count = 0;
   left_leg->torque_calibration_value = 0;
   right_leg->torque_calibration_value = 0;
-
-  while (millis() - torque_calibration_value_time < 1000)
-  { //Calibrates the LL for a total time of 1 second,
+  Serial.println("In torque cal 2");
+  while (torq_cal_count < 10000) {//(millis() - torque_calibration_value_time < 1000)  { //Calibrates the LL for a total time of 1 second,
+    //Serial.println(torq_cal_count);
     left_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
     right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
     torq_cal_count ++;                                                         //Increments count
   }
+  Serial.println("In torque cal 3");
   left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
+  interrupts();
 }
 
 

@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD
+#define BOARD_VERSION DUAL_BOARD_REV3
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -49,13 +49,16 @@ const unsigned int zero = 2048;//1540;
 void setup()
 {
   // set the interrupt timer
+  Serial.println("Started");
   Timer1.initialize(2000);         // initialize timer1, and set a 2 ms period *note this is 2k microseconds*
   Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
 
   // enable bluetooth
+  #define bluetooth Serial8
   bluetooth.begin(115200);
   Serial.begin(115200);
-
+  Serial.println("Enabled");
+  
   //set the resolution
   analogWriteResolution(12);                                          //change resolution to 12 bits
   analogReadResolution(12);                                           //ditto
@@ -67,16 +70,19 @@ void setup()
   // set the led
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
+  Serial.println("LED SET");
 
   // set pin mode for motor pin
   pinMode(onoff, OUTPUT); //Enable disable the motors
   digitalWrite(onoff, LOW);
+  Serial.println("ONOFF SET");
 
   // Fast torque calibration
-  torque_calibration();
+  //torque_calibration();
+  Serial.println("Torque Cal Done");
 
   digitalWrite(LED_PIN, HIGH);
-
+  Serial.println("Wrote LED_High");
 }
 
 //----------------------------------------------------------------------------------
@@ -122,6 +128,7 @@ void loop()
   {
     if (bluetooth.available() > 0) // If bluetooth buffer contains something
     {
+      Serial.println("Something to read");
       receive_and_transmit();       //Recieve and transmit
     }
 

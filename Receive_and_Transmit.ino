@@ -233,6 +233,7 @@ void receive_and_transmit()
       break;
 
     case 'N':
+      Serial.println("I'm here");
       *(data_to_send_point) = 0;
       *(data_to_send_point + 1) = 1;
       *(data_to_send_point + 2) = 2;
