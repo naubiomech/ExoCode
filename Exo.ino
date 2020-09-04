@@ -16,7 +16,7 @@
 // 2 steps = 2N
 // 3 steps = 4N
 // 4 steps = 6N
-// 5 steps = 8N
+// 5 steps = 8N   
 // 6 steps = 10N
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
