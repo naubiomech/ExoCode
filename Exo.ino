@@ -17,7 +17,6 @@
 // 3 steps = 4N
 // 4 steps = 6N
 // 5 steps = 8N
-// 5 steps = 8N   
 // 6 steps = 10N
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
@@ -56,26 +55,20 @@ void setup()
   Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
 
   // enable bluetooth
-<<<<<<< HEAD
-  #define bluetooth Serial8
-  bluetooth.begin(115200);
-  Serial.begin(115200);
-  Serial.println("Enabled");
-  
-=======
+  #if BOARD_VERSION == DUAL_BOARD_REV3
+      #define bluetooth Serial8
+  #endif
   if (iOS_Flag) 
   {
-  bluetooth.begin(9600);
-  Serial.begin(9600);
+    bluetooth.begin(9600);
+    Serial.begin(9600);
   }
   else if (!iOS_Flag) 
   {
-  bluetooth.begin(115200);
-  Serial.begin(115200);
+    bluetooth.begin(115200);
+    Serial.begin(115200);
   }
   
-
->>>>>>> 5b1e005369cba3f4fad7e70a0bb43ad6b74e5f98
   //set the resolution
   analogWriteResolution(12);                                          //change resolution to 12 bits
   analogReadResolution(12);                                           //ditto
