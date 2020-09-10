@@ -7,6 +7,7 @@
 #define TWO_LEG_BOARD 1
 
 #if BOARD_VERSION == DUAL_BOARD_REV3
+#define ENABLE_PWM
 const unsigned int BLUETOOTH_TX_PIN = 34;
 const unsigned int BLUETOOTH_RX_PIN = 35;
 

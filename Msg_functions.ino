@@ -115,7 +115,6 @@ void send_command_message(char command_char, double* data_to_send, int number_to
   
   else if (!iOS_Flag)
   {
-    Serial.println("Wrong");
     bluetooth.write('S');
     bluetooth.write(command_char);
     bluetooth.write((char) number_to_send);
