@@ -2,23 +2,19 @@
 
 void torque_calibration()
 {
-  noInterrupts();
+  noInterrupts(); //Disable timer interrupts for the duration of this function
   long torque_calibration_value_time = millis();
-  Serial.println(torque_calibration_value_time);
   int torq_cal_count = 0;
   left_leg->torque_calibration_value = 0;
   right_leg->torque_calibration_value = 0;
-  Serial.println("In torque cal 2");
-  while (torq_cal_count < 10000) {//(millis() - torque_calibration_value_time < 1000)  { //Calibrates the LL for a total time of 1 second,
-    //Serial.println(torq_cal_count);
+  while (millis() - torque_calibration_value_time < 1000)  { //Calibrates the LL for a total time of 1 second,    (torq_cal_count < 10000) {
     left_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
     right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
     torq_cal_count ++;                                                         //Increments count
   }
-  Serial.println("In torque cal 3");
   left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
-  interrupts();
+  interrupts(); //Re-enable interrupts
 }
 
 
@@ -145,21 +141,9 @@ double fsr(const unsigned int pin) {
  * This function reads the motor current pin and converts the voltage reading in bits to motor current.
 */
 double current(const unsigned int pin) {
-  //
   int value = analogRead(pin);
   double Co = NomCurrent * (value - 2048.0)/2048.0; //Nominal current needs to be set in ESCON, 7.58
   return Co;
-}
-
-/* This code allows us to read the analog output from the motor drivers and gives us the expected torque about the ankle.
-Torque Constant (200W) : 13.6 mNm/A
-Gear Ratio (32HP, 4-8Nm) : 17576/343 
-Large Exo Pulley Ratio: 74/10.3
-*/
-double expected_ankle_torq(const unsigned int pin){
-  double motor_current = current(pin);
-  double ankle_torq = motor_current * TrqConstant * GearRatio * PulleyRatio;
-  return ankle_torq;
 }
 
 /* This code allows us to read the analog output from the motor drivers and gives us the expected speed about the ankle.

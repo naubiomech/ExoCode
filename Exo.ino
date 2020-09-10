@@ -42,7 +42,7 @@ const unsigned int zero = 2048;//1540;
 #include "Board.h"
 #include "resetMotorIfError.h"
 #include "ATP.h"
-bool iOS_Flag = 1;
+bool iOS_Flag = 0;
 //----------------------------------------------------------------------------------
 
 
@@ -56,7 +56,7 @@ void setup()
 
   // enable bluetooth
   #if BOARD_VERSION == DUAL_BOARD_REV3
-      #define bluetooth Serial8
+    #define bluetooth Serial8
   #endif
   if (iOS_Flag) 
   {
