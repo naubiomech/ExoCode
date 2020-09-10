@@ -3,7 +3,7 @@ void send_data_message_wc() //with COP
 {
   
   //Executes if running iOS app
-  if (iOS_Flag) 
+  if (iOS_Flag)
   {
   //Right Leg
   data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);

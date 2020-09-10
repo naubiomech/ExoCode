@@ -174,10 +174,10 @@ void receive_and_transmit()
       break;
 
     case 'k':
-      receiveVals(1);
-      memcpy(&CtrlType,holdOnPoint,1);  //Copy the values that indicate desired open-loop control
-      Serial.println(CtrlType);
-      if (CtrlType==0) {
+      //receiveVals(1);
+      //memcpy(&CtrlType,holdOnPoint,1);  //Copy the values that indicate desired open-loop control
+      //Serial.println(CtrlType);
+      //if (CtrlType==0) {
         CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
         CURRENT_DIAGNOSTICS = 0;
         MODEL_CONTROL = 0;
@@ -186,7 +186,8 @@ void receive_and_transmit()
         } else {
           Serial.println("Torque Control");
         }
-      } else if (CtrlType==1) {
+        //Comments have been made for iOS Demo
+     /* } else if (CtrlType==1) {
         CURRENT_CONTROL = 0;
         CURRENT_DIAGNOSTICS = !CURRENT_DIAGNOSTICS;
         MODEL_CONTROL = 0;
@@ -203,8 +204,8 @@ void receive_and_transmit()
           Serial.println("Model Control");
         } else {
           Serial.println("Torque Control");
-        }
-      }
+        }*/
+      //}
 
       break;
 
@@ -331,7 +332,6 @@ void receive_and_transmit()
       if (clean_FSR_values(left_leg->address_FSR + sizeof(double) + sizeof(char)))
       {
       }
-      else
       {
       }
       if (clean_FSR_values(right_leg->address_FSR + sizeof(double) + sizeof(char)))

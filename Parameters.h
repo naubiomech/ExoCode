@@ -83,13 +83,15 @@ const int n_step_baseline = 6;
 
 // ===== Motor Parameters =====
 // Initialize all variables as 1 prior to definition of motor parameters in GUI
-int MotorParams = 100; 
-double NomCurrent = 1;
-double TrqConstant = 1;
-double GearRatio = 1;
-double PulleyRatio = 1;
-double MaxSpeed = 1;
-double MotorEff = 1;
-double GearboxEff = 1;
 
+//HardCoded for demo
+int MotorParams = 1;  //Was 100
+double NomCurrent = 7.58; //The rest were 1
+double TrqConstant = 13.5/1000;
+double GearRatio = 6877.0/56.0;
+double PulleyRatio = 30/10.3;
+double MaxSpeed = 15800;
+double MotorEff = 0.89;
+double GearboxEff = 0.7;
+ 
 #endif
