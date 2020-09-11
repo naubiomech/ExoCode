@@ -9,15 +9,13 @@ void send_data_message_wc() //with COP
   data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
   data_to_send[1] = right_leg->state;
   data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
-  data_to_send[3] = (right_leg->FSR_Toe_Average);
     
   //Left Leg
-  data_to_send[4] = (left_leg->sign * left_leg->Average_Trq);
-  data_to_send[5] = left_leg->state;
-  data_to_send[6] = (left_leg->sign * left_leg->PID_Setpoint);
-  data_to_send[7] = (left_leg->FSR_Toe_Average);
+  data_to_send[3] = (left_leg->sign * left_leg->Average_Trq);
+  data_to_send[4] = left_leg->state;
+  data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
   
-  send_command_message('?', data_to_send, 8);
+  send_command_message('?', data_to_send, 6);
   }
 
   //Executes if running MATLAB

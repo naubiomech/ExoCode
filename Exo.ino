@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD
+#define BOARD_VERSION DUAL_BOARD_REV3
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -42,7 +42,8 @@ const unsigned int zero = 2048;//1540;
 #include "Board.h"
 #include "resetMotorIfError.h"
 #include "ATP.h"
-bool iOS_Flag = 0;
+bool iOS_Flag = 1;
+int streamTimerCountNum = 0;
 //----------------------------------------------------------------------------------
 
 
@@ -62,11 +63,13 @@ void setup()
   {
     bluetooth.begin(9600);
     Serial.begin(9600);
+    streamTimerCountNum = 25;
   }
   else if (!iOS_Flag) 
   {
     bluetooth.begin(115200);
     Serial.begin(115200);
+    streamTimerCountNum = 5;
   }
   
   //set the resolution
@@ -312,7 +315,11 @@ void rotate_motor() {
 
   if (stream == 1)
   {
-    if (streamTimerCount >= 5) // every 5*2ms, i.e. every .01s
+    pid(left_leg, left_leg->Average_Trq);
+    pid(right_leg, right_leg->Average_Trq);
+
+    
+    if (streamTimerCount >= streamTimerCountNum) // every streamTimerCountNum*2ms
     {
       counter_msgs++;
       send_data_message_wc();
@@ -327,8 +334,7 @@ void rotate_motor() {
 
     streamTimerCount++;
 
-    pid(left_leg, left_leg->Average_Trq);
-    pid(right_leg, right_leg->Average_Trq);
+    
 
 
     // modification to check the pid
