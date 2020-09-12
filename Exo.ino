@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD_REV3
+#define BOARD_VERSION DUAL_BOARD
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -59,7 +59,7 @@ void setup()
   #if BOARD_VERSION == DUAL_BOARD_REV3
     #define bluetooth Serial8
   #endif
-  if (iOS_Flag) 
+  if (iOS_Flag == true) 
   {
     bluetooth.begin(9600);
     Serial.begin(9600);

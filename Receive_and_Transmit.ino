@@ -6,6 +6,7 @@ void receive_and_transmit()
 {
 
   cmd_from_Gui = bluetooth.read();
+  Serial.println((char) cmd_from_Gui);
   switch (cmd_from_Gui)
   {
     case '?':
