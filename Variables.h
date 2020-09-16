@@ -1,5 +1,6 @@
 // timer
 Metro slowThisDown = Metro(1);  // Set the function to be called at no faster a rate than once per millisecond
+Metro controlLoop = Metro(2);
 
 // Variable used to schedule some actions
 elapsedMillis timeElapsed;

@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD
+#define BOARD_VERSION DUAL_BOARD_REV3
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -52,8 +52,8 @@ void setup()
 {
   // set the interrupt timer
   Serial.println("Started");
-  Timer1.initialize(2000);         // initialize timer1, and set a 2 ms period *note this is 2k microseconds*
-  Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
+  //Timer1.initialize(2000);         // initialize timer1, and set a 2 ms period *note this is 2k microseconds*
+  //Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
 
   // enable bluetooth
   #if BOARD_VERSION == DUAL_BOARD_REV3
@@ -136,6 +136,11 @@ void callback()//executed every 2ms
 // Function that is repeated in loop
 void loop()
 {
+  if (controlLoop.check() == 1)
+  {
+    callback();
+    controlLoop.reset();
+  }
 
   if (slowThisDown.check() == 1) // If the time passed is over 1ms is a true statement
   {
