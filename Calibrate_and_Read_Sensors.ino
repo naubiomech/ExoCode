@@ -37,6 +37,14 @@ void FSR_calibration()
     right_leg->fsr_Toe_peak_ref = 0;
     left_leg->fsr_Heel_peak_ref = 0;
     right_leg->fsr_Heel_peak_ref = 0;
+
+    //Automatically take the PJMC basline during FSR calibration
+    left_leg->FSR_baseline_FLAG = 1;
+    right_leg->FSR_baseline_FLAG = 1;
+    left_leg->p_steps->count_plant_base = 0;
+    right_leg->p_steps->count_plant_base = 0;
+    right_leg->p_steps->flag_start_plant = false;
+    left_leg->p_steps->flag_start_plant = false;
   }
 
 
@@ -84,13 +92,7 @@ void FSR_calibration()
       right_leg->fsr_Heel_peak_ref = right_leg->Curr_Heel;
     }
 
-  //Automatically take the PJMC basline after FSR calibration
-  left_leg->FSR_baseline_FLAG = 1;
-  right_leg->FSR_baseline_FLAG = 1;
-  left_leg->p_steps->count_plant_base = 0;
-  right_leg->p_steps->count_plant_base = 0;
-  right_leg->p_steps->flag_start_plant = false;
-  left_leg->p_steps->flag_start_plant = false;
+  
   
   } else {
 
