@@ -39,8 +39,8 @@ const unsigned int MOTOR_SPEED_RIGHT_PIN = A15;
 const unsigned int HALL_LEFT_PIN = A9;
 const unsigned int HALL_RIGHT_PIN = A14; 
 
-const unsigned int PWR_REG_0 = 18; //Register 0
-const unsigned int PWR_REG_1 = 19; //Register 1
+const unsigned int PWR_ADR_0 = 18; //Address 0
+const unsigned int PWR_ADR_1 = 19; //Address 1
 const unsigned int PWR_SCL = 16;   //SCL 1
 const unsigned int PWR_SDA = 17;   //SDA 1
 #endif
@@ -78,8 +78,8 @@ const unsigned int MOTOR_SPEED_RIGHT_PIN = A19;
 const unsigned int HALL_LEFT_PIN = A9;
 const unsigned int HALL_RIGHT_PIN = A18; 
 
-const unsigned int PWR_REG_0 = 5; //Register 0
-const unsigned int PWR_REG_1 = 6; //Register 1
+const unsigned int PWR_ADR_0 = 5; //Address 0
+const unsigned int PWR_ADR_1 = 6; //Address 1
 const unsigned int PWR_SCL = 19;   //SCL
 const unsigned int PWR_SDA = 18;   //SDA
 #endif
