@@ -38,6 +38,7 @@ const unsigned int zero = 2048;//1540;
 #include "Msg_functions.h"
 #include "Auto_KF.h"
 #include <Metro.h>
+#include <Wire.h>
 #include "Variables.h"
 #include "Board.h"
 #include "resetMotorIfError.h"
@@ -58,6 +59,9 @@ void setup()
   // enable bluetooth
   #if BOARD_VERSION == DUAL_BOARD_REV3
     #define bluetooth Serial8
+  #endif
+  #if BOARD_VERSION == DUAL_BOARD_REV4
+    #define bluetooth Serial4
   #endif
   if (iOS_Flag == true) 
   {
