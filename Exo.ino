@@ -111,8 +111,14 @@ void setup()
   Wire1.write(INA219_CAL); //Write the target as the calibration register
   Wire1.write(Cal);        //Write the calibration value to the calibration register
   Wire1.endTransmission(); //End the transmission and calibration
+  delay(100);
+
+  int startVolt = readBatteryVoltage(); //Read the startup battery voltage
+  Serial.println(startVolt);
+  //Send data message to iOS here
 
   Serial.println("Setup complete");
+  
 }
 
 //----------------------------------------------------------------------------------
@@ -346,6 +352,11 @@ void rotate_motor() {
       counter_msgs++;
       send_data_message_wc();
       streamTimerCount = 0;
+    }
+
+    if (streamTimerCount >= 15000*2) { //every 30 seconds
+      int batteryVoltage = readBatteryVoltage();
+      //Send data message here
     }
 
     if (streamTimerCount == 1 && flag_auto_KF == 1) {
