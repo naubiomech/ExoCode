@@ -87,19 +87,32 @@ void setup()
   // set the led
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
-  Serial.println("LED SET");
+  //Serial.println("LED SET");
 
   // set pin mode for motor pin
   pinMode(onoff, OUTPUT); //Enable disable the motors
   digitalWrite(onoff, LOW);
-  Serial.println("ONOFF SET");
+  //Serial.println("ONOFF SET");
 
   // Fast torque calibration
   //torque_calibration();
-  Serial.println("Torque Cal Done");
+  //Serial.println("Torque Cal Done");
 
   digitalWrite(LED_PIN, HIGH);
-  Serial.println("Wrote LED_High");
+  //Serial.println("Wrote LED_High");
+
+  // Initialize power monitor settings
+  pinMode(PWR_ADR_0, OUTPUT);
+  pinMode(PWR_ADR_1, OUTPUT);
+  digitalWrite(PWR_ADR_0, LOW); 
+  digitalWrite(PWR_ADR_1, LOW); //Setting both address pins to GND defines the slave address
+  Wire1.begin(); //Initialize the I2C protocol on SDA1/SCL1 for Teensy 4.1 only for now
+  Wire1.beginTransmission(INA219_ADR); //Start talking to the INA219
+  Wire1.write(INA219_CAL); //Write the target as the calibration register
+  Wire1.write(Cal);        //Write the calibration value to the calibration register
+  Wire1.endTransmission(); //End the transmission and calibration
+
+  Serial.println("Setup complete");
 }
 
 //----------------------------------------------------------------------------------
