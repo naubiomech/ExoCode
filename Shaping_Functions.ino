@@ -68,6 +68,7 @@ void PID_Sigm_Curve(Leg* leg) {
     if (abs(leg->New_PID_Setpoint - leg->PID_Setpoint) > 0.1 &&  (leg->sigm_done))
     {
       leg->n_iter = 0;
+      leg->Angular_Impulse = 0;
       leg->sigm_done = false;                                                   //Do not let the code enter this block, until the setpoint transition has finished
 
       if (leg->state == 3) {
@@ -125,6 +126,7 @@ void PID_Sigm_Curve(Leg* leg) {
         if (leg->PID_Setpoint > 35.0)
           leg->PID_Setpoint = leg->Old_PID_Setpoint;
       }
+      leg->Angular_Impulse = leg->Angular_Impulse + leg->PID_Setpoint;
       leg->n_iter++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
     }
 
@@ -143,6 +145,7 @@ void PID_Sigm_Curve_Knee(Leg* leg) {
     if (abs(leg->New_PID_Setpoint_Knee - leg->PID_Setpoint_Knee) > 0.1 &&  (leg->sigm_done_Knee))
     {
       leg->n_iter_Knee = 0;
+      leg->Angular_Impulse_Knee = 0;
       leg->sigm_done_Knee = false;                                                   //Do not let the code enter this block, until the setpoint transition has finished
 
       if (leg->state == 3) {
@@ -166,7 +169,8 @@ void PID_Sigm_Curve_Knee(Leg* leg) {
         leg->PID_Setpoint_Knee = Change_PID_Setpoint_Sigm(leg->New_PID_Setpoint_Knee, leg->PID_Setpoint_Knee, leg->Old_PID_Setpoint_Knee, Ts, leg->exp_mult_Knee, leg->n_iter_Knee, leg->N_step_Knee);
         if (leg->PID_Setpoint_Knee > 35.0)
           leg->PID_Setpoint_Knee = leg->Old_PID_Setpoint_Knee;
-      leg->n_iter_Knee++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
+        leg->Angular_Impulse_Knee = leg->Angular_Impulse_Knee + leg->Old_PID_Setpoint_Knee;// SS 6/8/2020
+        leg->n_iter_Knee++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
     }
 
 

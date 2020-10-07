@@ -64,6 +64,9 @@ double FSR_Ratio;
 double FSR_Ratio_Toe;  // TN 5/8/19
 double FSR_Ratio_Heel;  // TN 5/8/19
 double FSR_Ratio_HeelMinusToe;  // SS 9/10/2019
+double INTEG_Ratio_Toe;           //  SS  3/29/2020
+double INTEG_Ratio_Heel;          //  SS  3/29/2020
+double INTEG_Ratio_HeelMinusToe;  //  SS  3/29/2020
 
 // ===== Proportional Control Parameters =====
 double Max_Prop = 25;

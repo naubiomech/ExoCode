@@ -101,3 +101,10 @@ bool flag_id_KneeHeel = false;   //  SS  2/5/2020
 
 bool Flag_Ankle_Cfg = true; // TN 05/06/2019
 bool Flag_Knee_Cfg = false; // TN 05/06/2019
+
+// Variables for IMU
+int DetectKneeIMU = 10;
+int DetectAnkleIMU = 10;
+int isIMU0 = 0;
+double Angle_Knee = 0; 
+double Angle_Ankle = 0;

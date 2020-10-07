@@ -221,7 +221,9 @@ void State_Machine_Toe_Heel_Sensors(Leg * leg) {
         leg->Previous_Setpoint_Ankle = 0;
         leg->Previous_Setpoint_Knee = 0;  // TN 5/8/19
         leg->PID_Setpoint = 0;
-        leg->PID_Setpoint_Knee = 0;  
+//        leg->Angular_Impulse = 0; // SS 6/8/2020
+        leg->PID_Setpoint_Knee = 0;
+//        leg->Angular_Impulse_Knee = 0; // SS 6/8/2020 
         leg->Setpoint_Ankle_Pctrl = 0;
         leg->Setpoint_Knee_Pctrl = 0;
         leg->Previous_Setpoint_Ankle_Pctrl = 0; //GO 4/21/19
@@ -410,9 +412,11 @@ void State_Machine_Toe_Sensor(Leg * leg) {
         leg->One_time_set_2_zero = 0;
         leg->Previous_Setpoint_Ankle = 0;
         leg->PID_Setpoint = 0;
+//        leg->Angular_Impulse = 0; // SS 6/8/2020
         leg->Setpoint_Ankle_Pctrl = 0;
-         leg->Previous_Setpoint_Knee = 0;// SS 1/9/2020
+        leg->Previous_Setpoint_Knee = 0;// SS 1/9/2020
         leg->PID_Setpoint_Knee = 0;// SS 1/9/2020
+//        leg->Angular_Impulse_Knee = 0; // SS 6/8/2020
         leg->Setpoint_Knee_Pctrl = 0;// SS 1/9/2020
       }
 
@@ -469,6 +473,8 @@ void State_Machine_Toe_Sensor(Leg * leg) {
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4) && leg->state == 1) {
     leg->PID_Setpoint = 0;
     leg->PID_Setpoint_Knee = 0;// SS 1/9/2020
+//    leg->Angular_Impulse = 0; // SS 6/8/2020
+//    leg->Angular_Impulse_Knee = 0; // SS 6/8/2020
   }
   else {
 
@@ -575,7 +581,9 @@ void State_BangBang(Leg * leg) {  // SS 1/27/2020
         leg->Previous_Setpoint_Ankle = 0;
         leg->Previous_Setpoint_Knee = 0;
         leg->PID_Setpoint = 0;
+//        leg->Angular_Impulse = 0; // SS 6/8/2020
         leg->PID_Setpoint_Knee = 0;
+//        leg->Angular_Impulse_Knee = 0; // SS 6/8/2020
         leg->Setpoint_Ankle_Pctrl = 0;
         leg->Setpoint_Knee_Pctrl = 0;
         leg->Previous_Setpoint_Ankle_Pctrl = 0;
@@ -654,7 +662,9 @@ void State_BangBang(Leg * leg) {  // SS 1/27/2020
         leg->Previous_Setpoint_Ankle = 0;
         leg->Previous_Setpoint_Knee = 0;
         leg->PID_Setpoint = 0;
+//        leg->Angular_Impulse = 0; // SS 6/8/2020
         leg->PID_Setpoint_Knee = 0;  
+//        leg->Angular_Impulse_Knee = 0; // SS 6/8/2020
         leg->Setpoint_Ankle_Pctrl = 0;
         leg->Setpoint_Knee_Pctrl = 0;
         leg->Previous_Setpoint_Ankle_Pctrl = 0; 

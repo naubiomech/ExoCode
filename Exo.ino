@@ -43,7 +43,17 @@ const unsigned int zero = 2048;//1540;
 #include "Board.h"
 #include "resetMotorIfError.h"
 #include "ATP.h"
+#include <i2c_t3.h>
+#include "AdafruitBNO055.h"
 //----------------------------------------------------------------------------------
+
+
+#define IS_I2C0 true
+Adafruit_BNO055 KneAng = Adafruit_BNO055(IS_I2C0);// IMU slot 0
+
+#define IS_I2C0 false
+Adafruit_BNO055 AnkAng = Adafruit_BNO055(IS_I2C0, -1, BNO055_ADDRESS_A);// IMU slot 1       
+
 
 
 // Initialize the system
@@ -57,6 +67,7 @@ void setup()
   bluetooth.begin(115200);
   Serial.begin(115200);
 
+  
   //set the resolution
   analogWriteResolution(12);                                          //change resolution to 12 bits
   analogReadResolution(12);                                           //ditto
@@ -77,6 +88,10 @@ void setup()
   torque_calibration();
 
   digitalWrite(LED_PIN, HIGH);
+  
+  // detect IMU
+  DetectKneeIMU = detect_IMU(KneAng);
+//  DetectAnkleIMU = detect_IMU(AnkAng);
 
 }
 
@@ -131,7 +146,10 @@ void loop()
 
   //  // apply biofeedback, if it is not activated return void
   biofeedback();
-
+  // read angle of segment from IMU
+  Angle_Knee = readAngle(KneAng);
+//  Angle_Ankle = readAngle(AnkAng);
+  
   //if the stream is not activated reset the starting parameters
   if (stream != 1) // stream is 1 once you push start trial in the matlab gui, is 0 once you push end trial.
   {
@@ -491,13 +509,17 @@ void rotate_motor() {
     left_leg->N3 = Control_Adjustment(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
                                       left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle_Pctrl,
                                       left_leg->New_PID_Setpoint_Knee, left_leg->p_Setpoint_Knee_Pctrl, Control_Mode, left_leg->Prop_Gain,
-                                      left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->FSR_Ratio_Toe, &left_leg->FSR_Ratio_Heel, &left_leg->FSR_Ratio_HeelMinusToe, &left_leg->FSR_Ratio_Ankle, &left_leg->FSR_Ratio_Knee,
-                                      &left_leg->Max_FSR_Ratio, &left_leg->Max_FSR_Ratio_Toe, &left_leg->Max_FSR_Ratio_Heel, &left_leg->Max_FSR_Ratio_HeelMinusToe, &left_leg->Max_FSR_Ratio_Ankle, &left_leg->Max_FSR_Ratio_Knee);
+                                      left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->FSR_Ratio_Toe, &left_leg->INTEG_Ratio_Toe, &left_leg->FSR_Ratio_Heel, &left_leg->INTEG_Ratio_Heel,
+                                      &left_leg->FSR_Ratio_HeelMinusToe, &left_leg->INTEG_Ratio_HeelMinusToe, &left_leg->FSR_Ratio_Ankle, &left_leg->INTEG_Ratio_Ankle, &left_leg->FSR_Ratio_Knee, &left_leg->INTEG_Ratio_Knee,
+                                      &left_leg->Max_FSR_Ratio, &left_leg->Max_FSR_Ratio_Toe, &left_leg->Max_INTEG_Ratio_Toe, &left_leg->Max_FSR_Ratio_Heel, &left_leg->Max_INTEG_Ratio_Heel,
+                                      &left_leg->Max_FSR_Ratio_HeelMinusToe, &left_leg->Max_INTEG_Ratio_HeelMinusToe, &left_leg->Max_FSR_Ratio_Ankle, &left_leg->Max_INTEG_Ratio_Ankle, &left_leg->Max_FSR_Ratio_Knee, &left_leg->Max_INTEG_Ratio_Knee);
     right_leg->N3 = Control_Adjustment(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps,
                                        right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle_Pctrl,
                                        right_leg->New_PID_Setpoint_Knee, right_leg->p_Setpoint_Knee_Pctrl, Control_Mode, right_leg->Prop_Gain,
-                                       right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->FSR_Ratio_Toe, &right_leg->FSR_Ratio_Heel, &right_leg->FSR_Ratio_HeelMinusToe, &right_leg->FSR_Ratio_Ankle, &right_leg->FSR_Ratio_Knee,
-                                       &right_leg->Max_FSR_Ratio, &right_leg->Max_FSR_Ratio_Toe, &right_leg->Max_FSR_Ratio_Heel, &right_leg->Max_FSR_Ratio_HeelMinusToe, &right_leg->Max_FSR_Ratio_Ankle, &right_leg->Max_FSR_Ratio_Knee);
+                                       right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->FSR_Ratio_Toe, &right_leg->INTEG_Ratio_Toe, &right_leg->FSR_Ratio_Heel, &right_leg->INTEG_Ratio_Heel,
+                                       &right_leg->FSR_Ratio_HeelMinusToe, &right_leg->INTEG_Ratio_HeelMinusToe, &right_leg->FSR_Ratio_Ankle, &right_leg->INTEG_Ratio_Ankle, &right_leg->FSR_Ratio_Knee, &right_leg->INTEG_Ratio_Knee,
+                                       &right_leg->Max_FSR_Ratio, &right_leg->Max_FSR_Ratio_Toe, &right_leg->Max_INTEG_Ratio_Toe, &right_leg->Max_FSR_Ratio_Heel, &right_leg->Max_INTEG_Ratio_Heel,
+                                       &right_leg->Max_FSR_Ratio_HeelMinusToe, &right_leg->Max_INTEG_Ratio_HeelMinusToe, &right_leg->Max_FSR_Ratio_Ankle, &right_leg->Max_INTEG_Ratio_Ankle, &right_leg->Max_FSR_Ratio_Knee, &right_leg->Max_INTEG_Ratio_Knee);
 
   }// end if stream==1
 }

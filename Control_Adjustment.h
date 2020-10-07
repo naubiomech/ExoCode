@@ -38,18 +38,33 @@ typedef struct {
   double plant_peak_mean_Toe = 0;
   double plant_peak_mean_Heel = 0;
   double plant_peak_mean_HeelMinusToe = 0;
+  double plant_IntegMax_mean_Toe = 0;         //  SS  3/29/2020
+  double plant_IntegMax_mean_Heel = 0;        //  SS  3/29/2020
+  double plant_IntegMax_mean_HeelMinusToe = 0;//  SS  3/29/2020
   double four_step_plant_peak[n_step_baseline] = {0};
   double four_step_plant_peak_Toe[n_step_baseline] = {0};
   double four_step_plant_peak_Heel[n_step_baseline] = {0};
   double four_step_plant_peak_HeelMinusToe[n_step_baseline] = {0};
+  double four_step_plant_IntegMax_Toe[n_step_baseline] = {0};           //  SS  3/29/2020
+  double four_step_plant_IntegMax_Heel[n_step_baseline] = {0};          //  SS  3/29/2020
+  double four_step_plant_IntegMax_HeelMinusToe[n_step_baseline] = {0};  //  SS  3/29/2020
   double plant_peak_mean_temp;
   double plant_peak_mean_temp_Toe = 0;
   double plant_peak_mean_temp_Heel = 0;
   double plant_peak_mean_temp_HeelMinusToe = 0;
+  double plant_IntegMax_mean_temp_Toe = 0;          //  SS  3/29/2020
+  double plant_IntegMax_mean_temp_Heel = 0;         //  SS  3/29/2020
+  double plant_IntegMax_mean_temp_HeelMinusToe = 0; //  SS  3/29/2020
   double peak;
   double peak_Toe;
   double peak_Heel;
   double peak_HeelMinusToe;
+  double IntegMax_Toe;          //  SS  3/29/2020
+  double IntegMax_Heel;         //  SS  3/29/2020
+  double IntegMax_HeelMinusToe; //  SS  3/29/2020
+  double Integ_Toe;             //  SS  3/29/2020
+  double Integ_Heel;            //  SS  3/29/2020
+  double Integ_HeelMinusToe;    //  SS  3/29/2020
 
   double fsr_Toe;
   double fsr_Heel;  // TN 5/17/19

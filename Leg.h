@@ -81,13 +81,24 @@ struct Leg {
   double FSR_Ratio_HeelMinusToe;  // SS 9/10/2019
   double FSR_Ratio_Ankle;  // SS 2/5/2020
   double FSR_Ratio_Knee;  // SS 2/5/2020
+  double INTEG_Ratio_Toe;           // SS 3/29/2020
+  double INTEG_Ratio_Heel;          // SS 3/29/2020
+  double INTEG_Ratio_HeelMinusToe;  // SS 3/29/2020
+  double INTEG_Ratio_Ankle;         // SS 3/29/2020
+  double INTEG_Ratio_Knee;          // SS 3/29/2020
   double Max_FSR_Ratio;
   double Max_FSR_Ratio_Toe;
   double Max_FSR_Ratio_Heel;
   double Max_FSR_Ratio_HeelMinusToe;  // SS 9/10/2019
   double Max_FSR_Ratio_Ankle;  // SS 2/5/2020
   double Max_FSR_Ratio_Knee;  // SS 2/5/2020
-  
+  double Max_INTEG_Ratio_Toe;           // SS 3/29/2020
+  double Max_INTEG_Ratio_Heel;          // SS 3/29/2020
+  double Max_INTEG_Ratio_HeelMinusToe;  // SS 3/29/2020
+  double Max_INTEG_Ratio_Ankle;         // SS 3/29/2020
+  double Max_INTEG_Ratio_Knee;          // SS 3/29/2020
+  double Angular_Impulse;// SS 6/8/2020
+  double Angular_Impulse_Knee;// SS 6/8/2020
 
   // Combined_FSR.h
   double fsr_Combined_peak_ref;
@@ -122,6 +133,12 @@ struct Leg {
   double baseline_value_HeelMinusToe;  // SS 9/10/2019
   double baseline_value_Knee; // SS 2/5/2020
   double baseline_value_Ankle; // SS 2/5/2020
+
+  double baseline_Integ_Toe;          //  SS  3/29/2020
+  double baseline_Integ_Heel;         //  SS  3/29/2020
+  double baseline_Integ_HeelMinusToe; //  SS  3/29/2020
+  double baseline_Integ_Ankle;        //  SS  3/29/2020
+  double baseline_Integ_Knee;         //  SS  3/29/2020
 
   // PID_and_Ctrl_Parameters.h
   double torque_calibration_value_Ankle = 0;
