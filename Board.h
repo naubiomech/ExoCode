@@ -78,7 +78,7 @@ const unsigned int MOTOR_SPEED_RIGHT_PIN = A19;
 const unsigned int HALL_LEFT_PIN = A9;
 const unsigned int HALL_RIGHT_PIN = A18; 
 
-const unsigned int TRIGGER_PIN = A9;
+const unsigned int TRIGGER_PIN = 23;
 
 const unsigned int PWR_ADR_0 = 5; //Address 0
 const unsigned int PWR_ADR_1 = 6; //Address 1
