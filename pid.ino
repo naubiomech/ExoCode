@@ -4,7 +4,7 @@
 // if the torque measured <25 the counter is reset.
 
 void pid(Leg* leg, double input) {
-  if !CURRENT_CONTROL {
+  if (!CURRENT_CONTROL) {
     if ((abs(input) > 35)) //Was 25, increased to accomodate large exo
     {
       leg->torque_error_counter++;

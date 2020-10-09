@@ -53,14 +53,15 @@ void setup()
 {
   // set the interrupt timer
   Serial.println("Started");
-  //Timer1.initialize(2000);         // initialize timer1, and set a 2 ms period *note this is 2k microseconds*
-  //Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
+  #if BOARD_VERSION == DUAL_BOARD_REV4  //Use timer interrupts for teensy 3.6
+    Timer1.initialize(2000);            // initialize timer1, and set a 2 ms period *note this is 2k microseconds*
+    Timer1.attachInterrupt(callback);   // attaches callback() as a timer overflow interrupt
+  #endif
 
   // enable bluetooth
   #if BOARD_VERSION == DUAL_BOARD_REV3
     #define bluetooth Serial8
-  #endif
-  #if BOARD_VERSION == DUAL_BOARD_REV4
+  #elif BOARD_VERSION == DUAL_BOARD_REV4
     #define bluetooth Serial4
   #endif
   if (iOS_Flag == true) 
@@ -105,20 +106,22 @@ void setup()
   //Serial.println("Wrote LED_High");
 
   // Initialize power monitor settings
-  pinMode(PWR_ADR_0, OUTPUT);
-  pinMode(PWR_ADR_1, OUTPUT);
-  digitalWrite(PWR_ADR_0, LOW); 
-  digitalWrite(PWR_ADR_1, LOW); //Setting both address pins to GND defines the slave address
-  Wire1.begin(); //Initialize the I2C protocol on SDA1/SCL1 for Teensy 4.1 only for now
-  Wire1.beginTransmission(INA219_ADR); //Start talking to the INA219
-  Wire1.write(INA219_CAL); //Write the target as the calibration register
-  Wire1.write(Cal);        //Write the calibration value to the calibration register
-  Wire1.endTransmission(); //End the transmission and calibration
-  delay(100);
-
-  int startVolt = readBatteryVoltage(); //Read the startup battery voltage
-  Serial.println(startVolt);
-  //Send data message to iOS here
+  #if BOARD_VERSION == DUAL_BOARD_REV3
+    pinMode(PWR_ADR_0, OUTPUT);
+    pinMode(PWR_ADR_1, OUTPUT);
+    digitalWrite(PWR_ADR_0, LOW); 
+    digitalWrite(PWR_ADR_1, LOW); //Setting both address pins to GND defines the slave address
+    Wire1.begin(); //Initialize the I2C protocol on SDA1/SCL1 for Teensy 4.1 only for now
+    Wire1.beginTransmission(INA219_ADR); //Start talking to the INA219
+    Wire1.write(INA219_CAL); //Write the target as the calibration register
+    Wire1.write(Cal);        //Write the calibration value to the calibration register
+    Wire1.endTransmission(); //End the transmission and calibration
+    delay(100);
+  
+    int startVolt = readBatteryVoltage(); //Read the startup battery voltage
+    Serial.println(startVolt);
+    //Send data message to iOS here
+  #endif  
 
   Serial.println("Setup complete");
   
@@ -162,11 +165,13 @@ void callback()//executed every 2ms
 // Function that is repeated in loop
 void loop()
 {
-  if (controlLoop.check() == 1)
-  {
-    callback();
-    controlLoop.reset();
-  }
+  #if BOARD_VERSION == DUAL_BOARD_REV3 //Timer based control loop doesn't work on teensy 4.1 (REV3)
+    if (controlLoop.check() == 1)
+    {
+      callback();
+      controlLoop.reset();
+    }
+  #endif
 
   if (slowThisDown.check() == 1) // If the time passed is over 1ms is a true statement
   {
