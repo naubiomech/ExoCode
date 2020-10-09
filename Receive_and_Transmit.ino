@@ -27,10 +27,6 @@ void receive_and_transmit()
       send_command_message('D', data_to_send_point, 4);
       break;
 
-    case 'd':
-
-      break;
-
     case 'F':
       if (iOS_Flag) {
         receiveVals(16);                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
@@ -373,10 +369,7 @@ void receive_and_transmit()
       send_command_message('`', data_to_send_point, 2);     //MATLAB is expecting to recieve the Torque Parameters
       break;
 
-    case'~':
-
-      break;
-
+    
     case')':
       receiveVals(24);                               //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
       //MATLAB Sent N1 N2 and then N3 Paramenters for smoothing (see change pid setpoint)
@@ -420,7 +413,90 @@ void receive_and_transmit()
       right_leg->torque_calibration_value = read_torque_bias(right_leg->torque_address);
       break;
 
-    case 'O':
+    case 'O': // SS 8/6/2020
+      if (Trigger_left){
+        left_leg->trig_number = 1;
+        left_leg->trig_time = millis();
+        left_leg->Approve_trigger = false;
+        left_leg->trig1_counter += 1;
+        *(data_to_send_point) = left_leg->trig1_counter;
+      }else {
+        right_leg->trig_number = 1;
+        right_leg->trig_time = millis();
+        right_leg->Approve_trigger = false;
+        right_leg->trig1_counter += 1;
+        *(data_to_send_point) = right_leg->trig1_counter;
+      }
+      send_command_message('O', data_to_send_point, 1);
+      break;
+
+    case 'd':// SS 8/6/2020
+      STIM_ACTIVATED = true; 
+      break;
+      
+    case'~':// SS 8/6/2020
+      STIM_ACTIVATED = false;
+      break;
+
+    case 'q':// SS 8/6/2020
+      if (Trigger_left){
+        left_leg->trig_number = 2;
+        left_leg->trig_time = millis();
+        left_leg->Approve_trigger = false;
+        left_leg->trig2_counter += 1;
+        *(data_to_send_point) = left_leg->trig2_counter;
+      }else{
+        right_leg->trig_number = 2;
+        right_leg->trig_time = millis();
+        right_leg->Approve_trigger = false;
+        right_leg->trig2_counter += 1;
+        *(data_to_send_point) = right_leg->trig2_counter;
+      }
+      send_command_message('q', data_to_send_point, 1);
+      break;
+
+    case '[':// SS 8/6/2020
+      if (Trigger_left){
+        left_leg->trig_number = 3;
+        left_leg->trig_time = millis();
+        left_leg->Approve_trigger = false;
+        left_leg->trig3_counter += 1;
+        *(data_to_send_point) = left_leg->trig3_counter;
+      }else{
+        right_leg->trig_number = 3;
+        right_leg->trig_time = millis();
+        right_leg->Approve_trigger = false;
+        right_leg->trig3_counter += 1;
+        *(data_to_send_point) = right_leg->trig3_counter;
+      }
+      send_command_message('[', data_to_send_point, 1);
+      break;
+
+    case ']':// SS 8/6/2020
+      if (Trigger_left){
+        left_leg->trig_number = 4;
+        left_leg->trig_time = millis();
+        left_leg->Approve_trigger = false;
+        left_leg->trig4_counter += 1;
+        *(data_to_send_point) = left_leg->trig4_counter;
+      }else{
+        right_leg->trig_number = 4;
+        right_leg->trig_time = millis();
+        right_leg->Approve_trigger = false;
+        right_leg->trig4_counter += 1;
+      *(data_to_send_point) = right_leg->trig4_counter;
+      }
+      send_command_message(']', data_to_send_point, 1);
+      break;
+
+    case 'r':// SS 8/6/2020
+      Trigger_left = false;
+      right_leg->Approve_trigger = false;
+      break;
+      
+    case 's':// SS 8/6/2020
+       Trigger_left = true;
+       left_leg->Approve_trigger = false;
       break;
 
 
@@ -431,10 +507,7 @@ void receive_and_transmit()
       send_command_message('Q', data_to_send_point, 2);     //MATLAB is expecting to recieve the Torque Parameters
       break;
 
-    case 'q':
-
-      break;
-
+    
     // TN 6/13/19
     case 'R':
       receiveVals(16);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
@@ -444,10 +517,6 @@ void receive_and_transmit()
       right_leg->p_steps->fsr_percent_thresh_Toe = right_leg->fsr_percent_thresh_Toe;
       break;
 
-    case 'r':
-
-      break;
-
     case 'S':
       flag_id = false;
       flag_pivot = false;
@@ -455,9 +524,6 @@ void receive_and_transmit()
       if (Flag_Prop_Ctrl == true) {
         Control_Mode = 6;
       }
-      break;
-
-    case's':
       break;
 
     case 'C':
@@ -536,14 +602,6 @@ void receive_and_transmit()
 
     case 'x':
       right_leg->sign = 1;
-      break;
-
-    case '[':
-
-      break;
-
-    case ']':
-
       break;
 
     // TN 6/13/19

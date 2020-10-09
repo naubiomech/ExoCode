@@ -58,6 +58,9 @@ int *p_count_LED_reads = &count_LED_reads;
 // Counter msgs sent via BT
 int counter_msgs = 0;
 
+// Stim protocol activated // SS 8/6/2020
+bool STIM_ACTIVATED = false;
+bool Trigger_left = false;
 
 // Variables for the Control Mode
 int Control_Mode = 100; // 1 for time 0 for volt 2 for proportional gain 3 for pivot proportional control
