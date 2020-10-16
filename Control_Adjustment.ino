@@ -291,7 +291,6 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       } else {
         *p_Setpoint_Ankle_Pctrl_l = 0;
       }
-
       return N3_l; // No modification in the shaping function which is disabled
     }
 

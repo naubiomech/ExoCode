@@ -269,6 +269,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) && leg->state == 3) { //GO 4/21/19
     leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
   }
+  
   else {
 
     if (N1 < 1 || N2 < 1 || N3 < 1) {
@@ -279,6 +280,8 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
       PID_Sigm_Curve(leg);
     }
   }
+
+  
 
   if (Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) { //GO 5/19/19
     if (leg->state == 1) {

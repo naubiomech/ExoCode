@@ -20,7 +20,8 @@ int readShuntVoltage() { // Read the shunt resistor voltage from the INA219 over
   WireObj.requestFrom(INA219_ADR,2);       // Request two bytes of data from the INA219
   int ShuntVolt = WireObj.read();          // Get the first byte of the shunt voltage
   ShuntVolt = ShuntVolt << 8;              // Shift the data over by 8 bits since the voltage is 16 bits total
-  ShuntVolt |= WireObj.read();             // Not the second 8 bits with the previous shifted value to finish
+  int ShuntVolt2 = WireObj.read();         // Get the second byte
+  ShuntVolt = ShuntVolt|ShuntVolt2;        // Not the second 8 bits with the previous shifted value to finish
   ShuntVolt = ShuntVolt*ShuntLSB;          // Multiply the voltage by the calibration value to finalize the battery voltage calculation
   return ShuntVolt;
 }
