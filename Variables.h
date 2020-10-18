@@ -108,3 +108,4 @@ int DetectAnkleIMU = 10;
 int isIMU0 = 0;
 double Angle_Knee = 0; 
 double Angle_Ankle = 0;
+double Angle_Foot = 0;

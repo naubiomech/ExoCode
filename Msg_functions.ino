@@ -54,7 +54,7 @@ void send_data_message_wc() //with COP
   }
   else  {
     data_to_send[10] = DetectKneeIMU;//(right_leg->sign * right_leg->PID_Setpoint_Knee);   // TN 5/13/19
-    data_to_send[11] = DetectAnkleIMU;//(left_leg->sign * left_leg->PID_Setpoint_Knee);   // TN 5/13/19
+    data_to_send[11] = Angle_Foot ;//(left_leg->sign * left_leg->PID_Setpoint_Knee);   // TN 5/13/19
   }
 
 if (FLAG_BIOFEEDBACK) {

@@ -48,13 +48,18 @@ const unsigned int zero = 2048;//1540;
 //----------------------------------------------------------------------------------
 
 
+
 #define IS_I2C0 true
-Adafruit_BNO055 KneAng = Adafruit_BNO055(IS_I2C0);// IMU slot 0
+#define IS_I2C1 false
+Adafruit_BNO055 KneAng = Adafruit_BNO055(IS_I2C0, IS_I2C1);// IMU slot 0
 
 #define IS_I2C0 false
-Adafruit_BNO055 AnkAng = Adafruit_BNO055(IS_I2C0, -1, BNO055_ADDRESS_A);// IMU slot 1       
+#define IS_I2C1 true
+Adafruit_BNO055 AnkAng = Adafruit_BNO055(IS_I2C0, IS_I2C1, -1, BNO055_ADDRESS_A);// IMU slot 1
 
-
+#define IS_I2C0 false
+#define IS_I2C1 false
+Adafruit_BNO055 FootAng = Adafruit_BNO055(IS_I2C0, IS_I2C1, -1, BNO055_ADDRESS_A);// IMU slot 2
 
 // Initialize the system
 void setup()
@@ -91,8 +96,8 @@ void setup()
   
   // detect IMU
   DetectKneeIMU = detect_IMU(KneAng);
-//  DetectAnkleIMU = detect_IMU(AnkAng);
-
+  DetectAnkleIMU = detect_IMU(AnkAng);
+  DetectAnkleIMU = detect_IMU(FootAng);
 }
 
 //----------------------------------------------------------------------------------
@@ -148,8 +153,8 @@ void loop()
   biofeedback();
   // read angle of segment from IMU
   Angle_Knee = readAngle(KneAng);
-//  Angle_Ankle = readAngle(AnkAng);
-  
+  Angle_Ankle = readAngle(AnkAng);
+  Angle_Foot = readAngle(FootAng);
   //if the stream is not activated reset the starting parameters
   if (stream != 1) // stream is 1 once you push start trial in the matlab gui, is 0 once you push end trial.
   {
