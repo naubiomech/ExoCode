@@ -1,6 +1,4 @@
-// Updated 12/11/2018 to use mean torque instead of max torque
-
-
+  //  SS  9/18/2019
 void Auto_KF_Knee(Leg* leg, int Control_Mode) {
 
   // take error during state 3 
@@ -16,7 +14,6 @@ void Auto_KF_Knee(Leg* leg, int Control_Mode) {
   } // end if state=3
   //
 
-  // TN 8/30/19
   if (leg->state == 1 && leg->auto_KF_Knee_update) {
     //
     //    // Here we update the KF and then we disable the conditions that activate the if statement

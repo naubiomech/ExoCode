@@ -25,7 +25,7 @@ struct Leg {
 
   double Tarray_Knee[dim] = {0};   // TN 5/9/19
   double* TarrayPoint_Knee = &Tarray_Knee[0];   // TN 5/9/19
-  double Average_K = 0;   // TN 5/9/19
+  double Average_K = 0;   // SS  9/18/2019
 
   double sign = 1;
 
@@ -43,12 +43,17 @@ struct Leg {
   volatile double Average_Volt;
   volatile double Average_Volt_Heel;
   volatile double Average_Trq;
-  volatile double Average_Trq_Knee;  // TN 5/9/19
+  volatile double Average_Trq_Knee;  // SS  9/18/2019
   volatile double FSR_Combined_Average;
   volatile double FSR_Toe_Average;
   volatile double FSR_Heel_Average;
   volatile bool motor_error = false;
   volatile int Time_error_counter;
+
+  //  SS  10/18/2020
+  volatile double Angle_Thigh;
+  volatile double Angle_Shank;
+  volatile double Angle_Foot;
 
   volatile double FSR_Toe_Balance_Baseline;
   volatile double FSR_Heel_Balance_Baseline;
@@ -76,7 +81,7 @@ struct Leg {
 
   // Calibrate_and_Read_Sensors.h
   double FSR_Ratio;
-  double FSR_Ratio_Toe; // TN 5/8/19
+  double FSR_Ratio_Toe;  // SS  9/18/2019
   double FSR_Ratio_Heel;
   double FSR_Ratio_HeelMinusToe;  // SS 9/10/2019
   double FSR_Ratio_Ankle;  // SS 2/5/2020
@@ -85,6 +90,9 @@ struct Leg {
   double INTEG_Ratio_Heel;          // SS 3/29/2020
   double INTEG_Ratio_HeelMinusToe;  // SS 3/29/2020
   double INTEG_Ratio_Ankle;         // SS 3/29/2020
+  double Moment_Ratio_Ankle;         // SS 10/18/2020
+
+  
   double INTEG_Ratio_Knee;          // SS 3/29/2020
   double Max_FSR_Ratio;
   double Max_FSR_Ratio_Toe;
@@ -128,8 +136,8 @@ struct Leg {
   int baseline_address;
   double baseline_value, baseline_value_Toe;
 
-  //int baseline_address_Heel;  // TN 5/9/19
-  double baseline_value_Heel;  // TN 5/9/19
+  //int baseline_address_Heel;   // SS  9/18/2019
+  double baseline_value_Heel;   // SS  9/18/2019
   double baseline_value_HeelMinusToe;  // SS 9/10/2019
   double baseline_value_Knee; // SS 2/5/2020
   double baseline_value_Ankle; // SS 2/5/2020
@@ -142,7 +150,7 @@ struct Leg {
 
   // PID_and_Ctrl_Parameters.h
   double torque_calibration_value_Ankle = 0;
-  double torque_calibration_value_Knee = 0;   // TN 5/9/19
+  double torque_calibration_value_Knee = 0;  // SS  9/18/2019
   double T_act;
   int Vol, Vol_Knee;
 
@@ -150,7 +158,7 @@ struct Leg {
   double kp = 600;
   double ki = 0;
   double kd = 3;
-  //PWM Gains for Knee control:  // TN 5/9/19
+  //PWM Gains for Knee control:  // SS  9/18/2019
   double kp_Knee = 600;
   double ki_Knee = 0;
   double kd_Knee = 3;
@@ -158,28 +166,28 @@ struct Leg {
   double kp = 700;
   double ki = 0;
   double kd = 3;
-  //PID Gains for Knee control:  // TN 5/9/19
+  //PID Gains for Knee control:  // SS  9/18/2019
   double kp_Knee = 700;
   double ki_Knee = 0;
   double kd_Knee = 3;
 #endif
   double KF = 1;
-  double KF_Knee = 1;  // TN 5/9/19
+  double KF_Knee = 1;  // SS  9/18/2019
 
   double PID_Setpoint, Input, Output;
   PID pid = PID(&Input, &Output, &PID_Setpoint, kp, ki, kd, DIRECT);
 
-  double PID_Setpoint_Knee, Input_Knee, Output_Knee;   // TN 5/9/19
-  PID pid_Knee = PID(&Input_Knee, &Output_Knee, &PID_Setpoint_Knee, kp_Knee, ki_Knee, kd_Knee, DIRECT);   // TN 5/9/19
+  double PID_Setpoint_Knee, Input_Knee, Output_Knee;  // SS  9/18/2019
+  PID pid_Knee = PID(&Input_Knee, &Output_Knee, &PID_Setpoint_Knee, kp_Knee, ki_Knee, kd_Knee, DIRECT);  // SS  9/18/2019
 
   double Setpoint_Ankle, Setpoint_Ankle_Pctrl;
   double Previous_Setpoint_Ankle = 0;
   double Previous_Setpoint_Ankle_Pctrl = 0;
   double* p_Setpoint_Ankle = &Setpoint_Ankle;
   double* p_Setpoint_Ankle_Pctrl = &Setpoint_Ankle_Pctrl;
-  double Setpoint_Knee, Setpoint_Knee_Pctrl; // TN 5/8/19
+  double Setpoint_Knee, Setpoint_Knee_Pctrl;  // SS  9/18/2019
   double Previous_Setpoint_Knee = 0;
-  double Previous_Setpoint_Knee_Pctrl = 0;  // TN 5/8/19
+  double Previous_Setpoint_Knee_Pctrl = 0;  // SS  9/18/2019
   double* p_Setpoint_Knee = &Setpoint_Knee;
   double* p_Setpoint_Knee_Pctrl = &Setpoint_Knee_Pctrl;
 
@@ -199,7 +207,7 @@ struct Leg {
 
   // Proportional_Ctrl.h
   double Prop_Gain = 1;
-  double Prop_Gain_Knee = 1;  // TN 5/9/19
+  double Prop_Gain_Knee = 1;  // SS  9/18/2019
 
   // Reference_ADJ.h
   double stateTimerCount;
@@ -227,13 +235,13 @@ struct Leg {
   // Shaping_Parameters.h
   double exp_mult = 1500.0;
   double exp_mult_Knee = 1500.0;
-  boolean sigm_done, sigm_done_Knee;   // TN 5/20/19
+  boolean sigm_done, sigm_done_Knee;  // SS  9/18/2019
 
   double New_PID_Setpoint = 0.0;
   double Old_PID_Setpoint = 0.0;
 
-  double New_PID_Setpoint_Knee = 0.0;  // TN 5/9/19
-  double Old_PID_Setpoint_Knee = 0.0;  // TN 5/9/19
+  double New_PID_Setpoint_Knee = 0.0;   // SS  9/18/2019
+  double Old_PID_Setpoint_Knee = 0.0;  // SS  9/18/2019
 
   double N3 = 200;
   double N2 = 200;
@@ -269,8 +277,8 @@ struct Leg {
   double state_1_start_time = 0;
   double start_from_1 = 0;
   double start_from_3 = 0;
-  double start_time_Ankle = 0;  // TN 7/3/19
-  double start_time_Knee = 0;  // TN 7/3/19
+  double start_time_Ankle = 0;  // SS  9/18/2019
+  double start_time_Knee = 0;  // SS  9/18/2019
   double state_3_stop_time = 0;
   double state_3_duration = 0;
   double state_2_stop_time = 0;
@@ -314,7 +322,7 @@ struct Leg {
 
 
   //Optimization-----------------------------------
-  double T_Opt_p, Setpoint_Ankle_Opt, Setpoint_Knee_Opt;  // TN 5/13/19
+  double T_Opt_p, Setpoint_Ankle_Opt, Setpoint_Knee_Opt;  // SS  9/18/2019
   double Previous_T_Opt = 0.1;
   double T_Opt = 0.1;
   double T_Opt_Setpoint = 0.1;

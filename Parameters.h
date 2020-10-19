@@ -70,7 +70,7 @@ double INTEG_Ratio_HeelMinusToe;  //  SS  3/29/2020
 
 // ===== Proportional Control Parameters =====
 double Max_Prop = 25;
-double Min_Prop = 0;
+double Min_Prop = -10;
 
 // ===== Auto KF Parameters =====
 double max_ERR = 0.20;

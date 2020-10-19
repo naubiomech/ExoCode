@@ -37,29 +37,29 @@ const unsigned int zero = 2048;//1540;
 #include "Reference_ADJ.h"
 #include "Msg_functions.h"
 #include "Auto_KF.h"
-#include "Auto_KF_Knee.h"  // TN 5/15/19
+#include "Auto_KF_Knee.h"  //  SS  9/18/2019
 #include <Metro.h>
 #include "Variables.h"
 #include "Board.h"
 #include "resetMotorIfError.h"
 #include "ATP.h"
-#include <i2c_t3.h>
-#include "AdafruitBNO055.h"
+#include <i2c_t3.h> //  SS  8/17/2020
+#include "AdafruitBNO055.h" //  SS  8/17/2020
 //----------------------------------------------------------------------------------
 
 
-
+ //  SS  8/17/2020
 #define IS_I2C0 true
 #define IS_I2C1 false
-Adafruit_BNO055 KneAng = Adafruit_BNO055(IS_I2C0, IS_I2C1);// IMU slot 0
+Adafruit_BNO055 Right_ThighAng = Adafruit_BNO055(IS_I2C0, IS_I2C1);// IMU slot 0 //  SS  8/17/2020
 
 #define IS_I2C0 false
 #define IS_I2C1 true
-Adafruit_BNO055 AnkAng = Adafruit_BNO055(IS_I2C0, IS_I2C1, -1, BNO055_ADDRESS_A);// IMU slot 1
+Adafruit_BNO055 Right_ShankAng = Adafruit_BNO055(IS_I2C0, IS_I2C1, -1, BNO055_ADDRESS_A);// IMU slot 1 //  SS  8/17/2020
 
 #define IS_I2C0 false
 #define IS_I2C1 false
-Adafruit_BNO055 FootAng = Adafruit_BNO055(IS_I2C0, IS_I2C1, -1, BNO055_ADDRESS_A);// IMU slot 2
+Adafruit_BNO055 Right_FootAng = Adafruit_BNO055(IS_I2C0, IS_I2C1, -1, BNO055_ADDRESS_A);// IMU slot 2 //  SS  8/17/2020
 
 // Initialize the system
 void setup()
@@ -94,10 +94,10 @@ void setup()
 
   digitalWrite(LED_PIN, HIGH);
   
-  // detect IMU
-  DetectKneeIMU = detect_IMU(KneAng);
-  DetectAnkleIMU = detect_IMU(AnkAng);
-  DetectAnkleIMU = detect_IMU(FootAng);
+  // detect IMU //  SS  8/17/2020
+  DetectKneeIMU = detect_IMU(Right_ThighAng);
+  DetectAnkleIMU = detect_IMU(Right_ShankAng);
+  DetectAnkleIMU = detect_IMU(Right_FootAng);
 }
 
 //----------------------------------------------------------------------------------
@@ -151,10 +151,16 @@ void loop()
 
   //  // apply biofeedback, if it is not activated return void
   biofeedback();
-  // read angle of segment from IMU
-  Angle_Knee = readAngle(KneAng);
-  Angle_Ankle = readAngle(AnkAng);
-  Angle_Foot = readAngle(FootAng);
+
+  // read angle of segment from IMU//  SS  8/17/2020
+  left_leg->Angle_Thigh = readAngle(Right_ThighAng) * pi / 180;// Angle in rad
+  left_leg->Angle_Shank = readAngle(Right_ShankAng) * pi / 180;// Angle in rad
+  left_leg->Angle_Foot = readAngle(Right_FootAng) * pi / 180;// Angle in rad
+
+  right_leg->Angle_Thigh = 0;
+  right_leg->Angle_Shank = 0;
+  right_leg->Angle_Foot = 0;
+  
   //if the stream is not activated reset the starting parameters
   if (stream != 1) // stream is 1 once you push start trial in the matlab gui, is 0 once you push end trial.
   {
@@ -199,33 +205,31 @@ void calculate_leg_average(Leg* leg) {
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
     leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
-    leg->TarrayPoint_Knee[j] = leg->TarrayPoint_Knee[j - 1];                // TN 8/29/19
+    leg->TarrayPoint_Knee[j] = leg->TarrayPoint_Knee[j - 1];                //  SS  9/18/2019
   }
 
   //Get the torque
-  //leg->AorK = 'A';  // TN 5/9/19
-  leg->TarrayPoint[0] = get_torq(leg);  // TN 5/9/19
-  //leg->AorK = 'K';  // TN 5/9/19
-  leg->TarrayPoint_Knee[0] = -get_torq_Knee(leg); // TN 8/29/19
+  leg->TarrayPoint[0] = get_torq(leg); 
+  leg->TarrayPoint_Knee[0] = -get_torq_Knee(leg); //  SS  9/18/2019
 
   leg->FSR_Toe_Average = 0;
   leg->FSR_Heel_Average = 0;
   leg->Average = 0;
-  leg->Average_K = 0;  // TN 5/9/19
+  leg->Average_K = 0;  //  SS  9/18/2019
 
 
   for (int i = 0; i < dim; i++)
   {
     leg->Average =  leg->Average + leg->TarrayPoint[i];
-    leg->Average_K =  leg->Average_K + leg->TarrayPoint_Knee[i];   // TN 5/9/19
+    leg->Average_K =  leg->Average_K + leg->TarrayPoint_Knee[i];   //  SS  9/18/2019
   }
 
   leg->Average_Trq = leg->Average / dim;
-  leg->Average_Trq_Knee = leg->Average_K / dim;     // TN 5/9/19
+  leg->Average_Trq_Knee = leg->Average_K / dim;     //  SS  9/18/2019
   if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && (leg->state == 3 || leg->state == 2)) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
   }
-  // TN 5/9/19
+    //  SS  9/18/2019
   if (abs(leg->Average_Trq_Knee) > abs(leg->Max_Measured_Torque_Knee) &&  (leg->state == 3 || leg->state == 2)) {
     leg->Max_Measured_Torque_Knee = leg->Average_Trq_Knee;  //Get max measured torque during
   }
@@ -242,7 +246,7 @@ void calculate_leg_average(Leg* leg) {
     leg->state = old_L_state_L;
   }
 
-  // TN 9/3/19
+  //  SS  9/18/2019
   if (abs(leg->TarrayPoint_Knee[dim]) > 25 && abs(leg->Average_Trq_Knee - leg->TarrayPoint_Knee[dim]) < 0.1) //When torque sensor is unplugged we see the same values for several seconds
   {
     double old_L_state_L = leg->state;
@@ -255,7 +259,7 @@ void calculate_leg_average(Leg* leg) {
     leg->state = old_L_state_L;
   }
   leg->p_steps->torque_average = leg->Average / dim;
-  leg->p_steps->torque_average_K = leg->Average_K / dim;    // TN 5/9/19
+  leg->p_steps->torque_average_K = leg->Average_K / dim;    //  SS  9/18/2019
 
   leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
   leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
@@ -263,15 +267,10 @@ void calculate_leg_average(Leg* leg) {
   // in case of two toe sensors we use the combined averate, i.e. the sum of the averages.
   leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
 
-  // TN 5/8/19
-
-  leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
-  leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
-
+  leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;//  SS  9/18/2019
+  leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;//  SS  9/18/2019
 
   leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
-
-
 
 }
 
@@ -351,8 +350,8 @@ void rotate_motor() {
     if (streamTimerCount == 1 && flag_auto_KF == 1) {
       Auto_KF(left_leg, Control_Mode);
       Auto_KF(right_leg, Control_Mode);
-      Auto_KF_Knee(left_leg, Control_Mode);
-      Auto_KF_Knee(right_leg, Control_Mode);
+      Auto_KF_Knee(left_leg, Control_Mode);  //  SS  9/18/2019
+      Auto_KF_Knee(right_leg, Control_Mode);  //  SS  9/18/2019
     }
 
     streamTimerCount++;
@@ -360,8 +359,8 @@ void rotate_motor() {
     pid(left_leg, left_leg->Average_Trq);
     pid(right_leg, right_leg->Average_Trq);
 
-    pid_Knee(left_leg, -left_leg->Average_Trq_Knee);  // TN 9/3/19
-    pid_Knee(right_leg, -right_leg->Average_Trq_Knee); // TN 9/3/19
+    pid_Knee(left_leg, -left_leg->Average_Trq_Knee);  //  SS  9/18/2019
+    pid_Knee(right_leg, -right_leg->Average_Trq_Knee); //  SS  9/18/2019
 
 
     // modification to check the pid
@@ -509,20 +508,21 @@ void rotate_motor() {
       set_2_zero_if_steady_state();
     }
 
-    // TN 5/9/19
-
+      //  SS  9/18/2019
     left_leg->N3 = Control_Adjustment(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
                                       left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle_Pctrl,
                                       left_leg->New_PID_Setpoint_Knee, left_leg->p_Setpoint_Knee_Pctrl, Control_Mode, left_leg->Prop_Gain,
+                                      left_leg->Angle_Thigh, left_leg->Angle_Shank, left_leg->Angle_Foot,
                                       left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->FSR_Ratio_Toe, &left_leg->INTEG_Ratio_Toe, &left_leg->FSR_Ratio_Heel, &left_leg->INTEG_Ratio_Heel,
-                                      &left_leg->FSR_Ratio_HeelMinusToe, &left_leg->INTEG_Ratio_HeelMinusToe, &left_leg->FSR_Ratio_Ankle, &left_leg->INTEG_Ratio_Ankle, &left_leg->FSR_Ratio_Knee, &left_leg->INTEG_Ratio_Knee,
+                                      &left_leg->FSR_Ratio_HeelMinusToe, &left_leg->INTEG_Ratio_HeelMinusToe, &left_leg->FSR_Ratio_Ankle, &left_leg->INTEG_Ratio_Ankle, &left_leg->Moment_Ratio_Ankle, &left_leg->FSR_Ratio_Knee, &left_leg->INTEG_Ratio_Knee,
                                       &left_leg->Max_FSR_Ratio, &left_leg->Max_FSR_Ratio_Toe, &left_leg->Max_INTEG_Ratio_Toe, &left_leg->Max_FSR_Ratio_Heel, &left_leg->Max_INTEG_Ratio_Heel,
                                       &left_leg->Max_FSR_Ratio_HeelMinusToe, &left_leg->Max_INTEG_Ratio_HeelMinusToe, &left_leg->Max_FSR_Ratio_Ankle, &left_leg->Max_INTEG_Ratio_Ankle, &left_leg->Max_FSR_Ratio_Knee, &left_leg->Max_INTEG_Ratio_Knee);
     right_leg->N3 = Control_Adjustment(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps,
                                        right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle_Pctrl,
-                                       right_leg->New_PID_Setpoint_Knee, right_leg->p_Setpoint_Knee_Pctrl, Control_Mode, right_leg->Prop_Gain,
+                                       right_leg->New_PID_Setpoint_Knee, right_leg->p_Setpoint_Knee_Pctrl, Control_Mode, right_leg->Prop_Gain,                                       
+                                       right_leg->Angle_Thigh, right_leg->Angle_Shank, right_leg->Angle_Foot,
                                        right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->FSR_Ratio_Toe, &right_leg->INTEG_Ratio_Toe, &right_leg->FSR_Ratio_Heel, &right_leg->INTEG_Ratio_Heel,
-                                       &right_leg->FSR_Ratio_HeelMinusToe, &right_leg->INTEG_Ratio_HeelMinusToe, &right_leg->FSR_Ratio_Ankle, &right_leg->INTEG_Ratio_Ankle, &right_leg->FSR_Ratio_Knee, &right_leg->INTEG_Ratio_Knee,
+                                       &right_leg->FSR_Ratio_HeelMinusToe, &right_leg->INTEG_Ratio_HeelMinusToe, &right_leg->FSR_Ratio_Ankle, &right_leg->INTEG_Ratio_Ankle, &right_leg->Moment_Ratio_Ankle, &right_leg->FSR_Ratio_Knee, &right_leg->INTEG_Ratio_Knee,
                                        &right_leg->Max_FSR_Ratio, &right_leg->Max_FSR_Ratio_Toe, &right_leg->Max_INTEG_Ratio_Toe, &right_leg->Max_FSR_Ratio_Heel, &right_leg->Max_INTEG_Ratio_Heel,
                                        &right_leg->Max_FSR_Ratio_HeelMinusToe, &right_leg->Max_INTEG_Ratio_HeelMinusToe, &right_leg->Max_FSR_Ratio_Ankle, &right_leg->Max_INTEG_Ratio_Ankle, &right_leg->Max_FSR_Ratio_Knee, &right_leg->Max_INTEG_Ratio_Knee);
 
@@ -558,9 +558,9 @@ void reset_leg_starting_parameters(Leg* leg) {
 
   leg->p_steps->perc_l = 0.5;
   leg->activate_in_3_steps_Ankle = 1;
-  leg->activate_in_3_steps_Knee = 1;  // TN 7/3/19
+  leg->activate_in_3_steps_Knee = 1;  //  SS  9/18/2019
   leg->Previous_Setpoint_Ankle = 0;
-  leg->Previous_Setpoint_Knee = 0;  // TN 5/8/19
+  leg->Previous_Setpoint_Knee = 0;  //  SS  9/18/2019
 
   leg->coef_in_3_steps_Ankle = 0;
   leg->num_3_steps_Ankle = 0;

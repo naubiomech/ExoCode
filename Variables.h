@@ -102,10 +102,19 @@ bool flag_id_KneeHeel = false;   //  SS  2/5/2020
 bool Flag_Ankle_Cfg = true; // TN 05/06/2019
 bool Flag_Knee_Cfg = false; // TN 05/06/2019
 
-// Variables for IMU
+// Variables for IMU//  SS  8/17/2020
 int DetectKneeIMU = 10;
 int DetectAnkleIMU = 10;
 int isIMU0 = 0;
-double Angle_Knee = 0; 
-double Angle_Ankle = 0;
-double Angle_Foot = 0;
+
+ // SS  10/8/2020
+double  BodyHeight  = 1.65;//meter
+double  Ankle2Toe   = BodyHeight * 0.117 * 0.7;// BodyHeight * (Ankle2Toe/BodyHeight) * (Ankle2BallofFoot/Ankle2Toe) = Ankle2BallofFoot
+double  Ankle2Heel  = BodyHeight * 0.117 * 0.7 * 0.57;// BodyHeight * (Ankle2Toe/BodyHeight) * (Ankle2BallofFoot/Ankle2Toe) * (Ankle2Heel/Ankle2BallofFoot) = Ankle2Heel
+double  ShankLength = BodyHeight * 0.233;
+double  ThighLength = BodyHeight * 0.254;
+
+const float FSR2Newton  = 2.6654;
+const float Mu          = 0.1445;// Friction Coefficient
+
+const float pi = 3.14;
