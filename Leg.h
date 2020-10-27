@@ -55,6 +55,27 @@ struct Leg {
   volatile double Angle_Shank;
   volatile double Angle_Foot;
 
+  volatile double AngularVel_Thigh;
+  volatile double AngularVel_Shank;
+  volatile double AngularVel_Foot;
+
+  volatile double PrevAngularVel_Thigh;
+  volatile double PrevAngularVel_Shank;
+  volatile double PrevAngularVel_Foot;
+
+  volatile double PrevAngularAcc_Thigh;
+  volatile double PrevAngularAcc_Shank;
+  volatile double PrevAngularAcc_Foot;
+
+  volatile double AngularAcc_Thigh;
+  volatile double AngularAcc_Shank;
+  volatile double AngularAcc_Foot;
+
+  double AnkleMoment;
+  double AnkleMoment_Mod;
+  double KneeMoment;
+  double KneeMoment_Mod;
+
   volatile double FSR_Toe_Balance_Baseline;
   volatile double FSR_Heel_Balance_Baseline;
   volatile double FSR_Toe_Steady_Balance_Baseline;

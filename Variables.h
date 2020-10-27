@@ -107,14 +107,30 @@ int DetectKneeIMU = 10;
 int DetectAnkleIMU = 10;
 int isIMU0 = 0;
 
- // SS  10/8/2020
+// SS  10/8/2020
 double  BodyHeight  = 1.65;//meter
-double  Ankle2Toe   = BodyHeight * 0.117 * 0.7;// BodyHeight * (Ankle2Toe/BodyHeight) * (Ankle2BallofFoot/Ankle2Toe) = Ankle2BallofFoot
-double  Ankle2Heel  = BodyHeight * 0.117 * 0.7 * 0.57;// BodyHeight * (Ankle2Toe/BodyHeight) * (Ankle2BallofFoot/Ankle2Toe) * (Ankle2Heel/Ankle2BallofFoot) = Ankle2Heel
-double  ShankLength = BodyHeight * 0.233;
-double  ThighLength = BodyHeight * 0.254;
+double  A2T         = BodyHeight * 0.117 * 0.7;// BodyHeight * (A2T/BodyHeight) * (Ankle2BallofFoot/A2T) = Ankle2BallofFoot
+double  A2H         = BodyHeight * 0.117 * 0.7 * 0.57;// BodyHeight * (A2T/BodyHeight) * (Ankle2BallofFoot/A2T) * (A2H/Ankle2BallofFoot) = A2H
+double  S           = BodyHeight * 0.233;//ShankLength
+double  r           = S * 0.57;//distance between shank center of mass and distal head of shank
+double  T           = BodyHeight * 0.254;//ThighLength
+double  d           = T * 0.567;//distance between thigh center of mass and distal head of thigh
 
-const float FSR2Newton  = 2.6654;
+double BodyWeight = 65; //kg
+double mF           = BodyWeight * 0.014; //kg FootWeight
+double mS           = BodyWeight * 0.048; //kg ShankWeight
+double mT           = BodyWeight * 0.1239; //kg  ThighWeight
+
+double IF           = 0.475 * mF * (pow(BodyHeight * 0.117, 2)); //mass of Inertia of foot
+double IS           = 0.302 * mS * (pow(S, 2)); //mass of Inertia of Shank
+double IT           = 0.323 * mT * (pow(T, 2)); //mass of Inertia of Thigh
+
+const float FSR2Newton  = 2.9159;
 const float Mu          = 0.1445;// Friction Coefficient
 
-const float pi = 3.14;
+const float pi      = 3.14;
+
+double t;// time
+double dt;// time difference
+
+float filterFre     = 7;

@@ -333,9 +333,9 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
           (*p_Max_INTEG_Ratio_Toe) = *p_INTEG_Ratio_Toe;                                            //  SS  3/29/2020
 
         *p_INTEG_Ratio_Ankle = *p_INTEG_Ratio_Toe;    //  SS  3/29/2020
-        *p_Moment_Ratio_Ankle =   ((p_steps_l->curr_voltage_Toe * Ankle2Toe * FSR2Newton * ((sin(leg->Angle_Foot) * Mu) + cos(leg->Angle_Foot)))  //  SS  10/18/2020
-                                - (p_steps_l->curr_voltage_Heel * Ankle2Heel * FSR2Newton * ((cos(leg->Angle_Foot) * Mu) + sin(leg->Angle_Foot))))
-                                / (p_steps_l->plant_peak_mean_Toe* Ankle2Toe * FSR2Newton * ((0.3683 * Mu) + 0.9297));//sin(leg->Angle_Foot) and cos(leg->Angle_Foot) at the maximum AnkleMoment is 0.3683 and 0.9297. "curr_voltage_Heel" at the maximum AnkleMoment is 0
+        *p_Moment_Ratio_Ankle =   ((p_steps_l->curr_voltage_Toe * A2T * FSR2Newton * ((sin(leg->Angle_Foot) * Mu) + cos(leg->Angle_Foot)))  //  SS  10/18/2020
+                                - (p_steps_l->curr_voltage_Heel * A2H * FSR2Newton * ((cos(leg->Angle_Foot) * Mu) + sin(leg->Angle_Foot))))
+                                / (p_steps_l->plant_peak_mean_Toe* A2T * FSR2Newton * ((0.3683 * Mu) + 0.9297));//sin(leg->Angle_Foot) and cos(leg->Angle_Foot) at the maximum AnkleMoment is 0.3683 and 0.9297. "curr_voltage_Heel" at the maximum AnkleMoment is 0
         
         // while updating the ratio value still continue to provide the control
         if ((p_steps_l->Setpoint_A ) > 0) { //depending on the leg the sign changes
@@ -556,9 +556,9 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       *p_Moment_Ratio_Ankle = 0;  //  SS  10/18/2020
     }else{
       *p_FSR_Ratio_Toe = fabs(p_steps_l->curr_voltage_Toe / p_steps_l->plant_peak_mean_Toe);
-      *p_Moment_Ratio_Ankle =   ((p_steps_l->curr_voltage_Toe * Ankle2Toe * FSR2Newton * ((sin(leg->Angle_Foot) * Mu) + cos(leg->Angle_Foot)))  //  SS  10/18/2020
-                                - (p_steps_l->curr_voltage_Heel * Ankle2Heel * FSR2Newton * ((cos(leg->Angle_Foot) * Mu) + sin(leg->Angle_Foot))))
-                                / (p_steps_l->plant_peak_mean_Toe* Ankle2Toe * FSR2Newton * ((0.3683 * Mu) + 0.9297));//sin(leg->Angle_Foot) and cos(leg->Angle_Foot) at the maximum AnkleMoment is 0.3683 and 0.9297. "curr_voltage_Heel" at the maximum AnkleMoment is 0
+      *p_Moment_Ratio_Ankle =   ((p_steps_l->curr_voltage_Toe * A2T * FSR2Newton * ((sin(leg->Angle_Foot) * Mu) + cos(leg->Angle_Foot)))  //  SS  10/18/2020
+                                - (p_steps_l->curr_voltage_Heel * A2H * FSR2Newton * ((cos(leg->Angle_Foot) * Mu) + sin(leg->Angle_Foot))))
+                                / (p_steps_l->plant_peak_mean_Toe* A2T * FSR2Newton * ((0.3683 * Mu) + 0.9297));//sin(leg->Angle_Foot) and cos(leg->Angle_Foot) at the maximum AnkleMoment is 0.3683 and 0.9297. "curr_voltage_Heel" at the maximum AnkleMoment is 0
     }
     
     if (*p_FSR_Ratio_Toe > (*p_Max_FSR_Ratio_Toe))

@@ -45,22 +45,28 @@ const unsigned int zero = 2048;//1540;
 #include "ATP.h"
 #include <i2c_t3.h> //  SS  8/17/2020
 #include "AdafruitBNO055.h" //  SS  8/17/2020
+#include <Filters.h> //  SS  10/25/2020
 //----------------------------------------------------------------------------------
 
 
  //  SS  8/17/2020
 #define IS_I2C0 true
 #define IS_I2C1 false
-Adafruit_BNO055 Right_ThighAng = Adafruit_BNO055(IS_I2C0, IS_I2C1);// IMU slot 0 //  SS  8/17/2020
+Adafruit_BNO055 Left_ThighIMU = Adafruit_BNO055(IS_I2C0, IS_I2C1);// IMU slot 0 //  SS  8/17/2020
 
 #define IS_I2C0 false
 #define IS_I2C1 true
-Adafruit_BNO055 Right_ShankAng = Adafruit_BNO055(IS_I2C0, IS_I2C1, -1, BNO055_ADDRESS_A);// IMU slot 1 //  SS  8/17/2020
+Adafruit_BNO055 Left_ShankIMU = Adafruit_BNO055(IS_I2C0, IS_I2C1, -1, BNO055_ADDRESS_A);// IMU slot 1 //  SS  8/17/2020
 
 #define IS_I2C0 false
 #define IS_I2C1 false
-Adafruit_BNO055 Right_FootAng = Adafruit_BNO055(IS_I2C0, IS_I2C1, -1, BNO055_ADDRESS_A);// IMU slot 2 //  SS  8/17/2020
+Adafruit_BNO055 Left_FootIMU = Adafruit_BNO055(IS_I2C0, IS_I2C1, -1, BNO055_ADDRESS_A);// IMU slot 2 //  SS  8/17/2020
 
+FilterOnePole lowpassFilter( LOWPASS, 6 );
+FilterTwoPole VelFilter( LOWPASS_BUTTERWORTH, 4 );
+FilterTwoPole AccLowFilter( LOWPASS_BUTTERWORTH, 100 );
+FilterTwoPole AccLowFilter2( LOWPASS_BUTTERWORTH, 5 );
+FilterOnePole AccHighFilter( HIGHPASS, 5 );
 // Initialize the system
 void setup()
 {
@@ -95,9 +101,11 @@ void setup()
   digitalWrite(LED_PIN, HIGH);
   
   // detect IMU //  SS  8/17/2020
-  DetectKneeIMU = detect_IMU(Right_ThighAng);
-  DetectAnkleIMU = detect_IMU(Right_ShankAng);
-  DetectAnkleIMU = detect_IMU(Right_FootAng);
+  DetectKneeIMU = detect_IMU(Left_ThighIMU);
+  DetectAnkleIMU = detect_IMU(Left_ShankIMU);
+  DetectAnkleIMU = detect_IMU(Left_FootIMU);
+
+  
 }
 
 //----------------------------------------------------------------------------------
@@ -153,13 +161,73 @@ void loop()
   biofeedback();
 
   // read angle of segment from IMU//  SS  8/17/2020
-  left_leg->Angle_Thigh = readAngle(Right_ThighAng) * pi / 180;// Angle in rad
-  left_leg->Angle_Shank = readAngle(Right_ShankAng) * pi / 180;// Angle in rad
-  left_leg->Angle_Foot = readAngle(Right_FootAng) * pi / 180;// Angle in rad
+
+  left_leg->Angle_Thigh = (3.14159/2) - readAngle(Left_ThighIMU);// Angle in rad
+  left_leg->Angle_Shank = (3.14159/2) - readAngle(Left_ShankIMU);// Angle in rad
+  left_leg->Angle_Foot = readAngle(Left_FootIMU);// Angle in rad
+
+  left_leg->AngularVel_Thigh = readAngularVel(Left_ThighIMU);// rad/s
+  VelFilter.input( left_leg->AngularVel_Thigh );
+  
+  left_leg->AngularVel_Shank = readAngularVel(Left_ShankIMU);// rad/s
+  VelFilter.input( left_leg->AngularVel_Shank );
+  
+  left_leg->AngularVel_Foot = readAngularVel(Left_FootIMU);// rad/s
+  VelFilter.input( left_leg->AngularVel_Foot );
+
+
+  left_leg->PrevAngularVel_Thigh = left_leg->AngularVel_Thigh;// rad/s
+  left_leg->PrevAngularVel_Shank = left_leg->AngularVel_Shank;// rad/s
+  left_leg->PrevAngularVel_Foot = left_leg->AngularVel_Foot;// rad/s
+  
+  dt = (millis() - t) / 1000;
+
+  left_leg->PrevAngularAcc_Thigh = left_leg->AngularAcc_Thigh;// rad/s
+  left_leg->PrevAngularAcc_Shank = left_leg->AngularAcc_Shank;// rad/s
+  left_leg->PrevAngularAcc_Foot = left_leg->AngularAcc_Foot;// rad/s
+  
+  left_leg->AngularAcc_Thigh = (left_leg->Angle_Thigh - left_leg->PrevAngularVel_Thigh) / dt;// rad/s^2
+  if (left_leg->AngularAcc_Thigh == 0 && abs(left_leg->PrevAngularAcc_Thigh) > 0.1)
+    left_leg->AngularAcc_Thigh = left_leg->PrevAngularAcc_Thigh;
+  
+  left_leg->AngularVel_Thigh = left_leg->AngularAcc_Thigh ;
+  AccLowFilter.input( left_leg->AngularAcc_Thigh );
+  AccLowFilter2.input( left_leg->AngularAcc_Thigh );
+  
+  left_leg->AngularAcc_Shank = (left_leg->Angle_Shank - left_leg->PrevAngularVel_Shank) / dt;// rad/s^2
+  if (left_leg->AngularAcc_Shank == 0 && left_leg->PrevAngularAcc_Shank > 0.1)
+    left_leg->AngularAcc_Shank = left_leg->PrevAngularAcc_Shank;
+  
+  left_leg->AngularAcc_Foot = (left_leg->Angle_Foot - left_leg->PrevAngularVel_Foot) / dt;// rad/s^2
+  if (left_leg->AngularAcc_Foot == 0 && left_leg->PrevAngularAcc_Foot > 0.1)
+    left_leg->AngularAcc_Foot = left_leg->PrevAngularAcc_Foot;
+    
 
   right_leg->Angle_Thigh = 0;
   right_leg->Angle_Shank = 0;
   right_leg->Angle_Foot = 0;
+
+  right_leg->PrevAngularVel_Thigh = right_leg->AngularVel_Thigh;// rad/s
+  right_leg->PrevAngularVel_Shank = right_leg->AngularVel_Shank;// rad/s
+  right_leg->PrevAngularVel_Foot = right_leg->AngularVel_Foot;// rad/s
+
+  right_leg->AngularVel_Thigh = 0;// rad/s
+  right_leg->AngularVel_Shank = 0;// rad/s
+  right_leg->AngularVel_Foot = 0;// rad/s
+
+  right_leg->AngularAcc_Thigh = (right_leg->AngularVel_Thigh - right_leg->PrevAngularVel_Thigh) / dt;// rad/s^2
+  right_leg->AngularAcc_Shank = (right_leg->AngularVel_Shank - right_leg->PrevAngularVel_Shank) / dt;// rad/s^2
+  right_leg->AngularAcc_Foot = (right_leg->AngularVel_Foot - right_leg->PrevAngularVel_Foot)  /dt;// rad/s^2
+  
+  t = millis();
+
+
+  AnkleMomentEstimation(right_leg); // SS  10/26/2020
+  AnkleMomentEstimation(left_leg); // SS  10/26/2020
+
+  KneeMomentEstimation(right_leg); // SS  10/26/2020
+  KneeMomentEstimation(left_leg); // SS  10/26/2020
+
   
   //if the stream is not activated reset the starting parameters
   if (stream != 1) // stream is 1 once you push start trial in the matlab gui, is 0 once you push end trial.
