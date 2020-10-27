@@ -181,10 +181,10 @@ void receive_and_transmit()
       break;
 
     case 'k':
-      receiveVals(1);
-      memcpy(&CtrlType,holdOnPoint,1);  //Copy the values that indicate desired open-loop control
-      Serial.println(CtrlType);
-      if (CtrlType==0) {
+//      receiveVals(1);
+//      memcpy(&CtrlType,holdOnPoint,1);  //Copy the values that indicate desired open-loop control
+//      Serial.println(CtrlType);
+//      if (CtrlType==0) {
       CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
       CURRENT_DIAGNOSTICS = 0;
       MODEL_CONTROL = 0;
@@ -193,26 +193,26 @@ void receive_and_transmit()
       } else {
         Serial.println("Torque Control");
       }
-      //Comments have been made for iOS Demo
-      } else if (CtrlType==1) {
-         CURRENT_CONTROL = 0;
-         CURRENT_DIAGNOSTICS = !CURRENT_DIAGNOSTICS;
-         MODEL_CONTROL = 0;
-         if (CURRENT_DIAGNOSTICS) {
-           Serial.println("Current Diagnostics");
-         } else {
-           Serial.println("Torque Control");
-         }
-        } else if (CtrlType==2) {
-         CURRENT_CONTROL = 0;
-         CURRENT_DIAGNOSTICS = 0;
-         MODEL_CONTROL = !MODEL_CONTROL;
-         if (MODEL_CONTROL) {
-           Serial.println("Model Control");
-         } else {
-           Serial.println("Torque Control");
-         }
-      }
+//      //Comments have been made for iOS Demo
+//      } else if (CtrlType==1) {
+//         CURRENT_CONTROL = 0;
+//         CURRENT_DIAGNOSTICS = !CURRENT_DIAGNOSTICS;
+//         MODEL_CONTROL = 0;
+//         if (CURRENT_DIAGNOSTICS) {
+//           Serial.println("Current Diagnostics");
+//         } else {
+//           Serial.println("Torque Control");
+//         }
+//        } else if (CtrlType==2) {
+//         CURRENT_CONTROL = 0;
+//         CURRENT_DIAGNOSTICS = 0;
+//         MODEL_CONTROL = !MODEL_CONTROL;
+//         if (MODEL_CONTROL) {
+//           Serial.println("Model Control");
+//         } else {
+//           Serial.println("Torque Control");
+//         }
+//      }
 
       break;
 
