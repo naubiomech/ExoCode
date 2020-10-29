@@ -45,15 +45,11 @@ int j = 0;
 #include "Board.h"
 #include "resetMotorIfError.h"
 #include "ATP.h"
-<<<<<<< HEAD
 //#include "Wave.h"
 #include "Step.h"
 #include "Math.h"
-
-=======
 bool iOS_Flag = 0;
 int streamTimerCountNum = 0;
->>>>>>> Models/Calibrations
 //----------------------------------------------------------------------------------
 
 
@@ -137,12 +133,9 @@ void setup()
   Serial.println(startVolt);
   //Send data message to iOS here 
 
-<<<<<<< HEAD
   //calculateWave();
   calculateStep();
-=======
   Serial.println("Setup complete");
->>>>>>> Models/Calibrations
   
 }
 

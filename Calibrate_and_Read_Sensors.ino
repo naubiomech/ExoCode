@@ -7,13 +7,7 @@ void torque_calibration()
   int torq_cal_count = 0;
   left_leg->torque_calibration_value = 0;
   right_leg->torque_calibration_value = 0;
-<<<<<<< HEAD
-
-  while (millis() - torque_calibration_value_time < 2000)
-  { //Calibrates the LL for a total time of 2 second,
-=======
   while (torq_cal_count < 10000) {  //(millis() - torque_calibration_value_time < 1000)  { //Calibrates the LL for a total time of 1 second,    (torq_cal_count < 10000) {
->>>>>>> Models/Calibrations
     left_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
     right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
     torq_cal_count ++;                                                         //Increments count
@@ -108,14 +102,8 @@ void FSR_calibration()
 }
 
 double get_torq(Leg* leg) {
-<<<<<<< HEAD
- // double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value); //Cylindrical torque sensor
-  //double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*52.948;  //Anchor torque sensor
-  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*49.39; //Anchor torque sensor v2
-=======
  // double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value); //  For the TRT-500 Torque Sensor
   double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*42.522; // For the custom anchor sensor
->>>>>>> Models/Calibrations
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }
 

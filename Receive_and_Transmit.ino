@@ -118,21 +118,12 @@ void receive_and_transmit()
         // 22mm 120W motor, 32HP C gearbox
 
         MaxSpeed = 15800; //RPM
-<<<<<<< HEAD
-        TrqConstant = 13.5/1000; //Nm/A
-        GearRatio = 6877.0/56.0; //123:1 gear ratio
-        NomCurrent = 7.24; //A
-        MotorEff = 0.89;
-        GearboxEff = 0.7;
-        PulleyRatio = 30/10.3; //Carbon fiber pulley, sprocket
-=======
         TrqConstant = 13.5 / 1000; //Nm/A
         GearRatio = 6877.0 / 56.0; //123:1 gear ratio
         NomCurrent = 7.58; //A
         MotorEff = 0.89;
         GearboxEff = 0.7;
         PulleyRatio = 30 / 10.3; //Small aluminum pulley, large sprocket
->>>>>>> Models/Calibrations
         Serial.println("22mm 120W");
 
       } else if (MotorParams == 2) {
