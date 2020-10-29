@@ -1,5 +1,6 @@
 // timer
 Metro slowThisDown = Metro(1);  // Set the function to be called at no faster a rate than once per millisecond
+Metro controlLoop = Metro(2);
 
 // Variable used to schedule some actions
 elapsedMillis timeElapsed;
@@ -57,6 +58,9 @@ int *p_count_LED_reads = &count_LED_reads;
 // Counter msgs sent via BT
 int counter_msgs = 0;
 
+// Stim protocol activated // SS 8/6/2020
+bool STIM_ACTIVATED = false;
+bool Trigger_left = false;
 
 // Variables for the Control Mode
 int Control_Mode = 100; // 1 for time 0 for volt 2 for proportional gain 3 for pivot proportional control
@@ -91,3 +95,19 @@ bool flag_motor_error_check = true;
 bool Flag_Prop_Ctrl = false; // TN 04/29/2019
 bool flag_pivot = false; // TN 04/29/2019
 bool flag_id = false; // TN 04/29/2019
+bool flag_resist = false; //GO 6/20/2020
+
+// Variables for Power Monitor - GO 9/24/2020
+
+int INA219_ADR = 0x40;        // Address of INA219 for writing defined in 7 bits. The 8th bit is automatically included by Wire.read() or Wire.write()
+int INA219_CONFIG = 0x00; // All-register reset, bus voltage range, PGA gain, ADC resolution/averaging. Typically does not need modification
+int INA219_SHUNT = 0x01;  // Shunt voltage measurement - use this to get the shunt resistor voltage
+int INA219_BUS = 0x02;    // Bus voltage measurement - use this to get the battery voltage relative to ground
+int INA219_PWR = 0x03;    // Power measurement - use this to get calibrated power measurements
+int INA219_CUR = 0x04;    // Current measurement - use this to get the current flowing through the shunt
+int INA219_CAL = 0x05;    // Set full scale range and LSB of current/power measurements. Needed for power and current measurements
+int CurrentLSB = 1;           // mA/bit. This value is used to multiply the current reading from the INA219 to obtain actual current in mA
+int PowerLSB = 20*CurrentLSB; // mW/bit. This value is used to multiply to power reading from the INA219 to obtain actual power in mW
+int ShuntLSB = 0.01;          // mV. This is the default multiplier for the shunt voltage reading from the INA219.
+int BusLSB = 4;               // mV. This is the multiplier for the bus (battery) voltage reading from the INA219.
+int Cal = 0x5000;             // Calibration value in hex. Cal = 0.04096/(CurrentLSB*ShuntResistance). Shunt resistance on Rev3/4 is 2mOhm.

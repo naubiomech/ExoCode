@@ -6,6 +6,7 @@ void receive_and_transmit()
 {
 
   cmd_from_Gui = bluetooth.read();
+  Serial.println((char) cmd_from_Gui);
   switch (cmd_from_Gui)
   {
     case '?':
@@ -26,20 +27,28 @@ void receive_and_transmit()
       send_command_message('D', data_to_send_point, 4);
       break;
 
-    case 'd':
-
-      break;
-
     case 'F':
-      receiveVals(32);                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
+      if (iOS_Flag) {
+        receiveVals(16);                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
+      } else {
+        receiveVals(32);
+      }
+      Serial.println("Received some setpoints");
       left_leg->Previous_Setpoint_Ankle = left_leg->Setpoint_Ankle;
       left_leg->Previous_Dorsi_Setpoint_Ankle = left_leg->Dorsi_Setpoint_Ankle;
       right_leg->Previous_Setpoint_Ankle = right_leg->Setpoint_Ankle;
       right_leg->Previous_Dorsi_Setpoint_Ankle = right_leg->Dorsi_Setpoint_Ankle;
       memcpy(&left_leg->Setpoint_Ankle, holdOnPoint, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       memcpy(&left_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
-      memcpy(&right_leg->Setpoint_Ankle, holdOnPoint + 16 , 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-      memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 24, 8);
+      if (iOS_Flag) {
+        memcpy(&right_leg->Setpoint_Ankle, holdOnPoint, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+        memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
+      } else {
+        memcpy(&right_leg->Setpoint_Ankle, holdOnPoint + 16, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+        memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 24, 8);
+      }
+      //right_leg->Setpoint_Ankle = left_leg->Setpoint_Ankle;
+      //right_leg->Dorsi_Setpoint_Ankle = left_leg->Dorsi_Setpoint_Ankle;
 
       if (left_leg->Setpoint_Ankle < 0) {
         left_leg->Setpoint_Ankle = 0;
@@ -56,7 +65,6 @@ void receive_and_transmit()
         left_leg->Dorsi_Setpoint_Ankle = -abs(left_leg->Dorsi_Setpoint_Ankle);
         //Recieved the large data chunk chopped into bytes, a roundabout way was needed
         left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->Previous_Setpoint_Ankle;  // TN 7/25/19
-        left_leg->Setpoint_Ankle_Pctrl = left_leg->Setpoint_Ankle;
         left_leg->activate_in_3_steps = 1;
         left_leg->num_3_steps = 0;
         left_leg->first_step = 1;
@@ -82,7 +90,6 @@ void receive_and_transmit()
         right_leg->Setpoint_Ankle = -abs(right_leg->Setpoint_Ankle);                    //memory space pointed to by the variable Setpoint_Ankle.  Essentially a roundabout way to change a variable value, but since the bluetooth
         right_leg->Dorsi_Setpoint_Ankle = abs(right_leg->Dorsi_Setpoint_Ankle);
         //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-        right_leg->Setpoint_Ankle_Pctrl = right_leg->Setpoint_Ankle;
         right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->Previous_Setpoint_Ankle;
         right_leg->activate_in_3_steps = 1;
         right_leg->num_3_steps = 0;
@@ -97,52 +104,61 @@ void receive_and_transmit()
       memcpy(&MotorParams, holdOnPoint, 1); //Copy the value sent from MATLAB into the MotorParams variable to define motor parameters
       if (MotorParams == 0) {
         // 22mm 90W motor, 22HP gearbox
-        
+
         MaxSpeed = 15000; //RPM
-        TrqConstant = 14/1000; //Nm/A
-        GearRatio = 4617.0/52.0; //89:1 gear ratio
+        TrqConstant = 14 / 1000; //Nm/A
+        GearRatio = 4617.0 / 52.0; //89:1 gear ratio
         NomCurrent = 3.34; //A
         MotorEff = 0.89;
         GearboxEff = 0.59;
-        PulleyRatio = 44/10.3; //Small aluminum pulley, large sprocket
+        PulleyRatio = 44 / 10.3; //Small aluminum pulley, large sprocket
         Serial.println("22mm 90W");
-        
+
       } else if (MotorParams == 1) {
         // 22mm 120W motor, 32HP C gearbox
-        
+
         MaxSpeed = 15800; //RPM
+<<<<<<< HEAD
         TrqConstant = 13.5/1000; //Nm/A
         GearRatio = 6877.0/56.0; //123:1 gear ratio
         NomCurrent = 7.24; //A
         MotorEff = 0.89;
         GearboxEff = 0.7;
         PulleyRatio = 30/10.3; //Carbon fiber pulley, sprocket
+=======
+        TrqConstant = 13.5 / 1000; //Nm/A
+        GearRatio = 6877.0 / 56.0; //123:1 gear ratio
+        NomCurrent = 7.58; //A
+        MotorEff = 0.89;
+        GearboxEff = 0.7;
+        PulleyRatio = 30 / 10.3; //Small aluminum pulley, large sprocket
+>>>>>>> Models/Calibrations
         Serial.println("22mm 120W");
-        
+
       } else if (MotorParams == 2) {
         // 30mm 200W motor, 32HP gearbox (51:1)
-        
+
         MaxSpeed = 16100; //RPM
-        TrqConstant = 13.6/1000; //Nm/A
-        GearRatio = 17576.0/343.0; //51:1 gear ratio
+        TrqConstant = 13.6 / 1000; //Nm/A
+        GearRatio = 17576.0 / 343.0; //51:1 gear ratio
         NomCurrent = 7.58; //A
         MotorEff = 0.89;
         GearboxEff = 0.7;
-        PulleyRatio = 74/10.3; //Large aluminum pulley, large sprocket
+        PulleyRatio = 74 / 10.3; //Large aluminum pulley, large sprocket
         Serial.println("30mm 200W 51:1");
-        
+
       } else if (MotorParams == 3) {
         // 30mm 200W motor, 32HP gearbox (103:1)
-        
+
         MaxSpeed = 16100; //RPM
-        TrqConstant = 13.6/1000; //Nm/A
-        GearRatio = 3588.0/35.0; //103:1 gear ratio
+        TrqConstant = 13.6 / 1000; //Nm/A
+        GearRatio = 3588.0 / 35.0; //103:1 gear ratio
         NomCurrent = 7.58; //A
         MotorEff = 0.89;
         GearboxEff = 0.7;
-        PulleyRatio = 30/13.25; //Carbon fiber pulley, motor pulley
+        PulleyRatio = 30 / 13.25; //Carbon fiber pulley, motor pulley
         Serial.println("30mm 200W 103:1");
-        
+
       }
 
       break;
@@ -174,37 +190,38 @@ void receive_and_transmit()
       break;
 
     case 'k':
-      receiveVals(1);
-      memcpy(&CtrlType,holdOnPoint,1);  //Copy the values that indicate desired open-loop control
-      Serial.println(CtrlType);
-      if (CtrlType==0) {
-        CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
-        CURRENT_DIAGNOSTICS = 0;
-        MODEL_CONTROL = 0;
-        if (CURRENT_CONTROL) {
-          Serial.println("Current Control");
-        } else {
-          Serial.println("Torque Control");
-        }
-      } else if (CtrlType==1) {
-        CURRENT_CONTROL = 0;
-        CURRENT_DIAGNOSTICS = !CURRENT_DIAGNOSTICS;
-        MODEL_CONTROL = 0;
-        if (CURRENT_DIAGNOSTICS) {
-          Serial.println("Current Diagnostics");
-        } else {
-          Serial.println("Torque Control");
-        }
-      } else if (CtrlType==2) {
-        CURRENT_CONTROL = 0;
-        CURRENT_DIAGNOSTICS = 0;
-        MODEL_CONTROL = !MODEL_CONTROL;
-        if (MODEL_CONTROL) {
-          Serial.println("Model Control");
-        } else {
-          Serial.println("Torque Control");
-        }
+//      receiveVals(1);
+//      memcpy(&CtrlType,holdOnPoint,1);  //Copy the values that indicate desired open-loop control
+//      Serial.println(CtrlType);
+//      if (CtrlType==0) {
+      CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
+      CURRENT_DIAGNOSTICS = 0;
+      MODEL_CONTROL = 0;
+      if (CURRENT_CONTROL) {
+        Serial.println("Current Control");
+      } else {
+        Serial.println("Torque Control");
       }
+//      //Comments have been made for iOS Demo
+//      } else if (CtrlType==1) {
+//         CURRENT_CONTROL = 0;
+//         CURRENT_DIAGNOSTICS = !CURRENT_DIAGNOSTICS;
+//         MODEL_CONTROL = 0;
+//         if (CURRENT_DIAGNOSTICS) {
+//           Serial.println("Current Diagnostics");
+//         } else {
+//           Serial.println("Torque Control");
+//         }
+//        } else if (CtrlType==2) {
+//         CURRENT_CONTROL = 0;
+//         CURRENT_DIAGNOSTICS = 0;
+//         MODEL_CONTROL = !MODEL_CONTROL;
+//         if (MODEL_CONTROL) {
+//           Serial.println("Model Control");
+//         } else {
+//           Serial.println("Torque Control");
+//         }
+//      }
 
       break;
 
@@ -233,6 +250,7 @@ void receive_and_transmit()
       break;
 
     case 'N':
+      Serial.println("I'm here");
       *(data_to_send_point) = 0;
       *(data_to_send_point + 1) = 1;
       *(data_to_send_point + 2) = 2;
@@ -330,7 +348,6 @@ void receive_and_transmit()
       if (clean_FSR_values(left_leg->address_FSR + sizeof(double) + sizeof(char)))
       {
       }
-      else
       {
       }
       if (clean_FSR_values(right_leg->address_FSR + sizeof(double) + sizeof(char)))
@@ -365,10 +382,7 @@ void receive_and_transmit()
       send_command_message('`', data_to_send_point, 2);     //MATLAB is expecting to recieve the Torque Parameters
       break;
 
-    case'~':
-
-      break;
-
+    
     case')':
       receiveVals(24);                               //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
       //MATLAB Sent N1 N2 and then N3 Paramenters for smoothing (see change pid setpoint)
@@ -412,7 +426,90 @@ void receive_and_transmit()
       right_leg->torque_calibration_value = read_torque_bias(right_leg->torque_address);
       break;
 
-    case 'O':
+    case 'O': // SS 8/6/2020
+      if (Trigger_left){
+        left_leg->trig_number = 1;
+        left_leg->trig_time = millis();
+        left_leg->Approve_trigger = false;
+        left_leg->trig1_counter += 1;
+        *(data_to_send_point) = left_leg->trig1_counter;
+      }else {
+        right_leg->trig_number = 1;
+        right_leg->trig_time = millis();
+        right_leg->Approve_trigger = false;
+        right_leg->trig1_counter += 1;
+        *(data_to_send_point) = right_leg->trig1_counter;
+      }
+      send_command_message('O', data_to_send_point, 1);
+      break;
+
+    case 'd':// SS 8/6/2020
+      STIM_ACTIVATED = true; 
+      break;
+      
+    case'~':// SS 8/6/2020
+      STIM_ACTIVATED = false;
+      break;
+
+    case 'q':// SS 8/6/2020
+      if (Trigger_left){
+        left_leg->trig_number = 2;
+        left_leg->trig_time = millis();
+        left_leg->Approve_trigger = false;
+        left_leg->trig2_counter += 1;
+        *(data_to_send_point) = left_leg->trig2_counter;
+      }else{
+        right_leg->trig_number = 2;
+        right_leg->trig_time = millis();
+        right_leg->Approve_trigger = false;
+        right_leg->trig2_counter += 1;
+        *(data_to_send_point) = right_leg->trig2_counter;
+      }
+      send_command_message('q', data_to_send_point, 1);
+      break;
+
+    case '[':// SS 8/6/2020
+      if (Trigger_left){
+        left_leg->trig_number = 3;
+        left_leg->trig_time = millis();
+        left_leg->Approve_trigger = false;
+        left_leg->trig3_counter += 1;
+        *(data_to_send_point) = left_leg->trig3_counter;
+      }else{
+        right_leg->trig_number = 3;
+        right_leg->trig_time = millis();
+        right_leg->Approve_trigger = false;
+        right_leg->trig3_counter += 1;
+        *(data_to_send_point) = right_leg->trig3_counter;
+      }
+      send_command_message('[', data_to_send_point, 1);
+      break;
+
+    case ']':// SS 8/6/2020
+      if (Trigger_left){
+        left_leg->trig_number = 4;
+        left_leg->trig_time = millis();
+        left_leg->Approve_trigger = false;
+        left_leg->trig4_counter += 1;
+        *(data_to_send_point) = left_leg->trig4_counter;
+      }else{
+        right_leg->trig_number = 4;
+        right_leg->trig_time = millis();
+        right_leg->Approve_trigger = false;
+        right_leg->trig4_counter += 1;
+      *(data_to_send_point) = right_leg->trig4_counter;
+      }
+      send_command_message(']', data_to_send_point, 1);
+      break;
+
+    case 'r':// SS 8/6/2020
+      Trigger_left = false;
+      right_leg->Approve_trigger = false;
+      break;
+      
+    case 's':// SS 8/6/2020
+       Trigger_left = true;
+       left_leg->Approve_trigger = false;
       break;
 
 
@@ -423,10 +520,7 @@ void receive_and_transmit()
       send_command_message('Q', data_to_send_point, 2);     //MATLAB is expecting to recieve the Torque Parameters
       break;
 
-    case 'q':
-
-      break;
-
+    
     // TN 6/13/19
     case 'R':
       receiveVals(16);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
@@ -436,20 +530,13 @@ void receive_and_transmit()
       right_leg->p_steps->fsr_percent_thresh_Toe = right_leg->fsr_percent_thresh_Toe;
       break;
 
-    case 'r':
-
-      break;
-
     case 'S':
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = true;
-      Old_Control_Mode = Control_Mode;
-      Control_Mode = 6; // activate Resistance Control
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      break; //JL 4/25/19
-
-    case's':
+      flag_id = false;
+      flag_pivot = false;
+      flag_resist = true;
+      if (Flag_Prop_Ctrl == true) {
+        Control_Mode = 6;
+      }
       break;
 
     case 'C':
@@ -530,14 +617,6 @@ void receive_and_transmit()
       right_leg->sign = 1;
       break;
 
-    case '[':
-
-      break;
-
-    case ']':
-
-      break;
-
     // TN 6/13/19
     case '{': // Receive Left Gain from GUI
       receiveVals(16);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
@@ -595,29 +674,21 @@ void receive_and_transmit()
       break;
 
     case '#':
-      //      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      //      FLAG_ONE_TOE_SENSOR = true;
-      //      Old_Control_Mode = Control_Mode;
-      //      Control_Mode = 3; // activate pivot proportional control
-      //      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      //      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
       flag_id = false; // TN 04/29/19
       flag_pivot = true; // TN 04/29/19
-      if (Flag_Prop_Ctrl == true) // TN 04/29/19
+      flag_resist = false; // GO 06/20/2020
+      if (Flag_Prop_Ctrl == true) { // TN 04/29/19
         Control_Mode = 3;
+      }
       break;
 
     case 'c':
-      // OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      // FLAG_ONE_TOE_SENSOR = true;
-      //Old_Control_Mode = Control_Mode;
-      //      Control_Mode = 4; // activate Inverse Dynamic proportional control
-      //      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      //      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
       flag_id = true; // TN 04/29/19
       flag_pivot = false; // TN 04/29/19
-      if (Flag_Prop_Ctrl == true) // TN 04/29/19
+      flag_resist = false;
+      if (Flag_Prop_Ctrl == true) { // TN 04/29/19
         Control_Mode = 4; // TN 04/29/19
+      }
       break;
 
     case 'l': // TN 04/29/19
@@ -625,10 +696,13 @@ void receive_and_transmit()
       FLAG_ONE_TOE_SENSOR = true; // TN 04/29/19
       Old_Control_Mode = Control_Mode; // TN 04/29/19
       Flag_Prop_Ctrl = true; // TN 04/29/19
-      if (flag_pivot == true)   // TN 04/29/19
+      if (flag_pivot == true) {   // TN 04/29/19
         Control_Mode = 3; // activate pivot PC // TN 04/29/19
-      if (flag_id == true) // TN 04/29/19
+      } else if (flag_id == true) { // TN 04/29/19
         Control_Mode = 4; // activate ID PC // TN 04/29/19
+      } else if (flag_resist == true) {
+        Control_Mode = 6; // Activate resistance control //GO 6/20/2020
+      }
       *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
       break;
@@ -646,6 +720,7 @@ void receive_and_transmit()
       *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
       flag_id = false; // TN 05/13/19
       flag_pivot = false; // TN 05/13/19
+      flag_resist = false; // GO 6/20/2020
       Flag_Prop_Ctrl = false; // TN 04/29/19
       break;
 

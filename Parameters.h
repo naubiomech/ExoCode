@@ -46,7 +46,7 @@ double step_time_length = 150;
 // ===== PID and CTRL Parameters =====
 //All the needed parameters to set torque bias, PID ctrl, to enable the motors and to average the torque signals
 int count = 0;
-int CURRENT_CONTROL = 0;
+int CURRENT_CONTROL = 0; 
 int CURRENT_DIAGNOSTICS = 0;
 int MODEL_CONTROL = 0;
 int CtrlType = 100;
@@ -67,7 +67,7 @@ double p_prop[3] = {128.1, -50.82, 22.06};
 double FSR_Ratio;
 
 // ===== Proportional Control Parameters =====
-double Max_Prop = 35;
+double Max_Prop = 35; //Was 35, GO 9/15/20
 double Min_Prop = 0;
 
 // ===== Auto KF Parameters =====
@@ -83,13 +83,15 @@ const int n_step_baseline = 6;
 
 // ===== Motor Parameters =====
 // Initialize all variables as 1 prior to definition of motor parameters in GUI
-int MotorParams = 100; 
-double NomCurrent = 1;
-double TrqConstant = 1;
-double GearRatio = 1;
-double PulleyRatio = 1;
-double MaxSpeed = 1;
-double MotorEff = 1;
-double GearboxEff = 1;
 
+//HardCoded for demo
+int MotorParams = 1;  //Was 100
+double NomCurrent = 7.58; //The rest were 1
+double TrqConstant = 13.5/1000;
+double GearRatio = 6877.0/56.0;
+double PulleyRatio = 30/10.3;
+double MaxSpeed = 15800;
+double MotorEff = 0.89;
+double GearboxEff = 0.7;
+ 
 #endif

@@ -17,3 +17,6 @@ msg* p_msg_receive = &val_msg_receive;
 
 double data_to_send[16];
 double *data_to_send_point = &data_to_send[0];
+
+double emptyData[1]; //for when you need to use send_command_message() but don't need to send actual data
+double *emptyData_point = &emptyData[0];

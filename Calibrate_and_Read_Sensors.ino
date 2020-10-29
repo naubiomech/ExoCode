@@ -2,19 +2,25 @@
 
 void torque_calibration()
 {
+  noInterrupts(); //Disable timer interrupts for the duration of this function
   long torque_calibration_value_time = millis();
   int torq_cal_count = 0;
   left_leg->torque_calibration_value = 0;
   right_leg->torque_calibration_value = 0;
+<<<<<<< HEAD
 
   while (millis() - torque_calibration_value_time < 2000)
   { //Calibrates the LL for a total time of 2 second,
+=======
+  while (torq_cal_count < 10000) {  //(millis() - torque_calibration_value_time < 1000)  { //Calibrates the LL for a total time of 1 second,    (torq_cal_count < 10000) {
+>>>>>>> Models/Calibrations
     left_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
     right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
     torq_cal_count ++;                                                         //Increments count
   }
   left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
+  interrupts(); //Re-enable interrupts
 }
 
 
@@ -37,6 +43,14 @@ void FSR_calibration()
     right_leg->fsr_Toe_peak_ref = 0;
     left_leg->fsr_Heel_peak_ref = 0;
     right_leg->fsr_Heel_peak_ref = 0;
+
+    //Automatically take the PJMC basline during FSR calibration
+    left_leg->FSR_baseline_FLAG = 1;
+    right_leg->FSR_baseline_FLAG = 1;
+    left_leg->p_steps->count_plant_base = 0;
+    right_leg->p_steps->count_plant_base = 0;
+    right_leg->p_steps->flag_start_plant = false;
+    left_leg->p_steps->flag_start_plant = false;
   }
 
 
@@ -84,8 +98,9 @@ void FSR_calibration()
       right_leg->fsr_Heel_peak_ref = right_leg->Curr_Heel;
     }
 
-  }
-  else {
+  
+  
+  } else {
 
     FSR_FIRST_Cycle = 1;
     FSR_CAL_FLAG = 0;
@@ -93,9 +108,14 @@ void FSR_calibration()
 }
 
 double get_torq(Leg* leg) {
+<<<<<<< HEAD
  // double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value); //Cylindrical torque sensor
   //double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*52.948;  //Anchor torque sensor
   double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*49.39; //Anchor torque sensor v2
+=======
+ // double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value); //  For the TRT-500 Torque Sensor
+  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*42.522; // For the custom anchor sensor
+>>>>>>> Models/Calibrations
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }
 
@@ -135,21 +155,9 @@ double fsr(const unsigned int pin) {
  * This function reads the motor current pin and converts the voltage reading in bits to motor current.
 */
 double current(const unsigned int pin) {
-  //
   int value = analogRead(pin);
   double Co = NomCurrent * (value - 2048.0)/2048.0; //Nominal current needs to be set in ESCON, 7.58
   return Co;
-}
-
-/* This code allows us to read the analog output from the motor drivers and gives us the expected torque about the ankle.
-Torque Constant (200W) : 13.6 mNm/A
-Gear Ratio (32HP, 4-8Nm) : 17576/343 
-Large Exo Pulley Ratio: 74/10.3
-*/
-double expected_ankle_torq(const unsigned int pin){
-  double motor_current = current(pin);
-  double ankle_torq = motor_current * TrqConstant * GearRatio * PulleyRatio;
-  return ankle_torq;
 }
 
 /* This code allows us to read the analog output from the motor drivers and gives us the expected speed about the ankle.

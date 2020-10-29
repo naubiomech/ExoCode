@@ -96,8 +96,8 @@ struct Leg {
   double fsr_Heel_peak_ref = 0;
   double fsr_Toe_peak_ref = 0;
 
-  double fsr_percent_thresh_Heel = 0.1;
-  double fsr_percent_thresh_Toe = 0.1;
+  double fsr_percent_thresh_Heel = 0.2;
+  double fsr_percent_thresh_Toe = 0.2;
 
   int FSR_baseline_FLAG = 0;
   int* p_FSR_baseline_FLAG = &FSR_baseline_FLAG;
@@ -117,7 +117,7 @@ struct Leg {
   int Vol;
 
 #ifdef ENABLE_PWM   //PID Gains are different for PWM control
-  double kp = 600;
+  double kp = 300;
   double ki = 0;
   double kd = 3;
 #else
@@ -185,6 +185,19 @@ struct Leg {
 
   boolean signm_done = true;
 
+  // Trigger parameter  // SS 8/6/2020
+  int Trigger = 0;
+  int Old_Trigger = 0;
+  int stance_counter = 0;
+  int swing_counter = 0;
+  double trig_time = 0;
+  bool Approve_trigger = false;
+  int trig1_counter = 0;
+  int trig2_counter = 0;
+  int trig3_counter = 0;
+  int trig4_counter = 0;
+  int trig_number = 0;
+
   // State_Machine_Parameters.h
 
   int state = 1;
@@ -204,7 +217,9 @@ struct Leg {
   double start_time = 0;
   double state_3_stop_time = 0;
   double state_3_duration = 0;
-
+  double state_1_stop_time = 0;
+  double state_1_duration = 0;
+  
   double Heel_Pos = -0.07;
   double Toe_Pos = 0.20;
   double COP = 0;
