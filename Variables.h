@@ -134,3 +134,5 @@ double t;// time
 double dt;// time difference
 
 float filterFre     = 7;
+double FirCoeff[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};//{0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05};
+double* p_FirCoeff;

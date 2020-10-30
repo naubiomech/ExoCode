@@ -53,8 +53,8 @@ void send_data_message_wc() //with COP
     // data_to_send[11] = (left_leg->PID_Setpoint_Knee);   // TN 5/13/19
   }
   else  {
-    data_to_send[10] = DetectKneeIMU;//(right_leg->sign * right_leg->PID_Setpoint_Knee);   // TN 5/13/19
-    data_to_send[11] = left_leg->KneeMoment_Mod;//(left_leg->sign * left_leg->PID_Setpoint_Knee);   // TN 5/13/19
+    data_to_send[10] = left_leg->AngularAcc_Thigh;//(right_leg->sign * right_leg->PID_Setpoint_Knee);   // TN 5/13/19
+    data_to_send[11] = left_leg->AngularAccAve_Thigh;//left_leg->Angle_Thigh;//(left_leg->sign * left_leg->PID_Setpoint_Knee);   // TN 5/13/19
   }
 
 if (FLAG_BIOFEEDBACK) {
@@ -62,8 +62,8 @@ if (FLAG_BIOFEEDBACK) {
     data_to_send[13] = left_leg->stridelength_target;
   }
   else {
-    data_to_send[12] = left_leg->Angle_Shank; //right_leg->Angular_Impulse_Knee;//(right_leg->sign * right_leg->Average_Trq_Knee); // SS 9/17/2019
-    data_to_send[13] = left_leg->KneeMoment; //(left_leg->sign * left_leg->Average_Trq_Knee);  // SS 9/17/2019
+    data_to_send[12] = left_leg->AngularVel_Thigh; //right_leg->Angular_Impulse_Knee;//(right_leg->sign * right_leg->Average_Trq_Knee); // SS 9/17/2019
+    data_to_send[13] = left_leg->AngularVelAve_Thigh; //(left_leg->sign * left_leg->Average_Trq_Knee);  // SS 9/17/2019
   }
   
   send_command_message('?', data_to_send, 14);
