@@ -64,7 +64,7 @@ void send_data_message_wc() //with COP
 
   // Signals
   if (FLAG_BALANCE) {
-    data_to_send[10] = 100*3.3*(analogRead(right_leg->ankle_angle_pin)-2048)/2048; //right_leg->Vol;//(left_leg->COP_Foot_ratio);
+    data_to_send[10] = 100*3.3*(analogRead(left_leg->ankle_angle_pin)-2048)/2048; //right_leg->Vol;//(left_leg->COP_Foot_ratio);
     data_to_send[11] = 100*3.3*(analogRead(right_leg->ankle_angle_pin)-2048)/2048;//current(right_leg->motor_current_pin);//(right_leg->COP_Foot_ratio);
   } else if (FLAG_BIOFEEDBACK) {
     data_to_send[10] = 3;//right_leg->stridelength_update;
@@ -75,7 +75,7 @@ void send_data_message_wc() //with COP
 //    data_to_send[11] = (right_leg->TM_data);
     //data_to_send[10] = right_leg->Vol; //(left_leg->COP_Foot_ratio);
     //data_to_send[11] = 100*3.3*(analogRead(right_leg->ankle_angle_pin)-2048)/2048; //(right_leg->COP_Foot_ratio);
-    data_to_send[10] = current(right_leg->motor_current_pin);
+    data_to_send[10] = 100*3.3*(analogRead(left_leg->ankle_angle_pin)-2048)/2048;//current(right_leg->motor_current_pin);
     data_to_send[11] = right_leg->sign * motor_ankle_speed(right_leg->motor_speed_pin);
   }
   if (FLAG_BIOFEEDBACK) {

@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD_REV4
+#define BOARD_VERSION DUAL_BOARD_REV3
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -58,10 +58,10 @@ void setup()
 {
   // set the interrupt timer
   Serial.println("Started");
-//  #if BOARD_VERSION == DUAL_BOARD_REV4  //Use timer interrupts for teensy 3.6
-//    Timer1.initialize(2000);            // initialize timer1, and set a 2 ms period *note this is 2k microseconds*
-//    Timer1.attachInterrupt(callback);   // attaches callback() as a timer overflow interrupt
-//  #endif
+  #if BOARD_VERSION == DUAL_BOARD_REV4  //Use timer interrupts for teensy 3.6
+    Timer1.initialize(2000);            // initialize timer1, and set a 2 ms period *note this is 2k microseconds*
+    Timer1.attachInterrupt(callback);   // attaches callback() as a timer overflow interrupt
+  #endif
 
   // enable bluetooth
   #if BOARD_VERSION == DUAL_BOARD_REV3
@@ -100,10 +100,10 @@ void setup()
   digitalWrite(onoff, LOW);
   //Serial.println("ONOFF SET");
 
-  #if BOARD_VERSION == DUAL_BOARD_REV4
-    pinMode(TRIGGER_PIN, OUTPUT); // Enable the trigger //SS  6/23/2020
-    digitalWrite(TRIGGER_PIN, HIGH); //SS  6/23/2020
-  #endif
+//  #if BOARD_VERSION == DUAL_BOARD_REV4
+//    pinMode(TRIGGER_PIN, OUTPUT); // Enable the trigger //SS  6/23/2020
+//    digitalWrite(TRIGGER_PIN, HIGH); //SS  6/23/2020
+//  #endif
 
   // Fast torque calibration
   //torque_calibration();
@@ -177,13 +177,13 @@ void callback()//executed every 2ms
 // Function that is repeated in loop
 void loop()
 {
-  //#if BOARD_VERSION == DUAL_BOARD_REV3 //Timer based control loop doesn't work on teensy 4.1 (REV3)
-  if (controlLoop.check() == 1)
-  {
-    callback();
-    controlLoop.reset();
-  }
-  //#endif
+  #if BOARD_VERSION == DUAL_BOARD_REV3 //Timer based control loop doesn't work on teensy 4.1 (REV3)
+    if (controlLoop.check() == 1)
+    {
+      callback();
+      controlLoop.reset();
+    }
+  #endif
 
   if (slowThisDown.check() == 1) // If the time passed is over 1ms is a true statement
   {
