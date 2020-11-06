@@ -95,10 +95,10 @@ void setup()
   digitalWrite(onoff, LOW);
   //Serial.println("ONOFF SET");
 
-  #if BOARD_VERSION == DUAL_BOARD_REV4
-    pinMode(TRIGGER_PIN, OUTPUT); // Enable the trigger //SS  6/23/2020
-    digitalWrite(TRIGGER_PIN, HIGH); //SS  6/23/2020
-  #endif
+//  #if BOARD_VERSION == DUAL_BOARD_REV4
+//    pinMode(TRIGGER_PIN, OUTPUT); // Enable the trigger //SS  6/23/2020
+//    digitalWrite(TRIGGER_PIN, HIGH); //SS  6/23/2020
+//  #endif
 
   // Fast torque calibration
   //torque_calibration();
@@ -519,7 +519,7 @@ void rotate_motor() {
 
     if (Control_Mode == 2) {}
     else {
-      set_2_zero_if_steady_state();
+      //set_2_zero_if_steady_state();
     }
 
     left_leg->N3 = Control_Adjustment(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
