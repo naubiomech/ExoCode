@@ -131,7 +131,8 @@ void setup()
   
   int startVolt = readBatteryVoltage(); //Read the startup battery voltage
   Serial.println(startVolt);
-  //Send data message to iOS here 
+  batteryData[0] = startVolt;
+  send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware 
 
   //calculateWave();
   calculateStep();
@@ -401,6 +402,8 @@ void rotate_motor() {
 
     if (streamTimerCount >= 15000*2) { //every 30 seconds
       int batteryVoltage = readBatteryVoltage();
+      batteryData[0] = batteryVoltage;
+      send_command_message('~',batteryVoltage,1); //Communicate battery voltage to operating hardware
       //Send data message here
     }
 
