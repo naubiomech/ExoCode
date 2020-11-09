@@ -125,8 +125,8 @@ double IF           = 0.475 * mF * (pow(BodyHeight * 0.117, 2)); //mass of Inert
 double IS           = 0.302 * mS * (pow(S, 2)); //mass of Inertia of Shank
 double IT           = 0.323 * mT * (pow(T, 2)); //mass of Inertia of Thigh
 
-const float FSR2Newton  = 1.7;//2.9159;
-const float Mu          = 0.3;//0.1445;// Friction Coefficient
+const float FSR2Newton  = 1;//2.9159;
+const float Mu          = 0.13;//0.1445;// Friction Coefficient
 
 const float pi      = 3.14;
 
