@@ -55,32 +55,43 @@ struct Leg {
   volatile double Angle_Shank;
   volatile double Angle_Foot;
 
+  volatile double PrevAngle_Thigh[9];
+  volatile double PrevAngle_Shank[9];
+  volatile double PrevAngle_Foot[9];
+
+  volatile double AngleAve_Thigh;
+  volatile double AngleAve_Shank;
+  volatile double AngleAve_Foot;
+
   volatile double AngularVel_Thigh;
-//  volatile double* p_AngularVel_Thigh = &AngularVel_Thigh;
   volatile double AngularVelAve_Thigh;
   volatile double PrevAngularVelAve_Thigh;
   volatile double AngularVel_Shank;
+  volatile double AngularVelAve_Shank;
+  volatile double PrevAngularVelAve_Shank;
   volatile double AngularVel_Foot;
+  volatile double AngularVelAve_Foot;
+  volatile double PrevAngularVelAve_Foot;
 
   volatile double AngularVel_Thigh_Filt;
-//   volatile double* p_AngularVel_Thigh_Filt = &AngularVel_Thigh_Filt;
   volatile double AngularVel_Shank_Filt;
   volatile double AngularVel_Foot_Filt;
 
   volatile double PrevAngularVel_Thigh[24];
-  volatile double PrevAngularVel_Shank;
-  volatile double PrevAngularVel_Foot;
+  volatile double PrevAngularVel_Shank[24];
+  volatile double PrevAngularVel_Foot[24];
   
 
   volatile double PrevAngularAcc_Thigh[24];
+  volatile double PrevAngularAcc_Shank[24];
+  volatile double PrevAngularAcc_Foot[24];
   
-    volatile double PrevAngularAcc_Shank;
-  volatile double PrevAngularAcc_Foot;
-
   volatile double AngularAcc_Thigh;
   volatile double AngularAccAve_Thigh;
   volatile double AngularAcc_Shank;
+  volatile double AngularAccAve_Shank;
   volatile double AngularAcc_Foot;
+  volatile double AngularAccAve_Foot;
 
   double AnkleMoment;
   double AnkleMoment_Mod;
@@ -155,6 +166,13 @@ struct Leg {
   double fsr_Heel_peak_ref = 0;
   double fsr_Toe_peak_ref = 0;
 
+  double cal_counter; //  SS  11/8/2020
+  double fsr_Toe_offset = 0; //  SS  11/8/20202020
+  double fsr_Heel_offset = 0; //  SS  11/8/2020
+  
+  double FSR_Toe_Abs; //  SS  11/8/2020
+  double FSR_Heel_Abs; //  SS  11/8/2020
+  
   double fsr_percent_thresh_Heel = 0.1;
   double fsr_percent_thresh_Toe = 0.1;
 

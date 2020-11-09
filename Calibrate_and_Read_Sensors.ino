@@ -53,6 +53,11 @@ void FSR_calibration()
     right_leg->fsr_Toe_peak_ref = 0;
     left_leg->fsr_Heel_peak_ref = 0;
     right_leg->fsr_Heel_peak_ref = 0;
+
+    left_leg->fsr_Toe_offset = 0; //  SS  11/8/2020
+    right_leg->fsr_Toe_offset  = 0; //  SS  11/8/2020
+    left_leg->fsr_Heel_offset = 0; //  SS  11/8/2020
+    right_leg->fsr_Heel_offset  = 0; //  SS  11/8/2020
   }
 
 
@@ -67,6 +72,13 @@ void FSR_calibration()
     left_leg->Curr_Combined = left_leg->Curr_Toe + left_leg->Curr_Heel;
     right_leg->Curr_Combined = right_leg->Curr_Toe + right_leg->Curr_Heel;
 
+    left_leg->cal_counter ++; //  SS  11/8/2020
+    right_leg->cal_counter ++; //  SS  11/8/2020
+    left_leg->fsr_Toe_offset += left_leg->Curr_Toe; //  SS  11/8/2020
+    right_leg->fsr_Toe_offset += right_leg->Curr_Toe; //  SS  11/8/2020
+    left_leg->fsr_Heel_offset += left_leg->Curr_Heel; //  SS  11/8/2020
+    right_leg->fsr_Heel_offset  += right_leg->Curr_Heel; //  SS  11/8/2020
+    
     if (left_leg->Curr_Combined > left_leg->fsr_Combined_peak_ref)
     {
       left_leg->fsr_Combined_peak_ref = left_leg->Curr_Combined;
@@ -105,6 +117,10 @@ void FSR_calibration()
 
     FSR_FIRST_Cycle = 1;
     FSR_CAL_FLAG = 0;
+    left_leg->fsr_Toe_offset = left_leg->fsr_Toe_offset/left_leg->cal_counter; //  SS  11/8/2020
+    right_leg->fsr_Toe_offset  = right_leg->fsr_Toe_offset/right_leg->cal_counter; //  SS  11/8/2020
+    left_leg->fsr_Heel_offset = left_leg->fsr_Heel_offset/left_leg->cal_counter; //  SS  11/8/2020
+    right_leg->fsr_Heel_offset  = right_leg->fsr_Heel_offset/right_leg->cal_counter; //  SS  11/8/2020
   }
 }
 
