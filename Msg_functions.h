@@ -20,3 +20,6 @@ double *data_to_send_point = &data_to_send[0];
 
 double emptyData[1]; //for when you need to use send_command_message() but don't need to send actual data
 double *emptyData_point = &emptyData[0];
+
+double batteryData[1];
+double *batteryData_point = &batteryData[0];

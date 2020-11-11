@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD_REV4
+#define BOARD_VERSION DUAL_BOARD_REV3
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -43,7 +43,7 @@ const unsigned int zero = 2048;//1540;
 #include "Board.h"
 #include "resetMotorIfError.h"
 #include "ATP.h"
-bool iOS_Flag = 0;
+bool iOS_Flag = 1;
 int streamTimerCountNum = 0;
 //----------------------------------------------------------------------------------
 
@@ -126,7 +126,8 @@ void setup()
   
   int startVolt = readBatteryVoltage(); //Read the startup battery voltage
   Serial.println(startVolt);
-  //Send data message to iOS here 
+  batteryData[0] = startVolt;
+  send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware
 
   Serial.println("Setup complete");
   
@@ -367,8 +368,13 @@ void rotate_motor() {
       streamTimerCount = 0;
     }
 
-    if (streamTimerCount >= 15000*2) { //every 30 seconds
+    if (voltageTimerCount >= 1500*2) { //every 30 seconds
       int batteryVoltage = readBatteryVoltage();
+      Serial.println(batteryVoltage);
+      batteryData[0] = batteryVoltage;
+      send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware
+      voltageTimerCount = 0;
+
       //Send data message here
     }
 
@@ -379,6 +385,7 @@ void rotate_motor() {
 
 
     streamTimerCount++;
+    voltageTimerCount++;
 
     
 

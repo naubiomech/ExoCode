@@ -6,6 +6,7 @@ Metro controlLoop = Metro(2);
 elapsedMillis timeElapsed;
 double startTime = 0;
 int streamTimerCount = 0;
+int voltageTimerCount = 0;
 
 // variable to indicate the beginning and ending of the stream of data
 int stream = 0;
