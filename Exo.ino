@@ -368,7 +368,7 @@ void rotate_motor() {
       streamTimerCount = 0;
     }
 
-    if (voltageTimerCount >= 1500*2) { //every 30 seconds
+    if (voltageTimerCount >= 15000*2) { //every 30 seconds
       int batteryVoltage = readBatteryVoltage();
       Serial.println(batteryVoltage);
       batteryData[0] = batteryVoltage;
