@@ -545,7 +545,9 @@ void receive_and_transmit()
       }
       break;
 
-    
+    case 'r':   // TN 5/9/19
+
+      break;
 
     case 'S':   // TN 7/3/19
 
@@ -595,32 +597,8 @@ void receive_and_transmit()
       left_leg->p_steps->torque_adj = false;
       break;
 
-
-    case 'r': // SS  11/8/2020
-      receiveVals(16);               
-      memcpy(&BodyHeight, holdOnPoint, 8);
-      memcpy(&BodyWeight, holdOnPoint + 8, 8);
-      A2T         = BodyHeight * 0.117 * 0.8;// BodyHeight * (A2T/BodyHeight) * (Ankle2BallofFoot/A2T) = Ankle2BallofFoot
-      A2H         = BodyHeight * 0.117 * 0.8 * 0.62;// BodyHeight * (A2T/BodyHeight) * (Ankle2BallofFoot/A2T) * (A2H/Ankle2BallofFoot) = A2H
-      S           = BodyHeight * 0.233;//ShankLength
-      r           = S * 0.57;//distance between shank center of mass and distal head of shank
-      T           = BodyHeight * 0.254;//ThighLength
-      d           = T * 0.567;//distance between thigh center of mass and distal head of thigh
-      mF           = BodyWeight * 0.014; //kg FootWeight
-      mS           = BodyWeight * 0.048; //kg ShankWeight
-      mT           = BodyWeight * 0.1239; //kg  ThighWeight
-      IF           = 0.475 * mF * (pow(BodyHeight * 0.117, 2)); //mass of Inertia of foot
-      IS           = 0.302 * mS * (pow(S, 2)); //mass of Inertia of Shank
-      IT           = 0.323 * mT * (pow(T, 2)); //mass of Inertia of Thigh
-
+    case 'i':
       break;
-      
-    case 'i':// SS  11/8/2020
-      *(data_to_send_point) = BodyHeight;
-      *(data_to_send_point + 1) = BodyWeight;
-      send_command_message('i', data_to_send_point, 2);     //MATLAB is expecting to recieve the Subject's Parameters
-      break;
-
 
     case '!':  // TN 5/9/19
       if (stream == 1) {
