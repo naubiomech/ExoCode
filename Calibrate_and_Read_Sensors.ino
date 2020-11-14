@@ -43,6 +43,8 @@ void FSR_calibration()
     FSR_FIRST_Cycle = 0;
 
     startTime = millis();
+    left_leg->cal_counter  = 0; //  SS  11/8/2020
+    right_leg->cal_counter  = 0; //  SS  11/8/2020
     //    Serial.println("First time");
     right_leg->Curr_Combined = 0;
     left_leg->Curr_Combined = 0;

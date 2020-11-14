@@ -73,9 +73,6 @@ struct Leg {
   volatile double AngularVelAve_Foot;
   volatile double PrevAngularVelAve_Foot;
 
-  volatile double AngularVel_Thigh_Filt;
-  volatile double AngularVel_Shank_Filt;
-  volatile double AngularVel_Foot_Filt;
 
   volatile double PrevAngularVel_Thigh[24];
   volatile double PrevAngularVel_Shank[24];

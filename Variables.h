@@ -110,7 +110,7 @@ int isIMU0 = 0;
 // SS  10/8/2020
 double  BodyHeight  = 1.65;//meter
 double  A2T         = BodyHeight * 0.117 * 0.8;// BodyHeight * (A2T/BodyHeight) * (Ankle2BallofFoot/A2T) = Ankle2BallofFoot
-double  A2H         = BodyHeight * 0.117 * 0.8 * 0.62;// BodyHeight * (A2T/BodyHeight) * (Ankle2BallofFoot/A2T) * (A2H/Ankle2BallofFoot) = A2H
+double  A2H         = BodyHeight * 0.117 * 0.8 * 0.7;// BodyHeight * (A2T/BodyHeight) * (Ankle2BallofFoot/A2T) * (A2H/Ankle2BallofFoot) = A2H
 double  S           = BodyHeight * 0.233;//ShankLength
 double  r           = S * 0.57;//distance between shank center of mass and distal head of shank
 double  T           = BodyHeight * 0.254;//ThighLength
@@ -125,12 +125,12 @@ double IF           = 0.475 * mF * (pow(BodyHeight * 0.117, 2)); //mass of Inert
 double IS           = 0.302 * mS * (pow(S, 2)); //mass of Inertia of Shank
 double IT           = 0.323 * mT * (pow(T, 2)); //mass of Inertia of Thigh
 
-const float FSR2Newton  = 1.7;//2.9159;
-const float Mu          = 0.3;//0.1445;// Friction Coefficient
+const float FSR2Newton  = 1;//1.7;//2.9159;
+const float Mu          = 0.1445;// Friction Coefficient
 
 const float pi      = 3.14;
 
-double t;// time
+double t = 0;// time
 double dt;// time difference
 
 float filterFre     = 7;
