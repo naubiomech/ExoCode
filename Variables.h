@@ -124,7 +124,7 @@ double mT           = BodyWeight * 0.1239; //kg  ThighWeight
 double IF           = 0.475 * mF * (pow(BodyHeight * 0.117, 2)); //mass of Inertia of foot
 double IS           = 0.302 * mS * (pow(S, 2)); //mass of Inertia of Shank
 double IT           = 0.323 * mT * (pow(T, 2)); //mass of Inertia of Thigh
-
+double HeelCorrCoef = 0.75;
 const float FSR2Newton  = 1;//1.7;//2.9159;
 const float Mu          = 0.1445;// Friction Coefficient
 

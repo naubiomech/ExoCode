@@ -179,17 +179,17 @@ void loop()
 //    left_leg->PrevAngle_Shank[i] = left_leg->PrevAngle_Shank[i+1];
 //    left_leg->PrevAngle_Foot[i] = left_leg->PrevAngle_Foot[i+1];
 //  }
-//  left_leg->PrevAngle_Thigh[8] = left_leg->Angle_Thigh;// Angle in rad
+  left_leg->PrevAngle_Thigh[8] = left_leg->Angle_Thigh;// Angle in rad
   left_leg->Angle_Thigh = (3.14159/2) - readAngle(Left_ThighIMU);// Angle in rad
   Filter.input(left_leg->Angle_Thigh);
 //  left_leg->AngleAve_Thigh = left_leg->Angle_Thigh;
 
-//  left_leg->PrevAngle_Shank[8] = left_leg->Angle_Shank;// Angle in rad
+  left_leg->PrevAngle_Shank[8] = left_leg->Angle_Shank;// Angle in rad
   left_leg->Angle_Shank = (3.14159/2) - readAngle(Left_ShankIMU);// Angle in rad
   Filter.input(left_leg->Angle_Shank);
 //  left_leg->AngleAve_Shank = left_leg->Angle_Shank;
 
-//  left_leg->PrevAngle_Foot[8] = left_leg->Angle_Foot;// Angle in rad
+  left_leg->PrevAngle_Foot[8] = left_leg->Angle_Foot;// Angle in rad
   left_leg->Angle_Foot = readAngle(Left_FootIMU);// Angle in rad
   Filter.input(left_leg->Angle_Foot);
 //  left_leg->AngleAve_Foot = left_leg->Angle_Foot;
@@ -208,56 +208,59 @@ void loop()
 //  left_leg->AngleAve_Foot = left_leg->AngleAve_Foot/10;
 //  Filter.input( left_leg->AngleAve_Foot );
 //
+  dt = (millis() - t) / 1000;
 
-
-  for (int i=0; i <= 22; i++){
+  for (int i=0; i <= 12; i++){
     left_leg->PrevAngularVel_Thigh[i] = left_leg->PrevAngularVel_Thigh[i+1];
     left_leg->PrevAngularVel_Shank[i] = left_leg->PrevAngularVel_Shank[i+1];
     left_leg->PrevAngularVel_Foot[i] = left_leg->PrevAngularVel_Foot[i+1];
   }
-  left_leg->PrevAngularVel_Thigh[23] = left_leg->AngularVel_Thigh;// rad/s
-  left_leg->AngularVel_Thigh = readAngularVel(Left_ThighIMU);// rad/s
+  left_leg->PrevAngularVel_Thigh[13] = left_leg->AngularVel_Thigh;// rad/s
+//  left_leg->AngularVel_Thigh = readAngularVel(Left_ThighIMU);// rad/s
+  left_leg->AngularVel_Thigh = (left_leg->Angle_Thigh - left_leg->PrevAngle_Thigh[8])/(dt*2);
   Filter.input( left_leg->AngularVel_Thigh );
-  if ((abs(left_leg->AngularVel_Thigh - left_leg->PrevAngularVel_Thigh[23]) > abs(20*left_leg->PrevAngularVel_Thigh[23])) && (left_leg->PrevAngularVel_Thigh[23] !=0)){// SS  11/8/2020
-    left_leg->AngularVel_Thigh =  left_leg->PrevAngularVel_Thigh[23];// SS  11/8/2020
+  if ((abs(left_leg->AngularVel_Thigh - left_leg->PrevAngularVel_Thigh[13]) > abs(20*left_leg->PrevAngularVel_Thigh[13])) && (left_leg->PrevAngularVel_Thigh[13] !=0)){// SS  11/8/2020
+    left_leg->AngularVel_Thigh =  left_leg->PrevAngularVel_Thigh[13];// SS  11/8/2020
   }
   left_leg->PrevAngularVelAve_Thigh = left_leg->AngularVelAve_Thigh;
   left_leg->AngularVelAve_Thigh = left_leg->AngularVel_Thigh;
 
-  left_leg->PrevAngularVel_Shank[23] = left_leg->AngularVel_Shank;// rad/s
-  left_leg->AngularVel_Shank = readAngularVel(Left_ShankIMU);// rad/s
+  left_leg->PrevAngularVel_Shank[13] = left_leg->AngularVel_Shank;// rad/s
+//  left_leg->AngularVel_Shank = readAngularVel(Left_ShankIMU);// rad/s
+  left_leg->AngularVel_Shank = (left_leg->Angle_Shank - left_leg->PrevAngle_Shank[8])/(dt*2);
   Filter.input( left_leg->AngularVel_Shank );
-  if ((abs(left_leg->AngularVel_Shank - left_leg->PrevAngularVel_Shank[23]) > abs(20*left_leg->PrevAngularVel_Shank[23])) && (left_leg->PrevAngularVel_Shank[23] !=0)){// SS  11/8/2020
-    left_leg->AngularVel_Shank =  left_leg->PrevAngularVel_Shank[23];// SS  11/8/2020
+  if ((abs(left_leg->AngularVel_Shank - left_leg->PrevAngularVel_Shank[13]) > abs(20*left_leg->PrevAngularVel_Shank[13])) && (left_leg->PrevAngularVel_Shank[13] !=0)){// SS  11/8/2020
+    left_leg->AngularVel_Shank =  left_leg->PrevAngularVel_Shank[13];// SS  11/8/2020
   }
   left_leg->PrevAngularVelAve_Shank = left_leg->AngularVelAve_Shank;
   left_leg->AngularVelAve_Shank = left_leg->AngularVel_Shank;
 
-  left_leg->PrevAngularVel_Foot[23] = left_leg->AngularVel_Foot;// rad/s
-  left_leg->AngularVel_Foot = readAngularVel(Left_FootIMU);// rad/s
+  left_leg->PrevAngularVel_Foot[13] = left_leg->AngularVel_Foot;// rad/s
+//  left_leg->AngularVel_Foot = readAngularVel(Left_FootIMU);// rad/s
+  left_leg->AngularVel_Foot = (left_leg->Angle_Foot - left_leg->PrevAngle_Foot[8])/(dt*2);
   Filter.input( left_leg->AngularVel_Foot );
-  if ((abs(left_leg->AngularVel_Foot - left_leg->PrevAngularVel_Foot[23]) > abs(20*left_leg->PrevAngularVel_Foot[23])) && (left_leg->PrevAngularVel_Foot[23] !=0)){// SS  11/8/2020
-    left_leg->AngularVel_Foot =  left_leg->PrevAngularVel_Foot[23];// SS  11/8/2020
+  if ((abs(left_leg->AngularVel_Foot - left_leg->PrevAngularVel_Foot[13]) > abs(20*left_leg->PrevAngularVel_Foot[13])) && (left_leg->PrevAngularVel_Foot[13] !=0)){// SS  11/8/2020
+    left_leg->AngularVel_Foot =  left_leg->PrevAngularVel_Foot[13];// SS  11/8/2020
   }
   left_leg->PrevAngularVelAve_Foot = left_leg->AngularVelAve_Foot;
   left_leg->AngularVelAve_Foot = left_leg->AngularVel_Foot;
   
-  for (int i=0; i <= 23; i++){
+  for (int i=0; i <= 13; i++){
     left_leg->AngularVelAve_Thigh += left_leg->PrevAngularVel_Thigh[i];
     left_leg->AngularVelAve_Shank += left_leg->PrevAngularVel_Shank[i];
     left_leg->AngularVelAve_Foot += left_leg->PrevAngularVel_Foot[i];
   }
-  left_leg->AngularVelAve_Thigh = left_leg->AngularVelAve_Thigh/25;
+  left_leg->AngularVelAve_Thigh = left_leg->AngularVelAve_Thigh/15;
   Filter.input( left_leg->AngularVelAve_Thigh );
 
-  left_leg->AngularVelAve_Shank = left_leg->AngularVelAve_Shank/25;
+  left_leg->AngularVelAve_Shank = left_leg->AngularVelAve_Shank/15;
   Filter.input( left_leg->AngularVelAve_Shank );
 
-  left_leg->AngularVelAve_Foot = left_leg->AngularVelAve_Foot/25;
+  left_leg->AngularVelAve_Foot = left_leg->AngularVelAve_Foot/15;
   Filter.input( left_leg->AngularVelAve_Foot );
 
   
-  dt = (millis() - t) / 1000;
+  
 
 
   for (int i=0; i <= 12; i++){

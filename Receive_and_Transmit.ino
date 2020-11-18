@@ -36,10 +36,7 @@ void receive_and_transmit()
 
       break;
 
-    case 'd':
-
-      break;
-
+    
 
 
 
@@ -159,9 +156,8 @@ void receive_and_transmit()
       }
       break;
 
-    case 'f':
+    
 
-      break;
 
     case 'E':
       digitalWrite(onoff, HIGH);                                         //The GUI user is ready to start the trial so Motor is enabled
@@ -616,6 +612,16 @@ void receive_and_transmit()
       *(data_to_send_point) = BodyHeight;
       *(data_to_send_point + 1) = BodyWeight;
       send_command_message('i', data_to_send_point, 2);     //MATLAB is expecting to recieve the Subject's Parameters
+      break;
+
+    case 'f':
+      receiveVals(8);               
+      memcpy(&HeelCorrCoef, holdOnPoint, 8);
+      break;
+
+    case 'd':
+      *(data_to_send_point) = HeelCorrCoef;
+      send_command_message('d', data_to_send_point, 1);     //MATLAB is expecting to recieve the Subject's Parameters
       break;
 
     case '!':  // TN 5/9/19
