@@ -28,13 +28,13 @@ void send_data_message_wc() //with COP
 
   if (FLAG_TOE_HEEL_SENSORS) {  // TN 5/8/19
     data_to_send[8] = (left_leg->FSR_Toe_Abs);//((left_leg->fsr_percent_thresh_Toe + left_leg->fsr_percent_thresh_Heel) * left_leg->fsr_Combined_peak_ref);
-    data_to_send[9] = (left_leg->FSR_Heel_Abs * HeelCorrCoef);//(left_leg->FSR_Combined_Average);
+    data_to_send[9] = (left_leg->FSR_Heel_Abs);//(left_leg->FSR_Combined_Average);
   } else if (FLAG_BALANCE) {
     data_to_send[8] = (left_leg->FSR_Toe_Average);
     data_to_send[9] = (left_leg->FSR_Heel_Average);
   } else {
     data_to_send[8] = (left_leg->FSR_Toe_Abs);//((left_leg->fsr_percent_thresh_Toe + left_leg->fsr_percent_thresh_Heel) * left_leg->fsr_Combined_peak_ref);
-    data_to_send[9] = (left_leg->FSR_Heel_Abs * HeelCorrCoef);//(left_leg->FSR_Combined_Average);
+    data_to_send[9] = (left_leg->FSR_Heel_Abs);//(left_leg->FSR_Combined_Average);
   }
 
   // Signals
