@@ -209,9 +209,25 @@ struct Leg {
   int state_count_21 = 0;
   int state_count_23 = 0;
   int state_count_32 = 0;
+  
+  int state_count_14 = 0;
+  int state_count_24 = 0;
+  int state_count_25 = 0; 
+  int state_count_34 = 0;
+  int state_count_35 = 0;
+  int state_count_41 = 0;
+  int state_count_42 = 0;
+  int state_count_43 = 0;
+  int state_count_45 = 0;
+  int state_count_51 = 0; 
+  int state_count_52 = 0;
+  int state_count_53 = 0;
+  int state_count_54 = 0;
+  int state_5_counter = 0; 
 
   double state_3_start_time = 0;
   double state_1_start_time = 0;
+  double state_swing_start_time = 0;
   double start_from_1 = 0;
   double start_from_3 = 0;
   double start_time = 0;
@@ -219,6 +235,8 @@ struct Leg {
   double state_3_duration = 0;
   double state_1_stop_time = 0;
   double state_1_duration = 0;
+  double state_swing_stop_time = 0;
+  double state_swing_duration = 12;
   
   double Heel_Pos = -0.07;
   double Toe_Pos = 0.20;

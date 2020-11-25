@@ -33,7 +33,7 @@ bool FLAG_PID_VALS = false;
 
 
 // Variables depending on the sensor placement that are used in the state machine
-bool FLAG_ONE_TOE_SENSOR = true;
+bool FLAG_ONE_TOE_SENSOR = false;
 bool OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
 
 //Variables and flags for Balance control

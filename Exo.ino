@@ -442,6 +442,16 @@ void rotate_motor() {
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
 
+    if ((left_leg->state == 5) && (left_leg->old_state == 2 || left_leg->old_state == 3 || left_leg->old_state == 4)) {// SS 11/25/2020
+      left_leg->state_swing_start_time = millis();
+    }
+    if ((left_leg->state == 2 || left_leg->state == 3 || left_leg->state == 4) && (left_leg->old_state == 1 || left_leg->old_state == 5)) {// SS 11/25/2020
+      left_leg->state_swing_stop_time = millis();
+    }
+    if (left_leg->state_swing_stop_time > left_leg->state_swing_start_time) {// SS 11/25/2020
+      left_leg->state_swing_duration = left_leg->state_swing_stop_time - left_leg->state_swing_start_time;
+    }
+    
         if ((left_leg->state == 3) && ((left_leg->old_state == 1) || (left_leg->old_state == 2))) {   // TN 9/26/19
       left_leg->state_3_start_time = millis();
     }
@@ -468,6 +478,16 @@ void rotate_motor() {
 
     left_leg->old_state = left_leg->state;
 
+    if ((right_leg->state == 5) && (right_leg->old_state == 2 || right_leg->old_state == 3 || right_leg->old_state == 4)) {// SS 11/25/2020
+      right_leg->state_swing_start_time = millis();
+    }
+    if ((right_leg->state == 2 || right_leg->state == 3 || right_leg->state == 4) && (right_leg->old_state == 1  || right_leg->state == 5)) {// SS 11/25/2020
+      right_leg->state_swing_stop_time = millis();
+    }
+    if (right_leg->state_swing_stop_time > right_leg->state_swing_start_time) {// SS 11/25/2020
+      right_leg->state_swing_duration = right_leg->state_swing_stop_time - right_leg->state_swing_start_time;
+    }
+    
     if ((right_leg->state == 3) && ((right_leg->old_state == 1) || (right_leg->old_state == 2))) {    // TN 9/26/19
       right_leg->state_3_start_time = millis();
     }
@@ -552,7 +572,7 @@ void rotate_motor() {
 
 
 
-    if (Control_Mode == 2) {}
+    if (Control_Mode == 2 || Control_Mode == 100) {}
     else {
       set_2_zero_if_steady_state();
     }
