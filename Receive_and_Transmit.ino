@@ -235,10 +235,17 @@ void receive_and_transmit()
       left_leg->pid.SetTunings(left_leg->kp, left_leg->ki, left_leg->kd);
       right_leg->pid.SetTunings(right_leg->kp, right_leg->ki, right_leg->kd);
       break;
-
+      
     case 'm':
-
+      receiveVals(8);               
+      memcpy(&SwingPercentage, holdOnPoint, 8);
       break;
+    
+    case '-':
+      *(data_to_send_point) = SwingPercentage;
+      send_command_message('-', data_to_send_point, 1);     //MATLAB is expecting to recieve the Subject's Parameters
+      break;
+    
 
     case 'N':
       Serial.println("I'm here");
@@ -360,10 +367,6 @@ void receive_and_transmit()
       receiveVals(16);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&left_leg->KF, holdOnPoint, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       memcpy(&right_leg->KF, holdOnPoint + 8, 8);
-      break;
-
-    case '-':
-
       break;
 
 

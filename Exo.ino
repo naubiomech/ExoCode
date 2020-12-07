@@ -449,7 +449,11 @@ void rotate_motor() {
       left_leg->state_swing_stop_time = millis();
     }
     if (left_leg->state_swing_stop_time > left_leg->state_swing_start_time) {// SS 11/25/2020
+      if ((2*left_leg->state_swing_duration) < (left_leg->state_swing_stop_time - left_leg->state_swing_start_time)) //if current state swing is more than 2 times of previous swing make it equal to 1000.
+        left_leg->state_swing_start_time = left_leg->state_swing_stop_time-1000; 
       left_leg->state_swing_duration = left_leg->state_swing_stop_time - left_leg->state_swing_start_time;
+      if (left_leg->state_swing_start_time == 0) 
+        left_leg->state_swing_duration = 1000; 
     }
     
         if ((left_leg->state == 3) && ((left_leg->old_state == 1) || (left_leg->old_state == 2))) {   // TN 9/26/19
@@ -486,6 +490,8 @@ void rotate_motor() {
     }
     if (right_leg->state_swing_stop_time > right_leg->state_swing_start_time) {// SS 11/25/2020
       right_leg->state_swing_duration = right_leg->state_swing_stop_time - right_leg->state_swing_start_time;
+      if (right_leg->state_swing_start_time == 0)
+        right_leg->state_swing_duration = 1000; 
     }
     
     if ((right_leg->state == 3) && ((right_leg->old_state == 1) || (right_leg->old_state == 2))) {    // TN 9/26/19

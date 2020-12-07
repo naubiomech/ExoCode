@@ -236,7 +236,7 @@ struct Leg {
   double state_1_stop_time = 0;
   double state_1_duration = 0;
   double state_swing_stop_time = 0;
-  double state_swing_duration = 12;
+  double state_swing_duration = 0;
   
   double Heel_Pos = -0.07;
   double Toe_Pos = 0.20;

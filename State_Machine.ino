@@ -6,21 +6,21 @@
 // in case of no contact of both the sensors
 void state_machine(Leg* leg)
 {
-  if (FLAG_ONE_TOE_SENSOR) {
-    State_Machine_One_Toe_Sensor(leg);
-  }
+//  if (FLAG_ONE_TOE_SENSOR) {
+//    State_Machine_One_Toe_Sensor(leg);
+//  }
 
-  else if (FLAG_BALANCE) {
-    State_Machine_Heel_Toe_Sensors_Balance(leg);
-  } else if (FLAG_BIOFEEDBACK) {
-      State_Machine_Heel_Toe_Sensors_BioFeedback(leg);
-    } 
+//  else if (FLAG_BALANCE) {
+//    State_Machine_Heel_Toe_Sensors_Balance(leg);
+//  } else if (FLAG_BIOFEEDBACK) {
+//      State_Machine_Heel_Toe_Sensors_BioFeedback(leg);
+//    } 
 
-  if(Control_Mode != 100){
-      State_Machine_Heel_Toe_Sensors(leg);
-      } else{
+//  if(Control_Mode != 100){
+//      State_Machine_Heel_Toe_Sensors(leg);
+//      } else{
         State_Machine_BangBang_Hip(leg);
-        }
+//        }
 }
 
 
@@ -847,9 +847,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
           
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
 
-//            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle);
+            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps);
             leg->PID_Setpoint = leg->Setpoint_Ankle;
           
           leg->state_old = leg->state;
@@ -886,9 +886,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
           
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + ((leg->Setpoint_Ankle) - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle)/2;
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + ((leg->Setpoint_Ankle) - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps)/2;
           leg->PID_Setpoint = leg->Setpoint_Ankle/2;
           
           leg->state_old = leg->state;
@@ -926,10 +926,10 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
           
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//          
-//
-//          leg->New_PID_Setpoint = 0;//leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+          
+
+          leg->New_PID_Setpoint = 0;//leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
           leg->PID_Setpoint = 0;
           if (leg->New_PID_Setpoint == 0) 
             leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
@@ -975,19 +975,19 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         }
   
       //transition from state 2 to state 1
-      else if ((leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->state_5_counter > ((leg->state_swing_duration/2)/5)) ) {// Transition from state 2 to state 1// SS 1/27/2020   
+      else if ((leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->state_5_counter > ((leg->state_swing_duration/2)*(SwingPercentage/100))) ) {// Transition from state 2 to state 1// SS 1/27/2020   
         leg->state_5_counter++;
         leg->state_count_21++;
         if (leg->state_count_21 >= 4 * state_counter_th) 
         {
             leg->sigm_done = true;
             leg->PID_Setpoint = 0;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//          leg->New_PID_Setpoint = 0;//leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
-//
-//          if (leg->New_PID_Setpoint == 0) 
-//            leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+          leg->New_PID_Setpoint = 0;//leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+
+          if (leg->New_PID_Setpoint == 0) 
+            leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
          
           leg->state_old = leg->state;
           leg->state = 1;
@@ -1019,9 +1019,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         if (leg->state_count_23 >= state_counter_th) 
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + ((leg->Setpoint_Ankle) - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle)/2;
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + ((leg->Setpoint_Ankle) - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps)/2;
           leg->PID_Setpoint = leg->Setpoint_Ankle/2;
           
           leg->state_old = leg->state;
@@ -1055,9 +1055,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         if (leg->state_count_24 >= state_counter_th) 
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//          leg->New_PID_Setpoint = 0; //leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+          leg->New_PID_Setpoint = 0; //leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
           leg->PID_Setpoint = 0;
           if (leg->New_PID_Setpoint == 0) 
             leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
@@ -1089,15 +1089,15 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
 
       //transition from state 2 to state 5
       //IDK HOW TO DO THIS ONE, USE SOME TIMER TO DETERMINE WHEN TO SWITCH TO STATE 1
-      else if ((leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  && (leg->state_5_counter <= ((leg->state_swing_duration/2)/5))) { //LKL 9/8/2020  
+      else if ((leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  && (leg->state_5_counter <= ((leg->state_swing_duration/2)*(SwingPercentage/100)))) { //LKL 9/8/2020  
         leg->state_count_25++;
         leg->state_5_counter++;
         if (leg->state_count_25 >= state_counter_th) 
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//            leg->New_PID_Setpoint = -(leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle);
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+            leg->New_PID_Setpoint = -(leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps);
           leg->PID_Setpoint = -leg->Setpoint_Ankle/2;
           leg->state_old = leg->state;
           leg->state = 5;
@@ -1138,16 +1138,16 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
       }
 
       //Transition from state 3 to state 1
-      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_5_counter > ((leg->state_swing_duration/2)/5))) //LKL 9/8/2020   
+      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_5_counter > ((leg->state_swing_duration/2)*(SwingPercentage/100)))) //LKL 9/8/2020   
       {
         leg->state_5_counter++;
         leg->state_count_31++;
         if (leg->state_count_31 >= state_counter_th)
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//          leg->New_PID_Setpoint = 0;//leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+          leg->New_PID_Setpoint = 0;//leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
           leg->PID_Setpoint = 0;
           
           if (leg->New_PID_Setpoint == 0) 
@@ -1185,9 +1185,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         if (leg->state_count_32 >= state_counter_th)
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle);
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps);
 //        
           leg->PID_Setpoint = leg->Setpoint_Ankle;
             
@@ -1224,12 +1224,12 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         if (leg->state_count_34 >= state_counter_th)
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//          leg->New_PID_Setpoint = 0;//leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
-//
-//          if (leg->New_PID_Setpoint == 0) 
-//            leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+          leg->New_PID_Setpoint = 0;//leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+
+          if (leg->New_PID_Setpoint == 0) 
+            leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
 
           leg->PID_Setpoint = 0;
           
@@ -1260,7 +1260,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
 
       //Transition from state 3 to state 5
       //IDK HOW TO DO THIS ONE
-      else if( (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  &&  (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->state_5_counter <= ((leg->state_swing_duration/2)/5)) ) //LKL 9/8/2020
+      else if( (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  &&  (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->state_5_counter <= ((leg->state_swing_duration/2)*(SwingPercentage/100))) ) //LKL 9/8/2020
       {
         leg->state_count_35++;
         leg->state_5_counter++;
@@ -1268,9 +1268,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         if (leg->state_count_35 >= state_counter_th)
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//            leg->New_PID_Setpoint = -(leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle);
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+            leg->New_PID_Setpoint = -(leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps);
           leg->PID_Setpoint = -leg->Setpoint_Ankle/2;
           
           leg->state_old = leg->state;
@@ -1312,19 +1312,19 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
       }
 
       //Transition from state 4 to state 1
-      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->state_5_counter > ((leg->state_swing_duration/2)/5)))     // 
+      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->state_5_counter > ((leg->state_swing_duration/2)*(SwingPercentage/100))))     // 
       {
         leg->state_count_41++;
         leg->state_5_counter++;
         if (leg->state_count_41 >= state_counter_th)
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//            
-//          leg->New_PID_Setpoint = 0;//leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
-//
-//          if (leg->New_PID_Setpoint == 0) 
-//            leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+            
+          leg->New_PID_Setpoint = 0;//leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+
+          if (leg->New_PID_Setpoint == 0) 
+            leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
           leg->PID_Setpoint = 0;
           
           leg->state_old = leg->state;
@@ -1359,9 +1359,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         if (leg->state_count_42 >= state_counter_th)
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle);
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps);
           leg->PID_Setpoint = leg->Setpoint_Ankle;
           
           leg->state_old = leg->state;
@@ -1397,9 +1397,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         if (leg->state_count_43 >= state_counter_th)
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle)/2;
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps)/2;
           leg->PID_Setpoint = leg->Setpoint_Ankle/2;
           
           leg->state_old = leg->state;
@@ -1429,7 +1429,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
 
       //Transition from state 4 to state 5
       //IDK HOW TO DO THIS ONE
-      else if( (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  &&  (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->state_5_counter <= ((leg->state_swing_duration/2)/5)) ) //LKL 9/8/2020
+      else if( (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  &&  (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->state_5_counter <= ((leg->state_swing_duration/2)*(SwingPercentage/100))) ) //LKL 9/8/2020
       {
         leg->state_count_45++;
         leg->state_5_counter++;
@@ -1437,9 +1437,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         if (leg->state_count_45 >= state_counter_th)
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//            leg->New_PID_Setpoint = -(leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle);
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+            leg->New_PID_Setpoint = -(leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps);
           leg->PID_Setpoint = -leg->Setpoint_Ankle/2;
           
           leg->state_old = leg->state;
@@ -1481,19 +1481,19 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         leg->Previous_Setpoint_Ankle_Pctrl = 0; 
       }
 
-      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_5_counter > ((leg->state_swing_duration/2)/5))) //LKL 9/8/2020  
+      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_5_counter > ((leg->state_swing_duration/2)*(SwingPercentage/100)))) //LKL 9/8/2020  
       {
         leg->state_count_51++;
         leg->state_5_counter++;
         if (leg->state_count_51 >= state_counter_th)
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//          leg->New_PID_Setpoint = 0;//leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
-//
-//          if (leg->New_PID_Setpoint == 0) 
-//            leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+          leg->New_PID_Setpoint = 0;//leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+
+          if (leg->New_PID_Setpoint == 0) 
+            leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
           leg->PID_Setpoint = 0;
           
           leg->state_old = leg->state;
@@ -1528,9 +1528,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         if (leg->state_count_52 >= state_counter_th)
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle);
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps);
           leg->PID_Setpoint = leg->Setpoint_Ankle;
             
           leg->state_old = leg->state;
@@ -1566,9 +1566,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         if (leg->state_count_53 >= state_counter_th)
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//
-//            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle)/2;
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+
+            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps)/2;
           leg->PID_Setpoint = leg->Setpoint_Ankle/2;  
           leg->state_old = leg->state;
           leg->state = 3;
@@ -1603,11 +1603,11 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         if (leg->state_count_54 >= state_counter_th)
         {
             leg->sigm_done = true;
-//            leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//          leg->New_PID_Setpoint = 0;//leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps_Ankle;
-//
-//          if (leg->New_PID_Setpoint == 0) 
-//            leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+            leg->Old_PID_Setpoint = leg->PID_Setpoint;
+          leg->New_PID_Setpoint = 0;//leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+
+          if (leg->New_PID_Setpoint == 0) 
+            leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
           leg->PID_Setpoint = 0;
           
           leg->state_old = leg->state;

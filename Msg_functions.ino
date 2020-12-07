@@ -24,8 +24,8 @@ void send_data_message_wc() //with COP
   //Right Leg
   data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);//motor_ankle_speed(right_leg->motor_speed_pin)/123/(60/25);
   //data_to_send[0] = right_leg->Average_Trq*69.559*4*0.36/0.22; //Futek load cell
-  data_to_send[1] = left_leg->state_swing_duration; //right_leg->state;//right_leg->AnkleAverageAngle;
-  data_to_send[2] = left_leg->state_swing_start_time;//(right_leg->sign * right_leg->PID_Setpoint);//right_leg->AnkleAverageSpeed/360*60;
+  data_to_send[1] = right_leg->state;//right_leg->AnkleAverageAngle;
+  data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);//right_leg->AnkleAverageSpeed/360*60;
 
   if (FLAG_ONE_TOE_SENSOR) {
     data_to_send[3] = right_leg->Average_Trq; //(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
