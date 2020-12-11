@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD_REV3
+#define BOARD_VERSION DUAL_BOARD_REV4
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -43,7 +43,7 @@ const unsigned int zero = 2048;//1540;
 #include "Board.h"
 #include "resetMotorIfError.h"
 #include "ATP.h"
-bool iOS_Flag = 1;
+bool iOS_Flag = 0;
 int streamTimerCountNum = 0;
 //----------------------------------------------------------------------------------
 

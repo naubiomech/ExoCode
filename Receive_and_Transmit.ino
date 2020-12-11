@@ -108,10 +108,10 @@ void receive_and_transmit()
         MaxSpeed = 15000; //RPM
         TrqConstant = 14 / 1000; //Nm/A
         GearRatio = 4617.0 / 52.0; //89:1 gear ratio
-        NomCurrent = 3.34; //A
+        NomCurrent = 7.58; //A
         MotorEff = 0.89;
         GearboxEff = 0.59;
-        PulleyRatio = 44 / 10.3; //Small aluminum pulley, large sprocket
+        PulleyRatio = 40 / 10.3; //Small aluminum pulley, large sprocket
         Serial.println("22mm 90W");
 
       } else if (MotorParams == 1) {
@@ -241,7 +241,6 @@ void receive_and_transmit()
       break;
 
     case 'N':
-      Serial.println("I'm here");
       *(data_to_send_point) = 0;
       *(data_to_send_point + 1) = 1;
       *(data_to_send_point + 2) = 2;
