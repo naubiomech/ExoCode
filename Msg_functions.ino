@@ -22,7 +22,7 @@ void send_data_message_wc() //with COP
   else if (!iOS_Flag)
   {
   //Right Leg
-  data_to_send[0] = motor_ankle_speed(right_leg->motor_speed_pin)/123/(60/25);//(right_leg->sign * right_leg->Average_Trq);
+  data_to_send[0] = motor_ankle_speed(right_leg->motor_speed_pin)/89/(60/18);//(right_leg->sign * right_leg->Average_Trq);
   //data_to_send[0] = right_leg->Average_Trq*69.559*4*0.36/0.22; //Futek load cell
   data_to_send[1] = right_leg->AnkleAverageAngle;//right_leg->state;
   data_to_send[2] = right_leg->AnkleAverageSpeed/360*60;//(right_leg->sign * right_leg->PID_Setpoint);
@@ -44,9 +44,9 @@ void send_data_message_wc() //with COP
   }
 
   //Left Leg
-  data_to_send[5] =  -motor_ankle_speed(left_leg->motor_speed_pin)/123/(60/25);//(left_leg->sign * left_leg->Average_Trq);
+  data_to_send[5] =  -motor_ankle_speed(left_leg->motor_speed_pin)/89/(60/18);//(left_leg->sign * left_leg->Average_Trq);
   //data_to_send[5] = left_leg->Average_Trq*100.000; //Transducer raw voltage output
-  data_to_send[6] = ankle_angle(left_leg);//left_leg->state;
+  data_to_send[6] = left_leg->AnkleAverageAngle;//left_leg->state;
   data_to_send[7] = left_leg->AnkleAverageSpeed/360*60;//(left_leg->sign * left_leg->PID_Setpoint);
 
   if (FLAG_ONE_TOE_SENSOR) {
@@ -75,8 +75,8 @@ void send_data_message_wc() //with COP
 //    data_to_send[11] = (right_leg->TM_data);
     //data_to_send[10] = right_leg->Vol; //(left_leg->COP_Foot_ratio);
     //data_to_send[11] = 100*3.3*(analogRead(right_leg->ankle_angle_pin)-2048)/2048; //(right_leg->COP_Foot_ratio);
-    data_to_send[10] = 100*3.3*(analogRead(left_leg->ankle_angle_pin)-2048)/2048;//current(right_leg->motor_current_pin);
-    data_to_send[11] = right_leg->sign * motor_ankle_speed(right_leg->motor_speed_pin);
+    data_to_send[10] = 100*3.3*(analogRead(right_leg->ankle_angle_pin)-2048)/2048;//current(right_leg->motor_current_pin);
+    data_to_send[11] = 100*3.3*(analogRead(left_leg->ankle_angle_pin)-2048)/2048; //right_leg->sign * motor_ankle_speed(right_leg->motor_speed_pin);
   }
   if (FLAG_BIOFEEDBACK) {
     data_to_send[12] = right_leg->stridelength_target;
