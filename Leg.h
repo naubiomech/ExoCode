@@ -81,7 +81,13 @@ struct Leg {
 
   // Calibrate_and_Read_Sensors.h
   double FSR_Ratio;
+  double FSR_Ratio_Toe;
+  double FSR_Ratio_Heel;
+  double FSR_Ratio_ToeMinusHeel;
   double Max_FSR_Ratio;
+  double Max_FSR_Ratio_Toe;
+  double Max_FSR_Ratio_Heel;
+  double Max_FSR_Ratio_ToeMinusHeel;
 
   // Combined_FSR.h
   double fsr_Combined_peak_ref;
@@ -110,6 +116,9 @@ struct Leg {
   int address_FSR;
   int baseline_address;
   double baseline_value;
+  double baseline_value_Toe; //  SS  12/14/2020
+  double baseline_value_Heel; //  SS  12/14/2020
+  double baseline_value_ToeMinusHeel; //  SS  12/14/2020
 
   // PID_and_Ctrl_Parameters.h
   double torque_calibration_value = 0;

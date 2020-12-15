@@ -313,6 +313,7 @@ void receive_and_transmit()
       right_leg->p_steps->plant_peak_mean = right_leg->p_steps->plant_peak_mean;
       left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
       right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
+
       break;
 
     case '>':
