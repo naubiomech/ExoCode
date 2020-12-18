@@ -27,12 +27,8 @@ void receive_and_transmit()
       send_command_message('D', data_to_send_point, 4);
       break;
 
-    case 'F':
-      if (iOS_Flag) {
-        receiveVals(16);                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
-      } else {
-        receiveVals(32);
-      }
+    case 'F':                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
+      receiveVals(32);
       Serial.println("Received some setpoints");
       left_leg->Previous_Setpoint_Ankle = left_leg->Setpoint_Ankle;
       left_leg->Previous_Dorsi_Setpoint_Ankle = left_leg->Dorsi_Setpoint_Ankle;
@@ -40,13 +36,11 @@ void receive_and_transmit()
       right_leg->Previous_Dorsi_Setpoint_Ankle = right_leg->Dorsi_Setpoint_Ankle;
       memcpy(&left_leg->Setpoint_Ankle, holdOnPoint, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       memcpy(&left_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
-      if (iOS_Flag) {
-        memcpy(&right_leg->Setpoint_Ankle, holdOnPoint, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-        memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
-      } else {
-        memcpy(&right_leg->Setpoint_Ankle, holdOnPoint + 16, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-        memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 24, 8);
-      }
+      memcpy(&right_leg->Setpoint_Ankle, holdOnPoint, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+      memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
+      memcpy(&right_leg->Setpoint_Ankle, holdOnPoint + 16, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+      memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 24, 8);
+      
       //right_leg->Setpoint_Ankle = left_leg->Setpoint_Ankle;
       //right_leg->Dorsi_Setpoint_Ankle = left_leg->Dorsi_Setpoint_Ankle;
 
