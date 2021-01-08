@@ -95,10 +95,10 @@ void setup()
   digitalWrite(onoff, LOW);
   //Serial.println("ONOFF SET");
 
-//  #if BOARD_VERSION == DUAL_BOARD_REV4
-//    pinMode(TRIGGER_PIN, OUTPUT); // Enable the trigger //SS  6/23/2020
-//    digitalWrite(TRIGGER_PIN, HIGH); //SS  6/23/2020
-//  #endif
+  #if BOARD_VERSION == DUAL_BOARD_REV4
+    pinMode(TRIGGER_PIN, OUTPUT); // Enable the trigger //SS  6/23/2020
+    digitalWrite(TRIGGER_PIN, HIGH); //SS  6/23/2020
+  #endif
 
   // Fast torque calibration
   //torque_calibration();
@@ -470,13 +470,13 @@ void rotate_motor() {
 
     right_leg->old_state = right_leg->state;
 
-//    #if BOARD_VERSION == DUAL_BOARD_REV4
-//      // Sending nerve stimulation tigger // SS 8/6/2020
-//      if (STIM_ACTIVATED){
-//        if (Trigger_left)  send_trigger(left_leg); //for left
-//        else  send_trigger(right_leg);  //for right (the default is for right leg)
-//        }
-//    #endif    
+    #if BOARD_VERSION == DUAL_BOARD_REV4
+      // Sending nerve stimulation tigger // SS 8/6/2020
+      if (STIM_ACTIVATED){
+        if (Trigger_left)  send_trigger(left_leg); //for left
+        else  send_trigger(right_leg);  //for right (the default is for right leg)
+        }
+    #endif    
 
     // When I first wrote this only God and I knew what it did. Now only God knows. Need to go through this again. GO 9/17/20
     if ((Control_Mode == 3 || Control_Mode == 6) && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
@@ -542,72 +542,72 @@ void rotate_motor() {
 }
 
 //----------------------------------------------------------------------------------
-//void send_trigger(Leg* leg) {   // Nerve stimulation trigger function // SS 8/6/2020
-//
-// 
-//if (leg->state == 3){
-//  leg->swing_counter = 0;
-//  leg->stance_counter ++;
-//  
-//  if ((((millis() - leg->trig_time) > 1000) && ((leg->stance_counter == 1) || (leg->stance_counter > (((leg->state_3_duration * 2) / 3)/2)) )) || leg->Approve_trigger) {
-//    leg->Approve_trigger = true;
-//    if ((leg->stance_counter < 41) && (leg->trig_number == 1)) { //  Trigger at the start of stance phase
-//      digitalWrite(TRIGGER_PIN, HIGH);
-//      leg->Trigger = 1;
-//      } else if ((leg->stance_counter > (((leg->state_3_duration * 2) / 3)/2)) && (leg->stance_counter < (40 + (((leg->state_3_duration * 2) / 3)/2))) && (leg->trig_number == 2)) { // Trigger at the 2/3 of stance phase
-//        digitalWrite(TRIGGER_PIN, HIGH);
-//        leg->Trigger = 2;
-//        } else  {
-//          digitalWrite(TRIGGER_PIN, LOW);
-//          leg->Old_Trigger = leg->Trigger;
-//          leg->Trigger = 0;
-//          if (leg->Old_Trigger != 0){
-//            leg->trig_number = 0;
-//            leg->Approve_trigger = false;
-//            }
-//          }
-//    }else{
-//      digitalWrite(TRIGGER_PIN, LOW);
-//      leg->Old_Trigger = leg->Trigger;
-//      leg->Trigger = 0;
-//      if (leg->Old_Trigger != 0){
-//         leg->trig_number = 0;
-//         leg->Approve_trigger = false;
-//         }
-//    }
-//  } else if (leg->state == 1){
-//        leg->stance_counter = 0;
-//        leg->swing_counter ++;
-//
-//        if ((((millis() - leg->trig_time) > 1000) && ((leg->swing_counter < ((leg->state_1_duration / 3)/2))) || (leg->swing_counter > (((leg->state_1_duration / 3)/2)+20)) ) || leg->Approve_trigger) {
-//          leg->Approve_trigger = true;
-//          if ((leg->swing_counter > ((leg->state_1_duration / 3)/2))  &&  (leg->swing_counter < (((leg->state_1_duration / 3)/2)+40)) && (leg->trig_number ==  3)) { // Trigger at the 1/3 of swing phase
-//            digitalWrite(TRIGGER_PIN, HIGH);
-//            leg->Trigger = 3;
-//            } else if ((leg->swing_counter > (((leg->state_1_duration * 2)/ 3)/2))  &&  (leg->swing_counter < ((((leg->state_1_duration * 2) / 3)/2)+40))  && (leg->trig_number == 4))  { // Trigger at the 2/3 of swing phase
-//              digitalWrite(TRIGGER_PIN, HIGH); 
-//              leg->Trigger = 4;
-//              } else  {
-//                digitalWrite(TRIGGER_PIN, LOW);
-//                leg->Old_Trigger = leg->Trigger;
-//                leg->Trigger = 0;
-//                if (leg->Old_Trigger != 0){
-//                  leg->trig_number = 0;
-//                  leg->Approve_trigger = false;
-//                  }
-//                }
-//          }else{
-//            digitalWrite(TRIGGER_PIN, LOW);
-//            leg->Old_Trigger = leg->Trigger;
-//            leg->Trigger = 0;
-//            if (leg->Old_Trigger != 0){
-//              leg->trig_number = 0;
-//              leg->Approve_trigger = false;
-//              }
-//            }
-//        }
-//    
-//}
+void send_trigger(Leg* leg) {   // Nerve stimulation trigger function // SS 8/6/2020
+
+ 
+if (leg->state == 3){
+  leg->swing_counter = 0;
+  leg->stance_counter ++;
+  
+  if ((((millis() - leg->trig_time) > 1000) && ((leg->stance_counter == 1) || (leg->stance_counter > (((leg->state_3_duration * 2) / 3)/2)) )) || leg->Approve_trigger) {
+    leg->Approve_trigger = true;
+    if ((leg->stance_counter < 41) && (leg->trig_number == 1)) { //  Trigger at the start of stance phase
+      digitalWrite(TRIGGER_PIN, HIGH);
+      leg->Trigger = 1;
+      } else if ((leg->stance_counter > (((leg->state_3_duration * 2) / 3)/2)) && (leg->stance_counter < (40 + (((leg->state_3_duration * 2) / 3)/2))) && (leg->trig_number == 2)) { // Trigger at the 2/3 of stance phase
+        digitalWrite(TRIGGER_PIN, HIGH);
+        leg->Trigger = 2;
+        } else  {
+          digitalWrite(TRIGGER_PIN, LOW);
+          leg->Old_Trigger = leg->Trigger;
+          leg->Trigger = 0;
+          if (leg->Old_Trigger != 0){
+            leg->trig_number = 0;
+            leg->Approve_trigger = false;
+            }
+          }
+    }else{
+      digitalWrite(TRIGGER_PIN, LOW);
+      leg->Old_Trigger = leg->Trigger;
+      leg->Trigger = 0;
+      if (leg->Old_Trigger != 0){
+         leg->trig_number = 0;
+         leg->Approve_trigger = false;
+         }
+    }
+  } else if (leg->state == 1){
+        leg->stance_counter = 0;
+        leg->swing_counter ++;
+
+        if ((((millis() - leg->trig_time) > 1000) && ((leg->swing_counter < ((leg->state_1_duration / 3)/2))) || (leg->swing_counter > (((leg->state_1_duration / 3)/2)+20)) ) || leg->Approve_trigger) {
+          leg->Approve_trigger = true;
+          if ((leg->swing_counter > ((leg->state_1_duration / 3)/2))  &&  (leg->swing_counter < (((leg->state_1_duration / 3)/2)+40)) && (leg->trig_number ==  3)) { // Trigger at the 1/3 of swing phase
+            digitalWrite(TRIGGER_PIN, HIGH);
+            leg->Trigger = 3;
+            } else if ((leg->swing_counter > (((leg->state_1_duration * 2)/ 3)/2))  &&  (leg->swing_counter < ((((leg->state_1_duration * 2) / 3)/2)+40))  && (leg->trig_number == 4))  { // Trigger at the 2/3 of swing phase
+              digitalWrite(TRIGGER_PIN, HIGH); 
+              leg->Trigger = 4;
+              } else  {
+                digitalWrite(TRIGGER_PIN, LOW);
+                leg->Old_Trigger = leg->Trigger;
+                leg->Trigger = 0;
+                if (leg->Old_Trigger != 0){
+                  leg->trig_number = 0;
+                  leg->Approve_trigger = false;
+                  }
+                }
+          }else{
+            digitalWrite(TRIGGER_PIN, LOW);
+            leg->Old_Trigger = leg->Trigger;
+            leg->Trigger = 0;
+            if (leg->Old_Trigger != 0){
+              leg->trig_number = 0;
+              leg->Approve_trigger = false;
+              }
+            }
+        }
+    
+}
 
 //----------------------------------------------------------------------------------
 
