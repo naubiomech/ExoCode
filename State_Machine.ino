@@ -41,6 +41,11 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_13 >= state_counter_th)
         {
+          if (stream && (leg == right_leg)) {
+            //Reference time to be used later for step counter
+            stepper->step_start = millis();
+          }
+          
           if (Control_Mode == 100) { //Increment set point for bang-bang GO - 5/19/19
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -222,7 +227,10 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
         leg->state_count_31++;
         if (leg->state_count_31 >= state_counter_th)
         {
-
+          //Check if stance phase was long enough to warrant a valid step
+          if ((millis() - stepper->step_start) >= stepper->kstep_delay && stream && (leg == right_leg)) {
+            stepper->steps += 2;
+          } 
           if (Control_Mode == 100) {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -301,7 +309,6 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
       // Create the smoothed reference and call the PID
       PID_Sigm_Curve(leg);
     }
-
   }
 }// end function
 

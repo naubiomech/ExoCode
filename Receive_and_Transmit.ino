@@ -153,11 +153,21 @@ void receive_and_transmit()
       stream = 1;                                                     //and the torque data is allowed to be streamed
       streamTimerCount = 0;
       timeElapsed = 0;
+      stepper->trial_start = millis();
       break;
 
     case 'G':
       digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
       stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
+      stepData[0] = stepper->steps;
+      trial_timeData[0] = (double(millis() - stepper->trial_start))/1000;
+      send_command_message('s',stepData,1);
+      send_command_message('t',trial_timeData,1);
+      stepper->steps = 0;
+      Serial.print("Steps: ");
+      Serial.println(stepper->steps);
+      Serial.print("Time: ");
+      Serial.println(trial_timeData[0]);
       break;
 
     case 'H':

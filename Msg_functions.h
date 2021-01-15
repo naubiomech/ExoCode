@@ -23,3 +23,9 @@ double *emptyData_point = &emptyData[0];
 
 double batteryData[1];
 double *batteryData_point = &batteryData[0];
+
+double stepData[1];
+double *stepData_point = &stepData[0];
+
+double trial_timeData[1];
+double *trial_timeData_point = &trial_timeData[0];
