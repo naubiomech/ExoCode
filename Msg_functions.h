@@ -24,8 +24,8 @@ double *emptyData_point = &emptyData[0];
 double batteryData[1];
 double *batteryData_point = &batteryData[0];
 
-double stepData[1];
+double stepData[2]; //Used to send trial summary information upon end trial command. Note: The size should be changed to three when complete
 double *stepData_point = &stepData[0];
 
-double trial_timeData[1];
-double *trial_timeData_point = &trial_timeData[0];
+double totalSteps[1]; //Used to send the total number of steps
+double *totalSteps_point = &totalSteps[0];

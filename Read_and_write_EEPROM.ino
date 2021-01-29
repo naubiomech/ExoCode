@@ -232,3 +232,35 @@ double read_baseline(int address_baseline_l)
   memcpy(&val_t, &array_values, 8);
   return val_t;
 }
+
+int check_steps(int addres_steps_1)
+{
+  byte value = EEPROM.read(address_FSR_l);
+  if (char(value) == 'y') 
+  {
+    return 1;
+  }
+  return 0;
+}
+
+int write_steps(int address_steps_1, int steps_val)
+{
+ EEPROM.put(address_steps_1, 'y');
+ address_steps_1 += 1;
+ EEPROM.put(address_steps_1, steps_val);
+ return 1;
+}
+
+int read_steps(int address_steps_1)
+{
+ address_steps_1 += 1;
+ int steps = 0;
+ byte array_values[4];
+ byte* p_array = array_values;
+ for (int i = 0; i < sizeof(int); i++)
+ {
+  *(p_array + i) = EEPROM.read(address_steps_1 + i);
+ }
+ memcpy(&steps, &array_values, 4);
+ return steps;
+}

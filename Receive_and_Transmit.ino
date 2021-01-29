@@ -153,21 +153,29 @@ void receive_and_transmit()
       stream = 1;                                                     //and the torque data is allowed to be streamed
       streamTimerCount = 0;
       timeElapsed = 0;
-      stepper->trial_start = millis();
+      
+      stepper->trial_start = millis();  //CFC 1/22/21 Gathers time at start of trial
       break;
 
     case 'G':
       digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
       stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
-      stepData[0] = stepper->steps;
-      trial_timeData[0] = (double(millis() - stepper->trial_start))/1000;
-      send_command_message('s',stepData,1);
-      send_command_message('t',trial_timeData,1);
-      stepper->steps = 0;
-      Serial.print("Steps: ");
-      Serial.println(stepper->steps);
-      Serial.print("Time: ");
-      Serial.println(trial_timeData[0]);
+      
+      stepData[0] = stepper->steps; //CFC 1/22/21
+      stepData[1] = millis() - stepper->trial_start;
+      //stepdata[2] = //XXXXX Will be used to send error information, must update stepData array size in msg_Functions header file
+      send_command_message(stepper->send_flag,stepData,2);
+
+      if (check_steps(stepper->kaddr))  //If the exo has saved a step count to EEPROM
+      {
+        write_steps(read_steps(stepper->kaddr) + stepper->steps, stepper->kaddr); //Write the new total to EEPROM
+        stepper->steps = 0; //Clear trial step count
+      } 
+      else 
+      {
+        write_steps(stepper->steps, stepper->kaddr);
+        stepper->steps = 0;
+      }
       break;
 
     case 'H':
@@ -1079,7 +1087,19 @@ void receive_and_transmit()
 
       break;
 
-
+    case '0':   //CFC 1/22/21
+      //Case to request exos total step count
+      if (check_steps(stepper->kaddr))
+      {
+        totalSteps[0] = read_steps(stepper->kaddr);
+      }
+      else
+      {
+        totalSteps[0] = 0;
+      }
+      send_command_message('0',totalSteps,1);
+      break
+      
   }
   cmd_from_Gui = 0;
 }
