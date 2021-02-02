@@ -163,31 +163,19 @@ double motor_ankle_speed(const unsigned int pin){
 /* Read the analog output from the hall sensor at the ankle, convert to degrees, and calculate actual ankle velocity.
  *  Likely needs a calibration but for now just read and convert
  */
-double ankle_angle(Leg* leg){
+struct angles ankle_angle(Leg* leg){
 
 // Sensor Reading and Normalization
-  double zeroL = 0.5505;
-  double zeroR = -0.0983;
-  double maxPFXL = -0.6475 - zeroL;
-  double maxDFXL = 0.959 - zeroL;
-  double maxPFXR = -1.5284;
-  double maxDFXR = 1.8640;
-  double zero;
-  double maxPFX;
-  double maxDFX;
-  double angle;
+  double zero = 0.024259;
+  double maxPFX = -0.76199;
+  double maxDFX = 0.79851;
 
-if (leg->whos == 'L') {
-  zero = zeroL;
-  maxPFX = maxPFXL;
-  maxDFX = maxDFXL;
-} else {
-  zero = zeroR;
-  maxPFX = maxPFXR;
-  maxDFX = maxDFXR; 
-}
+  struct angles ang;
 
-float hall_voltage = 3.3*((analogRead(leg->ankle_angle_pin)-2048.0)/2048.0) - zero; //Offset by zero 
+  float hall_voltage = 3.3*((analogRead(leg->ankle_angle_pin)-2048.0)/2048.0) - zero; //Offset by zero 
+  
+  ang.rawAngle = -69.086*hall_voltage; //Raw voltage regression for comparisons
+  
 if (hall_voltage > 0) {
   hall_voltage = hall_voltage/abs(maxDFX); //Positive voltage is dorsiflexion
 } else if (hall_voltage < 0) {
@@ -196,6 +184,7 @@ if (hall_voltage > 0) {
   hall_voltage = 0;
 }
 
-  angle = -1.675 - 0.5947*asin(hall_voltage)*180/PI; //Calculate the angle from the normalized and transformed voltag
-  return angle;
+  ang.calAngle = -0.74284*asin(hall_voltage)*180/PI; //Calculate the angle from the normalized and transformed voltage
+
+  return ang;
 }

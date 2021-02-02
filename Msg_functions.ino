@@ -22,14 +22,13 @@ void send_data_message_wc() //with COP
   else if (!iOS_Flag)
   {
   //Right Leg
-  data_to_send[0] = motor_ankle_speed(right_leg->motor_speed_pin)/89/(60/18);//(right_leg->sign * right_leg->Average_Trq);
-  //data_to_send[0] = right_leg->Average_Trq*69.559*4*0.36/0.22; //Futek load cell
-  data_to_send[1] = right_leg->AnkleAverageAngle;//right_leg->state;
-  data_to_send[2] = right_leg->AnkleAverageSpeed/360*60;//(right_leg->sign * right_leg->PID_Setpoint);
+  data_to_send[0] = motor_ankle_speed(right_leg->motor_speed_pin)/89/4; //Motor speed with gear reductions applied
+  data_to_send[1] = 100*3.3*(analogRead(right_leg->ankle_angle_pin)-2048)/2048; //Raw hall sensor voltage * 100
+  data_to_send[2] = right_leg->Vol; //The prescribed wave function
 
   if (FLAG_ONE_TOE_SENSOR) {
-    data_to_send[3] = right_leg->Average_Trq; //(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
-    data_to_send[4] = current(right_leg->motor_current_pin);//(right_leg->FSR_Combined_Average);
+    data_to_send[3] = right_leg->rawAnkleAverageAngle; // raw ankle angle regression
+    data_to_send[4] = right_leg->calAnkleAverageAngle; // calibrated ankle angle regression
   } else if (FLAG_BALANCE) {
     //data_to_send[3] = 12;//right_leg->FSR_Toe_Average);
     //data_to_send[4] = 13;//(right_leg->FSR_Heel_Average);
@@ -44,14 +43,13 @@ void send_data_message_wc() //with COP
   }
 
   //Left Leg
-  data_to_send[5] =  -motor_ankle_speed(left_leg->motor_speed_pin)/89/(60/18);//(left_leg->sign * left_leg->Average_Trq);
-  //data_to_send[5] = left_leg->Average_Trq*100.000; //Transducer raw voltage output
-  data_to_send[6] = left_leg->AnkleAverageAngle;//left_leg->state;
-  data_to_send[7] = left_leg->AnkleAverageSpeed/360*60;//(left_leg->sign * left_leg->PID_Setpoint);
+  data_to_send[5] = motor_ankle_speed(left_leg->motor_speed_pin)/89/4; //Motor speed with gear reductions applied
+  data_to_send[6] = 100*3.3*(analogRead(left_leg->ankle_angle_pin)-2048)/2048; //Raw hall sensor voltage * 100
+  data_to_send[7] = left_leg->Vol; //The prescribed wave function
 
   if (FLAG_ONE_TOE_SENSOR) {
-    data_to_send[8] =  left_leg->Average_Trq; //(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
-    data_to_send[9] = current(left_leg->motor_current_pin);// (left_leg->FSR_Combined_Average);
+    data_to_send[8] = left_leg->rawAnkleAverageAngle; // raw ankle angle regression
+    data_to_send[9] = left_leg->calAnkleAverageAngle; // calibrated ankle angle regression
   } else if (FLAG_BALANCE) {
     //data_to_send[8] = (left_leg->FSR_Toe_Average);
     //data_to_send[9] = (left_leg->FSR_Heel_Average);
@@ -75,9 +73,10 @@ void send_data_message_wc() //with COP
 //    data_to_send[11] = (right_leg->TM_data);
     //data_to_send[10] = right_leg->Vol; //(left_leg->COP_Foot_ratio);
     //data_to_send[11] = 100*3.3*(analogRead(right_leg->ankle_angle_pin)-2048)/2048; //(right_leg->COP_Foot_ratio);
-    data_to_send[10] = 100*3.3*(analogRead(right_leg->ankle_angle_pin)-2048)/2048;//current(right_leg->motor_current_pin);
-    data_to_send[11] = 100*3.3*(analogRead(left_leg->ankle_angle_pin)-2048)/2048; //right_leg->sign * motor_ankle_speed(right_leg->motor_speed_pin);
+    data_to_send[10] = right_leg->rawAnkleAverageSpeed/360*60; // raw regression velocity
+    data_to_send[11] = right_leg->calAnkleAverageSpeed/360*60; // calibrated regression velocity
   }
+    
   if (FLAG_BIOFEEDBACK) {
     data_to_send[12] = right_leg->stridelength_target;
     data_to_send[13] = left_leg->stridelength_target;
@@ -87,8 +86,8 @@ void send_data_message_wc() //with COP
     //data_to_send[13] = ((right_leg->Vol - 0.1*4096)/0.8 - right_leg->zero) / 2048 * NomCurrent;
     //data_to_send[13] = right_leg->AnkleAverageAngle; //Ankle angle
     //data_to_send[13] = 100*3.3*(analogRead(left_leg->ankle_angle_pin)-2048)/2048;
-    data_to_send[12] = current(left_leg->motor_current_pin);
-    data_to_send[13] = left_leg->sign * motor_ankle_speed(left_leg->motor_speed_pin);
+    data_to_send[12] = left_leg->rawAnkleAverageSpeed/360*60; // raw regression velocity
+    data_to_send[13] = left_leg->calAnkleAverageSpeed/360*60; // calibrated regression velocity
     //data_to_send[12] = left_leg->trig_number;//SS  6/23/2020
     //data_to_send[13] = left_leg->Trigger;//SS  6/23/2020
   }

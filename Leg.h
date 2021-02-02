@@ -30,14 +30,23 @@ struct Leg {
   double* MotorSpeedArrayPoint = &MotorSpeedArray[0];
   double MotorAverageSpeed = 0;
 
-  double AnkleAngleArray[dim] = {0};
-  double* AnkleAngleArrayPoint = &AnkleAngleArray[0];
-  double AnkleAverageAngle = 0;
-  double PrevAnkleAngle = 0;
+  double rawAnkleAngleArray[dim] = {0};
+  double* rawAnkleAngleArrayPoint = &rawAnkleAngleArray[0];
+  double rawAnkleAverageAngle = 0;
+  double rawPrevAnkleAngle = 0;
 
-  double AnkleSpeedArray[dim] = {0};
-  double* AnkleSpeedArrayPoint = &AnkleSpeedArray[0];
-  double AnkleAverageSpeed = 0;
+  double rawAnkleSpeedArray[dim] = {0};
+  double* rawAnkleSpeedArrayPoint = &rawAnkleSpeedArray[0];
+  double rawAnkleAverageSpeed = 0;
+
+  double calAnkleAngleArray[dim] = {0};
+  double* calAnkleAngleArrayPoint = &calAnkleAngleArray[0];
+  double calAnkleAverageAngle = 0;
+  double calPrevAnkleAngle = 0;
+
+  double calAnkleSpeedArray[dim] = {0};
+  double* calAnkleSpeedArrayPoint = &calAnkleSpeedArray[0];
+  double calAnkleAverageSpeed = 0;
   
 
   double sign = 1;
@@ -287,5 +296,9 @@ void initialize_leg(Leg* leg);
 void initialize_left_leg(Leg* left_leg);
 void initialize_right_leg(Leg* right_leg);
 
+struct angles {
+  double calAngle;
+  double rawAngle;
+};
 
 #endif

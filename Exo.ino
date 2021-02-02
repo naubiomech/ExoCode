@@ -240,6 +240,8 @@ void biofeedback() {
 //----------------------------------------------------------------------------------
 
 void calculate_leg_average(Leg* leg) {
+
+  struct angles AnkleAngles;
   //Calc the average value of Torque
 
   //Shift the arrays
@@ -247,8 +249,10 @@ void calculate_leg_average(Leg* leg) {
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
     leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
     leg->MotorSpeedArrayPoint[j] = leg->MotorSpeedArrayPoint[j-1];
-    leg->AnkleAngleArrayPoint[j] = leg->AnkleAngleArrayPoint[j-1];
-    leg->AnkleSpeedArrayPoint[j] = leg->AnkleSpeedArrayPoint[j-1];
+    leg->rawAnkleAngleArrayPoint[j] = leg->rawAnkleAngleArrayPoint[j-1];
+    leg->rawAnkleSpeedArrayPoint[j] = leg->rawAnkleSpeedArrayPoint[j-1];
+    leg->calAnkleAngleArrayPoint[j] = leg->calAnkleAngleArrayPoint[j-1];
+    leg->calAnkleSpeedArrayPoint[j] = leg->calAnkleSpeedArrayPoint[j-1];
   }
   //Get the torque
   leg->TarrayPoint[0] = get_torq(leg);
@@ -261,33 +265,43 @@ void calculate_leg_average(Leg* leg) {
   leg->MotorAverageSpeed = 0;
   
   //Ankle Angle Sensor
-  leg->AnkleAngleArrayPoint[0] = ankle_angle(leg);
-  leg->AnkleAverageAngle = 0;
+  AnkleAngles = ankle_angle(leg);
+  leg->rawAnkleAngleArrayPoint[0] = AnkleAngles.rawAngle;
+  leg->calAnkleAngleArrayPoint[0] = AnkleAngles.calAngle;
+  leg->rawAnkleAverageAngle = 0;
+  leg->calAnkleAverageAngle = 0;
   
   for (int i = 0; i < dim; i++)
   {
     leg->Average =  leg->Average + leg->TarrayPoint[i];
     leg->MotorAverageSpeed = leg->MotorAverageSpeed + leg->MotorSpeedArray[i];
-    leg->AnkleAverageAngle = leg->AnkleAverageAngle + leg->AnkleAngleArray[i]; 
+    leg->rawAnkleAverageAngle = leg->rawAnkleAverageAngle + leg->rawAnkleAngleArray[i]; 
+    leg->calAnkleAverageAngle = leg->calAnkleAverageAngle + leg->calAnkleAngleArray[i]; 
   }
 
   leg->Average_Trq = leg->Average / dim;
   leg->MotorAverageSpeed = leg->MotorAverageSpeed / dim;
-  leg->AnkleAverageAngle = leg->AnkleAverageAngle / dim;
-
+  leg->rawAnkleAverageAngle = leg->rawAnkleAverageAngle / dim;
+  leg->calAnkleAverageAngle = leg->calAnkleAverageAngle / dim;
+  
   //leg->AnkleAverageSpeed = (leg->AnkleAverageAngle - leg->PrevAnkleAngle)/0.002; //Angular Velocity in deg/s
   //leg->PrevAnkleAngle = leg->AnkleAverageAngle;
   
-  leg->AnkleSpeedArrayPoint[0] = (leg->AnkleAverageAngle - leg->PrevAnkleAngle)/0.002; //Angular velocity in degrees/s
-  leg->AnkleAverageSpeed = 0;
+  leg->rawAnkleSpeedArrayPoint[0] = (leg->rawAnkleAverageAngle - leg->rawPrevAnkleAngle)/0.002; //Angular velocity in degrees/s
+  leg->rawAnkleAverageSpeed = 0;
+  leg->calAnkleSpeedArrayPoint[0] = (leg->calAnkleAverageAngle - leg->calPrevAnkleAngle)/0.002; //Angular velocity in degrees/s
+  leg->calAnkleAverageSpeed = 0;
   
   for (int i = 0; i< dim; i++) {
     //leg->AnkleAverageSpeed = leg->AnkleAverageSpeed + (i+1)*leg->AnkleSpeedArray[i]; //Weighted moving average
-    leg->AnkleAverageSpeed = leg->AnkleAverageSpeed + leg->AnkleSpeedArray[i];
+    leg->rawAnkleAverageSpeed = leg->rawAnkleAverageSpeed + leg->rawAnkleSpeedArray[i];
+    leg->calAnkleAverageSpeed = leg->calAnkleAverageSpeed + leg->calAnkleSpeedArray[i];
   }
   //leg->AnkleAverageSpeed = leg->AnkleAverageSpeed / (dim*(dim+1)/2); //Weighted moving average
-  leg->AnkleAverageSpeed = leg->AnkleAverageSpeed / dim;  
-  leg->PrevAnkleAngle = leg->AnkleAverageAngle;
+  leg->rawAnkleAverageSpeed = leg->rawAnkleAverageSpeed / dim;  
+  leg->rawPrevAnkleAngle = leg->rawAnkleAverageAngle;
+  leg->calAnkleAverageSpeed = leg->calAnkleAverageSpeed / dim;  
+  leg->calPrevAnkleAngle = leg->calAnkleAverageAngle;
   
   if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
