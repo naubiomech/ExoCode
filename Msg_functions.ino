@@ -22,9 +22,9 @@ void send_data_message_wc() //with COP
   else if (!iOS_Flag)
   {
   //Right Leg
-  data_to_send[0] = motor_ankle_speed(right_leg->motor_speed_pin)/89/4; //Motor speed with gear reductions applied
-  data_to_send[1] = 100*3.3*(analogRead(right_leg->ankle_angle_pin)-2048)/2048; //Raw hall sensor voltage * 100
-  data_to_send[2] = right_leg->Vol; //The prescribed wave function
+  data_to_send[0] = 15000*3.3*((analogRead(right_leg->motor_speed_pin)-2048.0)/4096.0)/89/4; //Motor speed with gear reductions applied
+  data_to_send[1] = 100*3.3*(analogRead(right_leg->ankle_angle_pin)-2048.0)/4096.0; //Raw hall sensor voltage * 100
+  data_to_send[2] = 15000*3.3*((analogRead(right_leg->motor_current_pin)-2048.0)/4096.0)/89/4; //The prescribed wave function
 
   if (FLAG_ONE_TOE_SENSOR) {
     data_to_send[3] = right_leg->rawAnkleAverageAngle; // raw ankle angle regression
@@ -44,8 +44,8 @@ void send_data_message_wc() //with COP
 
   //Left Leg
   data_to_send[5] = motor_ankle_speed(left_leg->motor_speed_pin)/89/4; //Motor speed with gear reductions applied
-  data_to_send[6] = 100*3.3*(analogRead(left_leg->ankle_angle_pin)-2048)/2048; //Raw hall sensor voltage * 100
-  data_to_send[7] = left_leg->Vol; //The prescribed wave function
+  data_to_send[6] = 100*3.3*(analogRead(left_leg->ankle_angle_pin)-2048.0)/4096.0; //Raw hall sensor voltage * 100
+  data_to_send[7] = 15000*3.3*((analogRead(left_leg->motor_current_pin)-2048.0)/4096.0)/89/4; //The prescribed wave function
 
   if (FLAG_ONE_TOE_SENSOR) {
     data_to_send[8] = left_leg->rawAnkleAverageAngle; // raw ankle angle regression
@@ -62,11 +62,11 @@ void send_data_message_wc() //with COP
 
   // Signals
   if (FLAG_BALANCE) {
-    data_to_send[10] = 100*3.3*(analogRead(left_leg->ankle_angle_pin)-2048)/2048; //right_leg->Vol;//(left_leg->COP_Foot_ratio);
-    data_to_send[11] = 100*3.3*(analogRead(right_leg->ankle_angle_pin)-2048)/2048;//current(right_leg->motor_current_pin);//(right_leg->COP_Foot_ratio);
+    data_to_send[10] = right_leg->rawAnkleAverageSpeed/360*60; // raw regression velocity
+    data_to_send[11] = right_leg->calAnkleAverageSpeed/360*60; // calibrated regression velocity
   } else if (FLAG_BIOFEEDBACK) {
-    data_to_send[10] = 3;//right_leg->stridelength_update;
-    data_to_send[11] = 4;//left_leg->stridelength_update;
+    data_to_send[10] = right_leg->rawAnkleAverageSpeed/360*60; // raw regression velocity
+    data_to_send[11] = right_leg->calAnkleAverageSpeed/360*60; // calibrated regression velocity
   }
   else {
 //    data_to_send[10] = (left_leg->TM_data);
@@ -78,8 +78,8 @@ void send_data_message_wc() //with COP
   }
     
   if (FLAG_BIOFEEDBACK) {
-    data_to_send[12] = right_leg->stridelength_target;
-    data_to_send[13] = left_leg->stridelength_target;
+    data_to_send[12] = left_leg->rawAnkleAverageSpeed/360*60; // raw regression velocity
+    data_to_send[13] = left_leg->calAnkleAverageSpeed/360*60; // calibrated regression velocity
   }
   else {
     //data_to_send[12] =  left_leg->Vol;//Numerical derivative of angle

@@ -172,7 +172,7 @@ struct angles ankle_angle(Leg* leg){
 
   struct angles ang;
 
-  float hall_voltage = 3.3*((analogRead(leg->ankle_angle_pin)-2048.0)/2048.0) - zero; //Offset by zero 
+  float hall_voltage = 3.3*((analogRead(leg->ankle_angle_pin)-2048.0)/4096.0) - zero; //Offset by zero 
   
   ang.rawAngle = -69.086*hall_voltage; //Raw voltage regression for comparisons
   

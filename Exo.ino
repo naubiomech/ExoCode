@@ -134,7 +134,7 @@ void setup()
   batteryData[0] = startVolt;
   send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware 
 
-  //calculateWave();
+//  calculateWave();
   calculateStep();
   Serial.println("Setup complete");
   

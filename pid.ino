@@ -34,10 +34,9 @@ void pid(Leg* leg, double input) {
       leg->Vol = -leg->Vol;
     }
   } else if (CURRENT_DIAGNOSTICS && MotorParams!=100) { //Diagnostics Mode
-    if (leg->state == 3) {
-      double Vol = map(wave[j],-1,1,409.6,4096.0-409.6);
-      leg->Vol = Vol;
-    }
+    double Vol = wave[j]*4096.0;
+    leg->Vol = Vol;
+    
 //    if (leg->Dorsi_Setpoint_Ankle==0) {
 //      leg->Vol = leg->Setpoint_Ankle/NomCurrent*2048.0; 
 //    } else {
@@ -62,7 +61,7 @@ void pid(Leg* leg, double input) {
   if (PWM_CONTROL) {
      leg->Vol = leg->Vol*0.8 + 0.1*4096.0;  // Motor drivers need the PWM to be between 10% and 90%
   }
-  analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
+  //analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
 
   j++;
       //double Vol = map(wave[j],(wave[j]*2048 + 2048)*0.8 + 0.1*4096.0;
