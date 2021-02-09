@@ -160,12 +160,11 @@ void receive_and_transmit()
     case 'G':
       digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
       stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
-      
+
+      unsigned long int 
       stepData[0] = stepper->steps; //CFC 1/22/21
       stepData[1] = millis() - stepper->trial_start;
       //stepdata[2] = //XXXXX Will be used to send error information, must update stepData array size in msg_Functions header file
-      send_command_message(stepper->step_flag,stepData,2);
-
       if (check_steps(stepper->kaddr))  //If the exo has saved a step count to EEPROM
       {
         write_steps(read_steps(stepper->kaddr) + stepper->steps, stepper->kaddr); //Write the new total to EEPROM
@@ -176,6 +175,8 @@ void receive_and_transmit()
         write_steps(stepper->steps, stepper->kaddr);
         stepper->steps = 0;
       }
+      send_command_message(stepper->step_flag,stepData,2);
+      Serial.println("Sent Command!");
       break;
 
     case 'H':
