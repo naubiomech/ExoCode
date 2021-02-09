@@ -233,9 +233,9 @@ double read_baseline(int address_baseline_l)
   return val_t;
 }
 
-int check_steps(int addres_steps_1)
+int check_steps(int address_steps_l)
 {
-  byte value = EEPROM.read(address_FSR_l);
+  byte value = EEPROM.read(address_steps_l);
   if (char(value) == 'y') 
   {
     return 1;

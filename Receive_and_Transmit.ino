@@ -164,7 +164,7 @@ void receive_and_transmit()
       stepData[0] = stepper->steps; //CFC 1/22/21
       stepData[1] = millis() - stepper->trial_start;
       //stepdata[2] = //XXXXX Will be used to send error information, must update stepData array size in msg_Functions header file
-      send_command_message(stepper->send_flag,stepData,2);
+      send_command_message(stepper->step_flag,stepData,2);
 
       if (check_steps(stepper->kaddr))  //If the exo has saved a step count to EEPROM
       {
@@ -1098,7 +1098,7 @@ void receive_and_transmit()
         totalSteps[0] = 0;
       }
       send_command_message('0',totalSteps,1);
-      break
+      break;
       
   }
   cmd_from_Gui = 0;
