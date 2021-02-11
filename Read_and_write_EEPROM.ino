@@ -243,11 +243,11 @@ int check_steps(int address_steps_l)
   return 0;
 }
 
-int write_steps(int address_steps_1, int steps_val)
+int write_steps(int address_steps_l, int steps_val)
 {
- EEPROM.put(address_steps_1, 'y');
- address_steps_1 += 1;
- EEPROM.put(address_steps_1, steps_val);
+ EEPROM.put(address_steps_l, 'y');
+ address_steps_l++;
+ EEPROM.put(address_steps_l, steps_val);
  return 1;
 }
 

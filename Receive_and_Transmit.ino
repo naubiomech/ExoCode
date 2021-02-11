@@ -161,22 +161,23 @@ void receive_and_transmit()
       digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
       stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
 
-      unsigned long int 
       stepData[0] = stepper->steps; //CFC 1/22/21
       stepData[1] = millis() - stepper->trial_start;
       //stepdata[2] = //XXXXX Will be used to send error information, must update stepData array size in msg_Functions header file
-      if (check_steps(stepper->kaddr))  //If the exo has saved a step count to EEPROM
+      if (true)//check_steps(stepper->kaddr))  //If the exo has saved a step count to EEPROM
       {
-        write_steps(read_steps(stepper->kaddr) + stepper->steps, stepper->kaddr); //Write the new total to EEPROM
+        Serial.println("Check steps worked!");
+        //write_steps(read_steps(stepper->kaddr) + stepper->steps, stepper->kaddr); //Write the new total to EEPROM
         stepper->steps = 0; //Clear trial step count
       } 
       else 
       {
-        write_steps(stepper->steps, stepper->kaddr);
+        Serial.println("Check steps didnt work.");
+        //write_steps(stepper->steps, stepper->kaddr);
         stepper->steps = 0;
       }
       send_command_message(stepper->step_flag,stepData,2);
-      Serial.println("Sent Command!");
+      Serial.println("Sent Trial Data!");
       break;
 
     case 'H':
@@ -1088,16 +1089,18 @@ void receive_and_transmit()
 
       break;
 
-    case '0':   //CFC 1/22/21
+    case 'Z':   //CFC 1/22/21
       //Case to request exos total step count
-      if (check_steps(stepper->kaddr))
+      if (false)//check_steps(stepper->kaddr))
       {
-        totalSteps[0] = read_steps(stepper->kaddr);
+        //totalSteps[0] = read_steps(stepper->kaddr);
       }
       else
       {
         totalSteps[0] = 0;
       }
+      Serial.print("Total Steps: ");
+      Serial.println(totalSteps[0]);
       send_command_message('0',totalSteps,1);
       break;
       
