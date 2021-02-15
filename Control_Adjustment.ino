@@ -16,8 +16,8 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
   if (p_steps_l->curr_voltage_Heel > p_steps_l->peak_Heel)  //  SS  12/14/2020
     p_steps_l->peak_Heel =  p_steps_l->curr_voltage_Heel;
 
-  if ((p_steps_l->curr_voltage_Toe - p_steps_l->curr_voltage_Heel) > p_steps_l->peak_ToeMinusHeel)  //  SS  12/14/2020
-    p_steps_l->peak_ToeMinusHeel =  p_steps_l->curr_voltage_Toe - p_steps_l->curr_voltage_Heel;
+  if ((p_steps_l->curr_voltage_Heel - p_steps_l->curr_voltage_Toe) > p_steps_l->peak_HeelMinusToe)  //  SS  12/14/2020
+    p_steps_l->peak_HeelMinusToe = p_steps_l->curr_voltage_Heel - p_steps_l->curr_voltage_Toe;
 
   if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.
   {
@@ -29,7 +29,7 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
       p_steps_l->peak = 0;
       p_steps_l->peak_Toe = 0;  //  SS  12/14/2020
       p_steps_l->peak_Heel = 0;  //  SS  12/14/2020
-      p_steps_l->peak_ToeMinusHeel = 0;  //  SS  12/14/2020
+      p_steps_l->peak_HeelMinusToe = 0;  //  SS  12/14/2020
       p_steps_l->flag_start_plant = false;
       //        Serial.println(" BASE Dorsi too short");
       return 0;
@@ -77,7 +77,7 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
           p_steps_l->plant_peak_mean_temp = 0;
           p_steps_l->plant_peak_mean_temp_Toe = 0;  //  SS  12/14/2020
           p_steps_l->plant_peak_mean_temp_Heel = 0;  //  SS  12/14/2020
-          p_steps_l->plant_peak_mean_temp_ToeMinusHeel = 0;  //  SS  12/14/2020
+          p_steps_l->plant_peak_mean_temp_HeelMinusToe = 0;  //  SS  12/14/2020
 
 
           for (int i = 0; i < n_step_baseline - 1; i++)
@@ -97,8 +97,8 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
             p_steps_l->four_step_plant_peak_Heel[i] = p_steps_l->four_step_plant_peak_Heel[i + 1];  //  SS  12/14/2020
             p_steps_l->plant_peak_mean_temp_Heel += p_steps_l->four_step_plant_peak_Heel[i];
 
-            p_steps_l->four_step_plant_peak_ToeMinusHeel[i] = p_steps_l->four_step_plant_peak_ToeMinusHeel[i + 1];  //  SS  12/14/2020
-            p_steps_l->plant_peak_mean_temp_ToeMinusHeel += p_steps_l->four_step_plant_peak_ToeMinusHeel[i];
+            p_steps_l->four_step_plant_peak_HeelMinusToe[i] = p_steps_l->four_step_plant_peak_HeelMinusToe[i + 1];  //  SS  12/14/2020
+            p_steps_l->plant_peak_mean_temp_HeelMinusToe += p_steps_l->four_step_plant_peak_HeelMinusToe[i];
           }
 
           p_steps_l->four_step_dorsi_time[n_step_baseline - 1] = p_steps_l->dorsi_time;
@@ -116,15 +116,15 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
           p_steps_l->four_step_plant_peak_Heel[n_step_baseline - 1] = p_steps_l->peak_Heel;  //  SS  12/14/2020
           p_steps_l->plant_peak_mean_temp_Heel += p_steps_l->peak_Heel;
 
-          p_steps_l->four_step_plant_peak_ToeMinusHeel[n_step_baseline - 1] = p_steps_l->peak_ToeMinusHeel;  //  SS  12/14/2020
-          p_steps_l->plant_peak_mean_temp_ToeMinusHeel += p_steps_l->peak_ToeMinusHeel;
+          p_steps_l->four_step_plant_peak_HeelMinusToe[n_step_baseline - 1] = p_steps_l->peak_HeelMinusToe;  //  SS  12/14/2020
+          p_steps_l->plant_peak_mean_temp_HeelMinusToe += p_steps_l->peak_HeelMinusToe;
 
           p_steps_l->dorsi_mean = (p_steps_l->dorsi_mean) / n_step_baseline;
           p_steps_l->plant_mean = p_steps_l->plant_mean / n_step_baseline;
           p_steps_l->plant_peak_mean_temp = 1.0 * (p_steps_l->plant_peak_mean_temp) / n_step_baseline; //Changed from 0.9 to 1.0 by GO on 4/22/19
           p_steps_l->plant_peak_mean_temp_Toe =  (p_steps_l->plant_peak_mean_temp_Toe) / n_step_baseline;  //  SS  12/14/2020
           p_steps_l->plant_peak_mean_temp_Heel = (p_steps_l->plant_peak_mean_temp_Heel) / n_step_baseline;  //  SS  12/14/2020
-          p_steps_l->plant_peak_mean_temp_ToeMinusHeel = (p_steps_l->plant_peak_mean_temp_ToeMinusHeel) / n_step_baseline;  //  SS  12/14/2020
+          p_steps_l->plant_peak_mean_temp_HeelMinusToe = (p_steps_l->plant_peak_mean_temp_HeelMinusToe) / n_step_baseline;  //  SS  12/14/2020
           
           //HERE
 
@@ -145,7 +145,7 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
 
           p_steps_l->four_step_plant_peak_Heel[p_steps_l->count_plant_base - 2] = p_steps_l->peak_Heel;  //  SS  12/14/2020
 
-          p_steps_l->four_step_plant_peak_ToeMinusHeel[p_steps_l->count_plant_base - 2] = p_steps_l->peak_ToeMinusHeel;  //  SS  12/14/2020
+          p_steps_l->four_step_plant_peak_HeelMinusToe[p_steps_l->count_plant_base - 2] = p_steps_l->peak_HeelMinusToe;  //  SS  12/14/2020
           //          Serial.println("Inside Peak vector ");
 
           for (int i = 0; i < n_step_baseline; i++) {
@@ -163,7 +163,7 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
           leg->baseline_value = p_steps_l->plant_peak_mean;
           leg->baseline_value_Toe = p_steps_l->plant_peak_mean_Toe;  //  SS  12/14/2020 
           leg->baseline_value_Heel = p_steps_l->plant_peak_mean_Heel;  //  SS  12/14/2020 
-          leg->baseline_value_ToeMinusHeel = p_steps_l->plant_peak_mean_ToeMinusHeel;  //  SS  12/14/2020 
+          leg->baseline_value_HeelMinusToe = p_steps_l->plant_peak_mean_HeelMinusToe;  //  SS  12/14/2020 
           
           send_command_message('n', emptyData, 1); //GO 4/23/19 to communicate that baseline is done, the array sent in position two has one position initialized as zero
           return (p_steps_l->count_plant_base);
@@ -179,7 +179,7 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
     p_steps_l->peak = 0;
     p_steps_l->peak_Toe = 0;  //  SS  12/14/2020
     p_steps_l->peak_Heel = 0;  //  SS  12/14/2020
-    p_steps_l->peak_ToeMinusHeel = 0;  //  SS  12/14/2020
+    p_steps_l->peak_HeelMinusToe = 0;  //  SS  12/14/2020
   }
 
 
@@ -191,7 +191,7 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
 //------------------------------------------------------------------------------
 
 
-double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l, double* p_Setpoint_Ankle_l, double * p_Setpoint_Ankle_Pctrl_l, int Control_Mode_l, double prop_gain_l, double taking_baseline_l, double *p_FSR_Ratio, double *p_FSR_Ratio_Toe, double *p_FSR_Ratio_Heel, double *p_FSR_Ratio_ToeMinusHeel, double* p_Max_FSR_Ratio, double* p_Max_FSR_Ratio_Toe, double* p_Max_FSR_Ratio_Heel, double* p_Max_FSR_Ratio_ToeMinusHeel) {
+double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l, double* p_Setpoint_Ankle_l, double * p_Setpoint_Ankle_Pctrl_l, int Control_Mode_l, double prop_gain_l, double taking_baseline_l, double *p_FSR_Ratio, double *p_FSR_Ratio_Toe, double *p_FSR_Ratio_Heel, double *p_FSR_Ratio_HeelMinusToe, double* p_Max_FSR_Ratio, double* p_Max_FSR_Ratio_Toe, double* p_Max_FSR_Ratio_Heel, double* p_Max_FSR_Ratio_HeelMinusToe) {
 
   // Control Mode 2: Balance control
   // Control Mode 3: Joint Moment control, the torque is a percentage of the extimated Ankle moment. The mapping function that estimated the ankle moment use a ratio (p_FSR_Ratio) which depends on the current force of pressure
@@ -268,26 +268,26 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
 
 
-        if (p_steps_l->plant_peak_mean_ToeMinusHeel == 0)  //  SS  12/14/2020
-          *p_FSR_Ratio_ToeMinusHeel = 0;
+        if (p_steps_l->plant_peak_mean_HeelMinusToe == 0)  //  SS  12/14/2020
+          *p_FSR_Ratio_HeelMinusToe = 0;
         else
-          *p_FSR_Ratio_ToeMinusHeel = (p_steps_l->curr_voltage_Toe - p_steps_l->curr_voltage_Heel) / p_steps_l->plant_peak_mean_ToeMinusHeel;  //  SS  12/14/2020
+          *p_FSR_Ratio_HeelMinusToe = (p_steps_l->curr_voltage_Heel - p_steps_l->curr_voltage_Toe) / p_steps_l->plant_peak_mean_HeelMinusToe;  //  SS  12/14/2020
           
-        if (*p_FSR_Ratio_ToeMinusHeel > (*p_Max_FSR_Ratio_ToeMinusHeel))  //  SS  12/14/2020
-          (*p_Max_FSR_Ratio_ToeMinusHeel) = *p_FSR_Ratio_ToeMinusHeel; // update the max fsr Ratio of ToeMinusHeel
+        if (*p_FSR_Ratio_HeelMinusToe > (*p_Max_FSR_Ratio_HeelMinusToe))  //  SS  12/14/2020
+          (*p_Max_FSR_Ratio_HeelMinusToe) = *p_FSR_Ratio_HeelMinusToe; // update the max fsr Ratio of HeelMinusToe
 
 
         // while updating the ratio value still continue to provide the control
         if ((p_steps_l->Setpoint ) > 0) { //depending on the leg the sign changes
 //          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio));
 //          *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
-          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio_ToeMinusHeel));  //  SS  12/14/2020
+          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio_HeelMinusToe));  //  SS  12/14/2020
           *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
         }
         else if ((p_steps_l->Setpoint ) < 0) {
 //          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio));
 //          *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
-          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio_ToeMinusHeel));  //  SS  12/14/2020
+          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio_HeelMinusToe));  //  SS  12/14/2020
           *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
         } else {
           *p_Setpoint_Ankle_Pctrl_l = 0;
@@ -315,9 +315,9 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     leg->baseline_value_Heel = p_steps_l->plant_peak_mean_Heel;
   }
 
-  if (taking_baseline_l == 0 && p_steps_l->plant_peak_mean_temp_ToeMinusHeel != p_steps_l->plant_peak_mean_ToeMinusHeel) {  //  SS  12/14/2020
-    p_steps_l->plant_peak_mean_ToeMinusHeel = p_steps_l->plant_peak_mean_temp_ToeMinusHeel;
-    leg->baseline_value_ToeMinusHeel = p_steps_l->plant_peak_mean_ToeMinusHeel;
+  if (taking_baseline_l == 0 && p_steps_l->plant_peak_mean_temp_HeelMinusToe != p_steps_l->plant_peak_mean_HeelMinusToe) {  //  SS  12/14/2020
+    p_steps_l->plant_peak_mean_HeelMinusToe = p_steps_l->plant_peak_mean_temp_HeelMinusToe;
+    leg->baseline_value_HeelMinusToe = p_steps_l->plant_peak_mean_HeelMinusToe;
   }
 
   // if you transit from state 1 to state 3 dorsiflexion is completed and start plantarflexion
@@ -360,16 +360,16 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     if (*p_FSR_Ratio_Heel > *p_Max_FSR_Ratio_Heel)  //  SS  12/14/2020
       (*p_Max_FSR_Ratio_Heel) = *p_FSR_Ratio_Heel;
 
-    if ((p_steps_l->curr_voltage_Toe - p_steps_l->curr_voltage_Heel) > p_steps_l->peak_ToeMinusHeel)  //  SS  12/14/2020
-      p_steps_l->peak_ToeMinusHeel =  p_steps_l->curr_voltage_Toe - p_steps_l->curr_voltage_Heel ;
+    if ((p_steps_l->curr_voltage_Heel - p_steps_l->curr_voltage_Toe) > p_steps_l->peak_HeelMinusToe)  //  SS  12/14/2020
+      p_steps_l->peak_HeelMinusToe =  p_steps_l->curr_voltage_Heel - p_steps_l->curr_voltage_Toe;
 
-    if (p_steps_l->plant_peak_mean_ToeMinusHeel == 0)  //  SS  12/14/2020
-      *p_FSR_Ratio_ToeMinusHeel = 0;
+    if (p_steps_l->plant_peak_mean_HeelMinusToe == 0)  //  SS  12/14/2020
+      *p_FSR_Ratio_HeelMinusToe = 0;
     else
-      *p_FSR_Ratio_ToeMinusHeel = (p_steps_l->curr_voltage_Toe - p_steps_l->curr_voltage_Heel) / p_steps_l->plant_peak_mean_ToeMinusHeel; 
+      *p_FSR_Ratio_HeelMinusToe = (p_steps_l->curr_voltage_Heel - p_steps_l->curr_voltage_Toe) / p_steps_l->plant_peak_mean_HeelMinusToe; 
       
-    if (*p_FSR_Ratio_ToeMinusHeel > (*p_Max_FSR_Ratio_ToeMinusHeel))  //  SS  12/14/2020
-      (*p_Max_FSR_Ratio_ToeMinusHeel) = *p_FSR_Ratio_ToeMinusHeel;
+    if (*p_FSR_Ratio_HeelMinusToe > (*p_Max_FSR_Ratio_HeelMinusToe))  //  SS  12/14/2020
+      (*p_Max_FSR_Ratio_HeelMinusToe) = *p_FSR_Ratio_HeelMinusToe;
 
 
 
@@ -405,7 +405,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     else if (Control_Mode_l == 4 || Control_Mode_l == 6)  {
       if ((p_steps_l->Setpoint ) > 0) {
 //        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio)); // the difference here is that we do it as a function of the FSR calibration
-        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio_ToeMinusHeel));  //  SS  12/14/2020
+        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio_HeelMinusToe));  //  SS  12/14/2020
         *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
         if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
           leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
@@ -413,7 +413,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       }
       else if ((p_steps_l->Setpoint ) < 0) {
 //        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio)); // the difference here is that we do it as a function of the FSR calibration
-        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio_ToeMinusHeel));  //  SS  12/14/2020
+        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (*p_FSR_Ratio_HeelMinusToe));  //  SS  12/14/2020
         *p_Setpoint_Ankle_Pctrl_l = min(Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
         if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
           leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
@@ -502,11 +502,11 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     p_steps_l->peak = 0;
     p_steps_l->peak_Toe = 0;  //  SS  12/14/2020
     p_steps_l->peak_Heel = 0;  //  SS  12/14/2020
-    p_steps_l->peak_ToeMinusHeel = 0;  //  SS  12/14/2020
+    p_steps_l->peak_HeelMinusToe = 0;  //  SS  12/14/2020
     p_Max_FSR_Ratio = 0;
     p_Max_FSR_Ratio_Toe = 0;  //  SS  12/14/2020
     p_Max_FSR_Ratio_Heel = 0;  //  SS  12/14/2020
-    p_Max_FSR_Ratio_ToeMinusHeel = 0;  //  SS  12/14/2020
+    p_Max_FSR_Ratio_HeelMinusToe = 0;  //  SS  12/14/2020
     *p_Setpoint_Ankle_Pctrl_l = New_PID_Setpoint_l; //Dorsiflexion setpoint GO 4/22/19
     if (leg->auto_KF_update == 0) {
       leg->MaxPropSetpoint = 0;
