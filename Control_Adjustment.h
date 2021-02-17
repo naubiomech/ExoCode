@@ -33,21 +33,19 @@ typedef struct {
   double perc_l = 0.5;
   double fsr_percent_thresh_Toe = 0.9;
   double plant_peak_mean;
-  double plant_peak_mean_Toe;  //  SS  12/14/2020
-  double plant_peak_mean_Heel;  //  SS  12/14/2020
-  double plant_peak_mean_HeelMinusToe;  //  SS  12/14/2020
   double four_step_plant_peak[n_step_baseline] = {0};
-  double four_step_plant_peak_Toe[n_step_baseline] = {0};  //  SS  12/14/2020
-  double four_step_plant_peak_Heel[n_step_baseline] = {0};  //  SS  12/14/2020
-  double four_step_plant_peak_HeelMinusToe[n_step_baseline] = {0};  //  SS  12/14/2020
   double plant_peak_mean_temp;
-  double plant_peak_mean_temp_Toe;  //  SS  12/14/2020
-  double plant_peak_mean_temp_Heel;  //  SS  12/14/2020
-  double plant_peak_mean_temp_HeelMinusToe;  //  SS  12/14/2020
   double peak;
-  double peak_Toe;  //  SS  12/14/2020
-  double peak_Heel;  //  SS  12/14/2020
-  double peak_HeelMinusToe;  //  SS  12/14/2020
+    //  SS  12/14/2020
+  double plant_peak_mean_Heel;
+  double four_step_plant_peak_Heel[n_step_baseline] = {0};
+  double plant_peak_mean_temp_Heel;
+  double peak_Heel;
+  double plant_peak_mean_Toe;
+  double four_step_plant_peak_Toe[n_step_baseline] = {0};
+  double plant_peak_mean_temp_Toe;
+  double peak_Toe;
+  
   double fsr_Toe;
   double torque_average;
 } steps;

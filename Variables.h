@@ -33,7 +33,7 @@ bool FLAG_PID_VALS = false;
 
 
 // Variables depending on the sensor placement that are used in the state machine
-bool FLAG_ONE_TOE_SENSOR = false;
+bool FLAG_ONE_TOE_SENSOR = true;
 bool OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
 
 //Variables and flags for Balance control
@@ -112,4 +112,4 @@ int ShuntLSB = 0.01;          // mV. This is the default multiplier for the shun
 int BusLSB = 4;               // mV. This is the multiplier for the bus (battery) voltage reading from the INA219.
 int Cal = 0x5000;             // Calibration value in hex. Cal = 0.04096/(CurrentLSB*ShuntResistance). Shunt resistance on Rev3/4 is 2mOhm.
 
-double SwingPercentage = 20; 
+double SwingPercentage = 20; // SS  2/17/2021

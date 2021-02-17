@@ -235,17 +235,16 @@ void receive_and_transmit()
       left_leg->pid.SetTunings(left_leg->kp, left_leg->ki, left_leg->kd);
       right_leg->pid.SetTunings(right_leg->kp, right_leg->ki, right_leg->kd);
       break;
-      
-    case 'm':
+
+    case 'm':  //  SS  12/14/2020
       receiveVals(8);               
       memcpy(&SwingPercentage, holdOnPoint, 8);
       break;
     
-    case '-':
+    case '-':  //  SS  12/14/2020
       *(data_to_send_point) = SwingPercentage;
       send_command_message('-', data_to_send_point, 1);     //MATLAB is expecting to recieve the Subject's Parameters
       break;
-    
 
     case 'N':
       Serial.println("I'm here");
@@ -309,11 +308,27 @@ void receive_and_transmit()
       // add baseline
       left_leg->p_steps->plant_peak_mean_temp = read_baseline(left_leg->baseline_address);
       right_leg->p_steps->plant_peak_mean_temp = read_baseline(right_leg->baseline_address);
+      left_leg->p_steps->plant_peak_mean_temp_Heel = read_baseline(left_leg->baseline_address); //  SS  2/17/2021
+      right_leg->p_steps->plant_peak_mean_temp_Heel = read_baseline(right_leg->baseline_address); //  SS  2/17/2021
+      left_leg->p_steps->plant_peak_mean_temp_Toe = read_baseline(left_leg->baseline_address); //  SS  2/17/2021
+      right_leg->p_steps->plant_peak_mean_temp_Toe = read_baseline(right_leg->baseline_address); //  SS  2/17/2021
+      
       left_leg->p_steps->plant_peak_mean = left_leg->p_steps->plant_peak_mean;
       right_leg->p_steps->plant_peak_mean = right_leg->p_steps->plant_peak_mean;
+      left_leg->p_steps->plant_peak_mean_Heel = left_leg->p_steps->plant_peak_mean_Heel; //  SS  2/17/2021
+      right_leg->p_steps->plant_peak_mean_Heel = right_leg->p_steps->plant_peak_mean_Heel; //  SS  2/17/2021
+      left_leg->p_steps->plant_peak_mean_Toe = left_leg->p_steps->plant_peak_mean_Toe; //  SS  2/17/2021
+      right_leg->p_steps->plant_peak_mean_Toe = right_leg->p_steps->plant_peak_mean_Toe; //  SS  2/17/2021
+      
       left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
       right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
+      left_leg->baseline_value_Heel = left_leg->p_steps->plant_peak_mean_Heel; //  SS  2/17/2021
+      right_leg->baseline_value_Heel = right_leg->p_steps->plant_peak_mean_Heel; //  SS  2/17/2021
+      left_leg->baseline_value_Toe = left_leg->p_steps->plant_peak_mean_Toe; //  SS  2/17/2021
+      right_leg->baseline_value_Toe = right_leg->p_steps->plant_peak_mean_Toe; //  SS  2/17/2021
 
+      left_leg->ankle_baseline_value = left_leg->baseline_value_Heel;  //  SS  2/17/2021
+      right_leg->ankle_baseline_value = right_leg->baseline_value_Heel;  //  SS  2/17/2021
       break;
 
     case '>':
@@ -369,6 +384,10 @@ void receive_and_transmit()
       memcpy(&left_leg->KF, holdOnPoint, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       memcpy(&right_leg->KF, holdOnPoint + 8, 8);
       break;
+
+//    case '-':
+//
+//      break;
 
 
     case'`':  // TN 7/3/19
@@ -579,10 +598,10 @@ void receive_and_transmit()
         write_FSR_values(right_leg->address_FSR, right_leg->fsr_Toe_peak_ref);
         write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Heel_peak_ref);
 
-        write_baseline(left_leg->baseline_address, left_leg->baseline_value);
-        Serial.println(left_leg->baseline_value);
-        write_baseline(right_leg->baseline_address, right_leg->baseline_value);
-        Serial.println(right_leg->baseline_value);
+        write_baseline(left_leg->baseline_address, left_leg->ankle_baseline_value); //  SS  2/17/2021
+        Serial.println(left_leg->ankle_baseline_value); //  SS  2/17/2021
+        write_baseline(right_leg->baseline_address, right_leg->ankle_baseline_value); //  SS  2/17/2021
+        Serial.println(right_leg->ankle_baseline_value); //  SS  2/17/2021
 
         write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
         write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
@@ -742,8 +761,10 @@ void receive_and_transmit()
       else {
         left_leg->baseline_value = left_leg->p_steps->plant_peak_mean;
         right_leg->baseline_value = right_leg->p_steps->plant_peak_mean;
-        *(data_to_send_point) = left_leg->p_steps->plant_peak_mean;
-        *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
+        left_leg->ankle_baseline_value = left_leg->p_steps->plant_peak_mean_Heel; //  SS  2/17/2021
+        right_leg->ankle_baseline_value = right_leg->p_steps->plant_peak_mean_Heel; //  SS  2/17/2021
+        *(data_to_send_point) = left_leg->ankle_baseline_value; //  SS  2/17/2021
+        *(data_to_send_point + 1) = right_leg->ankle_baseline_value; //  SS  2/17/2021
         send_command_message('B', data_to_send_point, 2);
       }
 

@@ -389,8 +389,8 @@ void rotate_motor() {
 
   if (stream == 1)
   {
-    pid(left_leg, left_leg->Average_Trq);
-    pid(right_leg, right_leg->Average_Trq);
+    pid(left_leg, -left_leg->Average_Trq);
+    pid(right_leg, -right_leg->Average_Trq);
 
     
     if (streamTimerCount >= streamTimerCountNum) // every streamTimerCountNum*2ms
@@ -455,7 +455,7 @@ void rotate_motor() {
       if (left_leg->state_swing_start_time == 0) 
         left_leg->state_swing_duration = 1000; 
     }
-    
+
         if ((left_leg->state == 3) && ((left_leg->old_state == 1) || (left_leg->old_state == 2))) {   // TN 9/26/19
       left_leg->state_3_start_time = millis();
     }
@@ -485,12 +485,14 @@ void rotate_motor() {
     if ((right_leg->state == 5) && (right_leg->old_state == 2 || right_leg->old_state == 3 || right_leg->old_state == 4)) {// SS 11/25/2020
       right_leg->state_swing_start_time = millis();
     }
-    if ((right_leg->state == 2 || right_leg->state == 3 || right_leg->state == 4) && (right_leg->old_state == 1  || right_leg->state == 5)) {// SS 11/25/2020
+    if ((right_leg->state == 2 || right_leg->state == 3 || right_leg->state == 4) && (right_leg->old_state == 1 || right_leg->old_state == 5)) {// SS 11/25/2020
       right_leg->state_swing_stop_time = millis();
     }
     if (right_leg->state_swing_stop_time > right_leg->state_swing_start_time) {// SS 11/25/2020
+      if ((2*right_leg->state_swing_duration) < (right_leg->state_swing_stop_time - right_leg->state_swing_start_time)) //if current state swing is more than 2 times of previous swing make it equal to 1000.
+        right_leg->state_swing_start_time = right_leg->state_swing_stop_time-1000; 
       right_leg->state_swing_duration = right_leg->state_swing_stop_time - right_leg->state_swing_start_time;
-      if (right_leg->state_swing_start_time == 0)
+      if (right_leg->state_swing_start_time == 0) 
         right_leg->state_swing_duration = 1000; 
     }
     
@@ -578,7 +580,7 @@ void rotate_motor() {
 
 
 
-    if (Control_Mode == 2 || Control_Mode == 100) {}
+    if (Control_Mode == 2) {}
     else {
       set_2_zero_if_steady_state();
     }
@@ -586,13 +588,14 @@ void rotate_motor() {
     left_leg->N3 = Control_Adjustment(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
                                       left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle,
                                       left_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, left_leg->Prop_Gain,
-                                      left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->FSR_Ratio_Toe, &left_leg->FSR_Ratio_Heel, &left_leg->FSR_Ratio_HeelMinusToe,
-                                      &left_leg->Max_FSR_Ratio, &left_leg->Max_FSR_Ratio_Toe, &left_leg->Max_FSR_Ratio_Heel, &left_leg->Max_FSR_Ratio_HeelMinusToe);
+                                      left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->Max_FSR_Ratio,
+                                      &left_leg->FSR_Ratio_Heel, &left_leg->Max_FSR_Ratio_Heel, &left_leg->FSR_Ratio_Toe, &left_leg->Max_FSR_Ratio_Toe);
     right_leg->N3 = Control_Adjustment(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps,
                                        right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle,
                                        right_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, right_leg->Prop_Gain,
-                                       right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->FSR_Ratio_Toe, &right_leg->FSR_Ratio_Heel, &right_leg->FSR_Ratio_HeelMinusToe,
-                                      &right_leg->Max_FSR_Ratio, &right_leg->Max_FSR_Ratio_Toe, &right_leg->Max_FSR_Ratio_Heel, &right_leg->Max_FSR_Ratio_HeelMinusToe);
+                                       right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio,
+                                       &right_leg->FSR_Ratio_Heel, &right_leg->Max_FSR_Ratio_Heel, &right_leg->FSR_Ratio_Toe, &right_leg->Max_FSR_Ratio_Toe);
+
   }// end if stream==1
 }
 

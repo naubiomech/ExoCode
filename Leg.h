@@ -81,13 +81,11 @@ struct Leg {
 
   // Calibrate_and_Read_Sensors.h
   double FSR_Ratio;
-  double FSR_Ratio_Toe;
-  double FSR_Ratio_Heel;
-  double FSR_Ratio_HeelMinusToe;
   double Max_FSR_Ratio;
-  double Max_FSR_Ratio_Toe;
-  double Max_FSR_Ratio_Heel;
-  double Max_FSR_Ratio_HeelMinusToe;
+  double FSR_Ratio_Heel;  //  SS  12/14/2020
+  double Max_FSR_Ratio_Heel;  //  SS  12/14/2020
+  double FSR_Ratio_Toe;  //  SS  12/14/2020
+  double Max_FSR_Ratio_Toe;  //  SS  12/14/2020
 
   // Combined_FSR.h
   double fsr_Combined_peak_ref;
@@ -116,9 +114,9 @@ struct Leg {
   int address_FSR;
   int baseline_address;
   double baseline_value;
-  double baseline_value_Toe; //  SS  12/14/2020
-  double baseline_value_Heel; //  SS  12/14/2020
-  double baseline_value_HeelMinusToe; //  SS  12/14/2020
+  double baseline_value_Heel;  //  SS  12/14/2020
+  double baseline_value_Toe;  //  SS  12/14/2020
+  double ankle_baseline_value;  //  SS  2/17/2021
 
   // PID_and_Ctrl_Parameters.h
   double torque_calibration_value = 0;
@@ -218,7 +216,7 @@ struct Leg {
   int state_count_21 = 0;
   int state_count_23 = 0;
   int state_count_32 = 0;
-  
+  //  SS  12/14/2020
   int state_count_14 = 0;
   int state_count_24 = 0;
   int state_count_25 = 0; 
@@ -236,7 +234,6 @@ struct Leg {
 
   double state_3_start_time = 0;
   double state_1_start_time = 0;
-  double state_swing_start_time = 0;
   double start_from_1 = 0;
   double start_from_3 = 0;
   double start_time = 0;
@@ -244,8 +241,9 @@ struct Leg {
   double state_3_duration = 0;
   double state_1_stop_time = 0;
   double state_1_duration = 0;
-  double state_swing_stop_time = 0;
-  double state_swing_duration = 0;
+  double state_swing_start_time = 0; //  SS  12/14/2020
+  double state_swing_stop_time = 0; //  SS  12/14/2020
+  double state_swing_duration = 0; //  SS  12/14/2020
   
   double Heel_Pos = -0.07;
   double Toe_Pos = 0.20;
