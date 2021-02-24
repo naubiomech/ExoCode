@@ -71,6 +71,11 @@ struct Leg {
 
   double Dynamic_multiplier, Steady_multiplier;
 
+  //Test parameters
+  double Test1 = -1;
+  double Test2 = -1;
+  int Counter = 1;
+  
   // Auto_KF.h
   double ERR;
   double Max_Measured_Torque;

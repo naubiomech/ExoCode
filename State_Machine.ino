@@ -1066,7 +1066,6 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
           
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
             leg->New_PID_Setpoint = 0;
             leg->PID_Setpoint = 0;
 
@@ -1103,12 +1102,17 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_13 >= state_counter_th)
         {
-          
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
+            if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle)
+              leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+            else
+              leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
 
-            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + ((leg->Setpoint_Ankle) - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps);
-          leg->PID_Setpoint = leg->Setpoint_Ankle;
+            if (Flag_HLO && (leg->Previous_T_Opt <= leg->T_Opt))
+              leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps;
+            else if (Flag_HLO && (leg->Previous_T_Opt > leg->T_Opt))
+              leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt) * leg->coef_in_3_steps;
           
           leg->state_old = leg->state;
           leg->state = 3;
@@ -1146,9 +1150,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
           
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
             leg->New_PID_Setpoint = (leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps)/2;
-          leg->PID_Setpoint = leg->Dorsi_Setpoint_Ankle/2;
 
           leg->state_old = leg->state;
           leg->state = 4;
@@ -1197,10 +1199,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         if (leg->state_count_21 >= 4 * state_counter_th) 
         {
             leg->sigm_done = true;
-            leg->PID_Setpoint = 0;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
-          leg->New_PID_Setpoint = 0;
+            leg->New_PID_Setpoint = 0;
+            leg->PID_Setpoint = 0;
          
           leg->state_old = leg->state;
           leg->state = 1;
@@ -1233,9 +1234,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
             leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + ((leg->Setpoint_Ankle) - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps);
-          leg->PID_Setpoint = leg->Setpoint_Ankle;
           
           leg->state_old = leg->state;
           leg->state = 3;
@@ -1269,10 +1268,8 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
-           leg->New_PID_Setpoint = (leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps)/2;
-          leg->PID_Setpoint = leg->Dorsi_Setpoint_Ankle/2;
-         
+            leg->New_PID_Setpoint = (leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps)/2;
+          
           leg->state_old = leg->state;
           leg->state = 4;
           leg->state_count_12 = 0;
@@ -1307,9 +1304,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
-             leg->New_PID_Setpoint = (leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps);
-          leg->PID_Setpoint = leg->Dorsi_Setpoint_Ankle;
+            leg->New_PID_Setpoint = (leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps);
           
           
           leg->state_old = leg->state;
@@ -1359,9 +1354,8 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
-          leg->New_PID_Setpoint = 0;
-          leg->PID_Setpoint = 0;
+            leg->New_PID_Setpoint = 0;
+            leg->PID_Setpoint = 0;
          
           leg->state_old = leg->state;
           leg->state = 1;
@@ -1396,9 +1390,8 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
             leg->New_PID_Setpoint = 0;
-          leg->PID_Setpoint = 0;
+            leg->PID_Setpoint = 0;
             
           leg->state_old = leg->state;
           leg->state = 2;
@@ -1434,10 +1427,8 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
-           leg->New_PID_Setpoint = (leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps)/2;
-          leg->PID_Setpoint = leg->Dorsi_Setpoint_Ankle/2;
-          
+            leg->New_PID_Setpoint = (leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps)/2;
+//            leg->Old_PID_Setpoint = 0.01 * leg->New_PID_Setpoint;
           leg->state_old = leg->state;
           leg->state = 4;
           leg->state_count_12 = 0;
@@ -1474,9 +1465,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
-           leg->New_PID_Setpoint = (leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps);
-          leg->PID_Setpoint = leg->Dorsi_Setpoint_Ankle;
+            leg->New_PID_Setpoint = (leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps);
           
           leg->state_old = leg->state;
           leg->state = 5;
@@ -1501,7 +1490,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
           leg->state_count_54 = 0;
         }
       }
-
+    break;
 
     case 4: //Late Stance
       if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
@@ -1525,9 +1514,8 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-            
-          leg->New_PID_Setpoint = 0;
-          leg->PID_Setpoint = 0;
+            leg->New_PID_Setpoint = 0;
+            leg->PID_Setpoint = 0;
           
           leg->state_old = leg->state;
           leg->state = 1;
@@ -1562,9 +1550,8 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-            
             leg->New_PID_Setpoint = 0;
-          leg->PID_Setpoint = 0;
+            leg->PID_Setpoint = 0;
           
           leg->state_old = leg->state;
           leg->state = 2;
@@ -1598,11 +1585,17 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_43 >= state_counter_th)
         {
-            leg->sigm_done = true;
+           leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
+            if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle)
+              leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+            else
+              leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
 
-            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps);
-          leg->PID_Setpoint = leg->Setpoint_Ankle;
+            if (Flag_HLO && (leg->Previous_T_Opt <= leg->T_Opt))
+              leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps;
+            else if (Flag_HLO && (leg->Previous_T_Opt > leg->T_Opt))
+              leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt) * leg->coef_in_3_steps;
           
           leg->state_old = leg->state;
           leg->state = 3;
@@ -1640,9 +1633,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
             leg->New_PID_Setpoint = (leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps);
-          leg->PID_Setpoint = leg->Dorsi_Setpoint_Ankle;
           
           leg->state_old = leg->state;
           leg->state = 5;
@@ -1667,7 +1658,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
           leg->state_count_54 = 0;
         }
       }
-
+    break;
 
     case 5: //Early Swing
       leg->state_5_counter++;
@@ -1691,9 +1682,8 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
-          leg->New_PID_Setpoint = 0;
-          leg->PID_Setpoint = 0;
+            leg->New_PID_Setpoint = 0;
+            leg->PID_Setpoint = 0;
           
           leg->state_old = leg->state;
           leg->state = 1;
@@ -1728,9 +1718,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-            
             leg->New_PID_Setpoint = 0;
-          leg->PID_Setpoint = 0;
 
             
           leg->state_old = leg->state;
@@ -1767,9 +1755,15 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
+            if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle)
+              leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
+            else
+              leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
 
-            leg->New_PID_Setpoint = (leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps);
-          leg->PID_Setpoint = leg->Setpoint_Ankle; 
+            if (Flag_HLO && (leg->Previous_T_Opt <= leg->T_Opt))
+              leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps;
+            else if (Flag_HLO && (leg->Previous_T_Opt > leg->T_Opt))
+              leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt) * leg->coef_in_3_steps;
            
           leg->state_old = leg->state;
           leg->state = 3;
@@ -1805,9 +1799,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
-         
             leg->New_PID_Setpoint = (leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps)/2;
-          leg->PID_Setpoint = leg->Dorsi_Setpoint_Ankle/2;
           
           leg->state_old = leg->state;
           leg->state = 4;
@@ -1842,6 +1834,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
 
     if (N1 < 1 || N2 < 1 || N3 < 1) {
       leg->PID_Setpoint = leg->New_PID_Setpoint;
+    }else if ((leg->state == 3) || (leg->state == 4) || (leg->state == 5)){
+      // Create the smoothed reference and call the PID
+      PID_Sigm_Curve(leg);
     }
 
 }// end function
