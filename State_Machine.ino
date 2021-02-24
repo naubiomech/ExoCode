@@ -845,6 +845,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
       // When you're for at least 3 seconds in the same state, the torque reference is set to zero
       leg->state_5_counter++;
       if (leg->set_2_zero == 1) {
+        leg->Counter++;
         leg->set_2_zero = 0;
         leg->One_time_set_2_zero = 1;
       }
@@ -925,9 +926,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
         {
           leg->sigm_done = true;
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
-
-          leg->New_PID_Setpoint = (leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps);
-          leg->PID_Setpoint = leg->Dorsi_Setpoint_Ankle;
+          leg->New_PID_Setpoint = leg->Dorsi_Setpoint_Ankle;//(leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps);
           
           leg->state_old = leg->state;
           leg->state = 5;
@@ -960,14 +959,9 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
         leg->state_5_counter++;
         if (leg->state_count_51 >= state_counter_th)
         {
-          if (leg->Previous_Dorsi_Setpoint_Ankle <= leg->Dorsi_Setpoint_Ankle) { //Increment Dorsi Setpoint for Bang-Bang & Proportional GO - 5/19/19
+          leg->Old_PID_Setpoint = leg->PID_Setpoint;
             leg->New_PID_Setpoint = 0;
-          } else {
-            leg->New_PID_Setpoint = 0;
-          }
-          if (leg->New_PID_Setpoint == 0) { //GO 4/22/19
-            leg->Previous_Dorsi_Setpoint_Ankle = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
-          }
+            leg->PID_Setpoint = 0;
           
           leg->state_old = leg->state;
           leg->state = 1;
@@ -990,9 +984,9 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
             } else {
               leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl - (leg->Previous_Setpoint_Ankle_Pctrl - leg->Setpoint_Ankle) * leg->coef_in_3_steps; //Decrement when the new setpoint is lower than the old
             }
-            if (leg->p_steps->Setpoint == 0) {
-              leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
-            }
+//            if (leg->p_steps->Setpoint == 0) {
+//              leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+//            }
 
           leg->state_old = leg->state;
           leg->state = 3;
@@ -1017,30 +1011,12 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
     if (N1 < 1 || N2 < 1 || N3 < 1) {
       leg->PID_Setpoint = leg->New_PID_Setpoint;
     }
-    else {
-      // Create the smoothed reference and call the PID
-//      PID_Sigm_Curve(leg);
-    }
-  }
-
-  
-
-  if (Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) { //GO 5/19/19
-    if (leg->state == 1) {
-      leg->PID_Setpoint = leg->New_PID_Setpoint; //Activate Dorsiflexion during state 1
-    }
-  }
-  else {
-
-    if (N1 < 1 || N2 < 1 || N3 < 1) {
-      leg->PID_Setpoint = leg->New_PID_Setpoint;
-    }
-    else {
+    else if (leg->state == 5){
       // Create the smoothed reference and call the PID
       PID_Sigm_Curve(leg);
     }
-
   }
+
 }// end function
 
 //-------------------------------------------------------------------------------------------------------------
@@ -1759,11 +1735,6 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
               leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
             else
               leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle - (leg->Previous_Setpoint_Ankle - leg->Setpoint_Ankle) * leg->coef_in_3_steps;
-
-            if (Flag_HLO && (leg->Previous_T_Opt <= leg->T_Opt))
-              leg->T_Opt_Setpoint = leg->Previous_T_Opt + (leg->T_Opt - leg->Previous_T_Opt) * leg->coef_in_3_steps;
-            else if (Flag_HLO && (leg->Previous_T_Opt > leg->T_Opt))
-              leg->T_Opt_Setpoint = leg->Previous_T_Opt - (leg->Previous_T_Opt - leg->T_Opt) * leg->coef_in_3_steps;
            
           leg->state_old = leg->state;
           leg->state = 3;
