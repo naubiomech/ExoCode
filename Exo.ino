@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD_REV4
+#define BOARD_VERSION DUAL_BOARD_REV6
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -109,15 +109,13 @@ void setup()
   //Serial.println("Wrote LED_High");
 
   // Initialize power monitor settings
-  #if BOARD_VERSION == DUAL_BOARD_REV3
+  #if BOARD_VERSION == DUAL_BOARD_REV6
     #define WireObj Wire1
   #elif BOARD_VERSION == DUAL_BOARD_REV4
     #define WireObj Wire
   #endif  
-  pinMode(PWR_ADR_0, OUTPUT);
-  pinMode(PWR_ADR_1, OUTPUT);
-  digitalWrite(PWR_ADR_0, LOW); 
-  digitalWrite(PWR_ADR_1, LOW); //Setting both address pins to GND defines the slave address
+  //digitalWrite(PWR_ADR_0, LOW); 
+  //digitalWrite(PWR_ADR_1, LOW); //Setting both address pins to GND defines the slave address
   WireObj.begin(); //Initialize the I2C protocol on SDA1/SCL1 for Teensy 4.1, or SDA0/SCL0 on Teensy 3.6
   WireObj.beginTransmission(INA219_ADR); //Start talking to the INA219
   WireObj.write(INA219_CAL); //Write the target as the calibration register
