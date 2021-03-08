@@ -11,7 +11,6 @@
 // In case of too long steady state the torque reference is set to zero
 // In case of new torque reference the torque amount is provided gradually as function of the steps.
 //
-// Ex: Torque ref = 10N
 // 1 step = 0N
 // 2 steps = 2N
 // 3 steps = 4N
@@ -25,59 +24,43 @@
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
+#include <ArduinoBLE.h>
+#include <elapsedMillis.h>
+#include <PID_v2.h>
+#include <Wire.h>
+
 #include "Parameters.h"
 #include "Board.h"
 #include "Leg.h"
-#include <elapsedMillis.h>
-#include <EEPROM.h>
-#include "TimerOne.h"
-#include <PID_v2.h>
-#include <SoftwareSerial.h>
-//#include <NewSoftSerial.h>
 #include "Reference_ADJ.h"
 #include "Msg_functions.h"
 #include "Auto_KF.h"
-#include <Metro.h>
-#include <Wire.h>
 #include "Variables.h"
-#include "Board.h"
 #include "resetMotorIfError.h"
 #include "ATP.h"
 #include "Trial_Data.h"
-bool iOS_Flag = 1;
-int streamTimerCountNum = 0;
+
+
+//#include <EEPROM.h>         //Cant Use
+//#include "TimerOne.h"       //Cant Use
+//#include <SoftwareSerial.h> //Cant Use
+//#include <Metro.h>          //Cant Use
+
+bool DEBUG = true;
 //----------------------------------------------------------------------------------
 
 
 // Initialize the system
 void setup()
 {
-  // set the interrupt timer
-  Serial.println("Started");
-  #if BOARD_VERSION == DUAL_BOARD_REV4  //Use timer interrupts for teensy 3.6
-    Timer1.initialize(2000);            // initialize timer1, and set a 2 ms period *note this is 2k microseconds*
-    Timer1.attachInterrupt(callback);   // attaches callback() as a timer overflow interrupt
-  #endif
+  if (DEBUG) {Serial.println("Started");}
 
-  // enable bluetooth
-  #if BOARD_VERSION == DUAL_BOARD_REV3
-    #define bluetooth Serial8
-  #elif BOARD_VERSION == DUAL_BOARD_REV4
-    #define bluetooth Serial4
-  #endif
-  if (iOS_Flag == true) 
-  {
-    bluetooth.begin(9600);
-    Serial.begin(9600);
-    streamTimerCountNum = 25;
-  }
-  else if (!iOS_Flag) 
-  {
-    bluetooth.begin(115200);
-    Serial.begin(115200);
-    streamTimerCountNum = 5;
-  }
-  
+  //Nano's internal BLE module
+  setupBLE();
+
+  //Start Serial
+  Serial.begin(2000000);
+
   //set the resolution
   analogWriteResolution(12);                                          //change resolution to 12 bits
   analogReadResolution(12);                                           //ditto
@@ -86,56 +69,36 @@ void setup()
   initialize_left_leg(left_leg);
   initialize_right_leg(right_leg);
 
-  // set the led
-  pinMode(LED_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
-  //Serial.println("LED SET");
+  //LED Stuff if Desired
 
   // set pin mode for motor pin
   pinMode(onoff, OUTPUT); //Enable disable the motors
   digitalWrite(onoff, LOW);
-  //Serial.println("ONOFF SET");
-
-//  #if BOARD_VERSION == DUAL_BOARD_REV4
-//    pinMode(TRIGGER_PIN, OUTPUT); // Enable the trigger //SS  6/23/2020
-//    digitalWrite(TRIGGER_PIN, HIGH); //SS  6/23/2020
-//  #endif
-
-  // Fast torque calibration
-  //torque_calibration();
-  //Serial.println("Torque Cal Done");
-
-  digitalWrite(LED_PIN, HIGH);
-  //Serial.println("Wrote LED_High");
 
   // Initialize power monitor settings
-  #if BOARD_VERSION == DUAL_BOARD_REV6
-    #define WireObj Wire1
-  #elif BOARD_VERSION == DUAL_BOARD_REV4
-    #define WireObj Wire
-  #endif  
-  //digitalWrite(PWR_ADR_0, LOW); 
-  //digitalWrite(PWR_ADR_1, LOW); //Setting both address pins to GND defines the slave address
+  #define WireObj Wire
+  //Setting both address pins to GND defines the slave address
   WireObj.begin(); //Initialize the I2C protocol on SDA1/SCL1 for Teensy 4.1, or SDA0/SCL0 on Teensy 3.6
   WireObj.beginTransmission(INA219_ADR); //Start talking to the INA219
   WireObj.write(INA219_CAL); //Write the target as the calibration register
   WireObj.write(Cal);        //Write the calibration value to the calibration register
   WireObj.endTransmission(); //End the transmission and calibration
   delay(100);
-  
+
   int startVolt = readBatteryVoltage(); //Read the startup battery voltage
   Serial.println(startVolt);
   batteryData[0] = startVolt;
-  send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware
+  send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
 
-  Serial.println("Setup complete");
-  
+  if (DEBUG) {Serial.println("Setup complete");}
+  startMillis = millis();
 }
 
 //----------------------------------------------------------------------------------
 
 void callback()//executed every 2ms
 {
+  if (DEBUG) {Serial.println("Callback");}
   // reset the motor drivers if you encounter an unexpected current peakz
   resetMotorIfError();
 
@@ -151,10 +114,6 @@ void callback()//executed every 2ms
   // same of FSR but for the balance baseline
   check_Balance_Baseline();
 
-  // if flag auto reconnect BT is 1, activate the autoreconnect anche check the led voltage
-  if (FLAG_AUTO_RECONNECT_BT) {
-  }
-
   // if flag biofeedback is 1 update the step length of the biofeedback
   if (FLAG_BIOFEEDBACK) {
     Freq = left_leg->Frequency;
@@ -162,47 +121,31 @@ void callback()//executed every 2ms
     state_machine(left_leg);
     state_machine(right_leg);
     biofeedback_step_state(right_leg);
-    biofeedback_step_state(left_leg);       
+    biofeedback_step_state(left_leg);
 
   }//end if(Flag_biofeedback)
+  if (DEBUG) {Serial.println("Done with callback");}
 }// end callback
 //----------------------------------------------------------------------------------
 // Function that is repeated in loop
 void loop()
 {
-  #if BOARD_VERSION == DUAL_BOARD_REV3 //Timer based control loop doesn't work on teensy 4.1 (REV3)
-    if (controlLoop.check() == 1)
-    {
-      callback();
-      controlLoop.reset();
-    }
-  #endif
-
-  if (slowThisDown.check() == 1) // If the time passed is over 1ms is a true statement
+  if (DEBUG) {Serial.println("In loop");}
+  //Looks for updates
+  BLE.poll();
+  
+  currentMillis = millis();
+  if ((currentMillis - startMillis) >= callBackPeriod)
   {
-    if (bluetooth.available() > 0) // If bluetooth buffer contains something
-    {
-      Serial.println("Something to read");
-      receive_and_transmit();       //Recieve and transmit
-    }
-
-    slowThisDown.reset();     //Resets the interval counter
+    callback();
+    startMillis = currentMillis;
   }
-
-  //  // apply biofeedback, if it is not activated return void
-  biofeedback();
-
-  //if the stream is not activated reset the starting parameters
-  if (stream != 1) // stream is 1 once you push start trial in the matlab gui, is 0 once you push end trial.
-  {
-    reset_starting_parameters();
-    flag_done_once_bt = false;
-  }
+  if (DEBUG) {Serial.println("Out loop");}
 }// end void loop
 //---------------------------------------------------------------------------------
 //// Function of the biofeedback as a function of the error between the current knee angle during the heelstrike
 ////and a reference value (baseline), the Frequency of the sound is changed.
-//
+
 void biofeedback() {
 
   if (right_leg->NO_Biofeedback && left_leg->NO_Biofeedback) {
@@ -236,7 +179,7 @@ void calculate_leg_average(Leg* leg) {
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
     leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
-    leg->SpeedArrayPoint[j] = leg->SpeedArrayPoint[j-1];
+    leg->SpeedArrayPoint[j] = leg->SpeedArrayPoint[j - 1];
   }
   //Get the torque
   leg->TarrayPoint[0] = get_torq(leg);
@@ -281,7 +224,7 @@ void calculate_leg_average(Leg* leg) {
 
   leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
   leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
-  
+
   if (FLAG_ONE_TOE_SENSOR)
   {
     leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
@@ -294,7 +237,9 @@ void calculate_leg_average(Leg* leg) {
 //----------------------------------------------------------------------------------
 
 void calculate_averages() {
-
+  if (DEBUG) {
+    Serial.println("In calculate_averages()");
+  }
   calculate_leg_average(left_leg);
   calculate_leg_average(right_leg);
 
@@ -314,13 +259,15 @@ void calculate_averages() {
     Serial.print(" ] Average: ");
     Serial.println(right_leg->Average_Trq);
   }
-
+  if (DEBUG) {
+    Serial.println("Out calculate_averages()");
+  }
 }
 
 //----------------------------------------------------------------------------------
 
 void check_FSR_calibration() {
-
+  if (DEBUG) {Serial.println("In check_FSR_calibration");}
   if (FSR_CAL_FLAG) {
     FSR_calibration();
   }
@@ -332,61 +279,69 @@ void check_FSR_calibration() {
   if (left_leg->FSR_baseline_FLAG) {
     take_baseline(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
   }
-
+  if (DEBUG) {Serial.println("Out check_FSR_calibration");}
 }
 
 //----------------------------------------------------------------------------------
 // check if some data about the balance baseline exists and transmit them to the gui
 void check_Balance_Baseline() {
+  if (DEBUG) {Serial.println("In check_Balance_Baseline()");}
   if (FLAG_BALANCE_BASELINE) {
     Balance_Baseline();
   }
   if (FLAG_STEADY_BALANCE_BASELINE) {
     Steady_Balance_Baseline();
   }
-
+  if (DEBUG) {Serial.println("Out rotate_motor()");}
 }
 
 
 //----------------------------------------------------------------------------------
 
 void rotate_motor() {
+  if (DEBUG) {Serial.println("In rotate_motor()");}
   // send the data message, adapt KF if required, apply the PID, apply the state machine,
   //adjust some control parameters as a function of the control strategy decided (Control_Adjustment)
 
   if (stream == 1)
   {
+    if (DEBUG) {Serial.println("In stream if");}
     pid(left_leg, left_leg->Average_Trq);
     pid(right_leg, right_leg->Average_Trq);
 
-    
+
     if (streamTimerCount >= streamTimerCountNum) // every streamTimerCountNum*2ms
     {
+      if (DEBUG) {Serial.println("In streamTimerCount if");}
       counter_msgs++;
       send_data_message_wc();
       streamTimerCount = 0;
+      if (DEBUG) {Serial.println("Out stream if");}    
     }
 
-    if (voltageTimerCount >= 15000*2) { //every 30 seconds
+    if (voltageTimerCount >= 15000 * 2) { //every 30 seconds
+      if (DEBUG) {Serial.println("In voltageTimerCount if");}
       int batteryVoltage = readBatteryVoltage();
       Serial.println(batteryVoltage);
       batteryData[0] = batteryVoltage;
-      send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware
+      send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
       voltageTimerCount = 0;
 
-      //Send data message here
+      if (DEBUG) {Serial.println("Out voltageTimerCount if");}
     }
 
     if (streamTimerCount == 1 && flag_auto_KF == 1) {
+      if (DEBUG) {Serial.println("In flag_auto_KF if");}
       Auto_KF(left_leg, Control_Mode);
       Auto_KF(right_leg, Control_Mode);
+      if (DEBUG) {Serial.println("Out flag_auto_KF if");}
     }
 
 
     streamTimerCount++;
     voltageTimerCount++;
 
-    
+
 
 
     // modification to check the pid
@@ -409,11 +364,13 @@ void rotate_motor() {
 
     }
     // end modification
-
+    if (DEBUG) {Serial.println("Check States");}
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
-
-        if ((left_leg->state == 3) && ((left_leg->old_state == 1) || (left_leg->old_state == 2))) {   // TN 9/26/19
+    if (DEBUG) {Serial.println("Done Check states");}
+    
+    if (DEBUG) {Serial.println("Reference Millis");}
+    if ((left_leg->state == 3) && ((left_leg->old_state == 1) || (left_leg->old_state == 2))) {   // TN 9/26/19
       left_leg->state_3_start_time = millis();
     }
 
@@ -469,25 +426,28 @@ void rotate_motor() {
 
     right_leg->old_state = right_leg->state;
 
-//    #if BOARD_VERSION == DUAL_BOARD_REV4
-//      // Sending nerve stimulation tigger // SS 8/6/2020
-//      if (STIM_ACTIVATED){
-//        if (Trigger_left)  send_trigger(left_leg); //for left
-//        else  send_trigger(right_leg);  //for right (the default is for right leg)
-//        }
-//    #endif    
+    //    #if BOARD_VERSION == DUAL_BOARD_REV4
+    //      // Sending nerve stimulation tigger // SS 8/6/2020
+    //      if (STIM_ACTIVATED){
+    //        if (Trigger_left)  send_trigger(left_leg); //for left
+    //        else  send_trigger(right_leg);  //for right (the default is for right leg)
+    //        }
+    //    #endif
 
+    if (DEBUG) {Serial.println("God's code");}
     // When I first wrote this only God and I knew what it did. Now only God knows. Need to go through this again. GO 9/17/20
     if ((Control_Mode == 3 || Control_Mode == 6) && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
       left_leg->PID_Setpoint = left_leg->New_PID_Setpoint;   //Brute force the dorsiflexion set point to proportional control
     } else if ((Control_Mode == 3 || Control_Mode == 6) && (abs(right_leg->Dorsi_Setpoint_Ankle) > 0 || abs(right_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && right_leg->state == 1) {
       right_leg->PID_Setpoint = right_leg->New_PID_Setpoint; //Brute force the dorsiflexion set point to proportional control
     } else {};
+    if (DEBUG) {Serial.println("End God's code");}
 
     int left_scaling_index = 0;
     int right_scaling_index = 0;
 
     if (Control_Mode == 5) {
+      if (DEBUG) {Serial.println("In control_mode 5 if");}
 
 
 
@@ -518,7 +478,7 @@ void rotate_motor() {
       }
 
 
-
+    if (DEBUG) {Serial.println("End control mode 5 if");}
     }
 
 
@@ -527,7 +487,7 @@ void rotate_motor() {
     else {
       //set_2_zero_if_steady_state();
     }
-
+    if (DEBUG) {Serial.println("Control Adjustments");}
     left_leg->N3 = Control_Adjustment(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
                                       left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle,
                                       left_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, left_leg->Prop_Gain,
@@ -536,18 +496,19 @@ void rotate_motor() {
                                        right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle,
                                        right_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, right_leg->Prop_Gain,
                                        right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio);
-
+    if (DEBUG) {Serial.println("Out stream if");}
   }// end if stream==1
+  if (DEBUG) {Serial.println("Out rotate_motor()");}  
 }
 
 //----------------------------------------------------------------------------------
 //void send_trigger(Leg* leg) {   // Nerve stimulation trigger function // SS 8/6/2020
 //
-// 
+//
 //if (leg->state == 3){
 //  leg->swing_counter = 0;
 //  leg->stance_counter ++;
-//  
+//
 //  if ((((millis() - leg->trig_time) > 1000) && ((leg->stance_counter == 1) || (leg->stance_counter > (((leg->state_3_duration * 2) / 3)/2)) )) || leg->Approve_trigger) {
 //    leg->Approve_trigger = true;
 //    if ((leg->stance_counter < 41) && (leg->trig_number == 1)) { //  Trigger at the start of stance phase
@@ -584,7 +545,7 @@ void rotate_motor() {
 //            digitalWrite(TRIGGER_PIN, HIGH);
 //            leg->Trigger = 3;
 //            } else if ((leg->swing_counter > (((leg->state_1_duration * 2)/ 3)/2))  &&  (leg->swing_counter < ((((leg->state_1_duration * 2) / 3)/2)+40))  && (leg->trig_number == 4))  { // Trigger at the 2/3 of swing phase
-//              digitalWrite(TRIGGER_PIN, HIGH); 
+//              digitalWrite(TRIGGER_PIN, HIGH);
 //              leg->Trigger = 4;
 //              } else  {
 //                digitalWrite(TRIGGER_PIN, LOW);
@@ -605,7 +566,7 @@ void rotate_motor() {
 //              }
 //            }
 //        }
-//    
+//
 //}
 
 //----------------------------------------------------------------------------------
@@ -650,12 +611,12 @@ void reset_leg_starting_parameters(Leg* leg) {
   leg->Heel_Strike = 0;
   leg->NO_Biofeedback = true;
 
-   // SS 8/6/2020
+  // SS 8/6/2020
   leg->trig1_counter = 0;
   leg->trig2_counter = 0;
   leg->trig3_counter = 0;
   leg->trig4_counter = 0;
-  leg->stance_counter = 0; 
+  leg->stance_counter = 0;
   leg->swing_counter = 0;
   leg->trig_time = 0;
   leg->trig_number = 0;

@@ -1,6 +1,8 @@
 
 void resetMotorIfError() {
-
+  if (DEBUG) {
+    Serial.println("In resetMotorIfError()");
+  }
   //motor_error boolean is "true" if we have an error, false if we don't
   left_leg->motor_error = !digitalRead(left_leg->pin_err); //digitalRead is pulled HIGH when there is no error
   right_leg->motor_error = !digitalRead(right_leg->pin_err);  //Logical NOT makes it so that an error corresponds to HIGH
@@ -56,4 +58,7 @@ void resetMotorIfError() {
 
 
   }//end stream==1
+    if (DEBUG) {
+    Serial.println("Out resetMotorIfError()");
+  }
 } // resetmotorIfError

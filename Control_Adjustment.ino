@@ -212,7 +212,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
           *p_Setpoint_Ankle_Pctrl_l = 0;
         }
       }
-   }
+    }
 
     return N3_l; //return the previous N3 value whis is not used
   }
@@ -294,7 +294,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       return N3_l; // No modification in the shaping function which is disabled
     }
 
-         // Otherwise we need to calculate the time
+    // Otherwise we need to calculate the time
 
     // Parameters for speed adaption
     if (p_steps_l->flag_start_plant == false) // if it is true it means you started the step. Here I inizialize the parameters for speed adaption.

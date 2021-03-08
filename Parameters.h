@@ -46,7 +46,7 @@ double step_time_length = 150;
 // ===== PID and CTRL Parameters =====
 //All the needed parameters to set torque bias, PID ctrl, to enable the motors and to average the torque signals
 int count = 0;
-int CURRENT_CONTROL = 0; 
+int CURRENT_CONTROL = 0;
 int CURRENT_DIAGNOSTICS = 0;
 int MODEL_CONTROL = 0;
 int CtrlType = 100;
@@ -56,8 +56,8 @@ int PID_sample_time = 1;                                             //PID opera
 
 // ===== Memory Addrss Parameters =====
 //To store in memory. These are the address of the EEPROM of the Teensy
-int address_params = 54;
-int flag_save_EEPROM = 0;
+//int address_params = 54;
+//int flag_save_EEPROM = 0;
 
 // ===== Calibrate and read Parameters =====
 double p[4] = {0.0787, -0.8471, 20.599, -22.670};
@@ -87,11 +87,11 @@ const int n_step_baseline = 6;
 //HardCoded for demo
 int MotorParams = 1;  //Was 100
 double NomCurrent = 7.58; //The rest were 1
-double TrqConstant = 13.5/1000;
-double GearRatio = 6877.0/56.0;
-double PulleyRatio = 30/10.3;
+double TrqConstant = 13.5 / 1000;
+double GearRatio = 6877.0 / 56.0;
+double PulleyRatio = 30 / 10.3;
 double MaxSpeed = 15800;
 double MotorEff = 0.89;
 double GearboxEff = 0.7;
- 
+
 #endif

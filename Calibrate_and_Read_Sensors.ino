@@ -92,8 +92,8 @@ void FSR_calibration()
       right_leg->fsr_Heel_peak_ref = right_leg->Curr_Heel;
     }
 
-  
-  
+
+
   } else {
 
     FSR_FIRST_Cycle = 1;
@@ -102,8 +102,8 @@ void FSR_calibration()
 }
 
 double get_torq(Leg* leg) {
- // double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value); //  For the TRT-500 Torque Sensor
-  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*45.000; // For the custom anchor sensor
+  // double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value); //  For the TRT-500 Torque Sensor
+  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096.0)) - leg->torque_calibration_value) * 45.000; // For the custom anchor sensor
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }
 
@@ -140,21 +140,21 @@ double fsr(const unsigned int pin) {
 }
 
 /*Motor Current Code
- * This function reads the motor current pin and converts the voltage reading in bits to motor current.
+   This function reads the motor current pin and converts the voltage reading in bits to motor current.
 */
 double current(const unsigned int pin) {
   int value = analogRead(pin);
-  double Co = NomCurrent * (value - 2048.0)/2048.0; //Nominal current needs to be set in ESCON, 7.58
+  double Co = NomCurrent * (value - 2048.0) / 2048.0; //Nominal current needs to be set in ESCON, 7.58
   return Co;
 }
 
 /* This code allows us to read the analog output from the motor drivers and gives us the expected speed about the ankle.
-Torque Constant (200W) : 700 rpm/V
-Gear Ratio (32HP, 4-8Nm) : 17576/343 
-Large Exo Pulley Ratio: 74/10.3
+  Torque Constant (200W) : 700 rpm/V
+  Gear Ratio (32HP, 4-8Nm) : 17576/343
+  Large Exo Pulley Ratio: 74/10.3
 */
-double ankle_speed(const unsigned int pin){
-  double motor_speed = MaxSpeed * (analogRead(pin) - 2048.0)/2048.0;
-  double ankle_speed = motor_speed * (1/GearRatio) * (1/PulleyRatio);
+double ankle_speed(const unsigned int pin) {
+  double motor_speed = MaxSpeed * (analogRead(pin) - 2048.0) / 2048.0;
+  double ankle_speed = motor_speed * (1 / GearRatio) * (1 / PulleyRatio);
   return ankle_speed;
 }

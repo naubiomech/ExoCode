@@ -13,7 +13,7 @@ double Check_LED_BT(const unsigned int LED_BT_PIN_l, double LED_BT_Voltage_l, in
 
     if ( LED_BT_Voltage_l <= 2 && flag_done_once_bt == false) {
 
-      bluetooth.flush();
+      //bluetooth.flush();
       flag_done_once_bt = true;
 
     }

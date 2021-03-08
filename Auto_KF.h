@@ -9,7 +9,7 @@ void Auto_KF(Leg* leg, int Control_Mode) {
     if (abs(leg->Setpoint_Ankle * leg->coef_in_3_steps) != abs(leg->Max_Measured_Torque)) { //If target is greater than 99% of setpoint
       leg->auto_KF_update = true;                       // Raise auto KF flag
     }
-  } else if ((leg->state == 3 && Control_Mode == 3)||(leg->state == 3 && Control_Mode == 4)||(leg->state == 3 && Control_Mode == 6)) //If proportional
+  } else if ((leg->state == 3 && Control_Mode == 3) || (leg->state == 3 && Control_Mode == 4) || (leg->state == 3 && Control_Mode == 6)) //If proportional
   {
     if (abs(leg->MaxPropSetpoint) != abs(leg->Max_Measured_Torque)) { //If torque is under or over the setpoint
       leg->auto_KF_update = true;
@@ -40,7 +40,7 @@ void Auto_KF(Leg* leg, int Control_Mode) {
         leg->ERR = leg-> ERR + (leg->Max_Measured_Torque - (leg->Setpoint_Ankle * leg->coef_in_3_steps)) / (leg->Setpoint_Ankle * leg->coef_in_3_steps); //Calculate a running sum of the relative error
         leg->KF = leg->KF - ((leg->Max_Measured_Torque - (leg->Setpoint_Ankle * leg->coef_in_3_steps)) / (leg->Setpoint_Ankle * leg->coef_in_3_steps) * 0.6 + leg->ERR * 0.01); //changed from 0.4 to 0.6 after test of 11/7/18
       }
-    } else if ((Control_Mode == 3)||(Control_Mode == 4)||(Control_Mode==6)) { //If proportional
+    } else if ((Control_Mode == 3) || (Control_Mode == 4) || (Control_Mode == 6)) { //If proportional
 
       if (leg->Max_Measured_Torque * leg->MaxPropSetpoint <= 0) {
         leg->auto_KF_update = false;
@@ -58,7 +58,7 @@ void Auto_KF(Leg* leg, int Control_Mode) {
 
     } else {}
 
-    if isnan(leg->KF) {
+    if (isnan(leg->KF)) {
       leg->KF = 1;
     }
 

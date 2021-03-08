@@ -45,7 +45,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
             //Reference time to be used later for step counter
             stepper->step_start = millis();
           }
-          
+
           if (Control_Mode == 100) { //Increment set point for bang-bang GO - 5/19/19
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -230,7 +230,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           //Check if stance phase was long enough to warrant a valid step
           if ((millis() - stepper->step_start) >= stepper->kstep_delay && stream && (leg == right_leg)) {
             stepper->steps += 2;
-          } 
+          }
           if (Control_Mode == 100) {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -277,7 +277,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) && leg->state == 3) { //GO 4/21/19
     leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
   }
-  
+
   else {
 
     if (N1 < 1 || N2 < 1 || N3 < 1) {
@@ -289,7 +289,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
     }
   }
 
-  
+
 
   if (Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) { //GO 5/19/19
     if (leg->state == 1) {

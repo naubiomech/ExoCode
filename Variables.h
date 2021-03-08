@@ -1,6 +1,8 @@
-// timer
-Metro slowThisDown = Metro(1);  // Set the function to be called at no faster a rate than once per millisecond
-Metro controlLoop = Metro(2);
+//Manual Timer for Nano version
+int streamTimerCountNum = 25;
+unsigned long currentMillis;
+unsigned long startMillis;
+unsigned long callBackPeriod = 2;
 
 // Variable used to schedule some actions
 elapsedMillis timeElapsed;
@@ -12,8 +14,8 @@ int voltageTimerCount = 0;
 int stream = 0;
 
 //variables used to receive and send the data from and to the gui
-char holdon[96];
-char *holdOnPoint = &holdon[0];
+byte holdon[96];                  //Changed to byte array
+byte *holdOnPoint = &holdon[0];   //Changed to byte pointer
 char Peek = 'a';
 int cmd_from_Gui = 0;
 
@@ -21,13 +23,6 @@ int cmd_from_Gui = 0;
 const unsigned int onoff = MOTOR_ENABLE_PIN;
 
 // Single board SQuare (big)
-
-//Includes the SoftwareSerial library to be able to use the bluetooth Serial Communication
-int bluetoothTx = 0;                                                 // TX-O pin of bluetooth mate, Teensy D0
-int bluetoothRx = 1;                                                 // RX-I pin of bluetooth mate, Teensy D1
-SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an object named bluetooth to act as a serial port
-
-
 
 bool FLAG_PRINT_TORQUES = false;
 bool FLAG_PID_VALS = false;
@@ -50,7 +45,7 @@ bool FLAG_BIOFEEDBACK = false;
 // data for bluetooth autoreconnection
 bool FLAG_AUTO_RECONNECT_BT = false;
 bool flag_done_once_bt = false;
-const unsigned int LED_BT_PIN = A11;
+//const unsigned int LED_BT_PIN = A11;
 double LED_BT_Voltage;
 int count_LED_reads;
 int *p_count_LED_reads = &count_LED_reads;
@@ -108,7 +103,7 @@ int INA219_PWR = 0x03;    // Power measurement - use this to get calibrated powe
 int INA219_CUR = 0x04;    // Current measurement - use this to get the current flowing through the shunt
 int INA219_CAL = 0x05;    // Set full scale range and LSB of current/power measurements. Needed for power and current measurements
 int CurrentLSB = 1;           // mA/bit. This value is used to multiply the current reading from the INA219 to obtain actual current in mA
-int PowerLSB = 20*CurrentLSB; // mW/bit. This value is used to multiply to power reading from the INA219 to obtain actual power in mW
+int PowerLSB = 20 * CurrentLSB; // mW/bit. This value is used to multiply to power reading from the INA219 to obtain actual power in mW
 int ShuntLSB = 0.01;          // mV. This is the default multiplier for the shunt voltage reading from the INA219.
 int BusLSB = 4;               // mV. This is the multiplier for the bus (battery) voltage reading from the INA219.
 int Cal = 0x5000;             // Calibration value in hex. Cal = 0.04096/(CurrentLSB*ShuntResistance). Shunt resistance on Rev3/4 is 2mOhm.

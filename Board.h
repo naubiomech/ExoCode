@@ -31,8 +31,8 @@ const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = 2;
 const unsigned int MOTOR_CURRENT_LEFT_ANKLE_PIN = A7;
 const unsigned int MOTOR_CURRENT_RIGHT_ANKLE_PIN = A1;
 
-const unsigned int PWR_SCL = SCL;   //SCL
-const unsigned int PWR_SDA = SDA;   //SDA
+const unsigned int PWR_SCL = A5;   //SCL
+const unsigned int PWR_SDA = A4;   //SDA
 #endif
 
 #ifdef ENABLE_PWM

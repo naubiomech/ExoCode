@@ -94,9 +94,11 @@ struct Leg {
   double Curr_Heel;
 
   // Memory_Address.h
-  int torque_address;
-  int address_FSR;
-  int baseline_address;
+  /*
+    int torque_address;
+    int address_FSR;
+    int baseline_address;
+  */
   double baseline_value;
 
   // PID_and_Ctrl_Parameters.h
@@ -207,7 +209,7 @@ struct Leg {
   double state_3_duration = 0;
   double state_1_stop_time = 0;
   double state_1_duration = 0;
-  
+
   double Heel_Pos = -0.07;
   double Toe_Pos = 0.20;
   double COP = 0;

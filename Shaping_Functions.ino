@@ -111,7 +111,7 @@ void PID_Sigm_Curve(Leg* leg) {
       leg->FLAG_UPDATE_VALUES = false;
     }
     //---------------------------------------------------------
-    
+
     if (leg->sigm_done == false && leg->n_iter < leg->N_step)
     {
       //Optimization--------------------------------------------------------
