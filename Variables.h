@@ -2,7 +2,7 @@
 int streamTimerCountNum = 25;
 unsigned long currentMillis;
 unsigned long startMillis;
-unsigned long callBackPeriod = 2;
+unsigned long callBackPeriod = 1;
 
 // Variable used to schedule some actions
 elapsedMillis timeElapsed;

@@ -92,8 +92,6 @@ void FSR_calibration()
       right_leg->fsr_Heel_peak_ref = right_leg->Curr_Heel;
     }
 
-
-
   } else {
 
     FSR_FIRST_Cycle = 1;
@@ -125,7 +123,6 @@ double fsr(const unsigned int pin) {
   //using voltage divider: 3.3 V -- >FSR<-- Vo -- >R< (1000) -- ground
   //Vo from analog read: 3.3* analog read/ max read (4096) || I = Vo/R || FSR resistance = (3.3V - Vo)/I
   double Vo = 10 * 3.3 * analogRead(pin) / 4096; //ZL Added in the 10* to scale the output
-
   if ( FSR_Sensors_type == 10) {
     // This to return the force instead of the Voltage
     Vo = max(0, Vo); // add the max cause cannot be negative force
@@ -135,8 +132,9 @@ double fsr(const unsigned int pin) {
       // This to return the force instead of the Voltage
       Vo = max(0, p[0] * pow(Vo, 3) + p[1] * pow(Vo, 2) + p[2] * Vo + p[3]); // add the max cause cannot be negative force
   }
-
+  
   return Vo;
+  
 }
 
 /*Motor Current Code

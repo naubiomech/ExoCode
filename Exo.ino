@@ -125,8 +125,10 @@ void callback()//executed every 2ms
     biofeedback_step_state(left_leg);
 
   }//end if(Flag_biofeedback)
-  if (DEBUG) {Serial.println("Done with callback");}
-  Serial.println(millis()-milli);
+  if (DEBUG) {
+    Serial.println("Done with callback");
+    Serial.println(millis()-milli);
+  }
 }// end callback
 //----------------------------------------------------------------------------------
 // Function that is repeated in loop
