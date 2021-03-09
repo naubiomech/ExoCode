@@ -19,27 +19,22 @@ void send_data_message_wc() //with COP
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
 {
   if (DEBUG) {Serial.println("In send_data_message()");}
-  
-  byte buffer[sizeof(int)] = {0};
-  char c_buffer[2] = {'0', '0'};            //Assumes number_to_send < 100. i.e. only 2 chars
+  int payloadLength = (number_to_send*5);
+  byte buffer[payloadLength];
+  char c_buffer[4];           
   buffer[0] = 'S';
   buffer[1] = command_char;
   itoa(number_to_send, &c_buffer[0], 10);
-  memcpy(&buffer[2],&c_buffer[0],sizeof(char));
+  memcpy(&buffer[2],&c_buffer[0],1);
   
-  TXChar.writeValue(buffer[0], 1);           //Write 'S'
-  TXChar.writeValue(buffer[1], 1);           //Write command
-  TXChar.writeValue(buffer[2], 1);           //Write number_to_send
+  TXChar.writeValue(buffer, 3);           //Write message header
   for (int i = 0; i < number_to_send; i++)
   {
-    int to_send = round(data_to_send[i] * 100.0);
-    itoa(to_send, &c_buffer[0], 10);
-    memcpy(&buffer[0], &c_buffer[0], sizeof(int));
-    TXChar.writeValue(buffer, sizeof(int)); //Write int
-    c_buffer[0] = 'n';
-    memcpy(&buffer[0],&c_buffer[0], 1);
-    TXChar.writeValue(buffer, 1);           //Write 'n'
+    itoa(data_to_send[i]*100, &c_buffer[0], 10);
+    memcpy(&buffer[i*5], &c_buffer[0], 4);
+    buffer[4+i*5] = 'n';  
   }
+  TXChar.writeValue(buffer, payloadLength);           //Write payload
   if (DEBUG) {Serial.println("End send_data_message()");}
 }
 /*

@@ -46,7 +46,7 @@ const unsigned int zero = 2048;//1540;
 //#include <SoftwareSerial.h> //Cant Use
 //#include <Metro.h>          //Cant Use
 
-bool DEBUG = true;
+bool DEBUG = false;
 //----------------------------------------------------------------------------------
 
 
@@ -59,7 +59,7 @@ void setup()
   setupBLE();
 
   //Start Serial
-  Serial.begin(2000000);
+  Serial.begin(9600);
 
   //set the resolution
   analogWriteResolution(12);                                          //change resolution to 12 bits
@@ -98,6 +98,7 @@ void setup()
 
 void callback()//executed every 2ms
 {
+  unsigned long int milli = millis();
   if (DEBUG) {Serial.println("Callback");}
   // reset the motor drivers if you encounter an unexpected current peakz
   resetMotorIfError();
@@ -125,6 +126,7 @@ void callback()//executed every 2ms
 
   }//end if(Flag_biofeedback)
   if (DEBUG) {Serial.println("Done with callback");}
+  Serial.println(millis()-milli);
 }// end callback
 //----------------------------------------------------------------------------------
 // Function that is repeated in loop
