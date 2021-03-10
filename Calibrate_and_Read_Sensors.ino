@@ -117,8 +117,9 @@ double get_RL_torq()
 
 /*FSR Code
 	This code is very basic but is kept as an outside function for clarity. The FSR readings are used to control state based actions based on the part of the gait cycle the patient
-	is in.
+	is in. abcdefghi
 */
+
 double fsr(const unsigned int pin) {
   //using voltage divider: 3.3 V -- >FSR<-- Vo -- >R< (1000) -- ground
   //Vo from analog read: 3.3* analog read/ max read (4096) || I = Vo/R || FSR resistance = (3.3V - Vo)/I
@@ -130,7 +131,9 @@ double fsr(const unsigned int pin) {
   else {
     if (FSR_Sensors_type == 40)
       // This to return the force instead of the Voltage
-      Vo = max(0, p[0] * pow(Vo, 3) + p[1] * pow(Vo, 2) + p[2] * Vo + p[3]); // add the max cause cannot be negative force
+      double Vo = p[0] * Vo*Vo*Vo + p[1] * Vo*Vo + p[2] * Vo + p[3];
+      Vo = (Vo>0) ? Vo: 0;
+      //Vo = max(0, p[0] * pow(Vo,3) + p[1] * pow(Vo,2) + p[2] * Vo + p[3]); // add the max cause cannot be negative force
   }
   
   return Vo;

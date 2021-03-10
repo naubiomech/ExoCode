@@ -22,7 +22,7 @@
 #define VERSION 314
 #define BOARD_VERSION DUAL_BOARD_REV6
 //The digital pin connected to the motor on/off swich
-const unsigned int zero = 2048;//1540;
+const unsigned int zero = 2048; //1540;
 
 #include <ArduinoBLE.h>
 #include <elapsedMillis.h>
@@ -98,7 +98,7 @@ void setup()
 
 void callback()//executed every 2ms
 {
-  unsigned long int milli = millis();
+  unsigned long int micro = micros();
   if (DEBUG) {Serial.println("Callback");}
   // reset the motor drivers if you encounter an unexpected current peakz
   resetMotorIfError();
@@ -127,8 +127,8 @@ void callback()//executed every 2ms
   }//end if(Flag_biofeedback)
   if (DEBUG) {
     Serial.println("Done with callback");
-    Serial.println(millis()-milli);
   }
+  Serial.println(micros()-micro);
 }// end callback
 //----------------------------------------------------------------------------------
 // Function that is repeated in loop
@@ -178,7 +178,6 @@ void biofeedback() {
 
 void calculate_leg_average(Leg* leg) {
   //Calc the average value of Torque
-
   //Shift the arrays
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken

@@ -1,7 +1,7 @@
 
 void send_data_message_wc() //with COP
 {
-  if (DEBUG) {Serial.println("In send_data_message_wc()");}
+  //if (DEBUG) {Serial.println("In send_data_message_wc()");}
   //Right Leg
   data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
   data_to_send[1] = right_leg->state;
@@ -13,13 +13,13 @@ void send_data_message_wc() //with COP
   data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
 
   send_command_message('?', data_to_send, 6);
-  if (DEBUG) {Serial.println("Out send_data_message_wc()");}
+ // if (DEBUG) {Serial.println("Out send_data_message_wc()");}
 }
 
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
 {
-  if (DEBUG) {Serial.println("In send_data_message()");}
-  int payloadLength = (number_to_send*5);
+  //if (DEBUG) {Serial.println("In send_data_message()");}
+  int payloadLength = (3+number_to_send*5);
   byte buffer[payloadLength];
   char c_buffer[4];           
   buffer[0] = 'S';
@@ -27,15 +27,14 @@ void send_command_message(char command_char, double* data_to_send, int number_to
   itoa(number_to_send, &c_buffer[0], 10);
   memcpy(&buffer[2],&c_buffer[0],1);
   
-  TXChar.writeValue(buffer, 3);           //Write message header
   for (int i = 0; i < number_to_send; i++)
   {
     itoa(data_to_send[i]*100, &c_buffer[0], 10);
-    memcpy(&buffer[i*5], &c_buffer[0], 4);
-    buffer[4+i*5] = 'n';  
+    memcpy(&buffer[3+i*5], &c_buffer[0], 4);
+    buffer[7+i*5] = 'n';  
   }
   TXChar.writeValue(buffer, payloadLength);           //Write payload
-  if (DEBUG) {Serial.println("End send_data_message()");}
+  //if (DEBUG) {Serial.println("End send_data_message()");}
 }
 /*
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
