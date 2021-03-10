@@ -98,7 +98,6 @@ void setup()
 
 void callback()//executed every 2ms
 {
-  unsigned long int micro = micros();
   if (DEBUG) {Serial.println("Callback");}
   // reset the motor drivers if you encounter an unexpected current peakz
   resetMotorIfError();
@@ -128,7 +127,6 @@ void callback()//executed every 2ms
   if (DEBUG) {
     Serial.println("Done with callback");
   }
-  Serial.println(micros()-micro);
 }// end callback
 //----------------------------------------------------------------------------------
 // Function that is repeated in loop
