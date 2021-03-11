@@ -45,8 +45,8 @@ int j = 0;
 #include "Board.h"
 #include "resetMotorIfError.h"
 #include "ATP.h"
-//#include "Wave.h"
-#include "Step.h"
+#include "Wave.h"
+//#include "Step.h"
 #include "Math.h"
 bool iOS_Flag = 0;
 int streamTimerCountNum = 0;
@@ -134,8 +134,8 @@ void setup()
   batteryData[0] = startVolt;
   send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware 
 
-//  calculateWave();
-  calculateStep();
+  calculateWave();
+//  calculateStep();
   Serial.println("Setup complete");
   
 }

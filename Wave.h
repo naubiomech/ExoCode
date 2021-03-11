@@ -1,4 +1,4 @@
-const double spacing = PI*0.002;
+const double spacing = PI*0.005;
 const int waveLength = 2*PI/spacing;
 double x[waveLength] = {};
 double A = 0.5;
@@ -13,4 +13,3 @@ void calculateWave()
     wave[i+1] = A*sin(x[i+1]);
   }
 }
-

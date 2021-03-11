@@ -22,9 +22,9 @@ void send_data_message_wc() //with COP
   else if (!iOS_Flag)
   {
   //Right Leg
-  data_to_send[0] = 15000*3.3*((analogRead(right_leg->motor_speed_pin)-2048.0)/4096.0)/89/4; //Motor speed with gear reductions applied
-  data_to_send[1] = 100*3.3*(analogRead(right_leg->ankle_angle_pin)-2048.0)/4096.0; //Raw hall sensor voltage * 100
-  data_to_send[2] = 15000*3.3*((analogRead(right_leg->motor_current_pin)-2048.0)/4096.0)/89/4; //The prescribed wave function
+  data_to_send[0] = 15000*((analogRead(right_leg->motor_speed_pin)-2048.0)/2048.0)/89/4; //Motor speed with gear reductions applied
+  data_to_send[1] = right_leg->Vol; //Raw hall sensor voltage * 100
+  data_to_send[2] = 15000*((analogRead(right_leg->motor_current_pin)-2048.0)/2048.0)/89/4; //The prescribed wave function
 
   if (FLAG_ONE_TOE_SENSOR) {
     data_to_send[3] = right_leg->rawAnkleAverageAngle; // raw ankle angle regression
@@ -38,14 +38,14 @@ void send_data_message_wc() //with COP
   } else {
 //    data_to_send[3] = (right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Toe_peak_ref);
 //    data_to_send[4] = (right_leg->FSR_Toe_Average);
-    data_to_send[3] = (right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
-    data_to_send[4] = (right_leg->FSR_Combined_Average);
+    data_to_send[3] = right_leg->rawAnkleAverageAngle;
+    data_to_send[4] = right_leg->calAnkleAverageAngle;
   }
 
   //Left Leg
-  data_to_send[5] = motor_ankle_speed(left_leg->motor_speed_pin)/89/4; //Motor speed with gear reductions applied
+  data_to_send[5] = 15000*((analogRead(left_leg->motor_speed_pin)-2048.0)/2048.0)/89/4; //Motor speed with gear reductions applied
   data_to_send[6] = 100*3.3*(analogRead(left_leg->ankle_angle_pin)-2048.0)/4096.0; //Raw hall sensor voltage * 100
-  data_to_send[7] = 15000*3.3*((analogRead(left_leg->motor_current_pin)-2048.0)/4096.0)/89/4; //The prescribed wave function
+  data_to_send[7] = 15000*((analogRead(left_leg->motor_current_pin)-2048.0)/2048.0)/89/4; //The prescribed wave function
 
   if (FLAG_ONE_TOE_SENSOR) {
     data_to_send[8] = left_leg->rawAnkleAverageAngle; // raw ankle angle regression
