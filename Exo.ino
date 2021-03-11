@@ -40,13 +40,7 @@ const unsigned int zero = 2048; //1540;
 #include "ATP.h"
 #include "Trial_Data.h"
 
-
-//#include <EEPROM.h>         //Cant Use
-//#include "TimerOne.h"       //Cant Use
-//#include <SoftwareSerial.h> //Cant Use
-//#include <Metro.h>          //Cant Use
-
-bool DEBUG = false;
+bool DEBUG{false};
 //----------------------------------------------------------------------------------
 
 
@@ -96,7 +90,7 @@ void setup()
 
 //----------------------------------------------------------------------------------
 
-void callback()//executed every 2ms
+void callback()//executed every 1ms
 {
   if (DEBUG) {Serial.println("Callback");}
   // reset the motor drivers if you encounter an unexpected current peakz
@@ -114,19 +108,7 @@ void callback()//executed every 2ms
   // same of FSR but for the balance baseline
   check_Balance_Baseline();
 
-  // if flag biofeedback is 1 update the step length of the biofeedback
-  if (FLAG_BIOFEEDBACK) {
-    Freq = left_leg->Frequency;
-
-    state_machine(left_leg);
-    state_machine(right_leg);
-    biofeedback_step_state(right_leg);
-    biofeedback_step_state(left_leg);
-
-  }//end if(Flag_biofeedback)
-  if (DEBUG) {
-    Serial.println("Done with callback");
-  }
+  if (DEBUG) {Serial.println("Done with callback");}
 }// end callback
 //----------------------------------------------------------------------------------
 // Function that is repeated in loop
@@ -145,34 +127,6 @@ void loop()
   if (DEBUG) {Serial.println("Out loop");}
 }// end void loop
 //---------------------------------------------------------------------------------
-//// Function of the biofeedback as a function of the error between the current knee angle during the heelstrike
-////and a reference value (baseline), the Frequency of the sound is changed.
-
-void biofeedback() {
-
-  if (right_leg->NO_Biofeedback && left_leg->NO_Biofeedback) {
-  } else {
-    if (left_leg->BioFeedback_Baseline_flag) {
-
-      state = digitalRead(LED_PIN);
-
-      if (state == HIGH) {
-        state = LOW;
-      } else {
-        state = HIGH;
-      }
-      digitalWrite(LED_PIN, state);
-    }
-    //
-    //
-    //    right_leg->start_time_Biofeedback = millis();
-    //    tone(A17, 500, 100);
-
-  }
-  return;
-}
-
-//----------------------------------------------------------------------------------
 
 void calculate_leg_average(Leg* leg) {
   //Calc the average value of Torque
