@@ -133,13 +133,13 @@ void receive_and_transmit()
           break;
 
         case 'N':
-          //Send iOS app the current state of the exo
-          bool statebuff[] = {0};
+          //Send GUI the current state of the exo
+          //bool statebuff[] = {0};
           /*
           *(data_to_send_point) = 0;
           *(data_to_send_point + 1) = 1;
           *(data_to_send_point + 2) = 2;
-          send_command_message('N', data_to_send_point, 3);   //For the Arduino to prove to MATLAB that it is behaving, it will send back the character B
+          send_command_message('N', data_to_send_point, 3);
           */
           break;
 
@@ -395,6 +395,12 @@ void receive_and_transmit()
           memcpy(&right_leg->fsr_percent_thresh_Toe, holdOnPoint + 8, 8);
           left_leg->p_steps->fsr_percent_thresh_Toe = left_leg->fsr_percent_thresh_Toe;
           right_leg->p_steps->fsr_percent_thresh_Toe = right_leg->fsr_percent_thresh_Toe;
+          if (!DEBUG) {
+            Serial.print("Got new fsr thresholds: ");
+            Serial.print(left_leg->p_steps->fsr_percent_thresh_Toe);
+            Serial.print("  ");
+            Serial.println(right_leg->p_steps->fsr_percent_thresh_Toe);
+          }
           break;
 
         case 'S':
