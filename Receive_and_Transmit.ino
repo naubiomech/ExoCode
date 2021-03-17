@@ -134,7 +134,7 @@ void receive_and_transmit()
 
         case 'N':
           //Send iOS app the current state of the exo
-          bool statebuff[] = {0};d
+          bool statebuff[] = {0};
           /*
           *(data_to_send_point) = 0;
           *(data_to_send_point + 1) = 1;
