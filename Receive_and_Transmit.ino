@@ -134,12 +134,18 @@ void receive_and_transmit()
 
         case 'N':
           //Send GUI the current state of the exo
-          //bool statebuff[] = {0};
           /*
-          *(data_to_send_point) = 0;
-          *(data_to_send_point + 1) = 1;
-          *(data_to_send_point + 2) = 2;
-          send_command_message('N', data_to_send_point, 3);
+            //Order (beginning with index = 0): stream, torq cal, fsr cal, baseline, open-closed, bang-bang, assist, resist
+          *(data_to_send_point)     = (stream != 0);
+          *(data_to_send_point + 1) = (torque_calibration_value != 0);
+          *(data_to_send_point + 2) = (fsr_Toe_peak_ref != 0);         //right or left_leg->fsr_Toe_peak_ref
+          *(data_to_send_point + 3) = (left_leg->p_steps->plant_peak_mean != 0);                               //Baseline
+          *(data_to_send_point + 4) = (CURRENT_CONTROL != 0);
+          *(data_to_send_point + 5) = (Control_Mode == 100);
+          *(data_to_send_point + 6) = (Control_Mode == 4);
+          *(data_to_send_point + 7) = (Control_Mode == 6);
+          
+          send_command_message('N', data_to_send_point, 8);
           */
           break;
 
