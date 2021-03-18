@@ -13,6 +13,7 @@ void send_data_message_wc() //with COP
   data_to_send[4] = left_leg->state;
   data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
 
+<<<<<<< HEAD
   //FSR val
   data_to_send[6] = (right_leg->FSR_Toe_Average);
   data_to_send[7] = (left_leg->FSR_Toe_Average);
@@ -98,6 +99,13 @@ void send_data_message_wc() //with COP
     data_to_send[13] = left_leg->Trigger;//SS  6/23/2020
   }
   */
+=======
+  data_to_send[6] = right_leg->FSR_Toe_Average;
+  data_to_send[7] = left_leg->FSR_Toe_Average;
+
+  send_command_message('?', data_to_send, 8);
+ // if (DEBUG) {Serial.println("Out send_data_message_wc()");}
+>>>>>>> 21ab7570916bd5218f8feff2ef5791b798144b2c
 }
 
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
