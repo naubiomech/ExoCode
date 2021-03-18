@@ -13,7 +13,6 @@ void send_data_message_wc() //with COP
   data_to_send[4] = left_leg->state;
   data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
 
-<<<<<<< HEAD
   //FSR val
   data_to_send[6] = (right_leg->FSR_Toe_Average);
   data_to_send[7] = (left_leg->FSR_Toe_Average);
@@ -99,34 +98,26 @@ void send_data_message_wc() //with COP
     data_to_send[13] = left_leg->Trigger;//SS  6/23/2020
   }
   */
-=======
-  data_to_send[6] = right_leg->FSR_Toe_Average;
-  data_to_send[7] = left_leg->FSR_Toe_Average;
-
-  send_command_message('?', data_to_send, 8);
- // if (DEBUG) {Serial.println("Out send_data_message_wc()");}
->>>>>>> 21ab7570916bd5218f8feff2ef5791b798144b2c
 }
 
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
 {
-  //if (DEBUG) {Serial.println("In send_data_message()");}
-  int payloadLength = (3+number_to_send*5);
+  if (DEBUG) {Serial.println("In send_data_message()");}
+  int maxChars = 6;
+  int payloadLength = (3+number_to_send*(maxChars+1));  //+1 because of the 'n's
   byte buffer[payloadLength];
-  char c_buffer[4];           
+  char c_buffer[maxChars];           
   buffer[0] = 'S';
   buffer[1] = command_char;
   itoa(number_to_send, &c_buffer[0], 10);
   memcpy(&buffer[2],&c_buffer[0],1);
-  
-  for (int i = 0; i < number_to_send; i++)
-  {
-    itoa(data_to_send[i]*100, &c_buffer[0], 10);
-    memcpy(&buffer[3+i*5], &c_buffer[0], 4);
-    buffer[7+i*5] = 'n';  
+  for (int i = 0; i < number_to_send; i++) {
+      itoa(data_to_send[i]*100, &c_buffer[0], 10);
+      memcpy(&buffer[3+(i*(maxChars+1))], &c_buffer[0], maxChars);
+      buffer[3+maxChars+(i*(maxChars+1))] = 'n';  
   }
   TXChar.writeValue(buffer, payloadLength);           //Write payload
-  //if (DEBUG) {Serial.println("End send_data_message()");}
+  if (DEBUG) {Serial.println("End send_data_message()");}
 }
 /*
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
