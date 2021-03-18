@@ -33,8 +33,13 @@ void FSR_calibration()
 
     right_leg->fsr_Combined_peak_ref = 0;
     left_leg->fsr_Combined_peak_ref = 0;
+    
     left_leg->fsr_Toe_peak_ref = 0;
     right_leg->fsr_Toe_peak_ref = 0;
+    
+    left_leg->fsr_Toe_trough_ref = 1000;
+    right_leg->fsr_Toe_trough_ref = 1000;
+    
     left_leg->fsr_Heel_peak_ref = 0;
     right_leg->fsr_Heel_peak_ref = 0;
 
@@ -79,6 +84,16 @@ void FSR_calibration()
     if (right_leg->Curr_Toe > right_leg->fsr_Toe_peak_ref)
     {
       right_leg->fsr_Toe_peak_ref = right_leg->Curr_Toe;
+    }
+
+    if (left_leg->Curr_Toe < left_leg->fsr_Toe_trough_ref)
+    {
+      left_leg->fsr_Toe_trough_ref = left_leg->Curr_Toe;
+    }
+
+    if (right_leg->Curr_Toe < right_leg->fsr_Toe_trough_ref)
+    {
+      right_leg->fsr_Toe_trough_ref = right_leg->Curr_Toe;
     }
 
     // Heel
