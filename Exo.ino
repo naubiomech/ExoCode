@@ -82,7 +82,10 @@ void setup()
   int startVolt = readBatteryVoltage(); //Read the startup battery voltage
   Serial.println(startVolt);
   batteryData[0] = startVolt;
-  send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
+  send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware, needs fixing!
+
+  // Torque cal
+  torque_calibration(); //Sets a torque zero on startup  
 
   if (DEBUG) {Serial.println("Setup complete");}
   startMillis = millis();
