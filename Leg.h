@@ -238,6 +238,7 @@ struct Leg {
   int state_count_43 = 0;
   int state_count_45 = 0;
   int state_count_51 = 0; 
+  int state_count_53 = 0;
   int state_swing_counter = 0; 
 
   double state_3_start_time = 0;
