@@ -238,11 +238,11 @@ void receive_and_transmit()
 
     case 'm':  //  SS  12/14/2020
       receiveVals(8);               
-      memcpy(&SwingPercentage, holdOnPoint, 8);
+      memcpy(&EarlySwingPercentage, holdOnPoint, 8);
       break;
     
     case '-':  //  SS  12/14/2020
-      *(data_to_send_point) = SwingPercentage;
+      *(data_to_send_point) = EarlySwingPercentage;
       send_command_message('-', data_to_send_point, 1);     //MATLAB is expecting to recieve the Subject's Parameters
       break;
 

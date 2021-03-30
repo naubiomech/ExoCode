@@ -226,6 +226,8 @@ struct Leg {
   int state_count_23 = 0;
   int state_count_32 = 0;
   //  SS  12/14/2020
+  int state_count_10 = 0;
+  int state_count_03 = 0;
   int state_count_14 = 0;
   int state_count_24 = 0;
   int state_count_25 = 0; 
@@ -236,7 +238,7 @@ struct Leg {
   int state_count_43 = 0;
   int state_count_45 = 0;
   int state_count_51 = 0; 
-  int state_5_counter = 0; 
+  int state_swing_counter = 0; 
 
   double state_3_start_time = 0;
   double state_1_start_time = 0;

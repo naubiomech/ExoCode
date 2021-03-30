@@ -835,7 +835,7 @@ void State_Machine_Heel_Toe_Sensors_BioFeedback(Leg * leg) {
 
 void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
 
-  if ((leg->state != 1)  && (leg->state != 3)  && (leg->state != 5))   
+  if ((leg->state != 1)  && (leg->state != 3)  && (leg->state != 5) && (leg->state != 0))   
     leg->state = 1;
   
   switch (leg->state)
@@ -843,14 +843,14 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
     case 1: //Swing
       // This flag enables the "set to zero" procedure for the left ankle.
       // When you're for at least 3 seconds in the same state, the torque reference is set to zero
-      leg->state_5_counter++;
+      leg->state_swing_counter++;
       if (leg->set_2_zero == 1) {
         leg->set_2_zero = 0;
         leg->One_time_set_2_zero = 1;
       }
       else if ((leg->p_steps->curr_voltage_Toe > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) || (leg->p_steps->curr_voltage_Heel > leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)) //If the overall FSR reading is greater than the threshold we need to be in state 3
       {
-        leg->state_5_counter = 0;
+        leg->state_swing_counter = 0;
         leg->state_count_13++;
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_13 >= state_counter_th)
@@ -868,17 +868,41 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
 
           leg->state_old = leg->state;
           leg->state = 3;
+          leg->state_count_10 = 0;
+          leg->state_count_03 = 0;
           leg->state_count_13 = 0;
           leg->state_count_31 = 0;
           leg->state_count_35 = 0;
           leg->state_count_51 = 0;
+          leg->state_count_53 = 0;
+        }
+      }
+      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_swing_counter > ((leg->state_swing_duration/2)*((100-LateSwingPercentage)/100))))
+      {
+        leg->state_swing_counter++;
+        leg->state_count_10++;
+        // if you're in the same state for more than state_counter_th it means that it is not noise
+        if (leg->state_count_10 >= state_counter_th)
+        {
+          leg->PID_Setpoint = -leg->Dorsi_Setpoint_Ankle; 
+
+          leg->state_old = leg->state;
+          leg->state = 0;
+          leg->Min_FSR_Ratio_HeelMinusToe = 0;
+          leg->state_count_10 = 0;
+          leg->state_count_03 = 0;
+          leg->state_count_13 = 0;
+          leg->state_count_31 = 0;
+          leg->state_count_35 = 0;
+          leg->state_count_51 = 0;
+          leg->state_count_53 = 0;
         }
       }
 
       break;
 
     case 3: //Late Stance
-      leg->state_5_counter = 0;
+      leg->state_swing_counter = 0;
       if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
         leg->sigm_done = true;
         leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -891,9 +915,9 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
         leg->Previous_Setpoint_Ankle_Pctrl = 0; //GO 4/21/19
       }
 
-      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_5_counter > ((leg->state_swing_duration/2)*(SwingPercentage/100))))
+      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_swing_counter > ((leg->state_swing_duration/2)*(EarlySwingPercentage/100))) && (leg->state_swing_counter <= ((leg->state_swing_duration/2)*((100-LateSwingPercentage)/100))) )
       {
-        leg->state_5_counter++;
+        leg->state_swing_counter++;
         leg->state_count_31++;
         if (leg->state_count_31 >= state_counter_th)
         {
@@ -909,17 +933,20 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
           leg->state_old = leg->state;
           leg->state = 1;
           leg->Min_FSR_Ratio_HeelMinusToe = 0;
-          leg->state_count_31 = 0;
+          leg->state_count_10 = 0;
+          leg->state_count_03 = 0;
           leg->state_count_13 = 0;
+          leg->state_count_31 = 0;
           leg->state_count_35 = 0;
           leg->state_count_51 = 0;
+          leg->state_count_53 = 0;
           leg->allow_inc_flag = true; //TH 8/7/19
         }
       }
-      else if( (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  &&  (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->state_5_counter <= ((leg->state_swing_duration/2)*(SwingPercentage/100))) ) //LKL 9/8/2020
+      else if( (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  &&  (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->state_swing_counter <= ((leg->state_swing_duration/2)*(EarlySwingPercentage/100))) ) //LKL 9/8/2020
       {
         leg->state_count_35++;
-        leg->state_5_counter++;
+        leg->state_swing_counter++;
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_35 >= state_counter_th)
         {
@@ -930,16 +957,19 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
             
           leg->state_old = leg->state;
           leg->state = 5;
-          leg->state_count_31 = 0;
+          leg->state_count_10 = 0;
+          leg->state_count_03 = 0;
           leg->state_count_13 = 0;
+          leg->state_count_31 = 0;
           leg->state_count_35 = 0;
           leg->state_count_51 = 0;
+          leg->state_count_53 = 0;
         }
       }
       break;
 
     case 5: //Early Swing
-      leg->state_5_counter++;
+      leg->state_swing_counter++;
       if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
         leg->sigm_done = true;
         leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -952,10 +982,10 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
         leg->Previous_Setpoint_Ankle_Pctrl = 0; 
       }
 
-      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_5_counter > ((leg->state_swing_duration/2)*(SwingPercentage/100)))) //LKL 9/8/2020  
+      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_swing_counter > ((leg->state_swing_duration/2)*(EarlySwingPercentage/100))) && (leg->state_swing_counter <= ((leg->state_swing_duration/2)*(100-LateSwingPercentage)/100))) //LKL 9/8/2020  
       {
         leg->state_count_51++;
-        leg->state_5_counter++;
+        leg->state_swing_counter++;
         if (leg->state_count_51 >= state_counter_th)
         {
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -965,17 +995,87 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
           leg->state_old = leg->state;
           leg->state = 1;
           leg->Min_FSR_Ratio_HeelMinusToe = 0;
-          leg->state_count_31 = 0;
+          leg->state_count_10 = 0;
+          leg->state_count_03 = 0;
           leg->state_count_13 = 0;
+          leg->state_count_31 = 0;
           leg->state_count_35 = 0;
           leg->state_count_51 = 0;
+          leg->state_count_53 = 0;
         }
       }
-      else if(( (leg->p_steps->curr_voltage_Toe > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  ||  (leg->p_steps->curr_voltage_Heel > leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) )  && (leg->state_5_counter < ((leg->state_swing_duration/2)*(SwingPercentage/100)))) //LKL 9/8/2020
+      else if(( (leg->p_steps->curr_voltage_Toe > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  ||  (leg->p_steps->curr_voltage_Heel > leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) )  && (leg->state_swing_counter < ((leg->state_swing_duration/2)*(EarlySwingPercentage/100)))) //LKL 9/8/2020
       {
-        leg->state_5_counter = 0;
+        leg->state_swing_counter = 0;
         leg->state_old = leg->state;
         leg->state = 1;
+      }else if ((leg->p_steps->curr_voltage_Toe > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) || (leg->p_steps->curr_voltage_Heel > leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)) //If the overall FSR reading is greater than the threshold we need to be in state 3
+      {
+        leg->state_swing_counter = 0;
+        leg->state_count_53++;
+        // if you're in the same state for more than state_counter_th it means that it is not noise
+        if (leg->state_count_13 >= state_counter_th)
+        {
+          if (abs(leg->Previous_Setpoint_Ankle_Pctrl) <= abs(leg->Setpoint_Ankle)) {
+              leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
+            } else {
+              leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl - (leg->Previous_Setpoint_Ankle_Pctrl - leg->Setpoint_Ankle) * leg->coef_in_3_steps; //Decrement when the new setpoint is lower than the old
+            }
+            leg->p_steps->Setpoint = leg->Setpoint_Ankle;
+            if (leg->p_steps->Setpoint == 0) {
+              leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+            }
+ 
+
+          leg->state_old = leg->state;
+          leg->state = 3;
+          leg->state_count_10 = 0;
+          leg->state_count_03 = 0;
+          leg->state_count_13 = 0;
+          leg->state_count_31 = 0;
+          leg->state_count_35 = 0;
+          leg->state_count_51 = 0;
+          leg->state_count_53 = 0;
+        }
+      }
+      break;
+      
+    case 0: //Swing
+      // This flag enables the "set to zero" procedure for the left ankle.
+      // When you're for at least 3 seconds in the same state, the torque reference is set to zero
+      leg->state_swing_counter++;
+      if (leg->set_2_zero == 1) {
+        leg->set_2_zero = 0;
+        leg->One_time_set_2_zero = 1;
+      }
+      else if ((leg->p_steps->curr_voltage_Toe > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) || (leg->p_steps->curr_voltage_Heel > leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)) //If the overall FSR reading is greater than the threshold we need to be in state 3
+      {
+        leg->state_swing_counter = 0;
+        leg->state_count_03++;
+        // if you're in the same state for more than state_counter_th it means that it is not noise
+        if (leg->state_count_03 >= state_counter_th)
+        {
+          if (abs(leg->Previous_Setpoint_Ankle_Pctrl) <= abs(leg->Setpoint_Ankle)) {
+              leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle_Pctrl) * leg->coef_in_3_steps; //Increment when the new setpoint is higher than the old
+            } else {
+              leg->p_steps->Setpoint = leg->Previous_Setpoint_Ankle_Pctrl - (leg->Previous_Setpoint_Ankle_Pctrl - leg->Setpoint_Ankle) * leg->coef_in_3_steps; //Decrement when the new setpoint is lower than the old
+            }
+            leg->p_steps->Setpoint = leg->Setpoint_Ankle;
+            if (leg->p_steps->Setpoint == 0) {
+              leg->Previous_Setpoint_Ankle_Pctrl = 0; //To avoid an issue where after reaching ZT, stopping walking, and restarting walking the torque decrements from the previous down to ZT again
+            }
+ 
+
+          leg->state_old = leg->state;
+          leg->state = 3;
+          leg->state_count_10 = 0;
+          leg->state_count_03 = 0;
+          leg->state_count_13 = 0;
+          leg->state_count_31 = 0;
+          leg->state_count_35 = 0;
+          leg->state_count_51 = 0;
+          leg->state_count_53 = 0;
+        }
       }
       
   }//end switch
@@ -1006,7 +1106,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
     case 1: //Late Swing
       // This flag enables the "set to zero" procedure for the left ankle.
       // When you're for at least 3 seconds in the same state, the torque reference is set to zero
-      leg->state_5_counter++; //  SS  11/4/2020
+      leg->state_swing_counter++; //  SS  11/4/2020
       if (leg->set_2_zero == 1) {
         leg->set_2_zero = 0;
         leg->One_time_set_2_zero = 1;
@@ -1044,7 +1144,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
           leg->state_count_43 = 0;
           leg->state_count_45 = 0;
           leg->state_count_51 = 0; 
-          leg->state_5_counter = 0;
+          leg->state_swing_counter = 0;
         }
       }
 
@@ -1085,7 +1185,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
           leg->state_count_43 = 0;
           leg->state_count_45 = 0;
           leg->state_count_51 = 0; 
-          leg->state_5_counter = 0;
+          leg->state_swing_counter = 0;
         }
       }
 
@@ -1120,7 +1220,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
           leg->state_count_43 = 0;
           leg->state_count_45 = 0;
           leg->state_count_51 = 0; 
-          leg->state_5_counter = 0;
+          leg->state_swing_counter = 0;
         }
       }
       
@@ -1140,8 +1240,8 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         }
   
       //transition from state 2 to state 1
-      else if ((leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->state_5_counter > ((leg->state_swing_duration/2)*(SwingPercentage/100))) ) {// Transition from state 2 to state 1// SS 1/27/2020   
-        leg->state_5_counter++;
+      else if ((leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->state_swing_counter > ((leg->state_swing_duration/2)*(EarlySwingPercentage/100))) ) {// Transition from state 2 to state 1// SS 1/27/2020   
+        leg->state_swing_counter++;
         leg->state_count_21++;
         if (leg->state_count_21 >= 4 * state_counter_th) 
         {
@@ -1198,7 +1298,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
           leg->state_count_43 = 0;
           leg->state_count_45 = 0;
           leg->state_count_51 = 0; 
-          leg->state_5_counter = 0;
+          leg->state_swing_counter = 0;
         }
       }
 
@@ -1229,15 +1329,15 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
           leg->state_count_43 = 0;
           leg->state_count_45 = 0;
           leg->state_count_51 = 0; 
-          leg->state_5_counter = 0;
+          leg->state_swing_counter = 0;
         }
       }
 
       //transition from state 2 to state 5
       //IDK HOW TO DO THIS ONE, USE SOME TIMER TO DETERMINE WHEN TO SWITCH TO STATE 1
-      else if ((leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  && (leg->state_5_counter <= ((leg->state_swing_duration/2)*(SwingPercentage/100)))) { //LKL 9/8/2020  
+      else if ((leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  && (leg->state_swing_counter <= ((leg->state_swing_duration/2)*(EarlySwingPercentage/100)))) { //LKL 9/8/2020  
         leg->state_count_25++;
-        leg->state_5_counter++;
+        leg->state_swing_counter++;
         if (leg->state_count_25 >= state_counter_th) 
         {
             leg->sigm_done = true;
@@ -1281,9 +1381,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
       }
 
       //Transition from state 3 to state 1
-      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_5_counter > ((leg->state_swing_duration/2)*(SwingPercentage/100)))) //LKL 9/8/2020   
+      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_swing_counter > ((leg->state_swing_duration/2)*(EarlySwingPercentage/100)))) //LKL 9/8/2020   
       {
-        leg->state_5_counter++;
+        leg->state_swing_counter++;
         leg->state_count_31++;
         if (leg->state_count_31 >= state_counter_th)
         {
@@ -1343,7 +1443,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
           leg->state_count_43 = 0;
           leg->state_count_45 = 0;
           leg->state_count_51 = 0; 
-          leg->state_5_counter = 0; //  SS  11/4/2020
+          leg->state_swing_counter = 0; //  SS  11/4/2020
         }
       }
 
@@ -1376,16 +1476,16 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
           leg->state_count_43 = 0;
           leg->state_count_45 = 0;
           leg->state_count_51 = 0; 
-          leg->state_5_counter = 0; //  SS  11/4/2020
+          leg->state_swing_counter = 0; //  SS  11/4/2020
         }
       }
 
       //Transition from state 3 to state 5
       //IDK HOW TO DO THIS ONE
-      else if( (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  &&  (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->state_5_counter <= ((leg->state_swing_duration/2)*(SwingPercentage/100))) ) //LKL 9/8/2020
+      else if( (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  &&  (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->state_swing_counter <= ((leg->state_swing_duration/2)*(EarlySwingPercentage/100))) ) //LKL 9/8/2020
       {
         leg->state_count_35++;
-        leg->state_5_counter++;
+        leg->state_swing_counter++;
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_35 >= state_counter_th)
         {
@@ -1429,10 +1529,10 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
       }
 
       //Transition from state 4 to state 1
-      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->state_5_counter > ((leg->state_swing_duration/2)*(SwingPercentage/100))))     // 
+      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->state_swing_counter > ((leg->state_swing_duration/2)*(EarlySwingPercentage/100))))     // 
       {
         leg->state_count_41++;
-        leg->state_5_counter++;
+        leg->state_swing_counter++;
         if (leg->state_count_41 >= state_counter_th)
         {
             leg->sigm_done = true;
@@ -1491,7 +1591,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
           leg->state_count_43 = 0;
           leg->state_count_45 = 0;
           leg->state_count_51 = 0; 
-          leg->state_5_counter = 0; //  SS  11/4/2020
+          leg->state_swing_counter = 0; //  SS  11/4/2020
         }
       }
 
@@ -1532,16 +1632,16 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
           leg->state_count_43 = 0;
           leg->state_count_45 = 0;
           leg->state_count_51 = 0; 
-          leg->state_5_counter = 0; //  SS  11/4/2020
+          leg->state_swing_counter = 0; //  SS  11/4/2020
         }
       }
 
       //Transition from state 4 to state 5
       //IDK HOW TO DO THIS ONE
-      else if( (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  &&  (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->state_5_counter <= ((leg->state_swing_duration/2)*(SwingPercentage/100))) ) //LKL 9/8/2020
+      else if( (leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  &&  (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) && (leg->state_swing_counter <= ((leg->state_swing_duration/2)*(EarlySwingPercentage/100))) ) //LKL 9/8/2020
       {
         leg->state_count_45++;
-        leg->state_5_counter++;
+        leg->state_swing_counter++;
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_45 >= state_counter_th)
         {
@@ -1572,7 +1672,7 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
     break;
 
     case 5: //Early Swing
-      leg->state_5_counter++;
+      leg->state_swing_counter++;
       if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
         leg->sigm_done = true;
         leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -1585,10 +1685,10 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
         leg->Previous_Setpoint_Ankle_Pctrl = 0; 
       }
 
-      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_5_counter > ((leg->state_swing_duration/2)*(SwingPercentage/100)))) //LKL 9/8/2020  
+      else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_swing_counter > ((leg->state_swing_duration/2)*(EarlySwingPercentage/100)))) //LKL 9/8/2020  
       {
         leg->state_count_51++;
-        leg->state_5_counter++;
+        leg->state_swing_counter++;
         if (leg->state_count_51 >= state_counter_th)
         {
             leg->sigm_done = true;
@@ -1615,9 +1715,9 @@ void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
           leg->state_count_45 = 0;
           leg->state_count_51 = 0;
         }
-      }else if (((leg->p_steps->curr_voltage_Toe > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) || (leg->p_steps->curr_voltage_Heel > leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref))  && (leg->state_5_counter < ((leg->state_swing_duration/2)*(SwingPercentage/100)))) //LKL 9/8/2020  
+      }else if (((leg->p_steps->curr_voltage_Toe > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) || (leg->p_steps->curr_voltage_Heel > leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref))  && (leg->state_swing_counter < ((leg->state_swing_duration/2)*(EarlySwingPercentage/100)))) //LKL 9/8/2020  
       {
-        leg->state_5_counter++;
+        leg->state_swing_counter++;
         leg->state_old = leg->state;
         leg->state = 1;
       }

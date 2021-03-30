@@ -445,11 +445,11 @@ void rotate_motor() {
     if ((left_leg->state == 5) && (left_leg->old_state == 2 || left_leg->old_state == 3 || left_leg->old_state == 4)) {// SS 11/25/2020
       left_leg->state_swing_start_time = millis();
     }
-    if ((left_leg->state == 2 || left_leg->state == 3 || left_leg->state == 4) && (left_leg->old_state == 1 || left_leg->old_state == 5)) {// SS 11/25/2020
+    if ((left_leg->state == 2 || left_leg->state == 3 || left_leg->state == 4) && (left_leg->old_state == 1 || left_leg->old_state == 5 || left_leg->old_state == 0)) {// SS 11/25/2020
       left_leg->state_swing_stop_time = millis();
     }
     if (left_leg->state_swing_stop_time > left_leg->state_swing_start_time) {// SS 11/25/2020
-      if ((2*left_leg->state_swing_duration) < (left_leg->state_swing_stop_time - left_leg->state_swing_start_time)) //if current state swing is more than 2 times of previous swing make it equal to 1000.
+      if (((3*left_leg->state_swing_duration) < (left_leg->state_swing_stop_time - left_leg->state_swing_start_time)) || ((left_leg->state_swing_stop_time - left_leg->state_swing_start_time) > 5000)) //if current state swing is more than 2 times of previous swing make it equal to 1000.
         left_leg->state_swing_start_time = left_leg->state_swing_stop_time-1000; 
       left_leg->state_swing_duration = left_leg->state_swing_stop_time - left_leg->state_swing_start_time;
       if (left_leg->state_swing_start_time == 0) 
@@ -485,11 +485,11 @@ void rotate_motor() {
     if ((right_leg->state == 5) && (right_leg->old_state == 2 || right_leg->old_state == 3 || right_leg->old_state == 4)) {// SS 11/25/2020
       right_leg->state_swing_start_time = millis();
     }
-    if ((right_leg->state == 2 || right_leg->state == 3 || right_leg->state == 4) && (right_leg->old_state == 1 || right_leg->old_state == 5)) {// SS 11/25/2020
+    if ((right_leg->state == 2 || right_leg->state == 3 || right_leg->state == 4) && (right_leg->old_state == 1 || right_leg->old_state == 5 || right_leg->old_state == 0)) {// SS 11/25/2020
       right_leg->state_swing_stop_time = millis();
     }
     if (right_leg->state_swing_stop_time > right_leg->state_swing_start_time) {// SS 11/25/2020
-      if ((2*right_leg->state_swing_duration) < (right_leg->state_swing_stop_time - right_leg->state_swing_start_time)) //if current state swing is more than 2 times of previous swing make it equal to 1000.
+      if (((3*right_leg->state_swing_duration) < (right_leg->state_swing_stop_time - right_leg->state_swing_start_time)) || ((right_leg->state_swing_stop_time - right_leg->state_swing_start_time) > 5000)) //if current state swing is more than 2 times of previous swing make it equal to 1000.
         right_leg->state_swing_start_time = right_leg->state_swing_stop_time-1000; 
       right_leg->state_swing_duration = right_leg->state_swing_stop_time - right_leg->state_swing_start_time;
       if (right_leg->state_swing_start_time == 0) 
@@ -586,13 +586,13 @@ void rotate_motor() {
     }
 
     left_leg->N3 = Control_Adjustment(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
-                                      left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle,
+                                      left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle, left_leg->p_Dorsi_Setpoint_Ankle,
                                       left_leg->p_Setpoint_Ankle_Pctrl, left_leg->Previous_p_Setpoint_Ankle_Pctrl, Control_Mode, left_leg->Prop_Gain,
                                       left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->Max_FSR_Ratio,
                                       &left_leg->FSR_Ratio_Heel, &left_leg->Max_FSR_Ratio_Heel, &left_leg->FSR_Ratio_Toe, &left_leg->Max_FSR_Ratio_Toe,
                                       &left_leg->Max_FSR_Ratio_HeelMinusToe, &left_leg->Min_FSR_Ratio_HeelMinusToe);
     right_leg->N3 = Control_Adjustment(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps,
-                                       right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle,
+                                       right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle, right_leg->p_Dorsi_Setpoint_Ankle,
                                        right_leg->p_Setpoint_Ankle_Pctrl, right_leg->Previous_p_Setpoint_Ankle_Pctrl, Control_Mode, right_leg->Prop_Gain,
                                        right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio,
                                        &right_leg->FSR_Ratio_Heel, &right_leg->Max_FSR_Ratio_Heel, &right_leg->FSR_Ratio_Toe, &right_leg->Max_FSR_Ratio_Toe,

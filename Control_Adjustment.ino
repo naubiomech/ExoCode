@@ -173,7 +173,7 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
 //------------------------------------------------------------------------------
 
 
-double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l, double* p_Setpoint_Ankle_l, double * p_Setpoint_Ankle_Pctrl_l, double * Previous_p_Setpoint_Ankle_Pctrl_l, int Control_Mode_l, double prop_gain_l, double taking_baseline_l,
+double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l, double* p_Setpoint_Ankle_l, double* p_Dorsi_Setpoint_Ankle_l, double * p_Setpoint_Ankle_Pctrl_l, double * Previous_p_Setpoint_Ankle_Pctrl_l, int Control_Mode_l, double prop_gain_l, double taking_baseline_l,
                           double *p_FSR_Ratio, double* p_Max_FSR_Ratio, double *p_FSR_Ratio_Heel, double* p_Max_FSR_Ratio_Heel, double *p_FSR_Ratio_Toe, double* p_Max_FSR_Ratio_Toe, double* p_Max_FSR_Ratio_HeelMinusToe, double* p_Min_FSR_Ratio_HeelMinusToe) {  //  SS  12/14/2020
 
   // Control Mode 2: Balance control
@@ -254,26 +254,46 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
           if ((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) < (*p_Min_FSR_Ratio_HeelMinusToe))  //  SS  3/9/2021
             (*p_Min_FSR_Ratio_HeelMinusToe) = *p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe;
         }
-        if ((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) <= 0){
+        if (((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) < 0)  || ((((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) == 0) && (FSR_Ratio_HeelMinusToe < 0)))){
           if (((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) < leg->Hip_Ratio)  //  SS  3/9/2021
             leg->Hip_Ratio = (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe);
         }else{
-          leg->Hip_Ratio = (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe);  //  SS  3/9/2021
+          if ((1 > (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) && (FSR_Ratio_HeelMinusToe <= (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)))
+            leg->Hip_Ratio = 1;
+          else
+            leg->Hip_Ratio = (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe);
         }
+        FSR_Ratio_HeelMinusToe = *p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe;
         
         // while updating the ratio value still continue to provide the control
-        if ((p_steps_l->Setpoint ) > 0) { //depending on the leg the sign changes
-          *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
-          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (leg->Hip_Ratio));  //  SS  3/9/2021
-          *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
-        }
-        else if ((p_steps_l->Setpoint ) < 0) {
-          *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
-          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (leg->Hip_Ratio));  //  SS  3/9/2021
-          *p_Setpoint_Ankle_Pctrl_l = min(-Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
-        } else {
-          *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
-          *p_Setpoint_Ankle_Pctrl_l = 0;
+        if(FSR_Ratio_HeelMinusToe <= 0){
+          if ((p_steps_l->Setpoint ) > 0) { //depending on the leg the sign changes
+            *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
+            *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (leg->Hip_Ratio));  //  SS  3/9/2021
+            *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
+          }
+          else if ((p_steps_l->Setpoint ) < 0) {
+            *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
+            *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (leg->Hip_Ratio));  //  SS  3/9/2021
+            *p_Setpoint_Ankle_Pctrl_l = min(-Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
+          } else {
+            *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
+            *p_Setpoint_Ankle_Pctrl_l = 0;
+          }
+        }else{
+          if ((*p_Dorsi_Setpoint_Ankle_l) < 0) { //depending on the leg the sign changes
+            *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
+            *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (-*p_Dorsi_Setpoint_Ankle_l) * (leg->Hip_Ratio));  //  SS  3/9/2021
+            *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
+          }
+          else if ((*p_Dorsi_Setpoint_Ankle_l) > 0) {
+            *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
+            *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (-*p_Dorsi_Setpoint_Ankle_l) * (leg->Hip_Ratio));  //  SS  3/9/2021
+            *p_Setpoint_Ankle_Pctrl_l = min(-Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
+          } else {
+            *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
+            *p_Setpoint_Ankle_Pctrl_l = 0;
+          }
         }
       }
    }
@@ -347,13 +367,19 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     if ((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) < (*p_Min_FSR_Ratio_HeelMinusToe))  //  SS  3/9/2021
       (*p_Min_FSR_Ratio_HeelMinusToe) = *p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe;
 
-    if ((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) <= 0){
+
+
+    if (((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) < 0)  || ((((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) == 0) && (FSR_Ratio_HeelMinusToe < 0)))){
       if (((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) < leg->Hip_Ratio)  //  SS  3/9/2021
         leg->Hip_Ratio = (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe);
     }else{
-      leg->Hip_Ratio = (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe);
+      if ((1 > (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) && (FSR_Ratio_HeelMinusToe <= (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)))
+        leg->Hip_Ratio = 1;
+      else
+        leg->Hip_Ratio = (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe);
     }
-
+    FSR_Ratio_HeelMinusToe = *p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe;
+    
     if (Control_Mode_l == 2) { // Balance control
 
       *p_Setpoint_Ankle_Pctrl_l = Balance_Torque_ref_based_on_Steady(leg);
@@ -384,24 +410,46 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     }
 
     else if (Control_Mode_l == 4 || Control_Mode_l == 6)  {
-      if ((p_steps_l->Setpoint ) > 0) {
-        *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
-        *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (leg->Hip_Ratio)); // the difference here is that we do it as a function of the FSR calibration  //  SS  3/9/2021
-        *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
-        if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
-          leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
+      if (FSR_Ratio_HeelMinusToe <= 0){
+        if ((p_steps_l->Setpoint ) > 0) {
+          *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
+          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (leg->Hip_Ratio)); // the difference here is that we do it as a function of the FSR calibration  //  SS  3/9/2021
+          *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
+          if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
+            leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
+          }
         }
-      }
-      else if ((p_steps_l->Setpoint ) < 0) {
-        *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
-        *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (leg->Hip_Ratio)); // the difference here is that we do it as a function of the FSR calibration  //  SS  3/9/2021
-        *p_Setpoint_Ankle_Pctrl_l = min(-Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
-        if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
-          leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
+        else if ((p_steps_l->Setpoint ) < 0) {
+          *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
+          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (p_steps_l->Setpoint ) * (leg->Hip_Ratio)); // the difference here is that we do it as a function of the FSR calibration  //  SS  3/9/2021
+          *p_Setpoint_Ankle_Pctrl_l = min(-Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
+          if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
+            leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
+          }
+        } else {
+          *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
+          *p_Setpoint_Ankle_Pctrl_l = 0;
         }
-      } else {
-        *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
-        *p_Setpoint_Ankle_Pctrl_l = 0;
+      }else{
+          if ((*p_Dorsi_Setpoint_Ankle_l) < 0) {
+          *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
+          *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (-*p_Dorsi_Setpoint_Ankle_l) * (leg->Hip_Ratio)); // the difference here is that we do it as a function of the FSR calibration  //  SS  3/9/2021
+          *p_Setpoint_Ankle_Pctrl_l = min(Max_Prop, *p_Setpoint_Ankle_Pctrl_l);
+          if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
+            leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
+          }
+        }
+        else if ((*p_Dorsi_Setpoint_Ankle_l) > 0) {
+          *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
+          *p_Setpoint_Ankle_Pctrl_l = max(-Max_Prop, (-*p_Dorsi_Setpoint_Ankle_l) * (leg->Hip_Ratio)); // the difference here is that we do it as a function of the FSR calibration  //  SS  3/9/2021
+          *p_Setpoint_Ankle_Pctrl_l = min(-Min_Prop, *p_Setpoint_Ankle_Pctrl_l);
+          if (abs(leg->Setpoint_Ankle_Pctrl) > abs(leg->MaxPropSetpoint)) {
+            leg->MaxPropSetpoint = leg->Setpoint_Ankle_Pctrl; // Get max setpoint for current stance phase
+          }
+        } else {
+          *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
+          *p_Setpoint_Ankle_Pctrl_l = 0;
+        }
       }
       return N3_l; // No modification in the shaping function which is disabled
     }
