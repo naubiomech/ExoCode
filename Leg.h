@@ -91,7 +91,9 @@ struct Leg {
   double Max_FSR_Ratio_Heel;  //  SS  12/14/2020
   double FSR_Ratio_Toe;  //  SS  12/14/2020
   double Max_FSR_Ratio_Toe;  //  SS  12/14/2020
-
+  double Max_FSR_Ratio_HeelMinusToe;  //  SS  3/9/2021
+  double Min_FSR_Ratio_HeelMinusToe;  //  SS  3/9/2021
+  double Hip_Ratio = 0; //  SS  3/9/2021
   // Combined_FSR.h
   double fsr_Combined_peak_ref;
   double Curr_Combined;
@@ -147,6 +149,7 @@ struct Leg {
   double Previous_Setpoint_Ankle_Pctrl = 0;
   double* p_Setpoint_Ankle = &Setpoint_Ankle;
   double* p_Setpoint_Ankle_Pctrl = &Setpoint_Ankle_Pctrl;
+  double* Previous_p_Setpoint_Ankle_Pctrl = p_Setpoint_Ankle_Pctrl;
   double Setpoint_earlyStance = 0.25 * Setpoint_Ankle;
   double Dorsi_Setpoint_Ankle;
   double Previous_Dorsi_Setpoint_Ankle;
@@ -183,6 +186,7 @@ struct Leg {
   double Old_PID_Setpoint = 0.0;
 
   double N3 = 200;
+  double N5 = 200;
   double N2 = 4;
   double N1 = 4;
 
@@ -232,9 +236,6 @@ struct Leg {
   int state_count_43 = 0;
   int state_count_45 = 0;
   int state_count_51 = 0; 
-  int state_count_52 = 0;
-  int state_count_53 = 0;
-  int state_count_54 = 0;
   int state_5_counter = 0; 
 
   double state_3_start_time = 0;

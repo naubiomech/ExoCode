@@ -12,8 +12,8 @@ double Change_PID_Setpoint_Sigm(double New_PID_Setpoint_l, double Current_PID_Se
   //  }
   double sig = 1 / (1 + exp(-exp_mult_l * ((-N_l / 2 + n_iter_l + 1)) * Ts_l));
   Current_PID_Setpoint = Old_PID_Setpoint_l + (New_PID_Setpoint_l - Old_PID_Setpoint_l) * sig;
-  *P_Test1 = sig * 1000;
-  *P_Test2 = Old_PID_Setpoint_l;
+//  *P_Test1 = New_PID_Setpoint_l;
+//  *P_Test2 = Old_PID_Setpoint_l;
   return Current_PID_Setpoint;
 }
 
@@ -81,6 +81,9 @@ void PID_Sigm_Curve(Leg* leg) {
       else if (leg->state == 1) {
         leg->N_step = leg->N1;
       }
+      else if (leg->state == 5) {
+        leg->N_step = leg->N5;
+      }
 
       //Optimization-------------------------------
       if (Flag_HLO) {
@@ -113,7 +116,7 @@ void PID_Sigm_Curve(Leg* leg) {
       leg->FLAG_UPDATE_VALUES = false;
     }
     //---------------------------------------------------------
-    
+
     if (leg->sigm_done == false && leg->n_iter < leg->N_step)
     {
       //Optimization--------------------------------------------------------

@@ -22,14 +22,14 @@ void send_data_message_wc() //with COP
   else if (!iOS_Flag)
   {
   //Right Leg
-  data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
+  data_to_send[0] = -(right_leg->sign * right_leg->Average_Trq);
   //data_to_send[0] = right_leg->Average_Trq*69.559*4*0.36/0.22; //Futek load cell
   data_to_send[1] = right_leg->state;
   data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
 
   if (FLAG_ONE_TOE_SENSOR) {
-    data_to_send[3] = -right_leg->Average_Trq; //(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
-    data_to_send[4] = current(right_leg->motor_current_pin);//(right_leg->FSR_Combined_Average);
+    data_to_send[3] = right_leg->FSR_Toe_Average;//-right_leg->Average_Trq; //(right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
+    data_to_send[4] = right_leg->FSR_Heel_Average;//current(right_leg->motor_current_pin);//(right_leg->FSR_Combined_Average);
   } else if (FLAG_BALANCE) {
     //data_to_send[3] = 12;//right_leg->FSR_Toe_Average);
     //data_to_send[4] = 13;//(right_leg->FSR_Heel_Average);
@@ -39,27 +39,27 @@ void send_data_message_wc() //with COP
   } else {
 //    data_to_send[3] = (right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Toe_peak_ref);
 //    data_to_send[4] = (right_leg->FSR_Toe_Average);
-    data_to_send[3] = (right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
-    data_to_send[4] = (right_leg->FSR_Combined_Average);
+    data_to_send[3] = right_leg->FSR_Toe_Average;
+    data_to_send[4] = right_leg->FSR_Heel_Average;
   }
 
   //Left Leg
-  data_to_send[5] =  (left_leg->sign * left_leg->Average_Trq);
+  data_to_send[5] =  -(left_leg->sign * left_leg->Average_Trq);
   //data_to_send[5] = left_leg->Average_Trq*100.000; //Transducer raw voltage output
   data_to_send[6] = left_leg->state;
   data_to_send[7] = (left_leg->sign * left_leg->PID_Setpoint);
 
   if (FLAG_ONE_TOE_SENSOR) {
-    data_to_send[8] =  -left_leg->Average_Trq; //(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
-    data_to_send[9] = current(left_leg->motor_current_pin);// (left_leg->FSR_Combined_Average);
+    data_to_send[8] =  left_leg->FSR_Toe_Average;//-left_leg->Average_Trq; //(left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
+    data_to_send[9] = left_leg->FSR_Heel_Average;//current(left_leg->motor_current_pin);// (left_leg->FSR_Combined_Average);
   } else if (FLAG_BALANCE) {
     //data_to_send[8] = (left_leg->FSR_Toe_Average);
     //data_to_send[9] = (left_leg->FSR_Heel_Average);
   } else {
 //    data_to_send[8] = (left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Toe_peak_ref);
 //    data_to_send[9] = (left_leg->FSR_Toe_Average);
-    //data_to_send[8] = (left_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
-    //data_to_send[9] = (left_leg->FSR_Combined_Average);
+    data_to_send[8] = left_leg->FSR_Toe_Average;
+    data_to_send[9] = left_leg->FSR_Heel_Average;
   }
 
   // Signals

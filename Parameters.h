@@ -33,6 +33,7 @@ int clean_flag = 1;
 double Ts = 0.001;
 // the smoothing value, i.e. the sigmoind number of steps as a function of the EXO state
 double N3 = 200;
+double N5 = 200;
 double N2 = 4;
 double N1 = 4;
 
@@ -68,7 +69,7 @@ double FSR_Ratio;
 
 // ===== Proportional Control Parameters =====
 double Max_Prop = 35; //Was 35, GO 9/15/20
-double Min_Prop = 0;
+double Min_Prop = -35;
 
 // ===== Auto KF Parameters =====
 double max_ERR = 0.20;
