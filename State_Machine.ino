@@ -844,6 +844,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
       // This flag enables the "set to zero" procedure for the left ankle.
       // When you're for at least 3 seconds in the same state, the torque reference is set to zero
       leg->state_swing_counter++;
+      leg->state_stance_counter = 0;//  SS  4/9/2021
       if (leg->set_2_zero == 1) {
         leg->set_2_zero = 0;
         leg->One_time_set_2_zero = 1;
@@ -868,6 +869,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
 
           leg->state_old = leg->state;
           leg->state = 3;
+          leg->state_stance_counter = 0;//  SS  4/9/2021
           leg->state_count_10 = 0;
           leg->state_count_03 = 0;
           leg->state_count_13 = 0;
@@ -880,6 +882,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
       else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_swing_counter > ((leg->state_swing_duration/2)*((100-LateSwingPercentage)/100))))
       {
         leg->state_swing_counter++;
+        leg->state_stance_counter = 0;//  SS  4/9/2021
         leg->state_count_10++;
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_10 >= state_counter_th)
@@ -903,6 +906,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
 
     case 3: //Late Stance
       leg->state_swing_counter = 0;
+      leg->state_stance_counter++;//  SS  4/9/2021
       if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
         leg->sigm_done = true;
         leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -918,6 +922,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
       else if ((leg->p_steps->curr_voltage_Toe <= leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) && (leg->p_steps->curr_voltage_Heel <= leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)  && (leg->state_swing_counter > ((leg->state_swing_duration/2)*(EarlySwingPercentage/100))) && (leg->state_swing_counter <= ((leg->state_swing_duration/2)*((100-LateSwingPercentage)/100))) )
       {
         leg->state_swing_counter++;
+        leg->state_stance_counter = 0;//  SS  4/9/2021
         leg->state_count_31++;
         if (leg->state_count_31 >= state_counter_th)
         {
@@ -947,6 +952,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
       {
         leg->state_count_35++;
         leg->state_swing_counter++;
+        leg->state_stance_counter = 0;//  SS  4/9/2021
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_35 >= state_counter_th)
         {
@@ -970,6 +976,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
 
     case 5: //Early Swing
       leg->state_swing_counter++;
+      leg->state_stance_counter = 0;//  SS  4/9/2021
       if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
         leg->sigm_done = true;
         leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -986,6 +993,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
       {
         leg->state_count_51++;
         leg->state_swing_counter++;
+        leg->state_stance_counter = 0;//  SS  4/9/2021
         if (leg->state_count_51 >= state_counter_th)
         {
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -1007,6 +1015,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
       else if(( (leg->p_steps->curr_voltage_Toe > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref)  ||  (leg->p_steps->curr_voltage_Heel > leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref) )  && (leg->state_swing_counter < ((leg->state_swing_duration/2)*(EarlySwingPercentage/100)))) //LKL 9/8/2020
       {
         leg->state_swing_counter = 0;
+        leg->state_stance_counter = 0;//  SS  4/9/2021
         leg->state_old = leg->state;
         leg->state = 1;
       }else if ((leg->p_steps->curr_voltage_Toe > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) || (leg->p_steps->curr_voltage_Heel > leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)) //If the overall FSR reading is greater than the threshold we need to be in state 3
@@ -1029,6 +1038,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
 
           leg->state_old = leg->state;
           leg->state = 3;
+          leg->state_stance_counter = 0;//  SS  4/9/2021
           leg->state_count_10 = 0;
           leg->state_count_03 = 0;
           leg->state_count_13 = 0;
@@ -1044,13 +1054,14 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
       // This flag enables the "set to zero" procedure for the left ankle.
       // When you're for at least 3 seconds in the same state, the torque reference is set to zero
       leg->state_swing_counter++;
+      leg->state_stance_counter = 0;//  SS  4/9/2021
       if (leg->set_2_zero == 1) {
         leg->set_2_zero = 0;
         leg->One_time_set_2_zero = 1;
       }
       else if ((leg->p_steps->curr_voltage_Toe > leg->fsr_percent_thresh_Toe * leg->fsr_Toe_peak_ref) || (leg->p_steps->curr_voltage_Heel > leg->fsr_percent_thresh_Heel * leg->fsr_Heel_peak_ref)) //If the overall FSR reading is greater than the threshold we need to be in state 3
       {
-        leg->state_swing_counter = 0;
+        leg->state_swing_counter = 0;//  SS  4/9/2021
         leg->state_count_03++;
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_03 >= state_counter_th)
@@ -1068,6 +1079,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
 
           leg->state_old = leg->state;
           leg->state = 3;
+          leg->state_stance_counter = 0;//  SS  4/9/2021
           leg->state_count_10 = 0;
           leg->state_count_03 = 0;
           leg->state_count_13 = 0;
@@ -1082,7 +1094,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
   // Adjust the torque reference as a function of the step
   ref_step_adj(leg);
 
-  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) && leg->state == 3) { //GO 4/21/19
+  if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) && (leg->state == 3) && (leg->state_stance_counter > 0)) { //GO 4/21/19  //  SS  4/9/2021
     leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
   }
   
@@ -1103,6 +1115,9 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
 void State_Machine_BangBang_Hip(Leg * leg) {  // SS 11/17/2020
   switch (leg->state)
   {
+    if (leg->state == 0) //  SS  4/9/2021
+      leg->state = 1;
+      
     case 1: //Late Swing
       // This flag enables the "set to zero" procedure for the left ankle.
       // When you're for at least 3 seconds in the same state, the torque reference is set to zero

@@ -258,7 +258,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
           if (((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) < leg->Hip_Ratio)  //  SS  3/9/2021
             leg->Hip_Ratio = (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe);
         }else{
-          if ((1 > (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) && (FSR_Ratio_HeelMinusToe <= (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)))
+          if ((1 > (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) && ((FSR_Ratio_HeelMinusToe <= (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) || (FSR_Ratio_HeelMinusToe == 0)))
             leg->Hip_Ratio = 1;
           else
             leg->Hip_Ratio = (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe);
@@ -373,7 +373,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       if (((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) < leg->Hip_Ratio)  //  SS  3/9/2021
         leg->Hip_Ratio = (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe);
     }else{
-      if ((1 > (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) && (FSR_Ratio_HeelMinusToe <= (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)))
+      if ((1 > (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) && ((FSR_Ratio_HeelMinusToe <= (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe))  || (FSR_Ratio_HeelMinusToe == 0)))
         leg->Hip_Ratio = 1;
       else
         leg->Hip_Ratio = (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe);

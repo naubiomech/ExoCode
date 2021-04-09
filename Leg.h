@@ -240,6 +240,7 @@ struct Leg {
   int state_count_51 = 0; 
   int state_count_53 = 0;
   int state_swing_counter = 0; 
+  int state_stance_counter = 0; //  SS  4/9/2021
 
   double state_3_start_time = 0;
   double state_1_start_time = 0;
