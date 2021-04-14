@@ -58,6 +58,7 @@ void FSR_calibration()
     left_leg->Curr_Toe = fsr(left_leg->fsr_sense_Toe);
     right_leg->Curr_Toe = fsr(right_leg->fsr_sense_Toe);
 
+    /*
     left_leg->Curr_Heel = fsr(left_leg->fsr_sense_Heel);
     right_leg->Curr_Heel = fsr(right_leg->fsr_sense_Heel);
 
@@ -73,9 +74,9 @@ void FSR_calibration()
     {
       right_leg->fsr_Combined_peak_ref = right_leg->Curr_Combined;
     }
-
+    */
+    
     // Toe
-
     if (left_leg->Curr_Toe > left_leg->fsr_Toe_peak_ref)
     {
       left_leg->fsr_Toe_peak_ref = left_leg->Curr_Toe;
@@ -97,6 +98,7 @@ void FSR_calibration()
     }
 
     // Heel
+    /*
     if (left_leg->Curr_Heel > left_leg->fsr_Heel_peak_ref)
     {
       left_leg->fsr_Heel_peak_ref = left_leg->Curr_Heel;
@@ -106,6 +108,7 @@ void FSR_calibration()
     {
       right_leg->fsr_Heel_peak_ref = right_leg->Curr_Heel;
     }
+    */
 
   } else {
 
@@ -147,7 +150,9 @@ double fsr(const unsigned int pin) {
     if (FSR_Sensors_type == 40)
       // This to return the force instead of the Voltage
       double Vo = p[0] * Vo*Vo*Vo + p[1] * Vo*Vo + p[2] * Vo + p[3];
-      Vo = (Vo>0) ? Vo: 0;
+      Vo = (Vo>0.2) ? Vo: 0;
+      //If less than
+      
       //Vo = max(0, p[0] * pow(Vo,3) + p[1] * pow(Vo,2) + p[2] * Vo + p[3]); // add the max cause cannot be negative force
   }
   
