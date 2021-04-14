@@ -438,7 +438,8 @@ void rotate_motor() {
 
     }
     // end modification
-
+    left_leg->side = false;
+    right_leg->side = true;
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
 

@@ -41,6 +41,7 @@ struct Leg {
   
 
   double sign = 1;
+  bool side; // true for right, false for left
 
   // In A_Exo post_includes
   unsigned int pin_err;
@@ -94,6 +95,8 @@ struct Leg {
   double Max_FSR_Ratio_HeelMinusToe;  //  SS  3/9/2021
   double Min_FSR_Ratio_HeelMinusToe;  //  SS  3/9/2021
   double Hip_Ratio = 0; //  SS  3/9/2021
+  double Ankle_Ratio = 0; //  SS  4/12/2021
+  double Prop_Ratio = 0; //  SS  4/14/2021
   // Combined_FSR.h
   double fsr_Combined_peak_ref;
   double Curr_Combined;
