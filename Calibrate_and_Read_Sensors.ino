@@ -33,8 +33,13 @@ void FSR_calibration()
 
     right_leg->fsr_Combined_peak_ref = 0;
     left_leg->fsr_Combined_peak_ref = 0;
+    
     left_leg->fsr_Toe_peak_ref = 0;
     right_leg->fsr_Toe_peak_ref = 0;
+
+    left_leg->fsr_Toe_trough_ref = 1000;
+    right_leg->fsr_Toe_trough_ref = 1000;
+    
     left_leg->fsr_Heel_peak_ref = 0;
     right_leg->fsr_Heel_peak_ref = 0;
 
@@ -81,6 +86,16 @@ void FSR_calibration()
       right_leg->fsr_Toe_peak_ref = right_leg->Curr_Toe;
     }
 
+    if (left_leg->Curr_Toe < left_leg->fsr_Toe_trough_ref)
+    {
+      left_leg->fsr_Toe_trough_ref = left_leg->Curr_Toe;
+    }
+
+    if (right_leg->Curr_Toe < right_leg->fsr_Toe_trough_ref)
+    {
+      right_leg->fsr_Toe_trough_ref = right_leg->Curr_Toe;
+    }
+
     // Heel
     if (left_leg->Curr_Heel > left_leg->fsr_Heel_peak_ref)
     {
@@ -103,7 +118,7 @@ void FSR_calibration()
 
 double get_torq(Leg* leg) {
  // double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value); //  For the TRT-500 Torque Sensor
-  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*45.000; // For the custom anchor sensor
+  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*43.000; // For the custom anchor sensor
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }
 
@@ -133,7 +148,8 @@ double fsr(const unsigned int pin) {
   else {
     if (FSR_Sensors_type == 40)
       // This to return the force instead of the Voltage
-      Vo = max(0, p[0] * pow(Vo, 3) + p[1] * pow(Vo, 2) + p[2] * Vo + p[3]); // add the max cause cannot be negative force
+      Vo = p[0] * Vo*Vo*Vo + p[1] * Vo*Vo + p[2] * Vo + p[3];
+      Vo = (Vo>0.2) ? Vo: 0; //If the measured FSR value is not greater than 0.2, set it to zero. Prevents erroneous state changes during benchtop tests
   }
 
   return Vo;

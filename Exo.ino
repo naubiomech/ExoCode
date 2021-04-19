@@ -44,7 +44,7 @@ const unsigned int zero = 2048;//1540;
 #include "resetMotorIfError.h"
 #include "ATP.h"
 #include "Trial_Data.h"
-bool iOS_Flag = 1;
+bool iOS_Flag = 0;
 int streamTimerCountNum = 0;
 //----------------------------------------------------------------------------------
 
@@ -89,7 +89,6 @@ void setup()
   // set the led
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
-  //Serial.println("LED SET");
 
   // set pin mode for motor pin
   pinMode(onoff, OUTPUT); //Enable disable the motors
@@ -102,11 +101,9 @@ void setup()
 //  #endif
 
   // Fast torque calibration
-  //torque_calibration();
-  //Serial.println("Torque Cal Done");
+  torque_calibration();
 
   digitalWrite(LED_PIN, HIGH);
-  //Serial.println("Wrote LED_High");
 
   // Initialize power monitor settings
   #if BOARD_VERSION == DUAL_BOARD_REV3
@@ -124,11 +121,6 @@ void setup()
   WireObj.write(Cal);        //Write the calibration value to the calibration register
   WireObj.endTransmission(); //End the transmission and calibration
   delay(100);
-  
-  int startVolt = readBatteryVoltage(); //Read the startup battery voltage
-  Serial.println(startVolt);
-  batteryData[0] = startVolt;
-  send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware
 
   Serial.println("Setup complete");
   
@@ -325,6 +317,13 @@ void check_FSR_calibration() {
 
   if (FSR_CAL_FLAG) {
     FSR_calibration();
+    // Activate another baseline call after FSR cal completion
+    left_leg->FSR_baseline_FLAG = 1;
+    right_leg->FSR_baseline_FLAG = 1;
+    left_leg->p_steps->count_plant_base = 0;
+    right_leg->p_steps->count_plant_base = 0;
+    right_leg->p_steps->flag_start_plant = false;
+    left_leg->p_steps->flag_start_plant = false;
   }
 
   // for the proportional control

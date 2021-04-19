@@ -83,6 +83,7 @@ struct Leg {
   double fsr_Toe = 0;
   double fsr_Heel_peak_ref = 0;
   double fsr_Toe_peak_ref = 0;
+  double fsr_Toe_trough_ref = 1000;
 
   double fsr_percent_thresh_Heel = 0.2;
   double fsr_percent_thresh_Toe = 0.2;

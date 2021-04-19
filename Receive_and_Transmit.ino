@@ -942,7 +942,10 @@ void receive_and_transmit()
     case 'U':
       data_to_send_point[0] = (double) VERSION;
       data_to_send_point[1] = (double) BOARD_VERSION;
-      send_command_message('U', data_to_send_point, 2);
+      int startVolt = readBatteryVoltage(); //Read the startup battery voltage
+      batteryData[0] = startVolt;
+      data_to_send_point[2] = (double) startVolt;
+      send_command_message('U', data_to_send_point, 3);
       break;
 
     case 'z':

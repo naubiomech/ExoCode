@@ -64,7 +64,7 @@ bool STIM_ACTIVATED = false;
 bool Trigger_left = false;
 
 // Variables for the Control Mode
-int Control_Mode = 100; // 1 for time 0 for volt 2 for proportional gain 3 for pivot proportional control
+int Control_Mode = 4; // 1 for time 0 for volt 2 for proportional gain 3 for pivot proportional control
 int Old_Control_Mode = Control_Mode;
 
 //Variables to check of the motor driver error
@@ -72,7 +72,6 @@ volatile double motor_driver_count_err;
 int time_err_motor;
 int time_err_motor_reboot;
 bool motor_error = false;
-
 
 // Variables for auto KF
 int flag_auto_KF = 1;
