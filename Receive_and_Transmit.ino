@@ -4,7 +4,7 @@ double app = 0;
 
 void receive_and_transmit()
 {
-  if (DEBUG) {
+  if (!DEBUG) {
     Serial.println((char) cmd_from_Gui);
   }
   switch (cmd_from_Gui)
@@ -99,6 +99,7 @@ void receive_and_transmit()
           if (DEBUG) {
             Serial.println("Sent Trial Data!");
           }
+          reset_cal_on_end_trial();
           break;
 
         case 'H':

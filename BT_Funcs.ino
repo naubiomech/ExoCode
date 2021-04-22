@@ -8,10 +8,6 @@ BLEService UARTService(UARTUUID);   //Instantiate UART service
 BLECharacteristic TXChar(rxUUID, BLERead | BLENotify | BLEBroadcast,             BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //TX characteristic of service
 BLECharacteristic RXChar(txUUID, BLEWriteWithoutResponse | BLEWrite | BLENotify, BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //RX characteristic of service
 
-//Used for receiving multi byte commands
-bool collecting = false;
-int bytesReceived = 0;
-int bytesExpected = 0;
 
 void setupBLE()
 {
@@ -32,6 +28,7 @@ void setupBLE()
     BLE.setEventHandler(BLEDisconnected, onBLEDisconnected);
     RXChar.setEventHandler(BLEWritten,   onRxCharValueUpdate);
     BLE.advertise();
+    digitalWrite(GREEN,LOW);
   }
   else
   {
@@ -41,63 +38,22 @@ void setupBLE()
   }
 }
 
-void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic)
-{
-  byte tmp[32];
-  int dataLength = RXChar.readValue(tmp, 32);
-  int transLength = RXChar.valueLength();
-  int valLength = 0;
-  switch (dataLength)
-  {
-    case sizeof(char):
-      cmd_from_Gui = tmp[0]; //Chars are only used for commands
-      collecting = map_expected_bytes();
-      if (collecting)
-      {
-        if (DEBUG) {
-          Serial.println("Start Collecting");
-        }
-      }
-      else
-      {
-        if (DEBUG) {
-          Serial.println("Send to receive_and_transmit()");
-        }
-        receive_and_transmit();
-        return;
-      }
-      break;
-    case sizeof(double):
-    case sizeof(int):
-      if (collecting)
-      {
-        valLength = ((dataLength == sizeof(double)) ? sizeof(double) : sizeof(int));  //Only working with doubles and ints. '?' is the "ternary operator"
-        for (int i = 0; i < valLength; ++i)
-        {
-          holdon[bytesReceived + i] = tmp[i];
-        }
-        bytesReceived += valLength;
-      }
-      else
-      {
-        if (DEBUG) {
-          Serial.println("Got int || double when not collecting!");
-        }
-      }
-      break;
-    default:
-      if (DEBUG) {
-        Serial.println("Not char, int, or double!");
-      }
-  }//End switch
-  if (bytesReceived == bytesExpected)
-  {
-    if (DEBUG) {
-      Serial.println("Done Collecting");
+void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
+  static bool collecting = false;
+  char data[32] = {0};
+  int val_len = RXChar.valueLength();
+  RXChar.readValue(data, val_len);
+  for (int i=0;i<val_len;i++) {
+    Serial.println(data[i]);
+  }
+  if (data[0] == 'S') {
+    if (!handle_matlab_message(data, val_len)) {
+      receive_and_transmit();
     }
-    bytesReceived = 0;
-    collecting = false;
-    receive_and_transmit();
+  } else {
+    if (!handle_mobile_message(data, val_len)) {
+      receive_and_transmit();
+    }
   }
 }//End onRxCharValueUpdate
 
@@ -108,6 +64,7 @@ void onBLEConnected(BLEDevice central)
     Serial.print("Connected event, central: ");
     Serial.println(central.address());
   }
+  digitalWrite(GREEN,HIGH);
   digitalWrite(BLUE, LOW);
   BLE.stopAdvertise();
 }
@@ -119,6 +76,7 @@ void onBLEDisconnected(BLEDevice central)
     Serial.print("Disconnected event, central: ");
     Serial.println(central.address());
   }
+  digitalWrite(GREEN,LOW);
   digitalWrite(BLUE, HIGH);
   BLE.advertise();
 }

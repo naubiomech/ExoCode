@@ -306,7 +306,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       {
         p_steps_l->peak = 0;
         p_steps_l->flag_start_plant = false;
-        //        Serial.println(" SPD ADJ dorsi time too short ");
+        Serial.println(" SPD ADJ dorsi time too short ");
         return N3_l;
       }
 

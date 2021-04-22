@@ -19,137 +19,65 @@ void send_data_message_wc() //with COP
 
   send_command_message('?', data_to_send, 8);
  if (DEBUG) {Serial.println("Out send_data_message_wc()");}
- 
- /*Old code
-  * 
-  * //Right Leg
-  data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
-  //data_to_send[0] = right_leg->Average_Trq*69.559*4*0.36/0.22; //Futek load cell
-  data_to_send[1] = right_leg->state;
-  data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
-
-  if (FLAG_ONE_TOE_SENSOR) {
-    data_to_send[3] = (right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
-    //data_to_send[3] = 100.0*(analogRead(HALL_RIGHT_PIN)-2048.0)*3.3/4096.0;
-    data_to_send[4] = (right_leg->FSR_Combined_Average);
-  } else if (FLAG_BALANCE) {
-    data_to_send[3] = (right_leg->FSR_Toe_Average);
-    //data_to_send[3] = 100.0*(analogRead(HALL_RIGHT_PIN)-2048.0)*3.3/4096.0;
-    data_to_send[4] = (right_leg->FSR_Heel_Average);
-  } else if (FLAG_BIOFEEDBACK) { //YF
-    //data_to_send[3] = 100.0*(analogRead(HALL_RIGHT_PIN)-2048.0)*3.3/4096.0;
-    data_to_send[3] = right_leg->score;
-    data_to_send[4] = left_leg->score;
-  } else {
-//    data_to_send[3] = (right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Toe_peak_ref);
-//    data_to_send[4] = (right_leg->FSR_Toe_Average);
-    //data_to_send[3] = 100.0*(analogRead(HALL_RIGHT_PIN)-2048.0)*3.3/4096.0;
-    data_to_send[3] = (right_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
-    data_to_send[4] = (right_leg->FSR_Combined_Average);
-  }
-
-  //Left Leg
-  data_to_send[5] = (left_leg->sign * left_leg->Average_Trq);
-  //data_to_send[5] = left_leg->Average_Trq*100.000; //Transducer raw voltage output
-  data_to_send[6] = left_leg->state;
-  data_to_send[7] = (left_leg->sign * left_leg->PID_Setpoint);
-
-  if (FLAG_ONE_TOE_SENSOR) {
-    data_to_send[8] = (left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Combined_peak_ref);
-    //data_to_send[8] = 100.0*(analogRead(HALL_LEFT_PIN)-2048.0)*3.3/4096.0;
-    data_to_send[9] = (left_leg->FSR_Combined_Average);
-  } else if (FLAG_BALANCE) {
-    data_to_send[8] = (left_leg->FSR_Toe_Average);
-    //data_to_send[8] = 100.0*(analogRead(HALL_LEFT_PIN)-2048.0)*3.3/4096.0;
-    data_to_send[9] = (left_leg->FSR_Heel_Average);
-  } else {
-//    data_to_send[8] = (left_leg->fsr_percent_thresh_Toe * left_leg->fsr_Toe_peak_ref);
-//    data_to_send[9] = (left_leg->FSR_Toe_Average);
-    data_to_send[8] = (left_leg->fsr_percent_thresh_Toe * right_leg->fsr_Combined_peak_ref);
-    //data_to_send[8] = 100.0*(analogRead(HALL_LEFT_PIN)-2048.0)*3.3/4096.0;
-    data_to_send[9] = (left_leg->FSR_Combined_Average);
-  }
-
-  // Signals
-  if (FLAG_BALANCE) {
-    data_to_send[10] = (left_leg->COP_Foot_ratio);
-    data_to_send[11] = (right_leg->COP_Foot_ratio);
-  } else if (FLAG_BIOFEEDBACK) {
-    data_to_send[10] = right_leg->stridelength_update;
-    data_to_send[11] = left_leg->stridelength_update;
-  }
-  else {
-//    data_to_send[10] = (left_leg->TM_data);
-//    data_to_send[11] = (right_leg->TM_data);
-    //data_to_send[10] = current(right_leg->motor_current_pin);
-    //data_to_send[11] = right_leg->sign * ankle_speed(right_leg->motor_speed_pin);
-    //data_to_send[11] = analogRead(A10)*(3.3/4096);
-    data_to_send[10] = right_leg->trig_number; //SS  6/23/2020
-    data_to_send[11] = right_leg->Trigger;//SS  6/23/2020
-  }
-  if (FLAG_BIOFEEDBACK) {
-    data_to_send[12] = right_leg->stridelength_target;
-    data_to_send[13] = left_leg->stridelength_target;
-  }
-  else {
-    //data_to_send[12] = current(left_leg->motor_current_pin);
-    //data_to_send[13] = left_leg->sign * ankle_speed(left_leg->motor_speed_pin);
-    data_to_send[12] = left_leg->trig_number;//SS  6/23/2020
-    data_to_send[13] = left_leg->Trigger;//SS  6/23/2020
-  }
-  */
 }
 
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
 {
-  if (DEBUG) {Serial.println("In send_data_message()");}
-  int maxChars = 6;
-  int payloadLength = (3+number_to_send*(maxChars+1));  //+1 because of the 'n's
-  byte buffer[payloadLength];
-  char c_buffer[maxChars];           
-  buffer[0] = 'S';
-  buffer[1] = command_char;
-  itoa(number_to_send, &c_buffer[0], 10);
-  memcpy(&buffer[2],&c_buffer[0],1);
+  if (command_char!='?') {
+    Serial.print("Sending: ");
+    Serial.println(command_char);
+  }
+  //6 max characters can transmit -XXXXX, or XXXXXX
+  int maxChars = 8;
+  int maxPayloadLength = (3 + number_to_send * (maxChars + 1)); //+1 because of the delimiters
+  byte buffer[maxPayloadLength];
+  //Size must be declared at initialization because of itoa()
+  char cBuffer[maxChars];
+  int bufferIndex = 0;
+  buffer[bufferIndex++] = 'S';
+  buffer[bufferIndex++] = command_char;
+  itoa(number_to_send, &cBuffer[0], 10);
+  memcpy(&buffer[bufferIndex++], &cBuffer[0], 1);
   for (int i = 0; i < number_to_send; i++) {
-      itoa(data_to_send[i]*100, &c_buffer[0], 10);
-      memcpy(&buffer[3+(i*(maxChars+1))], &c_buffer[0], maxChars);
-      buffer[3+maxChars+(i*(maxChars+1))] = 'n';  
+    //Send as Int to reduce bytes being sent
+    int modData = int(data_to_send[i] * 100);
+    int cLength = getCharLength(modData);
+    //Populates cBuffer with a base 10 number
+    itoa(modData, &cBuffer[0], 10);
+    //Writes cLength indices of cBuffer into buffer
+    memcpy(&buffer[bufferIndex], &cBuffer[0], cLength);
+    bufferIndex += cLength;
+    buffer[bufferIndex++] = 'n';
   }
-  TXChar.writeValue(buffer, payloadLength);           //Write payload
-  if (DEBUG) {Serial.println("End send_data_message()");}
+  TXChar.writeValue(buffer, bufferIndex);           //Write payload
 }
-/*
-void send_command_message(char command_char, double* data_to_send, int number_to_send)
-{
-  if (DEBUG) {Serial.println("In send_data_message()");}
-  int size = 10;
-  char buffer[size];
-  TXChar.writeValue('S');
-  TXChar.writeValue(command_char);
-  TXChar.writeValue((char) number_to_send + 48);
-  float f = 0;
-  if (DEBUG) {Serial.println("Start loop");}
-  for (int i = 0; i < number_to_send; i++)
-  {
-    f = data_to_send[i];
-    double buffer_for_int = f * 100.0;
-    int buff_to_send = (int) buffer_for_int;
-    if (DEBUG) {Serial.println("itoa()");}
-    itoa(buff_to_send, buffer, size);
-    if (DEBUG) {Serial.println("Start nested loop");}
-    for (i = 0; i < size; i++)
-    {
-      TXChar.writeValue(buffer[i]);
-    }
-    if (DEBUG) {Serial.println("End nested loop");}
-    TXChar.writeValue('n');
+
+int getCharLength(int ofInt) {
+  int len = 0;
+  int localInt = ofInt;
+  if (localInt < 0) {
+    len += 1;
+    //Quick abs(x)
+    localInt = ((localInt < 0) ? -1 * localInt : localInt);
   }
-  if (DEBUG) {Serial.println("End loop");}
-  if (DEBUG) {Serial.println("Out send_data_message()");}
+  //Faster than loop
+  if (localInt < 10) {
+    len += 1;
+  } else if (localInt < 100) {
+    len += 2;
+  } else if (localInt < 1000) {
+    len += 3;
+  } else if (localInt < 10000) {
+    len += 4;
+  } else if (localInt < 100000) {
+    len += 5;
+  } else if (localInt < 1000000) {
+    len += 6;
+  }
+  return len;
 }
-*/
-bool map_expected_bytes() //Determines how much data each command needs before execution
+
+bool map_expected_bytes(int& bytesExpected) //Determines how much data each command needs before execution
 {
   bytesExpected = 0;
   switch (cmd_from_Gui)
@@ -184,4 +112,90 @@ bool map_expected_bytes() //Determines how much data each command needs before e
       break;
   }
   return ((bytesExpected) ? true : false);  //If zero return false
+}
+
+bool handle_matlab_message(char* data, const int data_length) {
+  //data is a pointer to a byte buffer
+  cmd_from_Gui = *(data+1);
+  //-48 to convert from ascii
+  int count = (int) (*(data+2));
+  count -= 48;
+  if (count == 0) {
+    //Skip over all the doohickie if you only received a command
+    return false;
+  }
+
+  //Collect payload
+  int i_buff_count{0};
+  int i_buff[data_length] = {0};
+  int to_collect = count;
+  for (int iii = 3; iii < data_length; iii++) {
+    if ((*(data+iii)) == 'n') {
+      int tmp{0};
+      //Epmty buffer
+      bool neg = false;
+      for (int jjj = 0; jjj < i_buff_count; jjj++) {
+        if (i_buff[jjj] < 0) {
+          neg = true;
+        } else {
+          tmp += i_buff[jjj] * pow(10, (i_buff_count - 1) - jjj);
+        }
+      }
+      tmp *= ((neg) ? (-1) : (1));
+      double d_tmp = (double)tmp / 100.0;
+      memcpy(&holdon[(count - to_collect) * 8], &d_tmp, 8);
+      to_collect--;
+      i_buff_count = 0;
+    }
+    else {
+      //3 offset because of overhead, -48 to convert from ascii to int
+      int tmp = (*(data+iii)) - 48;
+      i_buff[i_buff_count++] = tmp;
+    }
+  }
+  return false;
+}
+
+bool handle_mobile_message(char* data, const int val_len) {
+  static int call{0};
+  static int count{0};
+  static byte buff[48];
+  static int expected{0};
+  if (call == 0) {
+    cmd_from_Gui = *data;
+    call++;
+    if (map_expected_bytes(expected)) {
+      return true;
+    }
+    else {
+      call = 0;
+      return false;
+    }
+  }
+  else { //Call non zero
+    //Populate buffer
+    memcpy(&buff[count],data,val_len);
+    count += val_len;
+    if (count == expected) {
+      //We have a complete message
+      for (int i=0;i<=(expected);i+=8) {
+        memcpy(&holdon[i],&buff[i],8);
+      }
+      call = 0;
+      count = 0;
+      expected = 0;
+      return false;
+    }
+    else if (count>expected) {
+      //Something went wrong, reset
+      Serial.println("Error in handle_mobile_message!");
+      call = 0;
+      count = 0;
+      expected = 0;
+      return true;
+    }
+    else {
+      return true;
+    }
+  }
 }

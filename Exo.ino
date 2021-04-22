@@ -228,6 +228,12 @@ void check_FSR_calibration() {
   if (DEBUG) {Serial.println("In check_FSR_calibration");}
   if (FSR_CAL_FLAG) {
     FSR_calibration();
+    left_leg->FSR_baseline_FLAG = 1;
+    right_leg->FSR_baseline_FLAG = 1;
+    left_leg->p_steps->count_plant_base = 0;
+    right_leg->p_steps->count_plant_base = 0;
+    right_leg->p_steps->flag_start_plant = false;
+    left_leg->p_steps->flag_start_plant = false;
   }
 
   // for the proportional control
@@ -260,15 +266,7 @@ void rotate_motor() {
   if (DEBUG) {Serial.println("In rotate_motor()");}
   // send the data message, adapt KF if required, apply the PID, apply the state machine,
   //adjust some control parameters as a function of the control strategy decided (Control_Adjustment)
-
-  if (stream == 1)
-  {
-    if (DEBUG) {Serial.println("In stream if");}
-    pid(left_leg, left_leg->Average_Trq);
-    pid(right_leg, right_leg->Average_Trq);
-
-
-    if (streamTimerCount >= streamTimerCountNum) // every streamTimerCountNum*2ms
+  if (streamTimerCount >= streamTimerCountNum) // every streamTimerCountNum*2ms
     {
       if (DEBUG) {Serial.println("In streamTimerCount if");}
       counter_msgs++;
@@ -277,16 +275,24 @@ void rotate_motor() {
       if (DEBUG) {Serial.println("Out stream if");}    
     }
 
-    if (voltageTimerCount >= 15000 * 2) { //every 30 seconds
+    if (voltageTimerCount >= 2000) {
       if (DEBUG) {Serial.println("In voltageTimerCount if");}
       int batteryVoltage = readBatteryVoltage();
       Serial.println(batteryVoltage);
-      batteryData[0] = batteryVoltage;
+      batteryData[0] = batteryVoltage/10;
       send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
       voltageTimerCount = 0;
 
+      
+
       if (DEBUG) {Serial.println("Out voltageTimerCount if");}
     }
+    
+  if (stream == 1)
+  {
+    if (DEBUG) {Serial.println("In stream if");}
+    pid(left_leg, left_leg->Average_Trq);
+    pid(right_leg, right_leg->Average_Trq);
 
     if (streamTimerCount == 1 && flag_auto_KF == 1) {
       if (DEBUG) {Serial.println("In flag_auto_KF if");}
@@ -581,4 +587,60 @@ void reset_leg_starting_parameters(Leg* leg) {
   leg->Approve_trigger = false;
   STIM_ACTIVATED = false;
   Trigger_left = false;
+}
+
+
+void reset_cal_on_end_trial() {
+  reset_starting_parameters();
+  //Previous Torques
+  left_leg->Previous_Setpoint_Ankle = 0;
+  left_leg->Previous_Dorsi_Setpoint_Ankle = 0;
+  right_leg->Previous_Setpoint_Ankle = 0;
+  right_leg->Previous_Dorsi_Setpoint_Ankle = 0;
+  //Current Torques
+  left_leg->Setpoint_Ankle = 0;
+  left_leg->Dorsi_Setpoint_Ankle = 0;
+  right_leg->Setpoint_Ankle = 0;
+  right_leg->Dorsi_Setpoint_Ankle = 0;
+  //Torque Resets
+  left_leg->coef_in_3_steps = 0;
+  left_leg->activate_in_3_steps = 1;
+  left_leg->first_step = 1;
+  left_leg->num_3_steps = 0;
+  left_leg->start_step = 0;
+  right_leg->coef_in_3_steps = 0;
+  right_leg->activate_in_3_steps = 1;
+  right_leg->first_step = 1;
+  right_leg->num_3_steps = 0;
+  right_leg->start_step = 0;
+  
+  //Baseline
+  left_leg->baseline_value = 0;
+  right_leg->baseline_value = 0;
+  
+  //FSR
+  left_leg->fsr_Toe_peak_ref = 0;
+  right_leg->fsr_Toe_peak_ref = 0;
+  
+  left_leg->fsr_Toe_trough_ref = 1000;
+  right_leg->fsr_Toe_trough_ref = 1000;
+
+  //P-Steps
+  left_leg->p_steps->plant_peak_mean = 0;
+  right_leg->p_steps->plant_peak_mean = 0;
+  
+  left_leg->p_steps->peak = 0;
+  right_leg->p_steps->peak = 0;
+  
+  left_leg->p_steps->count_plant_base = 0;
+  right_leg->p_steps->count_plant_base = 0;
+
+  right_leg->p_steps->flag_start_plant = false;
+  left_leg->p_steps->flag_start_plant = false;
+
+  //PID
+  left_leg->PID_Setpoint = 0;
+  left_leg->New_PID_Setpoint = 0;
+  right_leg->PID_Setpoint = 0;
+  right_leg->New_PID_Setpoint = 0;
 }
