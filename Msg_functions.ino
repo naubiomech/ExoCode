@@ -23,10 +23,12 @@ void send_data_message_wc() //with COP
 
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
 {
+  /*
   if (command_char!='?') {
     Serial.print("Sending: ");
     Serial.println(command_char);
   }
+  */
   //6 max characters can transmit -XXXXX, or XXXXXX
   int maxChars = 8;
   int maxPayloadLength = (3 + number_to_send * (maxChars + 1)); //+1 because of the delimiters
@@ -189,6 +191,8 @@ bool handle_mobile_message(char* data, const int val_len) {
     else if (count>expected) {
       //Something went wrong, reset
       Serial.println("Error in handle_mobile_message!");
+      Serial.print(count);
+      Serial.print(expected);
       call = 0;
       count = 0;
       expected = 0;

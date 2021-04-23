@@ -4,7 +4,7 @@ double app = 0;
 
 void receive_and_transmit()
 {
-  if (!DEBUG) {
+  if (DEBUG) {
     Serial.println((char) cmd_from_Gui);
   }
   switch (cmd_from_Gui)
@@ -21,8 +21,12 @@ void receive_and_transmit()
       memcpy(&left_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
       memcpy(&right_leg->Setpoint_Ankle, holdOnPoint, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
-      memcpy(&right_leg->Setpoint_Ankle, holdOnPoint + 16, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-      memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 24, 8);
+      /*
+      Serial.println(left_leg->Setpoint_Ankle);
+      Serial.println(left_leg->Dorsi_Setpoint_Ankle);
+      Serial.println(right_leg->Setpoint_Ankle);
+      Serial.println(right_leg->Dorsi_Setpoint_Ankle);
+      */
       if (left_leg->Setpoint_Ankle < 0) {
         left_leg->Setpoint_Ankle = 0;
         left_leg->Previous_Setpoint_Ankle = 0;
@@ -93,9 +97,9 @@ void receive_and_transmit()
           digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
           stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
 
-          stepData[0] = stepper->steps; //CFC 1/22/21
-          stepData[1] = millis() - stepper->trial_start;
-          send_command_message(stepper->step_flag, stepData, 2);
+          //stepData[0] = stepper->steps; //CFC 1/22/21
+          //stepData[1] = millis() - stepper->trial_start;
+          //send_command_message(stepper->step_flag, stepData, 2);
           if (DEBUG) {
             Serial.println("Sent Trial Data!");
           }
@@ -586,8 +590,6 @@ void receive_and_transmit()
         case 'b':
           left_leg->FSR_baseline_FLAG = 1;
           right_leg->FSR_baseline_FLAG = 1;
-          base_1 = 0;
-          base_2 = 0;
           left_leg->p_steps->count_plant_base = 0;
           right_leg->p_steps->count_plant_base = 0;
           right_leg->p_steps->flag_start_plant = false;

@@ -13,7 +13,6 @@ int intFSR = 0;
 int FSR_FIRST_Cycle = 1;
 int FSR_CAL_FLAG = 0;
 
-double base_1, base_2;
 
 double FSR_Sensors_type = 40;
 
@@ -67,7 +66,7 @@ double p_prop[3] = {128.1, -50.82, 22.06};
 double FSR_Ratio;
 
 // ===== Proportional Control Parameters =====
-double Max_Prop = 35; //Was 35, GO 9/15/20
+double Max_Prop = 21; //Was 35, GO 9/15/20
 double Min_Prop = 0;
 
 // ===== Auto KF Parameters =====
@@ -79,7 +78,7 @@ const int BNO055_SAMPLERATE_DELAY_MS = 100;
 const double stability_trq_gain = 0.01;
 
 // ===== Torque Speed Adjust Parameters =====
-const int n_step_baseline = 6;
+const int n_step_baseline = 4;
 
 // ===== Motor Parameters =====
 // Initialize all variables as 1 prior to definition of motor parameters in GUI

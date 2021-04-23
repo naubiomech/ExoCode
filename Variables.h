@@ -1,5 +1,6 @@
 //Manual Timer for Nano version
-int streamTimerCountNum = 40;
+int streamTimerCountNum = 60;
+int voltageTimerCountNum = 2000;
 unsigned long currentMillis;
 unsigned long startMillis;
 unsigned long callBackPeriod = 1;

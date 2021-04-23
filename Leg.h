@@ -62,8 +62,8 @@ struct Leg {
   // Auto_KF.h
   double ERR;
   double Max_Measured_Torque;
-  double max_KF = 2.0;  //GO 5/17/19
-  double min_KF = 0.9;
+  double max_KF = 1.2;  //GO 5/17/19
+  double min_KF = 0.8;
   double MaxPropSetpoint;
   bool auto_KF_update = false;
 

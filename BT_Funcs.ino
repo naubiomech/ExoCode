@@ -43,9 +43,6 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
   char data[32] = {0};
   int val_len = RXChar.valueLength();
   RXChar.readValue(data, val_len);
-  for (int i=0;i<val_len;i++) {
-    Serial.println(data[i]);
-  }
   if (data[0] == 'S') {
     if (!handle_matlab_message(data, val_len)) {
       receive_and_transmit();

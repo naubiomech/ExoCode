@@ -29,3 +29,5 @@ double *stepData_point = &stepData[0];
 
 double totalSteps[1]; //Used to send the total number of steps
 double *totalSteps_point = &totalSteps[0];
+
+double errorCount[1];

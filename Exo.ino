@@ -53,7 +53,7 @@ void setup()
   setupBLE();
 
   //Start Serial
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   //set the resolution
   analogWriteResolution(12);                                          //change resolution to 12 bits
@@ -62,8 +62,6 @@ void setup()
   //initialize the leg objects
   initialize_left_leg(left_leg);
   initialize_right_leg(right_leg);
-
-  //LED Stuff if Desired
 
   // set pin mode for motor pin
   pinMode(onoff, OUTPUT); //Enable disable the motors
@@ -80,8 +78,8 @@ void setup()
   delay(100);
 
   int startVolt = readBatteryVoltage(); //Read the startup battery voltage
-  Serial.println(startVolt);
-  batteryData[0] = startVolt;
+  //Serial.println(startVolt);
+  batteryData[0] = startVolt/10;
   send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware, needs fixing!
 
   // Torque cal
@@ -111,6 +109,10 @@ void callback()//executed every 1ms
   // same of FSR but for the balance baseline
   check_Balance_Baseline();
 
+  //Updates GUI
+  update_GUI();
+    
+
   if (DEBUG) {Serial.println("Done with callback");}
 }// end callback
 //----------------------------------------------------------------------------------
@@ -130,6 +132,36 @@ void loop()
   if (DEBUG) {Serial.println("Out loop");}
 }// end void loop
 //---------------------------------------------------------------------------------
+void update_GUI() {
+    //Real Time data
+  if ((streamTimerCount >= streamTimerCountNum) && stream)
+    {
+      if (DEBUG) {Serial.println("In streamTimerCount if");}
+      counter_msgs++;
+      send_data_message_wc();
+      streamTimerCount = 0;
+      if (DEBUG) {Serial.println("Out stream if");}    
+    }
+    
+    //Battery voltage and reset motor count data
+    if (voltageTimerCount >= voltageTimerCountNum) {
+      if (DEBUG) {Serial.println("In voltageTimerCount if");}
+      int batteryVoltage = readBatteryVoltage();
+      if (DEBUG) {Serial.println(batteryVoltage);}
+      batteryData[0] = batteryVoltage/10; //convert from milli
+      //Serial.print("Voltage: ");
+      //Serial.println(batteryData[0]);
+      send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
+      voltageTimerCount = 0;
+
+      //Motor reset Count
+      errorCount[1] = reset_count;
+      send_command_message('w', errorCount, 1);
+      if (DEBUG) {Serial.println("Out voltageTimerCount if");}
+    }
+    streamTimerCount++;
+    voltageTimerCount++;
+}
 
 void calculate_leg_average(Leg* leg) {
   //Calc the average value of Torque
@@ -228,12 +260,7 @@ void check_FSR_calibration() {
   if (DEBUG) {Serial.println("In check_FSR_calibration");}
   if (FSR_CAL_FLAG) {
     FSR_calibration();
-    left_leg->FSR_baseline_FLAG = 1;
-    right_leg->FSR_baseline_FLAG = 1;
-    left_leg->p_steps->count_plant_base = 0;
-    right_leg->p_steps->count_plant_base = 0;
-    right_leg->p_steps->flag_start_plant = false;
-    left_leg->p_steps->flag_start_plant = false;
+    
   }
 
   // for the proportional control
@@ -266,27 +293,6 @@ void rotate_motor() {
   if (DEBUG) {Serial.println("In rotate_motor()");}
   // send the data message, adapt KF if required, apply the PID, apply the state machine,
   //adjust some control parameters as a function of the control strategy decided (Control_Adjustment)
-  if (streamTimerCount >= streamTimerCountNum) // every streamTimerCountNum*2ms
-    {
-      if (DEBUG) {Serial.println("In streamTimerCount if");}
-      counter_msgs++;
-      send_data_message_wc();
-      streamTimerCount = 0;
-      if (DEBUG) {Serial.println("Out stream if");}    
-    }
-
-    if (voltageTimerCount >= 2000) {
-      if (DEBUG) {Serial.println("In voltageTimerCount if");}
-      int batteryVoltage = readBatteryVoltage();
-      Serial.println(batteryVoltage);
-      batteryData[0] = batteryVoltage/10;
-      send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
-      voltageTimerCount = 0;
-
-      
-
-      if (DEBUG) {Serial.println("Out voltageTimerCount if");}
-    }
     
   if (stream == 1)
   {
@@ -300,14 +306,7 @@ void rotate_motor() {
       Auto_KF(right_leg, Control_Mode);
       if (DEBUG) {Serial.println("Out flag_auto_KF if");}
     }
-
-
-    streamTimerCount++;
-    voltageTimerCount++;
-
-
-
-
+    
     // modification to check the pid
     if (FLAG_PID_VALS) {
 
@@ -591,6 +590,7 @@ void reset_leg_starting_parameters(Leg* leg) {
 
 
 void reset_cal_on_end_trial() {
+  /*
   reset_starting_parameters();
   //Previous Torques
   left_leg->Previous_Setpoint_Ankle = 0;
@@ -639,8 +639,10 @@ void reset_cal_on_end_trial() {
   left_leg->p_steps->flag_start_plant = false;
 
   //PID
+  /*
   left_leg->PID_Setpoint = 0;
   left_leg->New_PID_Setpoint = 0;
   right_leg->PID_Setpoint = 0;
   right_leg->New_PID_Setpoint = 0;
+  */
 }

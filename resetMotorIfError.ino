@@ -40,6 +40,7 @@ void resetMotorIfError() {
     }
 
     if (time_drivers_are_off >= 8) {
+      reset_count++;
       digitalWrite(onoff, HIGH);
       count_time_drivers_are_off = false;
       time_drivers_are_off = 0;

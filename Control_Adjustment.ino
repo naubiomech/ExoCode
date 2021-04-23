@@ -46,6 +46,7 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
         //        Serial.println("BASE Plant too short"); // it means is a glitch not a real step
         return 0;
       } else {
+        
         p_steps_l->flag_start_plant = false; // you have provided one plant
         //        Serial.println("Increase Plant number");
         p_steps_l->count_plant_base++; // you have accomplished a step
