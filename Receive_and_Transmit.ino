@@ -730,8 +730,8 @@ void receive_and_transmit()
 
     case 'B':
       if (FLAG_BIOFEEDBACK == true) {
-        *(data_to_send_point) = right_leg->Heel_Strike_baseline;
-        send_command_message('B', data_to_send_point, 1);
+       // *(data_to_send_point) = right_leg->Heel_Strike_baseline;
+       //send_command_message('B', data_to_send_point, 1);
 
       } else if (FLAG_BALANCE == true) {
 
@@ -845,13 +845,13 @@ void receive_and_transmit()
 
     case 'u':
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&left_leg->BioFeedback_desired, &holdon, 8);
-      right_leg->BioFeedback_desired = left_leg->BioFeedback_desired;
+      memcpy(&BF_scale, &holdon, 8);
+//      right_leg->BioFeedback_desired = left_leg->BioFeedback_desired;
       break;
 
     case '*':
       receiveVals(8);                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&treadmill_speed, &holdon, 8); //YF
+      memcpy(&BF_scale, &holdon, 8); //YF
       break;
 
     // Optimization ------------------------------------------------

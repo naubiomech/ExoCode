@@ -14,7 +14,7 @@ void state_machine(Leg* leg)
     State_Machine_Heel_Toe_Sensors_Balance(leg);
   } else {
     if (FLAG_BIOFEEDBACK) {
-      State_Machine_Heel_Toe_Sensors_BioFeedback(leg);
+       State_Machine_One_Toe_Sensor(leg);
     } else {
       State_Machine_Heel_Toe_Sensors(leg);
     }
@@ -84,6 +84,8 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           leg->state = 3;
           leg->state_count_13 = 0;
           leg->state_count_31 = 0;
+
+          takestridetime(leg);
         }
       }
 
