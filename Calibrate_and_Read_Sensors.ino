@@ -61,8 +61,8 @@ void FSR_calibration()
     left_leg->Curr_Heel = fsr(left_leg->fsr_sense_Heel);
     right_leg->Curr_Heel = fsr(right_leg->fsr_sense_Heel);
 
-    left_leg->Curr_Combined = left_leg->Curr_Toe + left_leg->Curr_Heel;
-    right_leg->Curr_Combined = right_leg->Curr_Toe + right_leg->Curr_Heel;
+    left_leg->Curr_Combined = left_leg->Curr_Toe;// + left_leg->Curr_Heel;
+    right_leg->Curr_Combined = right_leg->Curr_Toe;// + right_leg->Curr_Heel;
 
     if (left_leg->Curr_Combined > left_leg->fsr_Combined_peak_ref)
     {
