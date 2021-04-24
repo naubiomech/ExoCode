@@ -259,8 +259,7 @@ void calculate_averages() {
 void check_FSR_calibration() {
   if (DEBUG) {Serial.println("In check_FSR_calibration");}
   if (FSR_CAL_FLAG) {
-    FSR_calibration();
-    
+    FSR_calibration();    
   }
 
   // for the proportional control

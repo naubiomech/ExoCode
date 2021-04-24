@@ -12,6 +12,7 @@ int intFSR = 0;
 
 int FSR_FIRST_Cycle = 1;
 int FSR_CAL_FLAG = 0;
+int first_BL_FLAG = 1;
 
 
 double FSR_Sensors_type = 40;
