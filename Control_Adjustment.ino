@@ -121,17 +121,7 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
           *p_flag_take_baseline_l = 0;
           leg->baseline_value = p_steps_l->plant_peak_mean;
           send_command_message('n', emptyData, 1); //GO 4/23/19 to communicate that baseline is done, the array sent in position two has one position initialized as zero
-          if (first_BL_FLAG) { //Retake another baseline 
-            first_BL_FLAG = 0; 
-            left_leg->FSR_baseline_FLAG = 1;
-            right_leg->FSR_baseline_FLAG = 1;
-            left_leg->p_steps->count_plant_base = 0;
-            right_leg->p_steps->count_plant_base = 0;
-            right_leg->p_steps->flag_start_plant = false;
-            left_leg->p_steps->flag_start_plant = false;
-          }
           return (p_steps_l->count_plant_base);
-               
 
         } // return 1 activate a flag that stops the calc of the baseline
       }// end if count_plant>2
