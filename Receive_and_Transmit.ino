@@ -4,6 +4,7 @@ double app = 0;
 
 void receive_and_transmit()
 {
+  //Serial.println((char) cmd_from_Gui);    //Uncomment and open Serial Monitor (top right) for debugging
   if (DEBUG) {
     Serial.println((char) cmd_from_Gui);
   }
@@ -95,15 +96,54 @@ void receive_and_transmit()
           Serial.println("Off");
         }
           digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
+          stepData[0] = stepper->steps; //CFC 1/22/21
+          send_command_message(stepper->step_flag, stepData, 1);
           stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
+          stepper->steps = 0;                                            // Reset step count for next trial
+      
+          temp_L_DFX = left_leg->Dorsi_Setpoint_Ankle;                   //Save the torque setpoints
+          temp_L_PFX = left_leg->Setpoint_Ankle;
+          temp_R_DFX = right_leg->Dorsi_Setpoint_Ankle;
+          temp_R_PFX = right_leg->Setpoint_Ankle;
+          
+          left_leg->Setpoint_Ankle = 0;                                 // Reset the torque settings to zero on startup
+          left_leg->Previous_Setpoint_Ankle = 0;
+          left_leg->Dorsi_Setpoint_Ankle = 0;
+          left_leg->Previous_Dorsi_Setpoint_Ankle = 0;
+          right_leg->Setpoint_Ankle = 0;
+          right_leg->Previous_Setpoint_Ankle = 0;
+          right_leg->Dorsi_Setpoint_Ankle = 0;
+          right_leg->Previous_Dorsi_Setpoint_Ankle = 0;
 
-          //stepData[0] = stepper->steps; //CFC 1/22/21
-          //stepData[1] = millis() - stepper->trial_start;
-          //send_command_message(stepper->step_flag, stepData, 2);
+          left_leg->PID_Setpoint = 0;
+          left_leg->New_PID_Setpoint = 0;
+          right_leg->PID_Setpoint = 0;
+          right_leg->New_PID_Setpoint = 0;
+
+          left_leg->Setpoint_Ankle = temp_L_PFX;
+          left_leg->Dorsi_Setpoint_Ankle = temp_L_DFX;
+          right_leg->Setpoint_Ankle = temp_R_PFX;
+          right_leg->Dorsi_Setpoint_Ankle = temp_R_DFX;
+
+          left_leg->activate_in_3_steps = 1;
+          left_leg->num_3_steps = 0;
+          left_leg->first_step = 1;
+          left_leg->start_step = 0;
+
+          right_leg->activate_in_3_steps = 1;
+          right_leg->num_3_steps = 0;
+          right_leg->first_step = 1;
+          right_leg->start_step = 0;
+
+          temp_L_DFX = 0;
+          temp_L_PFX = 0;
+          temp_R_DFX = 0;
+          temp_R_PFX = 0;
+          
           if (DEBUG) {
             Serial.println("Sent Trial Data!");
           }
-          reset_cal_on_end_trial();
+          reset_cal_on_end_trial(); //Currently commented out but acts to reset all torque, BL, and FSR parameters
           break;
 
         case 'H':

@@ -15,7 +15,7 @@ struct Trial_Data
   const int kaddr = 183;
 
   //Flags used by message functions to send steps and time
-  const char step_flag = 'l';
+  const char step_flag = 's';
 
   //Nominal Ankle moment at every other percent of gait phase (including zero)
   const float nominal_moment_array [51] = {

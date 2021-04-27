@@ -112,3 +112,9 @@ int PowerLSB = 20 * CurrentLSB; // mW/bit. This value is used to multiply to pow
 int ShuntLSB = 0.01;          // mV. This is the default multiplier for the shunt voltage reading from the INA219.
 int BusLSB = 4;               // mV. This is the multiplier for the bus (battery) voltage reading from the INA219.
 int Cal = 0x5000;             // Calibration value in hex. Cal = 0.04096/(CurrentLSB*ShuntResistance). Shunt resistance on Rev3/4 is 2mOhm.
+
+// Temporary Torque Value Storage
+ double temp_L_DFX = 0;
+ double temp_L_PFX = 0;
+ double temp_R_DFX = 0;
+ double temp_R_PFX = 0;
