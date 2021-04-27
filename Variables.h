@@ -94,6 +94,10 @@ bool flag_pivot = false; // TN 04/29/2019
 bool flag_id = false; // TN 04/29/2019
 bool flag_resist = false; //GO 6/20/2020
 
+// Flags for baseline communcation
+bool baselineRight = false;
+bool baselineLeft = false;
+
 // Variables for Power Monitor - GO 9/24/2020
 
 int INA219_ADR = 0x40;        // Address of INA219 for writing defined in 7 bits. The 8th bit is automatically included by Wire.read() or Wire.write()

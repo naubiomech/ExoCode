@@ -60,7 +60,7 @@ void pid(Leg* leg, double input) {
       leg->PID_Setpoint = -leg->PID_Setpoint;
     }
     leg->Input = input;
-    leg->pid.Compute_KF(leg->KF);
+    leg->pid.PID::Compute();
     leg->Vol = leg->Output; //need to map
   }
 
