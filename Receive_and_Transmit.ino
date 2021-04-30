@@ -105,11 +105,7 @@ void receive_and_transmit()
         NomCurrent = 7.58; //A
         MotorEff = 0.89;
         GearboxEff = 0.59;
-<<<<<<< HEAD
-        PulleyRatio = 40 / 10.3; //Small aluminum pulley, large sprocket
-=======
-        PulleyRatio = 4; //Small aluminum pulley, large sprocket
->>>>>>> CurrentControl
+        PulleyRatio = 5; //Small aluminum pulley, large sprocket
         Serial.println("22mm 90W");
 
       } else if (MotorParams == 1) {

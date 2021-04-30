@@ -159,8 +159,7 @@ double fsr(const unsigned int pin) {
  * This function reads the motor current pin and converts the voltage reading in bits to motor current.
 */
 double current(const unsigned int pin) {
-  int value = analogRead(pin);
-  double Co = NomCurrent * (value - 2048.0)/2048.0; //Nominal current needs to be set in ESCON, 7.58
+  double Co = map(analogRead(pin),0,4096,-NomCurrent,NomCurrent); //Nominal current needs to be set in ESCON, 7.58
   return Co;
 }
 
@@ -179,28 +178,13 @@ double motor_ankle_speed(const unsigned int pin){
 /* Read the analog output from the hall sensor at the ankle, convert to degrees, and calculate actual ankle velocity.
  *  Likely needs a calibration but for now just read and convert
  */
-struct angles ankle_angle(Leg* leg){
+double ankle_angle(Leg* leg){
 
 // Sensor Reading and Normalization
   double zero = 0.024259;
-  double maxPFX = -0.76199;
-  double maxDFX = 0.79851;
 
-  struct angles ang;
+  double hall_voltage = 3.3*((analogRead(leg->ankle_angle_pin)-2048.0)/4096.0) - zero; //Offset by zero 
+  double rawAngle = -68.873*hall_voltage; //Raw voltage regression for comparisons
 
-  float hall_voltage = 3.3*((analogRead(leg->ankle_angle_pin)-2048.0)/4096.0) - zero; //Offset by zero 
-  
-  ang.rawAngle = -69.086*hall_voltage; //Raw voltage regression for comparisons
-  
-if (hall_voltage > 0) {
-  hall_voltage = hall_voltage/abs(maxDFX); //Positive voltage is dorsiflexion
-} else if (hall_voltage < 0) {
-  hall_voltage = hall_voltage/abs(maxPFX); //Negative voltage is plantarflexion
-} else {
-  hall_voltage = 0;
-}
-
-  ang.calAngle = -0.74284*asin(hall_voltage)*180/PI; //Calculate the angle from the normalized and transformed voltage
-
-  return ang;
+  return rawAngle;
 }
