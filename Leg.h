@@ -1,7 +1,7 @@
 #ifndef LEG_HEADER
 #define LEG_HEADER
 const int dim_FSR = 30;
-const int dim = 5;
+const int dim = 30;
 
 #include "PID_v2.h"
 #include "Control_Adjustment.h"
@@ -11,6 +11,8 @@ struct Leg {
   int motor_ankle_pin;
   int motor_current_pin;
   int motor_speed_pin;
+  int ankle_angle_pin;
+  
   // In A_Exo pre-includes
   double FSR_Average_array[dim_FSR] = {0};
   double* p_FSR_Array = &FSR_Average_array[0];
@@ -24,9 +26,28 @@ struct Leg {
   double* TarrayPoint = &Tarray[0];
   double Average = 0;
 
-  double SpeedArray[dim] = {0};
-  double* SpeedArrayPoint = &SpeedArray[0];
-  double AverageSpeed = 0;
+  double MotorSpeedArray[dim] = {0};
+  double* MotorSpeedArrayPoint = &MotorSpeedArray[0];
+  double MotorAverageSpeed = 0;
+
+  double rawAnkleAngleArray[dim] = {0};
+  double* rawAnkleAngleArrayPoint = &rawAnkleAngleArray[0];
+  double rawAnkleAverageAngle = 0;
+  double rawPrevAnkleAngle = 0;
+
+  double rawAnkleSpeedArray[dim] = {0};
+  double* rawAnkleSpeedArrayPoint = &rawAnkleSpeedArray[0];
+  double rawAnkleAverageSpeed = 0;
+
+  double calAnkleAngleArray[dim] = {0};
+  double* calAnkleAngleArrayPoint = &calAnkleAngleArray[0];
+  double calAnkleAverageAngle = 0;
+  double calPrevAnkleAngle = 0;
+
+  double calAnkleSpeedArray[dim] = {0};
+  double* calAnkleSpeedArrayPoint = &calAnkleSpeedArray[0];
+  double calAnkleAverageSpeed = 0;
+  
 
   double sign = 1;
 
@@ -225,7 +246,7 @@ struct Leg {
   double Heel_Strike_mean;
   double n_step_biofeedback = 1;
   double n_step_biofeedback_base = 4;
-  unsigned int Potentiometer_pin;
+  unsigned int potentiometer_pin;
   double Biofeedback_bias;
   double BioFeedback_desired;
   double Frequency;
@@ -276,5 +297,9 @@ void initialize_leg(Leg* leg);
 void initialize_left_leg(Leg* left_leg);
 void initialize_right_leg(Leg* right_leg);
 
+struct angles {
+  double calAngle;
+  double rawAngle;
+};
 
 #endif

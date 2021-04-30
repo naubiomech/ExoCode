@@ -169,8 +169,38 @@ Torque Constant (200W) : 700 rpm/V
 Gear Ratio (32HP, 4-8Nm) : 17576/343 
 Large Exo Pulley Ratio: 74/10.3
 */
-double ankle_speed(const unsigned int pin){
-  double motor_speed = MaxSpeed * (analogRead(pin) - 2048.0)/2048.0;
-  double ankle_speed = motor_speed * (1/GearRatio) * (1/PulleyRatio);
-  return ankle_speed;
+double motor_ankle_speed(const unsigned int pin){
+  double motor_speed = map(analogRead(pin),0,4096,-MaxSpeed,MaxSpeed);
+  //double motor_speed = MaxSpeed*3.3*(analogRead(pin)-2048)/2048;
+  double predicted_ankle_speed = motor_speed * (1/GearRatio) * (1/PulleyRatio);
+  return motor_speed;
+}
+
+/* Read the analog output from the hall sensor at the ankle, convert to degrees, and calculate actual ankle velocity.
+ *  Likely needs a calibration but for now just read and convert
+ */
+struct angles ankle_angle(Leg* leg){
+
+// Sensor Reading and Normalization
+  double zero = 0.024259;
+  double maxPFX = -0.76199;
+  double maxDFX = 0.79851;
+
+  struct angles ang;
+
+  float hall_voltage = 3.3*((analogRead(leg->ankle_angle_pin)-2048.0)/4096.0) - zero; //Offset by zero 
+  
+  ang.rawAngle = -69.086*hall_voltage; //Raw voltage regression for comparisons
+  
+if (hall_voltage > 0) {
+  hall_voltage = hall_voltage/abs(maxDFX); //Positive voltage is dorsiflexion
+} else if (hall_voltage < 0) {
+  hall_voltage = hall_voltage/abs(maxPFX); //Negative voltage is plantarflexion
+} else {
+  hall_voltage = 0;
+}
+
+  ang.calAngle = -0.74284*asin(hall_voltage)*180/PI; //Calculate the angle from the normalized and transformed voltage
+
+  return ang;
 }

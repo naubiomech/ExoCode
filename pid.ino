@@ -34,13 +34,16 @@ void pid(Leg* leg, double input) {
       leg->Vol = -leg->Vol;
     }
   } else if (CURRENT_DIAGNOSTICS && MotorParams!=100) { //Diagnostics Mode
-    if (leg->Dorsi_Setpoint_Ankle==0) {
-      leg->Vol = leg->Setpoint_Ankle/NomCurrent*2048.0; 
-    } else {
-      leg->Vol = leg->Dorsi_Setpoint_Ankle/NomCurrent*2048.0;
-    }
+    double Vol = wave[j]*4096.0;
+    leg->Vol = Vol;
+    
+//    if (leg->Dorsi_Setpoint_Ankle==0) {
+//      leg->Vol = leg->Setpoint_Ankle/NomCurrent*2048.0; 
+//    } else {
+//      leg->Vol = leg->Dorsi_Setpoint_Ankle/NomCurrent*2048.0;
+//    }
   } else if (MODEL_CONTROL && MotorParams!=100) {
-    leg->Vol = (0.34284*(leg->PID_Setpoint) + 0.023564*(leg->AverageSpeed) + 0.0043038*(leg->PID_Setpoint * leg->AverageSpeed))/NomCurrent*2048; //Regression control, complex model
+    leg->Vol = (0.34284*(leg->PID_Setpoint) + 0.023564*(leg->MotorAverageSpeed) + 0.0043038*(leg->PID_Setpoint * leg->MotorAverageSpeed))/NomCurrent*2048; //Regression control, complex model
     if (Control_Mode == 6 && leg->state == 3) {
       leg->Vol = -leg->Vol;
     }
@@ -58,5 +61,13 @@ void pid(Leg* leg, double input) {
   if (PWM_CONTROL) {
      leg->Vol = leg->Vol*0.8 + 0.1*4096.0;  // Motor drivers need the PWM to be between 10% and 90%
   }
-  analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
+  //analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
+
+  j++;
+      //double Vol = map(wave[j],(wave[j]*2048 + 2048)*0.8 + 0.1*4096.0;
+      //analogWrite(leg->motor_ankle_pin, leg->Vol);
+      analogWrite(leg->motor_ankle_pin, leg->Vol);
+      if (j>waveLength) {
+        j = 0;
+      }
 }

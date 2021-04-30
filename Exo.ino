@@ -25,6 +25,8 @@
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
+int j = 0;
+
 #include "Parameters.h"
 #include "Board.h"
 #include "Leg.h"
@@ -43,7 +45,13 @@ const unsigned int zero = 2048;//1540;
 #include "Board.h"
 #include "resetMotorIfError.h"
 #include "ATP.h"
+<<<<<<< HEAD
 #include "Trial_Data.h"
+=======
+#include "Wave.h"
+//#include "Step.h"
+#include "Math.h"
+>>>>>>> CurrentControl
 bool iOS_Flag = 0;
 int streamTimerCountNum = 0;
 //----------------------------------------------------------------------------------
@@ -95,10 +103,10 @@ void setup()
   digitalWrite(onoff, LOW);
   //Serial.println("ONOFF SET");
 
-  #if BOARD_VERSION == DUAL_BOARD_REV4
-    pinMode(TRIGGER_PIN, OUTPUT); // Enable the trigger //SS  6/23/2020
-    digitalWrite(TRIGGER_PIN, HIGH); //SS  6/23/2020
-  #endif
+//  #if BOARD_VERSION == DUAL_BOARD_REV4
+//    pinMode(TRIGGER_PIN, OUTPUT); // Enable the trigger //SS  6/23/2020
+//    digitalWrite(TRIGGER_PIN, HIGH); //SS  6/23/2020
+//  #endif
 
   // Fast torque calibration
   torque_calibration();
@@ -121,7 +129,17 @@ void setup()
   WireObj.write(Cal);        //Write the calibration value to the calibration register
   WireObj.endTransmission(); //End the transmission and calibration
   delay(100);
+<<<<<<< HEAD
+=======
+  
+  int startVolt = readBatteryVoltage(); //Read the startup battery voltage
+  Serial.println(startVolt);
+  batteryData[0] = startVolt;
+  send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware 
+>>>>>>> CurrentControl
 
+  calculateWave();
+//  calculateStep();
   Serial.println("Setup complete");
   
 }
@@ -174,10 +192,12 @@ void loop()
 
   if (slowThisDown.check() == 1) // If the time passed is over 1ms is a true statement
   {
+    
     if (bluetooth.available() > 0) // If bluetooth buffer contains something
     {
       Serial.println("Something to read");
       receive_and_transmit();       //Recieve and transmit
+      
     }
 
     slowThisDown.reset();     //Resets the interval counter
@@ -224,13 +244,19 @@ void biofeedback() {
 //----------------------------------------------------------------------------------
 
 void calculate_leg_average(Leg* leg) {
+
+  struct angles AnkleAngles;
   //Calc the average value of Torque
 
   //Shift the arrays
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
     leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
-    leg->SpeedArrayPoint[j] = leg->SpeedArrayPoint[j-1];
+    leg->MotorSpeedArrayPoint[j] = leg->MotorSpeedArrayPoint[j-1];
+    leg->rawAnkleAngleArrayPoint[j] = leg->rawAnkleAngleArrayPoint[j-1];
+    leg->rawAnkleSpeedArrayPoint[j] = leg->rawAnkleSpeedArrayPoint[j-1];
+    leg->calAnkleAngleArrayPoint[j] = leg->calAnkleAngleArrayPoint[j-1];
+    leg->calAnkleSpeedArrayPoint[j] = leg->calAnkleSpeedArrayPoint[j-1];
   }
   //Get the torque
   leg->TarrayPoint[0] = get_torq(leg);
@@ -239,17 +265,48 @@ void calculate_leg_average(Leg* leg) {
   leg->Average = 0;
 
   //Motor Speed
-  leg->SpeedArrayPoint[0] = ankle_speed(leg->motor_speed_pin);
-  leg->AverageSpeed = 0;
-
+  leg->MotorSpeedArrayPoint[0] = motor_ankle_speed(leg->motor_speed_pin);
+  leg->MotorAverageSpeed = 0;
+  
+  //Ankle Angle Sensor
+  AnkleAngles = ankle_angle(leg);
+  leg->rawAnkleAngleArrayPoint[0] = AnkleAngles.rawAngle;
+  leg->calAnkleAngleArrayPoint[0] = AnkleAngles.calAngle;
+  leg->rawAnkleAverageAngle = 0;
+  leg->calAnkleAverageAngle = 0;
+  
   for (int i = 0; i < dim; i++)
   {
     leg->Average =  leg->Average + leg->TarrayPoint[i];
-    leg->AverageSpeed = leg->AverageSpeed + leg->SpeedArray[i];
+    leg->MotorAverageSpeed = leg->MotorAverageSpeed + leg->MotorSpeedArray[i];
+    leg->rawAnkleAverageAngle = leg->rawAnkleAverageAngle + leg->rawAnkleAngleArray[i]; 
+    leg->calAnkleAverageAngle = leg->calAnkleAverageAngle + leg->calAnkleAngleArray[i]; 
   }
 
   leg->Average_Trq = leg->Average / dim;
-  leg->AverageSpeed = leg->AverageSpeed / dim;
+  leg->MotorAverageSpeed = leg->MotorAverageSpeed / dim;
+  leg->rawAnkleAverageAngle = leg->rawAnkleAverageAngle / dim;
+  leg->calAnkleAverageAngle = leg->calAnkleAverageAngle / dim;
+  
+  //leg->AnkleAverageSpeed = (leg->AnkleAverageAngle - leg->PrevAnkleAngle)/0.002; //Angular Velocity in deg/s
+  //leg->PrevAnkleAngle = leg->AnkleAverageAngle;
+  
+  leg->rawAnkleSpeedArrayPoint[0] = (leg->rawAnkleAverageAngle - leg->rawPrevAnkleAngle)/0.002; //Angular velocity in degrees/s
+  leg->rawAnkleAverageSpeed = 0;
+  leg->calAnkleSpeedArrayPoint[0] = (leg->calAnkleAverageAngle - leg->calPrevAnkleAngle)/0.002; //Angular velocity in degrees/s
+  leg->calAnkleAverageSpeed = 0;
+  
+  for (int i = 0; i< dim; i++) {
+    //leg->AnkleAverageSpeed = leg->AnkleAverageSpeed + (i+1)*leg->AnkleSpeedArray[i]; //Weighted moving average
+    leg->rawAnkleAverageSpeed = leg->rawAnkleAverageSpeed + leg->rawAnkleSpeedArray[i];
+    leg->calAnkleAverageSpeed = leg->calAnkleAverageSpeed + leg->calAnkleSpeedArray[i];
+  }
+  //leg->AnkleAverageSpeed = leg->AnkleAverageSpeed / (dim*(dim+1)/2); //Weighted moving average
+  leg->rawAnkleAverageSpeed = leg->rawAnkleAverageSpeed / dim;  
+  leg->rawPrevAnkleAngle = leg->rawAnkleAverageAngle;
+  leg->calAnkleAverageSpeed = leg->calAnkleAverageSpeed / dim;  
+  leg->calPrevAnkleAngle = leg->calAnkleAverageAngle;
+  
   if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
   }
@@ -370,11 +427,16 @@ void rotate_motor() {
 
     if (voltageTimerCount >= 2000) { //every 2 seconds
       int batteryVoltage = readBatteryVoltage();
+<<<<<<< HEAD
       Serial.println(batteryVoltage);
       batteryData[0] = batteryVoltage;
       send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware
       voltageTimerCount = 0;
 
+=======
+      batteryData[0] = batteryVoltage;
+      send_command_message('~',batteryVoltage,1); //Communicate battery voltage to operating hardware
+>>>>>>> CurrentControl
       //Send data message here
     }
 
