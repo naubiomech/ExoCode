@@ -8,23 +8,23 @@ void torque_calibration()
   left_leg->torque_calibration_value = 0;
   right_leg->torque_calibration_value = 0;
 
-  left_leg->angle_zero = 0;
-  right_leg->angle_zero = 0;
+  //left_leg->angle_zero = 0;
+  //right_leg->angle_zero = 0;
   
   while (torq_cal_count < 10000) {  //(millis() - torque_calibration_value_time < 1000)  { //Calibrates the LL for a total time of 1 second,    (torq_cal_count < 10000) {
     left_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
     right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
     
-    left_leg->angle_zero += (analogRead(left_leg->ankle_angle_pin)-2048.0)*3.3/4096.0;
-    right_leg->angle_zero += (analogRead(right_leg->ankle_angle_pin) - 2048.0)*3.3/4096.0;
+    //left_leg->angle_zero += (analogRead(left_leg->ankle_angle_pin)-2048.0)*3.3/4096.0;
+    //right_leg->angle_zero += (analogRead(right_leg->ankle_angle_pin) - 2048.0)*3.3/4096.0;
     
     torq_cal_count ++;                                                         //Increments count  
   }
   left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
 
-  left_leg->angle_zero = left_leg->angle_zero/torq_cal_count;
-  right_leg->angle_zero = right_leg->angle_zero/torq_cal_count;
+  //left_leg->angle_zero = left_leg->angle_zero/torq_cal_count;
+  //right_leg->angle_zero = right_leg->angle_zero/torq_cal_count;
   
   interrupts(); //Re-enable interrupts
 }

@@ -275,11 +275,11 @@ void receive_and_transmit()
         *(data_to_send_point) = 0;
       }
       
-      if ((check_angle_bias(left_leg->angle_address)) && (check_angle_bias(right_leg->angle_address)))
-      {
-        left_leg->angle_zero = read_angle_bias(left_leg->angle_address);
-        right_leg->angle_zero = read_angle_bias(right_leg->angle_address);
-      }
+//      if ((check_angle_bias(left_leg->angle_address)) && (check_angle_bias(right_leg->angle_address)))
+//      {
+//        left_leg->angle_zero = read_angle_bias(left_leg->angle_address);
+//        right_leg->angle_zero = read_angle_bias(right_leg->angle_address);
+//      }
       
       if (((check_FSR_values(left_leg->address_FSR)) && (check_FSR_values(left_leg->address_FSR + sizeof(double) + 1))) &&
           ((check_FSR_values(right_leg->address_FSR)) && (check_FSR_values(right_leg->address_FSR + sizeof(double) + 1))))
@@ -430,15 +430,15 @@ void receive_and_transmit()
     case 'p': //GO 5/13/19
       write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
       write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
-      write_angle_bias(left_leg->angle_address, left_leg->angle_zero);
-      write_angle_bias(right_leg->angle_address, right_leg->angle_zero);
+//      write_angle_bias(left_leg->angle_address, left_leg->angle_zero); //Keep uncommented unless you want to update the angle sensor offset
+//      write_angle_bias(right_leg->angle_address, right_leg->angle_zero);
       break;
 
     case 'P': //GO 5/13/19
       left_leg->torque_calibration_value = read_torque_bias(left_leg->torque_address);
       right_leg->torque_calibration_value = read_torque_bias(right_leg->torque_address);
-      left_leg->angle_zero = read_angle_bias(left_leg->angle_address);
-      right_leg->angle_zero = read_angle_bias(right_leg->angle_address);
+//      left_leg->angle_zero = read_angle_bias(left_leg->angle_address);
+//      right_leg->angle_zero = read_angle_bias(right_leg->angle_address);
       break;
 
     case 'O': // SS 8/6/2020
