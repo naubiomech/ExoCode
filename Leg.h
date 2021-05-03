@@ -107,7 +107,11 @@ struct Leg {
   int torque_address;
   int address_FSR;
   int baseline_address;
+  int angle_address;
   double baseline_value;
+
+  // Angle Offset
+  double angle_zero = 0;
 
   // PID_and_Ctrl_Parameters.h
   double torque_calibration_value = 0;
@@ -284,10 +288,5 @@ Leg* right_leg = &right_leg_value;
 void initialize_leg(Leg* leg);
 void initialize_left_leg(Leg* left_leg);
 void initialize_right_leg(Leg* right_leg);
-
-struct angles {
-  double calAngle;
-  double rawAngle;
-};
 
 #endif
