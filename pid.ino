@@ -37,7 +37,7 @@ void pid(Leg* leg, double input) {
     leg->Vol = Vol;
     
   } else if (MODEL_CONTROL && MotorParams!=100) {
-    leg->Vol = (0.34284*(leg->PID_Setpoint) + 0.023564*(leg->MotorAverageSpeed) + 0.0043038*(leg->PID_Setpoint * leg->MotorAverageSpeed))/NomCurrent*2048; //Regression control, complex model
+    leg->Vol = (0.34284*(leg->PID_Setpoint) + 0.023564*(motor_speed(leg->motor_speed_pin)) + 0.0043038*(leg->PID_Setpoint * motor_speed(leg->motor_speed_pin)))/NomCurrent*2048; //Regression control, complex model
     if (Control_Mode == 6 && leg->state == 3) {
       leg->Vol = -leg->Vol;
     }

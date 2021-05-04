@@ -70,7 +70,7 @@ void send_data_message_wc() //with COP
   }
   else {
     data_to_send[10] = current(right_leg->motor_current_pin);
-    data_to_send[11] = right_leg->sign * motor_ankle_speed(right_leg->motor_speed_pin);
+    data_to_send[11] = right_leg->sign * motor_speed(right_leg->motor_speed_pin);
   }
     
   if (FLAG_BIOFEEDBACK) {
@@ -79,7 +79,7 @@ void send_data_message_wc() //with COP
   }
   else {
     data_to_send[12] = current(left_leg->motor_current_pin);
-    data_to_send[13] = left_leg->sign * motor_ankle_speed(left_leg->motor_speed_pin);
+    data_to_send[13] = left_leg->sign * motor_speed(left_leg->motor_speed_pin);
   }
   send_command_message('?', data_to_send, 14);
   }

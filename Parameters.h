@@ -79,7 +79,7 @@ const int BNO055_SAMPLERATE_DELAY_MS = 100;
 const double stability_trq_gain = 0.01;
 
 // ===== Torque Speed Adjust Parameters =====
-const int n_step_baseline = 6;
+const int n_step_baseline = 4;
 
 // ===== Motor Parameters =====
 // Initialize all variables as 1 prior to definition of motor parameters in GUI
@@ -87,11 +87,11 @@ const int n_step_baseline = 6;
 //HardCoded for demo
 int MotorParams = 1;  //Was 100
 double NomCurrent = 7.58; //The rest were 1
-double TrqConstant = 13.5/1000;
-double GearRatio = 6877.0/56.0;
-double PulleyRatio = 30/10.3;
-double MaxSpeed = 15800;
+double TrqConstant = 14/1000;
+double GearRatio = 4617.0 / 52.0;
+double PulleyRatio = 5;
+double MaxSpeed = 15000;
 double MotorEff = 0.89;
-double GearboxEff = 0.7;
+double GearboxEff = 0.59;
  
 #endif

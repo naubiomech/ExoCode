@@ -237,7 +237,6 @@ void calculate_leg_average(Leg* leg) {
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
     leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
-    leg->MotorSpeedArrayPoint[j] = leg->MotorSpeedArrayPoint[j-1];
     leg->rawAnkleAngleArrayPoint[j] = leg->rawAnkleAngleArrayPoint[j-1];
   }
   //Get the torque
@@ -245,10 +244,6 @@ void calculate_leg_average(Leg* leg) {
   leg->FSR_Toe_Average = 0;
   leg->FSR_Heel_Average = 0;
   leg->Average = 0;
-
-  //Motor Speed
-  leg->MotorSpeedArrayPoint[0] = motor_ankle_speed(leg->motor_speed_pin);
-  leg->MotorAverageSpeed = 0;
   
   //Ankle Angle Sensor
   leg->rawAnkleAngleArrayPoint[0] = ankle_angle(leg);
@@ -257,12 +252,10 @@ void calculate_leg_average(Leg* leg) {
   for (int i = 0; i < dim; i++)
   {
     leg->Average =  leg->Average + leg->TarrayPoint[i];
-    leg->MotorAverageSpeed = leg->MotorAverageSpeed + leg->MotorSpeedArray[i];
     leg->rawAnkleAverageAngle = leg->rawAnkleAverageAngle + leg->rawAnkleAngleArray[i]; 
   }
 
   leg->Average_Trq = leg->Average / dim;
-  leg->MotorAverageSpeed = leg->MotorAverageSpeed / dim;
   leg->rawAnkleAverageAngle = leg->rawAnkleAverageAngle / dim;
   
   leg->rawAnkleSpeed = (leg->rawAnkleAverageAngle - leg->rawPrevAnkleAngle)/0.002; //Angular velocity in degrees/s 

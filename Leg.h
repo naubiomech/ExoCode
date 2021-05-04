@@ -26,10 +26,6 @@ struct Leg {
   double* TarrayPoint = &Tarray[0];
   double Average = 0;
 
-  double MotorSpeedArray[dim] = {0};
-  double* MotorSpeedArrayPoint = &MotorSpeedArray[0];
-  double MotorAverageSpeed = 0;
-
   double rawAnkleAngleArray[dim_FSR] = {0};
   double* rawAnkleAngleArrayPoint = &rawAnkleAngleArray[0];
   double rawAnkleAverageAngle = 0;

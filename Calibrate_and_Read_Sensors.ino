@@ -171,7 +171,8 @@ double fsr(const unsigned int pin) {
  * This function reads the motor current pin and converts the voltage reading in bits to motor current.
 */
 double current(const unsigned int pin) {
-  double Co = map(analogRead(pin),0,4096,-NomCurrent,NomCurrent); //Nominal current needs to be set in ESCON, 7.58
+  double val = analogRead(pin)*3.3/4096.0;
+  double Co = map(val,0.0,3.3,-NomCurrent,NomCurrent); //Nominal current needs to be set in ESCON, 7.58
   return Co;
 }
 
@@ -180,11 +181,11 @@ Torque Constant (200W) : 700 rpm/V
 Gear Ratio (32HP, 4-8Nm) : 17576/343 
 Large Exo Pulley Ratio: 74/10.3
 */
-double motor_ankle_speed(const unsigned int pin){
-  double motor_speed = map(analogRead(pin),0,4096,-MaxSpeed,MaxSpeed);
-  //double motor_speed = MaxSpeed*3.3*(analogRead(pin)-2048)/2048;
-  double predicted_ankle_speed = motor_speed * (1/GearRatio) * (1/PulleyRatio);
-  return motor_speed;
+double motor_speed(const unsigned int pin){
+  double val = analogRead(pin)*3.3/4096.0;
+  double motorSpeed = map(val,0.0,3.3,-MaxSpeed,MaxSpeed);
+  double predicted_ankle_speed = motorSpeed * (1/GearRatio) * (1/PulleyRatio);
+  return motorSpeed;
 }
 
 /* Read the analog output from the hall sensor at the ankle, convert to degrees, and calculate actual ankle velocity.
