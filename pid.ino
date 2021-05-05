@@ -52,10 +52,6 @@ void pid(Leg* leg, double input) {
 
   leg->Vol = leg->Vol + leg->zero; // Modify the span such that the PWM value is from 0 to 4096.0 instead of -2048.0 to 2048.0
 
-  if (PWM_CONTROL) {
-     leg->Vol = leg->Vol*0.8 + 0.1*4096.0;  // Motor drivers need the PWM to be between 10% and 90%
-  }
-
   j++;
   analogWrite(leg->motor_ankle_pin, leg->Vol);
   if (j>waveLength) {
