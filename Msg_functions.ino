@@ -44,7 +44,7 @@ void send_data_message_wc() //with COP
   }
 
   //Left Leg
-  data_to_send[5] =  -(left_leg->sign * left_leg->Average_Trq);
+  data_to_send[5] = -(left_leg->sign * left_leg->Average_Trq);
   //data_to_send[5] = left_leg->Average_Trq*100.000; //Transducer raw voltage output
   data_to_send[6] = left_leg->state;
   data_to_send[7] = (left_leg->sign * left_leg->PID_Setpoint);

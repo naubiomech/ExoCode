@@ -590,13 +590,13 @@ void rotate_motor() {
                                       left_leg->p_Setpoint_Ankle_Pctrl, left_leg->Previous_p_Setpoint_Ankle_Pctrl, Control_Mode, left_leg->Prop_Gain,
                                       left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->Max_FSR_Ratio,
                                       &left_leg->FSR_Ratio_Heel, &left_leg->Max_FSR_Ratio_Heel, &left_leg->FSR_Ratio_Toe, &left_leg->Max_FSR_Ratio_Toe,
-                                      &left_leg->Max_FSR_Ratio_HeelMinusToe, &left_leg->Min_FSR_Ratio_HeelMinusToe);
+                                      &left_leg->Max_FSR_Ratio_Hip, &left_leg->Min_FSR_Ratio_Hip);
     right_leg->N3 = Control_Adjustment(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps,
                                        right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle, right_leg->p_Dorsi_Setpoint_Ankle,
                                        right_leg->p_Setpoint_Ankle_Pctrl, right_leg->Previous_p_Setpoint_Ankle_Pctrl, Control_Mode, right_leg->Prop_Gain,
                                        right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio,
                                        &right_leg->FSR_Ratio_Heel, &right_leg->Max_FSR_Ratio_Heel, &right_leg->FSR_Ratio_Toe, &right_leg->Max_FSR_Ratio_Toe,
-                                      &right_leg->Max_FSR_Ratio_HeelMinusToe, &right_leg->Min_FSR_Ratio_HeelMinusToe);
+                                      &right_leg->Max_FSR_Ratio_Hip, &right_leg->Min_FSR_Ratio_Hip);
 
   }// end if stream==1
 }

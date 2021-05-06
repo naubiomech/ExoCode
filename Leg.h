@@ -91,8 +91,8 @@ struct Leg {
   double Max_FSR_Ratio_Heel;  //  SS  12/14/2020
   double FSR_Ratio_Toe;  //  SS  12/14/2020
   double Max_FSR_Ratio_Toe;  //  SS  12/14/2020
-  double Max_FSR_Ratio_HeelMinusToe;  //  SS  3/9/2021
-  double Min_FSR_Ratio_HeelMinusToe;  //  SS  3/9/2021
+  double Max_FSR_Ratio_Hip;  //  SS  3/9/2021
+  double Min_FSR_Ratio_Hip;  //  SS  3/9/2021
   double Hip_Ratio = 0; //  SS  3/9/2021
   // Combined_FSR.h
   double fsr_Combined_peak_ref;
@@ -241,6 +241,8 @@ struct Leg {
   int state_count_53 = 0;
   int state_swing_counter = 0; 
   int state_stance_counter = 0; //  SS  4/9/2021
+  int state_1_counter = 0; //  SS  5/3/2021
+  int prev_state_swing_counter = 300; //  SS  5/3/2021
 
   double state_3_start_time = 0;
   double state_1_start_time = 0;

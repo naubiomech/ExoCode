@@ -174,7 +174,7 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
 
 
 double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, double N3_l, double New_PID_Setpoint_l, double* p_Setpoint_Ankle_l, double* p_Dorsi_Setpoint_Ankle_l, double * p_Setpoint_Ankle_Pctrl_l, double * Previous_p_Setpoint_Ankle_Pctrl_l, int Control_Mode_l, double prop_gain_l, double taking_baseline_l,
-                          double *p_FSR_Ratio, double* p_Max_FSR_Ratio, double *p_FSR_Ratio_Heel, double* p_Max_FSR_Ratio_Heel, double *p_FSR_Ratio_Toe, double* p_Max_FSR_Ratio_Toe, double* p_Max_FSR_Ratio_HeelMinusToe, double* p_Min_FSR_Ratio_HeelMinusToe) {  //  SS  12/14/2020
+                          double *p_FSR_Ratio, double* p_Max_FSR_Ratio, double *p_FSR_Ratio_Heel, double* p_Max_FSR_Ratio_Heel, double *p_FSR_Ratio_Toe, double* p_Max_FSR_Ratio_Toe, double* p_Max_FSR_Ratio_Hip, double* p_Min_FSR_Ratio_Hip) {  //  SS  12/14/2020
 
   // Control Mode 2: Balance control
   // Control Mode 3: Joint Moment control, the torque is a percentage of the extimated Ankle moment. The mapping function that estimated the ankle moment use a ratio (p_FSR_Ratio) which depends on the current force of pressure
@@ -245,28 +245,44 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
         if (*p_FSR_Ratio_Toe > (*p_Max_FSR_Ratio_Toe))  //  SS  12/SS14/2020
           (*p_Max_FSR_Ratio_Toe) = *p_FSR_Ratio_Toe; // update the max fsr Ratio
-        
 
-        if ((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) > (*p_Max_FSR_Ratio_HeelMinusToe))  //  SS  3/9/2021
-          (*p_Max_FSR_Ratio_HeelMinusToe) = *p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe;
+        if (HeelMToe)
+          FSR_Ratio_Hip = *p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe;
+        if (HeelMToe4)
+          FSR_Ratio_Hip = *p_FSR_Ratio_Heel - (*p_FSR_Ratio_Toe * 0.25);
+        if (Heel)
+          FSR_Ratio_Hip = *p_FSR_Ratio_Heel;
+        if (HeelPToe)
+          FSR_Ratio_Hip = *p_FSR_Ratio_Heel + *p_FSR_Ratio_Toe;
+          
+
+        if ((FSR_Ratio_Hip) > (*p_Max_FSR_Ratio_Hip))  //  SS  3/9/2021
+          (*p_Max_FSR_Ratio_Hip) = FSR_Ratio_Hip;
 
         if (R_state_l == 3){
-          if ((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) < (*p_Min_FSR_Ratio_HeelMinusToe))  //  SS  3/9/2021
-            (*p_Min_FSR_Ratio_HeelMinusToe) = *p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe;
+          if ((FSR_Ratio_Hip) < (*p_Min_FSR_Ratio_Hip))  //  SS  3/9/2021
+            (*p_Min_FSR_Ratio_Hip) = FSR_Ratio_Hip;
         }
-        if (((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) < 0)  || ((((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) == 0) && (FSR_Ratio_HeelMinusToe < 0)))){
-          if (((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) < leg->Hip_Ratio)  //  SS  3/9/2021
-            leg->Hip_Ratio = (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe);
+
+        if ((FSR_Ratio_Hip < 0) || ( (FSR_Ratio_Hip == 0) && (Pre_FSR_Ratio_Hip < 0) )){ 
+          if (HeelMToe){
+            if (FSR_Ratio_Hip < leg->Hip_Ratio)  //  SS  3/9/2021
+              leg->Hip_Ratio = FSR_Ratio_Hip;
+          }else{
+            if ((FSR_Ratio_Hip * 4) < leg->Hip_Ratio)  //  SS  3/9/2021
+              leg->Hip_Ratio = FSR_Ratio_Hip * 4;
+          }
         }else{
-          if ((1 > (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) && ((FSR_Ratio_HeelMinusToe <= (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) || (FSR_Ratio_HeelMinusToe == 0)))
-            leg->Hip_Ratio = 1;
-          else
-            leg->Hip_Ratio = (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe);
+          if (( (1 > FSR_Ratio_Hip) && (FSR_Ratio_Hip != 0) ) && ( (Pre_FSR_Ratio_Hip <= FSR_Ratio_Hip) && ((leg->Hip_Ratio == 1) || (Pre_FSR_Ratio_Hip == 0)) ))
+              leg->Hip_Ratio = 1;
+            else
+              leg->Hip_Ratio = FSR_Ratio_Hip;
         }
-        FSR_Ratio_HeelMinusToe = *p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe;
+
+        Pre_FSR_Ratio_Hip = FSR_Ratio_Hip;
         
         // while updating the ratio value still continue to provide the control
-        if(FSR_Ratio_HeelMinusToe <= 0){
+        if(FSR_Ratio_Hip <= 0){
           if ((p_steps_l->Setpoint ) > 0) { //depending on the leg the sign changes
             *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
             *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (leg->Hip_Ratio));  //  SS  3/9/2021
@@ -361,24 +377,41 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     if (*p_FSR_Ratio_Toe > (*p_Max_FSR_Ratio_Toe))  //  SS  12/14/2020
       (*p_Max_FSR_Ratio_Toe) = *p_FSR_Ratio_Toe;
 
-    if ((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) > (*p_Max_FSR_Ratio_HeelMinusToe))  //  SS  3/9/2021
-      (*p_Max_FSR_Ratio_HeelMinusToe) = *p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe;
+     if (HeelMToe)
+          FSR_Ratio_Hip = *p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe;
+        if (HeelMToe4)
+          FSR_Ratio_Hip = *p_FSR_Ratio_Heel - (*p_FSR_Ratio_Toe * 0.25);
+        if (Heel)
+          FSR_Ratio_Hip = *p_FSR_Ratio_Heel;
+        if (HeelPToe)
+          FSR_Ratio_Hip = *p_FSR_Ratio_Heel + *p_FSR_Ratio_Toe;
+          
 
-    if ((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) < (*p_Min_FSR_Ratio_HeelMinusToe))  //  SS  3/9/2021
-      (*p_Min_FSR_Ratio_HeelMinusToe) = *p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe;
+        if ((FSR_Ratio_Hip) > (*p_Max_FSR_Ratio_Hip))  //  SS  3/9/2021
+          (*p_Max_FSR_Ratio_Hip) = FSR_Ratio_Hip;
 
+        if (R_state_l == 3){
+          if ((FSR_Ratio_Hip) < (*p_Min_FSR_Ratio_Hip))  //  SS  3/9/2021
+            (*p_Min_FSR_Ratio_Hip) = FSR_Ratio_Hip;
+        }
 
+        if ((FSR_Ratio_Hip < 0) || ( (FSR_Ratio_Hip == 0) && (Pre_FSR_Ratio_Hip < 0) )){ 
+          if (HeelMToe){
+            if (FSR_Ratio_Hip < leg->Hip_Ratio)  //  SS  3/9/2021
+              leg->Hip_Ratio = FSR_Ratio_Hip;
+          }else{
+            if ((FSR_Ratio_Hip * 4) < leg->Hip_Ratio)  //  SS  3/9/2021
+              leg->Hip_Ratio = FSR_Ratio_Hip * 4;
+          }
+        }else{
+          if (( (1 > FSR_Ratio_Hip) && (FSR_Ratio_Hip != 0) ) && ( (Pre_FSR_Ratio_Hip <= FSR_Ratio_Hip) && ((leg->Hip_Ratio == 1) || (Pre_FSR_Ratio_Hip == 0)) ))
+              leg->Hip_Ratio = 1;
+            else
+              leg->Hip_Ratio = FSR_Ratio_Hip;
+        }
 
-    if (((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) < 0)  || ((((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe) == 0) && (FSR_Ratio_HeelMinusToe < 0)))){
-      if (((*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) < leg->Hip_Ratio)  //  SS  3/9/2021
-        leg->Hip_Ratio = (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe);
-    }else{
-      if ((1 > (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe)) && ((FSR_Ratio_HeelMinusToe <= (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe))  || (FSR_Ratio_HeelMinusToe == 0)))
-        leg->Hip_Ratio = 1;
-      else
-        leg->Hip_Ratio = (*p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe);
-    }
-    FSR_Ratio_HeelMinusToe = *p_FSR_Ratio_Heel - *p_FSR_Ratio_Toe;
+        Pre_FSR_Ratio_Hip = FSR_Ratio_Hip;
+        
     
     if (Control_Mode_l == 2) { // Balance control
 
@@ -410,7 +443,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
     }
 
     else if (Control_Mode_l == 4 || Control_Mode_l == 6)  {
-      if (FSR_Ratio_HeelMinusToe <= 0){
+      if (FSR_Ratio_Hip <= 0){
         if ((p_steps_l->Setpoint ) > 0) {
           *Previous_p_Setpoint_Ankle_Pctrl_l = *p_Setpoint_Ankle_Pctrl_l;
           *p_Setpoint_Ankle_Pctrl_l = max(Min_Prop, (p_steps_l->Setpoint ) * (leg->Hip_Ratio)); // the difference here is that we do it as a function of the FSR calibration  //  SS  3/9/2021

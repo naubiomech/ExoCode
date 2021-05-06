@@ -645,15 +645,22 @@ void receive_and_transmit()
       break;
 
     case '+':
-
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = false;
-      FLAG_BALANCE = true;
-      Old_Control_Mode = Control_Mode;
-      Control_Mode = 2;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      FLAG_BALANCE = true;
+     receiveVals(48);                                                
+      memcpy(&HeelMToe, holdOnPoint, 8);                                  
+      memcpy(&HeelMToe4, holdOnPoint + 8, 8); 
+      memcpy(&Heel, holdOnPoint + 16, 8); 
+      memcpy(&HeelPToe, holdOnPoint + 24, 8);   
+      memcpy(&Step, holdOnPoint + 32, 8); 
+      memcpy(&Line, holdOnPoint + 40, 8); 
+      
+//      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
+//      FLAG_ONE_TOE_SENSOR = false;
+//      FLAG_BALANCE = true;
+//      Old_Control_Mode = Control_Mode;
+//      Control_Mode = 2;
+//      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+//      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+//      FLAG_BALANCE = true;
       break;
 
     case '=':
@@ -783,28 +790,43 @@ void receive_and_transmit()
       left_leg->p_steps->flag_start_plant = false;
       break;
 
-    case '&':
-      FLAG_BALANCE_BASELINE = 1;
 
-      startTime = millis();
-      Control_Mode = Old_Control_Mode;// you cannot calibrate if your doing something
-      left_leg->FSR_Toe_Balance_Baseline = 0;
-      right_leg->FSR_Toe_Balance_Baseline = 0;
-      left_leg->FSR_Heel_Balance_Baseline = 0;
-      right_leg->FSR_Heel_Balance_Baseline = 0;
-      count_balance = 0;
+//    case 'm':  //  SS  12/14/2020
+//      receiveVals(8);               
+//      memcpy(&EarlySwingPercentage, holdOnPoint, 8);
+//      break;
+//    
+//    case '-':  //  SS  12/14/2020
+//      *(data_to_send_point) = EarlySwingPercentage;
+//      send_command_message('-', data_to_send_point, 1);     //MATLAB is expecting to recieve the Subject's Parameters
+//      break;
+      
+    case '&':
+      receiveVals(8);               
+      memcpy(&LateSwingPercentage, holdOnPoint, 8);
+//      FLAG_BALANCE_BASELINE = 1;
+//
+//      startTime = millis();
+//      Control_Mode = Old_Control_Mode;// you cannot calibrate if your doing something
+//      left_leg->FSR_Toe_Balance_Baseline = 0;
+//      right_leg->FSR_Toe_Balance_Baseline = 0;
+//      left_leg->FSR_Heel_Balance_Baseline = 0;
+//      right_leg->FSR_Heel_Balance_Baseline = 0;
+//      count_balance = 0;
       break;
 
     case 'J':
-      FLAG_STEADY_BALANCE_BASELINE = 1;
-
-      startTime = millis();
-      Control_Mode = Old_Control_Mode;// you cannot calibrate if your doing something
-      left_leg->FSR_Toe_Steady_Balance_Baseline = 0;
-      right_leg->FSR_Toe_Steady_Balance_Baseline = 0;
-      left_leg->FSR_Heel_Steady_Balance_Baseline = 0;
-      right_leg->FSR_Heel_Steady_Balance_Baseline = 0;
-      count_steady_baseline = 0;
+      *(data_to_send_point) = LateSwingPercentage;
+      send_command_message('J', data_to_send_point, 1);     //MATLAB is expecting to recieve the Subject's Parameters
+//      FLAG_STEADY_BALANCE_BASELINE = 1;
+//
+//      startTime = millis();
+//      Control_Mode = Old_Control_Mode;// you cannot calibrate if your doing something
+//      left_leg->FSR_Toe_Steady_Balance_Baseline = 0;
+//      right_leg->FSR_Toe_Steady_Balance_Baseline = 0;
+//      left_leg->FSR_Heel_Steady_Balance_Baseline = 0;
+//      right_leg->FSR_Heel_Steady_Balance_Baseline = 0;
+//      count_steady_baseline = 0;
       break;
 
 
