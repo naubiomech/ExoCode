@@ -368,8 +368,8 @@ void rotate_motor() {
 
   if (stream == 1)
   {
-    pid(left_leg, left_leg->Average_Trq);
-    pid(right_leg, right_leg->Average_Trq);
+    pid(left_leg, left_leg->Average_Trq*abs(left_leg->rawAnkleSpeed)*PI/180);
+    //pid(right_leg, right_leg->Average_Trq*right_leg->rawAnkleSpeed);
 
     
     if (streamTimerCount >= streamTimerCountNum) // every streamTimerCountNum*2ms

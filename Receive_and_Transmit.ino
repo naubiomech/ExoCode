@@ -99,10 +99,10 @@ void receive_and_transmit()
       if (MotorParams == 0) {
         // 22mm 90W motor, 22HP gearbox
 
-        MaxSpeed = 15000; //RPM
+        MaxSpeed = 20000; //RPM
         TrqConstant = 14 / 1000; //Nm/A
         GearRatio = 4617.0 / 52.0; //89:1 gear ratio
-        NomCurrent = 7.58; //A
+        NomCurrent = 8.0; //A
         MotorEff = 0.89;
         GearboxEff = 0.59;
         PulleyRatio = 5; //Small aluminum pulley, large sprocket
@@ -114,7 +114,7 @@ void receive_and_transmit()
         MaxSpeed = 15800; //RPM
         TrqConstant = 13.5 / 1000; //Nm/A
         GearRatio = 6877.0 / 56.0; //123:1 gear ratio
-        NomCurrent = 7.58; //A
+        NomCurrent = 8.0; //A
         MotorEff = 0.89;
         GearboxEff = 0.7;
         PulleyRatio = 30 / 10.3; //Small aluminum pulley, large sprocket
@@ -126,7 +126,7 @@ void receive_and_transmit()
         MaxSpeed = 16100; //RPM
         TrqConstant = 13.6 / 1000; //Nm/A
         GearRatio = 17576.0 / 343.0; //51:1 gear ratio
-        NomCurrent = 7.58; //A
+        NomCurrent = 8.0; //A
         MotorEff = 0.89;
         GearboxEff = 0.7;
         PulleyRatio = 74 / 10.3; //Large aluminum pulley, large sprocket
@@ -138,7 +138,7 @@ void receive_and_transmit()
         MaxSpeed = 16100; //RPM
         TrqConstant = 13.6 / 1000; //Nm/A
         GearRatio = 3588.0 / 35.0; //103:1 gear ratio
-        NomCurrent = 7.58; //A
+        NomCurrent = 8.0; //A
         MotorEff = 0.89;
         GearboxEff = 0.7;
         PulleyRatio = 30 / 13.25; //Carbon fiber pulley, motor pulley

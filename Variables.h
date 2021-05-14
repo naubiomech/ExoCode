@@ -101,7 +101,7 @@ bool flag_resist = false; //GO 6/20/2020
 // Variables for Power Monitor - GO 9/24/2020
 
 int INA219_ADR = 0x40;        // Address of INA219 for writing defined in 7 bits. The 8th bit is automatically included by Wire.read() or Wire.write()
-int INA219_CONFIG = 0x00; // All-register reset, bus voltage range, PGA gain, ADC resolution/averaging. Typically does not need modification
+int INA219_CONFIG = 0x00; // All-register reset, bus voltage range, PGA gain, ADC resolution/averaging. Typically does not need edits
 int INA219_SHUNT = 0x01;  // Shunt voltage measurement - use this to get the shunt resistor voltage
 int INA219_BUS = 0x02;    // Bus voltage measurement - use this to get the battery voltage relative to ground
 int INA219_PWR = 0x03;    // Power measurement - use this to get calibrated power measurements

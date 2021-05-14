@@ -5,7 +5,7 @@
 
 void pid(Leg* leg, double input) {
   if (!CURRENT_CONTROL) {
-    if ((abs(input) > 35)) //Was 25, increased to accomodate large exo
+    if ((abs(leg->Average_Trq) > 35)) //Was 25, increased to accomodate large exo
     {
       leg->torque_error_counter++;
       if (leg->torque_error_counter >= 10) {
