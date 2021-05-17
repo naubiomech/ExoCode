@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD_REV4
+#define BOARD_VERSION DUAL_BOARD_REV3
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -47,7 +47,7 @@ int j = 0;
 #include "ATP.h"
 #include "Trial_Data.h"
 #include "Step.h"
-bool iOS_Flag = 0;
+bool iOS_Flag = 1;
 int streamTimerCountNum = 0;
 //----------------------------------------------------------------------------------
 
@@ -127,7 +127,6 @@ void setup()
 
 //  calculateStep();
   Serial.println("Setup complete");
-  
 }
 
 //----------------------------------------------------------------------------------
@@ -365,6 +364,13 @@ void check_Balance_Baseline() {
 void rotate_motor() {
   // send the data message, adapt KF if required, apply the PID, apply the state machine,
   //adjust some control parameters as a function of the control strategy decided (Control_Adjustment)
+  if (voltageTimerCount >= 2000) { //send voltage every 2 seconds
+      int batteryVoltage = readBatteryVoltage();
+      batteryData[0] = batteryVoltage/10;
+      send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware
+      voltageTimerCount = 0;
+  }
+  voltageTimerCount++; 
 
   if (stream == 1)
   {
@@ -379,12 +385,6 @@ void rotate_motor() {
       streamTimerCount = 0;
     }
 
-    if (voltageTimerCount >= 2000) { //send voltage every 2 seconds
-      int batteryVoltage = readBatteryVoltage();
-      batteryData[0] = batteryVoltage;
-      send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware
-      voltageTimerCount = 0;
-    }
 
     if (streamTimerCount == 1 && flag_auto_KF == 1) {
       Auto_KF(left_leg, Control_Mode);
@@ -393,7 +393,6 @@ void rotate_motor() {
 
 
     streamTimerCount++;
-    voltageTimerCount++;
 
     
 
