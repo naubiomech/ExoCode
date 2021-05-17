@@ -78,7 +78,7 @@ const int BNO055_SAMPLERATE_DELAY_MS = 100;
 const double stability_trq_gain = 0.01;
 
 // ===== Torque Speed Adjust Parameters =====
-const int n_step_baseline = 4;
+const int n_step_baseline = 3;
 
 // ===== Motor Parameters =====
 // Initialize all variables as 1 prior to definition of motor parameters in GUI

@@ -94,6 +94,10 @@ bool flag_pivot = false; // TN 04/29/2019
 bool flag_id = false; // TN 04/29/2019
 bool flag_resist = false; //GO 6/20/2020
 
+// Flags for baseline communcation
+bool baselineRight = false;
+bool baselineLeft = false;
+
 // Variables for Power Monitor - GO 9/24/2020
 
 int INA219_ADR = 0x40;        // Address of INA219 for writing defined in 7 bits. The 8th bit is automatically included by Wire.read() or Wire.write()
@@ -108,3 +112,9 @@ int PowerLSB = 20 * CurrentLSB; // mW/bit. This value is used to multiply to pow
 int ShuntLSB = 0.01;          // mV. This is the default multiplier for the shunt voltage reading from the INA219.
 int BusLSB = 4;               // mV. This is the multiplier for the bus (battery) voltage reading from the INA219.
 int Cal = 0x5000;             // Calibration value in hex. Cal = 0.04096/(CurrentLSB*ShuntResistance). Shunt resistance on Rev3/4 is 2mOhm.
+
+// Temporary Torque Value Storage
+ double temp_L_DFX = 0;
+ double temp_L_PFX = 0;
+ double temp_R_DFX = 0;
+ double temp_R_PFX = 0;
