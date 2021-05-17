@@ -114,8 +114,6 @@ int Cal = 0x5000;             // Calibration value in hex. Cal = 0.04096/(Curren
 
 double EarlySwingPercentage = 30; // SS  2/17/2021
 double LateSwingPercentage = 30;
-double FSR_Ratio_Hip = 0;
-double Pre_FSR_Ratio_Hip = 0;
 double HeelMToe = 1;
 double HeelMToe4 = 0;
 double Heel = 0;

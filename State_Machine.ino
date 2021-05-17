@@ -1271,7 +1271,8 @@ void State_Machine_Heel_Toe_Sensors_Hip_3State(Leg * leg) {
             }else if(HeelMToe4){
               leg->PID_Setpoint = 4 * leg->Min_FSR_Ratio_Hip * leg->Setpoint_Ankle;
             }else{
-              leg->PID_Setpoint = -leg->Setpoint_Ankle;
+              leg->Old_PID_Setpoint = leg->PID_Setpoint;
+              leg->New_PID_Setpoint = -leg->Setpoint_Ankle;
             }
             
             
@@ -1312,6 +1313,7 @@ void State_Machine_Heel_Toe_Sensors_Hip_3State(Leg * leg) {
         leg->state_stance_counter = 0;//  SS  4/9/2021
         if (leg->state_count_51 >= state_counter_th)
         {
+          
           leg->Old_PID_Setpoint = leg->PID_Setpoint;
             leg->New_PID_Setpoint = 0;
           
@@ -1384,6 +1386,10 @@ void State_Machine_Heel_Toe_Sensors_Hip_3State(Leg * leg) {
 //      PID_Sigm_Curve(leg);
 //    }
   }
+  if ((leg->state == 5) && (Heel || HeelPToe) ){
+      // Create the smoothed reference and call the PID
+      PID_Sigm_Curve(leg);
+    }
 
 }// end function
 //-------------------------------------------------------------------------------------------------------------

@@ -94,6 +94,8 @@ struct Leg {
   double Max_FSR_Ratio_Hip;  //  SS  3/9/2021
   double Min_FSR_Ratio_Hip;  //  SS  3/9/2021
   double Hip_Ratio = 0; //  SS  3/9/2021
+  double FSR_Ratio_Hip = 0;
+  double Pre_FSR_Ratio_Hip[3];
   // Combined_FSR.h
   double fsr_Combined_peak_ref;
   double Curr_Combined;
