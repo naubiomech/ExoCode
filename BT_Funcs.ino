@@ -48,11 +48,7 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
   char data[32] = {0};
   int val_len = RXChar.valueLength();
   RXChar.readValue(data, val_len);
-<<<<<<< HEAD
   if (data[0] == '!') {
-=======
-  if (data[0] == 'C') { //Used to be 'S' but changed so that S can be used as the resistance control flag
->>>>>>> 19679b9d88ec73f5333aae88e6dcd44564f9610b
     if (!handle_matlab_message(data, val_len)) {
       receive_and_transmit();
     }

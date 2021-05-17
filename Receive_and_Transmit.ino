@@ -4,18 +4,14 @@ double app = 0;
 
 void receive_and_transmit()
 {
-<<<<<<< HEAD
-  if (!DEBUG) {
-=======
-  //Serial.println((char) cmd_from_Gui);    //Uncomment and open Serial Monitor (top right) for debugging
+
   if (DEBUG) {
->>>>>>> 19679b9d88ec73f5333aae88e6dcd44564f9610b
     Serial.println((char) cmd_from_Gui);
   }
   switch (cmd_from_Gui)
   {
     case 'F':                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
-      if (!DEBUG) {
+      if (DEBUG) {
         Serial.println("Received some setpoints");
       }
       left_leg->Previous_Setpoint_Ankle = left_leg->Setpoint_Ankle;
