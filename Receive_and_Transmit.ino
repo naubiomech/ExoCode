@@ -4,13 +4,13 @@ double app = 0;
 
 void receive_and_transmit()
 {
-  if (DEBUG) {
+  if (!DEBUG) {
     Serial.println((char) cmd_from_Gui);
   }
   switch (cmd_from_Gui)
   {
     case 'F':                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
-      if (DEBUG) {
+      if (!DEBUG) {
         Serial.println("Received some setpoints");
       }
       left_leg->Previous_Setpoint_Ankle = left_leg->Setpoint_Ankle;
@@ -19,14 +19,14 @@ void receive_and_transmit()
       right_leg->Previous_Dorsi_Setpoint_Ankle = right_leg->Dorsi_Setpoint_Ankle;
       memcpy(&left_leg->Setpoint_Ankle, holdOnPoint, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       memcpy(&left_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
-      memcpy(&right_leg->Setpoint_Ankle, holdOnPoint, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-      memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
-      /*
+      memcpy(&right_leg->Setpoint_Ankle, holdOnPoint + 16, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+      memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 24, 8);
+      
       Serial.println(left_leg->Setpoint_Ankle);
       Serial.println(left_leg->Dorsi_Setpoint_Ankle);
       Serial.println(right_leg->Setpoint_Ankle);
       Serial.println(right_leg->Dorsi_Setpoint_Ankle);
-      */
+      
       if (left_leg->Setpoint_Ankle < 0) {
         left_leg->Setpoint_Ankle = 0;
         left_leg->Previous_Setpoint_Ankle = 0;

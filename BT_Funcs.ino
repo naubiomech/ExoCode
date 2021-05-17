@@ -7,7 +7,11 @@ bool BUFFERS_FIXED_LENGTH = false;
 BLEService UARTService(UARTUUID);   //Instantiate UART service
 BLECharacteristic TXChar(rxUUID, BLERead | BLENotify | BLEBroadcast,             BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //TX characteristic of service
 BLECharacteristic RXChar(txUUID, BLEWriteWithoutResponse | BLEWrite | BLENotify, BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //RX characteristic of service
-
+static inline void config_ble_regs(void) {
+  NRF_RADIO->MODE = 3;  //3 = 1Mb/s, 4 = 2Mb/s
+  NRF_RADIO->TXPOWER = 0x8;
+  //MARK: Need to increase default MTU
+}
 
 void setupBLE()
 {
@@ -28,6 +32,7 @@ void setupBLE()
     BLE.setEventHandler(BLEDisconnected, onBLEDisconnected);
     RXChar.setEventHandler(BLEWritten,   onRxCharValueUpdate);
     BLE.advertise();
+    config_ble_regs();
     digitalWrite(GREEN,LOW);
   }
   else
@@ -43,7 +48,7 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
   char data[32] = {0};
   int val_len = RXChar.valueLength();
   RXChar.readValue(data, val_len);
-  if (data[0] == 'S') {
+  if (data[0] == '!') {
     if (!handle_matlab_message(data, val_len)) {
       receive_and_transmit();
     }

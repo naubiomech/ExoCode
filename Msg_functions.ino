@@ -51,7 +51,11 @@ void send_command_message(char command_char, double* data_to_send, int number_to
     bufferIndex += cLength;
     buffer[bufferIndex++] = 'n';
   }
+  unsigned long int before = micros();
   TXChar.writeValue(buffer, bufferIndex);           //Write payload
+  unsigned long int after = micros();
+  Serial.print("Delta: ");
+  Serial.println(after-before);
 }
 
 int getCharLength(int ofInt) {
