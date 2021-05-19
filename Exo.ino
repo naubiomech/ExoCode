@@ -25,6 +25,7 @@
 const unsigned int zero = 2048; //1540;
 
 #include <ArduinoBLE.h>
+//#define ATT_MTU_DEFAULT         247
 #include <elapsedMillis.h>
 #include <PID_v2.h>
 #include <Wire.h>
@@ -40,14 +41,12 @@ const unsigned int zero = 2048; //1540;
 #include "ATP.h"
 #include "Trial_Data.h"
 
-bool DEBUG{false};
 //----------------------------------------------------------------------------------
 
 
 // Initialize the system
 void setup()
 {
-  if (DEBUG) {Serial.println("Started");}
 
   //Nano's internal BLE module
   setupBLE();
@@ -84,8 +83,6 @@ void setup()
 
   // Torque cal
   torque_calibration(); //Sets a torque zero on startup  
-
-  if (DEBUG) {Serial.println("Setup complete");}
   startMillis = millis();
 }
 
@@ -93,7 +90,6 @@ void setup()
 
 void callback()//executed every 1ms
 {
-  if (DEBUG) {Serial.println("Callback");}
   // reset the motor drivers if you encounter an unexpected current peakz
   resetMotorIfError();
 
@@ -112,14 +108,11 @@ void callback()//executed every 1ms
   //Updates GUI
   update_GUI();
     
-
-  if (DEBUG) {Serial.println("Done with callback");}
 }// end callback
 //----------------------------------------------------------------------------------
 // Function that is repeated in loop
 void loop()
 {
-  if (DEBUG) {Serial.println("In loop");}
   //Looks for updates
   BLE.poll();
   
@@ -129,25 +122,20 @@ void loop()
     callback();
     startMillis = currentMillis;
   }
-  if (DEBUG) {Serial.println("Out loop");}
 }// end void loop
 //---------------------------------------------------------------------------------
 void update_GUI() {
     //Real Time data
   if ((streamTimerCount >= streamTimerCountNum) && stream)
     {
-      if (DEBUG) {Serial.println("In streamTimerCount if");}
       counter_msgs++;
       send_data_message_wc();
       streamTimerCount = 0;
-      if (DEBUG) {Serial.println("Out stream if");}    
     }
     
     //Battery voltage and reset motor count data
     if (voltageTimerCount >= voltageTimerCountNum) {
-      if (DEBUG) {Serial.println("In voltageTimerCount if");}
       int batteryVoltage = readBatteryVoltage();
-      if (DEBUG) {Serial.println(batteryVoltage);}
       batteryData[0] = batteryVoltage/10; //convert from milli
       //Serial.print("Voltage: ");
       //Serial.println(batteryData[0]);
@@ -157,7 +145,6 @@ void update_GUI() {
       //Motor reset Count
       errorCount[1] = reset_count;
       send_command_message('w', errorCount, 1);
-      if (DEBUG) {Serial.println("Out voltageTimerCount if");}
     }
     streamTimerCount++;
     voltageTimerCount++;
@@ -227,9 +214,6 @@ void calculate_leg_average(Leg* leg) {
 //----------------------------------------------------------------------------------
 
 void calculate_averages() {
-  if (DEBUG) {
-    Serial.println("In calculate_averages()");
-  }
   calculate_leg_average(left_leg);
   calculate_leg_average(right_leg);
 
@@ -249,15 +233,11 @@ void calculate_averages() {
     Serial.print(" ] Average: ");
     Serial.println(right_leg->Average_Trq);
   }
-  if (DEBUG) {
-    Serial.println("Out calculate_averages()");
-  }
 }
 
 //----------------------------------------------------------------------------------
 
 void check_FSR_calibration() {
-  if (DEBUG) {Serial.println("In check_FSR_calibration");}
   if (FSR_CAL_FLAG) {
     FSR_calibration();
     
@@ -270,41 +250,34 @@ void check_FSR_calibration() {
   if (left_leg->FSR_baseline_FLAG) {
     take_baseline(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
   }
-  if (DEBUG) {Serial.println("Out check_FSR_calibration");}
 }
 
 //----------------------------------------------------------------------------------
 // check if some data about the balance baseline exists and transmit them to the gui
 void check_Balance_Baseline() {
-  if (DEBUG) {Serial.println("In check_Balance_Baseline()");}
   if (FLAG_BALANCE_BASELINE) {
     Balance_Baseline();
   }
   if (FLAG_STEADY_BALANCE_BASELINE) {
     Steady_Balance_Baseline();
   }
-  if (DEBUG) {Serial.println("Out rotate_motor()");}
 }
 
 
 //----------------------------------------------------------------------------------
 
 void rotate_motor() {
-  if (DEBUG) {Serial.println("In rotate_motor()");}
   // send the data message, adapt KF if required, apply the PID, apply the state machine,
   //adjust some control parameters as a function of the control strategy decided (Control_Adjustment)
     
   if (stream == 1)
   {
-    if (DEBUG) {Serial.println("In stream if");}
     pid(left_leg, left_leg->Average_Trq);
     pid(right_leg, right_leg->Average_Trq);
 
     if (streamTimerCount == 1 && flag_auto_KF == 1) {
-      if (DEBUG) {Serial.println("In flag_auto_KF if");}
       Auto_KF(left_leg, Control_Mode);
       Auto_KF(right_leg, Control_Mode);
-      if (DEBUG) {Serial.println("Out flag_auto_KF if");}
     }
     
     // modification to check the pid
@@ -327,12 +300,9 @@ void rotate_motor() {
 
     }
     // end modification
-    if (DEBUG) {Serial.println("Check States");}
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
-    if (DEBUG) {Serial.println("Done Check states");}
     
-    if (DEBUG) {Serial.println("Reference Millis");}
     if ((left_leg->state == 3) && ((left_leg->old_state == 1) || (left_leg->old_state == 2))) {   // TN 9/26/19
       left_leg->state_3_start_time = millis();
     }
@@ -397,22 +367,17 @@ void rotate_motor() {
     //        }
     //    #endif
 
-    if (DEBUG) {Serial.println("God's code");}
     // When I first wrote this only God and I knew what it did. Now only God knows. Need to go through this again. GO 9/17/20
     if ((Control_Mode == 3 || Control_Mode == 6) && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
       left_leg->PID_Setpoint = left_leg->New_PID_Setpoint;   //Brute force the dorsiflexion set point to proportional control
     } else if ((Control_Mode == 3 || Control_Mode == 6) && (abs(right_leg->Dorsi_Setpoint_Ankle) > 0 || abs(right_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && right_leg->state == 1) {
       right_leg->PID_Setpoint = right_leg->New_PID_Setpoint; //Brute force the dorsiflexion set point to proportional control
     } else {};
-    if (DEBUG) {Serial.println("End God's code");}
 
     int left_scaling_index = 0;
     int right_scaling_index = 0;
 
     if (Control_Mode == 5) {
-      if (DEBUG) {Serial.println("In control_mode 5 if");}
-
-
 
       if ((left_leg->state == 3) && (left_leg->state_3_duration > 0)) {
         left_scaling_index = (millis() - left_leg->state_3_start_time) / (left_leg->state_3_duration / 100);
@@ -439,9 +404,6 @@ void rotate_motor() {
       else {
         right_leg->PID_Setpoint = 0;   // TN 8/20/19
       }
-
-
-    if (DEBUG) {Serial.println("End control mode 5 if");}
     }
 
 
@@ -450,7 +412,6 @@ void rotate_motor() {
     else {
       //set_2_zero_if_steady_state();
     }
-    if (DEBUG) {Serial.println("Control Adjustments");}
     left_leg->N3 = Control_Adjustment(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
                                       left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle,
                                       left_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, left_leg->Prop_Gain,
@@ -459,9 +420,7 @@ void rotate_motor() {
                                        right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle,
                                        right_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, right_leg->Prop_Gain,
                                        right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio);
-    if (DEBUG) {Serial.println("Out stream if");}
   }// end if stream==1
-  if (DEBUG) {Serial.println("Out rotate_motor()");}  
 }
 
 //----------------------------------------------------------------------------------

@@ -8,7 +8,7 @@ BLEService UARTService(UARTUUID);   //Instantiate UART service
 BLECharacteristic TXChar(rxUUID, BLERead | BLENotify | BLEBroadcast,             BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //TX characteristic of service
 BLECharacteristic RXChar(txUUID, BLEWriteWithoutResponse | BLEWrite | BLENotify, BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //RX characteristic of service
 static inline void config_ble_regs(void) {
-  NRF_RADIO->MODE = 3;  //3 = 1Mb/s, 4 = 2Mb/s
+  NRF_RADIO->MODE = 4;  //3 = 1Mb/s, 4 = 2Mb/s
   NRF_RADIO->TXPOWER = 0x8;
   //MARK: Need to increase default MTU
 }
@@ -32,14 +32,13 @@ void setupBLE()
     BLE.setEventHandler(BLEDisconnected, onBLEDisconnected);
     RXChar.setEventHandler(BLEWritten,   onRxCharValueUpdate);
     BLE.advertise();
-    config_ble_regs();
+    //config_ble_regs();
     digitalWrite(GREEN,LOW);
   }
-  else
-  {
-    if (DEBUG) {
-      Serial.println("Problem Starting BLE!");
-    }
+  else {
+    digitalWrite(GREEN, HIGH);
+    digitalWrite(BLUE, HIGH);
+    digitalWrite(RED, LOW);
   }
 }
 
@@ -61,11 +60,6 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
 
 void onBLEConnected(BLEDevice central)
 {
-  if (DEBUG)
-  {
-    Serial.print("Connected event, central: ");
-    Serial.println(central.address());
-  }
   digitalWrite(GREEN,HIGH);
   digitalWrite(BLUE, LOW);
   BLE.stopAdvertise();
@@ -73,11 +67,6 @@ void onBLEConnected(BLEDevice central)
 
 void onBLEDisconnected(BLEDevice central)
 {
-  if (DEBUG)
-  {
-    Serial.print("Disconnected event, central: ");
-    Serial.println(central.address());
-  }
   digitalWrite(GREEN,LOW);
   digitalWrite(BLUE, HIGH);
   BLE.advertise();

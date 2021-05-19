@@ -4,16 +4,9 @@ double app = 0;
 
 void receive_and_transmit()
 {
-
-  if (DEBUG) {
-    Serial.println((char) cmd_from_Gui);
-  }
   switch (cmd_from_Gui)
   {
     case 'F':                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
-      if (DEBUG) {
-        Serial.println("Received some setpoints");
-      }
       left_leg->Previous_Setpoint_Ankle = left_leg->Setpoint_Ankle;
       left_leg->Previous_Dorsi_Setpoint_Ankle = left_leg->Dorsi_Setpoint_Ankle;
       right_leg->Previous_Setpoint_Ankle = right_leg->Setpoint_Ankle;
@@ -22,11 +15,6 @@ void receive_and_transmit()
       memcpy(&left_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
       memcpy(&right_leg->Setpoint_Ankle, holdOnPoint + 16, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 24, 8);
-      
-      Serial.println(left_leg->Setpoint_Ankle);
-      Serial.println(left_leg->Dorsi_Setpoint_Ankle);
-      Serial.println(right_leg->Setpoint_Ankle);
-      Serial.println(right_leg->Dorsi_Setpoint_Ankle);
       
       if (left_leg->Setpoint_Ankle < 0) {
         left_leg->Setpoint_Ankle = 0;
@@ -61,9 +49,6 @@ void receive_and_transmit()
         right_leg->first_step = 1;
         right_leg->num_3_steps = 0;
         right_leg->start_step = 0;
-        if (DEBUG) {
-          Serial.println("Right Setpoint Negative, going to zero");
-        }
 
       } else {
 
@@ -80,9 +65,6 @@ void receive_and_transmit()
       break;
 
     case 'E':
-      if (DEBUG) {
-        Serial.println("On");
-      }
         digitalWrite(onoff, HIGH);                                         //The GUI user is ready to start the trial so Motor is enabled
         stream = 1;                                                     //and the torque data is allowed to be streamed
         streamTimerCount = 0;
@@ -92,9 +74,6 @@ void receive_and_transmit()
         break;
 
       case 'G':
-        if (DEBUG) {
-          Serial.println("Off");
-        }
           digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
           stepData[0] = stepper->steps; //CFC 1/22/21
           send_command_message(stepper->step_flag, stepData, 1);
@@ -140,9 +119,6 @@ void receive_and_transmit()
           temp_R_DFX = 0;
           temp_R_PFX = 0;
           
-          if (DEBUG) {
-            Serial.println("Sent Trial Data!");
-          }
           reset_cal_on_end_trial(); //Currently commented out but acts to reset all torque, BL, and FSR parameters
           break;
 
@@ -164,11 +140,6 @@ void receive_and_transmit()
           CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
           CURRENT_DIAGNOSTICS = 0;
           MODEL_CONTROL = 0;
-          if (CURRENT_CONTROL && DEBUG) {
-            Serial.println("Current Control");
-          } else if(DEBUG) {
-            Serial.println("Torque Control");
-          }
           break;
 
         case 'L':
@@ -446,12 +417,6 @@ void receive_and_transmit()
           memcpy(&right_leg->fsr_percent_thresh_Toe, holdOnPoint + 8, 8);
           left_leg->p_steps->fsr_percent_thresh_Toe = left_leg->fsr_percent_thresh_Toe;
           right_leg->p_steps->fsr_percent_thresh_Toe = right_leg->fsr_percent_thresh_Toe;
-          if (!DEBUG) {
-            Serial.print("Got new fsr thresholds: ");
-            Serial.print(left_leg->p_steps->fsr_percent_thresh_Toe);
-            Serial.print("  ");
-            Serial.println(right_leg->p_steps->fsr_percent_thresh_Toe);
-          }
           break;
 
         case 'S':

@@ -2,7 +2,6 @@
 //Real time data being sent to the GUI
 void send_data_message_wc() //with COP
 {
-  //if (DEBUG) {Serial.println("In send_data_message_wc()");}
   //Right Leg
   data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
   data_to_send[1] = right_leg->state;
@@ -18,17 +17,10 @@ void send_data_message_wc() //with COP
   data_to_send[7] = (left_leg->FSR_Toe_Average);
 
   send_command_message('?', data_to_send, 8);
- if (DEBUG) {Serial.println("Out send_data_message_wc()");}
 }
 
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
 {
-  /*
-  if (command_char!='?') {
-    Serial.print("Sending: ");
-    Serial.println(command_char);
-  }
-  */
   //6 max characters can transmit -XXXXX, or XXXXXX
   int maxChars = 8;
   int maxPayloadLength = (3 + number_to_send * (maxChars + 1)); //+1 because of the delimiters
@@ -51,11 +43,7 @@ void send_command_message(char command_char, double* data_to_send, int number_to
     bufferIndex += cLength;
     buffer[bufferIndex++] = 'n';
   }
-  unsigned long int before = micros();
   TXChar.writeValue(buffer, bufferIndex);           //Write payload
-  unsigned long int after = micros();
-  Serial.print("Delta: ");
-  Serial.println(after-before);
 }
 
 int getCharLength(int ofInt) {
