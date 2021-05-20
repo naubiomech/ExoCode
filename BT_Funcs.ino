@@ -48,12 +48,16 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
   int val_len = RXChar.valueLength();
   RXChar.readValue(data, val_len);
   if (data[0] == '!') {
+    //Serial.println("Got matlab message");
     if (!handle_matlab_message(data, val_len)) {
       receive_and_transmit();
+      return;
     }
   } else {
+    //Serial.println("Got mobile message");
     if (!handle_mobile_message(data, val_len)) {
       receive_and_transmit();
+      return;
     }
   }
 }//End onRxCharValueUpdate

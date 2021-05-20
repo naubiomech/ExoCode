@@ -118,7 +118,6 @@ bool handle_matlab_message(char* data, const int data_length) {
     //Skip over all the doohickie if you only received a command
     return false;
   }
-
   //Collect payload
   int i_buff_count{0};
   int i_buff[data_length] = {0};
