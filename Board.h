@@ -154,9 +154,6 @@ const unsigned int MOTOR_CURRENT_RIGHT_ANKLE_PIN = A4;
 const unsigned int MOTOR_SPEED_LEFT_PIN = A1;
 const unsigned int MOTOR_SPEED_RIGHT_PIN = A2;
 
-const unsigned int LEFT_ANKLE_ANGLE_PIN = A16;
-const unsigned int RIGHT_ANKLE_ANGLE_PIN = A17;
-
 const unsigned int BREAKOUT_LEFT_PIN = A10;
 const unsigned int BREAKOUT_RIGHT_PIN = A11;
 #endif

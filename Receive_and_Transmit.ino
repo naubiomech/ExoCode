@@ -105,7 +105,7 @@ void receive_and_transmit()
         NomCurrent = 7.58; //A
         MotorEff = 0.89;
         GearboxEff = 0.59;
-        PulleyRatio = 5; //Small aluminum pulley, large sprocket
+        PulleyRatio = 40 / 10.3; //Small aluminum pulley, large sprocket
         Serial.println("22mm 90W");
 
       } else if (MotorParams == 1) {
@@ -195,38 +195,38 @@ void receive_and_transmit()
       break;
 
     case 'k':
-      receiveVals(1);
-      memcpy(&CtrlType,holdOnPoint,1);  //Copy the values that indicate desired open-loop control
-      Serial.println(CtrlType);
-      if (CtrlType==0) {
-        CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
-        CURRENT_DIAGNOSTICS = 0;
-        MODEL_CONTROL = 0;
-        if (CURRENT_CONTROL) {
-          Serial.println("Current Control");
-        } else {
-          Serial.println("Torque Control");
-        }
-      //Comments have been made for iOS Demo
-      } else if (CtrlType==1) {
-         CURRENT_CONTROL = 0;
-         CURRENT_DIAGNOSTICS = !CURRENT_DIAGNOSTICS;
-         MODEL_CONTROL = 0;
-         if (CURRENT_DIAGNOSTICS) {
-           Serial.println("Current Diagnostics");
-         } else {
-           Serial.println("Torque Control");
-         }
-        } else if (CtrlType==2) {
-         CURRENT_CONTROL = 0;
-         CURRENT_DIAGNOSTICS = 0;
-         MODEL_CONTROL = !MODEL_CONTROL;
-         if (MODEL_CONTROL) {
-           Serial.println("Model Control");
-         } else {
-           Serial.println("Torque Control");
-         }
+//      receiveVals(1);
+//      memcpy(&CtrlType,holdOnPoint,1);  //Copy the values that indicate desired open-loop control
+//      Serial.println(CtrlType);
+//      if (CtrlType==0) {
+      CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
+      CURRENT_DIAGNOSTICS = 0;
+      MODEL_CONTROL = 0;
+      if (CURRENT_CONTROL) {
+        Serial.println("Current Control");
+      } else {
+        Serial.println("Torque Control");
       }
+//      //Comments have been made for iOS Demo
+//      } else if (CtrlType==1) {
+//         CURRENT_CONTROL = 0;
+//         CURRENT_DIAGNOSTICS = !CURRENT_DIAGNOSTICS;
+//         MODEL_CONTROL = 0;
+//         if (CURRENT_DIAGNOSTICS) {
+//           Serial.println("Current Diagnostics");
+//         } else {
+//           Serial.println("Torque Control");
+//         }
+//        } else if (CtrlType==2) {
+//         CURRENT_CONTROL = 0;
+//         CURRENT_DIAGNOSTICS = 0;
+//         MODEL_CONTROL = !MODEL_CONTROL;
+//         if (MODEL_CONTROL) {
+//           Serial.println("Model Control");
+//         } else {
+//           Serial.println("Torque Control");
+//         }
+//      }
 
       break;
 
@@ -274,13 +274,6 @@ void receive_and_transmit()
       {
         *(data_to_send_point) = 0;
       }
-      
-//      if ((check_angle_bias(left_leg->angle_address)) && (check_angle_bias(right_leg->angle_address)))
-//      {
-//        left_leg->angle_zero = read_angle_bias(left_leg->angle_address);
-//        right_leg->angle_zero = read_angle_bias(right_leg->angle_address);
-//      }
-      
       if (((check_FSR_values(left_leg->address_FSR)) && (check_FSR_values(left_leg->address_FSR + sizeof(double) + 1))) &&
           ((check_FSR_values(right_leg->address_FSR)) && (check_FSR_values(right_leg->address_FSR + sizeof(double) + 1))))
       {
@@ -430,15 +423,11 @@ void receive_and_transmit()
     case 'p': //GO 5/13/19
       write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
       write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
-//      write_angle_bias(left_leg->angle_address, left_leg->angle_zero); //Keep uncommented unless you want to update the angle sensor offset
-//      write_angle_bias(right_leg->angle_address, right_leg->angle_zero);
       break;
 
     case 'P': //GO 5/13/19
       left_leg->torque_calibration_value = read_torque_bias(left_leg->torque_address);
       right_leg->torque_calibration_value = read_torque_bias(right_leg->torque_address);
-//      left_leg->angle_zero = read_angle_bias(left_leg->angle_address);
-//      right_leg->angle_zero = read_angle_bias(right_leg->angle_address);
       break;
 
     case 'O': // SS 8/6/2020

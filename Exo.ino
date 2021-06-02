@@ -21,11 +21,9 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD_REV3
+#define BOARD_VERSION DUAL_BOARD_REV4
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
-
-int j = 0;
 
 #include "Parameters.h"
 #include "Board.h"
@@ -46,8 +44,7 @@ int j = 0;
 #include "resetMotorIfError.h"
 #include "ATP.h"
 #include "Trial_Data.h"
-#include "Step.h"
-bool iOS_Flag = 1;
+bool iOS_Flag = 0;
 int streamTimerCountNum = 0;
 //----------------------------------------------------------------------------------
 
@@ -98,10 +95,10 @@ void setup()
   digitalWrite(onoff, LOW);
   //Serial.println("ONOFF SET");
 
-//  #if BOARD_VERSION == DUAL_BOARD_REV4
-//    pinMode(TRIGGER_PIN, OUTPUT); // Enable the trigger //SS  6/23/2020
-//    digitalWrite(TRIGGER_PIN, HIGH); //SS  6/23/2020
-//  #endif
+  #if BOARD_VERSION == DUAL_BOARD_REV4
+    pinMode(TRIGGER_PIN, OUTPUT); // Enable the trigger //SS  6/23/2020
+    digitalWrite(TRIGGER_PIN, HIGH); //SS  6/23/2020
+  #endif
 
   // Fast torque calibration
   torque_calibration();
@@ -125,8 +122,8 @@ void setup()
   WireObj.endTransmission(); //End the transmission and calibration
   delay(100);
 
-//  calculateStep();
   Serial.println("Setup complete");
+  
 }
 
 //----------------------------------------------------------------------------------
@@ -177,12 +174,10 @@ void loop()
 
   if (slowThisDown.check() == 1) // If the time passed is over 1ms is a true statement
   {
-    
     if (bluetooth.available() > 0) // If bluetooth buffer contains something
     {
       Serial.println("Something to read");
       receive_and_transmit();       //Recieve and transmit
-      
     }
 
     slowThisDown.reset();     //Resets the interval counter
@@ -229,37 +224,32 @@ void biofeedback() {
 //----------------------------------------------------------------------------------
 
 void calculate_leg_average(Leg* leg) {
-
   //Calc the average value of Torque
 
   //Shift the arrays
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
     leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
-    leg->rawAnkleAngleArrayPoint[j] = leg->rawAnkleAngleArrayPoint[j-1];
+    leg->SpeedArrayPoint[j] = leg->SpeedArrayPoint[j-1];
   }
   //Get the torque
   leg->TarrayPoint[0] = get_torq(leg);
   leg->FSR_Toe_Average = 0;
   leg->FSR_Heel_Average = 0;
   leg->Average = 0;
-  
-  //Ankle Angle Sensor
-  leg->rawAnkleAngleArrayPoint[0] = ankle_angle(leg);
-  leg->rawAnkleAverageAngle = 0;
-  
+
+  //Motor Speed
+  leg->SpeedArrayPoint[0] = ankle_speed(leg->motor_speed_pin);
+  leg->AverageSpeed = 0;
+
   for (int i = 0; i < dim; i++)
   {
     leg->Average =  leg->Average + leg->TarrayPoint[i];
-    leg->rawAnkleAverageAngle = leg->rawAnkleAverageAngle + leg->rawAnkleAngleArray[i]; 
+    leg->AverageSpeed = leg->AverageSpeed + leg->SpeedArray[i];
   }
 
   leg->Average_Trq = leg->Average / dim;
-  leg->rawAnkleAverageAngle = leg->rawAnkleAverageAngle / dim;
-  
-  leg->rawAnkleSpeed = (leg->rawAnkleAverageAngle - leg->rawPrevAnkleAngle)/0.002; //Angular velocity in degrees/s 
-  leg->rawPrevAnkleAngle = leg->rawAnkleAverageAngle;
-  
+  leg->AverageSpeed = leg->AverageSpeed / dim;
   if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
   }
@@ -364,13 +354,6 @@ void check_Balance_Baseline() {
 void rotate_motor() {
   // send the data message, adapt KF if required, apply the PID, apply the state machine,
   //adjust some control parameters as a function of the control strategy decided (Control_Adjustment)
-  if (voltageTimerCount >= 2000) { //send voltage every 2 seconds
-      int batteryVoltage = readBatteryVoltage();
-      batteryData[0] = batteryVoltage/10;
-      send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware
-      voltageTimerCount = 0;
-  }
-  voltageTimerCount++; 
 
   if (stream == 1)
   {
@@ -385,6 +368,15 @@ void rotate_motor() {
       streamTimerCount = 0;
     }
 
+    if (voltageTimerCount >= 2000) { //every 2 seconds
+      int batteryVoltage = readBatteryVoltage();
+      Serial.println(batteryVoltage);
+      batteryData[0] = batteryVoltage;
+      send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware
+      voltageTimerCount = 0;
+
+      //Send data message here
+    }
 
     if (streamTimerCount == 1 && flag_auto_KF == 1) {
       Auto_KF(left_leg, Control_Mode);
@@ -393,6 +385,7 @@ void rotate_motor() {
 
 
     streamTimerCount++;
+    voltageTimerCount++;
 
     
 

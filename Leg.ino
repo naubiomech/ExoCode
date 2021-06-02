@@ -4,9 +4,6 @@ void initialize_leg(Leg* leg) {
   pinMode(leg->pin_err, INPUT_PULLUP);          //motor driver error checking needs digital input pulled high
   pinMode(leg->torque_sensor_ankle_pin, INPUT); //enable the torque reading of the left torque sensor
   pinMode(leg->motor_current_pin, INPUT);
-  pinMode(leg->motor_speed_pin,INPUT);
-  pinMode(leg->ankle_angle_pin,INPUT);
-  
 
   analogWrite(leg->motor_ankle_pin, zero);
   leg->pid.SetMode(AUTOMATIC);
@@ -29,17 +26,7 @@ void initialize_left_leg(Leg* left_leg) {
   left_leg->motor_ankle_pin = MOTOR_LEFT_ANKLE_PIN;
   left_leg->motor_current_pin = MOTOR_CURRENT_LEFT_ANKLE_PIN;
   left_leg->baseline_address = address_params + 105 + 5;
-  left_leg->angle_address = 192;
-  if (check_angle_bias(left_leg->angle_address)) { //If a saved angle calibration exists
-    left_leg->angle_zero = read_angle_bias(left_leg->angle_address);
-    //Serial.println("Successful angle bias update");
-    //Serial.println(left_leg->angle_zero);
-  } else {
-    left_leg->angle_zero = 0;
-  }
   left_leg->motor_speed_pin = MOTOR_SPEED_LEFT_PIN;
-  left_leg->ankle_angle_pin = HALL_LEFT_PIN;
-  left_leg->potentiometer_pin = HALL_LEFT_PIN;
 
   left_leg->Dynamic_multiplier = 1;
   left_leg->Steady_multiplier = 1;
@@ -49,6 +36,8 @@ void initialize_left_leg(Leg* left_leg) {
 
 
   left_leg->whos = 'L';
+  left_leg->Potentiometer_pin = A16;
+
 }
 
 void initialize_right_leg(Leg* right_leg) {
@@ -62,17 +51,7 @@ void initialize_right_leg(Leg* right_leg) {
   right_leg->motor_ankle_pin = MOTOR_RIGHT_ANKLE_PIN;
   right_leg->motor_current_pin = MOTOR_CURRENT_RIGHT_ANKLE_PIN;
   right_leg->baseline_address = address_params + 105 + 5 + 9;
-  right_leg->angle_address = 201;
-  if (check_angle_bias(right_leg->angle_address)) { //If a saved angle calibration exists
-    right_leg->angle_zero = read_angle_bias(right_leg->angle_address);
-  } else {
-    right_leg->angle_zero = 0;
-  }
-    
   right_leg->motor_speed_pin = MOTOR_SPEED_RIGHT_PIN;
-  right_leg->ankle_angle_pin = HALL_RIGHT_PIN;
-  right_leg->potentiometer_pin = HALL_RIGHT_PIN;
-
 
 
   right_leg->Dynamic_multiplier = 1;
@@ -81,4 +60,5 @@ void initialize_right_leg(Leg* right_leg) {
   initialize_leg(right_leg);
 
   right_leg->whos = 'R';
+  right_leg->Potentiometer_pin = A17;
 }

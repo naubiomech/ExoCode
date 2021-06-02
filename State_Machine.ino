@@ -6,20 +6,19 @@
 // in case of no contact of both the sensors
 void state_machine(Leg* leg)
 {
-  State_Machine_One_Toe_Sensor(leg);
-//  if (FLAG_ONE_TOE_SENSOR) {
-//    State_Machine_One_Toe_Sensor(leg);
-//  }
-//
-//  else if (FLAG_BALANCE) {
-//    State_Machine_Heel_Toe_Sensors_Balance(leg);
-//  } else {
-//    if (FLAG_BIOFEEDBACK) {
-//       State_Machine_One_Toe_Sensor(leg);
-//    } else {
-//      State_Machine_Heel_Toe_Sensors(leg);
-//    }
-//  }
+  if (FLAG_ONE_TOE_SENSOR) {
+    State_Machine_One_Toe_Sensor(leg);
+  }
+
+  else if (FLAG_BALANCE) {
+    State_Machine_Heel_Toe_Sensors_Balance(leg);
+  } else {
+    if (FLAG_BIOFEEDBACK) {
+       State_Machine_One_Toe_Sensor(leg);
+    } else {
+      State_Machine_Heel_Toe_Sensors(leg);
+    }
+  }
 }
 
 

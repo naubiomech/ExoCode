@@ -7,25 +7,13 @@ void torque_calibration()
   int torq_cal_count = 0;
   left_leg->torque_calibration_value = 0;
   right_leg->torque_calibration_value = 0;
-
-  //left_leg->angle_zero = 0;
-  //right_leg->angle_zero = 0;
-  
   while (torq_cal_count < 10000) {  //(millis() - torque_calibration_value_time < 1000)  { //Calibrates the LL for a total time of 1 second,    (torq_cal_count < 10000) {
     left_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
     right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
-    
-    //left_leg->angle_zero += (analogRead(left_leg->ankle_angle_pin)-2048.0)*3.3/4096.0;
-    //right_leg->angle_zero += (analogRead(right_leg->ankle_angle_pin) - 2048.0)*3.3/4096.0;
-    
-    torq_cal_count ++;                                                         //Increments count  
+    torq_cal_count ++;                                                         //Increments count
   }
   left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
-
-  //left_leg->angle_zero = left_leg->angle_zero/torq_cal_count;
-  //right_leg->angle_zero = right_leg->angle_zero/torq_cal_count;
-  
   interrupts(); //Re-enable interrupts
 }
 
@@ -171,8 +159,8 @@ double fsr(const unsigned int pin) {
  * This function reads the motor current pin and converts the voltage reading in bits to motor current.
 */
 double current(const unsigned int pin) {
-  double val = analogRead(pin)*3.3/4096.0;
-  double Co = map(val,0.0,3.3,-NomCurrent,NomCurrent); //Nominal current needs to be set in ESCON, 7.58
+  int value = analogRead(pin);
+  double Co = NomCurrent * (value - 2048.0)/2048.0; //Nominal current needs to be set in ESCON, 7.58
   return Co;
 }
 
@@ -181,23 +169,8 @@ Torque Constant (200W) : 700 rpm/V
 Gear Ratio (32HP, 4-8Nm) : 17576/343 
 Large Exo Pulley Ratio: 74/10.3
 */
-double motor_speed(const unsigned int pin){
-  double val = analogRead(pin)*3.3/4096.0;
-  double motorSpeed = map(val,0.0,3.3,-MaxSpeed,MaxSpeed);
-  double predicted_ankle_speed = motorSpeed * (1/GearRatio) * (1/PulleyRatio);
-  return motorSpeed;
-}
-
-/* Read the analog output from the hall sensor at the ankle, convert to degrees, and calculate actual ankle velocity.
- *  Likely needs a calibration but for now just read and convert
- */
-double ankle_angle(Leg* leg){
-
-// Sensor Reading and Normalization
-  double zero = leg->angle_zero;
-
-  double hall_voltage = 3.3*((analogRead(leg->ankle_angle_pin)-2048.0)/4096.0) - zero; //Offset by zero 
-  double rawAngle = -68.873*hall_voltage; //Raw voltage regression for comparisons
-
-  return rawAngle;
+double ankle_speed(const unsigned int pin){
+  double motor_speed = MaxSpeed * (analogRead(pin) - 2048.0)/2048.0;
+  double ankle_speed = motor_speed * (1/GearRatio) * (1/PulleyRatio);
+  return ankle_speed;
 }

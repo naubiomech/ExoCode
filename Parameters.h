@@ -67,7 +67,7 @@ double p_prop[3] = {128.1, -50.82, 22.06};
 double FSR_Ratio;
 
 // ===== Proportional Control Parameters =====
-double Max_Prop = 35; //Was 35, GO 9/15/20
+double Max_Prop = 25; //Was 35, GO 9/15/20
 double Min_Prop = 0;
 
 // ===== Auto KF Parameters =====
@@ -88,7 +88,7 @@ const int n_step_baseline = 4;
 int MotorParams = 1;  //Was 100
 double NomCurrent = 7.58; //The rest were 1
 double TrqConstant = 14/1000;
-double GearRatio = 4617.0 / 52.0;
+double GearRatio = 89;
 double PulleyRatio = 5;
 double MaxSpeed = 15000;
 double MotorEff = 0.89;

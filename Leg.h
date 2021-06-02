@@ -11,8 +11,6 @@ struct Leg {
   int motor_ankle_pin;
   int motor_current_pin;
   int motor_speed_pin;
-  int ankle_angle_pin;
-  
   // In A_Exo pre-includes
   double FSR_Average_array[dim_FSR] = {0};
   double* p_FSR_Array = &FSR_Average_array[0];
@@ -26,12 +24,9 @@ struct Leg {
   double* TarrayPoint = &Tarray[0];
   double Average = 0;
 
-  double rawAnkleAngleArray[dim_FSR] = {0};
-  double* rawAnkleAngleArrayPoint = &rawAnkleAngleArray[0];
-  double rawAnkleAverageAngle = 0;
-  double rawPrevAnkleAngle = 0;
-
-  double rawAnkleSpeed;
+  double SpeedArray[dim] = {0};
+  double* SpeedArrayPoint = &SpeedArray[0];
+  double AverageSpeed = 0;
 
   double sign = 1;
 
@@ -103,11 +98,7 @@ struct Leg {
   int torque_address;
   int address_FSR;
   int baseline_address;
-  int angle_address;
   double baseline_value;
-
-  // Angle Offset
-  double angle_zero = 0;
 
   // PID_and_Ctrl_Parameters.h
   double torque_calibration_value = 0;
@@ -234,7 +225,7 @@ struct Leg {
   double Heel_Strike_mean;
   double n_step_biofeedback = 1;
   double n_step_biofeedback_base = 4;
-  unsigned int potentiometer_pin;
+  unsigned int Potentiometer_pin;
   double Biofeedback_bias;
   double BioFeedback_desired;
   double Frequency;
@@ -284,5 +275,6 @@ Leg* right_leg = &right_leg_value;
 void initialize_leg(Leg* leg);
 void initialize_left_leg(Leg* left_leg);
 void initialize_right_leg(Leg* right_leg);
+
 
 #endif
