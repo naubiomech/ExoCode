@@ -72,8 +72,8 @@ void send_data_message_wc() //with COP
     data_to_send[11] = left_leg->score;
   }
   else {
-    data_to_send[10] = current(right_leg->motor_current_pin);
-    data_to_send[11] = right_leg->sign * ankle_speed(right_leg->motor_speed_pin);
+    data_to_send[10] = right_leg->trig_number; //SS  6/23/2020 // current(right_leg->motor_current_pin);
+    data_to_send[11] = right_leg->Trigger;//SS  6/23/2020 // right_leg->sign * ankle_speed(right_leg->motor_speed_pin);
 //    data_to_send[10] = right_leg->trig_number; //SS  6/23/2020
 //    data_to_send[11] = right_leg->Trigger;//SS  6/23/2020
   }
@@ -82,8 +82,8 @@ void send_data_message_wc() //with COP
     data_to_send[13] = left_leg->stridelength_target;
   }
   else {
-    data_to_send[12] = current(left_leg->motor_current_pin);
-    data_to_send[13] = left_leg->sign * ankle_speed(left_leg->motor_speed_pin);
+    data_to_send[12] = left_leg->trig_number;//SS  6/23/2020 // current(left_leg->motor_current_pin);
+    data_to_send[13] = left_leg->Trigger;//SS  6/23/2020 // left_leg->sign * ankle_speed(left_leg->motor_speed_pin);
 //    data_to_send[12] = left_leg->trig_number;//SS  6/23/2020
 //    data_to_send[13] = left_leg->Trigger;//SS  6/23/2020
   }

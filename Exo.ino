@@ -54,30 +54,30 @@ void setup()
 {
   // set the interrupt timer
   Serial.println("Started");
-  #if BOARD_VERSION == DUAL_BOARD_REV4  //Use timer interrupts for teensy 3.6
-    Timer1.initialize(2000);            // initialize timer1, and set a 2 ms period *note this is 2k microseconds*
-    Timer1.attachInterrupt(callback);   // attaches callback() as a timer overflow interrupt
-  #endif
+#if BOARD_VERSION == DUAL_BOARD_REV4  //Use timer interrupts for teensy 3.6
+  Timer1.initialize(2000);            // initialize timer1, and set a 2 ms period *note this is 2k microseconds*
+  Timer1.attachInterrupt(callback);   // attaches callback() as a timer overflow interrupt
+#endif
 
   // enable bluetooth
-  #if BOARD_VERSION == DUAL_BOARD_REV3
-    #define bluetooth Serial8
-  #elif BOARD_VERSION == DUAL_BOARD_REV4
-    #define bluetooth Serial4
-  #endif
-  if (iOS_Flag == true) 
+#if BOARD_VERSION == DUAL_BOARD_REV3
+#define bluetooth Serial8
+#elif BOARD_VERSION == DUAL_BOARD_REV4
+#define bluetooth Serial4
+#endif
+  if (iOS_Flag == true)
   {
     bluetooth.begin(9600);
     Serial.begin(9600);
     streamTimerCountNum = 25;
   }
-  else if (!iOS_Flag) 
+  else if (!iOS_Flag)
   {
     bluetooth.begin(115200);
     Serial.begin(115200);
     streamTimerCountNum = 5;
   }
-  
+
   //set the resolution
   analogWriteResolution(12);                                          //change resolution to 12 bits
   analogReadResolution(12);                                           //ditto
@@ -95,10 +95,10 @@ void setup()
   digitalWrite(onoff, LOW);
   //Serial.println("ONOFF SET");
 
-  #if BOARD_VERSION == DUAL_BOARD_REV4
-    pinMode(TRIGGER_PIN, OUTPUT); // Enable the trigger //SS  6/23/2020
-    digitalWrite(TRIGGER_PIN, HIGH); //SS  6/23/2020
-  #endif
+#if BOARD_VERSION == DUAL_BOARD_REV4
+  pinMode(TRIGGER_PIN, OUTPUT); // Enable the trigger //SS  6/23/2020
+  digitalWrite(TRIGGER_PIN, HIGH); //SS  6/23/2020
+#endif
 
   // Fast torque calibration
   torque_calibration();
@@ -106,14 +106,14 @@ void setup()
   digitalWrite(LED_PIN, HIGH);
 
   // Initialize power monitor settings
-  #if BOARD_VERSION == DUAL_BOARD_REV3
-    #define WireObj Wire1
-  #elif BOARD_VERSION == DUAL_BOARD_REV4
-    #define WireObj Wire
-  #endif  
+#if BOARD_VERSION == DUAL_BOARD_REV3
+#define WireObj Wire1
+#elif BOARD_VERSION == DUAL_BOARD_REV4
+#define WireObj Wire
+#endif
   pinMode(PWR_ADR_0, OUTPUT);
   pinMode(PWR_ADR_1, OUTPUT);
-  digitalWrite(PWR_ADR_0, LOW); 
+  digitalWrite(PWR_ADR_0, LOW);
   digitalWrite(PWR_ADR_1, LOW); //Setting both address pins to GND defines the slave address
   WireObj.begin(); //Initialize the I2C protocol on SDA1/SCL1 for Teensy 4.1, or SDA0/SCL0 on Teensy 3.6
   WireObj.beginTransmission(INA219_ADR); //Start talking to the INA219
@@ -123,7 +123,7 @@ void setup()
   delay(100);
 
   Serial.println("Setup complete");
-  
+
 }
 
 //----------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ void callback()//executed every 2ms
     state_machine(left_leg);
     state_machine(right_leg);
     biofeedback_step_state(right_leg);
-    biofeedback_step_state(left_leg);       
+    biofeedback_step_state(left_leg);
 
   }//end if(Flag_biofeedback)
 }// end callback
@@ -164,13 +164,13 @@ void callback()//executed every 2ms
 // Function that is repeated in loop
 void loop()
 {
-  #if BOARD_VERSION == DUAL_BOARD_REV3 //Timer based control loop doesn't work on teensy 4.1 (REV3)
-    if (controlLoop.check() == 1)
-    {
-      callback();
-      controlLoop.reset();
-    }
-  #endif
+#if BOARD_VERSION == DUAL_BOARD_REV3 //Timer based control loop doesn't work on teensy 4.1 (REV3)
+  if (controlLoop.check() == 1)
+  {
+    callback();
+    controlLoop.reset();
+  }
+#endif
 
   if (slowThisDown.check() == 1) // If the time passed is over 1ms is a true statement
   {
@@ -230,7 +230,7 @@ void calculate_leg_average(Leg* leg) {
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
     leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
-    leg->SpeedArrayPoint[j] = leg->SpeedArrayPoint[j-1];
+    leg->SpeedArrayPoint[j] = leg->SpeedArrayPoint[j - 1];
   }
   //Get the torque
   leg->TarrayPoint[0] = get_torq(leg);
@@ -275,7 +275,7 @@ void calculate_leg_average(Leg* leg) {
 
   leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
   leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
-  
+
   if (FLAG_ONE_TOE_SENSOR)
   {
     leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
@@ -360,7 +360,7 @@ void rotate_motor() {
     pid(left_leg, left_leg->Average_Trq);
     pid(right_leg, right_leg->Average_Trq);
 
-    
+
     if (streamTimerCount >= streamTimerCountNum) // every streamTimerCountNum*2ms
     {
       counter_msgs++;
@@ -372,7 +372,7 @@ void rotate_motor() {
       int batteryVoltage = readBatteryVoltage();
       Serial.println(batteryVoltage);
       batteryData[0] = batteryVoltage;
-      send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware
+      send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
       voltageTimerCount = 0;
 
       //Send data message here
@@ -387,7 +387,7 @@ void rotate_motor() {
     streamTimerCount++;
     voltageTimerCount++;
 
-    
+
 
 
     // modification to check the pid
@@ -414,7 +414,7 @@ void rotate_motor() {
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
 
-        if ((left_leg->state == 3) && ((left_leg->old_state == 1) || (left_leg->old_state == 2))) {   // TN 9/26/19
+    if ((left_leg->state == 3) && ((left_leg->old_state == 1) || (left_leg->old_state == 2))) {   // TN 9/26/19
       left_leg->state_3_start_time = millis();
     }
 
@@ -423,6 +423,7 @@ void rotate_motor() {
     }
 
     if (left_leg->state_3_stop_time > left_leg->state_3_start_time) { // SS 8/6/2020
+      left_leg->old_state_3_duration = left_leg->state_3_duration;
       left_leg->state_3_duration = left_leg->state_3_stop_time - left_leg->state_3_start_time;
     }
 
@@ -435,6 +436,7 @@ void rotate_motor() {
     }
 
     if (left_leg->state_1_stop_time > left_leg->state_1_start_time) { // SS 8/6/2020
+      left_leg->old_state_1_duration = left_leg->state_1_duration;
       left_leg->state_1_duration = left_leg->state_1_stop_time - left_leg->state_1_start_time;
     }
 
@@ -449,6 +451,7 @@ void rotate_motor() {
         right_leg->state_3_stop_time = millis();
 
         if (right_leg->state_3_stop_time > right_leg->state_3_start_time) { // SS 8/6/2020
+          right_leg->old_state_3_duration = right_leg->state_3_duration;
           right_leg->state_3_duration = right_leg->state_3_stop_time - right_leg->state_3_start_time;
         }
       }
@@ -463,6 +466,7 @@ void rotate_motor() {
         right_leg->state_1_stop_time = millis();
 
         if (right_leg->state_1_stop_time > right_leg->state_1_start_time) { // SS 8/6/2020
+          right_leg->old_state_1_duration = right_leg->state_1_duration;
           right_leg->state_1_duration = right_leg->state_1_stop_time - right_leg->state_1_start_time;
         }
       }
@@ -470,13 +474,13 @@ void rotate_motor() {
 
     right_leg->old_state = right_leg->state;
 
-//    #if BOARD_VERSION == DUAL_BOARD_REV4
-//      // Sending nerve stimulation tigger // SS 8/6/2020
-//      if (STIM_ACTIVATED){
-//        if (Trigger_left)  send_trigger(left_leg); //for left
-//        else  send_trigger(right_leg);  //for right (the default is for right leg)
-//        }
-//    #endif    
+        #if BOARD_VERSION == DUAL_BOARD_REV4
+          // Sending nerve stimulation tigger // SS 8/6/2020
+          if (STIM_ACTIVATED){
+            if (Trigger_left)  send_trigger(left_leg); //for left
+            else  send_trigger(right_leg);  //for right (the default is for right leg)
+            }
+        #endif
 
     // When I first wrote this only God and I knew what it did. Now only God knows. Need to go through this again. GO 9/17/20
     if ((Control_Mode == 3 || Control_Mode == 6) && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
@@ -542,74 +546,184 @@ void rotate_motor() {
 }
 
 //----------------------------------------------------------------------------------
-//void send_trigger(Leg* leg) {   // Nerve stimulation trigger function // SS 8/6/2020
-//
-// 
-//if (leg->state == 3){
-//  leg->swing_counter = 0;
-//  leg->stance_counter ++;
-//  
-//  if ((((millis() - leg->trig_time) > 1000) && ((leg->stance_counter == 1) || (leg->stance_counter > (((leg->state_3_duration * 2) / 3)/2)) )) || leg->Approve_trigger) {
-//    leg->Approve_trigger = true;
-//    if ((leg->stance_counter < 41) && (leg->trig_number == 1)) { //  Trigger at the start of stance phase
-//      digitalWrite(TRIGGER_PIN, HIGH);
-//      leg->Trigger = 1;
-//      } else if ((leg->stance_counter > (((leg->state_3_duration * 2) / 3)/2)) && (leg->stance_counter < (40 + (((leg->state_3_duration * 2) / 3)/2))) && (leg->trig_number == 2)) { // Trigger at the 2/3 of stance phase
-//        digitalWrite(TRIGGER_PIN, HIGH);
-//        leg->Trigger = 2;
-//        } else  {
-//          digitalWrite(TRIGGER_PIN, LOW);
-//          leg->Old_Trigger = leg->Trigger;
-//          leg->Trigger = 0;
-//          if (leg->Old_Trigger != 0){
-//            leg->trig_number = 0;
-//            leg->Approve_trigger = false;
-//            }
-//          }
-//    }else{
-//      digitalWrite(TRIGGER_PIN, LOW);
-//      leg->Old_Trigger = leg->Trigger;
-//      leg->Trigger = 0;
-//      if (leg->Old_Trigger != 0){
-//         leg->trig_number = 0;
-//         leg->Approve_trigger = false;
-//         }
-//    }
-//  } else if (leg->state == 1){
-//        leg->stance_counter = 0;
-//        leg->swing_counter ++;
-//
-//        if ((((millis() - leg->trig_time) > 1000) && ((leg->swing_counter < ((leg->state_1_duration / 3)/2))) || (leg->swing_counter > (((leg->state_1_duration / 3)/2)+20)) ) || leg->Approve_trigger) {
-//          leg->Approve_trigger = true;
-//          if ((leg->swing_counter > ((leg->state_1_duration / 3)/2))  &&  (leg->swing_counter < (((leg->state_1_duration / 3)/2)+40)) && (leg->trig_number ==  3)) { // Trigger at the 1/3 of swing phase
-//            digitalWrite(TRIGGER_PIN, HIGH);
-//            leg->Trigger = 3;
-//            } else if ((leg->swing_counter > (((leg->state_1_duration * 2)/ 3)/2))  &&  (leg->swing_counter < ((((leg->state_1_duration * 2) / 3)/2)+40))  && (leg->trig_number == 4))  { // Trigger at the 2/3 of swing phase
-//              digitalWrite(TRIGGER_PIN, HIGH); 
-//              leg->Trigger = 4;
-//              } else  {
-//                digitalWrite(TRIGGER_PIN, LOW);
-//                leg->Old_Trigger = leg->Trigger;
-//                leg->Trigger = 0;
-//                if (leg->Old_Trigger != 0){
-//                  leg->trig_number = 0;
-//                  leg->Approve_trigger = false;
-//                  }
-//                }
-//          }else{
-//            digitalWrite(TRIGGER_PIN, LOW);
-//            leg->Old_Trigger = leg->Trigger;
-//            leg->Trigger = 0;
-//            if (leg->Old_Trigger != 0){
-//              leg->trig_number = 0;
-//              leg->Approve_trigger = false;
-//              }
-//            }
-//        }
-//    
-//}
+void send_trigger(Leg* leg) {   // Nerve stimulation trigger function // SS 8/6/2020
+
+if (leg->state == 3){
+  leg->stance_counter ++;
+  if ((leg->trig3_rep != 0) && (leg->trig_number ==  3)){
+    leg->swing_counter ++;
+          if ((leg->trig_number ==  3) && ( ((leg->swing_counter > ((leg->old_state_1_duration / 3)/2))  &&  (leg->swing_counter < (((leg->old_state_1_duration / 3)/2)+20)))
+                                            || ((leg->swing_counter > ((leg->old_state_1_duration / 3)/2)+50)  &&  (leg->swing_counter < (((leg->old_state_1_duration / 3)/2)+70)))
+                                            || ((leg->swing_counter > ((leg->old_state_1_duration / 3)/2)+100)  &&  (leg->swing_counter < (((leg->old_state_1_duration / 3)/2)+120))) )) { // Trigger at the 1/3 of swing phase
+            digitalWrite(TRIGGER_PIN, HIGH);
+            leg->Trigger = 3;
+            } else  {
+                digitalWrite(TRIGGER_PIN, LOW);
+                leg->Old_Trigger = leg->Trigger;
+                leg->Trigger = 0;
+                if (leg->Old_Trigger == 3 && leg->trig3_rep != 2){
+                  leg->trig3_rep++;
+                }else if (leg->Old_Trigger == 3 && leg->trig3_rep == 2){
+                  leg->trig_number = 0;
+                  leg->Approve_trigger = false;
+                  leg->trig3_rep = 0;
+                }
+              }
+  }else if ((leg->trig4_rep != 0) && (leg->trig_number == 4)){
+    leg->swing_counter ++;
+          if ((leg->trig_number == 4)  && ( ((leg->swing_counter > (((leg->old_state_1_duration * 2)/ 3)/2))  &&  (leg->swing_counter < ((((leg->old_state_1_duration * 2) / 3)/2)+20))) 
+                                                      || ((leg->swing_counter > (((leg->old_state_1_duration * 2)/ 3)/2)+50)  &&  (leg->swing_counter < ((((leg->old_state_1_duration * 2) / 3)/2)+70)))
+                                                      || ((leg->swing_counter > (((leg->old_state_1_duration * 2)/ 3)/2)+100)  &&  (leg->swing_counter < ((((leg->old_state_1_duration * 2) / 3)/2)+120)))
+                                                      || ((leg->swing_counter > (((leg->old_state_1_duration * 2)/ 3)/2)+150)  &&  (leg->swing_counter < ((((leg->old_state_1_duration * 2) / 3)/2)+170))) )) { // Trigger at the 2/3 of swing phase
+              digitalWrite(TRIGGER_PIN, HIGH); 
+              leg->Trigger = 4;
+              } else  {
+                digitalWrite(TRIGGER_PIN, LOW);
+                leg->Old_Trigger = leg->Trigger;
+                leg->Trigger = 0;
+                if(leg->Old_Trigger == 4 && leg->trig4_rep != 3){
+                  leg->trig4_rep++;
+                }else if (leg->Old_Trigger == 4 && leg->trig4_rep == 3){
+                  leg->trig_number = 0;
+                  leg->Approve_trigger = false;
+                  leg->trig4_rep = 0;
+                }
+              }
+  }else{
+    leg->swing_counter = 0;
+    if ((((millis() - leg->trig_time) > 1000) && ((leg->stance_counter == 1) || (leg->stance_counter > (((leg->state_3_duration * 2) / 3)/2)) )) || leg->Approve_trigger) {
+      leg->Approve_trigger = true;
+      if ((leg->stance_counter < 41) && (leg->trig_number == 1)) { //  Trigger at the start of stance phase
+        digitalWrite(TRIGGER_PIN, HIGH);
+        leg->Trigger = 1;
+        } else if ((leg->trig_number == 2) && ( ((leg->stance_counter > (((leg->state_3_duration * 2) / 3)/2)) && (leg->stance_counter < (20 + (((leg->state_3_duration * 2) / 3)/2))))  
+                                                 || ((leg->stance_counter > (50 + ((leg->state_3_duration * 2) / 3)/2)) && (leg->stance_counter < (70 + (((leg->state_3_duration * 2) / 3)/2)))) )) { // Trigger at the 2/3 of stance phase
+          digitalWrite(TRIGGER_PIN, HIGH);
+          leg->Trigger = 2;
+          } else  {
+            digitalWrite(TRIGGER_PIN, LOW);
+            leg->Old_Trigger = leg->Trigger;
+            leg->Trigger = 0;
+            if (leg->Old_Trigger == 1){
+           leg->trig_number = 0;
+           leg->Approve_trigger = false;
+        }else if (leg->Old_Trigger == 2 && leg->trig2_rep == 0){
+            leg->trig2_rep = 1;
+        }else if (leg->Old_Trigger == 2 && leg->trig2_rep == 1){
+            leg->trig_number = 0;
+            leg->Approve_trigger = false;
+            leg->trig2_rep = 0;
+        }
+            }
+      }else{
+        digitalWrite(TRIGGER_PIN, LOW);
+        leg->Old_Trigger = leg->Trigger;
+        leg->Trigger = 0;
+        if (leg->Old_Trigger == 1){
+           leg->trig_number = 0;
+           leg->Approve_trigger = false;
+        }else if (leg->Old_Trigger == 2 && leg->trig2_rep != 1){
+            leg->trig2_rep++;
+        }else if (leg->Old_Trigger == 2 && leg->trig2_rep == 1){
+            leg->trig_number = 0;
+            leg->Approve_trigger = false;
+            leg->trig2_rep = 0;
+        }
+      }
+    }
+    if (leg->swing_counter > (leg->state_3_duration + leg->state_1_duration)*2){
+      leg->swing_counter = 0;
+      leg->trig_number = 0;
+      leg->trig3_rep = 0;
+      leg->trig4_rep = 0;
+    }
+  } else if (leg->state == 1){
+        leg->swing_counter ++;
+        if ((leg->trig2_rep != 0) && (leg->trig_number ==  2)){
+          leg->stance_counter++;
+          if ((leg->trig_number == 2) && ( ((leg->stance_counter > (((leg->old_state_3_duration * 2) / 3)/2)) && (leg->stance_counter < (20 + (((leg->old_state_3_duration * 2) / 3)/2))))  
+                                                 || ((leg->stance_counter > (50 + ((leg->old_state_3_duration * 2) / 3)/2)) && (leg->stance_counter < (70 + (((leg->old_state_3_duration * 2) / 3)/2)))) )) { // Trigger at the 2/3 of stance phase
+          digitalWrite(TRIGGER_PIN, HIGH);
+          leg->Trigger = 2;
+          } else  {
+            digitalWrite(TRIGGER_PIN, LOW);
+            leg->Old_Trigger = leg->Trigger;
+            leg->Trigger = 0;
+            if (leg->Old_Trigger == 2 && leg->trig2_rep == 0){
+              leg->trig2_rep = 1;
+            }else if (leg->Old_Trigger == 2 && leg->trig2_rep == 1){
+              leg->trig_number = 0;
+              leg->Approve_trigger = false;
+              leg->trig2_rep = 0;
+            }
+          }
+        }else{
+          leg->stance_counter = 0;
+          if (leg->trig2_rep != 0){
+            leg->trig2_rep = 0;
+            leg->trig_number = 0;
+          }
+  
+          if (((millis() - leg->trig_time) > 1000) || leg->Approve_trigger) {
+            leg->Approve_trigger = true;
+            if ((leg->trig_number ==  3) && ( ((leg->swing_counter > ((leg->state_1_duration / 3)/2))  &&  (leg->swing_counter < (((leg->state_1_duration / 3)/2)+20)))
+                                              || ((leg->swing_counter > ((leg->state_1_duration / 3)/2)+50)  &&  (leg->swing_counter < (((leg->state_1_duration / 3)/2)+70)))
+                                              || ((leg->swing_counter > ((leg->state_1_duration / 3)/2)+100)  &&  (leg->swing_counter < (((leg->state_1_duration / 3)/2)+120))) )) { // Trigger at the 1/3 of swing phase
+              digitalWrite(TRIGGER_PIN, HIGH);
+              leg->Trigger = 3;
+              } else if ((leg->trig_number == 4)  && ( ((leg->swing_counter > (((leg->state_1_duration * 2)/ 3)/2))  &&  (leg->swing_counter < ((((leg->state_1_duration * 2) / 3)/2)+20))) 
+                                                        || ((leg->swing_counter > (((leg->state_1_duration * 2)/ 3)/2)+50)  &&  (leg->swing_counter < ((((leg->state_1_duration * 2) / 3)/2)+70)))
+                                                        || ((leg->swing_counter > (((leg->state_1_duration * 2)/ 3)/2)+100)  &&  (leg->swing_counter < ((((leg->state_1_duration * 2) / 3)/2)+120)))
+                                                        || ((leg->swing_counter > (((leg->state_1_duration * 2)/ 3)/2)+150)  &&  (leg->swing_counter < ((((leg->state_1_duration * 2) / 3)/2)+170))) )) { // Trigger at the 2/3 of swing phase
+                digitalWrite(TRIGGER_PIN, HIGH); 
+                leg->Trigger = 4;
+                } else  {
+                  digitalWrite(TRIGGER_PIN, LOW);
+                  leg->Old_Trigger = leg->Trigger;
+                  leg->Trigger = 0;
+                  if (leg->Old_Trigger == 3 && leg->trig3_rep != 2){
+                    leg->trig3_rep++;
+                  }else if (leg->Old_Trigger == 3 && leg->trig3_rep == 2){
+                    leg->trig_number = 0;
+                    leg->Approve_trigger = false;
+                    leg->trig3_rep = 0;
+                  }else if(leg->Old_Trigger == 4 && leg->trig4_rep != 3){
+                    leg->trig4_rep++;
+                  }else if (leg->Old_Trigger == 4 && leg->trig4_rep == 3){
+                    leg->trig_number = 0;
+                    leg->Approve_trigger = false;
+                    leg->trig4_rep = 0;
+                  }
+                }
+            }else{
+              digitalWrite(TRIGGER_PIN, LOW);
+              leg->Old_Trigger = leg->Trigger;
+              leg->Trigger = 0;
+              if (leg->Old_Trigger == 3 && leg->trig3_rep != 2){
+                leg->trig3_rep++;
+              }else if (leg->Old_Trigger == 3 && leg->trig3_rep == 2){
+                leg->trig_number = 0;
+                leg->Approve_trigger = false;
+                leg->trig3_rep = 0;
+              }else if(leg->Old_Trigger == 4 && leg->trig4_rep != 3){
+                leg->trig4_rep++;
+              }else if (leg->Old_Trigger == 4 && leg->trig4_rep == 3){
+                leg->trig_number = 0;
+                leg->Approve_trigger = false;
+                leg->trig4_rep = 0;
+              }
+            }
+          }
+          if (leg->stance_counter > (leg->state_3_duration + leg->state_1_duration)*2){
+            leg->stance_counter = 0;
+            leg->trig_number = 0;
+            leg->trig2_rep = 0;
+          }
+        }
+}
 
 //----------------------------------------------------------------------------------
+
 
 //----------------------------------------------------------------------------------
 
@@ -651,12 +765,12 @@ void reset_leg_starting_parameters(Leg* leg) {
   leg->Heel_Strike = 0;
   leg->NO_Biofeedback = true;
 
-   // SS 8/6/2020
+  // SS 8/6/2020
   leg->trig1_counter = 0;
   leg->trig2_counter = 0;
   leg->trig3_counter = 0;
   leg->trig4_counter = 0;
-  leg->stance_counter = 0; 
+  leg->stance_counter = 0;
   leg->swing_counter = 0;
   leg->trig_time = 0;
   leg->trig_number = 0;

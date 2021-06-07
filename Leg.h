@@ -186,6 +186,9 @@ struct Leg {
   int trig3_counter = 0;
   int trig4_counter = 0;
   int trig_number = 0;
+  int trig2_rep = 0;
+  int trig3_rep = 0;
+  int trig4_rep = 0;
 
   // State_Machine_Parameters.h
 
@@ -206,8 +209,10 @@ struct Leg {
   double start_time = 0;
   double state_3_stop_time = 0;
   double state_3_duration = 0;
+  double old_state_3_duration = 0;
   double state_1_stop_time = 0;
   double state_1_duration = 0;
+  double old_state_1_duration = 0;
   
   double Heel_Pos = -0.07;
   double Toe_Pos = 0.20;
