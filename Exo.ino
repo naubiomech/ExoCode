@@ -21,14 +21,18 @@
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
 #define BOARD_VERSION DUAL_BOARD_REV6
+
+#define CONTROL_LOOP_HZ           1000
+#define COMMS_LOOP_HZ             1000                
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048; //1540;
 
 #include <ArduinoBLE.h>
-//#define ATT_MTU_DEFAULT         247
 #include <elapsedMillis.h>
 #include <PID_v2.h>
 #include <Wire.h>
+#include <mbed.h>
+#include <rtos.h>
 
 #include "Parameters.h"
 #include "Board.h"
@@ -40,19 +44,39 @@ const unsigned int zero = 2048; //1540;
 #include "resetMotorIfError.h"
 #include "ATP.h"
 #include "Trial_Data.h"
-
 //----------------------------------------------------------------------------------
+rtos::Thread callback_thread(osPriorityNormal);
+
+void control_loop() {
+  while (true) {
+    resetMotorIfError();
+    calculate_averages();
+    rotate_motor();
+    rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
+  }
+}
 
 
 // Initialize the system
 void setup()
 {
+    // set pin mode for motor pin
+  pinMode(onoff, OUTPUT); //Enable disable the motors
+  digitalWrite(onoff, LOW);
+
+  pinMode(RED, OUTPUT);
+  pinMode(BLUE, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+  digitalWrite(RED, HIGH);
+  digitalWrite(BLUE, HIGH);
+  digitalWrite(GREEN, HIGH);
+  
+  //Start Serial
+  Serial.begin(115200);
+  delay(100);
 
   //Nano's internal BLE module
   setupBLE();
-
-  //Start Serial
-  Serial.begin(115200);
 
   //set the resolution
   analogWriteResolution(12);                                          //change resolution to 12 bits
@@ -62,9 +86,6 @@ void setup()
   initialize_left_leg(left_leg);
   initialize_right_leg(right_leg);
 
-  // set pin mode for motor pin
-  pinMode(onoff, OUTPUT); //Enable disable the motors
-  digitalWrite(onoff, LOW);
 
   // Initialize power monitor settings
   #define WireObj Wire
@@ -77,51 +98,32 @@ void setup()
   delay(100);
 
   int startVolt = readBatteryVoltage(); //Read the startup battery voltage
-  //Serial.println(startVolt);
+  Serial.println(startVolt);
   batteryData[0] = startVolt/10;
   send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware, needs fixing!
 
   // Torque cal
   torque_calibration(); //Sets a torque zero on startup  
-  startMillis = millis();
+
+  //Starts the Control Loop thread
+  callback_thread.start(control_loop);
 }
 
+
 //----------------------------------------------------------------------------------
-
-void callback()//executed every 1ms
-{
-  // reset the motor drivers if you encounter an unexpected current peakz
-  resetMotorIfError();
-
-  // read FSR and torque values and calculate averages in case of necessity
-  calculate_averages();
-
-  // if the FSR calibration flag is true calibrate the FSR
-  check_FSR_calibration();
-
-  // apply the PID ctrl to the motors
-  rotate_motor();
-
-  // same of FSR but for the balance baseline
-  check_Balance_Baseline();
-
-  //Updates GUI
-  update_GUI();
-    
-}// end callback
-//----------------------------------------------------------------------------------
-// Function that is repeated in loop
 void loop()
 {
   //Looks for updates
   BLE.poll();
-  
-  currentMillis = millis();
-  if ((currentMillis - startMillis) >= callBackPeriod)
-  {
-    callback();
-    startMillis = currentMillis;
-  }
+  // if the FSR calibration flag is true calibrate the FSR
+  check_FSR_calibration();
+  // same of FSR but for the balance baseline
+  check_Balance_Baseline();
+  //Updates GUI
+  update_GUI();
+
+  //Puts the main thread to sleep for (1000 / Frequency) milliseconds
+  rtos::ThisThread::sleep_for(1000 / COMMS_LOOP_HZ);
 }// end void loop
 //---------------------------------------------------------------------------------
 void update_GUI() {
@@ -137,8 +139,8 @@ void update_GUI() {
     if (voltageTimerCount >= voltageTimerCountNum) {
       int batteryVoltage = readBatteryVoltage();
       batteryData[0] = batteryVoltage/10; //convert from milli
-      //Serial.print("Voltage: ");
-      //Serial.println(batteryData[0]);
+      Serial.print("Voltage: ");
+      Serial.println(batteryData[0]);
       send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
       voltageTimerCount = 0;
 
@@ -163,7 +165,7 @@ void calculate_leg_average(Leg* leg) {
   leg->FSR_Toe_Average = 0;
   leg->FSR_Heel_Average = 0;
   leg->Average = 0;
-
+ 
   //Motor Speed
   leg->SpeedArrayPoint[0] = ankle_speed(leg->motor_speed_pin);
   leg->AverageSpeed = 0;
@@ -173,24 +175,12 @@ void calculate_leg_average(Leg* leg) {
     leg->Average =  leg->Average + leg->TarrayPoint[i];
     leg->AverageSpeed = leg->AverageSpeed + leg->SpeedArray[i];
   }
-
   leg->Average_Trq = leg->Average / dim;
   leg->AverageSpeed = leg->AverageSpeed / dim;
   if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
   }
 
-  if (abs(leg->TarrayPoint[dim]) > 25 && abs(leg->Average_Trq - leg->TarrayPoint[dim]) < 0.1) //When torque sensor is unplugged we see the same values for several seconds
-  {
-    double old_L_state_L = leg->state;
-    leg->state = 9;
-    send_data_message_wc();
-
-    digitalWrite(onoff, LOW);
-    stream = 0;
-    digitalWrite(LED_PIN, LOW);
-    leg->state = old_L_state_L;
-  }
   leg->p_steps->torque_average = leg->Average / dim;
 
   leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
@@ -208,7 +198,6 @@ void calculate_leg_average(Leg* leg) {
   } else {
     leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
   }
-
 }
 
 //----------------------------------------------------------------------------------
@@ -269,7 +258,6 @@ void check_Balance_Baseline() {
 void rotate_motor() {
   // send the data message, adapt KF if required, apply the PID, apply the state machine,
   //adjust some control parameters as a function of the control strategy decided (Control_Adjustment)
-    
   if (stream == 1)
   {
     pid(left_leg, left_leg->Average_Trq);
@@ -356,16 +344,7 @@ void rotate_motor() {
         }
       }
     }
-
     right_leg->old_state = right_leg->state;
-
-    //    #if BOARD_VERSION == DUAL_BOARD_REV4
-    //      // Sending nerve stimulation tigger // SS 8/6/2020
-    //      if (STIM_ACTIVATED){
-    //        if (Trigger_left)  send_trigger(left_leg); //for left
-    //        else  send_trigger(right_leg);  //for right (the default is for right leg)
-    //        }
-    //    #endif
 
     // When I first wrote this only God and I knew what it did. Now only God knows. Need to go through this again. GO 9/17/20
     if ((Control_Mode == 3 || Control_Mode == 6) && (abs(left_leg->Dorsi_Setpoint_Ankle) > 0 || abs(left_leg->Previous_Dorsi_Setpoint_Ankle) > 0) && left_leg->state == 1) { //GO 4/22/19
@@ -376,7 +355,6 @@ void rotate_motor() {
 
     int left_scaling_index = 0;
     int right_scaling_index = 0;
-
     if (Control_Mode == 5) {
 
       if ((left_leg->state == 3) && (left_leg->state_3_duration > 0)) {
@@ -405,7 +383,6 @@ void rotate_motor() {
         right_leg->PID_Setpoint = 0;   // TN 8/20/19
       }
     }
-
 
 
     if (Control_Mode == 2) {}

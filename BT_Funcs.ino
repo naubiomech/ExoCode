@@ -7,11 +7,7 @@ bool BUFFERS_FIXED_LENGTH = false;
 BLEService UARTService(UARTUUID);   //Instantiate UART service
 BLECharacteristic TXChar(rxUUID, BLERead | BLENotify | BLEBroadcast,             BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //TX characteristic of service
 BLECharacteristic RXChar(txUUID, BLEWriteWithoutResponse | BLEWrite | BLENotify, BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //RX characteristic of service
-static inline void config_ble_regs(void) {
-  NRF_RADIO->MODE = 4;  //3 = 1Mb/s, 4 = 2Mb/s
-  NRF_RADIO->TXPOWER = 0x8;
-  //MARK: Need to increase default MTU
-}
+
 
 void setupBLE()
 {
@@ -36,6 +32,7 @@ void setupBLE()
     digitalWrite(GREEN,LOW);
   }
   else {
+    Serial.println("Error Setting up BLE");
     digitalWrite(GREEN, HIGH);
     digitalWrite(BLUE, HIGH);
     digitalWrite(RED, LOW);
@@ -54,7 +51,7 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
       return;
     }
   } else {
-    //Serial.println("Got mobile message");
+   // Serial.println("Got mobile message");
     if (!handle_mobile_message(data, val_len)) {
       receive_and_transmit();
       return;
