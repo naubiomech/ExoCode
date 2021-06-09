@@ -23,7 +23,7 @@
 #define BOARD_VERSION DUAL_BOARD_REV6
 
 #define CONTROL_LOOP_HZ           1000
-#define COMMS_LOOP_HZ             1000                
+#define COMMS_LOOP_HZ             1000               
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048; //1540;
 
@@ -98,7 +98,7 @@ void setup()
   delay(100);
 
   int startVolt = readBatteryVoltage(); //Read the startup battery voltage
-  Serial.println(startVolt);
+  //Serial.println(startVolt);
   batteryData[0] = startVolt/10;
   send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware, needs fixing!
 
@@ -121,10 +121,11 @@ void loop()
   check_Balance_Baseline();
   //Updates GUI
   update_GUI();
-
   //Puts the main thread to sleep for (1000 / Frequency) milliseconds
   rtos::ThisThread::sleep_for(1000 / COMMS_LOOP_HZ);
 }// end void loop
+
+
 //---------------------------------------------------------------------------------
 void update_GUI() {
     //Real Time data
@@ -139,8 +140,8 @@ void update_GUI() {
     if (voltageTimerCount >= voltageTimerCountNum) {
       int batteryVoltage = readBatteryVoltage();
       batteryData[0] = batteryVoltage/10; //convert from milli
-      Serial.print("Voltage: ");
-      Serial.println(batteryData[0]);
+      //Serial.print("Voltage: ");
+      //Serial.println(batteryData[0]);
       send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
       voltageTimerCount = 0;
 
