@@ -1,0 +1,27 @@
+Exoskeleton Firmware Release Notes
+
+Version Number: 1.1
+
+Firmware update guide: https://docs.google.com/document/d/1sL07ptdXuzw1IuAZdh5S4gdC_FAweF4HR37W7pJnLXw/edit?usp=sharing
+
+Contact your Biomotum representative for assistance with firmware updates or urgent feature requests and bug fixes.
+
+------------
+New Features
+------------
+
+1.
+
+2.
+
+3.
+
+---------
+Bug Fixes
+---------
+
+1.
+
+2.
+
+3.
