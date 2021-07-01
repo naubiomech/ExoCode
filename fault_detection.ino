@@ -15,7 +15,7 @@ void check_for_torque_faults(Leg* leg) {
 }
 
 int tracking_check(Leg* leg) {
-  //Compare smoothed tracking (LPF SP) with measured torque
+  //Compare smoothed setpoint with measured torque
   static double filtered_sp_L = 0;
   static double filtered_sp_R = 0;
   static double track_error_L = 0;
@@ -29,10 +29,14 @@ int tracking_check(Leg* leg) {
     filtered_error_R = abs(ema_with_context(filtered_error_R, current_track_error, HIGH_ALPHA));
     double track_error_rate = abs((current_track_error - track_error_R) / CONTROL_TIME_STEP);
     if ((filtered_error_R > TRACKING_THRESH || track_error_rate > TRACKING_RATE_THRESH) && stream) {
+      /*
       digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
       stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
       stepper->steps = 0;                                            // Reset step count for next trial
-      reset_cal_on_end_trial(); //Currently commented out but acts to reset all torque, BL, and FSR parameters
+      reset_cal_on_end_trial(); //But acts to reset all torque, BL, and FSR parameters
+      */
+      track_count_R += filtered_error_R > TRACKING_THRESH;
+      rate_count_R += track_error_rate > TRACKING_RATE_THRESH;
     }
     track_error_R = filtered_error_R;
   } 
@@ -42,10 +46,14 @@ int tracking_check(Leg* leg) {
     filtered_error_L = abs(ema_with_context(filtered_error_L, current_track_error, HIGH_ALPHA));
     double track_error_rate = abs((filtered_error_L - track_error_L) / CONTROL_TIME_STEP);
     if ((filtered_error_L > TRACKING_THRESH || track_error_rate > TRACKING_RATE_THRESH) && stream) {
+      /*
       digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
       stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
       stepper->steps = 0;                                            // Reset step count for next trial
       reset_cal_on_end_trial(); //Currently commented out but acts to reset all torque, BL, and FSR parameters
+      */
+      track_count_L += filtered_error_L > TRACKING_THRESH;
+      rate_count_L += track_error_rate > TRACKING_RATE_THRESH;
     }
     track_error_L = filtered_error_L;
   }

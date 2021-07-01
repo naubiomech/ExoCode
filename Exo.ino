@@ -19,6 +19,12 @@
 // 6 steps = 10N
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
+//Globals for testing
+int track_count_R = 0;
+int rate_count_R = 0;
+int track_count_L = 0;
+int rate_count_L = 0;
+
 #define VERSION 314
 #define BOARD_VERSION DUAL_BOARD_REV6
 
