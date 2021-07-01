@@ -23,6 +23,7 @@
 #define BOARD_VERSION DUAL_BOARD_REV6
 
 #define CONTROL_LOOP_HZ           1000
+#define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
 #define COMMS_LOOP_HZ             1000               
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048; //1540;
@@ -51,6 +52,7 @@ void control_loop() {
   while (true) {
     resetMotorIfError();
     calculate_averages();
+    detect_faults();
     rotate_motor();
     rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
   }
