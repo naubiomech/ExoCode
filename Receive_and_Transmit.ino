@@ -36,8 +36,8 @@ void receive_and_transmit()
       right_leg->Previous_Dorsi_Setpoint_Ankle = right_leg->Dorsi_Setpoint_Ankle;
       memcpy(&left_leg->Setpoint_Ankle, holdOnPoint, 8);                         //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       memcpy(&left_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
-      memcpy(&right_leg->Setpoint_Ankle, holdOnPoint, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-      memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
+//      memcpy(&right_leg->Setpoint_Ankle, holdOnPoint, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+//      memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
       memcpy(&right_leg->Setpoint_Ankle, holdOnPoint + 16, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 24, 8);
       
