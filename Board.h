@@ -6,7 +6,7 @@
 #define QUAD_BOARD 2
 #define DUAL_BOARD_REV4 1
 
-#if BOARD_VERSION == DUAL_BOARD_REV3 //Teensy 4.1
+#if BOARD_VERSION == DUAL_BOARD_REV3
 #define ENABLE_PWM
 const unsigned int BLUETOOTH_TX_PIN = 34;
 const unsigned int BLUETOOTH_RX_PIN = 35;
@@ -47,7 +47,7 @@ const unsigned int PWR_SCL = 16;   //SCL 1
 const unsigned int PWR_SDA = 17;   //SDA 1
 #endif
 
-#if BOARD_VERSION == DUAL_BOARD_REV4 //Teensy 3.6
+#if BOARD_VERSION == DUAL_BOARD_REV4
 #define ENABLE_PWM
 const unsigned int BLUETOOTH_TX_PIN = 31;
 const unsigned int BLUETOOTH_RX_PIN = 32;
@@ -80,7 +80,7 @@ const unsigned int MOTOR_SPEED_RIGHT_PIN = A19;
 const unsigned int HALL_LEFT_PIN = A9;
 const unsigned int HALL_RIGHT_PIN = A18; 
 
-const unsigned int TRIGGER_PIN = 26;// for Left trigger pin, and 28 for right trigger pin
+const unsigned int TRIGGER_PIN = 33;// for Left trigger pin, and 28 for right trigger pin
 
 const unsigned int PWR_ADR_0 = 5; //Address 0
 const unsigned int PWR_ADR_1 = 6; //Address 1
