@@ -25,3 +25,9 @@ Bug Fixes
 2.
 
 3.
+
+-------------
+Minor Updates
+-------------
+
+1. Updated torque transducer constant (470 Ohm resistor)

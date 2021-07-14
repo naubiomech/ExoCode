@@ -118,7 +118,7 @@ void FSR_calibration()
 }
 
 double get_torq(Leg* leg) {
-  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096.0)) - leg->torque_calibration_value) * 43.000; // For the custom anchor sensor
+  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096.0)) - leg->torque_calibration_value) * 43.27; // For the custom anchor sensor
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }
 
