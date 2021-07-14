@@ -44,6 +44,7 @@ const unsigned int zero = 2048; //1540;
 #include "resetMotorIfError.h"
 #include "ATP.h"
 #include "Trial_Data.h"
+#include "ema_filter.h"
 //----------------------------------------------------------------------------------
 rtos::Thread callback_thread(osPriorityNormal);
 
@@ -104,6 +105,8 @@ void setup()
 
   // Torque cal
   torque_calibration(); //Sets a torque zero on startup  
+
+  oldTrq = get_torq(right_leg); //
 
   //Starts the Control Loop thread
   callback_thread.start(control_loop);
@@ -166,6 +169,10 @@ void calculate_leg_average(Leg* leg) {
   leg->FSR_Toe_Average = 0;
   leg->FSR_Heel_Average = 0;
   leg->Average = 0;
+
+  emaTrq = ema_with_context(oldTrq,right_leg->TarrayPoint[0],0.01);
+  oldTrq = emaTrq;
+ 
  
   //Motor Speed
   leg->SpeedArrayPoint[0] = ankle_speed(leg->motor_speed_pin);
@@ -181,6 +188,12 @@ void calculate_leg_average(Leg* leg) {
   if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
   }
+
+//  Serial.print(emaTrq);
+//  Serial.print(",");
+//  Serial.print(right_leg->TarrayPoint[0]);
+//  Serial.print(",");
+//  Serial.println(right_leg->Average_Trq);
 
   leg->p_steps->torque_average = leg->Average / dim;
 
