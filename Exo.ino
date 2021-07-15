@@ -195,8 +195,8 @@ void calculate_leg_average(Leg* leg, double alpha) {
 //----------------------------------------------------------------------------------
 
 void calculate_averages() {
-  calculate_leg_average(left_leg,0.075);
-  calculate_leg_average(right_leg,0.075);
+  calculate_leg_average(left_leg,0.05);
+  calculate_leg_average(right_leg,0.05);
 }
 
 //----------------------------------------------------------------------------------
