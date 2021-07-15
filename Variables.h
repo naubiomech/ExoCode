@@ -68,7 +68,7 @@ bool motor_error = false;
 
 
 // Variables for auto KF
-int flag_auto_KF = 1;
+int flag_auto_KF = 0;
 
 //Variables for biofeedback
 volatile double Freq;
@@ -117,10 +117,6 @@ int Cal = 0x5000;             // Calibration value in hex. Cal = 0.04096/(Curren
  double temp_R_PFX = 0;
 
  // EMA Variables
- double oldTrq;
- double emaTrq;
- double trqAlpha = 0.01;
- 
  double oldVolt;
  double emaVolt;
  double voltAlpha = 0.001;

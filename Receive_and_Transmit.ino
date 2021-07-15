@@ -102,10 +102,12 @@ void receive_and_transmit()
       right_leg->num_3_steps = 0;
       right_leg->start_step = 0;
 
-      left_leg->PID_Setpoint = 0; //Makes sure that the next trial doesn't have any non-zero bias
-      left_leg->New_PID_Setpoint = 0;
-      right_leg->PID_Setpoint = 0;
-      right_leg->New_PID_Setpoint = 0;
+      left_leg->PID_Setpoint = 0.0; //Makes sure that the next trial doesn't have any non-zero bias
+      left_leg->New_PID_Setpoint = 0.0;
+      left_leg->Old_PID_Setpoint = 0.0;
+      right_leg->PID_Setpoint = 0.0;
+      right_leg->New_PID_Setpoint = 0.0;
+      right_leg->Old_PID_Setpoint = 0.0;
 
       digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
       stepData[0] = stepper->steps; //CFC 1/22/21

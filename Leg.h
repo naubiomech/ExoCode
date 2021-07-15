@@ -12,17 +12,9 @@ struct Leg {
   int motor_current_pin;
   int motor_speed_pin;
   // In A_Exo pre-includes
-  double FSR_Average_array[dim_FSR] = {0};
-  double* p_FSR_Array = &FSR_Average_array[0];
   double Curr_FSR_Toe = 0;
 
-  double FSR_Average_array_Heel[dim_FSR] = {0};
-  double* p_FSR_Array_Heel = &FSR_Average_array_Heel[0];
   double Curr_FSR_Heel = 0;
-
-  double Tarray[dim] = {0};
-  double* TarrayPoint = &Tarray[0];
-  double Average = 0;
 
   double SpeedArray[dim] = {0};
   double* SpeedArrayPoint = &SpeedArray[0];
@@ -44,6 +36,7 @@ struct Leg {
   volatile double Average_Volt;
   volatile double Average_Volt_Heel;
   volatile double Average_Trq;
+  volatile double Prev_Trq;
   volatile double FSR_Combined_Average;
   volatile double FSR_Toe_Average;
   volatile double FSR_Heel_Average;
@@ -110,7 +103,7 @@ struct Leg {
 #ifdef ENABLE_PWM   //PID Gains are different for PWM control
   double kp = 300;
   double ki = 0;
-  double kd = 3;
+  double kd = 10;
 #else
   double kp = 700;
   double ki = 0;

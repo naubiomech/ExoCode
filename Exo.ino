@@ -106,7 +106,8 @@ void setup()
   // Torque cal
   torque_calibration(); //Sets a torque zero on startup  
 
-  oldTrq = get_torq(right_leg); //
+  right_leg->Prev_Trq = get_torq(right_leg); //Initial conditions for EMA torque signal filter
+  left_leg->Prev_Trq = get_torq(left_leg); 
 
   //Starts the Control Loop thread
   callback_thread.start(control_loop);
@@ -156,46 +157,23 @@ void update_GUI() {
     voltageTimerCount++;
 }
 
-void calculate_leg_average(Leg* leg) {
-  //Calc the average value of Torque
-  //Shift the arrays
-  for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
-  { // there are the number of spaces in the memory space minus 2 actions that need to be taken
-    leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
-    leg->SpeedArrayPoint[j] = leg->SpeedArrayPoint[j - 1];
-  }
-  //Get the torque
-  leg->TarrayPoint[0] = get_torq(leg);
-  leg->FSR_Toe_Average = 0;
-  leg->FSR_Heel_Average = 0;
-  leg->Average = 0;
+void calculate_leg_average(Leg* leg, double alpha) {
 
-  emaTrq = ema_with_context(oldTrq,right_leg->TarrayPoint[0],0.01);
-  oldTrq = emaTrq;
- 
- 
-  //Motor Speed
-  leg->SpeedArrayPoint[0] = ankle_speed(leg->motor_speed_pin);
-  leg->AverageSpeed = 0;
-
-  for (int i = 0; i < dim; i++)
-  {
-    leg->Average =  leg->Average + leg->TarrayPoint[i];
-    leg->AverageSpeed = leg->AverageSpeed + leg->SpeedArray[i];
-  }
-  leg->Average_Trq = leg->Average / dim;
-  leg->AverageSpeed = leg->AverageSpeed / dim;
+  // Torque Poll and EMA Filter
+  
+  leg->Average_Trq = ema_with_context(leg->Prev_Trq,get_torq(leg),alpha);
+  leg->Prev_Trq = leg->Average_Trq;
+  
   if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
   }
 
-//  Serial.print(emaTrq);
-//  Serial.print(",");
-//  Serial.print(right_leg->TarrayPoint[0]);
-//  Serial.print(",");
-//  Serial.println(right_leg->Average_Trq);
+  leg->p_steps->torque_average = leg->Average_Trq;
 
-  leg->p_steps->torque_average = leg->Average / dim;
+  // FSR Poll
+
+  leg->FSR_Toe_Average = 0;
+  leg->FSR_Heel_Average = 0;
 
   leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
   leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
@@ -217,25 +195,8 @@ void calculate_leg_average(Leg* leg) {
 //----------------------------------------------------------------------------------
 
 void calculate_averages() {
-  calculate_leg_average(left_leg);
-  calculate_leg_average(right_leg);
-
-  if (FLAG_PRINT_TORQUES) {
-    Serial.print("LEFT [");
-    for (int i = 0; i < dim; i++) {
-      Serial.print(left_leg->TarrayPoint[i]);
-      Serial.print(" , ");
-    }
-    Serial.print(" ] Average: ");
-    Serial.println(left_leg->Average_Trq);
-    Serial.print("RIGHT [");
-    for (int i = 0; i < dim; i++) {
-      Serial.print(right_leg->TarrayPoint[i]);
-      Serial.print(" , ");
-    }
-    Serial.print(" ] Average: ");
-    Serial.println(right_leg->Average_Trq);
-  }
+  calculate_leg_average(left_leg,0.075);
+  calculate_leg_average(right_leg,0.075);
 }
 
 //----------------------------------------------------------------------------------
