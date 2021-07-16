@@ -48,7 +48,7 @@ void send_command_message(char command_char, double* data_to_send, int number_to
 {
   //6 max characters can transmit -XXXXX, or XXXXXX
   int maxChars = 8;
-  int maxPayloadLength = (3 + number_to_send * (maxChars + 1)); //+1 because of the delimiters
+  int maxPayloadLength = ((3 + number_to_send) * (maxChars + 1)); //+1 because of the delimiters
   byte buffer[maxPayloadLength];
   //Size must be declared at initialization because of itoa()
   char cBuffer[maxChars];

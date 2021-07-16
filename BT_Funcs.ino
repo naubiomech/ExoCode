@@ -1,7 +1,7 @@
 const char* UARTUUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
 const char* txUUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
 const char* rxUUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
-const int BUFFER_SIZE = 256;
+const int BUFFER_SIZE = 128;
 bool BUFFERS_FIXED_LENGTH = false;
 //Add Nordics UART Service
 BLEService UARTService(UARTUUID);   //Instantiate UART service
