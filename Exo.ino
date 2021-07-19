@@ -64,11 +64,10 @@ void control_loop() {
   }
 }
 
-
 // Initialize the system
 void setup()
 {
-    // set pin mode for motor pin
+  // set pin mode for motor pin
   pinMode(onoff, OUTPUT); //Enable disable the motors
   digitalWrite(onoff, LOW);
 
@@ -120,7 +119,7 @@ void setup()
 
 //----------------------------------------------------------------------------------
 void loop()
-{
+{  
   //Looks for updates
   BLE.poll();
   // if the FSR calibration flag is true calibrate the FSR
@@ -137,7 +136,7 @@ void loop()
 //---------------------------------------------------------------------------------
 void update_GUI() {
     //Real Time data
-  if ((streamTimerCount >= streamTimerCountNum) && stream)
+  if ((streamTimerCount >= streamTimerCountNum) &&  stream)
     {
       counter_msgs++;
       send_data_message_wc();

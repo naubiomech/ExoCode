@@ -1,5 +1,5 @@
 //Manual Timer for Nano version
-const int streamTimerCountNum = 20;
+const int streamTimerCountNum = 8;
 const int voltageTimerCountNum = 2500;
 
 // Variable used to schedule some actions
