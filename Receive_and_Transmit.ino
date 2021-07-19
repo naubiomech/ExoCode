@@ -81,9 +81,12 @@ void receive_and_transmit()
       break;
 
     case 'G':
-      
+
+      left_leg->p_steps->Setpoint = 0.0;
       left_leg->Setpoint_Ankle = 0;
       left_leg->Previous_Setpoint_Ankle = 0;
+      left_leg->Setpoint_Ankle_Pctrl = 0;
+      left_leg->Previous_Setpoint_Ankle_Pctrl = 0;
       left_leg->Dorsi_Setpoint_Ankle = 0;
       left_leg->Previous_Dorsi_Setpoint_Ankle = 0;
       left_leg->coef_in_3_steps = 0;
@@ -91,21 +94,25 @@ void receive_and_transmit()
       left_leg->first_step = 1;
       left_leg->num_3_steps = 0;
       left_leg->start_step = 0;
+      left_leg->PID_Setpoint = 0.0; //Makes sure that the next trial doesn't have any non-zero bias
+      left_leg->New_PID_Setpoint = 0.0;
+      left_leg->Old_PID_Setpoint = 0.0;
 
+      right_leg->p_steps->Setpoint = 0.0;
       right_leg->Setpoint_Ankle = 0;
       right_leg->Dorsi_Setpoint_Ankle = 0;
+      right_leg->Setpoint_Ankle_Pctrl = 0;
+      right_leg->Previous_Setpoint_Ankle_Pctrl = 0;
       right_leg->Previous_Setpoint_Ankle = 0;
       right_leg->Previous_Dorsi_Setpoint_Ankle = 0;
       right_leg->coef_in_3_steps = 0;
       right_leg->activate_in_3_steps = 1;
       right_leg->first_step = 1;
       right_leg->num_3_steps = 0;
-      right_leg->start_step = 0;
-
-      left_leg->PID_Setpoint = 0; //Makes sure that the next trial doesn't have any non-zero bias
-      left_leg->New_PID_Setpoint = 0;
-      right_leg->PID_Setpoint = 0;
-      right_leg->New_PID_Setpoint = 0;
+      right_leg->start_step = 0;   
+      right_leg->PID_Setpoint = 0.0;
+      right_leg->New_PID_Setpoint = 0.0;
+      right_leg->Old_PID_Setpoint = 0.0;
 
       digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
       stepData[0] = stepper->steps; //CFC 1/22/21
@@ -162,28 +169,23 @@ void receive_and_transmit()
       break;
 
     case 'c':
-      flag_id = true; // TN 04/29/19
-      flag_pivot = false; // TN 04/29/19
-      flag_resist = false;
-      if (Flag_Prop_Ctrl == true) { // TN 04/29/19
-        Control_Mode = 4; // TN 04/29/19
-      }
+      Control_Mode = 4; // TN 04/29/19
       break;
 
     case 'l': // TN 04/29/19
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR; // TN 04/29/19
-      FLAG_ONE_TOE_SENSOR = true; // TN 04/29/19
-      Old_Control_Mode = Control_Mode; // TN 04/29/19
-      Flag_Prop_Ctrl = true; // TN 04/29/19
-      if (flag_pivot == true) {   // TN 04/29/19
-        Control_Mode = 3; // activate pivot PC // TN 04/29/19
-      } else if (flag_id == true) { // TN 04/29/19
-        Control_Mode = 4; // activate ID PC // TN 04/29/19
-      } else if (flag_resist == true) {
-        Control_Mode = 6; // Activate resistance control //GO 6/20/2020
-      }
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
+//      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR; // TN 04/29/19
+//      FLAG_ONE_TOE_SENSOR = true; // TN 04/29/19
+//      Old_Control_Mode = Control_Mode; // TN 04/29/19
+//      Flag_Prop_Ctrl = true; // TN 04/29/19
+//      if (flag_pivot == true) {   // TN 04/29/19
+//        Control_Mode = 3; // activate pivot PC // TN 04/29/19
+//      } else if (flag_id == true) { // TN 04/29/19
+//        Control_Mode = 4; // activate ID PC // TN 04/29/19
+//      } else if (flag_resist == true) {
+//        Control_Mode = 6; // Activate resistance control //GO 6/20/2020
+//      }
+//      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
+//      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
       break;
 
     case 'w':
@@ -420,12 +422,7 @@ void receive_and_transmit()
       break;
 
     case 'S':
-      flag_id = false;
-      flag_pivot = false;
-      flag_resist = true;
-      if (Flag_Prop_Ctrl == true) {
-        Control_Mode = 6;
-      }
+      Control_Mode = 6;
       break;
 
     case 'T':
