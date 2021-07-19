@@ -159,17 +159,45 @@ void update_GUI() {
 
 void calculate_leg_average(Leg* leg, double alpha) {
 
-  // Torque Poll and EMA Filter
+  if (alpha==0) {
+    
+    //Calc the average value of Torque
+    //Shift the arrays
+    for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
+    { // there are the number of spaces in the memory space minus 2 actions that need to be taken
+      leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
+      leg->CurrentArrayPoint[j] = leg->CurrentArrayPoint[j - 1];
+    }
+    //Get the torque
+    leg->TarrayPoint[0] = get_torq(leg);
+    leg->Average = 0;
+
+    //Motor current needs the same moving average as torque
+    leg->CurrentArrayPoint[0] = current(leg->motor_current_pin);
+    leg->AverageCurrent = 0;
   
-  leg->Average_Trq = ema_with_context(leg->Prev_Trq,get_torq(leg),alpha);
-  leg->Prev_Trq = leg->Average_Trq;
+    for (int i = 0; i < dim; i++)
+    {
+      leg->Average =  leg->Average + leg->TarrayPoint[i];
+      leg->AverageCurrent = leg->AverageCurrent + leg->CurrentArray[i];
+    }
+    leg->Average_Trq = leg->Average / dim;
+    leg->AverageCurrent = leg->AverageCurrent / dim;
+    
+  } else {
+    
+    // Torque Poll and EMA Filter
   
-  if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
-    leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
+    leg->Average_Trq = ema_with_context(leg->Prev_Trq,get_torq(leg),alpha);
+    leg->Prev_Trq = leg->Average_Trq;
+    
+    if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
+      leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
+    }
   }
-
+  
   leg->p_steps->torque_average = leg->Average_Trq;
-
+  
   // FSR Poll
 
   leg->FSR_Toe_Average = 0;
@@ -195,8 +223,8 @@ void calculate_leg_average(Leg* leg, double alpha) {
 //----------------------------------------------------------------------------------
 
 void calculate_averages() {
-  calculate_leg_average(left_leg,0.05);
-  calculate_leg_average(right_leg,0.05);
+  calculate_leg_average(left_leg,0.00);
+  calculate_leg_average(right_leg,0.00);
 }
 
 //----------------------------------------------------------------------------------

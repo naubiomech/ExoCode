@@ -16,9 +16,13 @@ struct Leg {
 
   double Curr_FSR_Heel = 0;
 
-  double SpeedArray[dim] = {0};
-  double* SpeedArrayPoint = &SpeedArray[0];
-  double AverageSpeed = 0;
+  double CurrentArray[dim] = {0};
+  double* CurrentArrayPoint = &CurrentArray[0];
+  double AverageCurrent = 0;
+
+  double Tarray[dim] = {0};
+  double* TarrayPoint = &Tarray[0];
+  double Average = 0;
 
   double sign = 1;
 

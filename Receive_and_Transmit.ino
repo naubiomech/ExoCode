@@ -707,6 +707,7 @@ void receive_and_transmit()
 //        right_leg->first_step = 1;
 //        right_leg->start_step = 0;
 //      }
+    break;  
 
     case '"':
 //      if (Flag_HLO) {
@@ -726,8 +727,8 @@ void receive_and_transmit()
 //        right_leg->start_step = 0;
 //        left_leg->FSR_baseline_FLAG = 1;                      //Retake the baseline every new setpoint
 //        right_leg->FSR_baseline_FLAG = 1;
-//        break;
-      }
+//      }
+       break;
 
 
 
