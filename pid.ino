@@ -24,16 +24,16 @@ void pid(Leg* leg, double input) {
     }//abs(input) > 35
   }//!CURRENT_CONTROL
 
-  if (CURRENT_CONTROL && leg->PID_Setpoint != 0 && MotorParams != 100 && leg->state == 3) { //Simple Open-Loop Control
+  if (CURRENT_CONTROL && MotorParams != 100) { //Simple Open-Loop Control
     if (leg->Setpoint_Ankle >= 10) {
       leg->Vol = 0.191*(leg->PID_Setpoint)/NomCurrent*2048.0;
     } else if (leg->Setpoint_Ankle <= 5) {
-      if (leg->Setpoint_Ankle == 0) {
-        leg->Setpoint_Ankle = 3;
-        leg->Dorsi_Setpoint_Ankle = 0.5;
-        left_leg->coef_in_3_steps = 1;
-        left_leg->activate_in_3_steps = 0;
-      }
+//      if (leg->Setpoint_Ankle == 0) {
+//        leg->Setpoint_Ankle = 3;
+//        leg->Dorsi_Setpoint_Ankle = 0.5;
+//        leg->coef_in_3_steps = 1;
+//        leg->activate_in_3_steps = 0;
+//      }
       leg->Vol = 0.182*(leg->PID_Setpoint)/NomCurrent*2048.0;
     }
     //leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio))/NomCurrent*2048); //For OL Data collection
