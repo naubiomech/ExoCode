@@ -68,7 +68,7 @@ bool motor_error = false;
 
 
 // Variables for auto KF
-int flag_auto_KF = 1;
+int flag_auto_KF = 0;
 
 //Variables for biofeedback
 volatile double Freq;

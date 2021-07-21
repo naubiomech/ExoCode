@@ -13,8 +13,8 @@ void send_data_message_wc() //with COP
   data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
 
   //FSR val
-  data_to_send[6] = (right_leg->FSR_Toe_Average);
-  data_to_send[7] = (left_leg->FSR_Toe_Average);
+  data_to_send[6] = (right_leg->AverageCurrent);
+  data_to_send[7] = (left_leg->AverageCurrent);
 
   send_command_message('?', data_to_send, 8);
 }
