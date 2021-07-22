@@ -19,18 +19,13 @@
 // 6 steps = 10N
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
-//Globals for testing
-int track_count_R = 0;
-int rate_count_R = 0;
-int track_count_L = 0;
-int rate_count_L = 0;
 
 #define VERSION 314
 #define BOARD_VERSION DUAL_BOARD_REV6
 
-#define CONTROL_LOOP_HZ           1000
+#define CONTROL_LOOP_HZ           500
 #define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
-#define COMMS_LOOP_HZ             1000               
+#define COMMS_LOOP_HZ             50               
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048; //1540;
 
@@ -51,8 +46,19 @@ const unsigned int zero = 2048; //1540;
 #include "resetMotorIfError.h"
 #include "ATP.h"
 #include "Trial_Data.h"
+#include "Ambulation_SM.h"
+#include "fault_detection.h"
 //----------------------------------------------------------------------------------
 rtos::Thread callback_thread(osPriorityNormal);
+Ambulation_SM amb_sm;
+
+void upon_walking() {
+  Serial.println("Walking");
+}
+
+void upon_standing() {
+  Serial.println("Standing");
+}
 
 void control_loop() {
   while (true) {
@@ -60,6 +66,7 @@ void control_loop() {
     calculate_averages();
     detect_faults();
     rotate_motor();
+    //amb_sm.tick();
     rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
   }
 }
@@ -79,7 +86,9 @@ void setup()
   digitalWrite(GREEN, HIGH);
   
   //Start Serial
-  Serial.begin(115200);
+  Serial.begin(1000000);
+  while (!Serial);
+  Serial.println("Started");
   delay(100);
 
   //Nano's internal BLE module
@@ -112,6 +121,11 @@ void setup()
   // Torque cal
   torque_calibration(); //Sets a torque zero on startup  
 
+  //Initialize the standing/walking state detector and provide callback functions
+  amb_sm.init();
+  amb_sm.attach_fe_cb(upon_standing);
+  amb_sm.attach_re_cb(upon_walking);
+  
   //Starts the Control Loop thread
   callback_thread.start(control_loop);
 }
@@ -120,8 +134,10 @@ void setup()
 //----------------------------------------------------------------------------------
 void loop()
 {  
+  callback_thread.set_priority(osPriorityNormal);
   //Looks for updates
   BLE.poll();
+  callback_thread.set_priority(osPriorityAboveNormal);
   // if the FSR calibration flag is true calibrate the FSR
   check_FSR_calibration();
   // same of FSR but for the balance baseline
@@ -136,28 +152,27 @@ void loop()
 //---------------------------------------------------------------------------------
 void update_GUI() {
     //Real Time data
-  if ((streamTimerCount >= streamTimerCountNum) &&  stream)
+  if (stream)
     {
       counter_msgs++;
+      callback_thread.set_priority(osPriorityNormal);
       send_data_message_wc();
-      streamTimerCount = 0;
+      callback_thread.set_priority(osPriorityAboveNormal);
     }
     
-    //Battery voltage and reset motor count data
-    if (voltageTimerCount >= voltageTimerCountNum) {
-      int batteryVoltage = readBatteryVoltage();
-      batteryData[0] = batteryVoltage/10; //convert from milli
-      //Serial.print("Voltage: ");
-      //Serial.println(batteryData[0]);
-      send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
-      voltageTimerCount = 0;
-
-      //Motor reset Count
-      errorCount[1] = reset_count;
-      send_command_message('w', errorCount, 1);
-    }
-    streamTimerCount++;
-    voltageTimerCount++;
+  //Battery voltage and reset motor count data
+  if (voltageTimerCount >= voltageTimerCountNum) {
+    int batteryVoltage = readBatteryVoltage();
+    batteryData[0] = batteryVoltage/10; //convert from milli
+    callback_thread.set_priority(osPriorityNormal);
+    send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
+    voltageTimerCount = 0;
+    //Motor reset Count
+    errorCount[1] = reset_count;
+    send_command_message('w', errorCount, 1);
+    callback_thread.set_priority(osPriorityAboveNormal);
+  }
+  voltageTimerCount++;
 }
 
 void calculate_leg_average(Leg* leg) {

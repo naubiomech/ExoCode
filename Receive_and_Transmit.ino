@@ -81,7 +81,6 @@ void receive_and_transmit()
       break;
 
     case 'G':
-      
       left_leg->Setpoint_Ankle = 0;
       left_leg->Previous_Setpoint_Ankle = 0;
       left_leg->Dorsi_Setpoint_Ankle = 0;

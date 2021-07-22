@@ -2,7 +2,7 @@
 
 void torque_calibration()
 {
-  noInterrupts(); //Disable timer interrupts for the duration of this function
+  //noInterrupts(); //Disable timer interrupts for the duration of this function
   long torque_calibration_value_time = millis();
   int torq_cal_count = 0;
   left_leg->torque_calibration_value = 0;
@@ -14,7 +14,7 @@ void torque_calibration()
   }
   left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
-  interrupts(); //Re-enable interrupts
+  //interrupts(); //Re-enable interrupts
 }
 
 

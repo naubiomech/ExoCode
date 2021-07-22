@@ -42,6 +42,7 @@ void setupBLE()
 void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
   static bool collecting = false;
   char data[32] = {0};
+  callback_thread.set_priority(osPriorityNormal);
   int val_len = RXChar.valueLength();
   RXChar.readValue(data, val_len);
   if (data[0] == '!') {
@@ -51,24 +52,29 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
       return;
     }
   } else {
-   // Serial.println("Got mobile message");
+    //Serial.println("Got mobile message");
     if (!handle_mobile_message(data, val_len)) {
       receive_and_transmit();
       return;
     }
   }
+  callback_thread.set_priority(osPriorityAboveNormal);
 }//End onRxCharValueUpdate
 
 void onBLEConnected(BLEDevice central)
 {
   digitalWrite(GREEN,HIGH);
   digitalWrite(BLUE, LOW);
+  callback_thread.set_priority(osPriorityNormal);
   BLE.stopAdvertise();
+  callback_thread.set_priority(osPriorityAboveNormal);
 }
 
 void onBLEDisconnected(BLEDevice central)
 {
   digitalWrite(GREEN,LOW);
   digitalWrite(BLUE, HIGH);
+  callback_thread.set_priority(osPriorityNormal);
   BLE.advertise();
+  callback_thread.set_priority(osPriorityAboveNormal);
 }
