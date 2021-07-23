@@ -131,6 +131,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           leg->state_count_13 = 0;
           leg->state_count_12 = 0;
           leg->state_count_21 = 0;
+          leg->swing_counter = 0;
           leg->allow_inc_flag = true; //TH 8/7/19
         }
       }
@@ -157,12 +158,17 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
 
   if (Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) { //GO 5/19/19
     if (leg->state == 1) {
-      leg->PID_Setpoint = leg->New_PID_Setpoint; //Activate Dorsiflexion during state 1
+      leg->swing_counter++;
+      if (leg->swing_counter <= swing_counter_th) {
+        leg->PID_Setpoint = 6.5*leg->New_PID_Setpoint;
+      } else {
+        leg->PID_Setpoint = leg->New_PID_Setpoint; //Activate Dorsiflexion during state 1
+      } 
     }
-    else if (leg->state == 2) {
-      leg->PID_Setpoint = leg->New_PID_Setpoint; //Continue Dorsiflexion during state 2
-      //leg->PID_Setpoint = 0;    //Deactivate Dorsiflexion during state 2
-    }
+//    else if (leg->state == 2) {
+//      leg->PID_Setpoint = leg->New_PID_Setpoint; //Continue Dorsiflexion during state 2
+//      //leg->PID_Setpoint = 0;    //Deactivate Dorsiflexion during state 2
+//    }
   }
   else {
 

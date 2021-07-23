@@ -415,10 +415,11 @@ void receive_and_transmit()
 
     // TN 6/13/19
     case 'R':                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&left_leg->fsr_percent_thresh_Toe, holdOnPoint, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-      memcpy(&right_leg->fsr_percent_thresh_Toe, holdOnPoint + 8, 8);
-      left_leg->p_steps->fsr_percent_thresh_Toe = left_leg->fsr_percent_thresh_Toe;
-      right_leg->p_steps->fsr_percent_thresh_Toe = right_leg->fsr_percent_thresh_Toe;
+    CURRENT_CONTROL = !CURRENT_CONTROL; //Hijack the FSR send signal
+//      memcpy(&left_leg->fsr_percent_thresh_Toe, holdOnPoint, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+//      memcpy(&right_leg->fsr_percent_thresh_Toe, holdOnPoint + 8, 8);
+//      left_leg->p_steps->fsr_percent_thresh_Toe = left_leg->fsr_percent_thresh_Toe;
+//      right_leg->p_steps->fsr_percent_thresh_Toe = right_leg->fsr_percent_thresh_Toe;
       break;
 
     case 'S':
