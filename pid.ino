@@ -25,18 +25,9 @@ void pid(Leg* leg, double input) {
   }//!CURRENT_CONTROL
 
   if (CURRENT_CONTROL && leg->PID_Setpoint != 0 && MotorParams != 100 && leg->state == 3) { //Simple Open-Loop Control
-    if (leg->Setpoint_Ankle >= 10) {
-      leg->Vol = 0.191*(leg->PID_Setpoint)/NomCurrent*2048.0;
-    } else if (leg->Setpoint_Ankle <= 5) {
-      if (leg->Setpoint_Ankle == 0) {
-        leg->Setpoint_Ankle = 3;
-        leg->Dorsi_Setpoint_Ankle = 0.5;
-        left_leg->coef_in_3_steps = 1;
-        left_leg->activate_in_3_steps = 0;
-      }
-      leg->Vol = 0.182*(leg->PID_Setpoint)/NomCurrent*2048.0;
-    }
-    //leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio))/NomCurrent*2048); //For OL Data collection
+    //leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio * MotorEff * GearboxEff))/NomCurrent*2048) + leg->zero; //Setpoint/(Motor torque constant, gear reduction, pulley reduction, motor eff, gearbox eff)
+    //leg->Vol = (0.37293*(leg->PID_Setpoint))/NomCurrent*2048.0; //Regression control, torque only
+    leg->Vol = (0.275 * (leg->PID_Setpoint)) / NomCurrent * 2048.0;
     if (Control_Mode == 6 && leg->state == 3) {
       leg->Vol = -leg->Vol;
     }
@@ -55,11 +46,12 @@ void pid(Leg* leg, double input) {
     if (Control_Mode == 6 && leg->state == 3) {
       leg->PID_Setpoint = -leg->PID_Setpoint;
     }
-      leg->Input = input;
-      leg->pid.PID::Compute();
-      leg->Vol = leg->Output; //need to map
+    leg->Input = input;
+    leg->pid.PID::Compute();
+    leg->Vol = leg->Output; //need to map
   }
 
+  leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio))/NomCurrent*2048); //For OL Data collection
   leg->Vol = leg->Vol + leg->zero; // Modify the span such that the PWM value is from 0 to 4096.0 instead of -2048.0 to 2048.0
   
   analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
