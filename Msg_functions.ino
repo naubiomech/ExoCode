@@ -24,29 +24,6 @@ void send_data_message_wc() //with COP
 }
 
 
-/*
-//Real time data being sent to the GUI
-void send_data_message_wc() //with COP
-{
-  //Right Leg
-  data_to_send[0] = (right_leg->Average_Trq);
-  data_to_send[1] = track_count_R;//right_leg->state;
-  data_to_send[2] = (right_leg->sign * est_torque_R);
-
-  //Left Leg
-  data_to_send[3] = (left_leg->Average_Trq);
-  data_to_send[4] = track_count_L;//left_leg->state;
-  data_to_send[5] = (left_leg->sign * est_torque_L);
-
-  //FSR val
-  data_to_send[6] = rate_count_R;//(right_leg->FSR_Toe_Average);
-  data_to_send[7] = rate_count_L;//(left_leg->FSR_Toe_Average);
-
-  send_command_message('?', data_to_send, 8);
-}
-*/
-
-
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
 {
   //6 max characters can transmit -XXXXX, or XXXXXX
@@ -71,9 +48,9 @@ void send_command_message(char command_char, double* data_to_send, int number_to
     bufferIndex += cLength;
     buffer[bufferIndex++] = 'n';
   }
-  callback_thread.set_priority(osPriorityNormal);
+  //callback_thread.set_priority(osPriorityNormal);
   TXChar.writeValue(buffer, bufferIndex);           //Write payload
-  callback_thread.set_priority(osPriorityAboveNormal);
+  //callback_thread.set_priority(osPriorityAboveNormal);
 }
 
 int getCharLength(int ofInt) {

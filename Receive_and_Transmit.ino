@@ -5,7 +5,7 @@ double app = 0;
 void receive_and_transmit()
 {
   //Serial.print("cmd: ");
-  //Serial.println(char(cmd_from_Gui));
+  Serial.println(char(cmd_from_Gui));
   switch (cmd_from_Gui)
   {
     case 'F':                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
@@ -90,6 +90,7 @@ void receive_and_transmit()
       left_leg->first_step = 1;
       left_leg->num_3_steps = 0;
       left_leg->start_step = 0;
+      left_leg->baseline_value = 0;
 
       right_leg->Setpoint_Ankle = 0;
       right_leg->Dorsi_Setpoint_Ankle = 0;
@@ -100,18 +101,23 @@ void receive_and_transmit()
       right_leg->first_step = 1;
       right_leg->num_3_steps = 0;
       right_leg->start_step = 0;
+      right_leg->baseline_value = 0;
 
       left_leg->PID_Setpoint = 0; //Makes sure that the next trial doesn't have any non-zero bias
       left_leg->New_PID_Setpoint = 0;
       right_leg->PID_Setpoint = 0;
       right_leg->New_PID_Setpoint = 0;
 
+      reset_count = 0;
+
       digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
       stepData[0] = stepper->steps; //CFC 1/22/21
-      send_command_message(stepper->step_flag, stepData, 1);
+      stepData[1] = (stepper->bio_steps) / 2; //Divide by two because only one leg is being used during biofeedback
+      send_command_message(stepper->step_flag, stepData, 2);
       stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
       stepper->steps = 0;                                            // Reset step count for next trial
-
+      stepper->bio_steps = 0;
+      
       reset_cal_on_end_trial(); //Currently commented out but acts to reset all torque, BL, and FSR parameters
       break;
 
@@ -197,6 +203,17 @@ void receive_and_transmit()
       digitalWrite(onoff, HIGH);
       break;
 
+    case '%':
+      //Start Biofeedback
+      stepper->bio_ref_steps = stepper->steps;
+      //Serial.println(stepper->bio_ref_steps);
+      break;
+
+    case 'h':
+      //End Biofeedback
+      stepper->bio_steps += stepper->steps - stepper->bio_ref_steps;
+      Serial.println(stepper->bio_steps);
+      break;
 
 
 
@@ -672,22 +689,6 @@ void receive_and_transmit()
       break;
 
     // Optimization ------------------------------------------------
-
-    case '%':
-      Serial.println("Start Optimization");
-      Flag_HLO = true;
-      break;
-
-    case 'h':
-      Serial.println("End Optimization");
-      left_leg->Setpoint_Ankle = 0;
-      right_leg->Setpoint_Ankle = 0;
-      left_leg->Setpoint_Ankle_Pctrl = 0;
-      right_leg->Setpoint_Ankle_Pctrl = 0;
-      left_leg->Dorsi_Setpoint_Ankle = 0;
-      right_leg->Dorsi_Setpoint_Ankle = 0;
-      Flag_HLO = false;
-      break;
 
     case '$':
       if (Flag_HLO) {
