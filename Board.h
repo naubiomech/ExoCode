@@ -25,8 +25,8 @@ const unsigned int LED_PIN = 25; //POWER LED
 
 const unsigned int MOTOR_ENABLE_PIN = 5;
 
-const unsigned int MOTOR_ERROR_LEFT_ANKLE_PIN = 4; 
-const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = 2; 
+const unsigned int MOTOR_ERROR_LEFT_ANKLE_PIN = 4;
+const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = 11;
 
 const unsigned int MOTOR_CURRENT_LEFT_ANKLE_PIN = A7; 
 const unsigned int MOTOR_CURRENT_RIGHT_ANKLE_PIN = A1; 
@@ -54,7 +54,7 @@ const unsigned int LED_PIN = 25; //POWER LED
 
 const unsigned int MOTOR_ENABLE_PIN = 5;
 
-const unsigned int MOTOR_ERROR_LEFT_ANKLE_PIN = 2;
+const unsigned int MOTOR_ERROR_LEFT_ANKLE_PIN = 11;
 const unsigned int MOTOR_ERROR_RIGHT_ANKLE_PIN = 4;
 
 const unsigned int MOTOR_CURRENT_LEFT_ANKLE_PIN = A1;

@@ -2,7 +2,6 @@
 
 void torque_calibration()
 {
-  noInterrupts(); //Disable timer interrupts for the duration of this function
   long torque_calibration_value_time = millis();
   int torq_cal_count = 0;
   double left_temp_cal = 0;
@@ -14,7 +13,6 @@ void torque_calibration()
   }
   left_leg->torque_calibration_value = left_temp_cal / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_temp_cal / torq_cal_count;                       // Averages torque over a second
-  interrupts(); //Re-enable interrupts
 }
 
 
@@ -118,7 +116,7 @@ void FSR_calibration()
 }
 
 double get_torq(Leg* leg) {
-  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096.0)) - leg->torque_calibration_value) * 43.27; // For the custom anchor sensor
+  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096.0)) - leg->torque_calibration_value) * 43.9; // For the custom anchor sensor
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }
 

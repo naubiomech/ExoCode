@@ -1,7 +1,7 @@
 const char* UARTUUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
 const char* txUUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
 const char* rxUUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
-const int BUFFER_SIZE = 256;
+const int BUFFER_SIZE = 128;
 bool BUFFERS_FIXED_LENGTH = false;
 //Add Nordics UART Service
 BLEService UARTService(UARTUUID);   //Instantiate UART service
@@ -14,8 +14,8 @@ void setupBLE()
   if (BLE.begin())
   {
     //Advertised name and service
-    BLE.setLocalName("EXOBLE");
-    BLE.setDeviceName("EXOBLE");
+    BLE.setLocalName("EXOBLE_4"); //SET DEVICE ID HERE "EXOBLE_#"
+    BLE.setDeviceName("EXOBLE_4"); //SET DEVICE ID HERE "EXOBLE_#"
     BLE.setAdvertisedService(UARTService);
     //Add chars to service
     UARTService.addCharacteristic(TXChar);
@@ -42,6 +42,7 @@ void setupBLE()
 void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
   static bool collecting = false;
   char data[32] = {0};
+  //callback_thread.set_priority(osPriorityNormal);
   int val_len = RXChar.valueLength();
   RXChar.readValue(data, val_len);
   if (data[0] == '!') {
@@ -51,24 +52,29 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
       return;
     }
   } else {
-   // Serial.println("Got mobile message");
+    //Serial.println("Got mobile message");
     if (!handle_mobile_message(data, val_len)) {
       receive_and_transmit();
       return;
     }
   }
+  //callback_thread.set_priority(osPriorityAboveNormal);
 }//End onRxCharValueUpdate
 
 void onBLEConnected(BLEDevice central)
 {
   digitalWrite(GREEN,HIGH);
   digitalWrite(BLUE, LOW);
+  //callback_thread.set_priority(osPriorityNormal);
   BLE.stopAdvertise();
+  //callback_thread.set_priority(osPriorityAboveNormal);
 }
 
 void onBLEDisconnected(BLEDevice central)
 {
   digitalWrite(GREEN,LOW);
   digitalWrite(BLUE, HIGH);
+  //callback_thread.set_priority(osPriorityNormal);
   BLE.advertise();
+  //callback_thread.set_priority(osPriorityAboveNormal);
 }

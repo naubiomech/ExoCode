@@ -26,6 +26,7 @@ void resetMotorIfError() {
     }
 
     if (turn_off_drivers) {
+      //Serial.println("Turn off!");
       digitalWrite(onoff, LOW);
       count_time_drivers_are_off = true;
       flag_enable_catch_error = false;
@@ -37,6 +38,7 @@ void resetMotorIfError() {
     }
 
     if (time_drivers_are_off >= 8) {
+      //Serial.println("Turn on!");
       reset_count++;
       digitalWrite(onoff, HIGH);
       count_time_drivers_are_off = false;

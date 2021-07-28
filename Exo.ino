@@ -19,11 +19,13 @@
 // 6 steps = 10N
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
+
 #define VERSION 314
 #define BOARD_VERSION DUAL_BOARD_REV6
 
-#define CONTROL_LOOP_HZ           1000
-#define COMMS_LOOP_HZ             1000               
+#define CONTROL_LOOP_HZ           500
+#define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
+#define COMMS_LOOP_HZ             50               
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048; //1540;
 
@@ -44,24 +46,36 @@ const unsigned int zero = 2048; //1540;
 #include "resetMotorIfError.h"
 #include "ATP.h"
 #include "Trial_Data.h"
+//#include "Ambulation_SM.h"
+#include "fault_detection.h"
 #include "ema_filter.h"
 //----------------------------------------------------------------------------------
 rtos::Thread callback_thread(osPriorityNormal);
+//Ambulation_SM amb_sm;
+
+void upon_walking() {
+  Serial.println("Walking");
+}
+
+void upon_standing() {
+  Serial.println("Standing");
+}
 
 void control_loop() {
   while (true) {
     resetMotorIfError();
     calculate_averages();
+    //detect_faults();
     rotate_motor();
+    //amb_sm.tick();
     rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
   }
 }
 
-
 // Initialize the system
 void setup()
 {
-    // set pin mode for motor pin
+  // set pin mode for motor pin
   pinMode(onoff, OUTPUT); //Enable disable the motors
   digitalWrite(onoff, LOW);
 
@@ -73,7 +87,7 @@ void setup()
   digitalWrite(GREEN, HIGH);
   
   //Start Serial
-  Serial.begin(115200);
+  Serial.begin(1000000);
   delay(100);
 
   //Nano's internal BLE module
@@ -99,13 +113,18 @@ void setup()
   delay(100);
 
   int startVolt = readBatteryVoltage(); //Read the startup battery voltage
-  //Serial.println(startVolt);
+  ////Serial.println(startVolt);
   batteryData[0] = startVolt/10;
   send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware, needs fixing!
 
   // Torque cal
   torque_calibration(); //Sets a torque zero on startup  
 
+  //Initialize the standing/walking state detector and provide callback functions
+  //amb_sm.init();
+  //amb_sm.attach_fe_cb(upon_standing);
+  //amb_sm.attach_re_cb(upon_walking);
+  
   right_leg->Prev_Trq = get_torq(right_leg); //Initial conditions for EMA torque signal filter
   left_leg->Prev_Trq = get_torq(left_leg); 
 
@@ -116,9 +135,11 @@ void setup()
 
 //----------------------------------------------------------------------------------
 void loop()
-{
+{  
+  callback_thread.set_priority(osPriorityNormal);
   //Looks for updates
   BLE.poll();
+  callback_thread.set_priority(osPriorityAboveNormal);
   // if the FSR calibration flag is true calibrate the FSR
   check_FSR_calibration();
   // same of FSR but for the balance baseline
@@ -133,43 +154,67 @@ void loop()
 //---------------------------------------------------------------------------------
 void update_GUI() {
     //Real Time data
-  if ((streamTimerCount >= streamTimerCountNum) && stream)
+  if (stream)
     {
       counter_msgs++;
+      callback_thread.set_priority(osPriorityNormal);
       send_data_message_wc();
-      streamTimerCount = 0;
+      callback_thread.set_priority(osPriorityAboveNormal);
     }
     
-    //Battery voltage and reset motor count data
-    if (voltageTimerCount >= voltageTimerCountNum) {
-      int batteryVoltage = readBatteryVoltage();
-      batteryData[0] = batteryVoltage/10; //convert from milli
-      //Serial.print("Voltage: ");
-      //Serial.println(batteryData[0]);
-      send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
-      voltageTimerCount = 0;
-
-      //Motor reset Count
-      errorCount[1] = reset_count;
-      send_command_message('w', errorCount, 1);
-    }
-    streamTimerCount++;
-    voltageTimerCount++;
+  //Battery voltage and reset motor count data
+  if (voltageTimerCount >= voltageTimerCountNum) {
+    int batteryVoltage = readBatteryVoltage();
+    batteryData[0] = batteryVoltage/10; //convert from milli
+    callback_thread.set_priority(osPriorityNormal);
+    send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
+    voltageTimerCount = 0;
+    //Motor reset Count
+    errorCount[0] = reset_count * 100;
+    send_command_message('w', errorCount, 1);
+    callback_thread.set_priority(osPriorityAboveNormal);
+  }
+  voltageTimerCount++;
 }
 
 void calculate_leg_average(Leg* leg, double alpha) {
 
-  // Torque Poll and EMA Filter
+  if (alpha <= 0.0001) {
+    //Calc the average value of Torque
+    //Shift the arrays
+    for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
+    { // there are the number of spaces in the memory space minus 2 actions that need to be taken
+      leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
+      leg->CurrentArrayPoint[j] = leg->CurrentArrayPoint[j - 1];
+    }
+    //Get the torque
+    leg->TarrayPoint[0] = get_torq(leg);
+    leg->Average = 0;
+
+    //Motor current needs the same moving average as torque
+    leg->CurrentArrayPoint[0] = current(leg->motor_current_pin);
+    leg->AverageCurrent = 0;
   
-  leg->Average_Trq = ema_with_context(leg->Prev_Trq,get_torq(leg),alpha);
-  leg->Prev_Trq = leg->Average_Trq;
-  
-  if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
-    leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
+    for (int i = 0; i < dim; i++)
+    {
+      leg->Average =  leg->Average + leg->TarrayPoint[i];
+      leg->AverageCurrent = leg->AverageCurrent + leg->CurrentArray[i];
+    }
+    leg->Average_Trq = leg->Average / dim;
+    leg->AverageCurrent = leg->AverageCurrent / dim;
+    
+  } else {
+    // Torque Poll and EMA Filter
+    leg->Average_Trq = ema_with_context(leg->Prev_Trq,get_torq(leg),alpha);
+    leg->Prev_Trq = leg->Average_Trq;
+    
+    if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
+      leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
+    }
   }
-
+  
   leg->p_steps->torque_average = leg->Average_Trq;
-
+  
   // FSR Poll
 
   leg->FSR_Toe_Average = 0;
@@ -195,8 +240,8 @@ void calculate_leg_average(Leg* leg, double alpha) {
 //----------------------------------------------------------------------------------
 
 void calculate_averages() {
-  calculate_leg_average(left_leg,0.05);
-  calculate_leg_average(right_leg,0.05);
+  calculate_leg_average(left_leg,0.00);
+  calculate_leg_average(right_leg,0.00);
 }
 
 //----------------------------------------------------------------------------------

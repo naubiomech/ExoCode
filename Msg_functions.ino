@@ -4,26 +4,31 @@ void send_data_message_wc() //with COP
 {
   //Right Leg
   data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
-  data_to_send[1] = right_leg->state;
+  data_to_send[1] = right_leg->state / 3;
   data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
 
   //Left Leg
   data_to_send[3] = (left_leg->sign * left_leg->Average_Trq);
-  data_to_send[4] = left_leg->state;
+  data_to_send[4] = left_leg->state / 3;
   data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
 
-  //FSR val
-  data_to_send[6] = (right_leg->FSR_Toe_Average);
-  data_to_send[7] = (left_leg->FSR_Toe_Average);
-
+  //Normalized FSR values
+  if (right_leg->baseline_value != 0 && left_leg->baseline_value != 0) {
+    data_to_send[6] = (right_leg->FSR_Toe_Average) / right_leg->baseline_value;
+    data_to_send[7] = (left_leg->FSR_Toe_Average) / left_leg->baseline_value;
+  } else {
+    data_to_send[6] = 0;
+    data_to_send[7] = 0;
+  }
   send_command_message('?', data_to_send, 8);
 }
+
 
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
 {
   //6 max characters can transmit -XXXXX, or XXXXXX
   int maxChars = 8;
-  int maxPayloadLength = (3 + number_to_send * (maxChars + 1)); //+1 because of the delimiters
+  int maxPayloadLength = ((3 + number_to_send) * (maxChars + 1)); //+1 because of the delimiters
   byte buffer[maxPayloadLength];
   //Size must be declared at initialization because of itoa()
   char cBuffer[maxChars];
@@ -43,7 +48,9 @@ void send_command_message(char command_char, double* data_to_send, int number_to
     bufferIndex += cLength;
     buffer[bufferIndex++] = 'n';
   }
+  //callback_thread.set_priority(osPriorityNormal);
   TXChar.writeValue(buffer, bufferIndex);           //Write payload
+  //callback_thread.set_priority(osPriorityAboveNormal);
 }
 
 int getCharLength(int ofInt) {

@@ -1,6 +1,6 @@
 //Manual Timer for Nano version
-const int streamTimerCountNum = 20;
-const int voltageTimerCountNum = 2500;
+const int streamTimerCountNum = 1;
+const int voltageTimerCountNum = 25;
 
 // Variable used to schedule some actions
 elapsedMillis timeElapsed;
@@ -68,7 +68,7 @@ bool motor_error = false;
 
 
 // Variables for auto KF
-int flag_auto_KF = 0;
+int flag_auto_KF = 1;
 
 //Variables for biofeedback
 volatile double Freq;
@@ -120,3 +120,7 @@ int Cal = 0x5000;             // Calibration value in hex. Cal = 0.04096/(Curren
  double oldVolt;
  double emaVolt;
  double voltAlpha = 0.001;
+
+ // Torque Offsets
+ double trqOffsetR = -1.219;  //DEFINE TRANSDUCER OFFSET HERE S07
+ double trqOffsetL = -1.503;  //DEFINE TRANSDUCER OFFSET HERE S08

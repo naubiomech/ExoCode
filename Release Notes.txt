@@ -1,6 +1,6 @@
 Exoskeleton Firmware Release Notes
 
-Version Number: 1.1
+Version Number: 1.2
 
 Firmware update guide: https://docs.google.com/document/d/1sL07ptdXuzw1IuAZdh5S4gdC_FAweF4HR37W7pJnLXw/edit?usp=sharing
 
@@ -10,24 +10,26 @@ Contact your Biomotum representative for assistance with firmware updates or urg
 New Features
 ------------
 
-1.
+1. Added device identifier (EXOBLE_#)
 
-2.
+2. Added torque transducer zero-offset log. Additional feature development needed.
 
-3.
+3. Added exponential moving average (EMA) filter. Not currently implemented. Additional feature development needed.
 
 ---------
 Bug Fixes
 ---------
 
-1.
+1. Fixed bug with end trial functionality to ensure zero torque is prescribed on the next trial.
 
-2.
-
-3.
+2. Fixed bug with PWM span.
 
 -------------
 Minor Updates
 -------------
 
-1. Updated torque transducer constant (470 Ohm resistor)
+1. Updated torque transducer constant (470 Ohm resistor).
+
+2. Cleaned received commands to minimize likelihood of erroneous mode switch (i.e. defined assistance in app but control is resistance).
+
+3. Updated torque calibration function to use temporary variables when averaging torque data.
