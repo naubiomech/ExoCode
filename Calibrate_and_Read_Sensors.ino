@@ -11,8 +11,8 @@ void torque_calibration()
     right_temp_cal += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
     torq_cal_count ++;                                                         //Increments count
   }
-  left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
-  right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
+  left_leg->torque_calibration_value = left_temp_cal / torq_cal_count;                       // Averages torque over a second
+  right_leg->torque_calibration_value = right_temp_cal / torq_cal_count;                       // Averages torque over a second
 }
 
 

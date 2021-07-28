@@ -16,7 +16,6 @@ void pid(Leg* leg, double input) {
 
         digitalWrite(onoff, LOW);
         stream = 0;
-        digitalWrite(LED_PIN, LOW);
         leg->state = old_L_state_L;
         leg->torque_error_counter = 0;
       }

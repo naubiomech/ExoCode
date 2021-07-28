@@ -37,7 +37,7 @@ void resetMotorIfError() {
       time_drivers_are_off++;
     }
 
-    if (time_drivers_are_off >= (16)) {
+    if (time_drivers_are_off >= 8) {
       //Serial.println("Turn on!");
       reset_count++;
       digitalWrite(onoff, HIGH);

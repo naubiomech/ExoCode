@@ -182,6 +182,10 @@ void receive_and_transmit()
       */
       break;
 
+    case 'S':
+      Control_Mode = 6;
+      break;
+      
     case 'c':
       Control_Mode = 4; // TN 04/29/19
       break;
@@ -444,10 +448,6 @@ void receive_and_transmit()
       memcpy(&right_leg->fsr_percent_thresh_Toe, holdOnPoint + 8, 8);
       left_leg->p_steps->fsr_percent_thresh_Toe = left_leg->fsr_percent_thresh_Toe;
       right_leg->p_steps->fsr_percent_thresh_Toe = right_leg->fsr_percent_thresh_Toe;
-      break;
-
-    case 'S':
-      Control_Mode = 6;
       break;
 
     case 'T':

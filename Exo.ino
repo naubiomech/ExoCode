@@ -46,12 +46,12 @@ const unsigned int zero = 2048; //1540;
 #include "resetMotorIfError.h"
 #include "ATP.h"
 #include "Trial_Data.h"
-#include "Ambulation_SM.h"
+//#include "Ambulation_SM.h"
 #include "fault_detection.h"
 #include "ema_filter.h"
 //----------------------------------------------------------------------------------
 rtos::Thread callback_thread(osPriorityNormal);
-Ambulation_SM amb_sm;
+//Ambulation_SM amb_sm;
 
 void upon_walking() {
   Serial.println("Walking");
@@ -65,7 +65,7 @@ void control_loop() {
   while (true) {
     resetMotorIfError();
     calculate_averages();
-    detect_faults();
+    //detect_faults();
     rotate_motor();
     //amb_sm.tick();
     rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
@@ -113,7 +113,7 @@ void setup()
   delay(100);
 
   int startVolt = readBatteryVoltage(); //Read the startup battery voltage
-  //Serial.println(startVolt);
+  ////Serial.println(startVolt);
   batteryData[0] = startVolt/10;
   send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware, needs fixing!
 
@@ -121,9 +121,9 @@ void setup()
   torque_calibration(); //Sets a torque zero on startup  
 
   //Initialize the standing/walking state detector and provide callback functions
-  amb_sm.init();
-  amb_sm.attach_fe_cb(upon_standing);
-  amb_sm.attach_re_cb(upon_walking);
+  //amb_sm.init();
+  //amb_sm.attach_fe_cb(upon_standing);
+  //amb_sm.attach_re_cb(upon_walking);
   
   right_leg->Prev_Trq = get_torq(right_leg); //Initial conditions for EMA torque signal filter
   left_leg->Prev_Trq = get_torq(left_leg); 
@@ -179,8 +179,7 @@ void update_GUI() {
 
 void calculate_leg_average(Leg* leg, double alpha) {
 
-  if (alpha==0) {
-    
+  if (alpha <= 0.0001) {
     //Calc the average value of Torque
     //Shift the arrays
     for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
@@ -205,9 +204,7 @@ void calculate_leg_average(Leg* leg, double alpha) {
     leg->AverageCurrent = leg->AverageCurrent / dim;
     
   } else {
-    
     // Torque Poll and EMA Filter
-  
     leg->Average_Trq = ema_with_context(leg->Prev_Trq,get_torq(leg),alpha);
     leg->Prev_Trq = leg->Average_Trq;
     
