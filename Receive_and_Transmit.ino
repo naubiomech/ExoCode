@@ -5,7 +5,7 @@ double app = 0;
 void receive_and_transmit()
 {
   //Serial.print("cmd: ");
-  Serial.println(char(cmd_from_Gui));
+  //Serial.println(char(cmd_from_Gui));
   switch (cmd_from_Gui)
   {
     case 'F':                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
@@ -223,7 +223,7 @@ void receive_and_transmit()
     case 'h':
       //End Biofeedback
       stepper->bio_steps += stepper->steps - stepper->bio_ref_steps;
-      Serial.println(stepper->bio_steps);
+      //Serial.println(stepper->bio_steps);
       break;
 
 

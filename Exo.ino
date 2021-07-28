@@ -88,8 +88,6 @@ void setup()
   
   //Start Serial
   Serial.begin(1000000);
-  while (!Serial);
-  Serial.println("Started");
   delay(100);
 
   //Nano's internal BLE module
