@@ -38,7 +38,7 @@ void pid(Leg* leg, double input) {
       leg->Vol = leg->Dorsi_Setpoint_Ankle / NomCurrent * 2048.0;
     }
   } else if (MODEL_CONTROL && MotorParams != 100) {
-    leg->Vol = (0.34284 * (leg->PID_Setpoint) + 0.023564 * (leg->AverageSpeed) + 0.0043038 * (leg->PID_Setpoint * leg->AverageSpeed)) / NomCurrent * 2048; //Regression control, complex model
+    //leg->Vol = (0.34284 * (leg->PID_Setpoint) + 0.023564 * (leg->AverageSpeed) + 0.0043038 * (leg->PID_Setpoint * leg->AverageSpeed)) / NomCurrent * 2048; //Regression control, complex model
     if (Control_Mode == 6 && leg->state == 3) {
       leg->Vol = -leg->Vol;
     }
@@ -51,10 +51,8 @@ void pid(Leg* leg, double input) {
     leg->Vol = leg->Output; //need to map
   }
 
+  //leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio * MotorEff * GearboxEff))/NomCurrent*2048); //For OL Data collection
   leg->Vol = leg->Vol + leg->zero; // Modify the span such that the PWM value is from 0 to 4096.0 instead of -2048.0 to 2048.0
-
-  if (PWM_CONTROL) {
-    leg->Vol = leg->Vol * 0.8 + 0.1 * 4096.0; // Motor drivers need the PWM to be between 10% and 90%
-  }
+  
   analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
 } 

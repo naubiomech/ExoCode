@@ -81,8 +81,12 @@ void receive_and_transmit()
       break;
 
     case 'G':
+
+      left_leg->p_steps->Setpoint = 0.0;
       left_leg->Setpoint_Ankle = 0;
       left_leg->Previous_Setpoint_Ankle = 0;
+      left_leg->Setpoint_Ankle_Pctrl = 0;
+      left_leg->Previous_Setpoint_Ankle_Pctrl = 0;
       left_leg->Dorsi_Setpoint_Ankle = 0;
       left_leg->Previous_Dorsi_Setpoint_Ankle = 0;
       left_leg->coef_in_3_steps = 0;
@@ -91,9 +95,16 @@ void receive_and_transmit()
       left_leg->num_3_steps = 0;
       left_leg->start_step = 0;
       left_leg->baseline_value = 0;
+      left_leg->PID_Setpoint = 0.0; //Makes sure that the next trial doesn't have any non-zero bias
+      left_leg->New_PID_Setpoint = 0.0;
+      left_leg->Old_PID_Setpoint = 0.0;
 
+
+      right_leg->p_steps->Setpoint = 0.0;
       right_leg->Setpoint_Ankle = 0;
       right_leg->Dorsi_Setpoint_Ankle = 0;
+      right_leg->Setpoint_Ankle_Pctrl = 0;
+      right_leg->Previous_Setpoint_Ankle_Pctrl = 0;
       right_leg->Previous_Setpoint_Ankle = 0;
       right_leg->Previous_Dorsi_Setpoint_Ankle = 0;
       right_leg->coef_in_3_steps = 0;
@@ -107,6 +118,11 @@ void receive_and_transmit()
       left_leg->New_PID_Setpoint = 0;
       right_leg->PID_Setpoint = 0;
       right_leg->New_PID_Setpoint = 0;
+      right_leg->start_step = 0;   
+      right_leg->PID_Setpoint = 0.0;
+      right_leg->New_PID_Setpoint = 0.0;
+      right_leg->Old_PID_Setpoint = 0.0;
+
 
       reset_count = 0;
 
@@ -138,9 +154,9 @@ void receive_and_transmit()
       break;
 
     case 'k':
-      CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
-      CURRENT_DIAGNOSTICS = 0;
-      MODEL_CONTROL = 0;
+//      CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
+//      CURRENT_DIAGNOSTICS = 0;
+//      MODEL_CONTROL = 0;
       break;
 
     case 'L':
@@ -167,28 +183,23 @@ void receive_and_transmit()
       break;
 
     case 'c':
-      flag_id = true; // TN 04/29/19
-      flag_pivot = false; // TN 04/29/19
-      flag_resist = false;
-      if (Flag_Prop_Ctrl == true) { // TN 04/29/19
-        Control_Mode = 4; // TN 04/29/19
-      }
+      Control_Mode = 4; // TN 04/29/19
       break;
 
     case 'l': // TN 04/29/19
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR; // TN 04/29/19
-      FLAG_ONE_TOE_SENSOR = true; // TN 04/29/19
-      Old_Control_Mode = Control_Mode; // TN 04/29/19
-      Flag_Prop_Ctrl = true; // TN 04/29/19
-      if (flag_pivot == true) {   // TN 04/29/19
-        Control_Mode = 3; // activate pivot PC // TN 04/29/19
-      } else if (flag_id == true) { // TN 04/29/19
-        Control_Mode = 4; // activate ID PC // TN 04/29/19
-      } else if (flag_resist == true) {
-        Control_Mode = 6; // Activate resistance control //GO 6/20/2020
-      }
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
+//      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR; // TN 04/29/19
+//      FLAG_ONE_TOE_SENSOR = true; // TN 04/29/19
+//      Old_Control_Mode = Control_Mode; // TN 04/29/19
+//      Flag_Prop_Ctrl = true; // TN 04/29/19
+//      if (flag_pivot == true) {   // TN 04/29/19
+//        Control_Mode = 3; // activate pivot PC // TN 04/29/19
+//      } else if (flag_id == true) { // TN 04/29/19
+//        Control_Mode = 4; // activate ID PC // TN 04/29/19
+//      } else if (flag_resist == true) {
+//        Control_Mode = 6; // Activate resistance control //GO 6/20/2020
+//      }
+//      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint; // TN 04/29/19
+//      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint; // TN 04/29/19
       break;
 
     case 'w':
@@ -233,56 +244,56 @@ void receive_and_transmit()
       break;
 
     case 'f':
-      memcpy(&MotorParams, holdOnPoint, 1); //Copy the value sent from MATLAB into the MotorParams variable to define motor parameters
-      if (MotorParams == 0) {
-        // 22mm 90W motor, 22HP gearbox
-
-        MaxSpeed = 15000; //RPM
-        TrqConstant = 14 / 1000; //Nm/A
-        GearRatio = 4617.0 / 52.0; //89:1 gear ratio
-        NomCurrent = 7.58; //A
-        MotorEff = 0.89;
-        GearboxEff = 0.59;
-        PulleyRatio = 40 / 10.3; //Small aluminum pulley, large sprocket
-        Serial.println("22mm 90W");
-
-      } else if (MotorParams == 1) {
-        // 22mm 120W motor, 32HP C gearbox
-
-        MaxSpeed = 15800; //RPM
-        TrqConstant = 13.5 / 1000; //Nm/A
-        GearRatio = 6877.0 / 56.0; //123:1 gear ratio
-        NomCurrent = 7.58; //A
-        MotorEff = 0.89;
-        GearboxEff = 0.7;
-        PulleyRatio = 30 / 10.3; //Small aluminum pulley, large sprocket
-        Serial.println("22mm 120W");
-
-      } else if (MotorParams == 2) {
-        // 30mm 200W motor, 32HP gearbox (51:1)
-
-        MaxSpeed = 16100; //RPM
-        TrqConstant = 13.6 / 1000; //Nm/A
-        GearRatio = 17576.0 / 343.0; //51:1 gear ratio
-        NomCurrent = 7.58; //A
-        MotorEff = 0.89;
-        GearboxEff = 0.7;
-        PulleyRatio = 74 / 10.3; //Large aluminum pulley, large sprocket
-        Serial.println("30mm 200W 51:1");
-
-      } else if (MotorParams == 3) {
-        // 30mm 200W motor, 32HP gearbox (103:1)
-
-        MaxSpeed = 16100; //RPM
-        TrqConstant = 13.6 / 1000; //Nm/A
-        GearRatio = 3588.0 / 35.0; //103:1 gear ratio
-        NomCurrent = 7.58; //A
-        MotorEff = 0.89;
-        GearboxEff = 0.7;
-        PulleyRatio = 30 / 13.25; //Carbon fiber pulley, motor pulley
-        Serial.println("30mm 200W 103:1");
-
-      }
+//      memcpy(&MotorParams, holdOnPoint, 1); //Copy the value sent from MATLAB into the MotorParams variable to define motor parameters
+//      if (MotorParams == 0) {
+//        // 22mm 90W motor, 22HP gearbox
+//
+//        MaxSpeed = 15000; //RPM
+//        TrqConstant = 14 / 1000; //Nm/A
+//        GearRatio = 4617.0 / 52.0; //89:1 gear ratio
+//        NomCurrent = 7.58; //A
+//        MotorEff = 0.89;
+//        GearboxEff = 0.59;
+//        PulleyRatio = 40 / 10.3; //Small aluminum pulley, large sprocket
+//        Serial.println("22mm 90W");
+//
+//      } else if (MotorParams == 1) {
+//        // 22mm 120W motor, 32HP C gearbox
+//
+//        MaxSpeed = 15800; //RPM
+//        TrqConstant = 13.5 / 1000; //Nm/A
+//        GearRatio = 6877.0 / 56.0; //123:1 gear ratio
+//        NomCurrent = 7.58; //A
+//        MotorEff = 0.89;
+//        GearboxEff = 0.7;
+//        PulleyRatio = 30 / 10.3; //Small aluminum pulley, large sprocket
+//        Serial.println("22mm 120W");
+//
+//      } else if (MotorParams == 2) {
+//        // 30mm 200W motor, 32HP gearbox (51:1)
+//
+//        MaxSpeed = 16100; //RPM
+//        TrqConstant = 13.6 / 1000; //Nm/A
+//        GearRatio = 17576.0 / 343.0; //51:1 gear ratio
+//        NomCurrent = 7.58; //A
+//        MotorEff = 0.89;
+//        GearboxEff = 0.7;
+//        PulleyRatio = 74 / 10.3; //Large aluminum pulley, large sprocket
+//        Serial.println("30mm 200W 51:1");
+//
+//      } else if (MotorParams == 3) {
+//        // 30mm 200W motor, 32HP gearbox (103:1)
+//
+//        MaxSpeed = 16100; //RPM
+//        TrqConstant = 13.6 / 1000; //Nm/A
+//        GearRatio = 3588.0 / 35.0; //103:1 gear ratio
+//        NomCurrent = 7.58; //A
+//        MotorEff = 0.89;
+//        GearboxEff = 0.7;
+//        PulleyRatio = 30 / 13.25; //Carbon fiber pulley, motor pulley
+//        Serial.println("30mm 200W 103:1");
+//
+//      }
 
       break;
 
@@ -332,91 +343,91 @@ void receive_and_transmit()
 
       break;
 
-    case 'O': // SS 8/6/2020
-      if (Trigger_left) {
-        left_leg->trig_number = 1;
-        left_leg->trig_time = millis();
-        left_leg->Approve_trigger = false;
-        left_leg->trig1_counter += 1;
-        *(data_to_send_point) = left_leg->trig1_counter;
-      } else {
-        right_leg->trig_number = 1;
-        right_leg->trig_time = millis();
-        right_leg->Approve_trigger = false;
-        right_leg->trig1_counter += 1;
-        *(data_to_send_point) = right_leg->trig1_counter;
-      }
-      send_command_message('O', data_to_send_point, 1);
-      break;
-
-    case 'd':// SS 8/6/2020
-      STIM_ACTIVATED = true;
-      break;
-
-    case'~':// SS 8/6/2020
-      STIM_ACTIVATED = false;
-      break;
-
-    case 'q':// SS 8/6/2020
-      if (Trigger_left) {
-        left_leg->trig_number = 2;
-        left_leg->trig_time = millis();
-        left_leg->Approve_trigger = false;
-        left_leg->trig2_counter += 1;
-        *(data_to_send_point) = left_leg->trig2_counter;
-      } else {
-        right_leg->trig_number = 2;
-        right_leg->trig_time = millis();
-        right_leg->Approve_trigger = false;
-        right_leg->trig2_counter += 1;
-        *(data_to_send_point) = right_leg->trig2_counter;
-      }
-      send_command_message('q', data_to_send_point, 1);
-      break;
-
-    case '[':// SS 8/6/2020
-      if (Trigger_left) {
-        left_leg->trig_number = 3;
-        left_leg->trig_time = millis();
-        left_leg->Approve_trigger = false;
-        left_leg->trig3_counter += 1;
-        *(data_to_send_point) = left_leg->trig3_counter;
-      } else {
-        right_leg->trig_number = 3;
-        right_leg->trig_time = millis();
-        right_leg->Approve_trigger = false;
-        right_leg->trig3_counter += 1;
-        *(data_to_send_point) = right_leg->trig3_counter;
-      }
-      send_command_message('[', data_to_send_point, 1);
-      break;
-
-    case ']':// SS 8/6/2020
-      if (Trigger_left) {
-        left_leg->trig_number = 4;
-        left_leg->trig_time = millis();
-        left_leg->Approve_trigger = false;
-        left_leg->trig4_counter += 1;
-        *(data_to_send_point) = left_leg->trig4_counter;
-      } else {
-        right_leg->trig_number = 4;
-        right_leg->trig_time = millis();
-        right_leg->Approve_trigger = false;
-        right_leg->trig4_counter += 1;
-        *(data_to_send_point) = right_leg->trig4_counter;
-      }
-      send_command_message(']', data_to_send_point, 1);
-      break;
-
-    case 'r':// SS 8/6/2020
-      Trigger_left = false;
-      right_leg->Approve_trigger = false;
-      break;
-
-    case 's':// SS 8/6/2020
-      Trigger_left = true;
-      left_leg->Approve_trigger = false;
-      break;
+//    case 'O': // SS 8/6/2020
+//      if (Trigger_left) {
+//        left_leg->trig_number = 1;
+//        left_leg->trig_time = millis();
+//        left_leg->Approve_trigger = false;
+//        left_leg->trig1_counter += 1;
+//        *(data_to_send_point) = left_leg->trig1_counter;
+//      } else {
+//        right_leg->trig_number = 1;
+//        right_leg->trig_time = millis();
+//        right_leg->Approve_trigger = false;
+//        right_leg->trig1_counter += 1;
+//        *(data_to_send_point) = right_leg->trig1_counter;
+//      }
+//      send_command_message('O', data_to_send_point, 1);
+//      break;
+//
+//    case 'd':// SS 8/6/2020
+//      STIM_ACTIVATED = true;
+//      break;
+//
+//    case'~':// SS 8/6/2020
+//      STIM_ACTIVATED = false;
+//      break;
+//
+//    case 'q':// SS 8/6/2020
+//      if (Trigger_left) {
+//        left_leg->trig_number = 2;
+//        left_leg->trig_time = millis();
+//        left_leg->Approve_trigger = false;
+//        left_leg->trig2_counter += 1;
+//        *(data_to_send_point) = left_leg->trig2_counter;
+//      } else {
+//        right_leg->trig_number = 2;
+//        right_leg->trig_time = millis();
+//        right_leg->Approve_trigger = false;
+//        right_leg->trig2_counter += 1;
+//        *(data_to_send_point) = right_leg->trig2_counter;
+//      }
+//      send_command_message('q', data_to_send_point, 1);
+//      break;
+//
+//    case '[':// SS 8/6/2020
+//      if (Trigger_left) {
+//        left_leg->trig_number = 3;
+//        left_leg->trig_time = millis();
+//        left_leg->Approve_trigger = false;
+//        left_leg->trig3_counter += 1;
+//        *(data_to_send_point) = left_leg->trig3_counter;
+//      } else {
+//        right_leg->trig_number = 3;
+//        right_leg->trig_time = millis();
+//        right_leg->Approve_trigger = false;
+//        right_leg->trig3_counter += 1;
+//        *(data_to_send_point) = right_leg->trig3_counter;
+//      }
+//      send_command_message('[', data_to_send_point, 1);
+//      break;
+//
+//    case ']':// SS 8/6/2020
+//      if (Trigger_left) {
+//        left_leg->trig_number = 4;
+//        left_leg->trig_time = millis();
+//        left_leg->Approve_trigger = false;
+//        left_leg->trig4_counter += 1;
+//        *(data_to_send_point) = left_leg->trig4_counter;
+//      } else {
+//        right_leg->trig_number = 4;
+//        right_leg->trig_time = millis();
+//        right_leg->Approve_trigger = false;
+//        right_leg->trig4_counter += 1;
+//        *(data_to_send_point) = right_leg->trig4_counter;
+//      }
+//      send_command_message(']', data_to_send_point, 1);
+//      break;
+//
+//    case 'r':// SS 8/6/2020
+//      Trigger_left = false;
+//      right_leg->Approve_trigger = false;
+//      break;
+//
+//    case 's':// SS 8/6/2020
+//      Trigger_left = true;
+//      left_leg->Approve_trigger = false;
+//      break;
 
 
 
@@ -436,12 +447,7 @@ void receive_and_transmit()
       break;
 
     case 'S':
-      flag_id = false;
-      flag_pivot = false;
-      flag_resist = true;
-      if (Flag_Prop_Ctrl == true) {
-        Control_Mode = 6;
-      }
+      Control_Mode = 6;
       break;
 
     case 'T':
@@ -501,71 +507,66 @@ void receive_and_transmit()
 
     case '+':
 
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = false;
-      FLAG_BALANCE = true;
-      Old_Control_Mode = Control_Mode;
-      Control_Mode = 2;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      FLAG_BALANCE = true;
+//      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
+//      FLAG_ONE_TOE_SENSOR = false;
+//      FLAG_BALANCE = true;
+//      Old_Control_Mode = Control_Mode;
+//      Control_Mode = 2;
+//      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+//      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+//      FLAG_BALANCE = true;
       break;
 
     case '=':
-      FLAG_ONE_TOE_SENSOR = OLD_FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = true;
-      FLAG_BALANCE = false;
-      Control_Mode = Old_Control_Mode;
-      right_leg->p_steps->torque_adj = false;
-      left_leg->p_steps->torque_adj = false;
-      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      FLAG_BALANCE = false;
+//      FLAG_ONE_TOE_SENSOR = OLD_FLAG_ONE_TOE_SENSOR;
+//      FLAG_ONE_TOE_SENSOR = true;
+//      FLAG_BALANCE = false;
+//      Control_Mode = Old_Control_Mode;
+//      right_leg->p_steps->torque_adj = false;
+//      left_leg->p_steps->torque_adj = false;
+//      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
+//      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
+//      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+//      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+//      FLAG_BALANCE = false;
       break;
 
 
     case '.':
-      flag_auto_KF = 1;
-      left_leg->KF = 1;
-      right_leg->KF = 1;
-      left_leg->ERR = 0;
-      right_leg->ERR = 0;
+//      flag_auto_KF = 1;
+//      left_leg->KF = 1;
+//      right_leg->KF = 1;
+//      left_leg->ERR = 0;
+//      right_leg->ERR = 0;
       break;
 
     case ';':
-      flag_auto_KF = 0;
-      left_leg->KF = 1;
-      right_leg->KF = 1;
-      left_leg->ERR = 0;
-      right_leg->ERR = 0;
+//      flag_auto_KF = 0;
+//      left_leg->KF = 1;
+//      right_leg->KF = 1;
+//      left_leg->ERR = 0;
+//      right_leg->ERR = 0;
       break;
 
     case '#':
-      flag_id = false; // TN 04/29/19
-      flag_pivot = true; // TN 04/29/19
-      flag_resist = false; // GO 06/20/2020
-      if (Flag_Prop_Ctrl == true) { // TN 04/29/19
-        Control_Mode = 3;
-      }
+      Control_Mode = 3;
       break;
 
 
     case '^':
-      Control_Mode = Old_Control_Mode;
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR; //GO 4/23/19
-      FLAG_ONE_TOE_SENSOR = true; // TN 7/5/19
-      right_leg->p_steps->torque_adj = false;
-      left_leg->p_steps->torque_adj = false;
-      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-      flag_id = false; // TN 05/13/19
-      flag_pivot = false; // TN 05/13/19
-      flag_resist = false; // GO 6/20/2020
-      Flag_Prop_Ctrl = false; // TN 04/29/19
+//      Control_Mode = Old_Control_Mode;
+//      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR; //GO 4/23/19
+//      FLAG_ONE_TOE_SENSOR = true; // TN 7/5/19
+//      right_leg->p_steps->torque_adj = false;
+//      left_leg->p_steps->torque_adj = false;
+//      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
+//      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
+//      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+//      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+//      flag_id = false; // TN 05/13/19
+//      flag_pivot = false; // TN 05/13/19
+//      flag_resist = false; // GO 6/20/2020
+//      Flag_Prop_Ctrl = false; // TN 04/29/19
       break;
 
     case 'B':
@@ -690,52 +691,54 @@ void receive_and_transmit()
 
     // Optimization ------------------------------------------------
 
+
     case '$':
-      if (Flag_HLO) {
-        memcpy(&left_leg->Setpoint_Ankle_Opt, holdOnPoint, 8); //Ankle torque setpoint for bang-bang
-        memcpy(&left_leg->T_Opt_p, holdOnPoint + 8, 8);       //Ankle torque rise time percentage for bang-bang
-        right_leg->Setpoint_Ankle_Opt = -left_leg->Setpoint_Ankle_Opt;
-        right_leg->T_Opt_p = left_leg->T_Opt_p;
-        Serial.println(left_leg->FLAG_UPDATE_VALUES);
-        left_leg->FLAG_UPDATE_VALUES = true;
-        right_leg->FLAG_UPDATE_VALUES = true;
-        Serial.println(left_leg->FLAG_UPDATE_VALUES);
-        Serial.print("Received these values from HLO : ");
-        Serial.print(left_leg->Setpoint_Ankle_Opt);
-        Serial.print(" , ");
-        Serial.println(left_leg->T_Opt_p);
-
-        left_leg->activate_in_3_steps = 1;
-        left_leg->num_3_steps = 0;
-        left_leg->first_step = 1;
-        left_leg->start_step = 0;
-
-        right_leg->activate_in_3_steps = 1;
-        right_leg->num_3_steps = 0;
-        right_leg->first_step = 1;
-        right_leg->start_step = 0;
-      }
+//      if (Flag_HLO) {
+//        memcpy(&left_leg->Setpoint_Ankle_Opt, holdOnPoint, 8); //Ankle torque setpoint for bang-bang
+//        memcpy(&left_leg->T_Opt_p, holdOnPoint + 8, 8);       //Ankle torque rise time percentage for bang-bang
+//        right_leg->Setpoint_Ankle_Opt = -left_leg->Setpoint_Ankle_Opt;
+//        right_leg->T_Opt_p = left_leg->T_Opt_p;
+//        Serial.println(left_leg->FLAG_UPDATE_VALUES);
+//        left_leg->FLAG_UPDATE_VALUES = true;
+//        right_leg->FLAG_UPDATE_VALUES = true;
+//        Serial.println(left_leg->FLAG_UPDATE_VALUES);
+//        Serial.print("Received these values from HLO : ");
+//        Serial.print(left_leg->Setpoint_Ankle_Opt);
+//        Serial.print(" , ");
+//        Serial.println(left_leg->T_Opt_p);
+//
+//        left_leg->activate_in_3_steps = 1;
+//        left_leg->num_3_steps = 0;
+//        left_leg->first_step = 1;
+//        left_leg->start_step = 0;
+//
+//        right_leg->activate_in_3_steps = 1;
+//        right_leg->num_3_steps = 0;
+//        right_leg->first_step = 1;
+//        right_leg->start_step = 0;
+//      }
+    break;  
 
     case '"':
-      if (Flag_HLO) {
-        left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
-        right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-        left_leg->Previous_Dorsi_Setpoint_Ankle = left_leg->Dorsi_Setpoint_Ankle;
-        right_leg->Previous_Dorsi_Setpoint_Ankle = right_leg->Dorsi_Setpoint_Ankle;
-        memcpy(&left_leg->Setpoint_Ankle, holdOnPoint, 8); //HLO proportional control setpoint
-        right_leg->Setpoint_Ankle = -left_leg->Setpoint_Ankle;
-        left_leg->activate_in_3_steps = 1;
-        left_leg->num_3_steps = 0;
-        left_leg->first_step = 1;
-        left_leg->start_step = 0;
-        right_leg->activate_in_3_steps = 1;
-        right_leg->num_3_steps = 0;
-        right_leg->first_step = 1;
-        right_leg->start_step = 0;
-        left_leg->FSR_baseline_FLAG = 1;                      //Retake the baseline every new setpoint
-        right_leg->FSR_baseline_FLAG = 1;
-        break;
-      }
+//      if (Flag_HLO) {
+//        left_leg->Previous_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+//        right_leg->Previous_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+//        left_leg->Previous_Dorsi_Setpoint_Ankle = left_leg->Dorsi_Setpoint_Ankle;
+//        right_leg->Previous_Dorsi_Setpoint_Ankle = right_leg->Dorsi_Setpoint_Ankle;
+//        memcpy(&left_leg->Setpoint_Ankle, holdOnPoint, 8); //HLO proportional control setpoint
+//        right_leg->Setpoint_Ankle = -left_leg->Setpoint_Ankle;
+//        left_leg->activate_in_3_steps = 1;
+//        left_leg->num_3_steps = 0;
+//        left_leg->first_step = 1;
+//        left_leg->start_step = 0;
+//        right_leg->activate_in_3_steps = 1;
+//        right_leg->num_3_steps = 0;
+//        right_leg->first_step = 1;
+//        right_leg->start_step = 0;
+//        left_leg->FSR_baseline_FLAG = 1;                      //Retake the baseline every new setpoint
+//        right_leg->FSR_baseline_FLAG = 1;
+//      }
+       break;
 
 
 
@@ -824,27 +827,27 @@ void receive_and_transmit()
 
     case 'j':   // TN
 
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = true;
-      Old_Control_Mode = Control_Mode;
-      Control_Mode = 5;  // Averaged torque profiles
+//      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
+//      FLAG_ONE_TOE_SENSOR = true;
+//      Old_Control_Mode = Control_Mode;
+//      Control_Mode = 5;  // Averaged torque profiles
 
 
       break;
 
     case 'o':   // TN 6/7/19
 
-      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
-      FLAG_ONE_TOE_SENSOR = true;
-      Old_Control_Mode = Control_Mode;
-      Control_Mode = 100;
-
-      right_leg->p_steps->torque_adj = false;
-      left_leg->p_steps->torque_adj = false;
-      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
-      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
-      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
+//      OLD_FLAG_ONE_TOE_SENSOR = FLAG_ONE_TOE_SENSOR;
+//      FLAG_ONE_TOE_SENSOR = true;
+//      Old_Control_Mode = Control_Mode;
+//      Control_Mode = 100;
+//
+//      right_leg->p_steps->torque_adj = false;
+//      left_leg->p_steps->torque_adj = false;
+//      *right_leg->p_Setpoint_Ankle = right_leg->p_steps->Setpoint;
+//      *left_leg->p_Setpoint_Ankle = left_leg->p_steps->Setpoint;
+//      *right_leg->p_Setpoint_Ankle_Pctrl = right_leg->p_steps->Setpoint;
+//      *left_leg->p_Setpoint_Ankle_Pctrl = left_leg->p_steps->Setpoint;
 
       break;
   }
