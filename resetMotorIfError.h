@@ -14,6 +14,6 @@ int time_drivers_are_off = 0;
 int wait_to_allow_for_error_check = 0;
 bool count_wait_to_allow_for_error_check = false;
 void resetMotorIfError();
-int reset_count = 0;
+unsigned int reset_count = 0;
 
 #endif
