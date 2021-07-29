@@ -170,7 +170,7 @@ void update_GUI() {
     send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
     voltageTimerCount = 0;
     //Motor reset Count
-    errorCount[0] = reset_count * 100;
+    errorCount[0] = reset_count;
     send_command_message('w', errorCount, 1);
     callback_thread.set_priority(osPriorityAboveNormal);
   }
