@@ -122,5 +122,5 @@ int Cal = 0x5000;             // Calibration value in hex. Cal = 0.04096/(Curren
  double voltAlpha = 0.001;
 
  // Torque Offsets
- double trqOffsetR = -0.929;  //DEFINE TRANSDUCER OFFSET HERE S10
- double trqOffsetL = -1.119;  //DEFINE TRANSDUCER OFFSET HERE S11
+ double trqOffsetR = -1.219;  //DEFINE TRANSDUCER OFFSET HERE S07
+ double trqOffsetL = -1.503;  //DEFINE TRANSDUCER OFFSET HERE S08

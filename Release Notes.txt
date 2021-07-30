@@ -48,6 +48,7 @@ Minor Updates
 
 2. Reset baseline values on end trial. 
 
+3. Lowered Auto_KF maximum value.
 
 ====
 V1.2
