@@ -98,6 +98,7 @@ void receive_and_transmit()
       left_leg->PID_Setpoint = 0.0; //Makes sure that the next trial doesn't have any non-zero bias
       left_leg->New_PID_Setpoint = 0.0;
       left_leg->Old_PID_Setpoint = 0.0;
+      left_leg->KF = 1.0;
 
 
       right_leg->p_steps->Setpoint = 0.0;
@@ -113,15 +114,13 @@ void receive_and_transmit()
       right_leg->num_3_steps = 0;
       right_leg->start_step = 0;
       right_leg->baseline_value = 0;
-
-      left_leg->PID_Setpoint = 0; //Makes sure that the next trial doesn't have any non-zero bias
-      left_leg->New_PID_Setpoint = 0;
       right_leg->PID_Setpoint = 0;
       right_leg->New_PID_Setpoint = 0;
       right_leg->start_step = 0;   
       right_leg->PID_Setpoint = 0.0;
       right_leg->New_PID_Setpoint = 0.0;
       right_leg->Old_PID_Setpoint = 0.0;
+      right_leg->KF = 1.0;
 
 
       reset_count = 0;
@@ -209,12 +208,14 @@ void receive_and_transmit()
     case 'w':
       //Motors off command
       flag_motor_error_check = false;
+      flag_auto_KF = false;
       digitalWrite(onoff, LOW);
       break;
 
     case 'x':
       //Motors on command
       flag_motor_error_check = true;
+      flag_auto_KF = true;
       digitalWrite(onoff, HIGH);
       break;
 

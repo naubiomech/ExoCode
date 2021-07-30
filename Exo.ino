@@ -284,7 +284,7 @@ void rotate_motor() {
     pid(left_leg, left_leg->Average_Trq);
     pid(right_leg, right_leg->Average_Trq);
 
-    if (flag_auto_KF == 1) {
+    if (flag_auto_KF) {
       Auto_KF(left_leg, Control_Mode);
       Auto_KF(right_leg, Control_Mode);
     }
