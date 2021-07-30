@@ -14,8 +14,8 @@ void setupBLE()
   if (BLE.begin())
   {
     //Advertised name and service
-    BLE.setLocalName("EXOBLE_4"); //SET DEVICE ID HERE "EXOBLE_#"
-    BLE.setDeviceName("EXOBLE_4"); //SET DEVICE ID HERE "EXOBLE_#"
+    BLE.setLocalName("EXOBLE_3"); //SET DEVICE ID HERE "EXOBLE_#"
+    BLE.setDeviceName("EXOBLE_3"); //SET DEVICE ID HERE "EXOBLE_#"
     BLE.setAdvertisedService(UARTService);
     //Add chars to service
     UARTService.addCharacteristic(TXChar);

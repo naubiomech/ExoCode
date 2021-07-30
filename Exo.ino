@@ -35,7 +35,7 @@ const unsigned int zero = 2048; //1540;
 #include <Wire.h>
 #include <mbed.h>
 #include <rtos.h>
-
+ 
 #include "Parameters.h"
 #include "Board.h"
 #include "Leg.h"
@@ -207,11 +207,12 @@ void calculate_leg_average(Leg* leg, double alpha) {
     // Torque Poll and EMA Filter
     leg->Average_Trq = ema_with_context(leg->Prev_Trq,get_torq(leg),alpha);
     leg->Prev_Trq = leg->Average_Trq;
-    
-    if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
-      leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
-    }
   }
+  
+  if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
+      leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
+  }
+  
   
   leg->p_steps->torque_average = leg->Average_Trq;
   
@@ -283,7 +284,7 @@ void rotate_motor() {
     pid(left_leg, left_leg->Average_Trq);
     pid(right_leg, right_leg->Average_Trq);
 
-    if (streamTimerCount == 1 && flag_auto_KF == 1) {
+    if (flag_auto_KF == 1) {
       Auto_KF(left_leg, Control_Mode);
       Auto_KF(right_leg, Control_Mode);
     }

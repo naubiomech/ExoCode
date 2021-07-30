@@ -38,6 +38,8 @@ Bug Fixes
  
 3. Fixed improper board definition that resulted in persistent motor driver errors.  
 
+4. Fixed auto tracking correction (Auto_KF). Requires update of PID_V2 library.
+
 -------------
 Minor Updates
 -------------

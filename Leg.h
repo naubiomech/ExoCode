@@ -118,7 +118,7 @@ struct Leg {
   double PID_Setpoint, Input, Output;
   PID pid = PID(&Input, &Output, &PID_Setpoint, kp, ki, kd, DIRECT);
   
-
+        
   double Setpoint_Ankle, Setpoint_Ankle_Pctrl;
   double Previous_Setpoint_Ankle = 0;
   double Previous_Setpoint_Ankle_Pctrl = 0;
