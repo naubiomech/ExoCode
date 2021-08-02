@@ -120,9 +120,8 @@ void setup()
   delay(100);
 
   int startVolt = readBatteryVoltage(); //Read the startup battery voltage
-  ////Serial.println(startVolt);
   batteryData[0] = startVolt/10;
-  send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware, needs fixing!
+  send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
 
   // Torque cal
   torque_calibration(); //Sets a torque zero on startup  

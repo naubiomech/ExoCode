@@ -24,7 +24,7 @@
 //Error alpha
 #define ERROR_ALPHA           0.005
 //Tracking error rate in (N*m)/s
-#define TRACKING_RATE_THRESH  1.5 * TRACKING_THRESH / CONTROL_TIME_STEP
+#define TRACKING_RATE_THRESH  2 * TRACKING_THRESH / CONTROL_TIME_STEP
 //Max torque setpoint
 #define MAX_TORQUE            35
 //Max torque rate
@@ -35,7 +35,7 @@ inline void check_for_torque_faults(Leg* leg);
 inline void tracking_check(Leg* leg);
 
 
-void detect_faults() {
+inline void detect_faults() {
   check_for_torque_faults(right_leg);
   check_for_torque_faults(left_leg);
 }
