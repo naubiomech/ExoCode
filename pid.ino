@@ -1,28 +1,9 @@
 
-// In the pid function there's a check on torque reading. If the torque measured is >25 for 10 times it means we have a problem with the cable and we stop the system.
-// Changing the number 10 we increase or decrease the sensitivity of the system to false positives at the same time we introduce a delay in the stopping action.
-// if the torque measured <25 the counter is reset.
+/*
+ * This function takes a torque input, computes the PID value (dependent on the control law), then turns the motors. 
+ */
 
 void pid(Leg* leg, double input) {
-  if (!CURRENT_CONTROL) {
-    if ((abs(input) > 35)) //Was 25, increased to accomodate large exo
-    {
-      leg->torque_error_counter++;
-      if (leg->torque_error_counter >= 10) {
-        //leg->KF = 0;
-        double old_L_state_L = leg->state;
-        leg->state = 9;
-        send_data_message_wc();
-
-        digitalWrite(onoff, LOW);
-        stream = 0;
-        leg->state = old_L_state_L;
-        leg->torque_error_counter = 0;
-      }
-
-    }//abs(input) > 35
-  }//!CURRENT_CONTROL
-
   if (CURRENT_CONTROL && leg->PID_Setpoint != 0 && MotorParams != 100 && leg->state == 3) { //Simple Open-Loop Control
     //leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio * MotorEff * GearboxEff))/NomCurrent*2048) + leg->zero; //Setpoint/(Motor torque constant, gear reduction, pulley reduction, motor eff, gearbox eff)
     //leg->Vol = (0.37293*(leg->PID_Setpoint))/NomCurrent*2048.0; //Regression control, torque only

@@ -11,6 +11,11 @@
  * torque response are computed, and passed through an EMA filter. The averaged error is used compared
  * to the tracking_thresh define and, if greater, an error is thrown. 
  */
+ inline void turn_off_motors() {
+  flag_motor_error_check = false;
+  flag_auto_KF = false;
+  digitalWrite(onoff, LOW);
+ }
 
 //Tracking error in N*m
 #define TRACKING_THRESH       9.0
@@ -19,22 +24,28 @@
 //Error alpha
 #define ERROR_ALPHA           0.005
 //Tracking error rate in (N*m)/s
-#define TRACKING_RATE_THRESH 1.5 * TRACKING_THRESH / CONTROL_TIME_STEP
+#define TRACKING_RATE_THRESH  1.5 * TRACKING_THRESH / CONTROL_TIME_STEP
+//Max torque setpoint
+#define MAX_TORQUE            35
+//Max torque rate
+#define MAX_TORQUE_RATE       MAX_TORQUE / CONTROL_TIME_STEP
 
 //Protocols
-void check_for_torque_faults(Leg* leg);
-int tracking_check(Leg* leg);
+inline void check_for_torque_faults(Leg* leg);
+inline void tracking_check(Leg* leg);
+
 
 void detect_faults() {
   check_for_torque_faults(right_leg);
   check_for_torque_faults(left_leg);
 }
 
-void check_for_torque_faults(Leg* leg) {
+inline void check_for_torque_faults(Leg* leg) {
   tracking_check(leg);
+  torque_check(leg);
 }
-
-int tracking_check(Leg* leg) {
+  
+inline void tracking_check(Leg* leg) {
   //Compare smoothed setpoint with measured torque
   static double filtered_sp_L = 0;
   static double filtered_sp_R = 0;
@@ -53,9 +64,7 @@ int tracking_check(Leg* leg) {
     if (((sign * filtered_error_R) > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
       if (sign * filtered_error_R > TRACKING_THRESH) r_state += 1;
       if (sign * track_error_rate > TRACKING_RATE_THRESH) r_fsr += 1;
-      flag_motor_error_check = false;
-      flag_auto_KF = false;
-      digitalWrite(onoff, LOW);
+      turn_off_motors();
     }
     track_error_R = filtered_error_R;
     r_set = filtered_error_R; 
@@ -68,13 +77,34 @@ int tracking_check(Leg* leg) {
     if (((sign * filtered_error_L) > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
       if (sign * filtered_error_L > TRACKING_THRESH) l_state += 1;
       if (sign * track_error_rate > TRACKING_RATE_THRESH) l_fsr += 1;
-      flag_motor_error_check = false;
-      flag_auto_KF = false;
-      digitalWrite(onoff, LOW);
+      turn_off_motors();
     }
     track_error_L = filtered_error_L;
     l_set = filtered_error_L;
   }
+}
+
+void torque_check(Leg* leg) {
+  double abs_trq = abs(leg->Average_Trq);
+  /* Absolute check */
+  if ((abs_trq > MAX_TORQUE) && !CURRENT_CONTROL) {
+    leg->torque_error_counter++;
+    if (leg->torque_error_counter >= 10) {
+      turn_off_motors();
+      leg->torque_error_counter = 0;
+    }
+  }
+ 
+  /* Rate check */
+  static int count = 0;
+  if (((abs_trq - leg->previous_torque_average) / CONTROL_TIME_STEP) > MAX_TORQUE_RATE) {
+    count++;
+    if (count >= 10) {
+      turn_off_motors();
+      count = 0;
+    }
+  }
+  leg->previous_torque_average = abs_trq;
 }
 
 #endif
