@@ -20,6 +20,13 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
+double r_set = 0;
+double l_set = 0;
+double r_state = 0;
+double l_state = 0;
+double r_fsr = 0;
+double l_fsr = 0;
+
 #define VERSION 314
 #define BOARD_VERSION DUAL_BOARD_REV6
 
@@ -46,7 +53,7 @@ const unsigned int zero = 2048; //1540;
 #include "resetMotorIfError.h"
 #include "ATP.h"
 #include "Trial_Data.h"
-//#include "Ambulation_SM.h"
+#include "Ambulation_SM.h"
 #include "fault_detection.h"
 #include "ema_filter.h"
 //----------------------------------------------------------------------------------
@@ -65,7 +72,7 @@ void control_loop() {
   while (true) {
     resetMotorIfError();
     calculate_averages();
-    //detect_faults();
+    detect_faults();
     rotate_motor();
     //amb_sm.tick();
     rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
