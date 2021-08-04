@@ -159,7 +159,7 @@ void loop()
 
 //---------------------------------------------------------------------------------
 void update_GUI() {
-    //Real Time data
+  //Real Time data
   if (stream)
     {
       counter_msgs++;

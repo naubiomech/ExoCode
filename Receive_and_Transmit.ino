@@ -139,6 +139,10 @@ void receive_and_transmit()
     case 'H':
       //Calibrate torque sensors
       torque_calibration();
+      /* Send torque calibration values */
+      trqCalData[0] = right_leg->torque_calibration_value;
+      trqCalData[1] = left_leg->torque_calibration_value;
+      send_command_message('H', trqCalData, 2);
       break;
 
     case 'K':
