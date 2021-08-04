@@ -1,28 +1,21 @@
+#include "Msg_functions.h"
 
-//Real time data being sent to the GUI
-void send_data_message_wc() //with COP
-{
+inline void send_thermo_message(double temp) {
   //Right Leg
-  data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
-  data_to_send[1] = right_leg->state / 3;
-  data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
+  data_to_send[0] = 0;
+  data_to_send[1] = 0;
+  data_to_send[2] = 0;
 
   //Left Leg
-  data_to_send[3] = (left_leg->sign * left_leg->Average_Trq);
-  data_to_send[4] = left_leg->state / 3;
-  data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
+  data_to_send[3] = 0;
+  data_to_send[4] = 0;
+  data_to_send[5] = temp;
 
-  //Normalized FSR values
-  if (right_leg->baseline_value != 0 && left_leg->baseline_value != 0) {
-    data_to_send[6] = (right_leg->FSR_Toe_Average) / right_leg->baseline_value;
-    data_to_send[7] = (left_leg->FSR_Toe_Average) / left_leg->baseline_value;
-  } else {
-    data_to_send[6] = 0;
-    data_to_send[7] = 0;
-  }
+  data_to_send[6] = 0;
+  data_to_send[7] = 0;
+
   send_command_message('?', data_to_send, 8);
 }
-
 
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
 {
