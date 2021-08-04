@@ -27,7 +27,7 @@
 #define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
 #define COMMS_LOOP_HZ             50               
 //The digital pin connected to the motor on/off swich
-const unsigned int zero = 2048; //1540;
+const unsigned int zero = 2048; 
 
 #include <ArduinoBLE.h>
 #include <elapsedMillis.h>
