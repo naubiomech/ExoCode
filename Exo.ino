@@ -42,9 +42,13 @@ byte *holdOnPoint = &holdon[0];
 #include "ema_filter.h"
 //----------------------------------------------------------------------------------
 
+const double alpha = 0.1;
+const uint8_t therm_analog_pin = TORQUE_SENSOR_LEFT_ANKLE_PIN;
+
 inline double sample_thermocouple(unsigned int analogPin) {
   double voltage = analogRead(analogPin)*3.3/4096.0;
-  return (voltage - 1.25) / 0.005;
+  double deg_C = (voltage - 1.25) / 0.005;
+  return (deg_C * 9/5) + 32;
 }
 
 
@@ -75,9 +79,10 @@ void loop()
   BLE.poll();
   
   if (stream) {
-    double temp_deg_F = sample_thermocouple(FSR_SENSE_LEFT_TOE_PIN);
-    Serial.println(temp_deg_F);
-    send_thermo_message(temp_deg_F);
+    static double temp = sample_thermocouple(therm_analog_pin);
+    temp = ema_with_context(temp, sample_thermocouple(therm_analog_pin), alpha);
+    Serial.println(temp);
+    send_thermo_message(temp);
   }
   
   rtos::ThisThread::sleep_for(1000 / COMMS_LOOP_HZ);
