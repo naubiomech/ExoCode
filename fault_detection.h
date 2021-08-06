@@ -1,23 +1,19 @@
 #include "ema_filter.h"
+#include "motor_utils.h"
 
 
 #ifndef FAULT_DETECTION
 #define FAULT_DETECTION
-/*
- * The fault detection is currently performed in tracking_check(). If the exo is tracking poorly,
+
+/* The fault detection is currently performed in tracking_check() and torque_check(). If the exo is tracking poorly,
  * then the torque sensor may be bad. The tunable parameters are included as defines below. The 
  * tracking_check() function performs the error checking. By applying an EMA filter on the setpoint
  * the torque response may be approximated. The error between this approximated value and the actual
- * torque response are computed, and passed through an EMA filter. The averaged error is used compared
+ * torque response are computed, and passed through an EMA filter. The averaged error is compared
  * to the tracking_thresh define and, if greater, an error is thrown and the motors are turned off. In
  * the event that a false positive is thrown the operator may turn the motors off and on with the 
  * pause/play functionality on the app. 
  */
- inline void turn_off_motors() {
-  flag_motor_error_check = false;
-  flag_auto_KF = false;
-  digitalWrite(onoff, LOW);
- }
 
 //Tracking error in N*m
 #define TRACKING_THRESH       10.0
@@ -30,7 +26,7 @@
 //Max torque setpoint
 #define MAX_TORQUE            35
 //Max torque rate
-#define MAX_TORQUE_RATE       MAX_TORQUE / CONTROL_TIME_STEP
+#define MAX_TORQUE_RATE       20 * MAX_TORQUE / CONTROL_TIME_STEP
 
 //Protocols
 inline void check_for_torque_faults(Leg* leg);
@@ -66,12 +62,10 @@ inline void tracking_check(Leg* leg) {
     double track_error_rate = abs((current_track_error - track_error_R) / CONTROL_TIME_STEP);
     filtered_error_R *= sign;
     if ((filtered_error_R > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
-      //if (filtered_error_R > TRACKING_THRESH) r_state += 1;
-      //if (track_error_rate > TRACKING_RATE_THRESH) r_fsr += 1;
-      //turn_off_motors();
+      Serial.println("Tracking R");
+      //change_motor_state(false);
     }
-    track_error_R = filtered_error_R;
-    //r_set = filtered_error_R; 
+    track_error_R = filtered_error_R; 
   } 
   else {
     filtered_sp_L = ema_with_context(filtered_sp_L, left_leg->PID_Setpoint, EST_TRQ_ALPHA);
@@ -80,12 +74,10 @@ inline void tracking_check(Leg* leg) {
     double track_error_rate = abs((filtered_error_L - track_error_L) / CONTROL_TIME_STEP);
     filtered_error_L *= sign;
     if ((filtered_error_L > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
-      //if (filtered_error_L > TRACKING_THRESH) l_state += 1;
-      //if (track_error_rate > TRACKING_RATE_THRESH) l_fsr += 1;
-      //turn_off_motors();
+      Serial.println("Tracking L");
+      //change_motor_state(false);
     }
     track_error_L = filtered_error_L;
-    //l_set = filtered_error_L;
   }
 }
 
@@ -95,7 +87,8 @@ void torque_check(Leg* leg) {
   if ((abs_trq > MAX_TORQUE) && !CURRENT_CONTROL) {
     leg->torque_error_counter++;
     if (leg->torque_error_counter >= 10) {
-      turn_off_motors();
+      Serial.println("Torque MAX");
+      //change_motor_state(false);
       leg->torque_error_counter = 0;
     }
   }
@@ -105,7 +98,8 @@ void torque_check(Leg* leg) {
   if (((abs_trq - leg->previous_torque_average) / CONTROL_TIME_STEP) > MAX_TORQUE_RATE) {
     count++;
     if (count >= 10) {
-      //turn_off_motors();
+      Serial.println("Torque RATE");
+      //change_motor_state(false);
       count = 0;
     }
   }

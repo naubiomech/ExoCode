@@ -4,6 +4,10 @@
 #ifndef IMU_H
 #define IMU_H
 
+/*
+ * 
+ */
+
 #include <Arduino_LSM9DS1.h>
 #include "ema_filter.h"
 //Typedef for holding callback functions
@@ -18,24 +22,24 @@ class Ambulation_SM {
     }
   }
 
-  void tick() {
+  inline void tick() {
     float x, y, z;
     if (IMU.accelerationAvailable()) {
       if (IMU.readAcceleration(x, y, z)) {
         y = y * -1;
         correct_sagittal_angle(y, z);
-        float result = compute_resultant(x, y, z);
-        update_threshold(result);
-        check_state(result);
+        compute_resultant(x, y, z);
+        update_threshold();
+        check_state();
       }
     }
   }
 
-  void attach_fe_cb(cb_t cb) {
+  inline void attach_fe_cb(cb_t cb) {
     fe_cb = cb;
     if ((fe_cb != NULL) && (re_cb != NULL)) cbs_set = true;
   }
-  void attach_re_cb(cb_t cb) {
+  inline void attach_re_cb(cb_t cb) {
     re_cb = cb;
     if ((fe_cb != NULL) && (re_cb != NULL)) cbs_set = true;
   }
@@ -45,9 +49,16 @@ class Ambulation_SM {
   const float thrsh_offset_k = 0.075f;
   const unsigned long int reset_duration_k = CONTROL_LOOP_HZ * 3;
 
+  //Resultant acceleration
+  float resultant = 0;
+
+  //Estimated speed [m/s]
+  float est_speed = 0;
+
   //Dynamic Threshold
   float threshold = 0.0f;
   float avg_res = 0;
+  float alpha_for_filter = 0.2;
   float alpha_for_avg = 0.05;
   float st_dev = 0;
 
@@ -65,19 +76,17 @@ class Ambulation_SM {
   unsigned long int last_reset;
  
   //Private Functions
-  float compute_resultant(float x, float y, float z) {
+  inline void compute_resultant(float x, float y, float z) {
     /* Must subtract by abs(x) because the toy model is two dimensional */
-    return (sqrt(y*y + z*z) - abs(x));
+    resultant = ema_with_context(resultant, (sqrt(y*y + z*z) - abs(x)), alpha_for_filter);
   }
 
-  void update_threshold(float resultant) {
+  inline void update_threshold() {
     avg_res = ema_with_context(avg_res, resultant, alpha_for_avg);
     threshold = thrsh_offset_k + abs(avg_res);
   }
 
-  void check_state(float resultant) {
-    r_fsr = abs(resultant);
-    r_state = threshold;
+  inline void check_state() {
     /* If there is a large acceleration, the user is walking */
     if (abs(resultant) > threshold) {
       last_reset = millis();

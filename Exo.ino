@@ -20,13 +20,6 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
-double r_set = 0;
-double l_set = 0;
-double r_state = 0;
-double l_state = 0;
-double r_fsr = 0;
-double l_fsr = 0;
-
 #define VERSION 314
 #define BOARD_VERSION DUAL_BOARD_REV6
 
@@ -35,6 +28,7 @@ double l_fsr = 0;
 #define COMMS_LOOP_HZ             50               
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048; //1540;
+bool motors_on = false;
 
 #include <ArduinoBLE.h>
 #include <elapsedMillis.h>
@@ -56,24 +50,26 @@ const unsigned int zero = 2048; //1540;
 #include "Ambulation_SM.h"
 #include "fault_detection.h"
 #include "ema_filter.h"
+#include "motor_utils.h"
 //----------------------------------------------------------------------------------
 rtos::Thread callback_thread(osPriorityNormal);
 Ambulation_SM amb_sm;
 
 void upon_walking() {
-  l_state = 1;
+  change_motor_state(true);
 }
 
 void upon_standing() {
-  l_state = 0;
+  change_motor_state(false);
 }
 
 void control_loop() {
   while (true) {
     resetMotorIfError();
     calculate_averages();
-    //MARK: If the motors are paused disable error checking. 
-    detect_faults();
+    if (motors_on) { 
+      detect_faults();
+    }
     rotate_motor();
     amb_sm.tick();
     rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);

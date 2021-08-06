@@ -12,9 +12,6 @@ void send_data_message_wc() //with COP
   data_to_send[4] = left_leg->state / 3;
   data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
 
-  //data_to_send[6] = r_fsr;
-  //data_to_send[7] = l_fsr;
-  
   //Normalized FSR values
   if (right_leg->baseline_value != 0 && left_leg->baseline_value != 0) {
     data_to_send[6] = (right_leg->FSR_Toe_Average) / right_leg->baseline_value;
