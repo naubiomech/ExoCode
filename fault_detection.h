@@ -35,6 +35,7 @@
 //Protocols
 inline void check_for_torque_faults(Leg* leg);
 inline void tracking_check(Leg* leg);
+void torque_check(Leg* leg);
 
 
 inline void detect_faults() {
@@ -65,12 +66,12 @@ inline void tracking_check(Leg* leg) {
     double track_error_rate = abs((current_track_error - track_error_R) / CONTROL_TIME_STEP);
     filtered_error_R *= sign;
     if ((filtered_error_R > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
-      if (filtered_error_R > TRACKING_THRESH) r_state += 1;
-      if (track_error_rate > TRACKING_RATE_THRESH) r_fsr += 1;
+      //if (filtered_error_R > TRACKING_THRESH) r_state += 1;
+      //if (track_error_rate > TRACKING_RATE_THRESH) r_fsr += 1;
       //turn_off_motors();
     }
     track_error_R = filtered_error_R;
-    r_set = filtered_error_R; 
+    //r_set = filtered_error_R; 
   } 
   else {
     filtered_sp_L = ema_with_context(filtered_sp_L, left_leg->PID_Setpoint, EST_TRQ_ALPHA);
@@ -79,12 +80,12 @@ inline void tracking_check(Leg* leg) {
     double track_error_rate = abs((filtered_error_L - track_error_L) / CONTROL_TIME_STEP);
     filtered_error_L *= sign;
     if ((filtered_error_L > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
-      if (filtered_error_L > TRACKING_THRESH) l_state += 1;
-      if (track_error_rate > TRACKING_RATE_THRESH) l_fsr += 1;
+      //if (filtered_error_L > TRACKING_THRESH) l_state += 1;
+      //if (track_error_rate > TRACKING_RATE_THRESH) l_fsr += 1;
       //turn_off_motors();
     }
     track_error_L = filtered_error_L;
-    l_set = filtered_error_L;
+    //l_set = filtered_error_L;
   }
 }
 
@@ -104,7 +105,7 @@ void torque_check(Leg* leg) {
   if (((abs_trq - leg->previous_torque_average) / CONTROL_TIME_STEP) > MAX_TORQUE_RATE) {
     count++;
     if (count >= 10) {
-      turn_off_motors();
+      //turn_off_motors();
       count = 0;
     }
   }

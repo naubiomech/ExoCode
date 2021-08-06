@@ -42,8 +42,8 @@ class Ambulation_SM {
  
   private:
   //Const(s)
-  const float thrsh_offset_k = 0.1f;
-  const unsigned long int reset_duration_k = CONTROL_LOOP_HZ * 1.2;
+  const float thrsh_offset_k = 0.075f;
+  const unsigned long int reset_duration_k = CONTROL_LOOP_HZ * 3;
 
   //Dynamic Threshold
   float threshold = 0.0f;
@@ -76,6 +76,8 @@ class Ambulation_SM {
   }
 
   void check_state(float resultant) {
+    r_fsr = abs(resultant);
+    r_state = threshold;
     /* If there is a large acceleration, the user is walking */
     if (abs(resultant) > threshold) {
       last_reset = millis();

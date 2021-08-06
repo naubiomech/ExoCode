@@ -4,19 +4,18 @@ void send_data_message_wc() //with COP
 {
   //Right Leg
   data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
-  data_to_send[1] = r_state;//right_leg->state / 3;
-  data_to_send[2] = r_set;//(right_leg->sign * right_leg->PID_Setpoint);
+  data_to_send[1] = right_leg->state / 3;
+  data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
 
   //Left Leg
   data_to_send[3] = (left_leg->sign * left_leg->Average_Trq);
-  data_to_send[4] = l_state;//left_leg->state / 3;
-  data_to_send[5] = l_set;//(left_leg->sign * left_leg->PID_Setpoint);
+  data_to_send[4] = left_leg->state / 3;
+  data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
 
-  data_to_send[6] = r_fsr;
-  data_to_send[7] = l_fsr;
+  //data_to_send[6] = r_fsr;
+  //data_to_send[7] = l_fsr;
   
   //Normalized FSR values
-  /*
   if (right_leg->baseline_value != 0 && left_leg->baseline_value != 0) {
     data_to_send[6] = (right_leg->FSR_Toe_Average) / right_leg->baseline_value;
     data_to_send[7] = (left_leg->FSR_Toe_Average) / left_leg->baseline_value;
@@ -24,7 +23,7 @@ void send_data_message_wc() //with COP
     data_to_send[6] = 0;
     data_to_send[7] = 0;
   }
-  */
+
   send_command_message('?', data_to_send, 8);
 }
 

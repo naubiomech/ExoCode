@@ -58,23 +58,24 @@ const unsigned int zero = 2048; //1540;
 #include "ema_filter.h"
 //----------------------------------------------------------------------------------
 rtos::Thread callback_thread(osPriorityNormal);
-//Ambulation_SM amb_sm;
+Ambulation_SM amb_sm;
 
 void upon_walking() {
-  Serial.println("Walking");
+  l_state = 1;
 }
 
 void upon_standing() {
-  Serial.println("Standing");
+  l_state = 0;
 }
 
 void control_loop() {
   while (true) {
     resetMotorIfError();
     calculate_averages();
+    //MARK: If the motors are paused disable error checking. 
     detect_faults();
     rotate_motor();
-    //amb_sm.tick();
+    amb_sm.tick();
     rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
   }
 }
@@ -127,9 +128,9 @@ void setup()
   torque_calibration(); //Sets a torque zero on startup  
 
   //Initialize the standing/walking state detector and provide callback functions
-  //amb_sm.init();
-  //amb_sm.attach_fe_cb(upon_standing);
-  //amb_sm.attach_re_cb(upon_walking);
+  amb_sm.init();
+  amb_sm.attach_fe_cb(upon_standing);
+  amb_sm.attach_re_cb(upon_walking);
   
   right_leg->Prev_Trq = get_torq(right_leg); //Initial conditions for EMA torque signal filter
   left_leg->Prev_Trq = get_torq(left_leg); 
