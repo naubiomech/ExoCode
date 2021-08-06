@@ -171,8 +171,10 @@ void update_GUI() {
     
   //Battery voltage and reset motor count data
   if (voltageTimerCount >= voltageTimerCountNum) {
-    int batteryVoltage = readBatteryVoltage();
-    batteryData[0] = batteryVoltage/10; //convert from milli
+    static int batteryVoltage = readBatteryVoltage();
+    int filtered_voltage = ema_with_context(batteryVoltage, readBatteryVoltage(), 0.0001);
+    batteryVoltage = filtered_voltage;
+    batteryData[0] = filtered_voltage/10; //convert from milli
     callback_thread.set_priority(osPriorityNormal);
     send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
     voltageTimerCount = 0;
