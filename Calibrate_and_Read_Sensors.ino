@@ -197,7 +197,7 @@ double ankle_angle(Leg* leg){
   double zero = leg->angle_zero;
 
   double hall_voltage = 3.3*((analogRead(leg->ankle_angle_pin)-2048.0)/4096.0) - zero; //Offset by zero 
-  double rawAngle = -68.873*hall_voltage; //Raw voltage regression for comparisons
+  double rawAngle = 68.873*hall_voltage; //Raw voltage regression for comparisons
 
   return rawAngle;
 }

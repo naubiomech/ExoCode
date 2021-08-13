@@ -70,9 +70,11 @@ void send_data_message_wc() //with COP
 //    }'
 
     data_to_send[10] = current(right_leg->motor_current_pin);
-    data_to_send[11] = right_leg->sign * motor_speed(right_leg->motor_speed_pin);
+    //data_to_send[11] = right_leg->sign * motor_speed(right_leg->motor_speed_pin);
+    data_to_send[11] = right_leg->rawAnkleSpeed;
     data_to_send[12] = current(left_leg->motor_current_pin);
-    data_to_send[13] = left_leg->sign * motor_speed(left_leg->motor_speed_pin);
+    //data_to_send[13] = left_leg->sign * motor_speed(left_leg->motor_speed_pin);
+    data_to_send[13] = left_leg->rawAnkleSpeed;
 
 //    // Signals
 //    if (FLAG_BIOFEEDBACK) {
