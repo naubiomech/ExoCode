@@ -30,6 +30,7 @@ void pid(Leg* leg, double input) {
     //leg->pid.PID::Compute();
     leg->pid.Compute_KF(leg->KF);
     leg->Vol = leg->Output; //need to map
+    right_torque = leg->Output / 100;
   }
 
   //leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio * MotorEff * GearboxEff))/NomCurrent*2048); //For OL Data collection

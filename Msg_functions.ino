@@ -3,7 +3,7 @@
 void send_data_message_wc() //with COP
 {
   //Right Leg
-  data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
+  data_to_send[0] = right_torque;//(right_leg->sign * right_leg->Average_Trq);
   data_to_send[1] = right_leg->state / 3;
   data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
 

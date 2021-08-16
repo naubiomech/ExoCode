@@ -1,6 +1,7 @@
 // functions used for the Leg objects
 
 void initialize_leg(Leg* leg) {
+  
   pinMode(leg->pin_err, INPUT_PULLUP);          //motor driver error checking needs digital input pulled high
   pinMode(leg->torque_sensor_ankle_pin, INPUT); //enable the torque reading of the left torque sensor
   pinMode(leg->motor_current_pin, INPUT);

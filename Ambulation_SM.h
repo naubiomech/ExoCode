@@ -106,13 +106,14 @@ class Ambulation_SM {
   }
 
   void correct_sagittal_angle(float& y, float& z) {
-    /* Dont devide by zero */
+    /* Dont divide by zero */
     float theta;
     if (abs(y) < 0.01) {
       theta = float(HALF_PI);
     } else {
       theta = float(atan2(z, y));
     }
+    Serial.println(theta);
     y -= cos(theta);
     z -= sin(theta);
   }

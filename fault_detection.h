@@ -27,11 +27,16 @@
 #define MAX_TORQUE            35
 //Max torque rate
 #define MAX_TORQUE_RATE       20 * MAX_TORQUE / CONTROL_TIME_STEP
+//Max PID saturate time in seconds
+#define MAX_SAT_TIME          1
+//SAT TIME COUNT
+#define SAT_COUNT             MAX_SAT_TIME / CONTROL_TIME_STEP
 
 //Protocols
 inline void check_for_torque_faults(Leg* leg);
 inline void tracking_check(Leg* leg);
-void torque_check(Leg* leg);
+inline void torque_check(Leg* leg);
+inline void pid_check(Leg* leg);
 
 
 inline void detect_faults() {
@@ -42,6 +47,7 @@ inline void detect_faults() {
 inline void check_for_torque_faults(Leg* leg) {
   tracking_check(leg);
   torque_check(leg);
+  pid_check(leg);
 }
   
 inline void tracking_check(Leg* leg) {
@@ -62,8 +68,7 @@ inline void tracking_check(Leg* leg) {
     double track_error_rate = abs((current_track_error - track_error_R) / CONTROL_TIME_STEP);
     filtered_error_R *= sign;
     if ((filtered_error_R > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
-      Serial.println("Tracking R");
-      //change_motor_state(false);
+      change_motor_state(false);
     }
     track_error_R = filtered_error_R; 
   } 
@@ -74,21 +79,19 @@ inline void tracking_check(Leg* leg) {
     double track_error_rate = abs((filtered_error_L - track_error_L) / CONTROL_TIME_STEP);
     filtered_error_L *= sign;
     if ((filtered_error_L > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
-      Serial.println("Tracking L");
-      //change_motor_state(false);
+      change_motor_state(false);
     }
     track_error_L = filtered_error_L;
   }
 }
 
-void torque_check(Leg* leg) {
+inline void torque_check(Leg* leg) {
   double abs_trq = abs(leg->Average_Trq);
   /* Absolute check */
   if ((abs_trq > MAX_TORQUE) && !CURRENT_CONTROL) {
     leg->torque_error_counter++;
     if (leg->torque_error_counter >= 10) {
-      Serial.println("Torque MAX");
-      //change_motor_state(false);
+      change_motor_state(false);
       leg->torque_error_counter = 0;
     }
   }
@@ -98,12 +101,38 @@ void torque_check(Leg* leg) {
   if (((abs_trq - leg->previous_torque_average) / CONTROL_TIME_STEP) > MAX_TORQUE_RATE) {
     count++;
     if (count >= 10) {
-      Serial.println("Torque RATE");
-      //change_motor_state(false);
+      change_motor_state(false);
       count = 0;
     }
   }
   leg->previous_torque_average = abs_trq;
+}
+
+inline void pid_check(Leg* leg) {
+  static uint32_t r_count = 0;
+  static uint32_t l_count = 0;
+  
+  if (leg == right_leg) {
+    if ((abs(leg->Output)) >= 1400) {
+      r_count++;
+      if (count >= SAT_COUNT) {
+        change_motor_state(false);
+        Serial.println("R PID ERR");
+      }
+    } else {
+      r_count = 0;
+    }
+  } else if (leg == left_leg) {
+    if ((abs(leg->Output)) >= 1400) {
+      l_count++;
+      if (count >= SAT_COUNT) {
+        change_motor_state(false);
+        Serial.println("L PID ERR");
+      }
+    } else {
+      l_count = 0;
+    }
+  }
 }
 
 #endif

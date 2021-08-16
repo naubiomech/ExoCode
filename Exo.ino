@@ -29,6 +29,7 @@
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048; //1540;
 bool motors_on = false;
+double right_torque;
 
 #include <ArduinoBLE.h>
 #include <elapsedMillis.h>
@@ -67,11 +68,14 @@ void control_loop() {
   while (true) {
     resetMotorIfError();
     calculate_averages();
-    if (motors_on) { 
+    
+    if (stream && motors_on) {
       detect_faults();
+      amb_sm.tick();
     }
+    
     rotate_motor();
-    amb_sm.tick();
+    
     rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
   }
 }
