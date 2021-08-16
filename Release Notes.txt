@@ -1,11 +1,34 @@
 Exoskeleton Firmware Release Notes
 
-Current Firmware Version: 1.3
+Current Firmware Version: 1.3.1
 Current App Version: 1.3
 
 Firmware update guide: https://docs.google.com/document/d/1sL07ptdXuzw1IuAZdh5S4gdC_FAweF4HR37W7pJnLXw/edit?usp=sharing
 
 Contact your Biomotum representative for assistance with firmware updates or urgent feature requests and bug fixes.
+
+======
+V1.3.1
+====== 
+------------
+New Features
+------------
+
+1. Dorsiflexion assistance modification for improved toe clearance in early swing. DF assistance now begins with a short spike twice the magnitude of the setpoint.
+The magnitude and duration of the spike are scaled by the baseline value. Faster or slower walking will increase or decrease, 
+respectively, the duration and magnitude of the DF spike.
+
+---------
+Bug Fixes
+---------
+
+1. Replacement of the PID library for Arduino. Please refer to the email corresponding to this release for details and instructions. 
+
+-------------
+Minor Updates
+-------------
+
+1. Exponential moving averaging of the battery voltage signal to reduce voltage/capacity spikes on the app.  
 
 ====
 V1.3
