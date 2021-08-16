@@ -26,12 +26,15 @@ struct Leg {
   double* TarrayPoint = &Tarray[0];
   double Average = 0;
 
-  double rawAnkleAngleArray[dim_FSR] = {0};
+  double rawAnkleAngleArray[dim] = {0};
   double* rawAnkleAngleArrayPoint = &rawAnkleAngleArray[0];
   double rawAnkleAverageAngle = 0;
   double rawPrevAnkleAngle = 0;
 
-  double rawAnkleSpeed;
+  double rawAnkleSpeedArray[dim] = {0};
+  double* rawAnkleSpeedArrayPoint = &rawAnkleSpeedArray[0];
+  double tempAnkleSpeed = 0;
+  double rawAnkleAverageSpeed = 0;
 
   double sign = 1;
 

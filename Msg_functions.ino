@@ -31,7 +31,7 @@ void send_data_message_wc() //with COP
     data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
 
     data_to_send[3] = right_leg->rawAnkleAverageAngle; // raw ankle angle regression
-    data_to_send[4] = right_leg->FSR_Toe_Average;
+    data_to_send[4] = right_leg->rawAnkleAverageSpeed; //FSR_Toe_Average;
 
     //  if (FLAG_ONE_TOE_SENSOR) {
     //    data_to_send[3] = right_leg->rawAnkleAverageAngle; // raw ankle angle regression
@@ -53,7 +53,7 @@ void send_data_message_wc() //with COP
     data_to_send[7] = (left_leg->sign * left_leg->PID_Setpoint);
 
     data_to_send[8] = left_leg->rawAnkleAverageAngle; // raw ankle angle regression
-    data_to_send[9] = left_leg->FSR_Toe_Average;
+    data_to_send[9] = left_leg->rawAnkleAverageSpeed; //FSR_Toe_Average;
 
 //    if (FLAG_ONE_TOE_SENSOR) {
 //      data_to_send[8] = left_leg->rawAnkleAverageAngle; // raw ankle angle regression
@@ -70,11 +70,9 @@ void send_data_message_wc() //with COP
 //    }'
 
     data_to_send[10] = current(right_leg->motor_current_pin);
-    //data_to_send[11] = right_leg->sign * motor_speed(right_leg->motor_speed_pin);
-    data_to_send[11] = right_leg->rawAnkleSpeed;
+    data_to_send[11] = right_leg->sign * motor_speed(right_leg->motor_speed_pin);
     data_to_send[12] = current(left_leg->motor_current_pin);
-    //data_to_send[13] = left_leg->sign * motor_speed(left_leg->motor_speed_pin);
-    data_to_send[13] = left_leg->rawAnkleSpeed;
+    data_to_send[13] = left_leg->sign * motor_speed(left_leg->motor_speed_pin);
 
 //    // Signals
 //    if (FLAG_BIOFEEDBACK) {
