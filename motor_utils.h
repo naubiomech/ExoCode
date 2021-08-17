@@ -11,5 +11,11 @@ inline void change_motor_state(bool to)
   digitalWrite(onoff, to);
 }
 
+inline void change_motor_stateless(bool to) {
+  flag_motor_error_check = to;
+  flag_auto_KF = to;
+  digitalWrite(onoff, to);
+}
+
 
 #endif

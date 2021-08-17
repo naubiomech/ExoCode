@@ -30,6 +30,7 @@
 const unsigned int zero = 2048; //1540;
 bool motors_on = false;
 double right_torque;
+double left_torque;
 
 #include <ArduinoBLE.h>
 #include <elapsedMillis.h>
@@ -56,22 +57,14 @@ double right_torque;
 rtos::Thread callback_thread(osPriorityNormal);
 Ambulation_SM amb_sm;
 
-void upon_walking() {
-  change_motor_state(true);
-}
-
-void upon_standing() {
-  //change_motor_state(false);
-}
-
 void control_loop() {
   while (true) {
     resetMotorIfError();
     calculate_averages();
     
     if (stream && motors_on) {
-      detect_faults();
       amb_sm.tick();
+      detect_faults();
     }
     
     rotate_motor();
@@ -129,8 +122,8 @@ void setup()
 
   //Initialize the standing/walking state detector and provide callback functions
   amb_sm.init();
-  amb_sm.attach_fe_cb(upon_standing);
-  amb_sm.attach_re_cb(upon_walking);
+  amb_sm.attach_fe_cb(Amb_SM_cbs::upon_standing);
+  amb_sm.attach_re_cb(Amb_SM_cbs::upon_walking);
   
   right_leg->Prev_Trq = get_torq(right_leg); //Initial conditions for EMA torque signal filter
   left_leg->Prev_Trq = get_torq(left_leg); 

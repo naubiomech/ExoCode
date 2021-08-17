@@ -28,9 +28,8 @@
 //Max torque rate
 #define MAX_TORQUE_RATE       20 * MAX_TORQUE / CONTROL_TIME_STEP
 //Max PID saturate time in seconds
-#define MAX_SAT_TIME          1
-//SAT TIME COUNT
-#define SAT_COUNT             MAX_SAT_TIME / CONTROL_TIME_STEP
+#define SAT_COUNT_SCALING     3
+
 
 //Protocols
 inline void check_for_torque_faults(Leg* leg);
@@ -119,9 +118,16 @@ inline void pid_check(Leg* leg) {
   if (leg == right_leg) {
     if ((abs(leg->Output)) >= 1400) {
       r_count++;
-      if (count >= SAT_COUNT) {
-        change_motor_state(false);
-        Serial.println("R PID ERR");
+      if (right_leg->Max_FSR_Ratio > 0) {
+        if (r_count >= SAT_COUNT_SCALING*swing_counter_th*right_leg->Max_FSR_Ratio) {
+          change_motor_state(false);
+          Serial.println("R PID ERR");
+        }
+      } else {
+        if (r_count >= SAT_COUNT_SCALING*swing_counter_th) {
+          change_motor_state(false);
+          Serial.println("R PID ERR");
+        }
       }
     } else {
       r_count = 0;
@@ -129,9 +135,16 @@ inline void pid_check(Leg* leg) {
   } else if (leg == left_leg) {
     if ((abs(leg->Output)) >= 1400) {
       l_count++;
-      if (count >= SAT_COUNT) {
-        change_motor_state(false);
-        Serial.println("L PID ERR");
+      if (left_leg->Max_FSR_Ratio > 0) {
+        if (l_count >= SAT_COUNT_SCALING*swing_counter_th*left_leg->Max_FSR_Ratio) {
+          change_motor_state(false);
+          Serial.println("L PID ERR");
+        }
+      } else {
+        if (l_count >= SAT_COUNT_SCALING*swing_counter_th) {
+          change_motor_state(false);
+          Serial.println("L PID ERR");
+        }
       }
     } else {
       l_count = 0;

@@ -4,12 +4,13 @@
 #ifndef IMU_H
 #define IMU_H
 
-/*
+/* 
  * 
  */
 
 #include <Arduino_LSM9DS1.h>
 #include "ema_filter.h"
+#include "motor_utils.h"
 //Typedef for holding callback functions
 typedef void (*cb_t)();
 
@@ -29,6 +30,7 @@ class Ambulation_SM {
         y = y * -1;
         correct_sagittal_angle(y, z);
         compute_resultant(x, y, z);
+        //estimate_walking_speed(z);
         update_threshold();
         check_state();
       }
@@ -54,6 +56,7 @@ class Ambulation_SM {
 
   //Estimated speed [m/s]
   float est_speed = 0;
+  float filtered_speed = 0;
 
   //Dynamic Threshold
   float threshold = 0.0f;
@@ -81,6 +84,13 @@ class Ambulation_SM {
     resultant = ema_with_context(resultant, (sqrt(y*y + z*z) - abs(x)), alpha_for_filter);
   }
 
+  inline void estimate_walking_speed(float coronal_acc) {
+    coronal_acc *= 9.81*3.6;
+    est_speed += coronal_acc * CONTROL_TIME_STEP;
+    filtered_speed = ema_with_context(filtered_speed, est_speed, 0.9);
+    left_torque = filtered_speed;
+  }
+
   inline void update_threshold() {
     avg_res = ema_with_context(avg_res, resultant, alpha_for_avg);
     threshold = thrsh_offset_k + abs(avg_res);
@@ -93,6 +103,7 @@ class Ambulation_SM {
       if (last_state == Standing) {
         last_state = Walking;
         re_cb();
+        est_speed = 0;
       }
     }
     /* If the Timer is not Reset, user is standing */
@@ -101,6 +112,7 @@ class Ambulation_SM {
       if (last_state == Walking) {
         last_state = Standing;
         fe_cb();
+        est_speed = 0;
       }
     }
   }
@@ -119,5 +131,14 @@ class Ambulation_SM {
   }
 }; //End Class
 
+namespace Amb_SM_cbs {
+  void upon_walking() {
+    change_motor_stateless(true);
+  }
+
+  void upon_standing() {
+    change_motor_stateless(false);
+  }
+}
 
 #endif
