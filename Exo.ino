@@ -61,7 +61,7 @@ void upon_walking() {
 }
 
 void upon_standing() {
-  change_motor_state(false);
+  //change_motor_state(false);
 }
 
 void control_loop() {

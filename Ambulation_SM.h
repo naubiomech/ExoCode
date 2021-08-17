@@ -113,7 +113,7 @@ class Ambulation_SM {
     } else {
       theta = float(atan2(z, y));
     }
-    Serial.println(theta);
+    //Serial.println(theta);
     y -= cos(theta);
     z -= sin(theta);
   }

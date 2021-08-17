@@ -68,6 +68,7 @@ inline void tracking_check(Leg* leg) {
     double track_error_rate = abs((current_track_error - track_error_R) / CONTROL_TIME_STEP);
     filtered_error_R *= sign;
     if ((filtered_error_R > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
+      Serial.println("R_TRACK");
       change_motor_state(false);
     }
     track_error_R = filtered_error_R; 
@@ -79,6 +80,7 @@ inline void tracking_check(Leg* leg) {
     double track_error_rate = abs((filtered_error_L - track_error_L) / CONTROL_TIME_STEP);
     filtered_error_L *= sign;
     if ((filtered_error_L > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
+      Serial.println("L_TRACK");
       change_motor_state(false);
     }
     track_error_L = filtered_error_L;
@@ -92,6 +94,7 @@ inline void torque_check(Leg* leg) {
     leg->torque_error_counter++;
     if (leg->torque_error_counter >= 10) {
       change_motor_state(false);
+      Serial.println("TRQ_MAX");
       leg->torque_error_counter = 0;
     }
   }
@@ -102,6 +105,7 @@ inline void torque_check(Leg* leg) {
     count++;
     if (count >= 10) {
       change_motor_state(false);
+      Serial.println("TRQ_RATE");
       count = 0;
     }
   }
