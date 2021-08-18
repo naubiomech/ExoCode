@@ -32,18 +32,25 @@ bool stream{false};
 byte holdon[96];
 byte *holdOnPoint = &holdon[0];
 
+const uint8_t RED = 22;
+const uint8_t BLUE = 24;
+const uint8_t GREEN = 23;
+
 #include <ArduinoBLE.h>
 #include <mbed.h>
 #include <rtos.h>
 
-#include "Board.h"
-#include "Msg_functions.h"
 #include "Msg_functions.h"
 #include "ema_filter.h"
 //----------------------------------------------------------------------------------
 
+const uint8_t therm_count = 2;
 const double alpha = 0.1;
-const uint8_t therm_analog_pin = TORQUE_SENSOR_LEFT_ANKLE_PIN;
+
+const uint8_t pins[therm_count] = {
+  A0,
+  A2,
+};
 
 inline double sample_thermocouple(unsigned int analogPin) {
   double voltage = analogRead(analogPin)*3.3/4096.0;
@@ -66,7 +73,7 @@ void setup()
   analogReadResolution(12);
   
   Serial.begin(1000000);
-  delay(100);
+  delay(1000);
 
   setupBLE();
 }
@@ -75,14 +82,22 @@ void setup()
 //----------------------------------------------------------------------------------
 void loop()
 {  
-  //Required for HCI communications
+  /* Required for HCI communications */
   BLE.poll();
+
+  
+  /* Initialize temps */
+  static double temps[therm_count] = { 
+                                      sample_thermocouple(pins[0]), 
+                                      sample_thermocouple(pins[1]),
+                                      };
+                                      
   
   if (stream) {
-    static double temp = sample_thermocouple(therm_analog_pin);
-    temp = ema_with_context(temp, sample_thermocouple(therm_analog_pin), alpha);
-    Serial.println(temp);
-    send_thermo_message(temp);
+    for (int8_t i=0; i<= therm_count; i++) {
+      temps[i] = ema_with_context(temps[i], sample_thermocouple(pins[i]), alpha);
+    }
+    send_thermo_message(temps);
   }
   
   rtos::ThisThread::sleep_for(1000 / COMMS_LOOP_HZ);

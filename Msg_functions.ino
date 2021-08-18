@@ -1,15 +1,15 @@
 #include "Msg_functions.h"
 
-inline void send_thermo_message(double temp) {
+inline void send_thermo_message(double* temps) {
   //Right Leg
   data_to_send[0] = 0;
   data_to_send[1] = 0;
-  data_to_send[2] = 0;
+  data_to_send[2] = temps[1];
 
   //Left Leg
   data_to_send[3] = 0;
   data_to_send[4] = 0;
-  data_to_send[5] = temp;
+  data_to_send[5] = temps[0];
 
   data_to_send[6] = 0;
   data_to_send[7] = 0;

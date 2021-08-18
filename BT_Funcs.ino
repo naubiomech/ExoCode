@@ -8,7 +8,6 @@ BLEService UARTService(UARTUUID);   //Instantiate UART service
 BLECharacteristic TXChar(rxUUID, BLERead | BLENotify | BLEBroadcast,             BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //TX characteristic of service
 BLECharacteristic RXChar(txUUID, BLEWriteWithoutResponse | BLEWrite | BLENotify, BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //RX characteristic of service
 
-
 void setupBLE()
 {
   if (BLE.begin())
