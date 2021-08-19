@@ -64,7 +64,6 @@ void control_loop() {
     resetMotorIfError();
     calculate_averages();
 
-    amb_sm.tick();
     if (stream && motors_on) {
       amb_sm.tick();
       detect_faults();

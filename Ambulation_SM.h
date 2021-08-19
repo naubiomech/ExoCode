@@ -100,9 +100,6 @@ class Ambulation_SM {
   }
 
   inline void check_state() {
-    Serial.print(abs(resultant));
-    Serial.print('\t');
-    Serial.println(threshold);
     /* If there is a large acceleration, the user is walking */
     if (abs(resultant) > threshold) {
       last_reset = millis();
