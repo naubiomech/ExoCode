@@ -6,14 +6,14 @@
 #define FAULT_DETECTION
 
 /* The fault detection is currently performed in tracking_check() and torque_check(). If the exo is tracking poorly,
- * then the torque sensor may be bad. The tunable parameters are included as defines below. The 
- * tracking_check() function performs the error checking. By applying an EMA filter on the setpoint
- * the torque response may be approximated. The error between this approximated value and the actual
- * torque response are computed, and passed through an EMA filter. The averaged error is compared
- * to the tracking_thresh define and, if greater, an error is thrown and the motors are turned off. In
- * the event that a false positive is thrown the operator may turn the motors off and on with the 
- * pause/play functionality on the app. 
- */
+   then the torque sensor may be bad. The tunable parameters are included as defines below. The
+   tracking_check() function performs the error checking. By applying an EMA filter on the setpoint
+   the torque response may be approximated. The error between this approximated value and the actual
+   torque response are computed, and passed through an EMA filter. The averaged error is compared
+   to the tracking_thresh define and, if greater, an error is thrown and the motors are turned off. In
+   the event that a false positive is thrown the operator may turn the motors off and on with the
+   pause/play functionality on the app.
+*/
 
 //Tracking error in N*m
 #define TRACKING_THRESH       10.0
@@ -28,7 +28,7 @@
 //Max torque rate
 #define MAX_TORQUE_RATE       20 * MAX_TORQUE / CONTROL_TIME_STEP
 //Max PID saturate time in seconds
-#define SAT_COUNT_SCALING     3
+#define PID_SAT_TIME          1
 
 
 //Protocols
@@ -48,7 +48,7 @@ inline void check_for_torque_faults(Leg* leg) {
   torque_check(leg);
   pid_check(leg);
 }
-  
+
 inline void tracking_check(Leg* leg) {
   //Compare smoothed setpoint with measured torque
   static double filtered_sp_L = 0;
@@ -58,7 +58,7 @@ inline void tracking_check(Leg* leg) {
   static double filtered_error_L = 0;
   static double filtered_error_R = 0;
 
-  double sign = (Control_Mode == 8) ? -1:1;
+  double sign = (Control_Mode == 8) ? -1 : 1;
 
   if (leg == right_leg) {
     filtered_sp_R = ema_with_context(filtered_sp_R, right_leg->PID_Setpoint, EST_TRQ_ALPHA);
@@ -67,11 +67,11 @@ inline void tracking_check(Leg* leg) {
     double track_error_rate = abs((current_track_error - track_error_R) / CONTROL_TIME_STEP);
     filtered_error_R *= sign;
     if ((filtered_error_R > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
-      Serial.println("R_TRACK");
       change_motor_state(false);
+      right_state = 1;
     }
-    track_error_R = filtered_error_R; 
-  } 
+    track_error_R = filtered_error_R;
+  }
   else {
     filtered_sp_L = ema_with_context(filtered_sp_L, left_leg->PID_Setpoint, EST_TRQ_ALPHA);
     double current_track_error = abs(filtered_sp_L - leg->Average_Trq);
@@ -79,8 +79,8 @@ inline void tracking_check(Leg* leg) {
     double track_error_rate = abs((filtered_error_L - track_error_L) / CONTROL_TIME_STEP);
     filtered_error_L *= sign;
     if ((filtered_error_L > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
-      Serial.println("L_TRACK");
       change_motor_state(false);
+      left_state = 1;
     }
     track_error_L = filtered_error_L;
   }
@@ -93,18 +93,16 @@ inline void torque_check(Leg* leg) {
     leg->torque_error_counter++;
     if (leg->torque_error_counter >= 10) {
       change_motor_state(false);
-      Serial.println("TRQ_MAX");
       leg->torque_error_counter = 0;
     }
   }
- 
+
   /* Rate check */
   static int count = 0;
   if (((abs_trq - leg->previous_torque_average) / CONTROL_TIME_STEP) > MAX_TORQUE_RATE) {
     count++;
     if (count >= 10) {
       change_motor_state(false);
-      Serial.println("TRQ_RATE");
       count = 0;
     }
   }
@@ -114,42 +112,31 @@ inline void torque_check(Leg* leg) {
 inline void pid_check(Leg* leg) {
   static uint32_t r_count = 0;
   static uint32_t l_count = 0;
-  
+
   if (leg == right_leg) {
-    if ((abs(leg->Output)) >= 1400) {
+    if ((abs(leg->Output)) >= 1475) {
       r_count++;
-      if (right_leg->Max_FSR_Ratio > 0) {
-        if (r_count >= SAT_COUNT_SCALING*swing_counter_th*right_leg->Max_FSR_Ratio) {
-          change_motor_state(false);
-          Serial.println("R PID ERR");
-        }
-      } else {
-        if (r_count >= SAT_COUNT_SCALING*swing_counter_th) {
-          change_motor_state(false);
-          Serial.println("R PID ERR");
-        }
+      if (r_count / CONTROL_LOOP_HZ >= PID_SAT_TIME) {
+        change_motor_state(false);
+        right_state = 3;
       }
-    } else {
+    }
+    else {
       r_count = 0;
     }
   } else if (leg == left_leg) {
-    if ((abs(leg->Output)) >= 1400) {
+    if ((abs(leg->Output)) >= 1475) {
       l_count++;
-      if (left_leg->Max_FSR_Ratio > 0) {
-        if (l_count >= SAT_COUNT_SCALING*swing_counter_th*left_leg->Max_FSR_Ratio) {
-          change_motor_state(false);
-          Serial.println("L PID ERR");
-        }
-      } else {
-        if (l_count >= SAT_COUNT_SCALING*swing_counter_th) {
-          change_motor_state(false);
-          Serial.println("L PID ERR");
-        }
+      if (l_count / CONTROL_LOOP_HZ >= PID_SAT_TIME) {
+        change_motor_state(false);
+        left_state = 3;
       }
-    } else {
-      l_count = 0;
+    }
+    else {
+      r_count = 0;
     }
   }
 }
+
 
 #endif

@@ -49,10 +49,13 @@ class Ambulation_SM {
   private:
   //Const(s)
   const float thrsh_offset_k = 0.075f;
-  const unsigned long int reset_duration_k = CONTROL_LOOP_HZ * 3;
+  const unsigned long int reset_duration_k = CONTROL_LOOP_HZ * 4;
 
   //Resultant acceleration
   float resultant = 0;
+
+  //filtered angle
+  float filtered_angle = 0;
 
   //Estimated speed [m/s]
   float est_speed = 0;
@@ -81,7 +84,7 @@ class Ambulation_SM {
   //Private Functions
   inline void compute_resultant(float x, float y, float z) {
     /* Must subtract by abs(x) because the toy model is two dimensional */
-    resultant = ema_with_context(resultant, (sqrt(y*y + z*z) - abs(x)), alpha_for_filter);
+    resultant = ema_with_context(resultant, (sqrt(x*x+z*z)), alpha_for_filter);
   }
 
   inline void estimate_walking_speed(float coronal_acc) {
@@ -97,13 +100,15 @@ class Ambulation_SM {
   }
 
   inline void check_state() {
+    Serial.print(abs(resultant));
+    Serial.print('\t');
+    Serial.println(threshold);
     /* If there is a large acceleration, the user is walking */
     if (abs(resultant) > threshold) {
       last_reset = millis();
       if (last_state == Standing) {
         last_state = Walking;
         re_cb();
-        est_speed = 0;
       }
     }
     /* If the Timer is not Reset, user is standing */
@@ -112,22 +117,21 @@ class Ambulation_SM {
       if (last_state == Walking) {
         last_state = Standing;
         fe_cb();
-        est_speed = 0;
       }
     }
   }
 
   void correct_sagittal_angle(float& y, float& z) {
     /* Dont divide by zero */
-    float theta;
-    if (abs(y) < 0.01) {
-      theta = float(HALF_PI);
+    float acc_angle;
+    if (abs(y) < 0.00001) {
+      acc_angle = float(HALF_PI);
     } else {
-      theta = float(atan2(z, y));
+      acc_angle = float(atan2(z, y));
     }
-    //Serial.println(theta);
-    y -= cos(theta);
-    z -= sin(theta);
+    filtered_angle = ema_with_context(filtered_angle, acc_angle, alpha_for_filter);
+    y -= cos(acc_angle);
+    z -= sin(acc_angle);
   }
 }; //End Class
 

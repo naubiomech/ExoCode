@@ -31,6 +31,8 @@ const unsigned int zero = 2048; //1540;
 bool motors_on = false;
 double right_torque;
 double left_torque;
+double right_state;
+double left_state;
 
 #include <ArduinoBLE.h>
 #include <elapsedMillis.h>
@@ -61,7 +63,8 @@ void control_loop() {
   while (true) {
     resetMotorIfError();
     calculate_averages();
-    
+
+    amb_sm.tick();
     if (stream && motors_on) {
       amb_sm.tick();
       detect_faults();
