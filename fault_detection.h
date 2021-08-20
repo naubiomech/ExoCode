@@ -20,9 +20,9 @@
 //Estimated torque alpha
 #define EST_TRQ_ALPHA         0.1
 //Error alpha
-#define ERROR_ALPHA           0.005
+#define ERROR_ALPHA           0.003
 //Tracking error rate in (N*m)/s
-#define TRACKING_RATE_THRESH  2 * TRACKING_THRESH / CONTROL_TIME_STEP
+#define TRACKING_RATE_THRESH  4 * TRACKING_THRESH / CONTROL_TIME_STEP
 //Max torque setpoint
 #define MAX_TORQUE            35
 //Max torque rate
@@ -44,9 +44,7 @@ inline void detect_faults() {
 }
 
 inline void check_for_torque_faults(Leg* leg) {
-  tracking_check(leg);
   torque_check(leg);
-  pid_check(leg);
 }
 
 inline void tracking_check(Leg* leg) {
@@ -71,6 +69,7 @@ inline void tracking_check(Leg* leg) {
       right_state = 1;
     }
     track_error_R = filtered_error_R;
+    left_setpoint = track_error_R;
   }
   else {
     filtered_sp_L = ema_with_context(filtered_sp_L, left_leg->PID_Setpoint, EST_TRQ_ALPHA);
@@ -84,6 +83,7 @@ inline void tracking_check(Leg* leg) {
     }
     track_error_L = filtered_error_L;
   }
+  
 }
 
 inline void torque_check(Leg* leg) {
@@ -94,6 +94,7 @@ inline void torque_check(Leg* leg) {
     if (leg->torque_error_counter >= 10) {
       change_motor_state(false);
       leg->torque_error_counter = 0;
+      left_torque = 2;
     }
   }
 
@@ -104,6 +105,7 @@ inline void torque_check(Leg* leg) {
     if (count >= 10) {
       change_motor_state(false);
       count = 0;
+      right_torque = 2;
     }
   }
   leg->previous_torque_average = abs_trq;
@@ -133,7 +135,7 @@ inline void pid_check(Leg* leg) {
       }
     }
     else {
-      r_count = 0;
+      l_count = 0;
     }
   }
 }

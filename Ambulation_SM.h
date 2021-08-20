@@ -11,29 +11,32 @@
 #include <Arduino_LSM9DS1.h>
 #include "ema_filter.h"
 #include "motor_utils.h"
+
 //Typedef for holding callback functions
 typedef void (*cb_t)();
+//State Management
+enum States {Standing, Walking};
 
 class Ambulation_SM {
- 
   public:
+  States last_state = Standing;
   void init() {
     if (!IMU.begin()) {
        while (1);
     }
   }
 
-  inline void tick() {
+  inline void tick(unsigned int steps) {
     float x, y, z;
-    if (IMU.accelerationAvailable()) {
-      if (IMU.readAcceleration(x, y, z)) {
-        y = y * -1;
-        correct_sagittal_angle(y, z);
-        compute_resultant(x, y, z);
-        //estimate_walking_speed(z);
-        update_threshold();
-        check_state();
-      }
+    x = 2;
+    if (IMU.readAcceleration(x, y, z)) {
+      y = -y;
+      correct_sagittal_angle(y, z);
+      compute_resultant(x, y, z);
+      //estimate_walking_speed(z);
+      track_steps(steps);
+      update_threshold();
+      check_state();
     }
   }
 
@@ -49,10 +52,15 @@ class Ambulation_SM {
   private:
   //Const(s)
   const float thrsh_offset_k = 0.075f;
-  const unsigned long int reset_duration_k = CONTROL_LOOP_HZ * 4;
+  const unsigned long int reset_duration_k = 1500;  //millis
+  const float walking_bias_k = 0.25f;
 
   //Resultant acceleration
   float resultant = 0;
+
+  //Step tracking
+  bool bias_tracking = false;
+  unsigned int last_steps = 0;
 
   //filtered angle
   float filtered_angle = 0;
@@ -64,13 +72,9 @@ class Ambulation_SM {
   //Dynamic Threshold
   float threshold = 0.0f;
   float avg_res = 0;
-  float alpha_for_filter = 0.2;
-  float alpha_for_avg = 0.05;
+  float alpha_for_filter = 0.8;
+  float alpha_for_avg = 0.2;
   float st_dev = 0;
-
-  //State Management
-  enum States {Standing, Walking};
-  States last_state = Standing;
    
   //Callbacks/cb management
   /* Falling edge is defined as walking to standing */
@@ -80,11 +84,11 @@ class Ambulation_SM {
 
   //Timer Value
   unsigned long int last_reset;
+  unsigned long int last_step_reset;
  
   //Private Functions
   inline void compute_resultant(float x, float y, float z) {
-    /* Must subtract by abs(x) because the toy model is two dimensional */
-    resultant = ema_with_context(resultant, (sqrt(x*x+z*z)), alpha_for_filter);
+    resultant = ema_with_context(resultant, (sqrt(z*z + y*y + x*x)), alpha_for_filter);
   }
 
   inline void estimate_walking_speed(float coronal_acc) {
@@ -94,22 +98,45 @@ class Ambulation_SM {
     left_torque = filtered_speed;
   }
 
+  inline void track_steps(unsigned int steps) {
+    unsigned long int start = millis();
+    if (steps > last_steps) {
+      last_step_reset = start;
+      bias_tracking = true;
+      
+    }
+    unsigned long int delta = start - last_step_reset;
+    if (delta > reset_duration_k) {
+      bias_tracking = false;
+    }
+  }
+
   inline void update_threshold() {
     avg_res = ema_with_context(avg_res, resultant, alpha_for_avg);
-    threshold = thrsh_offset_k + abs(avg_res);
+    if (bias_tracking) {
+      threshold = (thrsh_offset_k * walking_bias_k) + avg_res;
+    } else {
+      threshold = thrsh_offset_k + avg_res;
+    }
   }
 
   inline void check_state() {
+    //Serial.print(resultant);
+    //Serial.print('\t');
+    //Serial.println(threshold);
+    right_torque = resultant;
+    right_setpoint = threshold;
     /* If there is a large acceleration, the user is walking */
-    if (abs(resultant) > threshold) {
-      last_reset = millis();
+    uint32_t start = millis();
+    if (resultant > threshold) {
+      last_reset = start;
       if (last_state == Standing) {
         last_state = Walking;
         re_cb();
       }
     }
     /* If the Timer is not Reset, user is standing */
-    unsigned long int delta = millis() - last_reset;
+    uint32_t delta = start - last_reset;
     if (delta > reset_duration_k) {
       if (last_state == Walking) {
         last_state = Standing;
@@ -126,7 +153,7 @@ class Ambulation_SM {
     } else {
       acc_angle = float(atan2(z, y));
     }
-    filtered_angle = ema_with_context(filtered_angle, acc_angle, alpha_for_filter);
+    //filtered_angle = ema_with_context(filtered_angle, acc_angle, alpha_for_filter);
     y -= cos(acc_angle);
     z -= sin(acc_angle);
   }

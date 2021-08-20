@@ -6,14 +6,14 @@
 #define HIGH_ALPHA  0.1
 
 /* Params: Leg to pass into sampler function, old filter value, alpha for filter, function that returns data that you would like to sample */
-float ema_with_sampler(Leg* leg, float old_value, float alpha, float (*sampler)(Leg*)) {
+inline float ema_with_sampler(Leg* leg, float old_value, float alpha, float (*sampler)(Leg*)) {
   float raw = (*sampler)(leg);
   float new_value = (alpha * raw) + ((1 - alpha) * old_value);
   return new_value;
 }
 
 template <typename T>
-T ema_with_context(T old_value, T raw, double alpha) {
+inline T ema_with_context(T old_value, T raw, double alpha) {
   T new_value = (alpha * raw) + ((1- alpha) * old_value);
   return new_value;
 }

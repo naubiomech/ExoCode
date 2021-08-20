@@ -25,12 +25,15 @@
 
 #define CONTROL_LOOP_HZ           500
 #define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
-#define COMMS_LOOP_HZ             50               
+#define COMMS_LOOP_HZ             50 
+#define IMU_LOOP_HZ               10              
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048; //1540;
 bool motors_on = false;
 double right_torque;
+double right_setpoint;
 double left_torque;
+double left_setpoint;
 double right_state;
 double left_state;
 
@@ -58,22 +61,34 @@ double left_state;
 //----------------------------------------------------------------------------------
 rtos::Thread callback_thread(osPriorityNormal);
 Ambulation_SM amb_sm;
+uint32_t imuCounter = 0; 
 
 void control_loop() {
   while (true) {
+    imuCounter++;
     resetMotorIfError();
     calculate_averages();
 
-    if (stream && motors_on) {
-      amb_sm.tick();
+    if (motors_on) {
       detect_faults();
+      if (amb_sm.last_state == Walking) {
+          tracking_check(right_leg);
+          tracking_check(left_leg);
+          pid_check(right_leg);
+          pid_check(left_leg);
+      }
+      if (stream && (imuCounter > imuTimerCount)) {
+        amb_sm.tick(stepper->steps);
+        imuCounter = 0;
+      }
     }
     
     rotate_motor();
-    
+
     rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
   }
 }
+
 
 // Initialize the system
 void setup()
@@ -90,7 +105,7 @@ void setup()
   digitalWrite(GREEN, HIGH);
   
   //Start Serial
-  Serial.begin(1000000);
+  Serial.begin(500000);
   delay(100);
 
   //Nano's internal BLE module
