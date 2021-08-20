@@ -38,9 +38,14 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_13 >= state_counter_th)
         {
-          if (stream && (leg == right_leg)) {
+          if (stream) {
             //Reference time to be used later for step counter
-            stepper->step_start = millis();
+            if (leg == right_leg) {
+              stepper->right_step_start = millis();
+            }
+            else {
+              stepper->left_step_start = millis();
+            }
           }
 
           if (Control_Mode == 100) { //Increment set point for bang-bang GO - 5/19/19
@@ -106,6 +111,18 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
         if (leg->state_count_31 >= state_counter_th)
         {
           //Check if stance phase was long enough to warrant a valid step
+          if (stream) {
+            if (leg == right_leg) {
+              uint32_t delta = (millis() - stepper->right_step_start);
+              bool condition = (delta > stepper->step_delay_k) && (delta < stepper->step_limit_k);
+              stepper->steps += (condition) ? (1):(0);
+            }
+            else {
+              uint32_t delta = (millis() - stepper->left_step_start);
+              bool condition = (delta > stepper->step_delay_k) && (delta < stepper->step_limit_k);
+              stepper->steps += (condition) ? (1):(0);
+            }
+          }
           if ((millis() - stepper->step_start) >= stepper->kstep_delay && stream && (leg == right_leg)) {
             stepper->steps += 2;
           }

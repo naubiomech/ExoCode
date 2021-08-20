@@ -10,9 +10,11 @@ struct Trial_Data
   //Number of steps performed during biofeedback
   long int bio_steps = 0;
   //millis() reference for each step, used to determine if step should count
-  unsigned long int step_start;
+  unsigned long int right_step_start;
+  unsigned long int left_step_start;
   //Delay to warrant incrementing the step counter
-  const int kstep_delay = 250;
+  const int step_delay_k = 250;
+  const int step_limit_k = 3500;
   //Trial start time
   unsigned long int trial_start;
   //Int where total steps is stored in EEPROM (See memory map in drive)

@@ -51,9 +51,9 @@ class Ambulation_SM {
  
   private:
   //Const(s)
-  const float thrsh_offset_k = 0.075f;
+  const float thrsh_offset_k = 0.01f;
   const unsigned long int reset_duration_k = 1500;  //millis
-  const float walking_bias_k = 0.25f;
+  const float walking_bias_k = 0.1f;
 
   //Resultant acceleration
   float resultant = 0;
@@ -103,12 +103,14 @@ class Ambulation_SM {
     if (steps > last_steps) {
       last_step_reset = start;
       bias_tracking = true;
-      
+      left_torque = 1;
     }
     unsigned long int delta = start - last_step_reset;
     if (delta > reset_duration_k) {
       bias_tracking = false;
+      left_torque = 0;
     }
+    last_steps = steps;
   }
 
   inline void update_threshold() {
@@ -116,7 +118,7 @@ class Ambulation_SM {
     if (bias_tracking) {
       threshold = (thrsh_offset_k * walking_bias_k) + avg_res;
     } else {
-      threshold = thrsh_offset_k + avg_res;
+      threshold = (thrsh_offset_k / walking_bias_k) + avg_res;
     }
   }
 
