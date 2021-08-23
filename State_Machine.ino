@@ -123,9 +123,6 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
               stepper->steps += (condition) ? (1):(0);
             }
           }
-          if ((millis() - stepper->step_start) >= stepper->kstep_delay && stream && (leg == right_leg)) {
-            stepper->steps += 2;
-          }
           if (Control_Mode == 100) {
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
