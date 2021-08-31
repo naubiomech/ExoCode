@@ -1,7 +1,8 @@
 #ifndef LEG_HEADER
 #define LEG_HEADER
 const int dim_FSR = 30;
-const int dim = 5;
+const int dim = 10;
+const int dim_Angle = 20;
 
 #include "PID_v2.h"
 #include "Control_Adjustment.h"
@@ -26,12 +27,12 @@ struct Leg {
   double* TarrayPoint = &Tarray[0];
   double Average = 0;
 
-  double rawAnkleAngleArray[dim] = {0};
+  double rawAnkleAngleArray[dim_Angle] = {0};
   double* rawAnkleAngleArrayPoint = &rawAnkleAngleArray[0];
   double rawAnkleAverageAngle = 0;
   double rawPrevAnkleAngle = 0;
 
-  double rawAnkleSpeedArray[dim] = {0};
+  double rawAnkleSpeedArray[dim_Angle] = {0};
   double* rawAnkleSpeedArrayPoint = &rawAnkleSpeedArray[0];
   double tempAnkleSpeed = 0;
   double rawAnkleAverageSpeed = 0;

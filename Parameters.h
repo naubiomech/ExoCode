@@ -67,7 +67,7 @@ double p_prop[3] = {128.1, -50.82, 22.06};
 double FSR_Ratio;
 
 // ===== Proportional Control Parameters =====
-double Max_Prop = 35; //Was 35, GO 9/15/20
+double Max_Prop = 40; //Was 35, GO 9/15/20
 double Min_Prop = 0;
 
 // ===== Auto KF Parameters =====
@@ -79,15 +79,15 @@ const int BNO055_SAMPLERATE_DELAY_MS = 100;
 const double stability_trq_gain = 0.01;
 
 // ===== Torque Speed Adjust Parameters =====
-const int n_step_baseline = 4;
+const int n_step_baseline = 3;
 
 // ===== Motor Parameters =====
 // Initialize all variables as 1 prior to definition of motor parameters in GUI
 
 //HardCoded for demo
 int MotorParams = 1;  //Was 100
-double NomCurrent = 7.58; //The rest were 1
-double TrqConstant = 14/1000;
+double NomCurrent = 8.0; //The rest were 1
+double TrqConstant = 14.0/1000.0;
 double GearRatio = 4617.0 / 52.0;
 double PulleyRatio = 5;
 double MaxSpeed = 15000;
