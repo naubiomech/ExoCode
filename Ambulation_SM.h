@@ -51,7 +51,7 @@ class Ambulation_SM {
  
   private:
   //Const(s)
-  const float thrsh_offset_k = 0.01f;
+  const float thrsh_offset_k = 0.05f;
   const unsigned long int reset_duration_k = 1500;  //millis
   const float walking_bias_k = 0.1f;
 
@@ -88,14 +88,14 @@ class Ambulation_SM {
  
   //Private Functions
   inline void compute_resultant(float x, float y, float z) {
-    resultant = ema_with_context(resultant, (sqrt(z*z + y*y + x*x)), alpha_for_filter);
-  }
+    resultant = ema_with_context(resultant, (sqrt(z*z + y*y)), alpha_for_filter);
+    }
 
   inline void estimate_walking_speed(float coronal_acc) {
     coronal_acc *= 9.81*3.6;
     est_speed += coronal_acc * CONTROL_TIME_STEP;
     filtered_speed = ema_with_context(filtered_speed, est_speed, 0.9);
-    left_torque = filtered_speed;
+    //left_torque = filtered_speed;
   }
 
   inline void track_steps(unsigned int steps) {
@@ -103,12 +103,12 @@ class Ambulation_SM {
     if (steps > last_steps) {
       last_step_reset = start;
       bias_tracking = true;
-      left_torque = 1;
+      //left_torque = 1;
     }
     unsigned long int delta = start - last_step_reset;
     if (delta > reset_duration_k) {
       bias_tracking = false;
-      left_torque = 0;
+      //left_torque = 0;
     }
     last_steps = steps;
   }
@@ -126,8 +126,8 @@ class Ambulation_SM {
     //Serial.print(resultant);
     //Serial.print('\t');
     //Serial.println(threshold);
-    right_torque = resultant;
-    right_setpoint = threshold;
+    left_torque = resultant;
+    left_setpoint = threshold;
     /* If there is a large acceleration, the user is walking */
     uint32_t start = millis();
     if (resultant > threshold) {

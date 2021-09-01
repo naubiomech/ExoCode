@@ -28,7 +28,7 @@
 //Max torque rate
 #define MAX_TORQUE_RATE       20 * MAX_TORQUE / CONTROL_TIME_STEP
 //Max PID saturate time in seconds
-#define PID_SAT_TIME          1
+#define PID_SAT_TIME          1.5
 
 
 //Protocols
@@ -56,27 +56,25 @@ inline void tracking_check(Leg* leg) {
   static double filtered_error_L = 0;
   static double filtered_error_R = 0;
 
-  double sign = (Control_Mode == 8) ? -1 : 1;
+  double sign = (Control_Mode == 6) ? -1 : 1; //If resistance change the sign of torque
 
   if (leg == right_leg) {
     filtered_sp_R = ema_with_context(filtered_sp_R, right_leg->PID_Setpoint, EST_TRQ_ALPHA);
-    double current_track_error = abs(filtered_sp_R - leg->Average_Trq);
+    double current_track_error = abs(filtered_sp_R - (leg->Average_Trq)*sign);
     filtered_error_R = abs(ema_with_context(filtered_error_R, current_track_error, ERROR_ALPHA));
     double track_error_rate = abs((current_track_error - track_error_R) / CONTROL_TIME_STEP);
-    filtered_error_R *= sign;
     if ((filtered_error_R > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
       change_motor_state(false);
       right_state = 1;
     }
     track_error_R = filtered_error_R;
-    left_setpoint = track_error_R;
+    //left_setpoint = track_error_R;
   }
   else {
     filtered_sp_L = ema_with_context(filtered_sp_L, left_leg->PID_Setpoint, EST_TRQ_ALPHA);
-    double current_track_error = abs(filtered_sp_L - leg->Average_Trq);
+    double current_track_error = abs(filtered_sp_L - (leg->Average_Trq)*sign);
     filtered_error_L = abs(ema_with_context(filtered_error_L, current_track_error, ERROR_ALPHA));
     double track_error_rate = abs((filtered_error_L - track_error_L) / CONTROL_TIME_STEP);
-    filtered_error_L *= sign;
     if ((filtered_error_L > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
       change_motor_state(false);
       left_state = 1;
@@ -94,7 +92,7 @@ inline void torque_check(Leg* leg) {
     if (leg->torque_error_counter >= 10) {
       change_motor_state(false);
       leg->torque_error_counter = 0;
-      left_torque = 2;
+      left_state = 2;
     }
   }
 
@@ -105,7 +103,7 @@ inline void torque_check(Leg* leg) {
     if (count >= 10) {
       change_motor_state(false);
       count = 0;
-      right_torque = 2;
+      right_state = 2;
     }
   }
   leg->previous_torque_average = abs_trq;

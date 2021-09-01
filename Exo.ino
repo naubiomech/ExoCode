@@ -25,8 +25,8 @@
 
 #define CONTROL_LOOP_HZ           500
 #define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
-#define COMMS_LOOP_HZ             50 
-#define IMU_LOOP_HZ               10              
+#define COMMS_LOOP_HZ             50
+#define IMU_LOOP_HZ               10
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048; //1540;
 bool motors_on = false;
