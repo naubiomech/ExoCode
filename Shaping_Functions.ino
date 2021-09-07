@@ -10,7 +10,7 @@ double Change_PID_Setpoint_Sigm(double New_PID_Setpoint_l, double Current_PID_Se
   //  if ((N_l % 2)) {
   //    N_l++;
   //  }
-  double sig = 1 / (1 + exp(3*(-exp_mult_l * (((-N_l)/ 2 + n_iter_l + 1+80)) * Ts_l)));// To decrease rising time, x is multiplied by 5// SS  4/26/2021
+  double sig = 1 / (1 + exp(3*(-exp_mult_l * (((-N_l)/ 2 + n_iter_l + 1+20)) * Ts_l)));// To decrease rising time, x is multiplied by 5// SS  4/26/2021
   Current_PID_Setpoint = Old_PID_Setpoint_l + (New_PID_Setpoint_l - Old_PID_Setpoint_l) * (sig);
   *P_Test1 = sig;
 //  *P_Test2 = Old_PID_Setpoint_l;

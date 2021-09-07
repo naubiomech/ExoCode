@@ -265,24 +265,40 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
         }
 
         if ((leg->FSR_Ratio_Hip < 0) || ( (leg->FSR_Ratio_Hip == 0) && (leg->Pre_FSR_Ratio_Hip[2] < 0) )){ 
-          if (HeelMToe){
-            if (leg->FSR_Ratio_Hip < leg->Hip_Ratio)  //  SS  3/9/2021
-              leg->Hip_Ratio = leg->FSR_Ratio_Hip;
+          if (leg->FSR_Ratio_Hip < leg->Pre_FSR_Ratio_Hip[2]){
+            if (HeelMToe){
+                leg->Hip_Ratio = leg->FSR_Ratio_Hip * 0.50;
+            }else{
+                leg->Hip_Ratio = leg->FSR_Ratio_Hip * 4 * 0.50;
+            }
           }else{
-            if ((leg->FSR_Ratio_Hip * 4) < leg->Hip_Ratio)  //  SS  3/9/2021
-              leg->Hip_Ratio = leg->FSR_Ratio_Hip * 4;
+            leg->lateStance_counter++;
+            leg->Alpha_counter = leg->lateStance_counter;
+            leg->Alpha = ((leg->state_swing_duration/2)*(EarlySwingPercentage/100)) + (leg->lateStance_duration); 
+            if (HeelMToe)
+                leg->Hip_Ratio = ((leg->Min_FSR_Ratio_Hip * 0.50) - (0.50 * (((9 * pow(leg->Alpha_counter / leg->Alpha,2))-(9 * leg->Alpha_counter / leg->Alpha)) / ((3 * leg->Alpha_counter / leg->Alpha) - 4))));
+            else if(HeelMToe4)
+                leg->Hip_Ratio = ((4 * leg->Min_FSR_Ratio_Hip * 0.50) - (0.50 * (((9 * pow(leg->Alpha_counter / leg->Alpha,2))-(9 * leg->Alpha_counter / leg->Alpha)) / ((3 * leg->Alpha_counter / leg->Alpha) - 4)))) ;
+            else
+                leg->Hip_Ratio = ((-0.50) - (0.50 * (((9 * pow(leg->Alpha_counter / leg->Alpha,2))-(9 * leg->Alpha_counter / leg->Alpha)) / ((3 * leg->Alpha_counter / leg->Alpha) - 4))));
           }
         }else{
-          if (( (1 > leg->FSR_Ratio_Hip) && (leg->FSR_Ratio_Hip != 0) ) && ( ((leg->Pre_FSR_Ratio_Hip[2] <= leg->FSR_Ratio_Hip) || (leg->Pre_FSR_Ratio_Hip[1] <= leg->Pre_FSR_Ratio_Hip[2]) || (leg->Pre_FSR_Ratio_Hip[0] <= leg->Pre_FSR_Ratio_Hip[1])) && ((leg->Hip_Ratio == 1) || (leg->Pre_FSR_Ratio_Hip == 0)) ))
-              leg->Hip_Ratio = 1;
-            else
+          if (( (1 > leg->FSR_Ratio_Hip) && (leg->FSR_Ratio_Hip != 0) ) && ( ((leg->Pre_FSR_Ratio_Hip[2] <= leg->FSR_Ratio_Hip)) && ((leg->SwingCon) || (leg->Pre_FSR_Ratio_Hip == 0)) )){
+              leg->Hip_Ratio = 0.6 + (leg->FSR_Ratio_Hip * 0.4);
+              leg->SwingCon = true;
+          }else{
               leg->Hip_Ratio = leg->FSR_Ratio_Hip;
+              leg->SwingCon = false;
+          }
         }
         for (int i = 0; i < 2; i++){
           leg->Pre_FSR_Ratio_Hip[i] = leg->Pre_FSR_Ratio_Hip[i+1];
         }
         leg->Pre_FSR_Ratio_Hip[2] = leg->FSR_Ratio_Hip;
-        
+
+        if (leg->Hip_Ratio > 5)
+          leg->Hip_Ratio = 0;
+          
         // while updating the ratio value still continue to provide the control
         if(leg->FSR_Ratio_Hip <= 0){
           if ((p_steps_l->Setpoint ) > 0) { //depending on the leg the sign changes
@@ -398,24 +414,39 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
         }
 
         if ((leg->FSR_Ratio_Hip < 0) || ( (leg->FSR_Ratio_Hip == 0) && (leg->Pre_FSR_Ratio_Hip[2] < 0) )){ 
-          if (HeelMToe){
-            if (leg->FSR_Ratio_Hip < leg->Hip_Ratio)  //  SS  3/9/2021
-              leg->Hip_Ratio = leg->FSR_Ratio_Hip;
+          if (leg->FSR_Ratio_Hip < leg->Pre_FSR_Ratio_Hip[2]){
+            if (HeelMToe){
+                leg->Hip_Ratio = leg->FSR_Ratio_Hip * 0.50;
+            }else{
+                leg->Hip_Ratio = leg->FSR_Ratio_Hip * 4 * 0.50;
+            }
           }else{
-            if ((leg->FSR_Ratio_Hip * 4) < leg->Hip_Ratio)  //  SS  3/9/2021
-              leg->Hip_Ratio = leg->FSR_Ratio_Hip * 4;
+            leg->lateStance_counter++;
+            leg->Alpha_counter = leg->lateStance_counter;
+            leg->Alpha = ((leg->state_swing_duration/2)*(EarlySwingPercentage/100)) + (leg->lateStance_duration); 
+            if (HeelMToe)
+                leg->Hip_Ratio = ((leg->Min_FSR_Ratio_Hip * 0.50) - (0.50 * (((9 * pow(leg->Alpha_counter / leg->Alpha,2))-(9 * leg->Alpha_counter / leg->Alpha)) / ((3 * leg->Alpha_counter / leg->Alpha) - 4))));
+            else if(HeelMToe4) 
+                leg->Hip_Ratio = ((4 * leg->Min_FSR_Ratio_Hip * 0.50) - (0.50 * (((9 * pow(leg->Alpha_counter / leg->Alpha,2))-(9 * leg->Alpha_counter / leg->Alpha)) / ((3 * leg->Alpha_counter / leg->Alpha) - 4))));
+            else
+            leg->Hip_Ratio = ((-0.50) - (0.50 * (((9 * pow(leg->Alpha_counter / leg->Alpha,2))-(9 * leg->Alpha_counter / leg->Alpha)) / ((3 * leg->Alpha_counter / leg->Alpha) - 4))));
           }
         }else{
-          if (( (1 > leg->FSR_Ratio_Hip) && (leg->FSR_Ratio_Hip != 0) ) && ( ((leg->Pre_FSR_Ratio_Hip[2] <= leg->FSR_Ratio_Hip) || (leg->Pre_FSR_Ratio_Hip[1] <= leg->Pre_FSR_Ratio_Hip[2]) || (leg->Pre_FSR_Ratio_Hip[0] <= leg->Pre_FSR_Ratio_Hip[1])) && ((leg->Hip_Ratio == 1) || (leg->Pre_FSR_Ratio_Hip == 0)) ))
-              leg->Hip_Ratio = 1;
-            else
+          if (( (1 > leg->FSR_Ratio_Hip) && (leg->FSR_Ratio_Hip != 0) ) && ( ((leg->Pre_FSR_Ratio_Hip[2] <= leg->FSR_Ratio_Hip)) && ((leg->SwingCon) || (leg->Pre_FSR_Ratio_Hip == 0)) )){
+              leg->Hip_Ratio = 0.6 + (leg->FSR_Ratio_Hip * 0.4);
+              leg->SwingCon = true;
+          }else{
               leg->Hip_Ratio = leg->FSR_Ratio_Hip;
+              leg->SwingCon = false;
+          }
         }
         for (int i = 0; i < 2; i++){
           leg->Pre_FSR_Ratio_Hip[i] = leg->Pre_FSR_Ratio_Hip[i+1];
         }
         leg->Pre_FSR_Ratio_Hip[2] = leg->FSR_Ratio_Hip;
-        
+
+        if (leg->Hip_Ratio > 5)
+          leg->Hip_Ratio = 0;
     
     if (Control_Mode_l == 2) { // Balance control
 

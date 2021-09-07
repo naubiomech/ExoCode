@@ -856,7 +856,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
       {
         leg->state_swing_counter = 0;
         leg->state_count_13++;
-        leg->Hip_Ratio = 1;
+        leg->SwingCon = true;
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_13 >= state_counter_th)
         {
@@ -1072,7 +1072,7 @@ void State_Machine_Heel_Toe_Sensors_Hip(Leg * leg) {
       {
         leg->state_swing_counter = 0;//  SS  4/9/2021
         leg->state_count_03++;
-        leg->Hip_Ratio = 1;
+        leg->SwingCon = true;
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_03 >= state_counter_th)
         {
@@ -1139,34 +1139,35 @@ void State_Machine_Heel_Toe_Sensors_Hip_3State(Leg * leg) {
       leg->state_1_counter++;
       leg->state_stance_counter = 0;//  SS  4/9/2021
       if (HeelMToe){
-        leg->PID_Setpoint = leg->PID_Setpoint + (((-leg->Dorsi_Setpoint_Ankle) - (leg->Min_FSR_Ratio_Hip * leg->Setpoint_Ankle)) / leg->prev_state_swing_counter);
-        if (leg->Dorsi_Setpoint_Ankle < 0){
-        if ((leg->PID_Setpoint) > (-leg->Dorsi_Setpoint_Ankle))
-          leg->PID_Setpoint = -leg->Dorsi_Setpoint_Ankle;
+        leg->PID_Setpoint = leg->PID_Setpoint + (((-leg->Dorsi_Setpoint_Ankle * 0.6) - (leg->Old_PID_Setpoint)) / leg->prev_state_swing_counter);
+        if (leg->Dorsi_Setpoint_Ankle * 0.6 < 0){
+        if ((leg->PID_Setpoint) > (-leg->Dorsi_Setpoint_Ankle * 0.6))
+          leg->PID_Setpoint = -leg->Dorsi_Setpoint_Ankle * 0.6;
       }else{
-        if ((leg->PID_Setpoint) < (-leg->Dorsi_Setpoint_Ankle))
-          leg->PID_Setpoint = -leg->Dorsi_Setpoint_Ankle;
+        if ((leg->PID_Setpoint) < (-leg->Dorsi_Setpoint_Ankle * 0.6))
+          leg->PID_Setpoint = -leg->Dorsi_Setpoint_Ankle * 0.6;
       }
       }else if (HeelMToe4){
-        leg->PID_Setpoint = leg->PID_Setpoint + (((-leg->Dorsi_Setpoint_Ankle) - (4 * leg->Min_FSR_Ratio_Hip * leg->Setpoint_Ankle)) / leg->prev_state_swing_counter);
-        if (leg->Dorsi_Setpoint_Ankle < 0){
-        if ((leg->PID_Setpoint) > (-leg->Dorsi_Setpoint_Ankle))
-          leg->PID_Setpoint = -leg->Dorsi_Setpoint_Ankle;
+        leg->PID_Setpoint = leg->PID_Setpoint + (((-leg->Dorsi_Setpoint_Ankle * 0.6) - (leg->Old_PID_Setpoint)) / leg->prev_state_swing_counter);
+        if (leg->Dorsi_Setpoint_Ankle * 0.6 < 0){
+        if ((leg->PID_Setpoint) > (-leg->Dorsi_Setpoint_Ankle * 0.6))
+          leg->PID_Setpoint = -leg->Dorsi_Setpoint_Ankle * 0.6;
       }else{
-        if ((leg->PID_Setpoint) < (-leg->Dorsi_Setpoint_Ankle))
-          leg->PID_Setpoint =-leg->Dorsi_Setpoint_Ankle;
+        if ((leg->PID_Setpoint) < (-leg->Dorsi_Setpoint_Ankle * 0.6))
+          leg->PID_Setpoint =-leg->Dorsi_Setpoint_Ankle * 0.6;
       }
       }else{
-       leg->PID_Setpoint = leg->PID_Setpoint + (((-leg->Dorsi_Setpoint_Ankle) - (-leg->Setpoint_Ankle)) / leg->prev_state_swing_counter);
-       if (leg->Dorsi_Setpoint_Ankle < 0){
-        if ((leg->PID_Setpoint) > (-leg->Dorsi_Setpoint_Ankle))
-          leg->PID_Setpoint = -leg->Dorsi_Setpoint_Ankle;
+       leg->PID_Setpoint = leg->PID_Setpoint + (((-leg->Dorsi_Setpoint_Ankle * 0.6) - (leg->Old_PID_Setpoint)) / leg->prev_state_swing_counter);
+       if (leg->Dorsi_Setpoint_Ankle * 0.6 < 0){
+        if ((leg->PID_Setpoint) > (-leg->Dorsi_Setpoint_Ankle * 0.6))
+          leg->PID_Setpoint = -leg->Dorsi_Setpoint_Ankle * 0.6;
       }else{
-        if ((leg->PID_Setpoint) < (-leg->Dorsi_Setpoint_Ankle))
-          leg->PID_Setpoint = -leg->Dorsi_Setpoint_Ankle;
+        if ((leg->PID_Setpoint) < (-leg->Dorsi_Setpoint_Ankle * 0.6))
+          leg->PID_Setpoint = -leg->Dorsi_Setpoint_Ankle * 0.6;
       }
       }
-
+      if (abs(leg->PID_Setpoint) > abs(10 * leg->Setpoint_Ankle))
+          leg->PID_Setpoint = 0;
       
       if (leg->set_2_zero == 1) {
         leg->set_2_zero = 0;
@@ -1179,7 +1180,7 @@ void State_Machine_Heel_Toe_Sensors_Hip_3State(Leg * leg) {
           leg->prev_state_swing_counter = leg->state_1_counter;
         leg->state_1_counter = 0;
         leg->state_count_13++;
-        leg->Hip_Ratio = 1;
+        leg->SwingCon = true;
         // if you're in the same state for more than state_counter_th it means that it is not noise
         if (leg->state_count_13 >= state_counter_th)
         {
@@ -1264,17 +1265,11 @@ void State_Machine_Heel_Toe_Sensors_Hip_3State(Leg * leg) {
         if (leg->state_count_35 >= state_counter_th)
         {
           leg->sigm_done = true;
-//          leg->Old_PID_Setpoint = leg->PID_Setpoint;
-//          leg->New_PID_Setpoint = leg->Dorsi_Setpoint_Ankle;//(leg->Previous_Dorsi_Setpoint_Ankle + (leg->Dorsi_Setpoint_Ankle - leg->Previous_Dorsi_Setpoint_Ankle) * leg->coef_in_3_steps);
-            if (HeelMToe){
-              leg->PID_Setpoint = leg->Min_FSR_Ratio_Hip * leg->Setpoint_Ankle;
-            }else if(HeelMToe4){
-              leg->PID_Setpoint = 4 * leg->Min_FSR_Ratio_Hip * leg->Setpoint_Ankle;
-            }else{
-              leg->Old_PID_Setpoint = leg->PID_Setpoint;
-              leg->New_PID_Setpoint = -leg->Setpoint_Ankle;
-            }
-            
+          if (leg->lateStance_counter != 0){  //  SS  6/7/2021
+            leg->Pre_lateStance_duration = leg->lateStance_duration;
+            leg->lateStance_duration = leg->lateStance_counter;
+            leg->lateStance_counter = 0;
+          } 
             
           leg->state_old = leg->state;
           leg->state = 5;
@@ -1293,6 +1288,39 @@ void State_Machine_Heel_Toe_Sensors_Hip_3State(Leg * leg) {
       leg->state_swing_counter++;
       leg->state_1_counter = 0;
       leg->state_stance_counter = 0;//  SS  4/9/2021
+      leg->Alpha_counter = leg->state_swing_counter + leg->lateStance_duration;
+//      leg->Alpha = ((leg->state_swing_duration/4)*(EarlySwingPercentage/100)) + (leg->Pre_lateStance_duration / 2);
+      leg->Alpha = ((leg->state_swing_duration/2)*(EarlySwingPercentage/100)) + (leg->Pre_lateStance_duration);
+
+      if ((((9 * pow(leg->Alpha_counter / leg->Alpha,2))-(9 * leg->Alpha_counter / leg->Alpha)) / ((3 * leg->Alpha_counter / leg->Alpha) - 4)) < 0){//Switch to state 1
+        leg->state_swing_counter++;
+        leg->state_1_counter++;
+        leg->state_stance_counter = 0;//  SS  4/9/2021
+        leg->Old_PID_Setpoint = leg->PID_Setpoint;
+        leg->New_PID_Setpoint = 0;
+          
+        leg->state_old = leg->state;
+        leg->state = 1;
+        leg->state_count_10 = 0;
+        leg->state_count_03 = 0;
+        leg->state_count_13 = 0;
+        leg->state_count_31 = 0;
+        leg->state_count_35 = 0;
+        leg->state_count_51 = 0;
+        leg->state_count_53 = 0;
+      }
+
+      
+      if (HeelMToe){
+        leg->PID_Setpoint = ((leg->Min_FSR_Ratio_Hip * 0.50) - (0.50 * (((9 * pow(leg->Alpha_counter / leg->Alpha,2))-(9 * leg->Alpha_counter / leg->Alpha)) / ((3 * leg->Alpha_counter / leg->Alpha) - 4)))) * leg->Setpoint_Ankle;
+      }else if(HeelMToe4){
+        leg->PID_Setpoint = ((4 * leg->Min_FSR_Ratio_Hip * 0.50) - (0.50 * (((9 * pow(leg->Alpha_counter / leg->Alpha,2))-(9 * leg->Alpha_counter / leg->Alpha)) / ((3 * leg->Alpha_counter / leg->Alpha) - 4)))) * leg->Setpoint_Ankle;
+      }else{
+        leg->PID_Setpoint = ((-0.50) - (0.50 * (((9 * pow(leg->Alpha_counter / leg->Alpha,2))-(9 * leg->Alpha_counter / leg->Alpha)) / ((3 * leg->Alpha_counter / leg->Alpha) - 4)))) * leg->Setpoint_Ankle;
+      }
+      if (abs(leg->PID_Setpoint) > abs(10 * leg->Setpoint_Ankle))
+          leg->PID_Setpoint = 0;
+      
       if ((leg->set_2_zero == 1) && (leg->One_time_set_2_zero)) {
         leg->sigm_done = true;
         leg->Old_PID_Setpoint = leg->PID_Setpoint;
@@ -1371,6 +1399,9 @@ void State_Machine_Heel_Toe_Sensors_Hip_3State(Leg * leg) {
   }//end switch
   // Adjust the torque reference as a function of the step
   ref_step_adj(leg);
+  
+  if ((abs(leg->PID_Setpoint) > abs(5 * leg->Setpoint_Ankle)) && (abs(leg->PID_Setpoint) > abs(5 * leg->Dorsi_Setpoint_Ankle)))
+          leg->PID_Setpoint = 0;
 
   if ((Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) && (leg->state == 3) && (leg->state_stance_counter > 0)) { //GO 4/21/19  //  SS  4/9/2021
     leg->PID_Setpoint = leg->Setpoint_Ankle_Pctrl;
@@ -1386,10 +1417,10 @@ void State_Machine_Heel_Toe_Sensors_Hip_3State(Leg * leg) {
 //      PID_Sigm_Curve(leg);
 //    }
   }
-  if ((leg->state == 5) && (Heel || HeelPToe) ){
+//  if ((leg->state == 5) && (Heel || HeelPToe) ){
       // Create the smoothed reference and call the PID
-      PID_Sigm_Curve(leg);
-    }
+//      PID_Sigm_Curve(leg);
+//    }
 
 }// end function
 //-------------------------------------------------------------------------------------------------------------

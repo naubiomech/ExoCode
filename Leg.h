@@ -96,6 +96,9 @@ struct Leg {
   double Hip_Ratio = 0; //  SS  3/9/2021
   double FSR_Ratio_Hip = 0;
   double Pre_FSR_Ratio_Hip[3];
+
+  double Alpha  = 1;
+  double Alpha_counter = 0;
   // Combined_FSR.h
   double fsr_Combined_peak_ref;
   double Curr_Combined;
@@ -245,6 +248,7 @@ struct Leg {
   int state_stance_counter = 0; //  SS  4/9/2021
   int state_1_counter = 0; //  SS  5/3/2021
   int prev_state_swing_counter = 300; //  SS  5/3/2021
+  int lateStance_counter = 0;
 
   double state_3_start_time = 0;
   double state_1_start_time = 0;
@@ -258,6 +262,9 @@ struct Leg {
   double state_swing_start_time = 0; //  SS  12/14/2020
   double state_swing_stop_time = 0; //  SS  12/14/2020
   double state_swing_duration = 0; //  SS  12/14/2020
+  double  lateStance_duration = 0;
+  double  Pre_lateStance_duration = 0;
+  bool SwingCon = false;
   
   double Heel_Pos = -0.07;
   double Toe_Pos = 0.20;

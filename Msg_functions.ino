@@ -12,7 +12,7 @@ void send_data_message_wc() //with COP
     
   //Left Leg
   data_to_send[3] = (left_leg->sign * left_leg->Average_Trq);
-  data_to_send[4] = left_leg->state;
+  data_to_send[4] = right_leg->FSR_Ratio_Hip;//left_leg->state;
   data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
   
   send_command_message('?', data_to_send, 6);
