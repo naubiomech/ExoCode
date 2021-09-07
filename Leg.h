@@ -1,7 +1,7 @@
 #ifndef LEG_HEADER
 #define LEG_HEADER
 const int dim_FSR = 30;
-const int dim = 10;
+const int dim = 5;
 const int dim_Angle = 20;
 
 #include "PID_v2.h"
