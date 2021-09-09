@@ -4,13 +4,13 @@ void send_data_message_wc() //with COP
 {
   //Right Leg
   data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
-  data_to_send[1] = right_state;//right_leg->state / 3;
+  data_to_send[1] = right_leg->state / 3;
   data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
 
   //Left Leg
-  data_to_send[3] = left_torque;//(left_leg->sign * left_leg->Average_Trq);
-  data_to_send[4] = left_state;//left_leg->state / 3;
-  data_to_send[5] = left_setpoint;//(left_leg->sign * left_leg->PID_Setpoint);
+  data_to_send[3] = (left_leg->sign * left_leg->Average_Trq);
+  data_to_send[4] = left_leg->state / 3;
+  data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
 
   //Normalized FSR values
   if (right_leg->baseline_value != 0 && left_leg->baseline_value != 0) {

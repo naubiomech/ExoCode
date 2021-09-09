@@ -30,12 +30,6 @@
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048; //1540;
 bool motors_on = false;
-double right_torque;
-double right_setpoint;
-double left_torque;
-double left_setpoint;
-double right_state;
-double left_state;
 
 #include <ArduinoBLE.h>
 #include <elapsedMillis.h>
@@ -78,7 +72,7 @@ void control_loop() {
           pid_check(left_leg);
       }
       if (stream && (imuCounter > imuTimerCount)) {
-        amb_sm.tick(stepper->steps);
+        //amb_sm.tick(stepper->steps);
         imuCounter = 0;
       }
     }

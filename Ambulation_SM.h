@@ -95,7 +95,6 @@ class Ambulation_SM {
     coronal_acc *= 9.81*3.6;
     est_speed += coronal_acc * CONTROL_TIME_STEP;
     filtered_speed = ema_with_context(filtered_speed, est_speed, 0.9);
-    //left_torque = filtered_speed;
   }
 
   inline void track_steps(unsigned int steps) {
@@ -103,12 +102,10 @@ class Ambulation_SM {
     if (steps > last_steps) {
       last_step_reset = start;
       bias_tracking = true;
-      //left_torque = 1;
     }
     unsigned long int delta = start - last_step_reset;
     if (delta > reset_duration_k) {
       bias_tracking = false;
-      //left_torque = 0;
     }
     last_steps = steps;
   }
@@ -123,11 +120,6 @@ class Ambulation_SM {
   }
 
   inline void check_state() {
-    //Serial.print(resultant);
-    //Serial.print('\t');
-    //Serial.println(threshold);
-    left_torque = resultant;
-    left_setpoint = threshold;
     /* If there is a large acceleration, the user is walking */
     uint32_t start = millis();
     if (resultant > threshold) {

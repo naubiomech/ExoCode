@@ -65,10 +65,8 @@ inline void tracking_check(Leg* leg) {
     double track_error_rate = abs((current_track_error - track_error_R) / CONTROL_TIME_STEP);
     if ((filtered_error_R > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
       change_motor_state(false);
-      right_state = 1;
     }
     track_error_R = filtered_error_R;
-    //left_setpoint = track_error_R;
   }
   else {
     filtered_sp_L = ema_with_context(filtered_sp_L, left_leg->PID_Setpoint, EST_TRQ_ALPHA);
@@ -77,7 +75,6 @@ inline void tracking_check(Leg* leg) {
     double track_error_rate = abs((filtered_error_L - track_error_L) / CONTROL_TIME_STEP);
     if ((filtered_error_L > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
       change_motor_state(false);
-      left_state = 1;
     }
     track_error_L = filtered_error_L;
   }
@@ -92,7 +89,6 @@ inline void torque_check(Leg* leg) {
     if (leg->torque_error_counter >= 10) {
       change_motor_state(false);
       leg->torque_error_counter = 0;
-      left_state = 2;
     }
   }
 
@@ -103,7 +99,6 @@ inline void torque_check(Leg* leg) {
     if (count >= 10) {
       change_motor_state(false);
       count = 0;
-      right_state = 2;
     }
   }
   leg->previous_torque_average = abs_trq;
@@ -118,7 +113,6 @@ inline void pid_check(Leg* leg) {
       r_count++;
       if (r_count / CONTROL_LOOP_HZ >= PID_SAT_TIME) {
         change_motor_state(false);
-        right_state = 3;
       }
     }
     else {
@@ -129,7 +123,6 @@ inline void pid_check(Leg* leg) {
       l_count++;
       if (l_count / CONTROL_LOOP_HZ >= PID_SAT_TIME) {
         change_motor_state(false);
-        left_state = 3;
       }
     }
     else {
