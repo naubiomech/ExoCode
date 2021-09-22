@@ -102,7 +102,7 @@ void receive_and_transmit()
         MaxSpeed = 15000; //RPM
         TrqConstant = 14 / 1000; //Nm/A
         GearRatio = 4617.0 / 52.0; //89:1 gear ratio
-        NomCurrent = 7.58; //A
+        NomCurrent = 8.0; //A
         MotorEff = 0.89;
         GearboxEff = 0.59;
         PulleyRatio = 5; //Small aluminum pulley, large sprocket
