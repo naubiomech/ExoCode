@@ -26,7 +26,7 @@ void pid(Leg* leg, double input) {
     
   }
 
-  if (CURRENT_CONTROL && leg->PID_Setpoint!=0 && MotorParams!=100 && leg->state==3) { //Simple Open-Loop Control
+  if (CURRENT_CONTROL && leg->PID_Setpoint!=0) { //Simple Open-Loop Control
     //leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio * MotorEff * GearboxEff))/NomCurrent*2048) + leg->zero; //Setpoint/(Motor torque constant, gear reduction, pulley reduction, motor eff, gearbox eff)
     leg->Vol = (0.275*(leg->PID_Setpoint))/NomCurrent*2048.0;
     if (Control_Mode == 6 && leg->state == 3) {
