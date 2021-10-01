@@ -19,7 +19,7 @@ char Peek = 'a';
 int cmd_from_Gui = 0;
 
 // Single board small pin to enable the motors
-const unsigned int onoff = MOTOR_ENABLE_PIN;
+//const unsigned int onoff = MOTOR_ENABLE_PIN;
 
 // Single board SQuare (big)
 

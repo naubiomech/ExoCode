@@ -155,11 +155,11 @@ class Ambulation_SM {
 
 namespace Amb_SM_cbs {
   void upon_walking() {
-    change_motor_stateless(true);
+    change_motor_stateless(&akMotor, true);
   }
 
   void upon_standing() {
-    change_motor_stateless(false);
+    change_motor_stateless(&akMotor, false);
   }
 }
 

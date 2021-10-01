@@ -3,9 +3,10 @@
 
 #include <SPI.h>
 #include "can.h"
+#include "board.h"
 
 #define CAN_RATE 57600
-#define CS_PIN 10
+#define CS 10
 
 /*
  *  Speed 8M
@@ -445,7 +446,7 @@ class MCP2515
             CANINTF  CANINTF_RXnIF;
         } RXB[N_RXBUFFERS];
 
-        uint8_t SPICS = CS_PIN;
+        uint8_t SPICS = CS;
 
     private:
 

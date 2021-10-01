@@ -1,4 +1,4 @@
-
+/*
 void resetMotorIfError() {
   //motor_error boolean is "true" if we have an error, false if we don't
   left_leg->motor_error = !digitalRead(left_leg->pin_err); //digitalRead is pulled HIGH when there is no error
@@ -59,3 +59,4 @@ void resetMotorIfError() {
 
   }//end stream==1
 } // resetmotorIfError
+*/

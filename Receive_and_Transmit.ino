@@ -72,7 +72,7 @@ void receive_and_transmit()
       break;
 
     case 'E':
-      change_motor_state(true);                                      //The GUI user is ready to start the trial so Motor is enabled
+      change_motor_state(&akMotor, true);                                      //The GUI user is ready to start the trial so Motor is enabled
       stream = 1;                                                     //and the torque data is allowed to be streamed
       streamTimerCount = 0;
       timeElapsed = 0;
@@ -126,9 +126,9 @@ void receive_and_transmit()
       right_leg->KF = 1.0;
 
 
-      reset_count = 0;
+      //reset_count = 0;
 
-      change_motor_state(false);                                        //The GUI user is ready to end the trial, so motor is disabled
+      change_motor_state(&akMotor, false);                                        //The GUI user is ready to end the trial, so motor is disabled
       stepData[0] = stepper->steps; //CFC 1/22/21
       stepData[1] = (stepper->bio_steps) / 2; //Divide by two because only one leg is being used during biofeedback
       send_command_message(stepper->step_flag, stepData, 2);
@@ -210,12 +210,12 @@ void receive_and_transmit()
 
     case 'w':
       //Motors off command
-      change_motor_state(false);
+      change_motor_state(&akMotor, false);
       break;
 
     case 'x':
       //Motors on command
-      change_motor_state(true);
+      change_motor_state(&akMotor, true);
       break;
 
     case '%':

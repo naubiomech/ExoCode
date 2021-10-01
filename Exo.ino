@@ -1,28 +1,8 @@
-//A_Exo 3_1_3 This is the code for the Single board Ankle Exoskeleton -> A_EXO_s
-//
-// FSR sensors retrieve the sensor voltage related to the foot pressure.
-// The state machine (Left and Right state machine) identify the participant status depending on the voltage.
-// The torque reference is decided by the user (Matlab GUI) and sent as reference to the PID control.
-// The PID control and data tranmission to the GUI are scheduled by an interrupt which interrupts the system every 2ms to do its job
-//
-// Sensor can be calibrated by the user and/or saved calibration can be loaded to speed up the setup.
-//
-// The torque reference can be smoothed by sigmoid functions or spline function
-// In case of too long steady state the torque reference is set to zero
-// In case of new torque reference the torque amount is provided gradually as function of the steps.
-//
-// 1 step = 0N
-// 2 steps = 2N
-// 3 steps = 4N
-// 4 steps = 6N
-// 5 steps = 8N
-// 6 steps = 10N
-//TMOTOR
-//
-// Several parameters can be modified thanks to the Receive and Transmit functions
+//TMOTOR Nano
+//Ensure that the proper motor is defined in akxMotor.h!!!
 
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD_REV6
+#define BOARD_VERSION TMOTOR_REV1
 
 #define CONTROL_LOOP_HZ           500
 #define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
@@ -54,15 +34,16 @@ bool motors_on = false;
 #include "fault_detection.h"
 #include "ema_filter.h"
 #include "motor_utils.h"
+#include "akxMotor.h"
 //----------------------------------------------------------------------------------
 rtos::Thread callback_thread(osPriorityNormal);
 Ambulation_SM amb_sm;
-uint32_t imuCounter = 0; 
+uint32_t imuCounter = 0;
 
 void control_loop() {
   while (true) {
     imuCounter++;
-    resetMotorIfError();
+    //resetMotorIfError();
     calculate_averages();
 
     if (motors_on) {
@@ -90,8 +71,8 @@ void control_loop() {
 void setup()
 {
   // set pin mode for motor pin
-  pinMode(onoff, OUTPUT); //Enable disable the motors
-  digitalWrite(onoff, LOW);
+  //pinMode(onoff, OUTPUT); //Enable disable the motors
+  //digitalWrite(onoff, LOW);
 
   pinMode(RED, OUTPUT);
   pinMode(BLUE, OUTPUT);
@@ -132,6 +113,11 @@ void setup()
 
   // Torque cal
   torque_calibration(); //Sets a torque zero on startup  
+
+  //Initailize motor driver IC
+  akMotor.init();
+  akMotor.setMotorState(L_ID, false);
+  akMotor.setMotorState(R_ID, false);
 
   //Initialize the standing/walking state detector and provide callback functions
   amb_sm.init();
@@ -185,8 +171,8 @@ void update_GUI() {
     send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
     voltageTimerCount = 0;
     //Motor reset Count
-    errorCount[0] = reset_count;
-    send_command_message('w', errorCount, 1);
+    //errorCount[0] = reset_count;
+    //send_command_message('w', errorCount, 1);
     callback_thread.set_priority(osPriorityAboveNormal);
   }
   voltageTimerCount++;
@@ -265,7 +251,6 @@ void calculate_averages() {
 void check_FSR_calibration() {
   if (FSR_CAL_FLAG) {
     FSR_calibration();
-    
   }
 
   // for the proportional control
@@ -296,8 +281,11 @@ void rotate_motor() {
   //adjust some control parameters as a function of the control strategy decided (Control_Adjustment)
   if (stream == 1)
   {
-    pid(left_leg, left_leg->Average_Trq);
-    pid(right_leg, right_leg->Average_Trq);
+    float l_vol = pid(left_leg, left_leg->Average_Trq);
+    float r_vol = pid(right_leg, right_leg->Average_Trq);
+
+    akMotor.map_and_apply(L_ID, l_vol);
+    akMotor.map_and_apply(R_ID, r_vol);
 
     if (flag_auto_KF) {
       Auto_KF(left_leg, Control_Mode);
