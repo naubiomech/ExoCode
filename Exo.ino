@@ -36,6 +36,7 @@ bool motors_on = false;
 #include <elapsedMillis.h>
 #include <PID_v2.h>
 #include <Wire.h>
+#include <SPI.h>
 #include <mbed.h>
 #include <rtos.h>
  
