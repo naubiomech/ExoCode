@@ -17,6 +17,7 @@
 // 4 steps = 6N
 // 5 steps = 8N
 // 6 steps = 10N
+//TMOTOR
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
