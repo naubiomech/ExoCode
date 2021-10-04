@@ -31,7 +31,9 @@
 const unsigned int zero = 2048; //1540;
 bool motors_on = false;
 
+#include <WiFiNINA.h>
 #include <ArduinoBLE.h>
+#include <WiFiNINA.h>
 #include <elapsedMillis.h>
 #include <PID_v2.h>
 #include <Wire.h>
@@ -39,6 +41,7 @@ bool motors_on = false;
 #include <rtos.h>
  
 #include "Parameters.h"
+#include <WiFiNINA.h>
 #include "Board.h"
 #include "Leg.h"
 #include "Reference_ADJ.h"
