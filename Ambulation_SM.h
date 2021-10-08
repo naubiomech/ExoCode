@@ -8,7 +8,7 @@
  * 
  */
 
-#include <Arduino_LSM9DS1.h>
+//#include <Arduino_LSM9DS1.h>
 #include "ema_filter.h"
 #include "motor_utils.h"
 
@@ -21,7 +21,7 @@ class Ambulation_SM {
   public:
   States last_state = Standing;
   void init() {
-    if (!IMU.begin()) {
+    if (false) {
        while (1);
     }
   }
@@ -29,7 +29,7 @@ class Ambulation_SM {
   inline void tick(unsigned int steps) {
     float x, y, z;
     x = 2;
-    if (IMU.readAcceleration(x, y, z)) {
+    if (false) {
       y = -y;
       correct_sagittal_angle(y, z);
       compute_resultant(x, y, z);

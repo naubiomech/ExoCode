@@ -29,13 +29,14 @@ void setupBLE()
     RXChar.setEventHandler(BLEWritten,   onRxCharValueUpdate);
     BLE.advertise();
     //config_ble_regs();
-    digitalWrite(GREEN,LOW);
+    
+    digitalWrite(GREEN, HIGH);
   }
   else {
     Serial.println("Error Setting up BLE");
-    digitalWrite(GREEN, HIGH);
-    digitalWrite(BLUE, HIGH);
-    digitalWrite(RED, LOW);
+    digitalWrite(GREEN, LOW);
+    digitalWrite(BLUE, LOW);
+    digitalWrite(RED, HIGH);
   }
 }
 
@@ -63,18 +64,20 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
 
 void onBLEConnected(BLEDevice central)
 {
-  digitalWrite(GREEN,HIGH);
-  digitalWrite(BLUE, LOW);
+  digitalWrite(GREEN, LOW);
+  digitalWrite(BLUE, HIGH);
   //callback_thread.set_priority(osPriorityNormal);
   BLE.stopAdvertise();
+  Serial.println("Connected");
   //callback_thread.set_priority(osPriorityAboveNormal);
 }
 
 void onBLEDisconnected(BLEDevice central)
 {
-  digitalWrite(GREEN,LOW);
-  digitalWrite(BLUE, HIGH);
+  digitalWrite(GREEN, HIGH);
+  digitalWrite(BLUE, LOW);
   //callback_thread.set_priority(osPriorityNormal);
   BLE.advertise();
+  Serial.println("Disconnected");
   //callback_thread.set_priority(osPriorityAboveNormal);
 }

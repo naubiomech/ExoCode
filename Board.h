@@ -21,7 +21,6 @@
 #define RED LEDR
 #define GREEN LEDG
 #define BLUE LEDB
-#define LED_PIN 25 //POWER LED
 
 #define MOTOR_ENABLE_PIN 5
 
