@@ -116,7 +116,12 @@ void FSR_calibration()
 }
 
 double get_torq(Leg* leg) {
-  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096.0)) - leg->torque_calibration_value) * 43.9; // For the custom anchor sensor
+  double Torq;
+  if(leg == left_leg) {
+    Torq = ((analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096.0)) - leg->torque_calibration_value) * 43.9;
+  } else {
+    Torq = ((analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096.0)) - leg->torque_calibration_value) * 43.9;
+  }
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }
 
@@ -160,8 +165,13 @@ double fsr(const unsigned int pin) {
 /*Motor Current Code
    This function reads the motor current pin and converts the voltage reading in bits to motor current.
 */
-double current(const unsigned int pin) {
-  int value = analogRead(pin);
+double current(Leg* leg) {
+  int value;
+  if(leg == left_leg) {
+    value = analogRead(MOTOR_CURRENT_LEFT_ANKLE_PIN);
+  } else {
+    value = analogRead(MOTOR_CURRENT_RIGHT_ANKLE_PIN);
+  }
   double Co = NomCurrent * (value - 2048.0) / 2048.0; //Nominal current needs to be set in ESCON, 7.58
   return Co;
 }

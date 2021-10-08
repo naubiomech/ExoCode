@@ -208,7 +208,7 @@ void calculate_leg_average(Leg* leg, double alpha) {
     leg->Average = 0;
 
     //Motor current needs the same moving average as torque
-    leg->CurrentArrayPoint[0] = current(leg->motor_current_pin);
+    leg->CurrentArrayPoint[0] = current(leg);
     leg->AverageCurrent = 0;
   
     for (int i = 0; i < dim; i++)

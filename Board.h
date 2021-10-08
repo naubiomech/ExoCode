@@ -18,9 +18,9 @@
 #define MOTOR_LEFT_ANKLE_PIN 3   
 #define MOTOR_RIGHT_ANKLE_PIN  10 
 
-#define RED 22
-#define GREEN 23
-#define BLUE 24
+#define RED LEDR
+#define GREEN LEDG
+#define BLUE LEDB
 #define LED_PIN 25 //POWER LED
 
 #define MOTOR_ENABLE_PIN 5

@@ -7,10 +7,9 @@ const int dim = 5;
 #include "Control_Adjustment.h"
 
 struct Leg {
-  int torque_sensor_ankle_pin;
   int motor_ankle_pin;
-  int motor_current_pin;
   int motor_speed_pin;
+  
   // In A_Exo pre-includes
   double Curr_FSR_Toe = 0;
 
