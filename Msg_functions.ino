@@ -92,7 +92,13 @@ void send_data_message_wc() //with COP
     //data_to_send[12] = left_leg->trig_number;//SS  6/23/2020
     //data_to_send[13] = left_leg->Trigger;//SS  6/23/2020
   }
-  send_command_message('?', data_to_send, 14);
+  #if BOARD_VERSION == DUAL_BOARD_REV4_1  // PS 2021.10
+    data_to_send[14] = syncLed.ledIsOn;
+    send_command_message('?', data_to_send, 15);
+  #else
+    send_command_message('?', data_to_send, 14);
+  #endif
+  
   }
   
 }

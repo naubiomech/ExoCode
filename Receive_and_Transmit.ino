@@ -154,16 +154,31 @@ void receive_and_transmit()
 
       break;
 
+    // Start Trial
     case 'E':
+      #if BOARD_VERSION == DUAL_BOARD_REV4_1  // PS 2021.10
+        // Trigger the sync LED
+        syncLed.trigger();
+        // We will handle the stream stuff in Exo.ino's loop.
+      #else
+        stream = 1;
+      #endif
       digitalWrite(onoff, HIGH);                                         //The GUI user is ready to start the trial so Motor is enabled
-      stream = 1;                                                     //and the torque data is allowed to be streamed
+                                                           //and the torque data is allowed to be streamed
       streamTimerCount = 0;
       timeElapsed = 0;
       break;
 
+    // End Trial
     case 'G':
       digitalWrite(onoff, LOW);                                         //The GUI user is ready to end the trial, so motor is disabled
-      stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
+      // The Sync LED stop sequence will not be recorded this way.  This is ok for a first pass.  Update later so that the stream does not stop till the stop sequence finishes.  
+      #if BOARD_VERSION == DUAL_BOARD_REV4_1  // PS 2021.10
+        // Trigger the sync LED
+        syncLed.trigger();
+      #else
+        stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
+      #endif
       break;
 
     case 'H':

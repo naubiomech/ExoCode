@@ -21,7 +21,7 @@
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD_REV3
+#define BOARD_VERSION DUAL_BOARD_REV4_1
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
 
@@ -33,7 +33,7 @@ int j = 0;
 #include <elapsedMillis.h>
 #include <EEPROM.h>
 #include "TimerOne.h"
-#include <PID_v2.h>
+#include <PID_v2.h>  // This file can be found in "G:\Shared drives\Biomech_Lab\Exoskeleton_Code\libraries". These libraries should be added to the arduino libraries (C:\Program Files (x86)\Arduino\libraries) as they contain some custom stuff.
 #include <SoftwareSerial.h>
 //#include <NewSoftSerial.h>
 #include "Reference_ADJ.h"
@@ -48,17 +48,25 @@ int j = 0;
 //#include "Wave.h"
 #include "Step.h"
 #include "Math.h"
+#include "IntervalTimer.h"
+#include "Sync_Led.h"
+
 bool iOS_Flag = 0;
 int streamTimerCountNum = 0;
 //----------------------------------------------------------------------------------
 
+// the sync is global so the ISR can access it.  The legs seem to be globals initialized in the .h file.  Need to discuss if we want to do the same here.  PS 2021.10
+#if BOARD_VERSION == DUAL_BOARD_REV4_1
+  IntervalTimer syncTimer;  // Create a timer for setting for handling the interupt, this is needed as the ISR cannot access class variables since you cannot pass a self to the ISR.
+  Sync_Led syncLed(SYNC_LED_PIN, SYNC_START_STOP_HALF_PERIOD_US, SYNC_HALF_PERIOD_US, LED_ON_STATE);  // Create a sync LED object, the first arguments (pin) is found in Board.h, and the rest are in Sync_Led.h.
+#endif
 
 // Initialize the system
 void setup()
 {
   // set the interrupt timer
   Serial.println("Started");
-  #if BOARD_VERSION == DUAL_BOARD_REV4  //Use timer interrupts for teensy 3.6
+  #if BOARD_VERSION == DUAL_BOARD_REV4 | BOARD_VERSION == DUAL_BOARD_REV4_1  //Use timer interrupts for teensy 3.6
     Timer1.initialize(2000);            // initialize timer1, and set a 2 ms period *note this is 2k microseconds*
     Timer1.attachInterrupt(callback);   // attaches callback() as a timer overflow interrupt
   #endif
@@ -66,7 +74,7 @@ void setup()
   // enable bluetooth
   #if BOARD_VERSION == DUAL_BOARD_REV3
     #define bluetooth Serial8
-  #elif BOARD_VERSION == DUAL_BOARD_REV4
+  #elif BOARD_VERSION == DUAL_BOARD_REV4 | BOARD_VERSION == DUAL_BOARD_REV4_1
     #define bluetooth Serial4
   #endif
   if (iOS_Flag == true) 
@@ -115,7 +123,7 @@ void setup()
   // Initialize power monitor settings
   #if BOARD_VERSION == DUAL_BOARD_REV3
     #define WireObj Wire1
-  #elif BOARD_VERSION == DUAL_BOARD_REV4
+  #elif BOARD_VERSION == DUAL_BOARD_REV4 | BOARD_VERSION == DUAL_BOARD_REV4_1
     #define WireObj Wire
   #endif  
   pinMode(PWR_ADR_0, OUTPUT);
@@ -134,6 +142,12 @@ void setup()
   batteryData[0] = startVolt;
   send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware 
 
+  #if BOARD_VERSION == DUAL_BOARD_REV4_1  // PS 2021.10
+    // Start the timer
+    syncTimer.begin(grossLedInteruptWrapper, syncLed.currentSyncPeriod);
+  #endif
+
+  
   //calculateWave();
   calculateStep();
   Serial.println("Setup complete");
@@ -141,6 +155,18 @@ void setup()
 }
 
 //----------------------------------------------------------------------------------
+
+/* 
+ *  The interupt service routine
+ *  This is terrible but integrating the timer into the class doesn't work well, as the callback can't access member variables or functions.
+ *  
+ *  PS 2021.10
+ */
+void grossLedInteruptWrapper(void)
+{
+  syncLed.syncLedHandler(); // calculate the LED state based on the timer, but don't change the actual LED state.
+  syncTimer.begin(grossLedInteruptWrapper, syncLed.currentSyncPeriod);  // update the timer period ideally we would only do this if it changed, might add a flag to syncLed if needed
+}
 
 void callback()//executed every 2ms
 {
@@ -202,6 +228,18 @@ void loop()
   //  // apply biofeedback, if it is not activated return void
   biofeedback();
 
+  #if BOARD_VERSION == DUAL_BOARD_REV4_1  // PS 2021.10
+    syncLed.updateLed();  // actually change the led state, this also updates ledIsOn for recording the actual on/off state 
+    if (syncLed.doBlink | syncLed.doStartStopSequence) //if we are within a trial stream data
+    {
+      stream = 1;
+    }
+    else 
+    {
+      stream = 0;
+    }
+  #endif
+  
   //if the stream is not activated reset the starting parameters
   if (stream != 1) // stream is 1 once you push start trial in the matlab gui, is 0 once you push end trial.
   {
