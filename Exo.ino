@@ -7,7 +7,6 @@
 #define CONTROL_LOOP_HZ           500
 #define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
 #define COMMS_LOOP_HZ             50
-#define IMU_LOOP_HZ               10
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048; //1540;
 bool motors_on = false;
@@ -40,6 +39,10 @@ rtos::Thread callback_thread(osPriorityNormal);
 Ambulation_SM amb_sm;
 uint32_t imuCounter = 0;
 
+/* Holds the latest motor data */
+//motor_frame_t l_frame;
+//motor_frame_t r_frame;
+
 void control_loop() {
   while (true) {
     imuCounter++;
@@ -61,10 +64,35 @@ void control_loop() {
     }
     
     rotate_motor();
+    //read_motor();
 
     rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
   }
 }
+
+/*
+void read_motor() {
+  
+  motor_frame_t temp_frame;
+  if(akMotor.readCAN(&temp_frame) == MCP2515::ERROR_OK) {
+    if(temp_frame.id == R_ID) {
+      Serial.println("R");
+      r_frame.pos = temp_frame.pos;
+      r_frame.vel = temp_frame.vel;
+      r_frame.tor = temp_frame.tor;
+    } else if(temp_frame.id == L_ID) {
+      Serial.println("L");
+      l_frame.pos = temp_frame.pos;
+      l_frame.vel = temp_frame.vel;
+      l_frame.tor = temp_frame.tor;
+    } else {
+      Serial.println("ERR");
+    }
+  } else {
+    Serial.println("ERR");
+  }
+}
+*/
 
 
 // Initialize the system
@@ -118,6 +146,9 @@ void setup()
   akMotor.init();
   akMotor.setMotorState(L_ID, false);
   akMotor.setMotorState(R_ID, false);
+
+  //r_frame.id = R_ID;
+  //l_frame.id = L_ID;
 
   //Initialize the standing/walking state detector and provide callback functions
   amb_sm.init();

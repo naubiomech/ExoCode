@@ -2,13 +2,16 @@
 //Real time data being sent to the GUI
 void send_data_message_wc() //with COP
 {
+  motor_frame_t r_frame = akMotor.readID(R_ID);
+  motor_frame_t l_frame = akMotor.readID(L_ID);
+  
   //Right Leg
-  data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
+  data_to_send[0] = r_frame.tor;
   data_to_send[1] = right_leg->state / 3;
   data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
 
   //Left Leg
-  data_to_send[3] = (left_leg->sign * left_leg->Average_Trq);
+  data_to_send[3] = l_frame.tor;
   data_to_send[4] = left_leg->state / 3;
   data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
 

@@ -16,12 +16,12 @@
 #define KD_MAX 5.0f
 #define KD_MIN 0.0f
 
-//#ifdef AK80
-//#define T_MIN -18.0f //Was 18
-//#define T_MAX 18.0f
-//#define V_MIN -25.64f //Was 65
-//#define V_MAX 25.64f
-//#endif
+#ifdef AK80
+#define T_MIN -18.0f
+#define T_MAX 18.0f
+#define V_MIN -25.64f
+#define V_MAX 25.64f
+#endif
 
 #ifdef AK60
 #define T_MIN -9.0f
@@ -63,19 +63,45 @@ class akxMotor {
       scaling_factor = 2*T_MAX / 4096;
     }
 
+    /* Takes the voltage output of PID, maps it to a torque and sends it */
     inline void map_and_apply(uint32_t id, float vol) {
-      /* Takes the voltage output of PID, maps it to a torque and sends it */
       motor_frame_t out_frame;
       out_frame.id = id;
       out_frame.pos = 0;
       out_frame.vel = 0;
       out_frame.kp = 0;
-      out_frame.kd = 0.01;
+      out_frame.kd = 0;
 
       float torque = (vol-ZERO)*scaling_factor;
       out_frame.tor = torque;
       sendCAN(&out_frame);
     }
+
+    /* This function will wait for timeout to execute, if timeout or error, return ID 0. Timout is in millis */
+    inline motor_frame_t readID(uint32_t id, float timeout = DEF_TIMEOUT) {
+      motor_frame_t m_frame;
+      float start = millis();
+      while(true) {
+        /* Read */
+        MCP2515::ERROR err = readCAN(&m_frame);
+
+        /* Check for errors and message */
+        if(err == MCP2515::ERROR_OK) {
+          if(m_frame.id == id) {
+            return m_frame;
+          }
+        } else if(err != MCP2515::ERROR_NOMSG) {
+          m_frame.id = 0;
+          return m_frame;
+        } //End error check
+
+        /* Check for timeout */
+        if((millis() - start) >= timeout) {
+          m_frame.id = 0;
+          return m_frame;
+        } //End timeout check
+      } //End While
+    } //End function
 
     inline void setZero(uint32_t id) {
       /* Sets the current zero of the motor position
@@ -177,6 +203,7 @@ class akxMotor {
   private:
     MCP2515 mcp2515;
     float scaling_factor;
+    static constexpr float DEF_TIMEOUT = 5;
     
   /* These functions will only output and send the correct values
      when the max and min values are properly defined above. */
