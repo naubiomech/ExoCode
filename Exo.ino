@@ -58,7 +58,7 @@ int streamTimerCountNum = 0;
 // the sync is global so the ISR can access it.  The legs seem to be globals initialized in the .h file.  Need to discuss if we want to do the same here.  PS 2021.10
 #if BOARD_VERSION == DUAL_BOARD_REV4_1
   IntervalTimer syncTimer;  // Create a timer for setting for handling the interupt, this is needed as the ISR cannot access class variables since you cannot pass a self to the ISR.
-  Sync_Led syncLed(SYNC_LED_PIN, SYNC_START_STOP_HALF_PERIOD_US, SYNC_HALF_PERIOD_US, LED_ON_STATE);  // Create a sync LED object, the first arguments (pin) is found in Board.h, and the rest are in Sync_Led.h.
+  Sync_Led syncLed(SYNC_LED_PIN, SYNC_START_STOP_HALF_PERIOD_US, SYNC_HALF_PERIOD_US, LED_ON_STATE, SYNC_DEFAULT_STATE_PIN);  // Create a sync LED object, the first and last arguments (pin) are found in Board.h, and the rest are in Sync_Led.h.  If you do not have a digital input for the default state you can remove SYNC_DEFAULT_STATE_PIN.  
 #endif
 
 // Initialize the system

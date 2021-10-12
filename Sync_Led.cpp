@@ -46,6 +46,7 @@ Sync_Led::Sync_Led(int pin, int syncStartStopHalfPeriodUs, int syncHalfPeriodUs)
 	_syncHalfPeriodUs = syncHalfPeriodUs;
 	_defaultLedState = LED_ON_STATE;
 	ledState = _defaultLedState;
+  _ledDefaultStatePin = -1;
   ledIsOn = ledState == LED_ON_STATE;
   
 	_stateChangeCount = 0; 
@@ -71,6 +72,7 @@ Sync_Led::Sync_Led(int pin, int syncStartStopHalfPeriodUs, int syncHalfPeriodUs,
 	_syncStartStopHalfPeriodUs = syncStartStopHalfPeriodUs;
 	_syncHalfPeriodUs = syncHalfPeriodUs;
 	_defaultLedState = defaultLedState;
+  _ledDefaultStatePin = -1;
   ledState = _defaultLedState;
   ledIsOn = ledState == LED_ON_STATE;
 	
@@ -86,6 +88,35 @@ Sync_Led::Sync_Led(int pin, int syncStartStopHalfPeriodUs, int syncHalfPeriodUs,
 	// Serial for debug.
 	//Serial.begin(115200);
 	
+}
+
+Sync_Led::Sync_Led(int pin, int syncStartStopHalfPeriodUs, int syncHalfPeriodUs, int defaultLedState , int ledDefaultStatePin)
+{
+  // See header file for information on what each variable is for.
+  
+  _pin = pin;
+  currentSyncPeriod = syncHalfPeriodUs;
+  _syncStartStopHalfPeriodUs = syncStartStopHalfPeriodUs;
+  _syncHalfPeriodUs = syncHalfPeriodUs;
+  _defaultLedState = defaultLedState;
+  _ledDefaultStatePin = ledDefaultStatePin;
+  ledState = _defaultLedState;
+  ledIsOn = ledState == LED_ON_STATE;
+  
+  _stateChangeCount = 0; // Track how many 
+  doBlink = false; // use volatile for shared variables
+  doStartStopSequence = false; // use volatile for shared variables
+  _numStartStopBlinks = NUM_START_STOP_BLINKS;
+  
+  // Configure the pin for the LED
+  pinMode(_pin, OUTPUT);
+  digitalWrite(_pin,_defaultLedState);
+
+  pinMode(_ledDefaultStatePin, INPUT_PULLUP);
+  _defaultLedState = digitalRead(_ledDefaultStatePin);
+
+  // Serial for debug.
+  //Serial.begin(115200);
 }
 
 /*
@@ -115,6 +146,7 @@ void Sync_Led::updateLed()
 	int tempLedState = ledState;  // quickly record the state to minimize time without interrupts
 	interrupts();// turn interupts back on.
 	digitalWrite(_pin, tempLedState);  // Change the LED state
+  _defaultLedState = digitalRead(_ledDefaultStatePin);  // technically this will update for the next call, but functionally this shouldn't really matter as it will change before you can use the sync.
   
   ledIsOn = tempLedState == LED_ON_STATE;
 	//return ledIsOn;
@@ -146,6 +178,11 @@ void Sync_Led::syncLedHandler()  // !!! I don't want this to be this long but I 
   else{
     _defaultState();
   }
+}
+
+void Sync_Led::setDefaultState(int newDefault)
+{
+  _defaultLedState = newDefault;
 }
 
 

@@ -44,13 +44,16 @@ class Sync_Led
 {
   public:
     // Constructors one you can set the default LED State
-    Sync_Led(int pin, int syncStartStopHalfPeriodUs, int SyncHalfPeriodUs);
-  	Sync_Led(int pin, int syncStartStopHalfPeriodUs, int SyncHalfPeriodUs, int defaultLedState);
+    Sync_Led(int pin, int syncStartStopHalfPeriodUs, int syncHalfPeriodUs);
+  	Sync_Led(int pin, int syncStartStopHalfPeriodUs, int syncHalfPeriodUs, int defaultLedState);
+    Sync_Led(int pin, int syncStartStopHalfPeriodUs, int syncHalfPeriodUs, int defaultLedState, int ledDefaultStatePin);  // This isn't a great way of overloading but with high and low being int instead of bool I don't have a great alternative
     
   	void trigger();  // Method call which starts and stops the blink sequence calculation, does not change LED state
   	void updateLed(); // Changes the LED State to the current state
   	void updatePeriods(int syncStartStopHalfPeriodUs, int SyncHalfPeriodUs);  // Used if you need to change the periods after initialization
   	void syncLedHandler();  // Handler which calculates the LED state, and sets the current period the interupt should use.  
+    void setDefaultState(int newDefault);  // Allows you to change the default state on the fly.  Primarily used with digital pin _ledDefaultStatePin.
+    
     
   	volatile int ledState;  // Records the current LED state. This may not actually be set and depending on the circuit low may be on
     int ledIsOn; // Records if the led is set to on.  This is what you should use to record the value.
@@ -69,6 +72,7 @@ class Sync_Led
   		 
     int _pin;  // pin the LED is on.
   	int _defaultLedState;  // Default LED state
+    int _ledDefaultStatePin;  // Pin for external switch for setting LED state -1 if not used.
   	
   	int _syncStartStopHalfPeriodUs;  // the time to hold a state, for the start stop sequence
   	int _syncHalfPeriodUs;  // the time to hold a state, for the main blink sequence
