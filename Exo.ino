@@ -20,7 +20,7 @@
 // 6 steps = 10N
 //
 // Several parameters can be modified thanks to the Receive and Transmit functions
-#define VERSION 314
+#define VERSION 315
 #define BOARD_VERSION DUAL_BOARD_REV4_1
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;//1540;
