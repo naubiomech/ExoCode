@@ -1,12 +1,13 @@
 #ifndef AKXM_H
 #define AKXM_H
 
+#include <mbed.h>
 #include "mcp2515.h"
 #include "board.h"
 
 #define ZERO 2048.0f
 
-#define AK60
+#define AK80
 
 //Motor max/mins
 #define P_MIN -12.5f
@@ -35,11 +36,11 @@
 #define KP_DEF 0.0f
 #define KD_DEF 0.0f
 
-#define L_ID 1
-#define R_ID 2
+constexpr canid_t L_ID = 1;
+constexpr canid_t R_ID = 2;
 
-typedef struct motor_frame {
-  uint16_t id;
+typedef struct {
+  canid_t id;
   float pos;
   float vel;
   float tor;
@@ -64,7 +65,7 @@ class akxMotor {
     }
 
     /* Takes the voltage output of PID, maps it to a torque and sends it */
-    inline void map_and_apply(uint32_t id, float vol) {
+    inline void map_and_apply(canid_t id, float vol) {
       motor_frame_t out_frame;
       out_frame.id = id;
       out_frame.pos = 0;
@@ -72,38 +73,44 @@ class akxMotor {
       out_frame.kp = 0;
       out_frame.kd = 0;
 
-      float torque = (vol-ZERO)*scaling_factor;
-      out_frame.tor = torque;
+      //float torque = (vol-ZERO)*scaling_factor;
+      out_frame.tor = vol;
       sendCAN(&out_frame);
     }
 
     /* This function will wait for timeout to execute, if timeout or error, return ID 0. Timout is in millis */
-    inline motor_frame_t readID(uint32_t id, float timeout = DEF_TIMEOUT) {
-      motor_frame_t m_frame;
+    inline bool updateFrame(motor_frame_t* out_frame, float timeout = DEF_TIMEOUT) {
+      motor_frame_t temp_frame;
+      temp_frame.id = 0;
+      temp_frame.pos = 0;
+      temp_frame.vel = 0;
+      temp_frame.tor = 0;
+      temp_frame.kp = 0;
+      temp_frame.kd = 0;
       float start = millis();
       while(true) {
         /* Read */
-        MCP2515::ERROR err = readCAN(&m_frame);
+        MCP2515::ERROR err = readCAN(&temp_frame);
 
         /* Check for errors and message */
-        if(err == MCP2515::ERROR_OK) {
-          if(m_frame.id == id) {
-            return m_frame;
-          }
-        } else if(err != MCP2515::ERROR_NOMSG) {
-          m_frame.id = 0;
-          return m_frame;
-        } //End error check
+        if(err == MCP2515::ERROR_OK && temp_frame.id == out_frame->id) {
+          out_frame->pos = temp_frame.pos;
+          out_frame->vel = temp_frame.vel;
+          out_frame->tor = temp_frame.tor;
+//          if(temp_frame.tor != T_MAX) {
+//            out_frame->tor = temp_frame.tor;
+//          }
+          return true;
+        }
 
         /* Check for timeout */
         if((millis() - start) >= timeout) {
-          m_frame.id = 0;
-          return m_frame;
+          return false;
         } //End timeout check
       } //End While
     } //End function
 
-    inline void setZero(uint32_t id) {
+    inline void setZero(canid_t id) {
       /* Sets the current zero of the motor position
          NEEDS TESTING */
       struct can_frame out_frame;
@@ -123,7 +130,7 @@ class akxMotor {
       }
     }
 
-    inline void setMotorState(uint32_t id, bool enable) {
+    inline void setMotorState(canid_t id, bool enable) {
       /* Turns the motor with id on or off */
       struct can_frame out_frame;
       out_frame.can_id = id;
@@ -174,15 +181,17 @@ class akxMotor {
       out_frame.data[7] = t_int & 0xFF;
     
       //Send
-      if (mcp2515.sendMessage(&out_frame) != MCP2515::ERROR_OK) {
-        Serial.println("Send Error!");
-      }
+      CAN_MUTEX.lock();
+      mcp2515.sendMessage(&out_frame);
+      CAN_MUTEX.unlock();
     }
     
     inline MCP2515::ERROR readCAN(motor_frame_t* frame) {
       /* Reads a CAN message with ID, POS, VEL, and TOR being put into frame */
       struct can_frame in_frame;
+      CAN_MUTEX.lock();
       MCP2515::ERROR err = mcp2515.readMessage(&in_frame);
+      CAN_MUTEX.unlock();
       if (err == MCP2515::ERROR_OK) {   
         unsigned int ID = in_frame.data[0];
         unsigned int p_int = (in_frame.data[1] << 8) | in_frame.data[2];
@@ -195,15 +204,16 @@ class akxMotor {
         frame->tor = uint_to_float(i_int, -T_MAX, T_MAX, 12);
              
       } else if(err != MCP2515::ERROR_NOMSG) {
-        Serial.print("Read Error: ");
-        Serial.println(err);
+        //Serial.print("Read Error: ");
+        //Serial.println(err);
       }
     }
     
   private:
     MCP2515 mcp2515;
     float scaling_factor;
-    static constexpr float DEF_TIMEOUT = 5;
+    static constexpr float DEF_TIMEOUT = 3;
+    rtos::Mutex CAN_MUTEX;
     
   /* These functions will only output and send the correct values
      when the max and min values are properly defined above. */

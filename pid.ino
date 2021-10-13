@@ -31,5 +31,5 @@ double pid(Leg* leg, double input) {
   leg->Vol = leg->Vol + leg->zero; // Modify the span such that the PWM value is from 0 to 4096.0 instead of -2048.0 to 2048.0
   
   //analogWrite(leg->motor_ankle_pin, leg->Vol); //0 to 4096 writing for motor to get Input
-  return leg->Vol;
+  return leg->PID_Setpoint;
 } 
