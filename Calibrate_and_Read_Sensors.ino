@@ -13,7 +13,7 @@ void torque_calibration()
     left_temp_cal += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
     right_temp_cal += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
     torq_cal_count ++; //Increments count
-    delta = start-millis();
+    delta = millis() - start;
   }
   
   left_leg->torque_calibration_value = left_temp_cal / torq_cal_count;                       // Averages torque over a second
@@ -125,7 +125,10 @@ double get_torq(Leg* leg) {
   if(leg == left_leg) {
     Torq = ((analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096.0)) - leg->torque_calibration_value) * 43.9;
   } else {
+    double start = millis();
     Torq = ((analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096.0)) - leg->torque_calibration_value) * 43.9;
+    double delta = millis() - start;
+    Serial.println(delta);
   }
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }

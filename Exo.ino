@@ -33,7 +33,6 @@ bool motors_on = false;
 
 #include <WiFiNINA.h>
 #include <ArduinoBLE.h>
-#include <WiFiNINA.h>
 #include <elapsedMillis.h>
 #include <PID_v2.h>
 #include <Wire.h>
@@ -41,7 +40,6 @@ bool motors_on = false;
 #include <rtos.h>
  
 #include "Parameters.h"
-#include <WiFiNINA.h>
 #include "Board.h"
 #include "Leg.h"
 #include "Reference_ADJ.h"
@@ -62,6 +60,7 @@ uint32_t imuCounter = 0;
 
 void control_loop() {
   while (true) {
+    double delta = 0; 
     imuCounter++;
     resetMotorIfError();
     calculate_averages();
@@ -79,9 +78,7 @@ void control_loop() {
         imuCounter = 0;
       }
     }
-    
     rotate_motor();
-
     rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
   }
 }
@@ -189,7 +186,6 @@ void update_GUI() {
 }
 
 void calculate_leg_average(Leg* leg, double alpha) {
-
   if (alpha <= 0.0001) {
     //Calc the average value of Torque
     //Shift the arrays
@@ -201,7 +197,6 @@ void calculate_leg_average(Leg* leg, double alpha) {
     //Get the torque
     leg->TarrayPoint[0] = get_torq(leg);
     leg->Average = 0;
-
     //Motor current needs the same moving average as torque
     leg->CurrentArrayPoint[0] = current(leg);
     leg->AverageCurrent = 0;
