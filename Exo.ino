@@ -93,28 +93,23 @@ void setup()
   //Start Serial
   Serial.begin(115200);
   delay(100);
-  while(!Serial);
-  Serial.println("Started");
   
   // set pin mode for motor pin
   pinMode(onoff, OUTPUT); //Enable disable the motors
   digitalWrite(onoff, LOW);
 
+  pinMode(GREEN, OUTPUT); //For some reason this needs to stay for the code to work
 
   //Nano's internal BLE module
-  Serial.println("Pre BLE");
   setupBLE();
-  Serial.println("Post BLE");
 
   //set the resolution
   analogWriteResolution(12);                                          //change resolution to 12 bits
   analogReadResolution(12);                                           //ditto
 
   //initialize the leg objects
-  Serial.println("Pre INIT LEG");
   initialize_left_leg(left_leg);
   initialize_right_leg(right_leg);
-  Serial.println("Post INIT LEG");
 
 
   // Initialize power monitor settings
@@ -126,30 +121,24 @@ void setup()
   WireObj.write(Cal);        //Write the calibration value to the calibration register
   WireObj.endTransmission(); //End the transmission and calibration
   delay(100);
-  Serial.println("Post WIRE");
 
   int startVolt = readBatteryVoltage(); //Read the startup battery voltage
   batteryData[0] = startVolt/10;
   send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
-  Serial.println("Post SEND BAT");
 
   // Torque cal
   torque_calibration(); //Sets a torque zero on startup  
-  Serial.println("Post TRQ CAL");
 
   //Initialize the standing/walking state detector and provide callback functions
   amb_sm.init();
   amb_sm.attach_fe_cb(Amb_SM_cbs::upon_standing);
   amb_sm.attach_re_cb(Amb_SM_cbs::upon_walking);
-  Serial.println("Post AMB SM");
   
   right_leg->Prev_Trq = get_torq(right_leg); //Initial conditions for EMA torque signal filter
   left_leg->Prev_Trq = get_torq(left_leg); 
-  Serial.println("Post get_torq");
 
   //Starts the Control Loop thread
   callback_thread.start(control_loop);
-  Serial.println("End of setup");
 }
 
 
