@@ -7,6 +7,9 @@ bool BUFFERS_FIXED_LENGTH = false;
 BLEService UARTService(UARTUUID);   //Instantiate UART service
 BLECharacteristic TXChar(rxUUID, BLERead | BLENotify | BLEBroadcast,             BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //TX characteristic of service
 BLECharacteristic RXChar(txUUID, BLEWriteWithoutResponse | BLEWrite | BLENotify, BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //RX characteristic of service
+double write_time = 0;
+bool good_connection = true;
+bool connected = false;
 
 
 void setupBLE()
@@ -65,16 +68,16 @@ void onBLEConnected(BLEDevice central)
 {
   digitalWrite(GREEN,HIGH);
   digitalWrite(BLUE, LOW);
-  //callback_thread.set_priority(osPriorityNormal);
+  
   BLE.stopAdvertise();
-  //callback_thread.set_priority(osPriorityAboveNormal);
+  connected = true;
 }
 
 void onBLEDisconnected(BLEDevice central)
 {
   digitalWrite(GREEN,LOW);
   digitalWrite(BLUE, HIGH);
-  //callback_thread.set_priority(osPriorityNormal);
+  
   BLE.advertise();
-  //callback_thread.set_priority(osPriorityAboveNormal);
+  connected = false;
 }

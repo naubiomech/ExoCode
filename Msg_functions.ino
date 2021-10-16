@@ -1,3 +1,4 @@
+#include "ema_filter.h"
 
 //Real time data being sent to the GUI
 void send_data_message_wc() //with COP
@@ -27,32 +28,66 @@ void send_data_message_wc() //with COP
 
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
 {
-  //6 max characters can transmit -XXXXX, or XXXXXX
-  int maxChars = 8;
-  int maxPayloadLength = ((3 + number_to_send) * (maxChars + 1)); //+1 because of the delimiters
-  byte buffer[maxPayloadLength];
-  //Size must be declared at initialization because of itoa()
-  char cBuffer[maxChars];
-  int bufferIndex = 0;
-  buffer[bufferIndex++] = 'S';
-  buffer[bufferIndex++] = command_char;
-  itoa(number_to_send, &cBuffer[0], 10);
-  memcpy(&buffer[bufferIndex++], &cBuffer[0], 1);
-  for (int i = 0; i < number_to_send; i++) {
-    //Send as Int to reduce bytes being sent
-    int modData = int(data_to_send[i] * 100);
-    int cLength = getCharLength(modData);
-    //Populates cBuffer with a base 10 number
-    itoa(modData, &cBuffer[0], 10);
-    //Writes cLength indices of cBuffer into buffer
-    memcpy(&buffer[bufferIndex], &cBuffer[0], cLength);
-    bufferIndex += cLength;
-    buffer[bufferIndex++] = 'n';
+  if(good_connection && connected) {
+    //6 max characters can transmit -XXXXX, or XXXXXX
+    int maxChars = 8;
+    int maxPayloadLength = ((3 + number_to_send) * (maxChars + 1)); //+1 because of the delimiters
+    byte buffer[maxPayloadLength];
+    //Size must be declared at initialization because of itoa()
+    char cBuffer[maxChars];
+    int bufferIndex = 0;
+    buffer[bufferIndex++] = 'S';
+    buffer[bufferIndex++] = command_char;
+    itoa(number_to_send, &cBuffer[0], 10);
+    memcpy(&buffer[bufferIndex++], &cBuffer[0], 1);
+    for (int i = 0; i < number_to_send; i++) {
+      //Send as Int to reduce bytes being sent
+      int modData = int(data_to_send[i] * 100);
+      int cLength = getCharLength(modData);
+      //Populates cBuffer with a base 10 number
+      itoa(modData, &cBuffer[0], 10);
+      //Writes cLength indices of cBuffer into buffer
+      memcpy(&buffer[bufferIndex], &cBuffer[0], cLength);
+      bufferIndex += cLength;
+      buffer[bufferIndex++] = 'n';
+    }
+    double start = millis();
+    TXChar.writeValue(buffer, bufferIndex);           //Write payload
+    double delta = millis() - start;
+    write_time = ema_with_context(write_time, delta, HIGH_ALPHA);
   }
-  //callback_thread.set_priority(osPriorityNormal);
-  TXChar.writeValue(buffer, bufferIndex);           //Write payload
-  //callback_thread.set_priority(osPriorityAboveNormal);
+  check_time();
 }
+
+inline void check_time() {
+  const float write_thresh = 20; //In millis
+  const float wait_duration = 10000; //In millis
+  static double wait_start_time = 0;
+  if(stream && connected)
+  {
+    //If we are currently transmitting and it is taking a while, stop sending messages
+    if((write_time > write_thresh))
+    {
+      good_connection = false;
+      wait_start_time = millis();
+    } 
+    //Wait before attempting to try again
+    if(!good_connection)
+    {
+      //Must reset write time for a valid new attempt
+      write_time = ema_with_context(write_time, 0.0, HIGH_ALPHA);
+      
+      double delta = millis() - wait_start_time;
+      if((delta > wait_duration))
+      {
+        good_connection = true;
+      } //End if(delta > wait_duration)
+    } //End if(!good_connection)
+  }//End if(stream)
+  Serial.print(good_connection);
+  Serial.print("\t");
+  Serial.println(write_time);
+}//End function
 
 int getCharLength(int ofInt) {
   int len = 0;
