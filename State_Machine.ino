@@ -22,12 +22,12 @@ void state_machine(Leg* leg)
 
   if(Control_Mode != 100){
     if (Line == 1)
-      State_Machine_Heel_Toe_Sensors_Hip_3State(leg);
+      State_Machine_Heel_Toe_Sensors_Hip_3State(leg);                                                 // The statemachine desiened for the line connection between extension and flextion during swing. 1) mid-late swing, 3) early-mid stance, 5) Stance to swing connection
     else
       State_Machine_Heel_Toe_Sensors_Hip(leg);
       } else{
-        State_Machine_BangBang_Hip(leg);
-        }
+        State_Machine_BangBang_Hip(leg);                                                              // Bang Banghip controller contains 5 gait phases: 1) mid-late swing, 2) early stance, 3) mid-stance,     4) late-stance,           5) early swing 
+        }                                                                                             // Setpoint is also assined inside the statemachine: 1) zero,         2) zero,         3) Setpoint_Ankle, 4) Dorsi_Setpoint_Ankle/2 5)Dorsi_Setpoint_Ankle
 }
 
 
