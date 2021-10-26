@@ -30,8 +30,8 @@ void send_data_message_wc() //with COP
     data_to_send[1] = right_leg->state;
     data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
 
-    //data_to_send[3] = right_leg->rawAnkleAverageAngle; // raw ankle angle regression
-    data_to_send[3] = readBatteryVoltage();
+    data_to_send[3] = right_leg->rawAnkleAverageAngle; // raw ankle angle regression
+    //data_to_send[3] = readBatteryVoltage();
     data_to_send[4] = right_leg->rawAnkleAverageSpeed; //FSR_Toe_Average;
 
     //  if (FLAG_ONE_TOE_SENSOR) {
