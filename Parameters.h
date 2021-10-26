@@ -86,11 +86,11 @@ const int n_step_baseline = 3;
 
 //HardCoded for demo
 int MotorParams = 1;  //Was 100
-double NomCurrent = 5.0; //The rest were 1
-double TrqConstant = 14.0/1000.0;
+double NomCurrent = 8.0; //The rest were 1
+double TrqConstant = 13.5/1000.0;
 double GearRatio = 4617.0 / 52.0;
 double PulleyRatio = 5;
-double MaxSpeed = 15000;
+double MaxSpeed = 15800;
 double MotorEff = 0.89;
 double GearboxEff = 0.59;
  
