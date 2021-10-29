@@ -1,3 +1,5 @@
 This branch is intended to be used with a thermocouple. The assembly, Nano and thermocouple IC w/ requisite jumper, will be fixed to an Exo. The assembly will connect to the
 Biomotum phone app. The data will only stream when the trial is active. Only one of the real time signals will be populated, the others will be zero. The value being sent will
 be in degrees Fahrenheit. The Thermocouple must be adhered to the test specimen, and the assembly must be connected to power via a LiIon cell. To adhere the thermocouple you may want to use some for of tape, if the thermal conductivity is bad you may want to purchase some off the shelf thermal paste. It is up to the user to monitor the state of the LiIon cell. After data collection the battery voltage should be tested. To charge the battery simply plug the nano into a usb port. To turn off the system, unplug the LiIon cell. I recommend that you first connect a phone to the thermocouple unit, and then power on the exo and connect to it.  
+
+A0 is the left leg, A2 is the right leg. 
