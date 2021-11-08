@@ -182,7 +182,8 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
   //otherwise Control Mode =  100 implies the classic bang bang whose shaping is based on N3
   //  Despite control mode 2 and 3 do not uses the N3 the function still returns a number associated to N3 which is not used.
-
+  FilterTwoPole Filter( LOWPASS_BUTTERWORTH, 3 );
+  
   if (taking_baseline_l) { // if I am taking the baseline adapt some parameters for the controls
 
     //--------------------------------
@@ -304,6 +305,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
         if (leg->Hip_Ratio > 5)
           leg->Hip_Ratio = 0;
           
+        Filter.input(leg->Hip_Ratio);
         // while updating the ratio value still continue to provide the control
         if(leg->FSR_Ratio_Hip <= 0){                                                                                                             // defined for hip flexion assistance(using plantarflexion ankle setpoint for hip flexion setpoint)
           if ((p_steps_l->Setpoint ) > 0) { //depending on the leg the sign changes
@@ -452,6 +454,8 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
 
         if (leg->Hip_Ratio > 5)
           leg->Hip_Ratio = 0;
+
+        Filter.input(leg->Hip_Ratio);
     
     if (Control_Mode_l == 2) { // Balance control
 

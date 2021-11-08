@@ -48,6 +48,7 @@ int j = 0;
 //#include "Wave.h"
 #include "Step.h"
 #include "Math.h"
+#include <Filters.h> //  SS  10/25/2021
 bool iOS_Flag = 0;
 int streamTimerCountNum = 0;
 //----------------------------------------------------------------------------------
