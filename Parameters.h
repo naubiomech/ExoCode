@@ -46,7 +46,7 @@ double step_time_length = 150;
 // ===== PID and CTRL Parameters =====
 //All the needed parameters to set torque bias, PID ctrl, to enable the motors and to average the torque signals
 int count = 0;
-int CURRENT_CONTROL = 1;
+int CURRENT_CONTROL = 0;
 int CURRENT_DIAGNOSTICS = 0;
 int MODEL_CONTROL = 0;
 int CtrlType = 100;

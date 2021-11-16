@@ -4,9 +4,8 @@
 #include "mcp2515.h"
 #include "board.h"
 
-#define ZERO 2048.0f
 
-#define AK60
+#define AK80
 
 //Motor max/mins
 #define P_MIN -12.5f
@@ -16,12 +15,12 @@
 #define KD_MAX 5.0f
 #define KD_MIN 0.0f
 
-//#ifdef AK80
-//#define T_MIN -18.0f //Was 18
-//#define T_MAX 18.0f
-//#define V_MIN -25.64f //Was 65
-//#define V_MAX 25.64f
-//#endif
+#ifdef AK80
+#define T_MIN -18.0f //Was 18
+#define T_MAX 18.0f
+#define V_MIN -25.64f //Was 65
+#define V_MAX 25.64f
+#endif
 
 #ifdef AK60
 #define T_MIN -9.0f
@@ -72,7 +71,7 @@ class akxMotor {
       out_frame.kp = 0;
       out_frame.kd = 0.01;
 
-      float torque = (vol-ZERO)*scaling_factor;
+      float torque = (vol)*scaling_factor;
       out_frame.tor = torque;
       sendCAN(&out_frame);
     }
