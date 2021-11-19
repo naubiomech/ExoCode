@@ -1,6 +1,7 @@
 #ifndef AKXM_H
 #define AKXM_H
 
+#include <mbed.h>
 #include "mcp2515.h"
 #include "board.h"
 
@@ -16,9 +17,9 @@
 #define KD_MIN 0.0f
 
 #ifdef AK80
-#define T_MIN -18.0f //Was 18
+#define T_MIN -18.0f
 #define T_MAX 18.0f
-#define V_MIN -25.64f //Was 65
+#define V_MIN -25.64f
 #define V_MAX 25.64f
 #endif
 
@@ -34,11 +35,11 @@
 #define KP_DEF 0.0f
 #define KD_DEF 0.0f
 
-#define L_ID 1
-#define R_ID 2
+constexpr canid_t L_ID = 1;
+constexpr canid_t R_ID = 2;
 
-typedef struct motor_frame {
-  uint16_t id;
+typedef struct {
+  canid_t id;
   float pos;
   float vel;
   float tor;
@@ -62,21 +63,53 @@ class akxMotor {
       scaling_factor = 2*T_MAX / 4096;
     }
 
-    inline void map_and_apply(uint32_t id, float vol) {
-      /* Takes the voltage output of PID, maps it to a torque and sends it */
+    /* Takes the voltage output of PID, maps it to a torque and sends it */
+    inline void map_and_apply(canid_t id, float vol) {
       motor_frame_t out_frame;
       out_frame.id = id;
       out_frame.pos = 0;
       out_frame.vel = 0;
       out_frame.kp = 0;
-      out_frame.kd = 0.01;
+      out_frame.kd = 0;
 
       float torque = (vol)*scaling_factor;
       out_frame.tor = torque;
       sendCAN(&out_frame);
     }
 
-    inline void setZero(uint32_t id) {
+    /* This function will wait for timeout to execute, if timeout or error, return ID 0. Timout is in millis */
+    inline bool updateFrame(motor_frame_t* out_frame, float timeout = DEF_TIMEOUT) {
+      motor_frame_t temp_frame;
+      temp_frame.id = 0;
+      temp_frame.pos = 0;
+      temp_frame.vel = 0;
+      temp_frame.tor = 0;
+      temp_frame.kp = 0;
+      temp_frame.kd = 0;
+      float start = millis();
+      while(true) {
+        /* Read */
+        MCP2515::ERROR err = readCAN(&temp_frame);
+
+        /* Check for errors and message */
+        if(err == MCP2515::ERROR_OK && temp_frame.id == out_frame->id) {
+          out_frame->pos = temp_frame.pos;
+          out_frame->vel = temp_frame.vel;
+          out_frame->tor = temp_frame.tor;
+//          if(temp_frame.tor != T_MAX) {
+//            out_frame->tor = temp_frame.tor;
+//          }
+          return true;
+        }
+
+        /* Check for timeout */
+        if((millis() - start) >= timeout) {
+          return false;
+        } //End timeout check
+      } //End While
+    } //End function
+
+    inline void setZero(canid_t id) {
       /* Sets the current zero of the motor position
          NEEDS TESTING */
       struct can_frame out_frame;
@@ -96,7 +129,7 @@ class akxMotor {
       }
     }
 
-    inline void setMotorState(uint32_t id, bool enable) {
+    inline void setMotorState(canid_t id, bool enable) {
       /* Turns the motor with id on or off */
       struct can_frame out_frame;
       out_frame.can_id = id;
@@ -147,15 +180,17 @@ class akxMotor {
       out_frame.data[7] = t_int & 0xFF;
     
       //Send
-      if (mcp2515.sendMessage(&out_frame) != MCP2515::ERROR_OK) {
-        Serial.println("Send Error!");
-      }
+      CAN_MUTEX.lock();
+      mcp2515.sendMessage(&out_frame);
+      CAN_MUTEX.unlock();
     }
     
     inline MCP2515::ERROR readCAN(motor_frame_t* frame) {
       /* Reads a CAN message with ID, POS, VEL, and TOR being put into frame */
       struct can_frame in_frame;
+      CAN_MUTEX.lock();
       MCP2515::ERROR err = mcp2515.readMessage(&in_frame);
+      CAN_MUTEX.unlock();
       if (err == MCP2515::ERROR_OK) {   
         unsigned int ID = in_frame.data[0];
         unsigned int p_int = (in_frame.data[1] << 8) | in_frame.data[2];
@@ -168,14 +203,16 @@ class akxMotor {
         frame->tor = uint_to_float(i_int, -T_MAX, T_MAX, 12);
              
       } else if(err != MCP2515::ERROR_NOMSG) {
-        Serial.print("Read Error: ");
-        Serial.println(err);
+        //Serial.print("Read Error: ");
+        //Serial.println(err);
       }
     }
     
   private:
     MCP2515 mcp2515;
     float scaling_factor;
+    static constexpr float DEF_TIMEOUT = 3;
+    rtos::Mutex CAN_MUTEX;
     
   /* These functions will only output and send the correct values
      when the max and min values are properly defined above. */
