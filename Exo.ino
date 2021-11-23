@@ -138,23 +138,6 @@ void setup()
   akMotor.init();
   akMotor.setMotorState(L_ID, false);
   akMotor.setMotorState(R_ID, false);
-
-  r_frame.id = R_ID;
-  r_frame.pos = 0;
-  r_frame.vel = 0;
-  r_frame.tor = 0;
-  r_frame.kp = 0;
-  r_frame.kd = 0;
-  
-  l_frame.id = L_ID;
-  l_frame.pos = 0;
-  l_frame.vel = 0;
-  l_frame.tor = 0;
-  l_frame.kp = 0;
-  l_frame.kd = 0;
-
-  akMotor.sendCAN(&r_frame);
-  akMotor.sendCAN(&l_frame);
   
   //Initialize the standing/walking state detector and provide callback functions
   amb_sm.init();
@@ -166,7 +149,7 @@ void setup()
 
   //Starts the Control Loop thread
   callback_thread.start(control_loop);
-  read_thread.start(read_loop);
+  //read_thread.start(read_loop);
 }
 
 
