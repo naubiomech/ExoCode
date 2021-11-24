@@ -64,7 +64,7 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
 void onBLEConnected(BLEDevice central)
 {
   digitalWrite(GREEN,HIGH);
-  digitalWrite(BLUE, LOW);
+  digitalWrite(BLUE, LOW); 
   //callback_thread.set_priority(osPriorityNormal);
   BLE.stopAdvertise();
   //callback_thread.set_priority(osPriorityAboveNormal);

@@ -103,6 +103,9 @@ void receive_and_transmit()
       left_leg->Old_PID_Setpoint = 0.0;
       left_leg->KF = 1.0;
 
+      // FSR Biofeedback - AS 11/16/21 
+      left_leg->biofeedback_high_val = 0; 
+      left_leg->FLAG_calc_success_rate = 0; 
 
       right_leg->p_steps->Setpoint = 0.0;
       right_leg->Setpoint_Ankle = 0;
@@ -123,8 +126,15 @@ void receive_and_transmit()
       right_leg->PID_Setpoint = 0.0;
       right_leg->New_PID_Setpoint = 0.0;
       right_leg->Old_PID_Setpoint = 0.0;
-      right_leg->KF = 1.0;
+      right_leg->KF = 1.0; 
 
+      //FSR Biofeedback - AS 11/16/21 
+      right_leg->biofeedback_high_val = 0; 
+      right_leg->FLAG_calc_success_rate = 0; 
+      for (int j = 0;j<(sizeof(right_leg->biofeedback_success_history)/sizeof(right_leg->biofeedback_success_history[1]));j++) {
+        right_leg->biofeedback_success_history[j] = -1; 
+        left_leg->biofeedback_success_history[j] = -1; 
+      }
 
       reset_count = 0;
 
@@ -220,19 +230,30 @@ void receive_and_transmit()
 
     case '%':
       //Start Biofeedback
-      stepper->bio_ref_steps = stepper->steps;
+      stepper->bio_ref_steps = stepper->steps; 
+      FLAG_BIOFEEDBACK = true; // added by AS - 11/8/21    
+      right_leg->biofeedback_first_step = true;  
+      left_leg->biofeedback_first_step = true; 
+      // Serial.println(FLAG_BIOFEEDBACK); 
       //Serial.println(stepper->bio_ref_steps);
       break;
 
     case 'h':
       //End Biofeedback
-      stepper->bio_steps += stepper->steps - stepper->bio_ref_steps;
+      stepper->bio_steps += stepper->steps - stepper->bio_ref_steps; 
+      FLAG_BIOFEEDBACK = false; // added by AS - 11/8/21   
       //Serial.println(stepper->bio_steps);
       break;
+      
+    case 'd': 
+    // Start autoadjusting biofeedback 
+    AUTOADJUST_BIOFEEDBACK = true;   
+    break;  
 
-
-
-
+    case 'q': 
+    // Stop autoadjusting biofeedback 
+    AUTOADJUST_BIOFEEDBACK = false;  
+    break; 
 
     // TN 6/13/19
     case 'M':                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each

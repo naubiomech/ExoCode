@@ -10,7 +10,7 @@
 // The torque reference can be smoothed by sigmoid functions or spline function
 // In case of too long steady state the torque reference is set to zero
 // In case of new torque reference the torque amount is provided gradually as function of the steps.
-//
+//M     
 // 1 step = 0N
 // 2 steps = 2N
 // 3 steps = 4N
@@ -61,8 +61,8 @@ void control_loop() {
   while (true) {
     imuCounter++;
     resetMotorIfError();
-    calculate_averages();
-
+    calculate_averages(); 
+    
     if (motors_on) {
       detect_faults();
       if (amb_sm.last_state == Walking) {
@@ -79,6 +79,15 @@ void control_loop() {
     
     rotate_motor();
 
+    if (FLAG_BIOFEEDBACK) {  
+      update_biofeedback_high_val(right_leg); 
+      update_biofeedback_high_val(left_leg);  
+      /*
+      Serial.print(right_leg->FSR_Toe_Average/right_leg->baseline_value); 
+      Serial.print(","); 
+      Serial.println(right_leg->biofeedback_target_score);   
+      */
+    }  
     rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
   }
 }
@@ -111,7 +120,7 @@ void setup()
 
   //initialize the leg objects
   initialize_left_leg(left_leg);
-  initialize_right_leg(right_leg);
+  initialize_right_leg(right_leg);  
 
 
   // Initialize power monitor settings
@@ -156,7 +165,7 @@ void loop()
   // same of FSR but for the balance baseline
   check_Balance_Baseline();
   //Updates GUI
-  update_GUI();
+  update_GUI(); 
   //Puts the main thread to sleep for (1000 / Frequency) milliseconds
   rtos::ThisThread::sleep_for(1000 / COMMS_LOOP_HZ);
 }// end void loop
@@ -263,16 +272,14 @@ void calculate_averages() {
 void check_FSR_calibration() {
   if (FSR_CAL_FLAG) {
     FSR_calibration();
-    
   }
-
   // for the proportional control
   if (right_leg->FSR_baseline_FLAG) {
-    take_baseline(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);
+    take_baseline(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);    
   }
   if (left_leg->FSR_baseline_FLAG) {
-    take_baseline(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
-  }
+    take_baseline(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);  
+  }   
 }
 
 //----------------------------------------------------------------------------------

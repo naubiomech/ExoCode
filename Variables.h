@@ -38,8 +38,13 @@ double FLAG_STEADY_BALANCE_BASELINE = 0;
 double count_balance = 0;
 double count_steady_baseline = 0;
 
-bool FLAG_BIOFEEDBACK = false;
-
+// Variables for FSR Biofeedback - added by AS 11/8/21 
+bool FLAG_BIOFEEDBACK = false; 
+bool AUTOADJUST_BIOFEEDBACK = false;     
+const double BF_scale = 0.1; 
+const double BF_upper_limit = 0.85; 
+const double BF_lower_limit = 0.50;  
+int biofeedback_current_success = 0; 
 
 // data for bluetooth autoreconnection
 bool FLAG_AUTO_RECONNECT_BT = false;
