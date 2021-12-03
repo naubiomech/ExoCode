@@ -68,7 +68,6 @@ void receive_and_transmit()
         right_leg->first_step = 1;
         right_leg->start_step = 0;
       }
-
       break;
 
     case 'E':
@@ -84,7 +83,6 @@ void receive_and_transmit()
       break;
 
     case 'G':
-
       left_leg->p_steps->Setpoint = 0.0;
       left_leg->Setpoint_Ankle = 0;
       left_leg->Previous_Setpoint_Ankle = 0;
@@ -127,7 +125,6 @@ void receive_and_transmit()
 
 
       //reset_count = 0;
-
       change_motor_state(&akMotor, false);                                        //The GUI user is ready to end the trial, so motor is disabled
       stepData[0] = stepper->steps; //CFC 1/22/21
       stepData[1] = (stepper->bio_steps) / 2; //Divide by two because only one leg is being used during biofeedback

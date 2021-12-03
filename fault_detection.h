@@ -24,7 +24,7 @@
 //Tracking error rate in (N*m)/s
 #define TRACKING_RATE_THRESH  4 * TRACKING_THRESH / CONTROL_TIME_STEP
 //Max torque setpoint
-#define MAX_TORQUE            35
+#define MAX_TORQUE            45
 //Max torque rate
 #define MAX_TORQUE_RATE       20 * MAX_TORQUE / CONTROL_TIME_STEP
 //Max PID saturate time in seconds

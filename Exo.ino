@@ -53,10 +53,10 @@ void control_loop() {
     if (motors_on) {
       detect_faults();
       if (amb_sm.last_state == Walking) {
-          tracking_check(right_leg);
-          tracking_check(left_leg);
-          pid_check(right_leg);
-          pid_check(left_leg);
+          //tracking_check(right_leg);
+          //tracking_check(left_leg);
+          //pid_check(right_leg);
+          //pid_check(left_leg);
       }
       if (stream && (imuCounter > imuTimerCount)) {
         //amb_sm.tick(stepper->steps);
