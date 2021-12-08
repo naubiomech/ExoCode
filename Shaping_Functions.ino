@@ -1,7 +1,7 @@
 //Calc Sigmoid function and apply to the New point
 
 
-double Change_PID_Setpoint_Sigm(double New_PID_Setpoint_l, double Current_PID_Setpoint, double Old_PID_Setpoint_l, double Ts_l, double exp_mult_l, int n_iter_l, int N_l, double* P_Test1, double* P_Test2)
+double Change_PID_Setpoint_Sigm(double New_PID_Setpoint_l, double Current_PID_Setpoint, double Old_PID_Setpoint_l, double Ts_l, double exp_mult_l, int n_iter_l, int N_l)
 { // Makes the curve for your setpoint vs time look like the voltage time graph for a charging capacitor
   //n_iter tells you at which of the Nth sample you are not counting the zero
   //Ts sampling time in this case 0.001 with exp_mult=2000 it takes 6 milliseconds to rise from 0 to 1
@@ -10,10 +10,8 @@ double Change_PID_Setpoint_Sigm(double New_PID_Setpoint_l, double Current_PID_Se
   //  if ((N_l % 2)) {
   //    N_l++;
   //  }
-  double sig = 1 / (1 + exp(3*(-exp_mult_l * (((-N_l)/ 2 + n_iter_l + 1+20)) * Ts_l)));// To decrease rising time, x is multiplied by 5// SS  4/26/2021
-  Current_PID_Setpoint = Old_PID_Setpoint_l + (New_PID_Setpoint_l - Old_PID_Setpoint_l) * (sig);
-  *P_Test1 = sig;
-//  *P_Test2 = Old_PID_Setpoint_l;
+  double sig = 1 / (1 + exp(-exp_mult_l * ((-N_l / 2 + n_iter_l + 1)) * Ts_l));
+  Current_PID_Setpoint = Old_PID_Setpoint_l + (New_PID_Setpoint_l - Old_PID_Setpoint_l) * sig;
   return Current_PID_Setpoint;
 }
 
@@ -81,9 +79,6 @@ void PID_Sigm_Curve(Leg* leg) {
       else if (leg->state == 1) {
         leg->N_step = leg->N1;
       }
-      else if (leg->state == 5) {
-        leg->N_step = leg->N5;
-      }
 
       //Optimization-------------------------------
       if (Flag_HLO) {
@@ -116,7 +111,7 @@ void PID_Sigm_Curve(Leg* leg) {
       leg->FLAG_UPDATE_VALUES = false;
     }
     //---------------------------------------------------------
-
+    
     if (leg->sigm_done == false && leg->n_iter < leg->N_step)
     {
       //Optimization--------------------------------------------------------
@@ -126,7 +121,7 @@ void PID_Sigm_Curve(Leg* leg) {
       //--------------------------------------------------------------------
       else {
         // Determines the new intermediate PID Setpoint
-        leg->PID_Setpoint = Change_PID_Setpoint_Sigm(leg->New_PID_Setpoint, leg->PID_Setpoint, leg->Old_PID_Setpoint, Ts, leg->exp_mult, leg->n_iter, leg->N_step, &leg->Test1, &leg->Test2);
+        leg->PID_Setpoint = Change_PID_Setpoint_Sigm(leg->New_PID_Setpoint, leg->PID_Setpoint, leg->Old_PID_Setpoint, Ts, leg->exp_mult, leg->n_iter, leg->N_step);
       }
       leg->n_iter++;                    //Takes in       goal Setpoint, instantaneous setpoint,   previous setpoint, time interval,    constant, our location along the x axis, length of x axis
     }

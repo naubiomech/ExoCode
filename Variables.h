@@ -6,6 +6,7 @@ Metro controlLoop = Metro(2);
 elapsedMillis timeElapsed;
 double startTime = 0;
 int streamTimerCount = 0;
+int voltageTimerCount = 0;
 
 // variable to indicate the beginning and ending of the stream of data
 int stream = 0;
@@ -31,6 +32,9 @@ SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);                  // Sets an 
 bool FLAG_PRINT_TORQUES = false;
 bool FLAG_PID_VALS = false;
 
+// Hip proportional variables
+double EarlySwingPercentage = 30;
+bool FLAG_HIP = false;
 
 // Variables depending on the sensor placement that are used in the state machine
 bool FLAG_ONE_TOE_SENSOR = true;
@@ -63,7 +67,7 @@ bool STIM_ACTIVATED = false;
 bool Trigger_left = false;
 
 // Variables for the Control Mode
-int Control_Mode = 100; // 1 for time 0 for volt 2 for proportional gain 3 for pivot proportional control
+int Control_Mode = 4; // 1 for time 0 for volt 2 for proportional gain 3 for pivot proportional control
 int Old_Control_Mode = Control_Mode;
 
 //Variables to check of the motor driver error
@@ -72,9 +76,8 @@ int time_err_motor;
 int time_err_motor_reboot;
 bool motor_error = false;
 
-
 // Variables for auto KF
-int flag_auto_KF = 0;
+int flag_auto_KF = 1;
 
 //Variables for biofeedback
 volatile double Freq;
@@ -84,6 +87,7 @@ const unsigned int pin_jack = 13;
 unsigned int state = HIGH;
 double right_stride_time, left_stride_time;
 double treadmill_speed = 0.6;//subject to change
+double BF_scale=1.1;
 
 // Variables for Human-in-the-Loop Optimization (HLO)
 bool Flag_HLO = false;
@@ -111,12 +115,3 @@ int PowerLSB = 20*CurrentLSB; // mW/bit. This value is used to multiply to power
 int ShuntLSB = 0.01;          // mV. This is the default multiplier for the shunt voltage reading from the INA219.
 int BusLSB = 4;               // mV. This is the multiplier for the bus (battery) voltage reading from the INA219.
 int Cal = 0x5000;             // Calibration value in hex. Cal = 0.04096/(CurrentLSB*ShuntResistance). Shunt resistance on Rev3/4 is 2mOhm.
-
-double EarlySwingPercentage = 30; // SS  2/17/2021
-double LateSwingPercentage = 30;
-double HeelMToe = 1;
-double HeelMToe4 = 0;
-double Heel = 0;
-double HeelPToe = 0;
-double Step = 1;
-double Line = 0;

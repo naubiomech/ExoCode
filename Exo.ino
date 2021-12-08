@@ -45,9 +45,8 @@ int j = 0;
 #include "Board.h"
 #include "resetMotorIfError.h"
 #include "ATP.h"
-//#include "Wave.h"
+#include "Trial_Data.h"
 #include "Step.h"
-#include "Math.h"
 #include <Filters.h> //  SS  10/25/2021
 bool iOS_Flag = 0;
 int streamTimerCountNum = 0;
@@ -94,7 +93,6 @@ void setup()
   // set the led
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
-  //Serial.println("LED SET");
 
   // set pin mode for motor pin
   pinMode(onoff, OUTPUT); //Enable disable the motors
@@ -107,11 +105,9 @@ void setup()
 //  #endif
 
   // Fast torque calibration
-  //torque_calibration();
-  //Serial.println("Torque Cal Done");
+  torque_calibration();
 
   digitalWrite(LED_PIN, HIGH);
-  //Serial.println("Wrote LED_High");
 
   // Initialize power monitor settings
   #if BOARD_VERSION == DUAL_BOARD_REV3
@@ -129,14 +125,8 @@ void setup()
   WireObj.write(Cal);        //Write the calibration value to the calibration register
   WireObj.endTransmission(); //End the transmission and calibration
   delay(100);
-  
-  int startVolt = readBatteryVoltage(); //Read the startup battery voltage
-  Serial.println(startVolt);
-  batteryData[0] = startVolt;
-  send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware 
 
-  //calculateWave();
-  calculateStep();
+//  calculateStep();
   Serial.println("Setup complete");
   
 }
@@ -171,7 +161,7 @@ void callback()//executed every 2ms
     state_machine(left_leg);
     state_machine(right_leg);
     biofeedback_step_state(right_leg);
-    biofeedback_step_state(left_leg);
+    biofeedback_step_state(left_leg);       
 
   }//end if(Flag_biofeedback)
 }// end callback
@@ -241,54 +231,51 @@ void biofeedback() {
 //----------------------------------------------------------------------------------
 
 void calculate_leg_average(Leg* leg) {
+
   //Calc the average value of Torque
 
   //Shift the arrays
   for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
   { // there are the number of spaces in the memory space minus 2 actions that need to be taken
     leg->TarrayPoint[j] = leg->TarrayPoint[j - 1];                //Puts the element in the following memory space into the current memory space
-    leg->MotorSpeedArrayPoint[j] = leg->MotorSpeedArrayPoint[j-1];
-    leg->AnkleAngleArrayPoint[j] = leg->AnkleAngleArrayPoint[j-1];
-    leg->AnkleSpeedArrayPoint[j] = leg->AnkleSpeedArrayPoint[j-1];
+  }
+
+  for (int j = dim_Angle - 1; j >= 0; j--)  
+  {
+    leg->rawAnkleAngleArrayPoint[j] = leg->rawAnkleAngleArrayPoint[j-1];
+    leg->rawAnkleSpeedArrayPoint[j] = leg->rawAnkleSpeedArrayPoint[j-1];
   }
   //Get the torque
   leg->TarrayPoint[0] = get_torq(leg);
   leg->FSR_Toe_Average = 0;
   leg->FSR_Heel_Average = 0;
   leg->Average = 0;
-
-  //Motor Speed
-  leg->MotorSpeedArrayPoint[0] = motor_ankle_speed(leg->motor_speed_pin);
-  leg->MotorAverageSpeed = 0;
   
   //Ankle Angle Sensor
-  leg->AnkleAngleArrayPoint[0] = ankle_angle(leg);
-  leg->AnkleAverageAngle = 0;
+  leg->rawAnkleAngleArrayPoint[0] = ankle_angle(leg);
+  leg->rawAnkleAverageAngle = 0;
   
   for (int i = 0; i < dim; i++)
   {
     leg->Average =  leg->Average + leg->TarrayPoint[i];
-    leg->MotorAverageSpeed = leg->MotorAverageSpeed + leg->MotorSpeedArray[i];
-    leg->AnkleAverageAngle = leg->AnkleAverageAngle + leg->AnkleAngleArray[i]; 
+  }
+
+  for (int i = 0; i < dim_Angle; i++)
+  {
+    leg->rawAnkleAverageAngle = leg->rawAnkleAverageAngle + leg->rawAnkleAngleArrayPoint[i]; 
   }
 
   leg->Average_Trq = leg->Average / dim;
-  leg->MotorAverageSpeed = leg->MotorAverageSpeed / dim;
-  leg->AnkleAverageAngle = leg->AnkleAverageAngle / dim;
-
-  //leg->AnkleAverageSpeed = (leg->AnkleAverageAngle - leg->PrevAnkleAngle)/0.002; //Angular Velocity in deg/s
-  //leg->PrevAnkleAngle = leg->AnkleAverageAngle;
+  leg->rawAnkleAverageAngle = leg->rawAnkleAverageAngle / dim_Angle;
   
-  leg->AnkleSpeedArrayPoint[0] = (leg->AnkleAverageAngle - leg->PrevAnkleAngle)/0.002; //Angular velocity in degrees/s
-  leg->AnkleAverageSpeed = 0;
-  
-  for (int i = 0; i< dim; i++) {
-    //leg->AnkleAverageSpeed = leg->AnkleAverageSpeed + (i+1)*leg->AnkleSpeedArray[i]; //Weighted moving average
-    leg->AnkleAverageSpeed = leg->AnkleAverageSpeed + leg->AnkleSpeedArray[i];
+  leg->rawAnkleSpeedArrayPoint[0] = (leg->rawAnkleAverageAngle - leg->rawPrevAnkleAngle)/0.002; //Angular velocity in degrees/s 
+  leg->rawPrevAnkleAngle = leg->rawAnkleAverageAngle;
+  leg->rawAnkleAverageSpeed = 0;
+  for (int i = 0; i< dim_Angle; i++)
+  {
+    leg->rawAnkleAverageSpeed = leg->rawAnkleAverageSpeed + leg->rawAnkleSpeedArrayPoint[i];
   }
-  //leg->AnkleAverageSpeed = leg->AnkleAverageSpeed / (dim*(dim+1)/2); //Weighted moving average
-  leg->AnkleAverageSpeed = leg->AnkleAverageSpeed / dim;  
-  leg->PrevAnkleAngle = leg->AnkleAverageAngle;
+  leg->rawAnkleAverageSpeed = leg->rawAnkleAverageSpeed / dim_Angle;
   
   if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
     leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
@@ -357,6 +344,13 @@ void check_FSR_calibration() {
 
   if (FSR_CAL_FLAG) {
     FSR_calibration();
+    // Activate another baseline call after FSR cal completion
+    left_leg->FSR_baseline_FLAG = 1;
+    right_leg->FSR_baseline_FLAG = 1;
+    left_leg->p_steps->count_plant_base = 0;
+    right_leg->p_steps->count_plant_base = 0;
+    right_leg->p_steps->flag_start_plant = false;
+    left_leg->p_steps->flag_start_plant = false;
   }
 
   // for the proportional control
@@ -390,8 +384,13 @@ void rotate_motor() {
 
   if (stream == 1)
   {
-    pid(left_leg, -left_leg->Average_Trq);
-    pid(right_leg, -right_leg->Average_Trq);
+    if (FLAG_HIP){
+      pid(left_leg, -left_leg->Average_Trq);
+      pid(right_leg, -right_leg->Average_Trq);
+    }else{
+      pid(left_leg, left_leg->Average_Trq);
+      pid(right_leg, right_leg->Average_Trq);
+    }
 
     
     if (streamTimerCount >= streamTimerCountNum) // every streamTimerCountNum*2ms
@@ -401,11 +400,11 @@ void rotate_motor() {
       streamTimerCount = 0;
     }
 
-    if (streamTimerCount >= 15000*2) { //every 30 seconds
+    if (voltageTimerCount >= 2000) { //send voltage every 2 seconds
       int batteryVoltage = readBatteryVoltage();
       batteryData[0] = batteryVoltage;
-      send_command_message('~',batteryVoltage,1); //Communicate battery voltage to operating hardware
-      //Send data message here
+      send_command_message('~',batteryData,1); //Communicate battery voltage to operating hardware
+      voltageTimerCount = 0;
     }
 
     if (streamTimerCount == 1 && flag_auto_KF == 1) {
@@ -415,6 +414,7 @@ void rotate_motor() {
 
 
     streamTimerCount++;
+    voltageTimerCount++;
 
     
 
@@ -496,7 +496,7 @@ void rotate_motor() {
       if (right_leg->state_swing_start_time == 0) 
         right_leg->state_swing_duration = 1000; 
     }
-    
+
     if ((right_leg->state == 3) && ((right_leg->old_state == 1) || (right_leg->old_state == 2))) {    // TN 9/26/19
       right_leg->state_3_start_time = millis();
     }
@@ -583,21 +583,19 @@ void rotate_motor() {
 
     if (Control_Mode == 2) {}
     else {
-      set_2_zero_if_steady_state();
+      //set_2_zero_if_steady_state();
     }
 
     left_leg->N3 = Control_Adjustment(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps,
                                       left_leg->N3, left_leg->New_PID_Setpoint, left_leg->p_Setpoint_Ankle, left_leg->p_Dorsi_Setpoint_Ankle,
-                                      left_leg->p_Setpoint_Ankle_Pctrl, left_leg->Previous_p_Setpoint_Ankle_Pctrl, Control_Mode, left_leg->Prop_Gain,
+                                      left_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, left_leg->Prop_Gain,
                                       left_leg->FSR_baseline_FLAG, &left_leg->FSR_Ratio, &left_leg->Max_FSR_Ratio,
-                                      &left_leg->FSR_Ratio_Heel, &left_leg->Max_FSR_Ratio_Heel, &left_leg->FSR_Ratio_Toe, &left_leg->Max_FSR_Ratio_Toe,
-                                      &left_leg->Max_FSR_Ratio_Hip, &left_leg->Min_FSR_Ratio_Hip);
+                                      &left_leg->FSR_Ratio_Toe, &left_leg->FSR_Ratio_Heel, &left_leg->Min_FSR_Ratio_Hip);
     right_leg->N3 = Control_Adjustment(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps,
                                        right_leg->N3, right_leg->New_PID_Setpoint, right_leg->p_Setpoint_Ankle, right_leg->p_Dorsi_Setpoint_Ankle,
-                                       right_leg->p_Setpoint_Ankle_Pctrl, right_leg->Previous_p_Setpoint_Ankle_Pctrl, Control_Mode, right_leg->Prop_Gain,
+                                       right_leg->p_Setpoint_Ankle_Pctrl, Control_Mode, right_leg->Prop_Gain,
                                        right_leg->FSR_baseline_FLAG, &right_leg->FSR_Ratio, &right_leg->Max_FSR_Ratio,
-                                       &right_leg->FSR_Ratio_Heel, &right_leg->Max_FSR_Ratio_Heel, &right_leg->FSR_Ratio_Toe, &right_leg->Max_FSR_Ratio_Toe,
-                                      &right_leg->Max_FSR_Ratio_Hip, &right_leg->Min_FSR_Ratio_Hip);
+                                       &right_leg->FSR_Ratio_Toe, &right_leg->FSR_Ratio_Heel, &right_leg->Min_FSR_Ratio_Hip);
 
   }// end if stream==1
 }

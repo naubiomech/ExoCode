@@ -33,7 +33,6 @@ int clean_flag = 1;
 double Ts = 0.001;
 // the smoothing value, i.e. the sigmoind number of steps as a function of the EXO state
 double N3 = 200;
-double N5 = 200;
 double N2 = 4;
 double N1 = 4;
 
@@ -68,8 +67,8 @@ double p_prop[3] = {128.1, -50.82, 22.06};
 double FSR_Ratio;
 
 // ===== Proportional Control Parameters =====
-double Max_Prop = 35; //Was 35, GO 9/15/20
-double Min_Prop = -35;
+double Max_Prop = 40; //Was 35, GO 9/15/20
+double Min_Prop = 0;
 
 // ===== Auto KF Parameters =====
 double max_ERR = 0.20;
@@ -80,19 +79,19 @@ const int BNO055_SAMPLERATE_DELAY_MS = 100;
 const double stability_trq_gain = 0.01;
 
 // ===== Torque Speed Adjust Parameters =====
-const int n_step_baseline = 6;
+const int n_step_baseline = 3;
 
 // ===== Motor Parameters =====
 // Initialize all variables as 1 prior to definition of motor parameters in GUI
 
 //HardCoded for demo
 int MotorParams = 1;  //Was 100
-double NomCurrent = 7.58; //The rest were 1
-double TrqConstant = 13.5/1000;
-double GearRatio = 6877.0/56.0;
-double PulleyRatio = 30/10.3;
+double NomCurrent = 8.0; //The rest were 1
+double TrqConstant = 13.5/1000.0;
+double GearRatio = 4617.0 / 52.0;
+double PulleyRatio = 5;
 double MaxSpeed = 15800;
 double MotorEff = 0.89;
-double GearboxEff = 0.7;
+double GearboxEff = 0.59;
  
 #endif

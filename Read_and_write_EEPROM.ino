@@ -41,6 +41,46 @@ int clean_torque_bias(int address_torque_l)
   return 1;
 }
 
+int check_angle_bias(int address_angle_l)
+{
+  byte value = EEPROM.read(address_angle_l);
+  if (char(value) == 'y')
+  {
+    return 1;
+  }
+  return 0;
+};
+
+int write_angle_bias(int address_angle_l, double angle_adj)
+{
+  EEPROM.put(address_angle_l, 'y');
+  address_angle_l++;
+  EEPROM.put(address_angle_l, angle_adj);
+  return 1;
+}
+
+double read_angle_bias(int address_angle_l)
+{
+  address_angle_l += 1;
+  double val_t = 0;
+  byte array_values[8];
+  byte* p_array = array_values;
+  for (int i = 0; i < sizeof(double); i++)
+  {
+    *(p_array + i) = EEPROM.read(address_angle_l + i);
+  }
+  memcpy(&val_t, &array_values, 8);
+  return val_t;
+}
+
+int clean_angle_bias(int address_angle_l)
+{
+  for ( int i = address_angle_l ; i < (sizeof(double) + sizeof(char) + address_angle_l) ; i++ )
+  {
+    EEPROM.write(i, 0);
+  }
+  return 1;
+}
 
 int check_FSR_values(int address_FSR_l)
 {
@@ -231,4 +271,36 @@ double read_baseline(int address_baseline_l)
   }
   memcpy(&val_t, &array_values, 8);
   return val_t;
+}
+
+int check_steps(int address_steps_l)
+{
+  byte value = EEPROM.read(address_steps_l);
+  if (char(value) == 'y') 
+  {
+    return 1;
+  }
+  return 0;
+}
+
+int write_steps(int address_steps_l, int steps_val)
+{
+ EEPROM.put(address_steps_l, 'y');
+ address_steps_l++;
+ EEPROM.put(address_steps_l, steps_val);
+ return 1;
+}
+
+int read_steps(int address_steps_1)
+{
+ address_steps_1 += 1;
+ int steps = 0;
+ byte array_values[4];
+ byte* p_array = array_values;
+ for (int i = 0; i < sizeof(int); i++)
+ {
+  *(p_array + i) = EEPROM.read(address_steps_1 + i);
+ }
+ memcpy(&steps, &array_values, 4);
+ return steps;
 }

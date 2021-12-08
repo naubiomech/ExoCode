@@ -7,13 +7,25 @@ void torque_calibration()
   int torq_cal_count = 0;
   left_leg->torque_calibration_value = 0;
   right_leg->torque_calibration_value = 0;
+
+  //left_leg->angle_zero = 0;
+  //right_leg->angle_zero = 0;
+  
   while (torq_cal_count < 10000) {  //(millis() - torque_calibration_value_time < 1000)  { //Calibrates the LL for a total time of 1 second,    (torq_cal_count < 10000) {
     left_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
     right_leg->torque_calibration_value += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
-    torq_cal_count ++;                                                         //Increments count
+    
+    //left_leg->angle_zero += (analogRead(left_leg->ankle_angle_pin)-2048.0)*3.3/4096.0;
+    //right_leg->angle_zero += (analogRead(right_leg->ankle_angle_pin) - 2048.0)*3.3/4096.0;
+    
+    torq_cal_count ++;                                                         //Increments count  
   }
   left_leg->torque_calibration_value = left_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_leg->torque_calibration_value / torq_cal_count;                       // Averages torque over a second
+
+  //left_leg->angle_zero = left_leg->angle_zero/torq_cal_count;
+  //right_leg->angle_zero = right_leg->angle_zero/torq_cal_count;
+  
   interrupts(); //Re-enable interrupts
 }
 
@@ -33,8 +45,13 @@ void FSR_calibration()
 
     right_leg->fsr_Combined_peak_ref = 0;
     left_leg->fsr_Combined_peak_ref = 0;
+    
     left_leg->fsr_Toe_peak_ref = 0;
     right_leg->fsr_Toe_peak_ref = 0;
+
+    left_leg->fsr_Toe_trough_ref = 1000;
+    right_leg->fsr_Toe_trough_ref = 1000;
+    
     left_leg->fsr_Heel_peak_ref = 0;
     right_leg->fsr_Heel_peak_ref = 0;
 
@@ -56,8 +73,8 @@ void FSR_calibration()
     left_leg->Curr_Heel = fsr(left_leg->fsr_sense_Heel);
     right_leg->Curr_Heel = fsr(right_leg->fsr_sense_Heel);
 
-    left_leg->Curr_Combined = left_leg->Curr_Toe + left_leg->Curr_Heel;
-    right_leg->Curr_Combined = right_leg->Curr_Toe + right_leg->Curr_Heel;
+    left_leg->Curr_Combined = left_leg->Curr_Toe;// + left_leg->Curr_Heel;
+    right_leg->Curr_Combined = right_leg->Curr_Toe;// + right_leg->Curr_Heel;
 
     if (left_leg->Curr_Combined > left_leg->fsr_Combined_peak_ref)
     {
@@ -79,6 +96,16 @@ void FSR_calibration()
     if (right_leg->Curr_Toe > right_leg->fsr_Toe_peak_ref)
     {
       right_leg->fsr_Toe_peak_ref = right_leg->Curr_Toe;
+    }
+
+    if (left_leg->Curr_Toe < left_leg->fsr_Toe_trough_ref)
+    {
+      left_leg->fsr_Toe_trough_ref = left_leg->Curr_Toe;
+    }
+
+    if (right_leg->Curr_Toe < right_leg->fsr_Toe_trough_ref)
+    {
+      right_leg->fsr_Toe_trough_ref = right_leg->Curr_Toe;
     }
 
     // Heel
@@ -103,8 +130,7 @@ void FSR_calibration()
 
 double get_torq(Leg* leg) {
  // double Torq = 56.5 / (2.1) * (analogRead(leg->torque_sensor_ankle_pin) * (3.3 / 4096) - leg->torque_calibration_value); //  For the TRT-500 Torque Sensor
-//  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*42.522; // For the custom anchor sensor//??????????
-double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*43.0;
+  double Torq = ((analogRead(leg->torque_sensor_ankle_pin) * (3.3/4096.0)) - leg->torque_calibration_value)*42.500; // For the custom anchor sensor
   return -Torq;             //neg is here for right leg, returns the torque value of the right leg (Newton-Meters)
 }
 
@@ -134,7 +160,8 @@ double fsr(const unsigned int pin) {
   else {
     if (FSR_Sensors_type == 40)
       // This to return the force instead of the Voltage
-      Vo = max(0, p[0] * pow(Vo, 3) + p[1] * pow(Vo, 2) + p[2] * Vo + p[3]); // add the max cause cannot be negative force
+      Vo = p[0] * Vo*Vo*Vo + p[1] * Vo*Vo + p[2] * Vo + p[3];
+      Vo = (Vo>0.2) ? Vo: 0; //If the measured FSR value is not greater than 0.2, set it to zero. Prevents erroneous state changes during benchtop tests
   }
 
   return Vo;
@@ -144,8 +171,8 @@ double fsr(const unsigned int pin) {
  * This function reads the motor current pin and converts the voltage reading in bits to motor current.
 */
 double current(const unsigned int pin) {
-  int value = analogRead(pin);
-  double Co = NomCurrent * (value - 2048.0)/2048.0; //Nominal current needs to be set in ESCON, 7.58
+  double val = analogRead(pin)*3.3/4096.0;
+  double Co = map(val,0.0,3.3,-NomCurrent,NomCurrent); //Nominal current needs to be set in ESCON, 7.58
   return Co;
 }
 
@@ -154,11 +181,11 @@ Torque Constant (200W) : 700 rpm/V
 Gear Ratio (32HP, 4-8Nm) : 17576/343 
 Large Exo Pulley Ratio: 74/10.3
 */
-double motor_ankle_speed(const unsigned int pin){
-  double motor_speed = map(analogRead(pin),0,4096,-MaxSpeed,MaxSpeed);
-  //double motor_speed = MaxSpeed*3.3*(analogRead(pin)-2048)/2048;
-  double predicted_ankle_speed = motor_speed * (1/GearRatio) * (1/PulleyRatio);
-  return motor_speed;
+double motor_speed(const unsigned int pin){
+  double val = analogRead(pin)*3.3/4096.0;
+  double motorSpeed = map(val,0.0,3.3,-MaxSpeed,MaxSpeed);
+  double predicted_ankle_speed = motorSpeed * (1/GearRatio) * (1/PulleyRatio);
+  return motorSpeed;
 }
 
 /* Read the analog output from the hall sensor at the ankle, convert to degrees, and calculate actual ankle velocity.
@@ -167,36 +194,10 @@ double motor_ankle_speed(const unsigned int pin){
 double ankle_angle(Leg* leg){
 
 // Sensor Reading and Normalization
-  double zeroL = 0.5505;
-  double zeroR = -0.0983;
-  double maxPFXL = -0.6475 - zeroL;
-  double maxDFXL = 0.959 - zeroL;
-  double maxPFXR = -1.5284;
-  double maxDFXR = 1.8640;
-  double zero;
-  double maxPFX;
-  double maxDFX;
-  double angle;
+  double zero = leg->angle_zero;
 
-if (leg->whos == 'L') {
-  zero = zeroL;
-  maxPFX = maxPFXL;
-  maxDFX = maxDFXL;
-} else {
-  zero = zeroR;
-  maxPFX = maxPFXR;
-  maxDFX = maxDFXR; 
-}
+  double hall_voltage = 3.3*((analogRead(leg->ankle_angle_pin)-2048.0)/4096.0) - zero; //Offset by zero 
+  double rawAngle = -68.873*hall_voltage; //Raw voltage regression for comparisons
 
-float hall_voltage = 3.3*((analogRead(leg->ankle_angle_pin)-2048.0)/2048.0) - zero; //Offset by zero 
-if (hall_voltage > 0) {
-  hall_voltage = hall_voltage/abs(maxDFX); //Positive voltage is dorsiflexion
-} else if (hall_voltage < 0) {
-  hall_voltage = hall_voltage/abs(maxPFX); //Negative voltage is plantarflexion
-} else {
-  hall_voltage = 0;
-}
-
-  angle = -1.675 - 0.5947*asin(hall_voltage)*180/PI; //Calculate the angle from the normalized and transformed voltag
-  return angle;
+  return rawAngle;
 }
