@@ -32,8 +32,8 @@
 //#include "IntervalTimer.h"
 
 // Define the on and off state of the LED.  This is handy for if you are using a P Channel MOSFET where low is on.
-#define LED_ON_STATE HIGH
-#define LED_OFF_STATE LOW
+#define SYNC_LED_ON_STATE HIGH
+#define SYNC_LED_OFF_STATE LOW
 
 const unsigned int SYNC_HALF_PERIOD_US = 125000;  // half blink period in micro seconds
 const unsigned int SYNC_START_STOP_HALF_PERIOD_US = 4 * SYNC_HALF_PERIOD_US; // Half blink period for the begining and end of the sequence.  This is usually longer so it is easy to identify.

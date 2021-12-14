@@ -44,10 +44,10 @@ Sync_Led::Sync_Led(int pin, int syncStartStopHalfPeriodUs, int syncHalfPeriodUs)
 	currentSyncPeriod = syncHalfPeriodUs;
 	_syncStartStopHalfPeriodUs = syncStartStopHalfPeriodUs;
 	_syncHalfPeriodUs = syncHalfPeriodUs;
-	_defaultLedState = LED_ON_STATE;
+	_defaultLedState = SYNC_LED_ON_STATE;
 	ledState = _defaultLedState;
   _ledDefaultStatePin = -1;
-  ledIsOn = ledState == LED_ON_STATE;
+  ledIsOn = ledState == SYNC_LED_ON_STATE;
   
 	_stateChangeCount = 0; 
 	doBlink = false; 
@@ -74,7 +74,7 @@ Sync_Led::Sync_Led(int pin, int syncStartStopHalfPeriodUs, int syncHalfPeriodUs,
 	_defaultLedState = defaultLedState;
   _ledDefaultStatePin = -1;
   ledState = _defaultLedState;
-  ledIsOn = ledState == LED_ON_STATE;
+  ledIsOn = ledState == SYNC_LED_ON_STATE;
 	
 	_stateChangeCount = 0; // Track how many 
 	doBlink = false; // use volatile for shared variables
@@ -101,7 +101,7 @@ Sync_Led::Sync_Led(int pin, int syncStartStopHalfPeriodUs, int syncHalfPeriodUs,
   _defaultLedState = defaultLedState;
   _ledDefaultStatePin = ledDefaultStatePin;
   ledState = _defaultLedState;
-  ledIsOn = ledState == LED_ON_STATE;
+  ledIsOn = ledState == SYNC_LED_ON_STATE;
   
   _stateChangeCount = 0; // Track how many 
   doBlink = false; // use volatile for shared variables
@@ -148,7 +148,7 @@ void Sync_Led::updateLed()
 	digitalWrite(_pin, tempLedState);  // Change the LED state
   _defaultLedState = digitalRead(_ledDefaultStatePin);  // technically this will update for the next call, but functionally this shouldn't really matter as it will change before you can use the sync.
   
-  ledIsOn = tempLedState == LED_ON_STATE;
+  ledIsOn = tempLedState == SYNC_LED_ON_STATE;
 	//return ledIsOn;
 }
 
@@ -203,15 +203,15 @@ void Sync_Led::_blinkStartStop(void)
     currentSyncPeriod = _syncStartStopHalfPeriodUs;  // set teh correct period
     // Serial.print("blinkStartStop: sync half period changed to  : ");
     // Serial.println(currentSyncPeriod);
-    ledState = LED_ON_STATE; // set the LED to on so that way end of the first call in the sequence will be off
+    ledState = SYNC_LED_ON_STATE; // set the LED to on so that way end of the first call in the sequence will be off
   }
 
   // toggle state
-  if (ledState == LED_OFF_STATE) {
-    ledState = LED_ON_STATE;
+  if (ledState == SYNC_LED_OFF_STATE) {
+    ledState = SYNC_LED_ON_STATE;
   } 
   else {
-    ledState = LED_OFF_STATE;
+    ledState = SYNC_LED_OFF_STATE;
   }
  
   _stateChangeCount = _stateChangeCount + 1;   // iterate the state change counter
@@ -220,7 +220,7 @@ void Sync_Led::_blinkStartStop(void)
   // Serial.println(ledState);
 
   // once we have done the approprate number of state change stop the start stop sequence.
-  if (_stateChangeCount == (2*_numStartStopBlinks+1*(_defaultLedState==LED_ON_STATE))) // if the default state is 1 you need and extra one so make it low before it goes to the default state.
+  if (_stateChangeCount == (2*_numStartStopBlinks+1*(_defaultLedState==SYNC_LED_ON_STATE))) // if the default state is 1 you need and extra one so make it low before it goes to the default state.
   {
     doStartStopSequence = false;
   }
@@ -245,12 +245,12 @@ void Sync_Led::_blink(void)
   }
 
   // toggle LED state
-  if (ledState == LED_OFF_STATE) {
-    ledState = LED_ON_STATE;
+  if (ledState == SYNC_LED_OFF_STATE) {
+    ledState = SYNC_LED_ON_STATE;
     // _blinkCount = _blinkCount + 1;  // increase when LED turns on
   } 
   else {
-    ledState = LED_OFF_STATE;
+    ledState = SYNC_LED_OFF_STATE;
   }
   //digitalWrite(syncLEDPin, ledState);
  
