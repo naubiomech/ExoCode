@@ -50,6 +50,7 @@ int j = 0;
 #include "Math.h"
 #include "IntervalTimer.h"
 #include "Sync_Led.h"
+#include "Status_LED.h"
 
 bool iOS_Flag = 0;
 int streamTimerCountNum = 0;
@@ -58,7 +59,9 @@ int streamTimerCountNum = 0;
 // the sync is global so the ISR can access it.  The legs seem to be globals initialized in the .h file.  Need to discuss if we want to do the same here.  PS 2021.10
 #if BOARD_VERSION == DUAL_BOARD_REV4_1
   IntervalTimer syncTimer;  // Create a timer for setting for handling the interupt, this is needed as the ISR cannot access class variables since you cannot pass a self to the ISR.
-  Sync_Led syncLed(SYNC_LED_PIN, SYNC_START_STOP_HALF_PERIOD_US, SYNC_HALF_PERIOD_US, LED_ON_STATE, SYNC_DEFAULT_STATE_PIN);  // Create a sync LED object, the first and last arguments (pin) are found in Board.h, and the rest are in Sync_Led.h.  If you do not have a digital input for the default state you can remove SYNC_DEFAULT_STATE_PIN.  
+  Sync_Led syncLed(SYNC_LED_PIN, SYNC_START_STOP_HALF_PERIOD_US, SYNC_HALF_PERIOD_US, SYNC_LED_ON_STATE, SYNC_DEFAULT_STATE_PIN);  // Create a sync LED object, the first and last arguments (pin) are found in Board.h, and the rest are in Sync_Led.h.  If you do not have a digital input for the default state you can remove SYNC_DEFAULT_STATE_PIN.  
+  Status_Led statusLed(STATUS_LED_R_PIN, STATUS_LED_G_PIN, STATUS_LED_B_PIN);  // Create the status LED object.
+//  statusLed.updateLed(STATUS_MESSAGE_TRIAL_OFF); // Set to the Trial Off state
 #endif
 
 // Initialize the system
@@ -172,6 +175,13 @@ void callback()//executed every 2ms
 {
   // reset the motor drivers if you encounter an unexpected current peakz
   resetMotorIfError();
+  #if BOARD_VERSION == DUAL_BOARD_REV4_1
+    if (left_leg->motor_error || right_leg->motor_error)
+    {
+      statusLed.updateLed(STATUS_MESSAGE_ERROR); // Set to the ERROR state
+    }
+  #endif
+  
 
   // read FSR and torque values and calculate averages in case of necessity
   calculate_averages();
