@@ -80,7 +80,9 @@ void control_loop() {
     rotate_motor();
 
     if (FLAG_BIOFEEDBACK) {  
+      //Serial.println("Update Right");
       update_biofeedback_high_val(right_leg); 
+      //Serial.println("Update Left");
       update_biofeedback_high_val(left_leg);  
       /*
       Serial.print(right_leg->FSR_Toe_Average/right_leg->baseline_value); 
@@ -165,7 +167,7 @@ void loop()
   // same of FSR but for the balance baseline
   check_Balance_Baseline();
   //Updates GUI
-  update_GUI(); 
+  update_GUI();
   //Puts the main thread to sleep for (1000 / Frequency) milliseconds
   rtos::ThisThread::sleep_for(1000 / COMMS_LOOP_HZ);
 }// end void loop
@@ -176,7 +178,7 @@ void update_GUI() {
   //Real Time data
   if (stream)
     {
-      counter_msgs++;
+      //counter_msgs++;
       callback_thread.set_priority(osPriorityNormal);
       send_data_message_wc();
       callback_thread.set_priority(osPriorityAboveNormal);

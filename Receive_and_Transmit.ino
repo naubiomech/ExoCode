@@ -4,8 +4,8 @@ double app = 0;
 
 void receive_and_transmit()
 {
-  //Serial.print("cmd: ");
-  //Serial.println(char(cmd_from_Gui));
+  Serial.print("cmd: ");
+  Serial.println(char(cmd_from_Gui));
   switch (cmd_from_Gui)
   {
     case 'F':                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
@@ -18,10 +18,10 @@ void receive_and_transmit()
       memcpy(&left_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 8, 8);
       memcpy(&right_leg->Setpoint_Ankle, holdOnPoint + 16, 8);                        //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       memcpy(&right_leg->Dorsi_Setpoint_Ankle, holdOnPoint + 24, 8);
-      //Serial.println(left_leg->Setpoint_Ankle);
-      //Serial.println(left_leg->Dorsi_Setpoint_Ankle);
-      //Serial.println(right_leg->Setpoint_Ankle);
-      //Serial.println(right_leg->Dorsi_Setpoint_Ankle);
+//      Serial.println(left_leg->Setpoint_Ankle);
+//      Serial.println(left_leg->Dorsi_Setpoint_Ankle);
+//      Serial.println(right_leg->Setpoint_Ankle);
+//      Serial.println(right_leg->Dorsi_Setpoint_Ankle);
 
       if (left_leg->Setpoint_Ankle < 0) {
         left_leg->Setpoint_Ankle = 0;
@@ -84,7 +84,6 @@ void receive_and_transmit()
       break;
 
     case 'G':
-
       left_leg->p_steps->Setpoint = 0.0;
       left_leg->Setpoint_Ankle = 0;
       left_leg->Previous_Setpoint_Ankle = 0;
@@ -242,18 +241,21 @@ void receive_and_transmit()
       //End Biofeedback
       stepper->bio_steps += stepper->steps - stepper->bio_ref_steps; 
       FLAG_BIOFEEDBACK = false; // added by AS - 11/8/21   
+      AUTOADJUST_BIOFEEDBACK = false;
       //Serial.println(stepper->bio_steps);
       break;
       
     case 'd': 
-    // Start autoadjusting biofeedback 
-    AUTOADJUST_BIOFEEDBACK = true;   
-    break;  
+      // Toggle autoadjusting biofeedback 
+      AUTOADJUST_BIOFEEDBACK = !AUTOADJUST_BIOFEEDBACK;
+      break;  
 
     case 'q': 
-    // Stop autoadjusting biofeedback 
-    AUTOADJUST_BIOFEEDBACK = false;  
-    break; 
+      //Change the leg for dynamic biofeedback
+      char temp;
+      memcpy(&temp, &holdOnPoint[0], 8);
+      biofeedbackLeg = (temp == '0' ? 'L':'R');
+      break; 
 
     // TN 6/13/19
     case 'M':                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
