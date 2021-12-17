@@ -34,7 +34,7 @@ bool FLAG_PID_VALS = false;
 
 // Hip proportional variables
 double EarlySwingPercentage = 30;
-bool FLAG_HIP = false;
+bool FLAG_HIP = true;
 
 // Variables depending on the sensor placement that are used in the state machine
 bool FLAG_ONE_TOE_SENSOR = true;
