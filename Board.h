@@ -130,7 +130,13 @@ const unsigned int PWR_SCL = 19;   //SCL
 const unsigned int PWR_SDA = 18;   //SDA
 
 const unsigned int SYNC_LED_PIN = 29;
-const unsigned int SYNC_DEFAULT_STATE_PIN = 28;
+const unsigned int SYNC_DEFAULT_STATE_PIN = 25;
+
+const unsigned int STATUS_LED_R_PIN = 28;
+const unsigned int STATUS_LED_G_PIN = 27;
+const unsigned int STATUS_LED_B_PIN = 26;
+
+
 
 #endif
 

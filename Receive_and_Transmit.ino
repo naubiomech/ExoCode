@@ -159,6 +159,7 @@ void receive_and_transmit()
       #if BOARD_VERSION == DUAL_BOARD_REV4_1  // PS 2021.10
         // Trigger the sync LED
         syncLed.trigger();
+        statusLed.updateLed(STATUS_MESSAGE_TRIAL_ON);
         // We will handle the stream stuff in Exo.ino's loop.
       #else
         stream = 1;
@@ -176,6 +177,7 @@ void receive_and_transmit()
       #if BOARD_VERSION == DUAL_BOARD_REV4_1  // PS 2021.10
         // Trigger the sync LED
         syncLed.trigger();
+        statusLed.updateLed(STATUS_MESSAGE_TRIAL_OFF);
       #else
         stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
       #endif
