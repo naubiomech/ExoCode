@@ -54,7 +54,7 @@ bool motors_on = false;
 #include "motor_utils.h"
 //----------------------------------------------------------------------------------
 rtos::Thread callback_thread(osPriorityNormal);
-Ambulation_SM amb_sm;
+IMUhandler imu;
 uint32_t imuCounter = 0; 
 
 void control_loop() {
@@ -64,8 +64,9 @@ void control_loop() {
     calculate_averages();
 
     if (motors_on) {
+      imu.check_for_fall();
       detect_faults();
-      if (amb_sm.last_state == Walking) {
+      if (imu.last_state == Walking) {
           tracking_check(right_leg);
           tracking_check(left_leg);
           pid_check(right_leg);
@@ -132,9 +133,9 @@ void setup()
   torque_calibration(); //Sets a torque zero on startup  
 
   //Initialize the standing/walking state detector and provide callback functions
-  amb_sm.init();
-  amb_sm.attach_fe_cb(Amb_SM_cbs::upon_standing);
-  amb_sm.attach_re_cb(Amb_SM_cbs::upon_walking);
+  imu.init();
+  imu.attach_fe_cb(Amb_SM_cbs::upon_standing);
+  imu.attach_re_cb(Amb_SM_cbs::upon_walking);
   
   right_leg->Prev_Trq = get_torq(right_leg); //Initial conditions for EMA torque signal filter
   left_leg->Prev_Trq = get_torq(left_leg); 
