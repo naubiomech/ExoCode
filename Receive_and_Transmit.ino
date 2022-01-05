@@ -255,6 +255,8 @@ void receive_and_transmit()
       char temp;
       memcpy(&temp, &holdOnPoint[0], 8);
       biofeedbackLeg = (temp == '0' ? 'L':'R');
+      Serial.print("Changing leg to: ");
+      Serial.println(biofeedbackLeg);
       break; 
 
     // TN 6/13/19

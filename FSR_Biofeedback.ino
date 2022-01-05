@@ -24,6 +24,7 @@ void update_biofeedback_high_val(Leg* leg) { // pseudo 'peak finder' algorithm -
 void refresh_biofeedback(Leg* leg) { // run immediately after a new step is detected. Checks whether or not the previous step was successful and updates the auto-adjusting feature
   //Serial.print("Refresh with leg: ");
   //Serial.println(leg->whos);
+  char biofeedbackLegLocal = biofeedbackLeg;
   if (leg->biofeedback_high_val >= leg->biofeedback_target_score) { // if the individual has hit the target score
     biofeedback_current_success = 1;  // Success = 1
   }
@@ -61,7 +62,7 @@ void refresh_biofeedback(Leg* leg) { // run immediately after a new step is dete
   */
 
   // Calculate the new target score if the autoadjust biofeedback condition is on
-  if (leg->FLAG_calc_success_rate == 1) { // will only calculate a new rate after 6 strides have been taken at the current target goal
+  if (leg->FLAG_calc_success_rate == 1 && AUTOADJUST_BIOFEEDBACK) { // will only calculate a new rate after 6 strides have been taken at the current target goal
     double success_rate = 0;
     for (int jj = 0; jj < leg->biofeedback_window_length; jj++) {
       success_rate += leg->biofeedback_success_history[jj];
@@ -93,7 +94,11 @@ void refresh_biofeedback(Leg* leg) { // run immediately after a new step is dete
       }
       leg->FLAG_calc_success_rate = 0;
 
-      if (leg->whos == biofeedbackLeg) {
+      if (leg->whos == biofeedbackLegLocal && AUTOADJUST_BIOFEEDBACK) {
+        Serial.print("Sending ");
+        Serial.print(leg->biofeedback_target_score);
+        Serial.print(" to ");
+        Serial.println(biofeedbackLeg);
         biofeedbackScore[0] = leg->biofeedback_target_score;
         send_command_message('d', biofeedbackScore, 1);
       }

@@ -24,7 +24,7 @@ void send_data_message_wc() //with COP
   data_to_send[8] = 0;
   data_to_send[9] = 0;
 
-  send_command_message('?', data_to_send, 9);
+  send_command_message('?', data_to_send, 8);
 }
 
 
@@ -43,6 +43,7 @@ void send_command_message(char command_char, double* data_to_send, int number_to
   itoa(number_to_send, &cBuffer[0], 10);
   memcpy(&buffer[bufferIndex], &cBuffer[0], cLength);
   bufferIndex += cLength;
+  //buffer[bufferIndex++] = 'c';
   for (int i = 0; i < number_to_send; i++) {
     //Send as Int to reduce bytes being sent
     int modData = int(data_to_send[i] * 100);
