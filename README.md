@@ -20,8 +20,8 @@ We can tag which one of us is working on what when we get there.
 - SPI Handler (Chance [not started]) I added this to Chance since it seems tied to the Nano SPI, so it will be easier for an individual to debug.
 - Data 
 - Exo
-- Joint
 - Leg 
+- Joint
 - FSR
 - Controller
 - Motor (Chance [not started]) I am giving you this one as you have more experience with CAN
