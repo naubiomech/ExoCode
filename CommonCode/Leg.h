@@ -8,12 +8,10 @@
 #ifndef Leg_h
 #define Leg_h
 
-#include "Arduino.h"
 
 #include <motor.h>
 #include <controller.h>
 #include <FSR.h>
-
 
 
 struct legData{

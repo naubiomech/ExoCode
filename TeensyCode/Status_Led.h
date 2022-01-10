@@ -35,8 +35,6 @@
 #define STATUS_MESSAGE_ERROR 3  // set the message index
 #define STATUS_COLOR_ERROR {255, 0, 0}  // set the color in {R, G, B} format 0-255
 
-
-
 #define NO_PWM true // true if using simple digital pins, false if using pwm pins
 
 
