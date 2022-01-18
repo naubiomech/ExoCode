@@ -22,8 +22,6 @@ void update_biofeedback_high_val(Leg* leg) { // pseudo 'peak finder' algorithm -
 }
 
 void refresh_biofeedback(Leg* leg) { // run immediately after a new step is detected. Checks whether or not the previous step was successful and updates the auto-adjusting feature
-  //Serial.print("Refresh with leg: ");
-  //Serial.println(leg->whos);
   char biofeedbackLegLocal = biofeedbackLeg;
   if (leg->biofeedback_high_val >= leg->biofeedback_target_score) { // if the individual has hit the target score
     biofeedback_current_success = 1;  // Success = 1
@@ -52,14 +50,6 @@ void refresh_biofeedback(Leg* leg) { // run immediately after a new step is dete
       }
     }
   }
-  // Print the current array
-  /*
-    for (int ii = 0; ii < leg->biofeedback_window_length;ii++){
-    Serial.print(leg->biofeedback_success_history[ii]);
-    Serial.print(",");
-    }
-    Serial.println("");
-  */
 
   // Calculate the new target score if the autoadjust biofeedback condition is on
   if (leg->FLAG_calc_success_rate == 1 && AUTOADJUST_BIOFEEDBACK) { // will only calculate a new rate after 6 strides have been taken at the current target goal
@@ -68,7 +58,6 @@ void refresh_biofeedback(Leg* leg) { // run immediately after a new step is dete
       success_rate += leg->biofeedback_success_history[jj];
     }
     leg->biofeedback_success_rate = success_rate / leg->biofeedback_window_length; // calculate the success rate
-    //Serial.println(leg->biofeedback_success_rate);
 
     // Adjust the target score if the success rate is outside of the set bounds
     if (leg->biofeedback_success_rate >= BF_upper_limit || leg->biofeedback_success_rate < BF_lower_limit) {
@@ -87,26 +76,17 @@ void refresh_biofeedback(Leg* leg) { // run immediately after a new step is dete
         }
       }
 
-      //Serial.println("Target Score");
-      //Serial.println(leg->biofeedback_target_score);
-      for (int j = 0; j < (sizeof(leg->biofeedback_success_history) / sizeof(leg->biofeedback_success_history[1])); j++) { // if the target score is modified, then we reset to ensure that the individual takes atleast 6 steps at each target level!
+      for (int j = 0; j < leg->biofeedback_window_length; j++) { // if the target score is modified, then we reset to ensure that the individual takes atleast 6 steps at each target level!
         leg->biofeedback_success_history[j] = -1;
       }
       leg->FLAG_calc_success_rate = 0;
 
-      if (leg->whos == biofeedbackLegLocal && AUTOADJUST_BIOFEEDBACK) {
-        Serial.print("Sending ");
-        Serial.print(leg->biofeedback_target_score);
-        Serial.print(" to ");
-        Serial.println(biofeedbackLeg);
+      if ((leg->whos == biofeedbackLegLocal) && AUTOADJUST_BIOFEEDBACK) {
         biofeedbackScore[0] = leg->biofeedback_target_score;
         send_command_message('d', biofeedbackScore, 1);
       }
     }
   }
-
-
-
   leg->biofeedback_high_val = 0;
   return;
 }

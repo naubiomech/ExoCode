@@ -1,4 +1,4 @@
-
+bool sending = false;
 //Real time data being sent to the GUI
 void send_data_message_wc() //with COP
 {
@@ -67,10 +67,8 @@ void send_command_message(char command_char, double* data_to_send, int number_to
     memcpy(&buffer[bufferIndex], &cBuffer[0], cLength);
     bufferIndex += cLength;
     buffer[bufferIndex++] = 'n';
-  }
-  //callback_thread.set_priority(osPriorityNormal);
-  TXChar.writeValue(buffer, bufferIndex);           //Write payload
-  //callback_thread.set_priority(osPriorityAboveNormal);
+  } 
+  TXChar.writeValue(buffer, bufferIndex);     //Write payload
 }
 
 int getCharLength(int ofInt) {

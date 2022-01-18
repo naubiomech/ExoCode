@@ -45,6 +45,7 @@ inline void detect_faults() {
 
 inline void check_for_torque_faults(Leg* leg) {
   torque_check(leg);
+  tracking_check(leg);
 }
 
 inline void tracking_check(Leg* leg) {

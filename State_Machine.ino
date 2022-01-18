@@ -95,8 +95,13 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
               leg->biofeedback_high_val = 0; // refresh the current high value
               leg->biofeedback_first_step = false; // indicate that the first step with biofeedback has been taken 
             } 
-            else if (AUTOADJUST_BIOFEEDBACK){
-              refresh_biofeedback(leg);  
+            else if (AUTOADJUST_BIOFEEDBACK && (leg->whos == biofeedbackLeg)){
+              if(leg->whos == 'R') {
+                refresh_countR++;
+              } else if(leg->whos == 'L') {
+                refresh_countL++;
+              }
+              //refresh_biofeedback(leg);  
             }
           } 
         }

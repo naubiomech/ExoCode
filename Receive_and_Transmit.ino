@@ -4,8 +4,6 @@ double app = 0;
 
 void receive_and_transmit()
 {
-  Serial.print("cmd: ");
-  Serial.println(char(cmd_from_Gui));
   switch (cmd_from_Gui)
   {
     case 'F':                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
@@ -244,8 +242,8 @@ void receive_and_transmit()
       char temp;
       memcpy(&temp, &holdOnPoint[0], 8);
       biofeedbackLeg = (temp == '0' ? 'L':'R');
-      Serial.print("Changing leg to: ");
-      Serial.println(biofeedbackLeg);
+//      Serial.print("Changing leg to: ");
+//      Serial.println(biofeedbackLeg);
       break; 
 
     // TN 6/13/19

@@ -80,15 +80,8 @@ void control_loop() {
     rotate_motor();
 
     if (FLAG_BIOFEEDBACK) {  
-      //Serial.println("Update Right");
       update_biofeedback_high_val(right_leg); 
-      //Serial.println("Update Left");
       update_biofeedback_high_val(left_leg);  
-      /*
-      Serial.print(right_leg->FSR_Toe_Average/right_leg->baseline_value); 
-      Serial.print(","); 
-      Serial.println(right_leg->biofeedback_target_score);   
-      */
     }  
     rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
   }
@@ -199,6 +192,15 @@ void update_GUI() {
     callback_thread.set_priority(osPriorityAboveNormal);
   }
   voltageTimerCount++;
+
+  if(refresh_countR) {
+    refresh_biofeedback(right_leg);
+    refresh_countR--;
+  } else if(refresh_countL) {
+    refresh_biofeedback(left_leg);
+    refresh_countL--;
+    
+  }
 }
 
 void calculate_leg_average(Leg* leg, double alpha) {
