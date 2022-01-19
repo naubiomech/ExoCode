@@ -125,8 +125,8 @@ double temp_R_DFX = 0;
 double temp_R_PFX = 0;
 
 // Torque Offsets
-double trqOffsetR = 1.219;  //DEFINE TRANSDUCER OFFSET HERE S07
-double trqOffsetL = 1.503;  //DEFINE TRANSDUCER OFFSET HERE S08
+double trqOffsetR = 1.51;  //DEFINE TRANSDUCER OFFSET HERE S02
+double trqOffsetL = 1.42;  //DEFINE TRANSDUCER OFFSET HERE S03
 
 // Mark Functionality
 char biofeedbackLeg = 'R';
