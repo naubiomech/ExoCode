@@ -3,12 +3,17 @@
 //Real time data being sent to the GUI
 void send_data_message_wc() //with COP
 {
+  static double last_time = (double)millis();
+  double temp = (double)millis();
+  double time = temp - last_time;
+  last_time = temp;
+  
   //Right Leg
   data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
-  data_to_send[1] = right_leg->state / 3;
+  data_to_send[1] = right_leg->state / 3; //right_leg->AverageCurrent
   data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
 
-  //Left Leg
+  //Left Leg, sends mark data in place of left_leg FSR value
   data_to_send[3] = (left_leg->sign * left_leg->Average_Trq);
   if (markFlag) {
     data_to_send[4] = markCount++;
@@ -18,7 +23,7 @@ void send_data_message_wc() //with COP
   }
   data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
 
-  //Normalized FSR values, sends mark data in place of left_leg FSR value
+  //Normalized FSR values
   if (right_leg->baseline_value != 0 && left_leg->baseline_value != 0) {
     data_to_send[6] = (right_leg->FSR_Toe_Average) / right_leg->baseline_value;
     data_to_send[7] = (left_leg->FSR_Toe_Average) / left_leg->baseline_value;
@@ -26,73 +31,43 @@ void send_data_message_wc() //with COP
     data_to_send[6] = 0;
     data_to_send[7] = 0;
   }
+  
+  data_to_send[8] = time;
+  data_to_send[9] = 0;
 
-  send_command_message('?', data_to_send, 8);
+  send_command_message('?', data_to_send, 9);
 }
 
 
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
 {
-  if(good_connection && connected) {
-    //6 max characters can transmit -XXXXX, or XXXXXX
-    int maxChars = 8;
-    int maxPayloadLength = ((3 + number_to_send) * (maxChars + 1)); //+1 because of the delimiters
-    byte buffer[maxPayloadLength];
-    //Size must be declared at initialization because of itoa()
-    char cBuffer[maxChars];
-    int bufferIndex = 0;
-    buffer[bufferIndex++] = 'S';
-    buffer[bufferIndex++] = command_char;
-    itoa(number_to_send, &cBuffer[0], 10);
-    memcpy(&buffer[bufferIndex++], &cBuffer[0], 1);
-    for (int i = 0; i < number_to_send; i++) {
-      //Send as Int to reduce bytes being sent
-      int modData = int(data_to_send[i] * 100);
-      int cLength = getCharLength(modData);
-      //Populates cBuffer with a base 10 number
-      itoa(modData, &cBuffer[0], 10);
-      //Writes cLength indices of cBuffer into buffer
-      memcpy(&buffer[bufferIndex], &cBuffer[0], cLength);
-      bufferIndex += cLength;
-      buffer[bufferIndex++] = 'n';
-    }
-    double start = millis();
-    TXChar.writeValue(buffer, bufferIndex);           //Write payload
-    double delta = millis() - start;
-    write_time = ema_with_context(write_time, delta, HIGH_ALPHA);
-  }
-  check_time();
+  //8 max characters can transmit -XXXXX, or XXXXXX
+  int maxChars = 8;
+  int maxPayloadLength = ((4 + number_to_send) * (maxChars + 1)); //+1 because of the delimiters
+  byte buffer[maxPayloadLength];
+  //Size must be declared at initialization because of itoa()
+  char cBuffer[maxChars];
+  int bufferIndex = 0;
+  buffer[bufferIndex++] = 'S';
+  buffer[bufferIndex++] = command_char;
+  int cLength = getCharLength(number_to_send);
+  itoa(number_to_send, &cBuffer[0], 10);
+  memcpy(&buffer[bufferIndex], &cBuffer[0], cLength);
+  bufferIndex += cLength;
+  buffer[bufferIndex++] = 'c';
+  for (int i = 0; i < number_to_send; i++) {
+    //Send as Int to reduce bytes being sent
+    int modData = int(data_to_send[i] * 100);
+    cLength = getCharLength(modData);
+    //Populates cBuffer with a base 10 number
+    itoa(modData, &cBuffer[0], 10);
+    //Writes cLength indices of cBuffer into buffer
+    memcpy(&buffer[bufferIndex], &cBuffer[0], cLength);
+    bufferIndex += cLength;
+    buffer[bufferIndex++] = 'n';
+  } 
+  TXChar.writeValue(buffer, bufferIndex);     //Write payload
 }
-
-inline void check_time() {
-  static const float write_thresh = 20; //In millis
-  static const float wait_duration = 2000; //In millis
-  static double wait_start_time = 0;
-  if(stream && connected)
-  {
-    //If we are currently transmitting and it is taking a while, stop sending messages
-    if((write_time > write_thresh))
-    {
-      good_connection = false;
-      wait_start_time = millis();
-    } 
-    //Wait before attempting to try again
-    if(!good_connection)
-    {
-      //Must reset write time for a valid new attempt
-      write_time = ema_with_context(write_time, 0.0, HIGH_ALPHA);
-      
-      double delta = millis() - wait_start_time;
-      if((delta > wait_duration))
-      {
-        good_connection = true;
-      } //End if(delta > wait_duration)
-    } //End if(!good_connection)
-  }//End if(stream)
-  //Serial.print(good_connection);
-  //Serial.print("\t");
-  //Serial.println(write_time);
-}//End function
 
 int getCharLength(int ofInt) {
   int len = 0;
@@ -150,6 +125,7 @@ bool map_expected_bytes(int& bytesExpected) //Determines how much data each comm
       bytesExpected = 8;
       break;
     case 'f':
+    case 'q':
       bytesExpected = 1;
       break;
   }

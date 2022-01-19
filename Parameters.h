@@ -67,7 +67,7 @@ double p_prop[3] = {128.1, -50.82, 22.06};
 double FSR_Ratio;
 
 // ===== Proportional Control Parameters =====
-double Max_Prop = 21; //Was 35, GO 9/15/20
+double Max_Prop = 35;
 double Min_Prop = 0;
 
 // ===== Auto KF Parameters =====

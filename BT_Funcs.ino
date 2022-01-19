@@ -7,18 +7,14 @@ bool BUFFERS_FIXED_LENGTH = false;
 BLEService UARTService(UARTUUID);   //Instantiate UART service
 BLECharacteristic TXChar(rxUUID, BLERead | BLENotify | BLEBroadcast,             BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //TX characteristic of service
 BLECharacteristic RXChar(txUUID, BLEWriteWithoutResponse | BLEWrite | BLENotify, BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //RX characteristic of service
-double write_time = 0;
-bool good_connection = true;
-bool connected = false;
-
 
 void setupBLE()
 {
   if (BLE.begin())
   {
     //Advertised name and service
-    BLE.setLocalName("EXOBLE_4"); //SET DEVICE ID HERE "EXOBLE_#"
-    BLE.setDeviceName("EXOBLE_4"); //SET DEVICE ID HERE "EXOBLE_#"
+    BLE.setLocalName("EXOBLE_Dur2"); //SET DEVICE ID HERE "EXOBLE_#"
+    BLE.setDeviceName("EXOBLE_Dur2"); //SET DEVICE ID HERE "EXOBLE_#"
     BLE.setAdvertisedService(UARTService);
     //Add chars to service
     UARTService.addCharacteristic(TXChar);
@@ -32,13 +28,13 @@ void setupBLE()
     RXChar.setEventHandler(BLEWritten,   onRxCharValueUpdate);
     BLE.advertise();
     //config_ble_regs();
-    digitalWrite(GREEN,LOW);
+    digitalWrite(GREEN,HIGH);
   }
   else {
     Serial.println("Error Setting up BLE");
-    digitalWrite(GREEN, HIGH);
-    digitalWrite(BLUE, HIGH);
-    digitalWrite(RED, LOW);
+    digitalWrite(GREEN, LOW);
+    digitalWrite(BLUE, LOW);
+    digitalWrite(RED, HIGH);
   }
 }
 
@@ -67,17 +63,13 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
 void onBLEConnected(BLEDevice central)
 {
   digitalWrite(GREEN,HIGH);
-  digitalWrite(BLUE, LOW);
-  
+  digitalWrite(BLUE, HIGH);
   BLE.stopAdvertise();
-  connected = true;
 }
 
 void onBLEDisconnected(BLEDevice central)
 {
-  digitalWrite(GREEN,LOW);
-  digitalWrite(BLUE, HIGH);
-  
+  digitalWrite(GREEN,HIGH);
+  digitalWrite(BLUE, LOW);
   BLE.advertise();
-  connected = false;
 }

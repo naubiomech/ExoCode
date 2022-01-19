@@ -10,7 +10,7 @@
 // The torque reference can be smoothed by sigmoid functions or spline function
 // In case of too long steady state the torque reference is set to zero
 // In case of new torque reference the torque amount is provided gradually as function of the steps.
-//
+//M     
 // 1 step = 0N
 // 2 steps = 2N
 // 3 steps = 4N
@@ -55,31 +55,23 @@ bool motors_on = false;
 //----------------------------------------------------------------------------------
 rtos::Thread callback_thread(osPriorityNormal);
 IMUhandler imu;
-uint32_t imuCounter = 0; 
 
 void control_loop() {
   while (true) {
-    imuCounter++;
     resetMotorIfError();
-    calculate_averages();
-
+    calculate_averages(); 
+    
     if (motors_on) {
       imu.check_for_fall();
       detect_faults();
-      if (imu.last_state == Walking) {
-          tracking_check(right_leg);
-          tracking_check(left_leg);
-          pid_check(right_leg);
-          pid_check(left_leg);
-      }
-      if (stream && (imuCounter > imuTimerCount)) {
-        //amb_sm.tick(stepper->steps);
-        imuCounter = 0;
-      }
     }
     
     rotate_motor();
 
+    if (FLAG_BIOFEEDBACK) {  
+      update_biofeedback_high_val(right_leg); 
+      update_biofeedback_high_val(left_leg);  
+    }  
     rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
   }
 }
@@ -95,13 +87,13 @@ void setup()
   pinMode(RED, OUTPUT);
   pinMode(BLUE, OUTPUT);
   pinMode(GREEN, OUTPUT);
-  digitalWrite(RED, HIGH);
-  digitalWrite(BLUE, HIGH);
-  digitalWrite(GREEN, HIGH);
+  digitalWrite(RED, LOW);
+  digitalWrite(BLUE, LOW);
+  digitalWrite(GREEN, LOW);
   
   //Start Serial
   Serial.begin(500000);
-  delay(100);
+  delay(1);
 
   //Nano's internal BLE module
   setupBLE();
@@ -112,7 +104,7 @@ void setup()
 
   //initialize the leg objects
   initialize_left_leg(left_leg);
-  initialize_right_leg(right_leg);
+  initialize_right_leg(right_leg);  
 
 
   // Initialize power monitor settings
@@ -168,7 +160,6 @@ void update_GUI() {
   //Real Time data
   if (stream)
     {
-      counter_msgs++;
       callback_thread.set_priority(osPriorityNormal);
       send_data_message_wc();
       callback_thread.set_priority(osPriorityAboveNormal);
@@ -176,10 +167,8 @@ void update_GUI() {
     
   //Battery voltage and reset motor count data
   if (voltageTimerCount >= voltageTimerCountNum) {
-    static int batteryVoltage = readBatteryVoltage();
-    int filtered_voltage = ema_with_context(batteryVoltage, readBatteryVoltage(), 0.0001);
-    batteryVoltage = filtered_voltage;
-    batteryData[0] = filtered_voltage/10; //convert from milli
+    int batteryVoltage = readBatteryVoltage();
+    batteryData[0] = batteryVoltage/10; //convert from milli
     callback_thread.set_priority(osPriorityNormal);
     send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
     voltageTimerCount = 0;
@@ -189,6 +178,14 @@ void update_GUI() {
     callback_thread.set_priority(osPriorityAboveNormal);
   }
   voltageTimerCount++;
+
+  if(refresh_countR) {
+    refresh_biofeedback(right_leg);
+    refresh_countR--;
+  } else if(refresh_countL) {
+    refresh_biofeedback(left_leg);
+    refresh_countL--;
+  }
 }
 
 void calculate_leg_average(Leg* leg, double alpha) {
@@ -264,16 +261,14 @@ void calculate_averages() {
 void check_FSR_calibration() {
   if (FSR_CAL_FLAG) {
     FSR_calibration();
-    
   }
-
   // for the proportional control
   if (right_leg->FSR_baseline_FLAG) {
-    take_baseline(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);
+    take_baseline(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);    
   }
   if (left_leg->FSR_baseline_FLAG) {
-    take_baseline(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
-  }
+    take_baseline(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);  
+  }   
 }
 
 //----------------------------------------------------------------------------------

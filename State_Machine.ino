@@ -87,6 +87,23 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           leg->state_count_13 = 0;
           leg->state_count_31 = 0;
           leg->Max_FSR_Ratio = 0;
+
+          
+          // Once a new stride is identified (transition from State 1 > State 3) refresh biofeedback + update target score (if necessary)  
+          if (FLAG_BIOFEEDBACK) {  
+            if (leg->biofeedback_first_step) { // if biofeedback is turned on and this is the first step with biofeedback, we don't want to refresh the biofeedback system (ensures that the first stride that is used is a full stride with biofeedback on)
+              leg->biofeedback_high_val = 0; // refresh the current high value
+              leg->biofeedback_first_step = false; // indicate that the first step with biofeedback has been taken 
+            } 
+            else if (AUTOADJUST_BIOFEEDBACK && (leg->whos == biofeedbackLeg)){
+              if(leg->whos == 'R') {
+                refresh_countR++;
+              } else if(leg->whos == 'L') {
+                refresh_countL++;
+              }
+              //refresh_biofeedback(leg);  
+            }
+          } 
         }
       }
 
