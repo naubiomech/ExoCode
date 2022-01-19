@@ -62,14 +62,16 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
 
 void onBLEConnected(BLEDevice central)
 {
-  digitalWrite(GREEN,HIGH);
+  digitalWrite(GREEN, LOW);
+  digitalWrite(RED,HIGH);
   digitalWrite(BLUE, HIGH);
   BLE.stopAdvertise();
 }
 
 void onBLEDisconnected(BLEDevice central)
 {
-  digitalWrite(GREEN,HIGH);
+  digitalWrite(GREEN, HIGH);
   digitalWrite(BLUE, LOW);
+  digitalWrite(RED, LOW);
   BLE.advertise();
 }

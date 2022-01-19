@@ -20,6 +20,8 @@ enum States {Standing, Walking};
 class IMUhandler {
   public:
   States last_state = Standing;
+  bool has_fallen = true;
+  
   void init() {
     if (!IMU.begin()) {
        while (1);
@@ -40,9 +42,11 @@ class IMUhandler {
       filtered_angle = ema_with_context(filtered_angle, acc_angle, 0.25);
       
       if(abs(filtered_angle) > angle_thresh_k) {
-        change_motor_stateless(false);
+        has_fallen = true;
+        change_motor_stateless(!has_fallen);
       } else {
-        change_motor_stateless(true);
+        has_fallen = false;
+        change_motor_stateless(!has_fallen);
       }
     }
   }
