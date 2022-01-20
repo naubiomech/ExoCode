@@ -34,7 +34,6 @@ bool motors_on = false;
 #include <ArduinoBLE.h>
 #include <elapsedMillis.h>
 #include <PID_v2.h>
-#include <Wire.h>
 #include <mbed.h>
 #include <rtos.h>
 
@@ -49,12 +48,14 @@ bool motors_on = false;
 #include "ATP.h"
 #include "Trial_Data.h"
 #include "Ambulation_SM.h"
+#include "SMBattery.h"
 #include "fault_detection.h"
 #include "ema_filter.h"
 #include "motor_utils.h"
 //----------------------------------------------------------------------------------
 rtos::Thread callback_thread(osPriorityNormal);
 IMUhandler imu;
+SMBattery battery;
 
 void control_loop() {
   while (true) {
@@ -108,20 +109,10 @@ void setup()
   initialize_right_leg(right_leg);
 
 
-  // Initialize power monitor settings
-#define WireObj Wire
-  //Setting both address pins to GND defines the slave address
-  WireObj.begin(); //Initialize the I2C protocol on SDA1/SCL1 for Teensy 4.1, or SDA0/SCL0 on Teensy 3.6
-  WireObj.beginTransmission(INA219_ADR); //Start talking to the INA219
-  WireObj.write(INA219_CAL); //Write the target as the calibration register
-  WireObj.write(Cal);        //Write the calibration value to the calibration register
-  WireObj.endTransmission(); //End the transmission and calibration
-  delay(100);
+  // Enable I2C for smart battery
+  battery.init();
 
-  int startVolt = readBatteryVoltage(); //Read the startup battery voltage
-  batteryData[0] = startVolt / 10;
-  send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
-
+  
   // Torque cal
   torque_calibration(); //Sets a torque zero on startup
 
@@ -168,15 +159,13 @@ void update_GUI() {
 
   //Battery voltage and reset motor count data
   if (voltageTimerCount >= voltageTimerCountNum) {
-    int batteryVoltage = readBatteryVoltage();
-    batteryData[0] = batteryVoltage / 10; //convert from milli
+    batteryData[0] = battery.readSOC();
     callback_thread.set_priority(osPriorityNormal);
     send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
-    voltageTimerCount = 0;
-    //Motor reset Count
     errorCount[0] = reset_count;
     send_command_message('w', errorCount, 1);
     callback_thread.set_priority(osPriorityAboveNormal);
+    voltageTimerCount = 0;
   }
   voltageTimerCount++;
 
