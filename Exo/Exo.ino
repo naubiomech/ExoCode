@@ -138,7 +138,8 @@ void setup()
   
   right_leg->Prev_Trq = get_torq(right_leg); //Initial conditions for EMA torque signal filter
   left_leg->Prev_Trq = get_torq(left_leg); 
-
+  
+  
   //Starts the Control Loop thread
   callback_thread.start(control_loop);
 }

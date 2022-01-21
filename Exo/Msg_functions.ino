@@ -2,15 +2,26 @@
 //Real time data being sent to the GUI
 void send_data_message_wc() //with COP
 {
+ static double last_time = (double)millis();
+  double temp = (double)millis();
+  double time = temp - last_time;
+  last_time = temp;
+  
   //Right Leg
   data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
-  data_to_send[1] = right_leg->state / 3;
+  data_to_send[1] = time;
   data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
 
   //Left Leg
   data_to_send[3] = (left_leg->sign * left_leg->Average_Trq);
-  data_to_send[4] = left_leg->state / 3;
+  if(stepper->mark_flag) {
+    data_to_send[4] = stepper->mark_count;
+    stepper->mark_flag = false;
+  } else {
+    data_to_send[4] = left_leg->state / 3;
+  }
   data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
+
 
   //Normalized FSR values
   if (right_leg->baseline_value != 0 && left_leg->baseline_value != 0) {
@@ -20,8 +31,10 @@ void send_data_message_wc() //with COP
     data_to_send[6] = 0;
     data_to_send[7] = 0;
   }
+  data_to_send[8] = stepper->steps;
+  //data_to_send[9] = 1;
 
-  send_command_message('?', data_to_send, 8);
+  send_command_message('?', data_to_send, 9);
 }
 
 
@@ -38,6 +51,7 @@ void send_command_message(char command_char, double* data_to_send, int number_to
   buffer[bufferIndex++] = command_char;
   itoa(number_to_send, &cBuffer[0], 10);
   memcpy(&buffer[bufferIndex++], &cBuffer[0], 1);
+  buffer[bufferIndex++] = 'c';
   for (int i = 0; i < number_to_send; i++) {
     //Send as Int to reduce bytes being sent
     int modData = int(data_to_send[i] * 100);

@@ -20,6 +20,9 @@ struct Trial_Data
   //Int where total steps is stored in EEPROM (See memory map in drive)
   const int kaddr = 183;
 
+  unsigned long int mark_count = 10;
+  bool mark_flag = 0;
+
   //Flags used by message functions to send steps and time
   const char step_flag = 's';
 };

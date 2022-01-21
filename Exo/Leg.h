@@ -248,7 +248,9 @@ struct Leg {
   double stridetime_target;
   double stridetime;
   double score;
-
+  
+  // dynamic PID for swing    kh 11/2021
+  int d_counter =0;
 
   //Optimization-----------------------------------
   double T_Opt_p, Setpoint_Ankle_Opt;

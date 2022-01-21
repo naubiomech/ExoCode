@@ -20,6 +20,16 @@ void state_machine(Leg* leg)
     }
   }
 }
+// P tunings to explore 
+void P_values(int old_best_P, int old_range, int P_vec[3]){
+  int range = round(0.5 * old_range);
+  P_vec[] = {old_best_P - range, old_best_P, old_best_P + range};
+}
+
+// update state values
+void update_state_value(int step_count_start, int step_count_current, int P_vec[3], int P_error_vec[3], int P_error_count[3]){
+  
+}
 
 //-----------------------------------------------------------------------------------------------------
 void State_Machine_One_Toe_Sensor(Leg * leg) {
@@ -51,6 +61,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           if (Control_Mode == 100) { //Increment set point for bang-bang GO - 5/19/19
             leg->sigm_done = true;
             leg->Old_PID_Setpoint = leg->PID_Setpoint;
+            leg->d_counter++;                                 //kh 11/2021
             if (leg->Previous_Setpoint_Ankle <= leg->Setpoint_Ankle) {
 
               leg->New_PID_Setpoint = leg->Previous_Setpoint_Ankle + (leg->Setpoint_Ankle - leg->Previous_Setpoint_Ankle) * leg->coef_in_3_steps;
@@ -87,9 +98,13 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           leg->state_count_13 = 0;
           leg->state_count_31 = 0;
           leg->Max_FSR_Ratio = 0;
+          leg->pid.SetTunings(300, 0, 3); 
+          leg->d_counter =0;
         }
+        
       }
-
+      leg->pid.SetTunings(375, 0, 3); //+ leg->d_counter);   //kh 12/21 incriment the derivative to mitigate increasing error at heal strike?
+      //leg->d_counter = leg->d_counter +1;
       break;
 
     case 3: //Late Stance
@@ -148,6 +163,8 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           leg->state_count_21 = 0;
           leg->swing_counter = 0;
           leg->allow_inc_flag = true; //TH 8/7/19
+
+          leg->pid.SetTunings(375, 0, 3);   //kh 11/21
         }
       }
   }//end switch
