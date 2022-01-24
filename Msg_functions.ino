@@ -1,3 +1,4 @@
+#include "Msg_functions.h"
 
 //Real time data being sent to the GUI
 void send_data_message_wc() //with COP
@@ -21,7 +22,9 @@ void send_data_message_wc() //with COP
     data_to_send[7] = 0;
   }
 
-  send_command_message('?', data_to_send, 8);
+  data_to_send[8] = send_error;
+
+  send_command_message('?', data_to_send, 9);
 }
 
 
@@ -38,6 +41,7 @@ void send_command_message(char command_char, double* data_to_send, int number_to
   buffer[bufferIndex++] = command_char;
   itoa(number_to_send, &cBuffer[0], 10);
   memcpy(&buffer[bufferIndex++], &cBuffer[0], 1);
+  buffer[bufferIndex++] = 'c';
   for (int i = 0; i < number_to_send; i++) {
     //Send as Int to reduce bytes being sent
     int modData = int(data_to_send[i] * 100);

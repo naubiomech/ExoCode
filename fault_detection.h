@@ -1,6 +1,8 @@
 #include "ema_filter.h"
 #include "motor_utils.h"
 #include "akxMotor.h"
+#include "ErrorReporter.h"
+#include "Msg_functions.h"
 
 #ifndef FAULT_DETECTION
 #define FAULT_DETECTION
@@ -29,6 +31,8 @@
 #define MAX_TORQUE_RATE       20 * MAX_TORQUE / CONTROL_TIME_STEP
 //Max PID saturate time in seconds
 #define PID_SAT_TIME          1.5
+
+ErrorReporter reporter;
 
 
 //Protocols
@@ -64,6 +68,7 @@ inline void tracking_check(Leg* leg) {
     filtered_error_R = abs(ema_with_context(filtered_error_R, current_track_error, ERROR_ALPHA));
     double track_error_rate = abs((current_track_error - track_error_R) / CONTROL_TIME_STEP);
     if ((filtered_error_R > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
+      reporter.report(TRACKING, RIGHT);
       change_motor_state(&akMotor, false);
     }
     track_error_R = filtered_error_R;
@@ -74,6 +79,7 @@ inline void tracking_check(Leg* leg) {
     filtered_error_L = abs(ema_with_context(filtered_error_L, current_track_error, ERROR_ALPHA));
     double track_error_rate = abs((filtered_error_L - track_error_L) / CONTROL_TIME_STEP);
     if ((filtered_error_L > TRACKING_THRESH || (sign * track_error_rate) > TRACKING_RATE_THRESH) && stream) {
+      reporter.report(TRACKING, LEFT);
       change_motor_state(&akMotor, false);
     }
     track_error_L = filtered_error_L;
@@ -87,6 +93,11 @@ inline void torque_check(Leg* leg) {
   if ((abs_trq > MAX_TORQUE) && !CURRENT_CONTROL) {
     leg->torque_error_counter++;
     if (leg->torque_error_counter >= 10) {
+      if(leg->whos == 'R') {
+        reporter.report(TRQ_THRSH, RIGHT);
+      } else {
+        reporter.report(TRQ_THRSH, LEFT);
+      }
       change_motor_state(&akMotor, false);
       leg->torque_error_counter = 0;
     }
@@ -97,6 +108,11 @@ inline void torque_check(Leg* leg) {
   if (((abs_trq - leg->previous_torque_average) / CONTROL_TIME_STEP) > MAX_TORQUE_RATE) {
     count++;
     if (count >= 10) {
+      if(leg->whos == 'R') {
+        reporter.report(TRQ_THRSH, RIGHT);
+      } else {
+        reporter.report(TRQ_THRSH, LEFT);
+      }
       change_motor_state(&akMotor, false);
       count = 0;
     }
@@ -112,6 +128,7 @@ inline void pid_check(Leg* leg) {
     if ((abs(leg->Output)) >= 1475) {
       r_count++;
       if (r_count / CONTROL_LOOP_HZ >= PID_SAT_TIME) {
+        reporter.report(SAT_PID, RIGHT);
         change_motor_state(&akMotor, false);
       }
     }
@@ -122,6 +139,7 @@ inline void pid_check(Leg* leg) {
     if ((abs(leg->Output)) >= 1475) {
       l_count++;
       if (l_count / CONTROL_LOOP_HZ >= PID_SAT_TIME) {
+        reporter.report(SAT_PID, LEFT);
         change_motor_state(&akMotor, false);
       }
     }

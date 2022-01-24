@@ -1,3 +1,5 @@
+#ifndef MSG_FUNCTIONS_H
+#define MSG_FUNCTIONS_H
 // structure to create the messages transmitted and received between arduino and matlab
 
 typedef struct {
@@ -34,3 +36,16 @@ double totalSteps[1]; //Used to send the total number of steps
 double *totalSteps_point = &totalSteps[0];
 
 double errorCount[1];
+
+/* Used for error reporting */
+int send_error = 0;
+
+/* Function Protocols */
+void send_data_message_wc();
+void send_command_message(char command_char, double* data_to_send, int number_to_send);
+int getCharLength(int ofInt);
+bool map_expected_bytes(int& bytesExpected);
+bool handle_matlab_message(char* data, const int data_length);
+bool handle_mobile_message(char* data, const int val_len);
+
+#endif
