@@ -27,7 +27,7 @@ We can tag which one of us is working on what when we get there.
 - [ ] Motor (Chance [not started]) I am giving you this one as you have more experience with CAN
 - [ ] TorqueSensor (Paul [structure in place need to add function])
 
-![Diagram](CodeDiagram.jpg)
+![Diagram](CodeDiagram.svg)
 
 MORE DETAILS TO COME
 Probably need to create a consistent/shared SPI interface
