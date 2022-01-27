@@ -16,7 +16,6 @@ Chance I am going to let you handle most of this but I am going to provide some 
 ## Teensy Specific Code (Mixed [in progress])
 ### Classes
 We can tag which one of us is working on what when we get there.
-- Config parser (Paul [complete])
 - [ ] Sync LED (Paul [Make style compliant])
 - [ ] Status LED (Paul [Make style compliant])
 - [ ] SPI Handler (Chance [not started]) I added this to Chance since it seems tied to the Nano SPI, so it will be easier for an individual to debug.
