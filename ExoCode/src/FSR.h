@@ -8,13 +8,12 @@
 #ifndef FSR_h
 #define FSR_h
 
-#include "Arduino.h"
+// Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
+#if defined(ARDUINO_TEENSY36)
 
-struct FSRData {
-	int calibration;
-	int rawReading;
-	int calibratedReading;
-};
+#include "Arduino.h"
+#include "board.h"
+
 
 class FSR
 {
@@ -29,6 +28,7 @@ class FSR
 		int _calibration;
 		int _rawReading;
 		int _calibratedReading;
+        int _pin;
 };
-
+#endif
 #endif

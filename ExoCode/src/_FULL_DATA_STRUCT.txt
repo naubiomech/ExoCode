@@ -1,0 +1,38 @@
+ExoData
+{
+    LegData[2]
+    {
+        percent_gait
+        heel_fsr
+        toe_fsr
+        is_left
+        JointData[3]
+        {
+            id
+            motor
+            {
+                id
+                p
+                v
+                i
+                p_des
+                v_des
+                kp
+                kd
+                t_ff
+            }
+            controller
+            {
+                controller
+                setpoint
+                parameter1
+                parameter2
+            }
+            torque_reading
+            
+        }  
+        
+        
+    }
+    ExoStatus
+}

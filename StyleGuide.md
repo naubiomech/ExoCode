@@ -10,6 +10,7 @@ and https://www.python.org/dev/peps/pep-0008/
 - DON'T use void as an argument type
 - If globals exist still pass them by reference
 - Place curly bracket { on the next line when opening a multiline section.
+- Always run interactions through items from proximal joint to distal, and left before right.
 
 
 ## Commenting
@@ -41,6 +42,8 @@ and https://www.python.org/dev/peps/pep-0008/
 ### Enum
 - use enum class rather than typedef.
 
+### Namespace
+- Namespaces should normally use the CapWords convention.
 
 
 
