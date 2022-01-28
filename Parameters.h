@@ -69,6 +69,8 @@ double FSR_Ratio;
 // ===== Proportional Control Parameters =====
 double Max_Prop = 35;
 double Min_Prop = 0;
+double Max_Baseline = 2;
+double Max_Dorsi = 15;
 
 // ===== Auto KF Parameters =====
 double max_ERR = 0.20;

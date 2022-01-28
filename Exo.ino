@@ -223,6 +223,9 @@ void calculate_leg_average(Leg* leg, double alpha) {
   leg->FSR_Heel_Average = 0;
 
   leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
+  if(leg->baseline_value != 0) {
+    leg->FSR_Toe_Average = min(Max_Baseline, leg->FSR_Toe_Average / leg->baseline_value);
+  }
   leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
 
   // in case of two toe sensors we use the combined averate, i.e. the sum of the averages.
