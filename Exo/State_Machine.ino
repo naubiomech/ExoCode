@@ -23,7 +23,10 @@ void state_machine(Leg* leg)
 // P tunings to explore 
 void P_values(int old_best_P, int old_range, int P_vec[3]){
   int range = round(0.5 * old_range);
-  P_vec[] = {old_best_P - range, old_best_P, old_best_P + range};
+  //P_vec[] = {old_best_P - range, old_best_P, old_best_P + range};
+  P_vec[0] = old_best_P - range;
+  P_vec[1] = old_best_P;
+  P_vec[2] = old_best_P + range;
 }
 
 // update state values
