@@ -1,17 +1,25 @@
 ExoData
 {
-    LegData[2]
+    ExoStatus
+    sync_led_state
+    LegData : left, right
     {
         percent_gait
         heel_fsr
         toe_fsr
         is_left
-        JointData[3]
+        is_used
+        JointData : hip,knee, ankle
         {
             id
+            torque_reading
+            is_left
+            is_used
             motor
             {
                 id
+                motor_type
+                is_left
                 p
                 v
                 i
@@ -24,15 +32,16 @@ ExoData
             controller
             {
                 controller
+                JointType
                 setpoint
                 parameter1
                 parameter2
             }
-            torque_reading
+            
             
         }  
         
         
     }
-    ExoStatus
+    
 }
