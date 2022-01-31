@@ -77,7 +77,7 @@ void setup()
   else if (!iOS_Flag) 
   {
     bluetooth.begin(115200);
-    Serial.begin(115200);
+    Serial4.begin(115200);
     streamTimerCountNum = 5;
   }
   
