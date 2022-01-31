@@ -10,8 +10,8 @@
 // The torque reference can be smoothed by sigmoid functions or spline function
 // In case of too long steady state the torque reference is set to zero
 // In case of new torque reference the torque amount is provided gradually as function of the steps.
-//M
-// 1 step = 0N
+//
+// 1 step  = 0N
 // 2 steps = 2N
 // 3 steps = 4N
 // 4 steps = 6N
@@ -21,14 +21,14 @@
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD_REV6
+#define BOARD_VERSION DUAL_BOARD_REV8_1
 
 #define CONTROL_LOOP_HZ           500
 #define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
 #define COMMS_LOOP_HZ             50
 #define IMU_LOOP_HZ               10
 //The digital pin connected to the motor on/off swich
-const unsigned int zero = 2048; //1540;
+const unsigned int zero = 2048;
 bool motors_on = false;
 
 #include <ArduinoBLE.h>
