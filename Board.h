@@ -1,9 +1,10 @@
 #ifndef BOARD_SETTINGS_HEADER
 #define BOARD_SETTINGS_HEADER
 
-#define DUAL_BOARD_REV8_1 1
+#define DUAL_BOARD_REV6_1 1
+#define DUAL_BOARD_REV6   2
 
-#if BOARD_VERSION == DUAL_BOARD_REV8_1
+#if BOARD_VERSION == DUAL_BOARD_REV6_1
 #define ENABLE_PWM
 
 const unsigned int FSR_SENSE_LEFT_TOE_PIN = A2;
@@ -15,9 +16,9 @@ const unsigned int TORQUE_SENSOR_RIGHT_ANKLE_PIN = A6;
 const unsigned int MOTOR_LEFT_ANKLE_PIN = 3;   
 const unsigned int MOTOR_RIGHT_ANKLE_PIN = 10; 
 
-const unsigned int RED = 12;
-const unsigned int GREEN = 9;
-const unsigned int BLUE = 8;
+const unsigned int RED = 22;
+const unsigned int GREEN = 23;
+const unsigned int BLUE = 24;
 
 const unsigned int MOTOR_ENABLE_PIN = 5;
 

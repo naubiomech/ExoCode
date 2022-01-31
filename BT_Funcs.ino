@@ -27,14 +27,13 @@ void setupBLE()
     BLE.setEventHandler(BLEDisconnected, onBLEDisconnected);
     RXChar.setEventHandler(BLEWritten,   onRxCharValueUpdate);
     BLE.advertise();
-    //config_ble_regs();
-    digitalWrite(GREEN,HIGH);
+    digitalWrite(GREEN,LOW);
   }
   else {
     Serial.println("Error Setting up BLE");
-    digitalWrite(GREEN, LOW);
-    digitalWrite(BLUE, LOW);
-    digitalWrite(RED, HIGH);
+    digitalWrite(GREEN, HIGH);
+    digitalWrite(BLUE, HIGH);
+    digitalWrite(RED, LOW);
   }
 }
 
@@ -62,16 +61,16 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
 
 void onBLEConnected(BLEDevice central)
 {
-  digitalWrite(GREEN, LOW);
-  digitalWrite(RED,HIGH);
-  digitalWrite(BLUE, HIGH);
+  digitalWrite(GREEN, HIGH);
+  digitalWrite(RED, HIGH);
+  digitalWrite(BLUE, LOW);
   BLE.stopAdvertise();
 }
 
 void onBLEDisconnected(BLEDevice central)
 {
-  digitalWrite(GREEN, HIGH);
-  digitalWrite(BLUE, LOW);
-  digitalWrite(RED, LOW);
+  digitalWrite(GREEN, LOW);
+  digitalWrite(BLUE, HIGH);
+  digitalWrite(RED,  HIGH);
   BLE.advertise();
 }

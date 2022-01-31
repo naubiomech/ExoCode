@@ -21,7 +21,7 @@
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD_REV8_1
+#define BOARD_VERSION DUAL_BOARD_REV6_1
 
 #define CONTROL_LOOP_HZ           500
 #define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
@@ -48,14 +48,12 @@ bool motors_on = false;
 #include "ATP.h"
 #include "Trial_Data.h"
 #include "Ambulation_SM.h"
-#include "SMBattery.h"
 #include "fault_detection.h"
 #include "ema_filter.h"
 #include "motor_utils.h"
 //----------------------------------------------------------------------------------
 rtos::Thread callback_thread(osPriorityNormal);
 IMUhandler imu;
-SMBattery battery;
 
 void control_loop() {
   while (true) {
@@ -89,9 +87,9 @@ void setup()
   pinMode(RED, OUTPUT);
   pinMode(BLUE, OUTPUT);
   pinMode(GREEN, OUTPUT);
-  digitalWrite(RED, LOW);
-  digitalWrite(BLUE, LOW);
-  digitalWrite(GREEN, LOW);
+  digitalWrite(RED, HIGH);
+  digitalWrite(BLUE, HIGH);
+  digitalWrite(GREEN, HIGH);
 
   //Start Serial
   Serial.begin(500000);
@@ -109,8 +107,14 @@ void setup()
   initialize_right_leg(right_leg);
 
 
-  // Enable I2C for smart battery
-  battery.init();
+  // Enable I2C for battery data
+  #define WireObj Wire
+  //Setting both address pins to GND defines the slave address
+  WireObj.begin(); //Initialize the I2C protocol on SDA1/SCL1 for Teensy 4.1, or SDA0/SCL0 on Teensy 3.6
+  WireObj.beginTransmission(INA219_ADR); //Start talking to the INA219
+  WireObj.write(INA219_CAL); //Write the target as the calibration register
+  WireObj.write(Cal);        //Write the calibration value to the calibration register
+  WireObj.endTransmission(); //End the transmission and calibration
 
   
   // Torque cal
@@ -159,7 +163,10 @@ void update_GUI() {
 
   //Battery voltage and reset motor count data
   if (voltageTimerCount >= voltageTimerCountNum) {
-    batteryData[0] = battery.readSOC();
+    static int batteryVoltage = readBatteryVoltage();
+    int filtered_voltage = ema_with_context(batteryVoltage, readBatteryVoltage(), 0.0001);
+    batteryVoltage = filtered_voltage;
+    batteryData[0] = filtered_voltage/10; //convert from milli
     callback_thread.set_priority(osPriorityNormal);
     send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
     errorCount[0] = reset_count;
