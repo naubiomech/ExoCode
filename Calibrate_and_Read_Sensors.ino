@@ -13,8 +13,8 @@ void torque_calibration()
   }
   left_leg->torque_calibration_value = left_temp_cal / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_temp_cal / torq_cal_count;                       // Averages torque over a second
-  left_leg->torque_calibration_value = 1.0*trqOffsetL;                       // Averages torque over a second
-  right_leg->torque_calibration_value = 1.0*trqOffsetR;                       // Averages torque over a second
+  //left_leg->torque_calibration_value = 1.0*trqOffsetL;                       // Averages torque over a second
+  //right_leg->torque_calibration_value = 1.0*trqOffsetR;                       // Averages torque over a second
 }
 
 
