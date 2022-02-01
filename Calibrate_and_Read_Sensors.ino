@@ -2,19 +2,19 @@
 
 void torque_calibration()
 {
-//  long torque_calibration_value_time = millis();
-//  int torq_cal_count = 0;
-//  double left_temp_cal = 0;
-//  double right_temp_cal = 0;
-//  while (torq_cal_count < 10000) {  //(millis() - torque_calibration_value_time < 1000)  { //Calibrates the LL for a total time of 1 second,    (torq_cal_count < 10000) {
-//    left_temp_cal += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
-//    right_temp_cal += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
-//    torq_cal_count ++;                                                         //Increments count
-//  }
-//  left_leg->torque_calibration_value = left_temp_cal / torq_cal_count;                       // Averages torque over a second
-//  right_leg->torque_calibration_value = right_temp_cal / torq_cal_count;                       // Averages torque over a second
-  left_leg->torque_calibration_value = 1.0*trqOffsetL;                       // Averages torque over a second
-  right_leg->torque_calibration_value = 1.0*trqOffsetR;                       // Averages torque over a second
+  long torque_calibration_value_time = millis();
+  int torq_cal_count = 0;
+  double left_temp_cal = 0;
+  double right_temp_cal = 0;
+  while (torq_cal_count < 10000) {  //(millis() - torque_calibration_value_time < 1000)  { //Calibrates the LL for a total time of 1 second,    (torq_cal_count < 10000) {
+    left_temp_cal += analogRead(TORQUE_SENSOR_LEFT_ANKLE_PIN) * (3.3 / 4096);                                        //Sums the torque read in and sums it with all previous red values
+    right_temp_cal += analogRead(TORQUE_SENSOR_RIGHT_ANKLE_PIN) * (3.3 / 4096);
+    torq_cal_count ++;                                                         //Increments count
+  }
+  left_leg->torque_calibration_value = left_temp_cal / torq_cal_count;                       // Averages torque over a second
+  right_leg->torque_calibration_value = right_temp_cal / torq_cal_count;                       // Averages torque over a second
+//  left_leg->torque_calibration_value = 1.0*trqOffsetL;                       // Averages torque over a second
+//  right_leg->torque_calibration_value = 1.0*trqOffsetR;                       // Averages torque over a second
 }
 
 

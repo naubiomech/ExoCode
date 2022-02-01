@@ -4,6 +4,7 @@ double app = 0;
 
 void receive_and_transmit()
 {
+  Serial.println(cmd_from_Gui);
   switch (cmd_from_Gui)
   {
     case 'F':                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes

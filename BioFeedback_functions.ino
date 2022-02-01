@@ -1,7 +1,7 @@
 void takeHeelStrikeAngle(Leg* leg) {
   // take the angle during the heel strike
 
-  leg->Heel_Strike += (pot(leg->Potentiometer_pin) + leg->Biofeedback_bias);                //Take baseline knee angle data
+  //leg->Heel_Strike += (pot(leg->Potentiometer_pin) + leg->Biofeedback_bias);                //Take baseline knee angle data
   leg->Heel_Strike_Count++;
   Serial.print("Heel strike sum and n of steps: ");
   Serial.print(leg->Heel_Strike);
