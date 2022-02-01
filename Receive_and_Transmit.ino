@@ -212,7 +212,9 @@ void receive_and_transmit()
 
     case 'x':
       //Motors on command
-      change_motor_state(true);
+      if(!imu.has_fallen) {
+        change_motor_state(true);
+      }
       break;
 
     case '%':

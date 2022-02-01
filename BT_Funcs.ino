@@ -26,8 +26,7 @@ void setupBLE()
     BLE.setEventHandler(BLEConnected,    onBLEConnected);
     BLE.setEventHandler(BLEDisconnected, onBLEDisconnected);
     RXChar.setEventHandler(BLEWritten,   onRxCharValueUpdate);
-    BLE.advertise();
-    //config_ble_regs();
+    BLE.advertise();;
     digitalWrite(GREEN,LED_ON);
   }
   else {
@@ -64,6 +63,7 @@ void onBLEConnected(BLEDevice central)
 {
   digitalWrite(GREEN,LED_ON);
   digitalWrite(BLUE, LED_ON);
+
   BLE.stopAdvertise();
 }
 
@@ -71,5 +71,6 @@ void onBLEDisconnected(BLEDevice central)
 {
   digitalWrite(GREEN, LED_ON);
   digitalWrite(BLUE, !LED_ON);
+
   BLE.advertise();
 }

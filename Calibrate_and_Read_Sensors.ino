@@ -2,7 +2,7 @@
 
 void torque_calibration()
 {
-  long torque_calibration_value_time = millis();
+  double torque_calibration_value_time = millis();
   int torq_cal_count = 0;
   double left_temp_cal = 0;
   double right_temp_cal = 0;
@@ -13,16 +13,12 @@ void torque_calibration()
   }
   left_leg->torque_calibration_value = left_temp_cal / torq_cal_count;                       // Averages torque over a second
   right_leg->torque_calibration_value = right_temp_cal / torq_cal_count;                       // Averages torque over a second
-//  left_leg->torque_calibration_value = 1.0*trqOffsetL;                       // Averages torque over a second
-//  right_leg->torque_calibration_value = 1.0*trqOffsetR;                       // Averages torque over a second
 }
 
 
 
 void FSR_calibration()
 {
-
-
   if (FSR_FIRST_Cycle) {
     FSR_FIRST_Cycle = 0;
 
