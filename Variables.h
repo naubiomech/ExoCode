@@ -38,8 +38,13 @@ double FLAG_STEADY_BALANCE_BASELINE = 0;
 double count_balance = 0;
 double count_steady_baseline = 0;
 
-bool FLAG_BIOFEEDBACK = false;
-
+// Variables for FSR Biofeedback - added by AS 11/8/21 
+bool FLAG_BIOFEEDBACK = false; 
+bool AUTOADJUST_BIOFEEDBACK = false;     
+const double BF_scale = 0.1; 
+const double BF_upper_limit = 0.85; 
+const double BF_lower_limit = 0.50;  
+int biofeedback_current_success = 0; 
 
 // data for bluetooth autoreconnection
 bool FLAG_AUTO_RECONNECT_BT = false;
@@ -79,6 +84,8 @@ const unsigned int pin_jack = 13;
 unsigned int state = HIGH;
 double right_stride_time, left_stride_time;
 double treadmill_speed = 0.6;//subject to change
+int refresh_countR = 0;
+int refresh_countL = 0;
 
 // Variables for Human-in-the-Loop Optimization (HLO)
 bool Flag_HLO = false;
@@ -112,16 +119,16 @@ int BusLSB = 4;               // mV. This is the multiplier for the bus (battery
 int Cal = 0x5000;             // Calibration value in hex. Cal = 0.04096/(CurrentLSB*ShuntResistance). Shunt resistance on Rev3/4 is 2mOhm.
 
 // Temporary Torque Value Storage
- double temp_L_DFX = 0;
- double temp_L_PFX = 0;
- double temp_R_DFX = 0;
- double temp_R_PFX = 0;
+double temp_L_DFX = 0;
+double temp_L_PFX = 0;
+double temp_R_DFX = 0;
+double temp_R_PFX = 0;
 
- // EMA Variables
- double oldVolt;
- double emaVolt;
- double voltAlpha = 0.001;
+// Torque Offsets
+double trqOffsetR = 1.51;  //DEFINE TRANSDUCER OFFSET HERE S02
+double trqOffsetL = 1.42;  //DEFINE TRANSDUCER OFFSET HERE S03
 
- // Torque Offsets
- double trqOffsetR = -1.219;  //DEFINE TRANSDUCER OFFSET HERE S07
- double trqOffsetL = -1.503;  //DEFINE TRANSDUCER OFFSET HERE S08
+// Mark Functionality
+char biofeedbackLeg = 'R';
+double markCount = 10;
+bool markFlag = false;

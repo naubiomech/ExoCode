@@ -1,21 +1,20 @@
 const char* UARTUUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
 const char* txUUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
 const char* rxUUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
-const int BUFFER_SIZE = 128;
+const int BUFFER_SIZE = 512;
 bool BUFFERS_FIXED_LENGTH = false;
 //Add Nordics UART Service
 BLEService UARTService(UARTUUID);   //Instantiate UART service
 BLECharacteristic TXChar(rxUUID, BLERead | BLENotify | BLEBroadcast,             BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //TX characteristic of service
 BLECharacteristic RXChar(txUUID, BLEWriteWithoutResponse | BLEWrite | BLENotify, BUFFER_SIZE, BUFFERS_FIXED_LENGTH); //RX characteristic of service
 
-
 void setupBLE()
 {
   if (BLE.begin())
   {
     //Advertised name and service
-    BLE.setLocalName("EXOBLE_4"); //SET DEVICE ID HERE "EXOBLE_#"
-    BLE.setDeviceName("EXOBLE_4"); //SET DEVICE ID HERE "EXOBLE_#"
+    BLE.setLocalName("EXOBLE_Dur2"); //SET DEVICE ID HERE "EXOBLE_#"
+    BLE.setDeviceName("EXOBLE_Dur2"); //SET DEVICE ID HERE "EXOBLE_#"
     BLE.setAdvertisedService(UARTService);
     //Add chars to service
     UARTService.addCharacteristic(TXChar);
@@ -28,7 +27,6 @@ void setupBLE()
     BLE.setEventHandler(BLEDisconnected, onBLEDisconnected);
     RXChar.setEventHandler(BLEWritten,   onRxCharValueUpdate);
     BLE.advertise();
-    //config_ble_regs();
     digitalWrite(GREEN,LOW);
   }
   else {
@@ -63,18 +61,16 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
 
 void onBLEConnected(BLEDevice central)
 {
-  digitalWrite(GREEN,HIGH);
+  digitalWrite(GREEN, HIGH);
+  digitalWrite(RED, HIGH);
   digitalWrite(BLUE, LOW);
-  //callback_thread.set_priority(osPriorityNormal);
   BLE.stopAdvertise();
-  //callback_thread.set_priority(osPriorityAboveNormal);
 }
 
 void onBLEDisconnected(BLEDevice central)
 {
-  digitalWrite(GREEN,LOW);
+  digitalWrite(GREEN, LOW);
   digitalWrite(BLUE, HIGH);
-  //callback_thread.set_priority(osPriorityNormal);
+  digitalWrite(RED,  HIGH);
   BLE.advertise();
-  //callback_thread.set_priority(osPriorityAboveNormal);
 }

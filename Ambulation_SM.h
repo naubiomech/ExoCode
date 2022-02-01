@@ -1,5 +1,5 @@
-/* Defines class to determine ambulation state.
-   Two states*/
+/* Handles IMU data for ambulation state machine and fall detection.
+   Should be refactored to multiple classes. */
 
 #ifndef IMU_H
 #define IMU_H
@@ -17,14 +17,40 @@ typedef void (*cb_t)();
 //State Management
 enum States {Standing, Walking};
 
-class Ambulation_SM {
+class IMUhandler {
   public:
   States last_state = Standing;
+  bool has_fallen = true;
+  
   void init() {
     if (!IMU.begin()) {
        while (1);
     }
   }
+
+  inline void check_for_fall() {
+    float x, y, z;
+    if (IMU.readAcceleration(x, y, z)) {
+      y = -y;
+      float acc_angle;
+      if (abs(y) < 0.00001) {
+        acc_angle = float(HALF_PI);
+      } else {
+        acc_angle = float(atan2(z, y));
+      }
+      acc_angle*=100;
+      filtered_angle = ema_with_context(filtered_angle, acc_angle, 0.25);
+      
+      if(abs(filtered_angle) > angle_thresh_k) {
+        has_fallen = true;
+        change_motor_stateless(!has_fallen);
+      } else {
+        has_fallen = false;
+        change_motor_stateless(!has_fallen);
+      }
+    }
+  }
+  
 
   inline void tick(unsigned int steps) {
     float x, y, z;
@@ -54,6 +80,7 @@ class Ambulation_SM {
   const float thrsh_offset_k = 0.05f;
   const unsigned long int reset_duration_k = 1500;  //millis
   const float walking_bias_k = 0.1f;
+  const float angle_thresh_k = 120.0f;
 
   //Resultant acceleration
   float resultant = 0;
