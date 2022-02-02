@@ -95,7 +95,7 @@ class akxMotor {
       out_frame.kd = 0;
 
       float torque = (vol)*scaling_factor;
-      out_frame.tor = 0;//torque;
+      out_frame.tor = torque;
       sendCAN(&out_frame);
     }
 
