@@ -1,16 +1,16 @@
 #include "Msg_functions.h"
+#include "akxMotor.h"
 
 //Real time data being sent to the GUI
 void send_data_message_wc() //with COP
 {
   //Right Leg
   data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
-  data_to_send[1] = right_leg->state / 3; //right_leg->AverageCurrent
+  data_to_send[1] = right_leg->state / 3;
   data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
 
   //Left Leg
-  data_to_send[3] = (left_leg->sign * left_leg->Average_Trq);
-  data_to_send[4] = left_leg->state / 3; //left_leg->AverageCurrent
+  data_to_send[3] = (left_leg->sign * left_leg->Average_Trq); 
   if (markFlag) {
     data_to_send[4] = markCount++;
     markFlag = false;

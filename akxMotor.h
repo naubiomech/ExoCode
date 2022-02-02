@@ -35,9 +35,6 @@
 #define KP_DEF 0.0f
 #define KD_DEF 0.0f
 
-constexpr canid_t L_ID = 1;
-constexpr canid_t R_ID = 2;
-
 typedef struct {
   canid_t id;
   float pos;
@@ -47,9 +44,17 @@ typedef struct {
   float kd;
 } motor_frame_t;
 
+constexpr canid_t L_ID = 1;
+constexpr canid_t R_ID = 2;
+
+
 
 class akxMotor {
   public: 
+    /* Left and Right motor return data */
+    motor_frame_t left_return;
+    motor_frame_t right_return;
+  
     inline bool init() {
       pinMode(OE, OUTPUT);
       digitalWrite(OE, HIGH);
@@ -61,6 +66,23 @@ class akxMotor {
       mcp2515.setNormalMode();
 
       scaling_factor = 2*T_MAX / 4096;
+
+      left_return.id = L_ID;
+      right_return.id = R_ID;
+    }
+
+    
+    
+    inline void send_and_read(canid_t id, float vol) {
+      map_and_apply(id, vol);
+      motor_frame_t update_frame;
+      update_frame.id = id;
+      updateFrame(&update_frame, 0.1);
+      if(id == L_ID) {
+        left_return.pos = update_frame.pos;
+      } else if(id == R_ID) {
+        right_return.pos = update_frame.pos;
+      }
     }
 
     /* Takes the voltage output of PID, maps it to a torque and sends it */
@@ -73,12 +95,33 @@ class akxMotor {
       out_frame.kd = 0;
 
       float torque = (vol)*scaling_factor;
-      out_frame.tor = torque;
+      out_frame.tor = 0;//torque;
       sendCAN(&out_frame);
     }
 
+    /* This function will read data from the motors. It updates the motor frame with position velocity and current. */
+    inline bool updateFrame(motor_frame_t* out_frame) {
+      motor_frame_t temp_frame;
+      temp_frame.id = 0;
+      temp_frame.pos = 0;
+      temp_frame.vel = 0;
+      temp_frame.tor = 0;
+      temp_frame.kp = 0;
+      temp_frame.kd = 0;
+      MCP2515::ERROR err = readCAN(&temp_frame);
+      /* Check for errors and message */
+      if(err == MCP2515::ERROR_OK && temp_frame.id == out_frame->id) {
+        out_frame->pos = temp_frame.pos;
+        out_frame->vel = temp_frame.vel;
+        out_frame->tor = temp_frame.tor;
+        return true;
+      } else {
+        return false;
+      }
+    }
+
     /* This function will wait for timeout to execute, if timeout or error, return ID 0. Timout is in millis */
-    inline bool updateFrame(motor_frame_t* out_frame, float timeout = DEF_TIMEOUT) {
+    inline bool updateFrame(motor_frame_t* out_frame, float timeout) {
       motor_frame_t temp_frame;
       temp_frame.id = 0;
       temp_frame.pos = 0;
@@ -96,9 +139,9 @@ class akxMotor {
           out_frame->pos = temp_frame.pos;
           out_frame->vel = temp_frame.vel;
           out_frame->tor = temp_frame.tor;
-//          if(temp_frame.tor != T_MAX) {
-//            out_frame->tor = temp_frame.tor;
-//          }
+//          Serial.print(out_frame->id);
+//          Serial.print("\t");
+//          Serial.println(out_frame->pos);
           return true;
         }
 
@@ -201,17 +244,13 @@ class akxMotor {
         frame->pos = uint_to_float(p_int, P_MIN, P_MAX, 16);
         frame->vel = uint_to_float(v_int, V_MIN, V_MAX, 12);
         frame->tor = uint_to_float(i_int, -T_MAX, T_MAX, 12);
-             
-      } else if(err != MCP2515::ERROR_NOMSG) {
-        //Serial.print("Read Error: ");
-        //Serial.println(err);
       }
+      return err;
     }
     
   private:
     MCP2515 mcp2515;
     float scaling_factor;
-    static constexpr float DEF_TIMEOUT = 3;
     rtos::Mutex CAN_MUTEX;
     
   /* These functions will only output and send the correct values
