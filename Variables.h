@@ -11,6 +11,8 @@ int voltageTimerCount = 0;
 
 // variable to indicate the beginning and ending of the stream of data
 int stream = 0;
+bool reset_time = true;
+double last_time = 0;
 
 //variables used to receive and send the data from and to the gui
 byte holdon[96];                  //Changed to byte array

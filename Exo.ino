@@ -21,7 +21,7 @@
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD_REV6_1
+#define BOARD_VERSION DUAL_BOARD_REV8_1
 
 #define CONTROL_LOOP_HZ           500
 #define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
@@ -47,7 +47,7 @@ bool motors_on = false;
 #include "resetMotorIfError.h"
 #include "ATP.h"
 #include "Trial_Data.h"
-#include "Ambulation_SM.h"
+#include "IMUhandler.h"
 #include "fault_detection.h"
 #include "SMBattery.h"
 #include "ema_filter.h"
@@ -112,13 +112,12 @@ void setup()
   #ifdef SMA_BATTERY
   smart_battery.init();
   #else
-  #define WireObj Wire
   //Setting both address pins to GND defines the slave address
-  WireObj.begin(); //Initialize the I2C protocol on SDA1/SCL1 for Teensy 4.1, or SDA0/SCL0 on Teensy 3.6
-  WireObj.beginTransmission(INA219_ADR); //Start talking to the INA219
-  WireObj.write(INA219_CAL); //Write the target as the calibration register
-  WireObj.write(Cal);        //Write the calibration value to the calibration register
-  WireObj.endTransmission(); //End the transmission and calibration
+  Wire.begin(); //Initialize the I2C protocol on SDA1/SCL1 for Teensy 4.1, or SDA0/SCL0 on Teensy 3.6
+  Wire.beginTransmission(INA219_ADR); //Start talking to the INA219
+  Wire.write(INA219_CAL); //Write the target as the calibration register
+  Wire.write(Cal);        //Write the calibration value to the calibration register
+  Wire.endTransmission(); //End the transmission and calibration
   delay(100);
   #endif
 

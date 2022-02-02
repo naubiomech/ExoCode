@@ -143,6 +143,8 @@ void receive_and_transmit()
       stream = 0;                                                    //and the torque data is no longer allowed to be streamed.
       stepper->steps = 0;                                            // Reset step count for next trial
       stepper->bio_steps = 0;
+
+      reset_time = true;
       
       reset_cal_on_end_trial(); //Currently commented out but acts to reset all torque, BL, and FSR parameters
       break;

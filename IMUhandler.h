@@ -40,6 +40,7 @@ class IMUhandler {
       }
       acc_angle*=100;
       filtered_angle = ema_with_context(filtered_angle, acc_angle, 0.25);
+      Serial.println(abs(filtered_angle));
       
       if(abs(filtered_angle) > angle_thresh_k) {
         has_fallen = true;

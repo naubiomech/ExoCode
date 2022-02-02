@@ -3,7 +3,11 @@
 //Real time data being sent to the GUI
 void send_data_message_wc() //with COP
 {
-  static double last_time = (double)millis();
+  if (reset_time) {
+    last_time = millis();
+    reset_time = false;
+  }
+  static double last_time = millis();
   double temp = (double)millis();
   double time = temp - last_time;
   last_time = temp;

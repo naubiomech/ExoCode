@@ -61,8 +61,9 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
 
 void onBLEConnected(BLEDevice central)
 {
-  digitalWrite(GREEN,LED_ON);
+  digitalWrite(GREEN,!LED_ON);
   digitalWrite(BLUE, LED_ON);
+  digitalWrite(RED,  LED_ON);
 
   BLE.stopAdvertise();
 }

@@ -21,9 +21,9 @@ const unsigned int TORQUE_SENSOR_RIGHT_ANKLE_PIN = A6;
 const unsigned int MOTOR_LEFT_ANKLE_PIN = 3;   
 const unsigned int MOTOR_RIGHT_ANKLE_PIN = 10; 
 
-const unsigned int RED = 22;
-const unsigned int GREEN = 23;
-const unsigned int BLUE = 24;
+const unsigned int RED = 12;
+const unsigned int GREEN = 9;
+const unsigned int BLUE = 8;
 
 const unsigned int MOTOR_ENABLE_PIN = 5;
 
