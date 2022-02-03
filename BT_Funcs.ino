@@ -39,10 +39,12 @@ void setupBLE()
 
 void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
   static bool collecting = false;
-  char data[32] = {0};
+  char data[35] = {0};
   //callback_thread.set_priority(osPriorityNormal);
   int val_len = RXChar.valueLength();
   RXChar.readValue(data, val_len);
+  //for(int i=0; i<val_len; i++) {Serial.print(data[i]);}
+  //Serial.println();
   if (data[0] == '!') {
     //Serial.println("Got matlab message");
     if (!handle_matlab_message(data, val_len)) {

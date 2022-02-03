@@ -4,7 +4,7 @@ double app = 0;
 
 void receive_and_transmit()
 {
-  Serial.println(cmd_from_Gui);
+  //Serial.println(cmd_from_Gui);
   switch (cmd_from_Gui)
   {
     case 'F':                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
@@ -173,7 +173,11 @@ void receive_and_transmit()
 
     case 'L':
       //Calibrate FSR command
-      FSR_CAL_FLAG = 1;
+      if(!taking_baseline) {
+        //Serial.println("Taking Baseline");
+        taking_baseline = true;
+        FSR_CAL_FLAG = 1;
+      }
 
       break;
 

@@ -7,7 +7,6 @@ void send_data_message_wc() //with COP
     last_time = millis();
     reset_time = false;
   }
-  static double last_time = millis();
   double temp = (double)millis();
   double time = temp - last_time;
   last_time = temp;
@@ -209,9 +208,9 @@ bool handle_mobile_message(char* data, const int val_len) {
     }
     else if (count>expected) {
       //Something went wrong, reset
-      Serial.println("Error in handle_mobile_message!");
-      Serial.print(count);
-      Serial.print(expected);
+//      Serial.println("Error in handle_mobile_message!");
+//      Serial.println(count);
+//      Serial.println(expected);
       call = 0;
       count = 0;
       expected = 0;

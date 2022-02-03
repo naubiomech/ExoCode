@@ -9,6 +9,8 @@ double startTime = 0;
 int streamTimerCount = 0;
 int voltageTimerCount = 0;
 
+bool taking_baseline = false;
+
 // variable to indicate the beginning and ending of the stream of data
 int stream = 0;
 bool reset_time = true;

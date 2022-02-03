@@ -21,6 +21,7 @@ class IMUhandler {
   public:
   States last_state = Standing;
   bool has_fallen = true;
+  float filtered_angle = 0;
   
   void init() {
     if (!IMU.begin()) {
@@ -32,6 +33,10 @@ class IMUhandler {
     float x, y, z;
     if (IMU.readAcceleration(x, y, z)) {
       y = -y;
+      #ifdef BOARD_VERSION == DUAL_BOARD_REV8_1
+      y = -y;
+      #endif
+      
       float acc_angle;
       if (abs(y) < 0.00001) {
         acc_angle = float(HALF_PI);
@@ -40,7 +45,7 @@ class IMUhandler {
       }
       acc_angle*=100;
       filtered_angle = ema_with_context(filtered_angle, acc_angle, 0.25);
-      Serial.println(abs(filtered_angle));
+      //Serial.println(abs(filtered_angle));
       
       if(abs(filtered_angle) > angle_thresh_k) {
         has_fallen = true;
@@ -89,9 +94,6 @@ class IMUhandler {
   //Step tracking
   bool bias_tracking = false;
   unsigned int last_steps = 0;
-
-  //filtered angle
-  float filtered_angle = 0;
 
   //Estimated speed [m/s]
   float est_speed = 0;
