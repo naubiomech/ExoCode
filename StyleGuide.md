@@ -29,7 +29,8 @@ and https://www.python.org/dev/peps/pep-0008/
 ### Classes
 - Class names should normally use the CapWords convention.
 - Methods should use function naming convention.
-- Private members should use a leading underscores 
+- Private members should use a leading underscores
+- Abstract classes should use a leading underscore, ex. _AbstractClass 
 
 ### Types
 - Type variable names should us CapWord Convention
