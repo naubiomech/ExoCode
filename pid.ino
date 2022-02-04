@@ -4,7 +4,7 @@
  */
 
 double pid(Leg* leg, double input) {
-  if (CURRENT_CONTROL && leg->PID_Setpoint != 0 && MotorParams != 100 && leg->state == 3) { //Simple Open-Loop Control
+  if (CURRENT_CONTROL) { //&& leg->PID_Setpoint != 0) { //Simple Open-Loop Control
     leg->Vol = (0.275 * (leg->PID_Setpoint)) / NomCurrent * 2048.0;
     if (Control_Mode == 6 && leg->state == 3) {
       leg->Vol = -leg->Vol;
