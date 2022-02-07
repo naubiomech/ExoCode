@@ -19,36 +19,66 @@
 
 #include <stdint.h>
 
-class Motor
+// TODO: Create base motor class with interface read_data(), send_cmd(), motor_on_off(bool), get_is_left()
+
+class _Motor
 {
 	public:
-		Motor(config_defs::joint_id id, ExoData* exo_data); // constructor: type is the motor type
+		_Motor(config_defs::joint_id id, ExoData* exo_data);
+        virtual ~_Motor();
 		
-		void read_data(); // reads motor data from each motor used in the leg and stores the values
-		void send_data();  // sends new control command to the motors used in the leg, based on the defined controllers
-		void set_controller(int controller); // Changes the low level controller for an individual joint
-		void motor_on_off(bool on);  // motor enable/disable
-		bool get_is_left();  // lets you know if it is a left or right leg.
-			
-		config_defs::joint_id id; //motor id
-		// float p; // read position
-		// float v; // read velocity
-		// float i; // read current
+        //Pure virtual functions, these will have to be defined for each one.
+        virtual void read_data() = 0; // reads motor data from each motor used in the leg and stores the values
+		virtual void send_data() = 0;  // sends new control command to the motors used in the leg, based on the defined controllers
+		//void set_controller(int controller); // Changes the low level controller for an individual joint
+		virtual void motor_on_off(bool is_on) = 0;  // motor enable/disable
 		
-		// float p_des; // 
-		// float v_des;
-		// float kp;
-		// float kd;
-		// float t_ff;
+        //
+        virtual bool get_is_left();  // lets you know if it is a left or right leg.
+        virtual config_defs::joint_id get_id();
 		
 		
 	private:
-		ExoData* _data;
-        
-        // int _p;
-		// int _v;
-		// int _i;
+        config_defs::joint_id _id; //motor id 
 		bool _is_left;
+        ExoData* _data;
+};
+
+
+/*
+ * This will define some of the common communication 
+ */
+class _CANMotor : public _Motor
+{
+    public:
+        _CANMotor(config_defs::joint_id id, ExoData* exo_data);
+        virtual ~_CANMotor();
+        virtual void read_data();
+        virtual void send_data();
+        virtual void motor_on_off(bool is_on);
+};
+
+
+class AK60 : public _CANMotor
+{
+    public:
+        AK60(config_defs::joint_id id, ExoData* exo_data); // constructor: type is the motor type
+		~AK60();
+        
+    
+    private:
+        
+};
+
+class AK80 : public _CANMotor
+{
+    public:
+        AK80(config_defs::joint_id id, ExoData* exo_data); // constructor: type is the motor type
+		~AK80();
+        
+    
+    private:
+        
 };
 #endif
 #endif
