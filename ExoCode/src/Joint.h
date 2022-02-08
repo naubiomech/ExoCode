@@ -23,35 +23,71 @@
 
 #include <stdint.h>
 
-class Joint
+class _Joint
 {
 	static uint8_t left_used_joint_count;
     static uint8_t right_used_joint_count;
     
+    
+    // TODO: create object for each type of controller (joint type specific) and pointer to current controller.
+    // TODO: Create object for specific motor used based on config.
+    // TODO: Create joint base class that can then be used for each joint so that hip, knee, and ankle can each have joint specific controllers.
     public:
-		Joint(config_defs::joint_id id, ExoData* exo_data);  // constructor:  
-		void run_joint();  // updates the controller and sends the motor command
-		void read_data(); // reads data from motor and sensors
-		void set_controller(uint8_t);  // changes the high level controller in Controller, and the low level controller in Motor
+		_Joint(config_defs::joint_id id, ExoData* exo_data);  // constructor:  
+		~_Joint();
+        virtual void run_joint() = 0;  // updates the controller and sends the motor command
+		virtual void read_data() = 0; // reads data from motor and sensors
+		virtual void set_controller(uint8_t) = 0;  // changes the high level controller in Controller, and the low level controller in Motor
 		
         // create some static member functions we can use for the initializer list.
         static bool get_is_left(config_defs::joint_id);
         static uint8_t get_joint_type(config_defs::joint_id);
         static unsigned int get_torque_sensor_pin(config_defs::joint_id, ExoData*);
         
-		config_defs::joint_id id;
-        bool is_left;
-        
-        
-	private:
-		ExoData* _data;
-        
-        
-        Motor _motor;
+        _Motor* _motor;
 		TorqueSensor _torque_sensor;
-		Controller _controller;
+		_Controller* _controller;
+	
+    private:
+		ExoData* _data;
+        config_defs::joint_id _id;
+        bool _is_left;
         
         
+};
+
+class HipJoint : public _Joint
+{
+    public:
+        HipJoint(config_defs::joint_id id, ExoData* exo_data);
+        
+        void run_joint();  // updates the controller and sends the motor command
+        void read_data(); // reads data from motor and sensors
+        void set_controller(uint8_t);  // changes the high level controller in Controller, and the low level controller in Motor
+    
+    
+};
+
+class KneeJoint : public _Joint
+{
+    public:
+        KneeJoint(config_defs::joint_id id, ExoData* exo_data);
+        
+        void run_joint();  // updates the controller and sends the motor command
+        void read_data(); // reads data from motor and sensors
+        void set_controller(uint8_t);  // changes the high level controller in Controller, and the low level controller in Motor
+		
+};
+
+class AnkleJoint : public _Joint
+{
+    public:
+        AnkleJoint(config_defs::joint_id id, ExoData* exo_data);
+        
+        void run_joint();  // updates the controller and sends the motor command
+        void read_data(); // reads data from motor and sensors
+        void set_controller(uint8_t);  // changes the high level controller in Controller, and the low level controller in Motor
+		
 };
 
 #endif

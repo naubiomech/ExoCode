@@ -53,7 +53,7 @@ void _CANMotor::send_data()
     // set data in motor
 };
 
-void _CANMotor::motor_on_off(bool is_on)
+void _CANMotor::on_off(bool is_on)
 {
     if (is_on)
     {

@@ -31,7 +31,7 @@ class _Motor
         virtual void read_data() = 0; // reads motor data from each motor used in the leg and stores the values
 		virtual void send_data() = 0;  // sends new control command to the motors used in the leg, based on the defined controllers
 		//void set_controller(int controller); // Changes the low level controller for an individual joint
-		virtual void motor_on_off(bool is_on) = 0;  // motor enable/disable
+		virtual void on_off(bool is_on) = 0;  // motor enable/disable
 		
         //
         virtual bool get_is_left();  // lets you know if it is a left or right leg.
@@ -53,9 +53,9 @@ class _CANMotor : public _Motor
     public:
         _CANMotor(config_defs::joint_id id, ExoData* exo_data);
         virtual ~_CANMotor();
-        virtual void read_data();
-        virtual void send_data();
-        virtual void motor_on_off(bool is_on);
+        void read_data();
+        void send_data();
+        void on_off(bool is_on);
 };
 
 
