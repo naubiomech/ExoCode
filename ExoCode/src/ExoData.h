@@ -16,6 +16,7 @@
 #include "board.h"
 
 
+//TODO: Add an output data that creates an array that can be used to send to the other board.
 enum class ExoStatus {
 	not_enabled = 0,
 	enabled = 1,

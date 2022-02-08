@@ -15,13 +15,13 @@
     // Common Libraries
     #include "src\board.h"
     #include "src\ExoData.h"
-    //#include "src\Exo.h"
+    #include "src\Exo.h"
     
     // Specific Librarys
     #include "src\parseIni.h"
     #include "src\Sync_Led.h"
     #include "src\Status_Led.h"
-    //#include "TSPISlave.h"
+    #include "src\TSPISlave.h"
     
     
     namespace led{

@@ -38,9 +38,9 @@ class Leg
 		void _calc_percent_gait();
 		ExoData* _data;
         
-        Joint _hip;
-        Joint _knee;
-        Joint _ankle;
+        HipJoint _hip;
+        KneeJoint _knee;
+        AnkleJoint _ankle;
 		FSR _heel_fsr;
 		FSR _toe_fsr;
 		

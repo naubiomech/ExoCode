@@ -2,14 +2,14 @@ ExoData
 {
     ExoStatus
     sync_led_state
-    LegData : left, right
+    LegData : left_leg, right_leg
     {
         percent_gait
         heel_fsr
         toe_fsr
         is_left
         is_used
-        JointData : hip,knee, ankle
+        JointData : hip, knee, ankle
         {
             id
             torque_reading
