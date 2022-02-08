@@ -74,6 +74,7 @@ void onBLEDisconnected(BLEDevice central)
 {
   digitalWrite(GREEN, LED_ON);
   digitalWrite(BLUE, !LED_ON);
+  digitalWrite(RED, !LED_ON);
 
   BLE.advertise();
 }

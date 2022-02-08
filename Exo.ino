@@ -235,23 +235,26 @@ void calculate_leg_average(Leg* leg, double alpha) {
   // FSR Poll
 
   leg->FSR_Toe_Average = 0;
-  leg->FSR_Heel_Average = 0;
+  //leg->FSR_Heel_Average = 0;
 
   leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
-  leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
+  //leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
+
+  if (leg->baseline_value != 0) {
+    double norm_FSR = leg->FSR_Toe_Average / leg->baseline_value;
+    if (norm_FSR >= max_norm_FSR) {
+      leg->FSR_Toe_Average = max_norm_FSR*leg->baseline_value;
+    }
+  }
 
   // in case of two toe sensors we use the combined averate, i.e. the sum of the averages.
-  leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
+  //leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
 
   leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
-  leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
+  leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
+  //leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
 
-  if (FLAG_ONE_TOE_SENSOR)
-  {
-    leg->p_steps->curr_voltage = leg->FSR_Toe_Average;
-  } else {
-    leg->p_steps->curr_voltage = leg->FSR_Combined_Average;
-  }
+  
 }
 
 //----------------------------------------------------------------------------------
