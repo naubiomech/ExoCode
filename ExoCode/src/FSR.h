@@ -13,22 +13,44 @@
 
 #include "Arduino.h"
 #include "board.h"
+#include "Utilities.h"
 
 
 class FSR
 {
 	public:
 		FSR(int pin);
-		void calibrate(); // Changes the controller for an individual joint
-		int read(); // reads the pins and updatas the data stuct.
+		bool calibrate(bool do_calibrate); // Changes the controller for an individual joint
+		bool refine_calibration(bool do_refinement);
+        int read(); // reads the pins and updatas the data stuct.
 		
 			
 		
 	private:
-		int _calibration;
-		int _rawReading;
-		int _calibratedReading;
+		uint16_t _raw_reading;
+		int _calibrated_reading;
+        
         int _pin;
+        
+        const uint16_t _cal_time = 5000; // this is time to do the initial calibration
+        uint16_t _start_time;
+        bool _last_do_calibrate; //need to remember to delete this when the calibration ends.
+        uint16_t _calibration_min;
+        uint16_t _calibration_max;
+        
+        const uint8_t _num_steps = 7; // this is the number of steps to do the calibration_refinement
+        const float _lower_threshold_percent = .33;
+        const float _upper_threshold_percent = .66;
+        bool _state;
+        bool _last_do_refinement;
+        unsigned int _step_max_sum;
+        uint16_t _step_max;
+        unsigned int _step_min_sum;
+        uint16_t _step_min;
+        uint8_t _step_count;
+        uint16_t _calibration_refinement_min;
+        uint16_t _calibration_refinement_max;
+        
 };
 #endif
 #endif
