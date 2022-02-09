@@ -14,17 +14,11 @@
 #include "board.h"
 #include "Arduino.h"
 
-struct torqueData {
-	int rawReading;
-	int calibratedReading;
-};
-
-
 class TorqueSensor
 {
 	public:
 		TorqueSensor(unsigned int pin);
-        void calibrate(); // Changes the controller for an individual joint
+        bool calibrate(bool do_calibration); // Changes the controller for an individual joint
 		int read(); // reads the pins and updatas the data stuct.
 				
 		
@@ -32,8 +26,14 @@ class TorqueSensor
 		bool _is_used;
         int _pin;
         int _calibration;
-        int _rawReading;
-		int _calibratedReading;
+        int _raw_reading;
+		int _calibrated_reading;
+        
+        const uint16_t _cal_time = 1000; // this is time to do the initial calibration
+        uint16_t _start_time;
+        bool _last_do_calibrate; //need to remember to delete this when the calibration ends.
+        int _zero_sum;
+        uint16_t _num_calibration_samples;
         
 };
 #endif
