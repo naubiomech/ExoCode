@@ -63,7 +63,7 @@ bool FSR::calibrate(bool do_calibrate)
     // offset by min and normalize by (max-min), (val-avg_min)/(avg_max-avg_min)
     
     // check if we are done with the calibration 
-    
+    _last_do_calibrate = do_calibrate;
     return do_calibrate;
 };
 
@@ -130,5 +130,23 @@ bool FSR::refine_calibration(bool do_refinement)
     return do_refinement;
 };
 
+int FSR::read()
+{
+    _raw_reading = analogRead(_pin);
+    if (_calibration_refinement_max > 0)
+    {
+        _calibrated_reading = (_raw_reading - _calibration_refinement_min)/(_calibration_refinement_max-_calibration_refinement_min);
+    }
+    else if (_calibration_max > 0)
+    {
+        _calibrated_reading = (_raw_reading - _calibration_min)/(_calibration_max-_calibration_min);
+    }
+    else
+    {
+        _calibrated_reading = _raw_reading;
+    }
+    return _calibrated_reading;
+
+};
 
 #endif
