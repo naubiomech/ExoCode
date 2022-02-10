@@ -33,6 +33,7 @@ class JointData {
         int torque_reading;
         bool is_left;
         bool is_used;
+        bool calibrate_torque_sensor;
 };
 
 

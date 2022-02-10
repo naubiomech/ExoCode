@@ -5,6 +5,7 @@
 
 #include "Joint.h"
 
+
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36) 
 // initialize the used joint counters that will be used to select the TorqueSensor pin.  If you don't do it it won't work.
@@ -22,28 +23,12 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
 //, _controller(id, exo_data)
 {
     this->_id = id;
-    this->_is_left = _Joint::get_is_left(this->_id); //((uint8_t)this->id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
+    this->_is_left = utils::get_is_left(this->_id); //((uint8_t)this->id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
     
     this->_data = exo_data;
 };  
 
-/*
- * Takes in the joint id and returns if the left indicator bit is set as a bool
- *
- */
-bool _Joint::get_is_left(config_defs::joint_id id)
-{
-    return ((uint8_t)id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
-};
 
-/*
- * Takes in the joint id and returns the id with the left/right bits masked out.
- * Returning uint8_t rather than joint_id type since we have to typecast to do logical stuff anyways.
- */
-uint8_t _Joint::get_joint_type(config_defs::joint_id id)
-{
-    return (uint8_t)id & (~(uint8_t)config_defs::joint_id::left & ~(uint8_t)config_defs::joint_id::right);  // return the joint id with the left/right indicators masked out.  
-};
 
 /*
  * Takes in the joint id and exo data, and checks if the current joint is used.
@@ -55,11 +40,11 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
     // First check which joint we are looking at.  
     // Then go through and if it is the left or right and if it is used.  
     // If it is set return the appropriate pin and increment the counter.
-    switch (_Joint::get_joint_type(id))
+    switch (utils::get_joint_type(id))
     {
         case (uint8_t)config_defs::joint_id::hip:
         {
-            if (_Joint::get_is_left(id) & exo_data->left_leg.hip.is_used)  // check if the left leg is used
+            if (utils::get_is_left(id) & exo_data->left_leg.hip.is_used)  // check if the left leg is used
             {
                 if (_Joint::left_used_joint_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
@@ -89,7 +74,7 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
         }
         case (uint8_t)config_defs::joint_id::knee:
         {
-            if (_Joint::get_is_left(id) & exo_data->left_leg.knee.is_used)  // check if the left leg is used
+            if (utils::get_is_left(id) & exo_data->left_leg.knee.is_used)  // check if the left leg is used
             {
                 if (_Joint::left_used_joint_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
@@ -119,7 +104,7 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
         }
         case (uint8_t)config_defs::joint_id::ankle:
         {
-            if (_Joint::get_is_left(id) & exo_data->left_leg.ankle.is_used)  // check if the left leg is used
+            if (utils::get_is_left(id) & exo_data->left_leg.ankle.is_used)  // check if the left leg is used
             {
                 if (_Joint::left_used_joint_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
@@ -196,7 +181,33 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
             _controller = nullptr;
             break;
     } 
-}
+};
+
+/*
+ *
+ */
+void HipJoint::run_joint()
+{
+    
+};  
+
+/*
+ *
+ */
+void HipJoint::read_data() // reads data from motor and sensors
+{
+    
+};
+
+/*
+ *
+ */
+void HipJoint::set_controller(uint8_t controller_id)  // changes the high level controller in Controller, and the low level controller in Motor
+{
+    
+};
+
+//================================================================
 
 KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
 : _Joint(id, exo_data)
@@ -234,8 +245,33 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
             _controller = nullptr;
             break;
     } 
-}
+};
 
+/*
+ *
+ */
+void KneeJoint::run_joint()
+{
+    
+};  
+
+/*
+ *
+ */
+void KneeJoint::read_data() // reads data from motor and sensors
+{
+    
+};
+
+/*
+ *
+ */
+void KneeJoint::set_controller(uint8_t controller_id)  // changes the high level controller in Controller, and the low level controller in Motor
+{
+    
+};
+
+//=================================================================
 AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 : _Joint(id, exo_data)
 {
@@ -276,6 +312,29 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
             _controller = nullptr;
             break;
     } 
-}
+};
 
+/*
+ *
+ */
+void AnkleJoint::run_joint()
+{
+    
+};  
+
+/*
+ *
+ */
+void AnkleJoint::read_data() // reads data from motor and sensors
+{
+    
+};
+
+/*
+ *
+ */
+void AnkleJoint::set_controller(uint8_t controller_id)  // changes the high level controller in Controller, and the low level controller in Motor
+{
+    
+};
 #endif

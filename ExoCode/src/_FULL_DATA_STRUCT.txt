@@ -9,25 +9,21 @@ ExoData
         toe_fsr
         is_left
         is_used
+        calibrate_fsr
         JointData : hip, knee, ankle
         {
             id
             torque_reading
             is_left
             is_used
+            calibrate_torque_sensor
             motor
             {
                 id
                 motor_type
                 is_left
-                p
-                v
-                i
-                p_des
-                v_des
-                kp
-                kd
-                t_ff
+                cmd // t_ff
+                params = {p, v, i}
             }
             controller
             {

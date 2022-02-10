@@ -34,6 +34,7 @@ class LegData{
         int toe_fsr;
         bool is_left;
         bool is_used;
+        bool calibrate_fsr;
         
 };
 

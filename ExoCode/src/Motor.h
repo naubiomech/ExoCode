@@ -25,7 +25,7 @@ class _Motor
 {
 	public:
 		_Motor(config_defs::joint_id id, ExoData* exo_data);
-        virtual ~_Motor();
+        virtual ~_Motor(){};
 		
         //Pure virtual functions, these will have to be defined for each one.
         virtual void read_data() = 0; // reads motor data from each motor used in the leg and stores the values
@@ -52,7 +52,7 @@ class _CANMotor : public _Motor
 {
     public:
         _CANMotor(config_defs::joint_id id, ExoData* exo_data);
-        virtual ~_CANMotor();
+        virtual ~_CANMotor(){};
         void read_data();
         void send_data();
         void on_off(bool is_on);
@@ -63,7 +63,7 @@ class AK60 : public _CANMotor
 {
     public:
         AK60(config_defs::joint_id id, ExoData* exo_data); // constructor: type is the motor type
-		~AK60();
+		~AK60(){};
         
     
     private:
@@ -74,7 +74,7 @@ class AK80 : public _CANMotor
 {
     public:
         AK80(config_defs::joint_id id, ExoData* exo_data); // constructor: type is the motor type
-		~AK80();
+		~AK80(){};
         
     
     private:

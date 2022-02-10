@@ -34,6 +34,10 @@ class Leg
 		void update_motor_cmds();  // sends new control command to the motors used in the leg, based on the defined controllers
 		void set_controller(int joint, int controller); // Changes the controller for an individual joint
 		
+        // temp move to test FSRs, move back to private when done
+        FSR _heel_fsr;
+		FSR _toe_fsr;
+        
 	private:
 		void _calc_percent_gait();
 		ExoData* _data;
@@ -41,8 +45,7 @@ class Leg
         HipJoint _hip;
         KneeJoint _knee;
         AnkleJoint _ankle;
-		FSR _heel_fsr;
-		FSR _toe_fsr;
+		
 		
         bool _is_left;
 		

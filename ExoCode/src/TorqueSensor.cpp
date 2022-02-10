@@ -58,6 +58,7 @@ bool TorqueSensor::calibrate(bool do_calibrate)
             {
                 _calibration = _zero_sum/_num_calibration_samples;
             }
+            Serial.println("TorqueSensor::calibrate : Torque Cal Done");
             do_calibrate = false;
         }
         

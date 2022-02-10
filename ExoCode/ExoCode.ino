@@ -94,7 +94,8 @@
     
     void loop()
     {
-        //static ExoData exo_data(config_info::config_to_send);
+        static ExoData exo_data(config_info::config_to_send);
+        static Exo exo(&exo_data);
          
         //Led::syncLed.updateLed();  // actually change the led state, this also updates ledIsOn for recording the actual on/off state 
         
@@ -107,6 +108,55 @@
 //        {
 //          //stream = 0;
 //        }
+
+          /* Temp code to test the FSR, need to move them to public in leg.h */
+          //+++++++++++++++++++++++++++++++++++++++++
+          static bool do_heel_cal = true;
+          static bool do_toe_cal = true;
+          
+          static bool heel_cal_done = false;
+          static bool toe_cal_done = false;
+          
+          static bool do_heel_cal_refinement = false;
+          static bool do_toe_cal_refinement = false;
+          
+          // once the calibration is done do the refinement.
+          if (!do_heel_cal & !heel_cal_done)
+          {
+              heel_cal_done = true;
+              do_heel_cal_refinement = true;
+          }
+
+          if (!do_toe_cal & !toe_cal_done)
+          {
+              toe_cal_done = true;
+              do_toe_cal_refinement = true;
+          }
+          
+          do_heel_cal = exo.left_leg._heel_fsr.calibrate(do_heel_cal);
+          do_toe_cal = exo.left_leg._toe_fsr.calibrate(do_toe_cal);
+
+          do_heel_cal_refinement = exo.left_leg._heel_fsr.refine_calibration(do_heel_cal_refinement);
+          do_toe_cal_refinement = exo.left_leg._toe_fsr.refine_calibration(do_toe_cal_refinement);
+
+
+          if(!do_toe_cal & !do_toe_cal_refinement & !do_heel_cal & !do_heel_cal_refinement)
+          {
+              Serial.print("toe reading : \t");
+              Serial.print(exo.left_leg._toe_fsr.read());
+              Serial.print("\t heel reading : \t");
+              Serial.println(exo.left_leg._heel_fsr.read());
+          }
+
+
+          
+
+          
+
+          
+          //+++++++++++++++++++++++++++++++++++++++++
+
+  
     
     
       

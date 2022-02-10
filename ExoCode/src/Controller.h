@@ -32,7 +32,7 @@ class _Controller
 	public:
         // Constructor not needed as there isn't anything to set.
 		// Virtual destructor is needed to make sure the correct destructor is called when the derived class is deleted.
-        virtual ~_Controller();
+        virtual ~_Controller(){};
 		//virtual void set_controller(int joint, int controller) = 0; // Changes the controller for an individual joint
 		virtual int calc_motor_cmd() = 0; 
 
@@ -44,7 +44,7 @@ class ProportionalJointMoment : public _Controller
 {
     public:
         ProportionalJointMoment(config_defs::joint_id id, ExoData* exo_data);
-        ~ProportionalJointMoment();
+        ~ProportionalJointMoment(){};
         
         int calc_motor_cmd();
 		
@@ -59,7 +59,7 @@ class ZeroTorque : public _Controller
 {
     public:
         ZeroTorque(config_defs::joint_id id, ExoData* exo_data);
-        ~ZeroTorque();
+        ~ZeroTorque(){};
         
         int calc_motor_cmd();
         
@@ -72,7 +72,7 @@ class HeelToe: public _Controller
 {
     public:
         HeelToe(config_defs::joint_id id, ExoData* exo_data);
-        ~HeelToe();
+        ~HeelToe(){};
         
         int calc_motor_cmd();
         
