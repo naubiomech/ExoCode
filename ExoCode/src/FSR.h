@@ -22,13 +22,13 @@ class FSR
 		FSR(int pin);
 		bool calibrate(bool do_calibrate); // Changes the controller for an individual joint
 		bool refine_calibration(bool do_refinement);
-        int read(); // reads the pins and updatas the data stuct.
-		
+        float read(); // reads the pins and updatas the data stuct.
+		bool edge_detector(bool check_rising);  // finds the rising or falling edge of the signal.
 			
 		
 	private:
 		uint16_t _raw_reading;
-		int _calibrated_reading;
+		float _calibrated_reading;
         
         int _pin;
         
@@ -48,8 +48,8 @@ class FSR
         unsigned int _step_min_sum;
         uint16_t _step_min;
         uint8_t _step_count;
-        uint16_t _calibration_refinement_min;
-        uint16_t _calibration_refinement_max;
+        float _calibration_refinement_min;
+        float _calibration_refinement_max;
         
 };
 #endif
