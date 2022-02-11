@@ -2,7 +2,7 @@
 
 void torque_calibration()
 {
-  double torque_calibration_value_time = millis();
+  long torque_calibration_value_time = millis();
   int torq_cal_count = 0;
   double left_temp_cal = 0;
   double right_temp_cal = 0;
@@ -19,6 +19,8 @@ void torque_calibration()
 
 void FSR_calibration()
 {
+
+
   if (FSR_FIRST_Cycle) {
     FSR_FIRST_Cycle = 0;
 

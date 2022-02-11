@@ -10,7 +10,7 @@
 #if BOARD_VERSION == DUAL_BOARD_REV8_1
 #define ENABLE_PWM
 #define SMA_BATTERY
-#define LED_ON 1
+#define LED_ON HIGH
 
 const unsigned int FSR_SENSE_LEFT_TOE_PIN = A2;
 const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A3;
@@ -37,10 +37,9 @@ const unsigned int PWR_SCL = A5;   //SCL
 const unsigned int PWR_SDA = A4;   //SDA
 #endif
 
-
 #if BOARD_VERSION == DUAL_BOARD_REV6
 #define ENABLE_PWM
-#define LED_ON 0
+#define LED_ON LOW
 
 const unsigned int FSR_SENSE_LEFT_TOE_PIN = A2;
 const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A3;
@@ -54,6 +53,7 @@ const unsigned int MOTOR_RIGHT_ANKLE_PIN = 10;
 const unsigned int RED = 22;
 const unsigned int GREEN = 23;
 const unsigned int BLUE = 24;
+const unsigned int LED_PIN = 25; //POWER LED
 
 const unsigned int MOTOR_ENABLE_PIN = 5;
 
@@ -69,7 +69,7 @@ const unsigned int PWR_SDA = A4;   //SDA
 
 #if BOARD_VERSION == DUAL_BOARD_REV6_1
 #define ENABLE_PWM
-#define LED_ON 0
+#define LED_ON LOW
 
 const unsigned int FSR_SENSE_LEFT_TOE_PIN = A2;
 const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A3;
@@ -83,6 +83,7 @@ const unsigned int MOTOR_RIGHT_ANKLE_PIN = 3;
 const unsigned int RED = 22;
 const unsigned int GREEN = 23;
 const unsigned int BLUE = 24;
+const unsigned int LED_PIN = 25; //POWER LED
 
 const unsigned int MOTOR_ENABLE_PIN = 5;
 

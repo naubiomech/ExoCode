@@ -1,22 +1,21 @@
-#include "ema_filter.h"
 
 //Real time data being sent to the GUI
 void send_data_message_wc() //with COP
 {
-  if (reset_time) {
-    last_time = millis();
-    reset_time = false;
-  }
-  double temp = (double)millis();
-  double time = temp - last_time;
-  last_time = temp;
+//  if (reset_time) {
+//    last_time = millis();
+//    reset_time = false;
+//  }
+//  double temp = (double)millis();
+//  double time = temp - last_time;
+//  last_time = temp;
   
   //Right Leg
   data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
-  data_to_send[1] = right_leg->state / 3; //right_leg->AverageCurrent
+  data_to_send[1] = right_leg->state / 3;
   data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
 
-  //Left Leg, sends mark data in place of left_leg FSR value
+  //Left Leg
   data_to_send[3] = (left_leg->sign * left_leg->Average_Trq);
   if (markFlag) {
     data_to_send[4] = markCount++;
@@ -34,42 +33,44 @@ void send_data_message_wc() //with COP
     data_to_send[6] = 0;
     data_to_send[7] = 0;
   }
-  
-  data_to_send[8] = time;
-  data_to_send[9] = 0;
 
+  data_to_send[8] = time;
   send_command_message('?', data_to_send, 9);
 }
 
 
 void send_command_message(char command_char, double* data_to_send, int number_to_send)
 {
-  //8 max characters can transmit -XXXXX, or XXXXXX
+  //6 max characters can transmit -XXXXX, or XXXXXX
   int maxChars = 8;
-  int maxPayloadLength = ((4 + number_to_send) * (maxChars + 1)); //+1 because of the delimiters
+  int maxPayloadLength = ((3 + number_to_send) * (maxChars + 1)); //+1 because of the delimiters
   byte buffer[maxPayloadLength];
   //Size must be declared at initialization because of itoa()
   char cBuffer[maxChars];
   int bufferIndex = 0;
   buffer[bufferIndex++] = 'S';
   buffer[bufferIndex++] = command_char;
-  int cLength = getCharLength(number_to_send);
   itoa(number_to_send, &cBuffer[0], 10);
-  memcpy(&buffer[bufferIndex], &cBuffer[0], cLength);
-  bufferIndex += cLength;
+  memcpy(&buffer[bufferIndex++], &cBuffer[0], 1);
   buffer[bufferIndex++] = 'c';
   for (int i = 0; i < number_to_send; i++) {
     //Send as Int to reduce bytes being sent
     int modData = int(data_to_send[i] * 100);
-    cLength = getCharLength(modData);
+    int cLength = getCharLength(modData);
+    if (cLength > maxChars) {
+      cLength = 1;
+      modData = 0;
+    }
     //Populates cBuffer with a base 10 number
     itoa(modData, &cBuffer[0], 10);
     //Writes cLength indices of cBuffer into buffer
     memcpy(&buffer[bufferIndex], &cBuffer[0], cLength);
     bufferIndex += cLength;
     buffer[bufferIndex++] = 'n';
-  } 
-  TXChar.writeValue(buffer, bufferIndex);     //Write payload
+  }
+  //callback_thread.set_priority(osPriorityNormal);
+  TXChar.writeValue(buffer, bufferIndex);           //Write payload
+  //callback_thread.set_priority(osPriorityAboveNormal);
 }
 
 int getCharLength(int ofInt) {
@@ -208,9 +209,9 @@ bool handle_mobile_message(char* data, const int val_len) {
     }
     else if (count>expected) {
       //Something went wrong, reset
-//      Serial.println("Error in handle_mobile_message!");
-//      Serial.println(count);
-//      Serial.println(expected);
+      Serial.println("Error in handle_mobile_message!");
+      Serial.print(count);
+      Serial.print(expected);
       call = 0;
       count = 0;
       expected = 0;

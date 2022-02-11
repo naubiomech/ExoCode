@@ -244,8 +244,7 @@ struct Leg {
   const int biofeedback_window_length = 6;  
   double biofeedback_success_history[6] = {-1,-1,-1,-1,-1,-1}; // defining the sliding window as 6 steps, filled with -1s - really rudimentary at this point, but shouldn't have to change much... 
   double FLAG_calc_success_rate = 0;   
-  bool biofeedback_first_step = true; 
-
+  bool biofeedback_first_step = true;
 
   char whos = ' ';
 

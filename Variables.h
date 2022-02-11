@@ -9,8 +9,6 @@ double startTime = 0;
 int streamTimerCount = 0;
 int voltageTimerCount = 0;
 
-bool taking_baseline = false;
-
 // variable to indicate the beginning and ending of the stream of data
 int stream = 0;
 bool reset_time = true;
@@ -49,6 +47,9 @@ const double BF_scale = 0.1;
 const double BF_upper_limit = 0.85; 
 const double BF_lower_limit = 0.50;  
 int biofeedback_current_success = 0; 
+char biofeedbackLeg = 'R';
+double max_norm_FSR = 1.5;
+
 
 // data for bluetooth autoreconnection
 bool FLAG_AUTO_RECONNECT_BT = false;
@@ -128,11 +129,14 @@ double temp_L_PFX = 0;
 double temp_R_DFX = 0;
 double temp_R_PFX = 0;
 
-// Torque Offsets
-double trqOffsetR = 1.51;  //DEFINE TRANSDUCER OFFSET HERE S02
-double trqOffsetL = 1.42;  //DEFINE TRANSDUCER OFFSET HERE S03
+// EMA Variables
+double oldVolt;
+double emaVolt;
+double voltAlpha = 0.001;
 
-// Mark Functionality
-char biofeedbackLeg = 'R';
+// Torque Offsets
+double trqOffsetR = -1.219;  //DEFINE TRANSDUCER OFFSET HERE S07
+double trqOffsetL = -1.503;  //DEFINE TRANSDUCER OFFSET HERE S08
+
 double markCount = 10;
 bool markFlag = false;

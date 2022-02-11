@@ -119,16 +119,13 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
           (p_steps_l->count_plant_base) = 0;
           *p_flag_take_baseline_l = 0;
-          leg->baseline_value = p_steps_l->plant_peak_mean;   
+          leg->baseline_value = p_steps_l->plant_peak_mean;
           if (leg->whos == 'R') {baselineRight = true;}
           if (leg->whos == 'L') {baselineLeft = true;}
-          if ((baselineRight) && (baselineLeft)) {  
-            update_biofeedback_baseline(); 
-            send_command_message('n', emptyData, 1); //GO 4/23/19 to communicate that baseline is done, the array sent in position two has one position initialized as zero        
+          if ((baselineRight) && (baselineLeft)) {
+            send_command_message('n', emptyData, 1); //GO 4/23/19 to communicate that baseline is done, the array sent in position two has one position initialized as zero
             baselineRight = false;
             baselineLeft = false;
-            taking_baseline = false;
-            //Serial.println("Finished baseline"); 
           }
           return (p_steps_l->count_plant_base);
 
