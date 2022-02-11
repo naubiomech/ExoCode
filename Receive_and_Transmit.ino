@@ -463,6 +463,9 @@ void receive_and_transmit()
     case 'R':                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
       memcpy(&left_leg->fsr_percent_thresh_Toe, holdOnPoint, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
       memcpy(&right_leg->fsr_percent_thresh_Toe, holdOnPoint + 8, 8);
+      if ((left_leg->fsr_percent_thresh_Toe == 5.1) || (right_leg->fsr_percent_thresh_Toe == 5.1)) { //If either of the incoming FSR thresholds are exactly equal to 5.1
+        CURRENT_CONTROL = !CURRENT_CONTROL; // Toggle open-loop control
+      }
       left_leg->p_steps->fsr_percent_thresh_Toe = left_leg->fsr_percent_thresh_Toe;
       right_leg->p_steps->fsr_percent_thresh_Toe = right_leg->fsr_percent_thresh_Toe;
       break;
