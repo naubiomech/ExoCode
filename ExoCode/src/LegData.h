@@ -19,6 +19,7 @@
 // forward declaration
 class ExoData;
 
+
 class LegData{
 	   
     public:
@@ -29,13 +30,15 @@ class LegData{
         JointData ankle; 
         
         
-        int percent_gait; // likely want to do fixed point 
-        int heel_fsr;
-        int toe_fsr;
+        int percent_gait_x10; // likely want to do fixed point 
+        float heel_fsr;
+        float toe_fsr;
         bool is_left;
         bool is_used;
-        bool calibrate_fsr;
-        
+        bool do_calibration_toe_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
+        bool do_calibration_refinement_toe_fsr; 
+        bool do_calibration_heel_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
+        bool do_calibration_refinement_heel_fsr; 
 };
 
 #endif

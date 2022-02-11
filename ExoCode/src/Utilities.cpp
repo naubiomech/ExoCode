@@ -42,4 +42,18 @@ namespace utils
         }    
         return trigger;
     }
+    
+    uint8_t update_bit(uint8_t original, bool val, uint8_t loc)
+    {
+        uint8_t keep_bit = ~(1<<loc);  //set a mask for the bits we aren't setting 
+        
+        return (original & keep_bit) | (val<<loc);
+    }
+    
+    bool get_bit(uint8_t original, uint8_t loc)
+    {
+        uint8_t bit_to_check = (1<<loc);  //set a mask for the bits we are checking
+        
+        return (original & bit_to_check) == bit_to_check;
+    }
 }

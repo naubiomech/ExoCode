@@ -22,5 +22,38 @@ Leg::Leg(bool is_left, ExoData* exo_data)
 {
     this->_data = exo_data;
     this->_is_left = is_left;
+    this->_leg_data = _is_left ? &(_data->left_leg) : &(_data->right_leg);
+    
+};
+
+void Leg::read_data()
+{
+    _leg_data->heel_fsr = _heel_fsr.read();
+    _leg_data->toe_fsr = _toe_fsr.read();
+};
+
+void Leg::check_calibration()
+{
+    if (_is_used)
+    {
+        // make sure calibration is done before refinement.
+        if (_leg_data->do_calibration_toe_fsr)
+        {
+            _leg_data->do_calibration_toe_fsr = _toe_fsr.calibrate(_leg_data->do_calibration_toe_fsr);
+        }
+        else if (_leg_data->do_calibration_refinement_toe_fsr) 
+        {
+            _leg_data->do_calibration_refinement_toe_fsr = _toe_fsr.refine_calibration(_leg_data->do_calibration_refinement_toe_fsr);
+        }
+        
+        if (_leg_data->do_calibration_heel_fsr)
+        {
+            _leg_data->do_calibration_heel_fsr = _heel_fsr.calibrate(_leg_data->do_calibration_heel_fsr);
+        }
+        else if (_leg_data->do_calibration_refinement_heel_fsr) 
+        {
+            _leg_data->do_calibration_refinement_heel_fsr = _heel_fsr.refine_calibration(_leg_data->do_calibration_refinement_heel_fsr);
+        }
+    }        
 };
 #endif

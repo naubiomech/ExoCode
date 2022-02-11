@@ -111,41 +111,49 @@
 
           /* Temp code to test the FSR, need to move them to public in leg.h */
           //+++++++++++++++++++++++++++++++++++++++++
-          static bool do_heel_cal = true;
-          static bool do_toe_cal = true;
-          
-          static bool heel_cal_done = false;
-          static bool toe_cal_done = false;
-          
-          static bool do_heel_cal_refinement = false;
-          static bool do_toe_cal_refinement = false;
-          
-          // once the calibration is done do the refinement.
-          if (!do_heel_cal & !heel_cal_done)
+          static bool first_run = true;
+          if (first_run)
           {
-              heel_cal_done = true;
-              do_heel_cal_refinement = true;
+            exo_data.left_leg.do_calibration_toe_fsr = true;
+            exo_data.left_leg.do_calibration_refinement_toe_fsr = true;
+  
+            exo_data.left_leg.do_calibration_heel_fsr = true;
+            exo_data.left_leg.do_calibration_refinement_heel_fsr = true;
+
+            first_run = false;
           }
 
-          if (!do_toe_cal & !toe_cal_done)
-          {
-              toe_cal_done = true;
-              do_toe_cal_refinement = true;
-          }
+          exo.left_leg.check_calibration();
+          exo.left_leg.read_data();
+
           
-          do_heel_cal = exo.left_leg._heel_fsr.calibrate(do_heel_cal);
-          do_toe_cal = exo.left_leg._toe_fsr.calibrate(do_toe_cal);
-
-          do_heel_cal_refinement = exo.left_leg._heel_fsr.refine_calibration(do_heel_cal_refinement);
-          do_toe_cal_refinement = exo.left_leg._toe_fsr.refine_calibration(do_toe_cal_refinement);
-
-
-          if(!do_toe_cal & !do_toe_cal_refinement & !do_heel_cal & !do_heel_cal_refinement)
+          
+//          // once the calibration is done do the refinement.
+//          if (!do_heel_cal & !heel_cal_done)
+//          {
+//              heel_cal_done = true;
+//              do_heel_cal_refinement = true;
+//          }
+//
+//          if (!do_toe_cal & !toe_cal_done)
+//          {
+//              toe_cal_done = true;
+//              do_toe_cal_refinement = true;
+//          }
+//          
+//          do_heel_cal = exo.left_leg._heel_fsr.calibrate(do_heel_cal);
+//          do_toe_cal = exo.left_leg._toe_fsr.calibrate(do_toe_cal);
+//
+//          do_heel_cal_refinement = exo.left_leg._heel_fsr.refine_calibration(do_heel_cal_refinement);
+//          do_toe_cal_refinement = exo.left_leg._toe_fsr.refine_calibration(do_toe_cal_refinement);
+//
+//
+          if(!exo_data.left_leg.do_calibration_toe_fsr & !exo_data.left_leg.do_calibration_refinement_toe_fsr & !exo_data.left_leg.do_calibration_heel_fsr & !exo_data.left_leg.do_calibration_refinement_heel_fsr)
           {
               Serial.print("toe reading : \t");
-              Serial.print(exo.left_leg._toe_fsr.read());
+              Serial.print(exo_data.left_leg.toe_fsr);
               Serial.print("\t heel reading : \t");
-              Serial.println(exo.left_leg._heel_fsr.read());
+              Serial.println(exo_data.left_leg.heel_fsr);
           }
 
 
