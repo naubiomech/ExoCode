@@ -18,6 +18,7 @@
 #include "FSR.h"
 #include "parseIni.h"
 #include "board.h"
+#include "Utilities.h"
 
 #include <stdint.h>
 
@@ -41,7 +42,9 @@ class Leg
         
 	private:
 		void _calc_percent_gait();
-		ExoData* _data;
+        bool _check_ground_strike();
+		
+        ExoData* _data;
         LegData* _leg_data;// breaks out the specific leg we are using so we don't have to keep checking if it is left.
         
         HipJoint _hip;
@@ -49,7 +52,10 @@ class Leg
         AnkleJoint _ankle;
 				
         bool _is_left;
-		
+        
+        // used for ground strike detection
+        bool _last_heel_contact_state;
+        bool _last_toe_contact_state;
 };
 #endif
 #endif

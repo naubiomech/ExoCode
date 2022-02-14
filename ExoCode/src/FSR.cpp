@@ -102,7 +102,7 @@ bool FSR::refine_calibration(bool do_refinement)
             
             
             bool last_state = _state;
-            _state = utils::schmitt_trigger(current_reading, last_state, _lower_threshold_percent * (_calibration_max-_calibration_min) + _calibration_min, _upper_threshold_percent * (_calibration_max-_calibration_min) + _calibration_min); 
+            _state = utils::schmitt_trigger(current_reading, last_state, _lower_threshold_percent_calibration_refinement * (_calibration_max-_calibration_min) + _calibration_min, _upper_threshold_percent_calibration_refinement * (_calibration_max-_calibration_min) + _calibration_min); 
             
             // there is a new low -> high transition (next step), add the step max and min to their respective sums.
             if (_state > last_state) 
@@ -158,14 +158,21 @@ float FSR::read()
     {
         _calibrated_reading = _raw_reading;
     }
+    
+    _calc_ground_contact();
     return _calibrated_reading;
 
 };
 
 
-bool FSR::edge_detector(bool check_rising)
+bool FSR::_calc_ground_contact()
 {
-    bool edge_detected = false;
-    return edge_detected;
-}
+    _ground_contact = utils::schmitt_trigger(_calibrated_reading, _ground_contact, _lower_threshold_percent_ground_contact, _upper_threshold_percent_ground_contact); 
+    return _ground_contact;
+};
+
+bool FSR::get_ground_contact()
+{
+    return _ground_contact;
+};
 #endif

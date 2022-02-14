@@ -27,6 +27,7 @@ LegData::LegData(bool is_left, uint8_t* config_to_send)
     this->do_calibration_refinement_toe_fsr = false; 
     this->do_calibration_heel_fsr = false; //bit 0 is calibrate fsr, bit 1 is refine calibration.
     this->do_calibration_refinement_heel_fsr = false; 
+    this->ground_strike = false; 
 
     if ((static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_to_send[config_defs::exo_side_idx]) 
         || (((uint8_t)config_defs::exo_side::left == config_to_send[config_defs::exo_side_idx]) & this->is_left)

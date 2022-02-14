@@ -33,6 +33,9 @@ class LegData{
         int percent_gait_x10; // likely want to do fixed point 
         float heel_fsr;
         float toe_fsr;
+        
+        bool ground_strike;
+        
         bool is_left;
         bool is_used;
         bool do_calibration_toe_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
