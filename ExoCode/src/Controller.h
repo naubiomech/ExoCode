@@ -17,6 +17,7 @@
 #include "board.h"
 #include "parseIni.h"
 #include <stdint.h>
+#include "Utilities.h"
 
 //TODO: Create motor base class with interface : int calc_motor_cmd()
 
@@ -31,12 +32,17 @@ class _Controller
 {
 	public:
         // Constructor not needed as there isn't anything to set.
+        _Controller(config_defs::joint_id id, ExoData* exo_data);
 		// Virtual destructor is needed to make sure the correct destructor is called when the derived class is deleted.
         virtual ~_Controller(){};
 		//virtual void set_controller(int joint, int controller) = 0; // Changes the controller for an individual joint
-		virtual int calc_motor_cmd() = 0; 
+		virtual int calc_motor_cmd() = 0;
 
-    
+    protected:
+        ExoData* _data;
+        ControllerData* _controller_data;
+        
+        config_defs::joint_id _id;
 };
 
 
@@ -47,10 +53,6 @@ class ProportionalJointMoment : public _Controller
         ~ProportionalJointMoment(){};
         
         int calc_motor_cmd();
-		
-	private:
-        ExoData* _data;
-        config_defs::joint_id _id;
 };
 
 
@@ -62,10 +64,6 @@ class ZeroTorque : public _Controller
         ~ZeroTorque(){};
         
         int calc_motor_cmd();
-        
-	private:
-        ExoData* _data;
-        config_defs::joint_id _id;
 };
 
 class HeelToe: public _Controller
@@ -75,12 +73,6 @@ class HeelToe: public _Controller
         ~HeelToe(){};
         
         int calc_motor_cmd();
-        
-        
-		
-	private:
-        ExoData* _data;
-        config_defs::joint_id _id;
 };
 
 

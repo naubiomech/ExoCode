@@ -22,10 +22,47 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
 : _torque_sensor(_Joint::get_torque_sensor_pin(id, exo_data))
 //, _controller(id, exo_data)
 {
-    this->_id = id;
-    this->_is_left = utils::get_is_left(this->_id); //((uint8_t)this->id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
+    _id = id;
+    _is_left = utils::get_is_left(_id); //((uint8_t)this->id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
     
-    this->_data = exo_data;
+    _data = exo_data;
+    
+    // set _joint_data to point to the data specific to this joint.
+    switch (utils::get_joint_type(_id))
+    {
+        case (uint8_t)config_defs::joint_id::hip:
+            if (_is_left)
+            {
+                _joint_data = &(exo_data->left_leg.hip);
+            }
+            else
+            {
+                _joint_data = &(exo_data->right_leg.hip);
+            }
+            break;
+            
+        case (uint8_t)config_defs::joint_id::knee:
+            if (_is_left)
+            {
+                _joint_data = &(exo_data->left_leg.knee);
+            }
+            else
+            {
+                _joint_data = &(exo_data->right_leg.knee);
+            }
+            break;
+        
+        case (uint8_t)config_defs::joint_id::ankle:
+            if (_is_left)
+            {
+                _joint_data = &(exo_data->left_leg.ankle);
+            }
+            else
+            {
+                _joint_data = &(exo_data->right_leg.ankle);
+            }
+            break;
+    }
 };  
 
 
@@ -139,6 +176,11 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
     }
 };
 
+void _Joint::set_motor(_Motor* new_motor)
+{
+    _motor = new_motor;
+};
+
 
 //*********************************************
 HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
@@ -151,13 +193,16 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
     {
         // using new so the object of the specific motor type persists.
         case (uint8_t)config_defs::motor::AK60 :
-            _motor = new AK60(id, exo_data);
+            //_motor = new AK60(id, exo_data);
+            HipJoint::set_motor(new AK60(id, exo_data));
             break;
         case (uint8_t)config_defs::motor::AK80 :
-            _motor = new AK80(id, exo_data);
+            //_motor = new AK80(id, exo_data);
+            HipJoint::set_motor(new AK80(id, exo_data));
             break;
         default :
-            _motor = nullptr;
+            //_motor = nullptr;
+            HipJoint::set_motor(nullptr);
             break;
     }
     

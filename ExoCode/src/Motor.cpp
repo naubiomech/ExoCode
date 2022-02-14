@@ -11,9 +11,47 @@
 
 _Motor::_Motor(config_defs::joint_id id, ExoData* exo_data)
 {
-    this->_id = id;
-    this->_is_left = ((uint8_t)this->_id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
-    this->_data = exo_data;
+    _id = id;
+    _is_left = ((uint8_t)this->_id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
+    _data = exo_data;
+    
+    // set _motor_data to point to the data specific to this motor.
+    switch (utils::get_joint_type(_id))
+    {
+        case (uint8_t)config_defs::joint_id::hip:
+            if (_is_left)
+            {
+                _motor_data = &(exo_data->left_leg.hip.motor);
+            }
+            else
+            {
+                _motor_data = &(exo_data->right_leg.hip.motor);
+            }
+            break;
+            
+        case (uint8_t)config_defs::joint_id::knee:
+            if (_is_left)
+            {
+                _motor_data = &(exo_data->left_leg.knee.motor);
+            }
+            else
+            {
+                _motor_data = &(exo_data->right_leg.knee.motor);
+            }
+            break;
+        
+        case (uint8_t)config_defs::joint_id::ankle:
+            if (_is_left)
+            {
+                _motor_data = &(exo_data->left_leg.ankle.motor);
+            }
+            else
+            {
+                _motor_data = &(exo_data->right_leg.ankle.motor);
+            }
+            break;
+    }
+    
 };
 
 bool _Motor::get_is_left() // constructor: type is the motor type
@@ -33,8 +71,8 @@ config_defs::joint_id _Motor::get_id()
  * 
  * 
  */
-_CANMotor::_CANMotor(config_defs::joint_id id, ExoData* exo_data): // constructor: type is the motor type
-_Motor(id, exo_data)
+_CANMotor::_CANMotor(config_defs::joint_id id, ExoData* exo_data) // constructor: type is the motor type
+: _Motor(id, exo_data)
 {
     
 };

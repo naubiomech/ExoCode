@@ -40,22 +40,25 @@ class _Joint
         virtual void run_joint() = 0;  // updates the controller and sends the motor command
 		virtual void read_data() = 0; // reads data from motor and sensors
 		virtual void set_controller(uint8_t) = 0;  // changes the high level controller in Controller, and the low level controller in Motor
-		
+		void set_motor(_Motor* new_motor);
+        
         // create some static member functions we can use for the initializer list.
         static bool get_is_left(config_defs::joint_id);
         static uint8_t get_joint_type(config_defs::joint_id);
         static unsigned int get_torque_sensor_pin(config_defs::joint_id, ExoData*);
         
+        
+    protected:
+        ExoData* _data;
+        JointData* _joint_data;
+        
         _Motor* _motor;
 		TorqueSensor _torque_sensor;
 		_Controller* _controller;
-	
-    private:
-		ExoData* _data;
+        
         config_defs::joint_id _id;
         bool _is_left;
-        
-        
+    
 };
 
 class HipJoint : public _Joint

@@ -16,6 +16,7 @@
 #include "ExoData.h"
 #include "parseIni.h"
 #include "board.h"
+#include "Utilities.h"
 
 #include <stdint.h>
 
@@ -38,10 +39,11 @@ class _Motor
         virtual config_defs::joint_id get_id();
 		
 		
-	private:
+	protected:
         config_defs::joint_id _id; //motor id 
 		bool _is_left;
         ExoData* _data;
+        MotorData* _motor_data;
 };
 
 
@@ -64,21 +66,13 @@ class AK60 : public _CANMotor
     public:
         AK60(config_defs::joint_id id, ExoData* exo_data); // constructor: type is the motor type
 		~AK60(){};
-        
-    
-    private:
-        
 };
 
 class AK80 : public _CANMotor
 {
     public:
         AK80(config_defs::joint_id id, ExoData* exo_data); // constructor: type is the motor type
-		~AK80(){};
-        
-    
-    private:
-        
+		~AK80(){};   
 };
 #endif
 #endif
