@@ -8,10 +8,10 @@ class SMBattery {
     Wire.begin();
   }
   int readSOC() {
-    return readWord(SOC_REG);
+    return max(0, min(readWord(SOC_REG), 100));
   }
   int readVoltage() {
-    return readWord(VOL_REG);
+    return max(0, min(readWord(VOL_REG), 48));
   }
   private:
   const byte BATT_ADDR = 0xb;

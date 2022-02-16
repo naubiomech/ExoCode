@@ -34,8 +34,8 @@ void send_data_message_wc() //with COP
     data_to_send[7] = 0;
   }
 
-  data_to_send[8] = time;
-  send_command_message('?', data_to_send, 9);
+  //data_to_send[8] = time;
+  send_command_message('?', data_to_send, 8);
 }
 
 

@@ -173,6 +173,7 @@ void loop()
 //---------------------------------------------------------------------------------
 void update_GUI() {
   //Real Time data
+  //Serial.println("Updatate GUI");
   if (stream)
     {
       counter_msgs++;
