@@ -188,14 +188,23 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
 
 
   if (Control_Mode == 2 || Control_Mode == 3 || Control_Mode == 4 || Control_Mode == 6) { //GO 5/19/19
+    
     if (leg->state == 1) {
-      if (leg->swing_counter <= swing_counter_th*leg->Max_FSR_Ratio) { //Max FSR Ratio scales DF peak duration for speed adaptation
-        leg->PID_Setpoint = 2*leg->New_PID_Setpoint*leg->Max_FSR_Ratio; //Activate Dorsiflexion during state 1. Max FSR Ratio scales DF peak for speed adaptation
+      
+      double Baseline_Multiplier = 1;
+
+      if (leg->Max_FSR_Ratio >= 1) { //Fixes an issue where the swing_counter and the DF spike during early swing would be scaled down by FSR ratio < Baseline
+        Baseline_Multiplier = leg->Max_FSR_Ratio;
+      }
+      
+      if (leg->swing_counter <= swing_counter_th*Baseline_Multiplier) { //Max FSR Ratio scales DF peak duration for speed adaptation
+        leg->PID_Setpoint = 2*leg->New_PID_Setpoint*Baseline_Multiplier; //Activate Dorsiflexion during state 1. Max FSR Ratio scales DF peak for speed adaptation
       } else {
         leg->PID_Setpoint = leg->New_PID_Setpoint; //Activate Dorsiflexion during state 1
       }
       leg->swing_counter++;
     }
+    
     else if (leg->state == 2) {
       leg->PID_Setpoint = leg->New_PID_Setpoint; //Continue Dorsiflexion during state 2
       //leg->PID_Setpoint = 0;    //Deactivate Dorsiflexion during state 2
