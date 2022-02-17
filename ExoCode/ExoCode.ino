@@ -96,6 +96,9 @@
     {
         static ExoData exo_data(config_info::config_to_send);
         static Exo exo(&exo_data);
+
+        
+        
          
         //Led::syncLed.updateLed();  // actually change the led state, this also updates ledIsOn for recording the actual on/off state 
         
@@ -109,9 +112,11 @@
 //          //stream = 0;
 //        }
 
-          /* Temp code to test the FSR, need to move them to public in leg.h */
+          /* Temp code to test the FSR */
           //+++++++++++++++++++++++++++++++++++++++++
           static bool first_run = true;
+          static unsigned int ground_strike_count = 0;
+          
           if (first_run)
           {
             exo_data.left_leg.do_calibration_toe_fsr = true;
@@ -126,45 +131,66 @@
           exo.left_leg.check_calibration();
           exo.left_leg.read_data();
 
-          
-          
-//          // once the calibration is done do the refinement.
-//          if (!do_heel_cal & !heel_cal_done)
-//          {
-//              heel_cal_done = true;
-//              do_heel_cal_refinement = true;
-//          }
-//
-//          if (!do_toe_cal & !toe_cal_done)
-//          {
-//              toe_cal_done = true;
-//              do_toe_cal_refinement = true;
-//          }
-//          
-//          do_heel_cal = exo.left_leg._heel_fsr.calibrate(do_heel_cal);
-//          do_toe_cal = exo.left_leg._toe_fsr.calibrate(do_toe_cal);
-//
-//          do_heel_cal_refinement = exo.left_leg._heel_fsr.refine_calibration(do_heel_cal_refinement);
-//          do_toe_cal_refinement = exo.left_leg._toe_fsr.refine_calibration(do_toe_cal_refinement);
-//
-//
           if(!exo_data.left_leg.do_calibration_toe_fsr & !exo_data.left_leg.do_calibration_refinement_toe_fsr & !exo_data.left_leg.do_calibration_heel_fsr & !exo_data.left_leg.do_calibration_refinement_heel_fsr)
           {
-              Serial.print("toe reading : \t");
-              Serial.print(exo_data.left_leg.toe_fsr);
-              Serial.print("\t heel reading : \t");
-              Serial.println(exo_data.left_leg.heel_fsr);
+//              Serial.print("toe reading : \t");
+//              Serial.print(exo_data.left_leg.toe_fsr);
+//              Serial.print("\t heel reading : \t");
+//              Serial.println(exo_data.left_leg.heel_fsr);
+              if (exo_data.left_leg.ground_strike)
+              {
+                  ground_strike_count++;
+                  Serial.print("Main - ground_strike_count = ");
+                  Serial.println(ground_strike_count);
+                  
+                  Serial.println("");
+              }
+              
           }
+//          int print_time_ms = 100;
+//          static int last_timestamp = millis();
+//          int timestamp = millis();
+//          if ((timestamp-last_timestamp)>print_time_ms)
+//          {
+//              Serial.print("Main - percent_gait_x10 = ");
+//              Serial.print(exo_data.left_leg.percent_gait_x10);
+//              Serial.print("\tToe FSR = ");
+//              Serial.print(exo_data.left_leg.toe_fsr);
+//              Serial.print("\r");
+//              last_timestamp = timestamp;
+//          }
 
+           //+++++++++++++++++++++++++++++++++++++++++
 
+          /*Temp code to test controller*/
+          //-----------------------------------------------
+          if(!exo_data.left_leg.do_calibration_toe_fsr & !exo_data.left_leg.do_calibration_refinement_toe_fsr & !exo_data.left_leg.do_calibration_heel_fsr & !exo_data.left_leg.do_calibration_refinement_heel_fsr)
+          {
+              exo_data.left_leg.ankle.controller.parameters[controller_defs::proportional_joint_moment::max_torque_idx] = 2000;
+              exo_data.left_leg.ankle.controller.controller = (uint8_t)config_defs::ankle_controllers::pjmc;
+              exo.left_leg._ankle.set_controller(exo_data.left_leg.ankle.controller.controller);
+              exo.left_leg._ankle.run_joint();
+              
+              int print_time_ms = 100;
+              static int last_timestamp = millis();
+              int timestamp = millis();
+              if ((timestamp-last_timestamp)>print_time_ms)
+              {
+                  Serial.print("Main -\n\ttorque CMD = ");
+                  Serial.println(exo_data.left_leg.ankle.controller.setpoint);
+                  Serial.print("\tToe FSR = ");
+                  Serial.println(exo_data.left_leg.toe_fsr);
+                  //Serial.print("\t\t\t\t\t\t\r");
+                  last_timestamp = timestamp;
+              }
+
+          }
           
-
+          //-----------------------------------------------
           
-
           
-          //+++++++++++++++++++++++++++++++++++++++++
-
-  
+          
+         
     
     
       
