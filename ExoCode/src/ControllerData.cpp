@@ -20,22 +20,26 @@ ControllerData::ControllerData(config_defs::joint_id id, uint8_t* config_to_send
         {
             controller = config_to_send[config_defs::exo_hip_default_controller_idx];
             joint = config_defs::JointType::hip;
+            break;
         }
         case (uint8_t)config_defs::joint_id::knee:
         {
             controller = config_to_send[config_defs::exo_knee_default_controller_idx];
             joint = config_defs::JointType::knee;
+            break;
         }
         case (uint8_t)config_defs::joint_id::ankle:
         {
             controller = config_to_send[config_defs::exo_ankle_default_controller_idx];
             joint = config_defs::JointType::ankle;
+            break;
         }
     }
     
     setpoint = 0;
-    parameter1 = 0;
-    parameter2 = 0;
-    
+    for (int i=0; i < controller_defs::max_parameters; i++)
+    {    
+        parameters[i] = 0;
+    }
 };
 

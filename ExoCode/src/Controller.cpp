@@ -58,6 +58,16 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
             }
             break;
     }
+    // added a pointer to the leg data as most controllers will need to access info specific to their leg.
+    if (is_left)
+    {
+        _leg_data = &(exo_data->left_leg);
+    }
+    else
+    {
+        _leg_data = &(exo_data->right_leg);
+    }
+    
 };
 
 
@@ -99,6 +109,11 @@ ProportionalJointMoment::ProportionalJointMoment(config_defs::joint_id id, ExoDa
 int ProportionalJointMoment::calc_motor_cmd()
 {
     int cmd = 0;
+    //Serial.println("ProportionalJointMoment::calc_motor_cmd : Entered");
+    cmd = _leg_data->toe_fsr * _controller_data->parameters[controller_defs::proportional_joint_moment::max_torque_idx];
+    cmd = max(0, cmd);  // if the fsr is negative use zero torque so it doesn't dorsiflex.
+    
+    //Serial.println("ProportionalJointMoment::calc_motor_cmd : Exiting");
     return cmd;
 };
 

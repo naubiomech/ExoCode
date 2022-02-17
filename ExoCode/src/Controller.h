@@ -41,6 +41,7 @@ class _Controller
     protected:
         ExoData* _data;
         ControllerData* _controller_data;
+        LegData* _leg_data;
         
         config_defs::joint_id _id;
 };
