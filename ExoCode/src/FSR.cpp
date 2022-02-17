@@ -14,11 +14,11 @@
  */
 FSR::FSR(int pin)
 {
-    this->_pin = pin;
+    _pin = pin;
     
     
-    this->_raw_reading = 0;
-    this->_calibrated_reading = 0;
+    _raw_reading = 0;
+    _calibrated_reading = 0;
     
     
     _last_do_calibrate = false; //need to remember to delete this when the calibration ends.
@@ -54,9 +54,9 @@ bool FSR::calibrate(bool do_calibrate)
     }        
     else if (do_calibrate)
     {
-        Serial.println("FSR::calibrate : FSR Cal Done");
-        Serial.print("FSR::calibrate : _calibration_max - ");
-        Serial.println(_calibration_max);
+        // Serial.println("FSR::calibrate : FSR Cal Done");
+        // Serial.print("FSR::calibrate : _calibration_max - ");
+        // Serial.println(_calibration_max);
         do_calibrate = false;
     }
     
@@ -115,8 +115,8 @@ bool FSR::refine_calibration(bool do_refinement)
                 _step_min = (_calibration_max+_calibration_min)/2;
                 
                 _step_count++;
-                Serial.print("FSR::refine_calibration : New Step - ");
-                Serial.println(_step_count);
+                // Serial.print("FSR::refine_calibration : New Step - ");
+                // Serial.println(_step_count);
             }
         }
         else // we are still at do_refinement but the _step_count is at the _num_steps
@@ -126,15 +126,16 @@ bool FSR::refine_calibration(bool do_refinement)
             _calibration_refinement_max = static_cast<decltype(_calibration_refinement_max)>(_step_max_sum)/_num_steps;  // casting to the type of _calibration_refinement_max before division 
             _calibration_refinement_min = static_cast<decltype(_calibration_refinement_min)>(_step_min_sum)/_num_steps;
             
-            Serial.println("FSR::refine_calibration : FSR Cal Done");
-            Serial.print("FSR::refine_calibration : New Step - ");
-            Serial.println(_step_count);
+            // Serial.println("FSR::refine_calibration : FSR Cal Done");
+            // Serial.print("FSR::refine_calibration : New Step - ");
+            // Serial.println(_step_count);
             
-            Serial.print("FSR::refine_calibration : _calibration_refinement_max - ");
-            Serial.println(_calibration_refinement_max);
-            Serial.print("FSR::refine_calibration : _calibration_refinement_min - ");
-            Serial.println(_calibration_refinement_min);
-            delay(1000);
+            // Serial.print("FSR::refine_calibration : _calibration_refinement_max - ");
+            // Serial.println(_calibration_refinement_max);
+            // Serial.print("FSR::refine_calibration : _calibration_refinement_min - ");
+            // Serial.println(_calibration_refinement_min);
+            //delay(1000);
+            
             // refinement is done
             do_refinement = false;
         } 
@@ -148,11 +149,11 @@ float FSR::read()
     _raw_reading = analogRead(_pin);
     if (_calibration_refinement_max > 0)
     {
-        _calibrated_reading = (_raw_reading - _calibration_refinement_min)/(_calibration_refinement_max-_calibration_refinement_min);
+        _calibrated_reading = ((float)_raw_reading - _calibration_refinement_min)/(_calibration_refinement_max-_calibration_refinement_min);
     }
     else if (_calibration_max > 0)
     {
-        _calibrated_reading = (_raw_reading - _calibration_min)/(_calibration_max-_calibration_min);
+        _calibrated_reading = ((float)_raw_reading - _calibration_min)/(_calibration_max-_calibration_min);
     }
     else
     {
@@ -167,7 +168,10 @@ float FSR::read()
 
 bool FSR::_calc_ground_contact()
 {
-    _ground_contact = utils::schmitt_trigger(_calibrated_reading, _ground_contact, _lower_threshold_percent_ground_contact, _upper_threshold_percent_ground_contact); 
+    if (_calibration_refinement_max > 0)
+    {
+        _ground_contact = utils::schmitt_trigger(_calibrated_reading, _ground_contact, _lower_threshold_percent_ground_contact, _upper_threshold_percent_ground_contact); 
+    }
     return _ground_contact;
 };
 
