@@ -29,7 +29,7 @@ namespace utils
      * Takes in the value, current state, the lower threshold, and upper threshold
      * Returns the updated state
      */
-    bool schmitt_trigger(int value, bool is_high, int lower_threshold, int upper_threshold)
+    bool schmitt_trigger(float value, bool is_high, float lower_threshold, float upper_threshold)
     {
         bool trigger = 0;
         if (is_high)
@@ -42,6 +42,26 @@ namespace utils
         }    
         return trigger;
     }
+    
+    
+    /*
+     * The rate limiter is to reduce how quickly a value can change.
+     * This is helpful when turning on a controller so the parameter doesn't rapidly change.
+     * 
+     */
+     // Add template so works with ints, floats, whatever.
+     int rate_limit(int setpoint, int last_value, int* last_time, int rate_per_ms)
+     {
+        int time = millis();
+        int step = (time - *last_time) * rate_per_ms;
+        *last_time = time;
+        
+        return min(setpoint, last_value + step);
+        
+        
+        
+     };
+     
     
     uint8_t update_bit(uint8_t original, bool val, uint8_t loc)
     {

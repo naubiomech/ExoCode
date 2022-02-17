@@ -19,7 +19,8 @@ namespace utils
      */
     uint8_t get_joint_type(config_defs::joint_id id);
     
-    bool schmitt_trigger(int value, bool is_high, int lower_threshold, int upper_threshold);
+    
+    bool schmitt_trigger(float value, bool is_high, float lower_threshold, float upper_threshold);
 }
 
 
