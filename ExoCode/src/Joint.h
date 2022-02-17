@@ -96,6 +96,9 @@ class AnkleJoint : public _Joint
         void read_data(); // reads data from motor and sensors
         void set_controller(uint8_t);  // changes the high level controller in Controller, and the low level controller in Motor
 		
+    protected:
+        ZeroTorque _zero_torque;
+        ProportionalJointMoment _proportional_joint_moment;
 };
 
 #endif

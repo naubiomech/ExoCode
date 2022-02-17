@@ -42,6 +42,9 @@ class LegData{
         bool do_calibration_refinement_toe_fsr; 
         bool do_calibration_heel_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
         bool do_calibration_refinement_heel_fsr; 
+        
+        float expected_duration_window_upper_coeff;
+        float expected_duration_window_lower_coeff;
 };
 
 #endif

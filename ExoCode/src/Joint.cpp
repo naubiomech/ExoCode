@@ -319,6 +319,8 @@ void KneeJoint::set_controller(uint8_t controller_id)  // changes the high level
 //=================================================================
 AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 : _Joint(id, exo_data)
+, _zero_torque(id, exo_data)
+, _proportional_joint_moment(id, exo_data)
 {
     
     // Don't need to check side as we assume symmetry and create both leg data objects.
@@ -338,25 +340,25 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
     }
     
     // setup controller here so we can create objects specific to the joint, then point to the one to use.
-    ZeroTorque zero_torque(id, exo_data);
-    ProportionalJointMoment proportional_joint_moment(id, exo_data);
     
-    switch (exo_data->left_leg.ankle.controller.controller)
-    {
-        case (uint8_t)config_defs::ankle_controllers::disabled :
-            _motor->on_off(false);
-            _controller = &zero_torque;
-            break;
-        case (uint8_t)config_defs::ankle_controllers::zero_torque :
-            _controller = &zero_torque;
-            break;
-        case (uint8_t)config_defs::ankle_controllers::pjmc :
-            _controller = &proportional_joint_moment;
-            break;
-        default :
-            _controller = nullptr;
-            break;
-    } 
+    set_controller(exo_data->left_leg.ankle.controller.controller);
+    
+    // switch (exo_data->left_leg.ankle.controller.controller)
+    // {
+        // case (uint8_t)config_defs::ankle_controllers::disabled :
+            // _motor->on_off(false);
+            // _controller = &_zero_torque;
+            // break;
+        // case (uint8_t)config_defs::ankle_controllers::zero_torque :
+            // _controller = &_zero_torque;
+            // break;
+        // case (uint8_t)config_defs::ankle_controllers::pjmc :
+            // _controller = &_proportional_joint_moment;
+            // break;
+        // default :
+            // _controller = nullptr;
+            // break;
+    // } 
 };
 
 /*
@@ -364,7 +366,9 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
  */
 void AnkleJoint::run_joint()
 {
-    
+    //Serial.println("AnkleJoint::run_joint : Entered");
+    _joint_data->controller.setpoint = _controller->calc_motor_cmd();
+    //Serial.println("AnkleJoint::run_joint : Exiting");
 };  
 
 /*
@@ -380,6 +384,21 @@ void AnkleJoint::read_data() // reads data from motor and sensors
  */
 void AnkleJoint::set_controller(uint8_t controller_id)  // changes the high level controller in Controller, and the low level controller in Motor
 {
-    
+    switch (controller_id)
+    {
+        case (uint8_t)config_defs::ankle_controllers::disabled :
+            _motor->on_off(false);
+            _controller = &_zero_torque;
+            break;
+        case (uint8_t)config_defs::ankle_controllers::zero_torque :
+            _controller = &_zero_torque;
+            break;
+        case (uint8_t)config_defs::ankle_controllers::pjmc :
+            _controller = &_proportional_joint_moment;
+            break;
+        default :
+            _controller = nullptr;
+            break;
+    } 
 };
 #endif
