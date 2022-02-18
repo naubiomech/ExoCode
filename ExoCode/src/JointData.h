@@ -30,10 +30,10 @@ class JointData {
         config_defs::joint_id id;
         MotorData motor;
         ControllerData controller;
-        int torque_reading;
+        int torque_reading;  // reading from the torque sensor
         bool is_left;
         bool is_used;
-        bool calibrate_torque_sensor;
+        bool calibrate_torque_sensor;  // flag for if we should calibrate.
 };
 
 

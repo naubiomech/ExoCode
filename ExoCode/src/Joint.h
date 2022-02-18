@@ -37,25 +37,47 @@ class _Joint
 		_Joint(config_defs::joint_id id, ExoData* exo_data);  // constructor:  
 		virtual ~_Joint(){};
         
-        virtual void run_joint() = 0;  // updates the controller and sends the motor command
-		virtual void read_data() = 0; // reads data from motor and sensors
-		virtual void set_controller(uint8_t) = 0;  // changes the high level controller in Controller, and the low level controller in Motor
-		void set_motor(_Motor* new_motor);
+        /*
+         * updates the controller and sends the motor command
+         */
+        virtual void run_joint() = 0;   
+		
+        /*
+         * reads data from motor and sensors
+         */
+        virtual void read_data() = 0;  
+		
+        /*
+         * changes the high level controller in Controller, and the low level controller in Motor
+         */
+        virtual void set_controller(uint8_t) = 0;  
+		
+        /*
+         * Sets the motor to use.  Not strictly needed since everything stays internal.
+         */
+        void set_motor(_Motor* new_motor);
         
         // create some static member functions we can use for the initializer list.
-        static bool get_is_left(config_defs::joint_id);
-        static uint8_t get_joint_type(config_defs::joint_id);
+        
+        /*
+         * Takes in the joint id and exo data, and checks if the current joint is used.
+         * If it is used it pulls the next open torque sensor pin for the side, and increments the counter.
+         * If the joint is not used, or we have used up all the available torque sensor pins for the side, it sets the pin to a pin that is not connected.
+         */
         static unsigned int get_torque_sensor_pin(config_defs::joint_id, ExoData*);
         
         
     protected:
+        // give access to the larger data object and the joint specific data 
         ExoData* _data;
         JointData* _joint_data;
         
-        _Motor* _motor;
+        // IO objects for the joint
+        _Motor* _motor; // using pointer to the base class so we can use any motor type.
 		TorqueSensor _torque_sensor;
-		_Controller* _controller;
+		_Controller* _controller; // Using pointer so we just need to change the object we are pointing to when the controller changes.
         
+        // joint info
         config_defs::joint_id _id;
         bool _is_left;
     
@@ -67,10 +89,13 @@ class HipJoint : public _Joint
         HipJoint(config_defs::joint_id id, ExoData* exo_data);
         ~HipJoint(){};
         
-        void run_joint();  // updates the controller and sends the motor command
-        void read_data(); // reads data from motor and sensors
-        void set_controller(uint8_t);  // changes the high level controller in Controller, and the low level controller in Motor
-    
+        void run_joint();  // See _Joint 
+        void read_data(); // See _Joint 
+        void set_controller(uint8_t);  // See _Joint 
+    protected:
+        // Objects for joint specific controllers
+        ZeroTorque _zero_torque;
+        HeelToe _heel_toe;
     
 };
 
@@ -80,10 +105,13 @@ class KneeJoint : public _Joint
         KneeJoint(config_defs::joint_id id, ExoData* exo_data);
         ~KneeJoint(){};
         
-        void run_joint();  // updates the controller and sends the motor command
-        void read_data(); // reads data from motor and sensors
-        void set_controller(uint8_t);  // changes the high level controller in Controller, and the low level controller in Motor
-		
+        void run_joint();  // See _Joint
+        void read_data(); // See _Joint
+        void set_controller(uint8_t);  // See _Joint
+	
+    protected:
+        // Objects for joint specific controllers	
+        ZeroTorque _zero_torque;
 };
 
 class AnkleJoint : public _Joint
@@ -92,11 +120,12 @@ class AnkleJoint : public _Joint
         AnkleJoint(config_defs::joint_id id, ExoData* exo_data);
         ~AnkleJoint(){};
         
-        void run_joint();  // updates the controller and sends the motor command
-        void read_data(); // reads data from motor and sensors
-        void set_controller(uint8_t);  // changes the high level controller in Controller, and the low level controller in Motor
+        void run_joint();  // See _Joint
+        void read_data(); // See _Joint
+        void set_controller(uint8_t);  // See _Joint
 		
     protected:
+        // Objects for joint specific controllers
         ZeroTorque _zero_torque;
         ProportionalJointMoment _proportional_joint_moment;
 };

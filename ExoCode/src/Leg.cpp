@@ -22,6 +22,7 @@ Leg::Leg(bool is_left, ExoData* exo_data)
 {
     _data = exo_data;
     _is_left = is_left;
+    // This data object is set for the specific leg so we don't have to keep checking the side.
     _leg_data = _is_left ? &(_data->left_leg) : &(_data->right_leg);
     
     _prev_heel_contact_state = true; // initialized to true so we don't get a strike the first time we read
@@ -36,6 +37,10 @@ Leg::Leg(bool is_left, ExoData* exo_data)
     _expected_step_duration = 0;
 };
 
+/*
+ * Reads the FSR, detects ground strike, and calculates percent gait.
+ * Sets the values to the corresponding place in data class.
+ */
 void Leg::read_data()
 {
     _leg_data->heel_fsr = _heel_fsr.read();
@@ -49,6 +54,9 @@ void Leg::read_data()
     
 };
 
+/*
+ * Checks if we need to do the calibration and runs the calibration if we do.
+ */
 void Leg::check_calibration()
 {
     if (_leg_data->is_used)
@@ -77,6 +85,9 @@ void Leg::check_calibration()
     }        
 };
 
+/*
+ * Simple check for a rising edge of either FSR during swing and returns 1 if they have.
+ */
 bool Leg::_check_ground_strike()
 {
     bool heel_contact_state = _heel_fsr.get_ground_contact();
@@ -105,10 +116,15 @@ bool Leg::_check_ground_strike()
     return ground_strike;
 };
 
+/*
+ * Uses the expected duration of the step to calculate the percent gait * 10 and returns the value
+ * Saturates at 100%
+ */
 int Leg::_calc_percent_gait()
 {
     int timestamp = millis();
     int percent_gait_x10 = -1;
+    // only calulate if the expected step duration has been established.
     if (_expected_step_duration>0)
     {
         percent_gait_x10 = 10*100 * ((float)timestamp - _ground_strike_timestamp) / _expected_step_duration;
@@ -119,6 +135,11 @@ int Leg::_calc_percent_gait()
     return percent_gait_x10;
 };
 
+/*
+ * Calculates the expected duration of a step by averaging the time the last N steps took.
+ * Should only be called when a ground strike has occurred.
+ * 
+ */
 void Leg::_update_expected_duration()
 {
     unsigned int step_time = _ground_strike_timestamp - _prev_ground_strike_timestamp;
@@ -135,8 +156,6 @@ void Leg::_update_expected_duration()
     }
     
     // get the max and min values of the array for determining the window for expected values.
-    
-    
     unsigned int* max_val = std::max_element(_step_times, _step_times + _num_steps_avg);
     unsigned int* min_val = std::min_element(_step_times, _step_times + _num_steps_avg);
     
@@ -159,8 +178,10 @@ void Leg::_update_expected_duration()
         
         
     }
+    // consider it a good step if the ground strike falls within a window around the expected duration.
+    // Then shift the step times and put in the new value.
     else if ((step_time <= (_leg_data->expected_duration_window_upper_coeff * *max_val)) & (step_time >= (_leg_data->expected_duration_window_lower_coeff * *min_val))) // and (armed_time > ARMED_DURATION_PERCENT * self.expected_duration)): # a better check can be used.  If the person hasn't stopped or the step is good update the vector.  
-    {// !!!THE ARMED TIME CHECK STILL NEEDS TO BE TESTED!!!
+    {
         int sum_step_times = step_time;
         for (int i = 1; i<_num_steps_avg; i++)
         {
@@ -176,6 +197,9 @@ void Leg::_update_expected_duration()
     }
 };
 
+/*
+ * Reset the step times in case the value gets off and can't recover.
+ */
 void Leg::clear_step_time_estimate()
 {
     for (int i = 0; i<_num_steps_avg; i++)

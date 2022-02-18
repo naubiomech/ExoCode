@@ -21,7 +21,7 @@ LegData::LegData(bool is_left, uint8_t* config_to_send)
     this->is_left = is_left;
     
     this->percent_gait_x10 = -1; // likely want to do fixed point 
-    this->heel_fsr = -1;
+    this->heel_fsr = -1; // set to -1 since should always be positive once set.
     this->toe_fsr = -1;
     this->do_calibration_toe_fsr = false; //bit 0 is calibrate fsr, bit 1 is refine calibration.
     this->do_calibration_refinement_toe_fsr = false; 
@@ -32,6 +32,7 @@ LegData::LegData(bool is_left, uint8_t* config_to_send)
     this->expected_duration_window_upper_coeff = 1.75;
     this->expected_duration_window_lower_coeff = 0.25;
 
+    // check if the leg is used from the config.
     if ((static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_to_send[config_defs::exo_side_idx]) 
         || (((uint8_t)config_defs::exo_side::left == config_to_send[config_defs::exo_side_idx]) & this->is_left)
         || (((uint8_t)config_defs::exo_side::right == config_to_send[config_defs::exo_side_idx]) & !this->is_left)

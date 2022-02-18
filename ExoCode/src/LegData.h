@@ -31,9 +31,11 @@ class LegData{
         
         
         int percent_gait_x10; // likely want to do fixed point 
+        // Calibrated FSR readings
         float heel_fsr;
         float toe_fsr;
         
+        // Trigger when we go from swing to one FSR making contact.
         bool ground_strike;
         
         bool is_left;
@@ -43,6 +45,7 @@ class LegData{
         bool do_calibration_heel_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
         bool do_calibration_refinement_heel_fsr; 
         
+        // Sets the window to determine if a ground strike is considered a new step.
         float expected_duration_window_upper_coeff;
         float expected_duration_window_lower_coeff;
 };

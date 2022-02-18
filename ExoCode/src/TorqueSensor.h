@@ -18,22 +18,30 @@ class TorqueSensor
 {
 	public:
 		TorqueSensor(unsigned int pin);
-        bool calibrate(bool do_calibration); // Changes the controller for an individual joint
-		int read(); // reads the pins and updatas the data stuct.
+        
+        /*
+         * Does the calibration, while do_calibration is true, and returns 0 when the calibration has finished.
+         */
+        bool calibrate(bool do_calibration); 
+		
+        /*
+         * reads the pins and updates the data object.
+         */
+        int read();
 				
 		
 	private:
 		bool _is_used;
         int _pin;
-        int _calibration;
+        int _calibration;  // Stores the value used for calibration.
         int _raw_reading;
 		int _calibrated_reading;
         
         const uint16_t _cal_time = 1000; // this is time to do the initial calibration
-        uint16_t _start_time;
+        uint16_t _start_time;  // time the calibration starts.
         bool _last_do_calibrate; //need to remember to delete this when the calibration ends.
-        int _zero_sum;
-        uint16_t _num_calibration_samples;
+        int _zero_sum; // sum of values over the calibration period used for averaging.
+        uint16_t _num_calibration_samples;  // number of samples collected during calibration, denominator for averaging.
         
 };
 #endif

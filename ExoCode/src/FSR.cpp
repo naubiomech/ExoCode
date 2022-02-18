@@ -21,7 +21,7 @@ FSR::FSR(int pin)
     _calibrated_reading = 0;
     
     
-    _last_do_calibrate = false; //need to remember to delete this when the calibration ends.
+    _last_do_calibrate = false; 
     _start_time = 0;
     _calibration_min = 0;
     _calibration_max = 0;
@@ -40,18 +40,24 @@ FSR::FSR(int pin)
  */
 bool FSR::calibrate(bool do_calibrate)
 {
-    // check for rising edge of do_calibrate
+    // check for rising edge of do_calibrate and start the timer
     if (do_calibrate > _last_do_calibrate)
     {
         _start_time = millis();
+        // set the max/min to the current value
+        _calibration_max = analogRead(_pin);
+        _calibration_min = _calibration_max;
     }
     
+    // check if we are within the time window and need to do the calibration
     if((_cal_time >= (millis()-_start_time)) & do_calibrate)
     {
         uint16_t current_reading = analogRead(_pin);
+        // Track the min and max.
         _calibration_max = max(_calibration_max, current_reading);
         _calibration_min = min(_calibration_min, current_reading);
-    }        
+    }    
+    // The time window ran out so we are done.
     else if (do_calibrate)
     {
         // Serial.println("FSR::calibrate : FSR Cal Done");
@@ -59,12 +65,8 @@ bool FSR::calibrate(bool do_calibrate)
         // Serial.println(_calibration_max);
         do_calibrate = false;
     }
-    
-    // find the min and max over the time interval
-    
-    // offset by min and normalize by (max-min), (val-avg_min)/(avg_max-avg_min)
-    
-    // check if we are done with the calibration 
+        
+    // store the reading for next time.
     _last_do_calibrate = do_calibrate;
     return do_calibrate;
 };
@@ -100,7 +102,7 @@ bool FSR::refine_calibration(bool do_refinement)
             _step_max = max(_step_max, current_reading);
             _step_min = min(_step_min, current_reading);
             
-            
+            // store the current state so we can check for change
             bool last_state = _state;
             _state = utils::schmitt_trigger(current_reading, last_state, _lower_threshold_percent_calibration_refinement * (_calibration_max-_calibration_min) + _calibration_min, _upper_threshold_percent_calibration_refinement * (_calibration_max-_calibration_min) + _calibration_min); 
             
@@ -140,34 +142,47 @@ bool FSR::refine_calibration(bool do_refinement)
             do_refinement = false;
         } 
     }
+    // store the value so we can check for a rising edge next time.
     _last_do_refinement = do_refinement;
     return do_refinement;
 };
 
+/*
+ * Reads the sensor and applies the calibration.  
+ * If the refinement isn't done returns the regular calibration, 
+ * if the regular calibration isn't done returns the raw value.
+ */
 float FSR::read()
 {
     _raw_reading = analogRead(_pin);
+    // Return the value using the calibrated refinement if it is done.
     if (_calibration_refinement_max > 0)
     {
         _calibrated_reading = ((float)_raw_reading - _calibration_refinement_min)/(_calibration_refinement_max-_calibration_refinement_min);
     }
+    // If we haven't refined yet just use the regular calibration.
     else if (_calibration_max > 0)
     {
         _calibrated_reading = ((float)_raw_reading - _calibration_min)/(_calibration_max-_calibration_min);
     }
+    // if no calibrations are done just return the raw reading.
     else
     {
         _calibrated_reading = _raw_reading;
     }
     
+    // based on the readings update the ground contact state.
     _calc_ground_contact();
     return _calibrated_reading;
 
 };
 
-
+/*
+ * Uses a schmitt trigger to determine if the sensor is in contact with the ground (foot/shoe)
+ */
 bool FSR::_calc_ground_contact()
 {
+    // only do this if the refinement is done.
     if (_calibration_refinement_max > 0)
     {
         _ground_contact = utils::schmitt_trigger(_calibrated_reading, _ground_contact, _lower_threshold_percent_ground_contact, _upper_threshold_percent_ground_contact); 
@@ -175,6 +190,10 @@ bool FSR::_calc_ground_contact()
     return _ground_contact;
 };
 
+
+/*
+ * Simple get for the ground contact state.
+ */
 bool FSR::get_ground_contact()
 {
     return _ground_contact;

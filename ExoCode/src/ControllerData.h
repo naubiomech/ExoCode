@@ -48,10 +48,8 @@ class ControllerData {
         
         uint8_t controller;
         config_defs::JointType joint; 
-        int16_t setpoint;
-        int16_t parameters[controller_defs::max_parameters];
-
-        
+        int16_t setpoint;  //  controller setpoint, basically the motor command.
+        int16_t parameters[controller_defs::max_parameters];  // Parameter list for the controller see the controller_defs namespace for the specific controller.  
 };
 
 

@@ -46,7 +46,13 @@ class _Controller
         config_defs::joint_id _id;
 };
 
-
+/*
+ * Proportional Joint Moment Controller
+ * This controller is for the ankle joint 
+ * Applies a plantar torque based on the normalized magnitude of the toe FSR
+ *
+ * see ControllerData.h for details on the parameters used.
+ */
 class ProportionalJointMoment : public _Controller
 {
     public:
@@ -57,7 +63,13 @@ class ProportionalJointMoment : public _Controller
 };
 
 
-
+/*
+ * Zero Torque Controller
+ * This controller is for the any joint
+ * Simply applies zero torque
+ * 
+ * see ControllerData.h for details on the parameters used.
+ */
 class ZeroTorque : public _Controller
 {
     public:
@@ -67,6 +79,14 @@ class ZeroTorque : public _Controller
         int calc_motor_cmd();
 };
 
+/*
+ * Heel Toe Controller
+ * This controller is for the hip joint 
+ * Applies torque based on the heel and toe readings with some adjustments for swing
+ * This controller is based on the work of Safoura Sadegh Pour
+ * 
+ * see ControllerData.h for details on the parameters used.
+ */
 class HeelToe: public _Controller
 {
     public:

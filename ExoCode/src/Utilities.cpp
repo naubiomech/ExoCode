@@ -6,6 +6,9 @@
  
 namespace utils
 {
+    /*
+     * From the joint_id returns the bit for is_left.
+     */
     bool get_is_left(config_defs::joint_id id)
     {
         return ((uint8_t)id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
@@ -62,7 +65,10 @@ namespace utils
         
      };
      
-    
+    /*
+     * sets/clears the specified bit in a unit8_t.
+     * Takes in the original uint8_t the bit value you would like to use and the location you are placing that bit.
+     */
     uint8_t update_bit(uint8_t original, bool val, uint8_t loc)
     {
         uint8_t keep_bit = ~(1<<loc);  //set a mask for the bits we aren't setting 
@@ -70,6 +76,9 @@ namespace utils
         return (original & keep_bit) | (val<<loc);
     }
     
+    /*
+     * Returns the bit in a specific location in a uint8_t
+     */
     bool get_bit(uint8_t original, uint8_t loc)
     {
         uint8_t bit_to_check = (1<<loc);  //set a mask for the bits we are checking

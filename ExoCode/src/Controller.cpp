@@ -133,6 +133,7 @@ HeelToe::HeelToe(config_defs::joint_id id, ExoData* exo_data)
 
 int HeelToe::calc_motor_cmd()
 {
+    // this code is just temporary while we are under construction.
     int cmd = 0;
     return cmd;
 };

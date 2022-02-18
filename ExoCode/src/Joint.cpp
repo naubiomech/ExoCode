@@ -28,41 +28,41 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
     _data = exo_data;
     
     // set _joint_data to point to the data specific to this joint.
-    switch (utils::get_joint_type(_id))
-    {
-        case (uint8_t)config_defs::joint_id::hip:
-            if (_is_left)
-            {
-                _joint_data = &(exo_data->left_leg.hip);
-            }
-            else
-            {
-                _joint_data = &(exo_data->right_leg.hip);
-            }
-            break;
+    // switch (utils::get_joint_type(_id))
+    // {
+        // case (uint8_t)config_defs::joint_id::hip:
+            // if (_is_left)
+            // {
+                // _joint_data = &(exo_data->left_leg.hip);
+            // }
+            // else
+            // {
+                // _joint_data = &(exo_data->right_leg.hip);
+            // }
+            // break;
             
-        case (uint8_t)config_defs::joint_id::knee:
-            if (_is_left)
-            {
-                _joint_data = &(exo_data->left_leg.knee);
-            }
-            else
-            {
-                _joint_data = &(exo_data->right_leg.knee);
-            }
-            break;
+        // case (uint8_t)config_defs::joint_id::knee:
+            // if (_is_left)
+            // {
+                // _joint_data = &(exo_data->left_leg.knee);
+            // }
+            // else
+            // {
+                // _joint_data = &(exo_data->right_leg.knee);
+            // }
+            // break;
         
-        case (uint8_t)config_defs::joint_id::ankle:
-            if (_is_left)
-            {
-                _joint_data = &(exo_data->left_leg.ankle);
-            }
-            else
-            {
-                _joint_data = &(exo_data->right_leg.ankle);
-            }
-            break;
-    }
+        // case (uint8_t)config_defs::joint_id::ankle:
+            // if (_is_left)
+            // {
+                // _joint_data = &(exo_data->left_leg.ankle);
+            // }
+            // else
+            // {
+                // _joint_data = &(exo_data->right_leg.ankle);
+            // }
+            // break;
+    // }
 };  
 
 
@@ -176,6 +176,10 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
     }
 };
 
+/*
+ * A method to set the _motor to point to the new motor.  
+ * Not fully needed since we are only setting motors at the beginning but used for consistent formatting.
+ */
 void _Joint::set_motor(_Motor* new_motor)
 {
     _motor = new_motor;
@@ -185,8 +189,19 @@ void _Joint::set_motor(_Motor* new_motor)
 //*********************************************
 HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 : _Joint(id, exo_data)
+, _zero_torque(id, exo_data)
+, _heel_toe(id, exo_data)
 {
-    
+    // set _joint_data to point to the data specific to this joint.
+    if (_is_left)
+    {
+        _joint_data = &(exo_data->left_leg.hip);
+    }
+    else
+    {
+        _joint_data = &(exo_data->right_leg.hip);
+    }
+        
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
     switch (exo_data->left_leg.hip.motor.motor_type)
@@ -206,30 +221,12 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
             break;
     }
     
-    // setup controller here so we can create objects specific to the joint, then point to the one to use.
-    ZeroTorque zero_torque(id, exo_data);
-    HeelToe heel_toe(id, exo_data);
-    
-    switch (exo_data->left_leg.hip.controller.controller)
-    {
-        case (uint8_t)config_defs::hip_controllers::disabled :
-            _motor->on_off(false);
-            _controller = &zero_torque;
-            break;
-        case (uint8_t)config_defs::hip_controllers::zero_torque :
-            _controller = &zero_torque;
-            break;
-        case (uint8_t)config_defs::hip_controllers::heel_toe :
-            _controller = &heel_toe;
-            break;
-        default :
-            _controller = nullptr;
-            break;
-    } 
+    set_controller(exo_data->left_leg.hip.controller.controller);
+   
 };
 
 /*
- *
+ * Reads the data and sends motor commands
  */
 void HipJoint::run_joint()
 {
@@ -237,30 +234,56 @@ void HipJoint::run_joint()
 };  
 
 /*
- *
+ * reads data for sensors for the joint, torque and motor.
  */
-void HipJoint::read_data() // reads data from motor and sensors
+void HipJoint::read_data() 
 {
     
 };
 
 /*
- *
+ * Changes the high level controller in Controller
+ * Each joint has their own version since they have joint specific controllers.
  */
-void HipJoint::set_controller(uint8_t controller_id)  // changes the high level controller in Controller, and the low level controller in Motor
+void HipJoint::set_controller(uint8_t controller_id)   
 {
-    
+    switch (_data->left_leg.hip.controller.controller)
+    {
+        case (uint8_t)config_defs::hip_controllers::disabled :
+            _motor->on_off(false);
+            _controller = &_zero_torque;
+            break;
+        case (uint8_t)config_defs::hip_controllers::zero_torque :
+            _controller = &_zero_torque;
+            break;
+        case (uint8_t)config_defs::hip_controllers::heel_toe :
+            _controller = &_heel_toe;
+            break;
+        default :
+            _controller = nullptr;
+            break;
+    } 
 };
 
 //================================================================
 
 KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
 : _Joint(id, exo_data)
+, _zero_torque(id, exo_data)
 {
+    // set _joint_data to point to the data specific to this joint.
+    if (_is_left)
+    {
+        _joint_data = &(exo_data->left_leg.knee);
+    }
+    else
+    {
+        _joint_data = &(exo_data->right_leg.knee);
+    }
     
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
-    switch (exo_data->left_leg.knee.motor.motor_type)
+    switch (_data->left_leg.knee.motor.motor_type)
     {
         // using new so the object of the specific motor type persists.
         case (uint8_t)config_defs::motor::AK60 :
@@ -274,26 +297,12 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
             break;
     }
     
-    // setup controller here so we can create objects specific to the joint, then point to the one to use.
-    ZeroTorque zero_torque(id, exo_data);
-        
-    switch (exo_data->left_leg.knee.controller.controller)
-    {
-        case (uint8_t)config_defs::knee_controllers::disabled :
-            _motor->on_off(false);
-            _controller = &zero_torque;
-            break;
-        case (uint8_t)config_defs::knee_controllers::zero_torque :
-            _controller = &zero_torque;
-            break;
-        default :
-            _controller = nullptr;
-            break;
-    } 
+    set_controller(exo_data->left_leg.knee.controller.controller);
+     
 };
 
 /*
- *
+ * Reads the data and sends motor commands
  */
 void KneeJoint::run_joint()
 {
@@ -301,7 +310,7 @@ void KneeJoint::run_joint()
 };  
 
 /*
- *
+ * reads data for sensors for the joint, torque and motor.
  */
 void KneeJoint::read_data() // reads data from motor and sensors
 {
@@ -309,11 +318,24 @@ void KneeJoint::read_data() // reads data from motor and sensors
 };
 
 /*
- *
+ * Changes the high level controller in Controller
+ * Each joint has their own version since they have joint specific controllers.
  */
 void KneeJoint::set_controller(uint8_t controller_id)  // changes the high level controller in Controller, and the low level controller in Motor
 {
-    
+    switch (controller_id)
+    {
+        case (uint8_t)config_defs::knee_controllers::disabled :
+            _motor->on_off(false);
+            _controller = &_zero_torque;
+            break;
+        case (uint8_t)config_defs::knee_controllers::zero_torque :
+            _controller = &_zero_torque;
+            break;
+        default :
+            _controller = nullptr;
+            break;
+    } 
 };
 
 //=================================================================
@@ -322,10 +344,19 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 , _zero_torque(id, exo_data)
 , _proportional_joint_moment(id, exo_data)
 {
-    
+    // set _joint_data to point to the data specific to this joint.
+    if (_is_left)
+    {
+        _joint_data = &(exo_data->left_leg.ankle);
+    }
+    else
+    {
+        _joint_data = &(exo_data->right_leg.ankle);
+    }
+            
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
-    switch (exo_data->left_leg.ankle.motor.motor_type)
+    switch (_data->left_leg.ankle.motor.motor_type)
     {
         // using new so the object of the specific motor type persists.
         case (uint8_t)config_defs::motor::AK60 :
@@ -339,30 +370,13 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
             break;
     }
     
-    // setup controller here so we can create objects specific to the joint, then point to the one to use.
-    
     set_controller(exo_data->left_leg.ankle.controller.controller);
     
-    // switch (exo_data->left_leg.ankle.controller.controller)
-    // {
-        // case (uint8_t)config_defs::ankle_controllers::disabled :
-            // _motor->on_off(false);
-            // _controller = &_zero_torque;
-            // break;
-        // case (uint8_t)config_defs::ankle_controllers::zero_torque :
-            // _controller = &_zero_torque;
-            // break;
-        // case (uint8_t)config_defs::ankle_controllers::pjmc :
-            // _controller = &_proportional_joint_moment;
-            // break;
-        // default :
-            // _controller = nullptr;
-            // break;
-    // } 
+    
 };
 
 /*
- *
+ * Reads the data and sends motor commands
  */
 void AnkleJoint::run_joint()
 {
@@ -372,15 +386,16 @@ void AnkleJoint::run_joint()
 };  
 
 /*
- *
+ * reads data for sensors for the joint, torque and motor.
  */
-void AnkleJoint::read_data() // reads data from motor and sensors
+void AnkleJoint::read_data()  
 {
     
 };
 
 /*
- *
+ * Changes the high level controller in Controller
+ * Each joint has their own version since they have joint specific controllers.
  */
 void AnkleJoint::set_controller(uint8_t controller_id)  // changes the high level controller in Controller, and the low level controller in Motor
 {

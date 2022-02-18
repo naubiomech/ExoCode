@@ -29,29 +29,29 @@ TorqueSensor::TorqueSensor(unsigned int pin)
 };
 
 /*
-* This gets a rough estimate of the calibrated values.
-* These values will be used for tracking the number of transitions for the calibration refinement. 
-*
+* This gets the average of the readings during quite standing.
+* returns zero for do_calibrate when done.
 */
 bool TorqueSensor::calibrate(bool do_calibrate)
 {
     if (_is_used)
     {
-    // check for rising edge of do_calibrate
+    // check for rising edge of do_calibrate, and reset the values
         if (do_calibrate > _last_do_calibrate)
         {
             _start_time = millis();
             _zero_sum = 0;
             _num_calibration_samples = 0;
         }
-        
+        // check if we are within the time window and need to do the calibration
         if((_cal_time >= (millis()-_start_time)) & do_calibrate)
         {
             uint16_t current_reading = analogRead(_pin);
             _zero_sum = _zero_sum + current_reading;
             _num_calibration_samples++;
             
-        }        
+        }
+        // The time window ran out so we are done, and should average the values and set the _calibration value.
         else if (do_calibrate)
         {
             if (_num_calibration_samples>0)
@@ -76,12 +76,15 @@ bool TorqueSensor::calibrate(bool do_calibrate)
     return do_calibrate;
 };
 
+/*
+ * Reads the sensor and returns the calibrated value.
+ */
 int TorqueSensor::read()
 {
     _raw_reading = analogRead(_pin);
     _calibrated_reading = _raw_reading - _calibration;
     
-    return 0;
+    return _calibrated_reading;
 };
 
 
