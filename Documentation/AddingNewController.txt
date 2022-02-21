@@ -9,3 +9,29 @@
     - Add a num_parameter value that stores the number of parameters the controller needs.
     - if this number is larger than the max_parameters in controller_defs, change max_parameters to your value. 
 
+## Controller.h
+1. Under Controller.h create a new controller that inherits the _Controller class.
+    - this must have:
+        - A constructor that takes in the joint id and exo_data pointer.
+        - A destructor
+        - And a calc_motor_cmd() function that returns the torque command in mNm.
+    - Additional private functions can be added as needed but the only calls to a controller will be to the three required functions.
+
+## Controller.cpp
+1. Define all the functions for the controller.  
+    - An initializer list for _Controller will be needed when calling the constructor.
+    
+    
+## Joint.h
+1. Under the joint(s) (hip, knee, ankle) the controller is valid for, add an object to the new controller.
+
+## Joint.cpp
+1. For the joint(s) the controller is valid for:
+    1. Add the constructor for the object you just added to the initializer list.
+    2. In set_controller(), add the controller to the switch case, referencing the joint controller namespace in the config_defs namespace.  
+        - Use the existing controllers for the template
+        - Thus changes which controller object the _controller pointer is using.
+        
+## Done
+It should now be good to go.  You will need to change the controller and update the parameters.
+
