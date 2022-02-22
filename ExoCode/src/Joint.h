@@ -96,6 +96,7 @@ class HipJoint : public _Joint
         // Objects for joint specific controllers
         ZeroTorque _zero_torque;
         HeelToe _heel_toe;
+        ExtensionAngle _extension_angle;
     
 };
 

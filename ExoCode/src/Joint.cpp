@@ -191,6 +191,7 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 : _Joint(id, exo_data)
 , _zero_torque(id, exo_data)
 , _heel_toe(id, exo_data)
+, _extension_angle(id, exo_data)
 {
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
@@ -230,7 +231,7 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
  */
 void HipJoint::run_joint()
 {
-    
+    _joint_data->controller.setpoint = _controller->calc_motor_cmd();
 };  
 
 /*
@@ -258,6 +259,9 @@ void HipJoint::set_controller(uint8_t controller_id)
             break;
         case (uint8_t)config_defs::hip_controllers::heel_toe :
             _controller = &_heel_toe;
+            break;
+        case (uint8_t)config_defs::hip_controllers::extension_angle :
+            _controller = &_extension_angle;
             break;
         default :
             _controller = nullptr;
@@ -306,7 +310,7 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
  */
 void KneeJoint::run_joint()
 {
-    
+    _joint_data->controller.setpoint = _controller->calc_motor_cmd();
 };  
 
 /*

@@ -16,6 +16,7 @@
     #include "src\board.h"
     #include "src\ExoData.h"
     #include "src\Exo.h"
+    #include "src\Utilities.h"
     
     // Specific Librarys
     #include "src\parseIni.h"
@@ -66,32 +67,32 @@
         while (!Serial) {
             ; // wait for serial port to connect. Needed for native USB
         } 
-        Serial.println("Teensy Microcontroller");
+//        Serial.println("Teensy Microcontroller");
 
 
         ini_parser(config_info::config_to_send);
         //uint8_t (config_to_send)[ini_config::number_of_keys];
         
-        Serial.println();
-        Serial.println("setup : Coded Config Data");
-        for (int i = 0; i<ini_config::number_of_keys; i++)
-        {
-            Serial.print("[");
-            Serial.print(i);
-            Serial.print("] : ");
-            Serial.println((int)config_info::config_to_send[i]);
-            
-        }
-        Serial.println();
-
-        Serial.println();
-        Serial.println(static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_info::config_to_send[config_defs::exo_side_idx]);
+//        Serial.println();
+//        Serial.println("setup : Coded Config Data");
+//        for (int i = 0; i<ini_config::number_of_keys; i++)
+//        {
+//            Serial.print("[");
+//            Serial.print(i);
+//            Serial.print("] : ");
+//            Serial.println((int)config_info::config_to_send[i]);
+//            
+//        }
+//        Serial.println();
+//
+//        Serial.println();
+//        Serial.println(static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_info::config_to_send[config_defs::exo_side_idx]);
     
         // Now that we have read the config file create the data structure and exoskeleton object.
        
     }
     
-    
+//    
     void loop()
     {
         static ExoData exo_data(config_info::config_to_send);
@@ -114,7 +115,7 @@
 
           /* Temp code to test the FSR */
           //+++++++++++++++++++++++++++++++++++++++++
-          static bool first_run = true;
+/*          static bool first_run = true;
           static unsigned int ground_strike_count = 0;
           
           if (first_run)
@@ -140,10 +141,10 @@
               if (exo_data.left_leg.ground_strike)
               {
                   ground_strike_count++;
-                  Serial.print("Main - ground_strike_count = ");
-                  Serial.println(ground_strike_count);
-                  
-                  Serial.println("");
+//                  Serial.print("Main - ground_strike_count = ");
+//                  Serial.println(ground_strike_count);
+//                  
+//                  Serial.println("");
               }
               
           }
@@ -159,16 +160,34 @@
 //              Serial.print("\r");
 //              last_timestamp = timestamp;
 //          }
-
+*/
            //+++++++++++++++++++++++++++++++++++++++++
 
-          /*Temp code to test controller*/
+          /*Temp code to test controllers*/
           //-----------------------------------------------
-          if(!exo_data.left_leg.do_calibration_toe_fsr & !exo_data.left_leg.do_calibration_refinement_toe_fsr & !exo_data.left_leg.do_calibration_heel_fsr & !exo_data.left_leg.do_calibration_refinement_heel_fsr)
-          {
+          //if(!exo_data.left_leg.do_calibration_toe_fsr & !exo_data.left_leg.do_calibration_refinement_toe_fsr & !exo_data.left_leg.do_calibration_heel_fsr & !exo_data.left_leg.do_calibration_refinement_heel_fsr)
+          //{
               exo_data.left_leg.ankle.controller.parameters[controller_defs::proportional_joint_moment::max_torque_idx] = 2000;
               exo_data.left_leg.ankle.controller.controller = (uint8_t)config_defs::ankle_controllers::pjmc;
+
+              exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 100;
+              exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -200;
+              exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] = 80;
+              exo_data.left_leg.hip.controller.controller = (uint8_t)config_defs::hip_controllers::extension_angle;
+              
               exo.left_leg._ankle.set_controller(exo_data.left_leg.ankle.controller.controller);
+              exo.left_leg._hip.set_controller(exo_data.left_leg.hip.controller.controller);
+              
+              // create a false angle and velocity signal for the hip.
+              int hip_period = 5000000; //us 
+              static long last_loop_timestamp = micros();
+              long loop_timestamp = micros();
+              float last_p = exo_data.left_leg.hip.motor.p;
+              exo_data.left_leg.hip.motor.p = utils::degrees_to_radians(30) + utils::degrees_to_radians(60) * sin(2 * PI * loop_timestamp / hip_period);
+              exo_data.left_leg.hip.motor.v = utils::degrees_to_radians(60) * (2*PI/hip_period) * cos(2 * PI * loop_timestamp / hip_period); //(exo_data.left_leg.hip.motor.p - last_p)/(loop_timestamp - last_loop_timestamp);
+              last_loop_timestamp = loop_timestamp; 
+              
+              exo.left_leg._hip.run_joint();
               exo.left_leg._ankle.run_joint();
               
               int print_time_ms = 100;
@@ -176,15 +195,26 @@
               int timestamp = millis();
               if ((timestamp-last_timestamp)>print_time_ms)
               {
-                  Serial.print("Main -\n\ttorque CMD = ");
-                  Serial.println(exo_data.left_leg.ankle.controller.setpoint);
-                  Serial.print("\tToe FSR = ");
-                  Serial.println(exo_data.left_leg.toe_fsr);
+//                  Serial.print("Main -\n\ttorque CMD = ");
+//                  Serial.println(exo_data.left_leg.ankle.controller.setpoint);
+//                  Serial.print("\tToe FSR = ");
+//                  Serial.println(exo_data.left_leg.toe_fsr);
                   //Serial.print("\t\t\t\t\t\t\r");
+                  
+//                  Serial.print(exo_data.left_leg.ankle.controller.setpoint);
+//                  Serial.print(" ");
+
+                  Serial.print(utils::radians_to_degrees(exo_data.left_leg.hip.motor.v) * 1000000);
+                  Serial.print(" ");                  
+                  Serial.print(exo_data.left_leg.hip.controller.setpoint);
+                  Serial.print(" ");
+                  Serial.print(utils::radians_to_degrees(exo_data.left_leg.hip.motor.p) * 1);
+                  Serial.println(" ");
+                  
                   last_timestamp = timestamp;
               }
 
-          }
+          //}
           
           //-----------------------------------------------
           
