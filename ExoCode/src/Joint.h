@@ -129,6 +129,7 @@ class AnkleJoint : public _Joint
         // Objects for joint specific controllers
         ZeroTorque _zero_torque;
         ProportionalJointMoment _proportional_joint_moment;
+        ZhangCollins _zhang_collins;
 };
 
 #endif

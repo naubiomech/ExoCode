@@ -7,7 +7,7 @@
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36) 
-
+#include <math.h>
 //****************************************************
 /*
  * Constructor for the controller
@@ -267,21 +267,20 @@ void ExtensionAngle::_update_state(float angle)
  * Takes the joint id and a pointer to the exo_data
  * Only stores the id, exo_data pointer.
  */
- /*
 ZhangCollins::ZhangCollins(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
     _mass = -1;
-    _peak_normalized_torque_x100 = -1;
+    _peak_normalized_torque_mNm = -1;
     _t0_x10 = -1;
     _t1_x10 = -1;
     _t2_x10 = -1;
     _t3_x10 = -1;
             
     // peak torque
-    _tp = -1;
+    _tp_mNm = -1;
     // cable tension torque.  Not needed for our design, but used to match the paper.
-    _ts = -1;
+    _ts_mNm = -1;
     // parameters for rising spline
     _a1 = -1;
     _b1 = -1;
@@ -294,8 +293,131 @@ ZhangCollins::ZhangCollins(config_defs::joint_id id, ExoData* exo_data)
     _c2 = -1;
     _d2 = -1;
 };
-*/
 
+/*
+ * Used to update the parameters of the spline equations
+ * when the parameters that define the splines change.
+ * 
+ * Takes in the parameters that define the curve shape.
+ */
+void ZhangCollins::_update_spline_parameters(int mass, int peak_normalized_torque_mNm, int ramp_start_percent_gait_x10, int onset_percent_gait_x10, int peak_percent_gait_x10, int stop_percent_gait_x10)
+{
+    // TODO: add config file read;
+    // 1 cout << "\n exoBoot :: initCollinsProfile : Doing the init." << endl;
+
+    _mass = mass; // kg
+    // todo : add fixed point
+    _t0_x10 = ramp_start_percent_gait_x10;
+    float t0 = (float)_t0_x10/10;
+    _t1_x10 = onset_percent_gait_x10;
+    float t1 = (float)_t1_x10/10;
+    _t2_x10 = peak_percent_gait_x10;
+    float t2 = (float)_t2_x10/10;
+    _t3_x10 = stop_percent_gait_x10;
+    float t3 = (float)_t3_x10/10;
+
+    _peak_normalized_torque_mNm = peak_normalized_torque_mNm; // 0.76; // Using a smaller value due to Dephy Exo Limit.
+    
+
+    _tp_mNm = _mass * (float)peak_normalized_torque_mNm;
+    _ts_mNm = 2000;
+
+    _a1 = (2 *(_tp_mNm - _ts_mNm))/pow((t1 - t2),3);
+    _b1 = -((3 *(t1 + t2) *(_tp_mNm - _ts_mNm)) / pow((t1 - t2),3));
+    _c1 = (6* t1 * t2 * (_tp_mNm - _ts_mNm))/pow((t1 - t2),3);
+    _d1 = -((-pow(t1, 3) * _tp_mNm + 3 * pow(t1, 2) * t2 * _tp_mNm - 3 * t1 * pow(t2,2) * _ts_mNm +
+            pow(t2,3) * _ts_mNm)/pow((t1 - t2),3));
+
+    // 1 cout << "exoBoot :: initCollinsProfile : \na1 = " << a1 << "\nb1 = " << b1 << "\nc1 = " << c1 << "\nd1 = " << d1 << endl;
+
+    _a2 = -((_tp_mNm - _ts_mNm)/(2* pow((t2 - t3),3)));
+    _b2 = (3 *t3 *(_tp_mNm - _ts_mNm))/(2 *pow((t2 - t3),3));
+    _c2 = (3 *(pow(t2,2) - 2 *t2 *t3) * (_tp_mNm - _ts_mNm))/(2* pow((t2 - t3),3));
+    _d2 = -((3 * pow(t2,2) * t3 * _tp_mNm - 6 * t2 * pow(t3, 2) * _tp_mNm + 2 * pow(t3,3) * _tp_mNm -
+              2 * pow(t2,3) * _ts_mNm + 3 * pow(t2, 2) * t3 * _ts_mNm)/(2 * pow((t2 - t3), 3)));
+
+    // 1 cout << "exoBoot :: initCollinsProfile : \na2 = " << a2 << "\nb2 = " << b2 << "\nc2 = " << c2 << "\nd2 = " << d2 << endl;
+
+
+    // 1 cout << "\n\nexoBoot :: initCollinsProfile : \ntorque rising = " << a1 << " t^3 + " << b1 << " t^2 + " << c1 << " t + " << d1 << endl;
+    // 1 cout << "exoBoot :: initCollinsProfile : \ntorque falling = " << a2 << " t^3 + " << b2 << " t^2 + " << c2 << " t + " << d2 << endl;
+
+
+    return;
+};
+
+/*
+ *
+ */
+int ZhangCollins::calc_motor_cmd()
+{
+    // check if the parameters have changed and update the spline if they have
+    if ((_mass != _controller_data->parameters[controller_defs::zhang_collins::mass_idx])
+        | (_peak_normalized_torque_mNm != _controller_data->parameters[controller_defs::zhang_collins::peak_normalized_torque_mNm_idx])
+        | (_t0_x10 != _controller_data->parameters[controller_defs::zhang_collins::t0_x10_idx])
+        | (_t1_x10 != _controller_data->parameters[controller_defs::zhang_collins::t1_x10_idx])
+        | (_t2_x10 != _controller_data->parameters[controller_defs::zhang_collins::t2_x10_idx])
+        | (_t3_x10 != _controller_data->parameters[controller_defs::zhang_collins::t3_x10_idx]))
+    {
+        _update_spline_parameters(_controller_data->parameters[controller_defs::zhang_collins::mass_idx]
+            , _controller_data->parameters[controller_defs::zhang_collins::peak_normalized_torque_mNm_idx]
+            , _controller_data->parameters[controller_defs::zhang_collins::t0_x10_idx]
+            , _controller_data->parameters[controller_defs::zhang_collins::t1_x10_idx]
+            , _controller_data->parameters[controller_defs::zhang_collins::t2_x10_idx]
+            , _controller_data->parameters[controller_defs::zhang_collins::t3_x10_idx]);
+        // Serial.print("ZhangCollins::calc_motor_cmd : Updated parameters");
+        // delay(1000);
+    
+    }
+    
+    // based on the percent gait find the torque to apply.
+    // convert to floats so we don't need to modify everywhere in the code.
+    float percent_gait = (float)(_leg_data->percent_gait_x10)/10;
+    float t0 = (float)_t0_x10/10;
+    float t1 = (float)_t1_x10/10;
+    float t2 = (float)_t2_x10/10;
+    float t3 = (float)_t3_x10/10;
+    int torque_cmd = 0;
+    
+    // Serial.print("ZhangCollins::calc_motor_cmd : Percent Gait = ");
+    // Serial.println(percent_gait);
+    // Serial.print("ZhangCollins::calc_motor_cmd : t0 = ");
+    // Serial.println(t0);
+    // Serial.print("ZhangCollins::calc_motor_cmd : t1 = ");
+    // Serial.println(t1);
+    // Serial.print("ZhangCollins::calc_motor_cmd : t2 = ");
+    // Serial.println(t2);
+    // Serial.print("ZhangCollins::calc_motor_cmd : t3 = ");
+    // Serial.println(t3);
+    // Serial.println();
+    
+    
+    if (-1 != percent_gait) //we have a valid calculation for percent_gait
+    {
+        if ((percent_gait <= t1) && (0 <= percent_gait))  // torque ramp to ts at t1
+        {
+            torque_cmd = _ts_mNm / (t1 - t0) * percent_gait - _ts_mNm/(t1 - t0) * t0;  
+            // Serial.println("ZhangCollins::calc_motor_cmd : Ramp");
+            
+        }
+        else if (percent_gait <= t2) // the rising spline
+        {
+            torque_cmd = _a1 * pow(percent_gait,3) + _b1 * pow(percent_gait,2) + _c1 * percent_gait + _d1;
+            // Serial.println("ZhangCollins::calc_motor_cmd : Rising");
+        }
+        else if (percent_gait <= t3)  // the falling spline
+        {
+            torque_cmd = _a2 * pow(percent_gait,3) + _b2 * pow(percent_gait,2) + _c2 * percent_gait + _d2;
+            // Serial.println("ZhangCollins::calc_motor_cmd : Falling");
+        }
+        else  // go to the slack position if we aren't commanding a specific value
+        {
+            torque_cmd = 0;
+            // Serial.println("ZhangCollins::calc_motor_cmd : Swing");
+        }
+    }
+    return torque_cmd;
+};
 
 
 #endif

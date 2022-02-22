@@ -49,13 +49,13 @@ namespace controller_defs
         const uint8_t clear_angle_idx = 3;
         const uint8_t num_parameter = 4;
     }
-    /*
+    
     namespace zhang_collins
     {
         // user mass kg
         const uint8_t mass_idx = 0;
-        // peak torque divided by user mass x100
-        const uint8_t peak_normalized_torque_x100_idx = 1;
+        // peak torque divided by user mass 
+        const uint8_t peak_normalized_torque_mNm_idx = 1;
         // ramp start percent gait x10
         const uint8_t t0_x10_idx = 2;
         // torque onset percent gait x10
@@ -67,7 +67,7 @@ namespace controller_defs
         const uint8_t num_parameter = 6;
         
     }
-    */
+    
     const uint8_t max_parameters = 6;  // this should be the largest of all the num_parameters
 }
 

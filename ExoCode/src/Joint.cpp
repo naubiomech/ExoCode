@@ -347,6 +347,7 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 : _Joint(id, exo_data)
 , _zero_torque(id, exo_data)
 , _proportional_joint_moment(id, exo_data)
+, _zhang_collins(id, exo_data)
 {
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
@@ -414,6 +415,9 @@ void AnkleJoint::set_controller(uint8_t controller_id)  // changes the high leve
             break;
         case (uint8_t)config_defs::ankle_controllers::pjmc :
             _controller = &_proportional_joint_moment;
+            break;
+        case (uint8_t)config_defs::ankle_controllers::zhang_collins :
+            _controller = &_zhang_collins;
             break;
         default :
             _controller = nullptr;

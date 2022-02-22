@@ -152,7 +152,6 @@ class ExtensionAngle: public _Controller
  * 
  * see ControllerData.h for details on the parameters used.
  */
- /*
 class ZhangCollins: public _Controller
 {
     public:
@@ -166,16 +165,16 @@ class ZhangCollins: public _Controller
                 
         // store the parameters so we can check if they change.
         int _mass;
-        int _peak_normalized_torque_x100;
+        int _peak_normalized_torque_mNm;
         int _t0_x10;
         int _t1_x10;
         int _t2_x10;
         int _t3_x10;
                 
         // peak torque
-        float _tp;
+        float _tp_mNm;
         // cable tension torque.  Not needed for our design, but used to match the paper.
-        float _ts;
+        float _ts_mNm;
         // parameters for rising spline
         float _a1;
         float _b1;
@@ -188,7 +187,7 @@ class ZhangCollins: public _Controller
         float _c2;
         float _d2;
 };
-*/
+
 
 #endif
 #endif

@@ -19,8 +19,7 @@
 
 ## Controller.cpp
 1. Define all the functions for the controller.  
-    - An initializer list for _Controller will be needed when calling the constructor.
-    
+    - An initializer list for _Controller will be needed when calling the constructor.  
     
 ## Joint.h
 1. Under the joint(s) (hip, knee, ankle) the controller is valid for, add an object to the new controller.
@@ -30,8 +29,7 @@
     1. Add the constructor for the object you just added to the initializer list.
     2. In set_controller(), add the controller to the switch case, referencing the joint controller namespace in the config_defs namespace.  
         - Use the existing controllers for the template
-        - Thus changes which controller object the _controller pointer is using.
+        - This changes which controller object the _controller pointer is using.
         
 ## Done
 It should now be good to go.  You will need to change the controller and update the parameters.
-
