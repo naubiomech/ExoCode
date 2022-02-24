@@ -25,6 +25,8 @@ TorqueSensor::TorqueSensor(unsigned int pin)
     this->_zero_sum = 0; 
     this->_num_calibration_samples = 0;  
         
+    // Serial.print("TorqueSensor::TorqueSensor : pin = ");
+    // Serial.println(pin);
     
     // Configure pin if it is used
     if (this->_is_used)

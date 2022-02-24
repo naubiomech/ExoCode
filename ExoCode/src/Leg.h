@@ -62,8 +62,10 @@ class Leg
         // TEMP move to test FSRs and control, move back to private when done
         FSR _heel_fsr;
 		FSR _toe_fsr;
-        AnkleJoint _ankle;
+        // The order these are listed are important as it will determine the order their constructors are called in the initalizer list.
         HipJoint _hip;
+        AnkleJoint _ankle;
+        
 	private:
 		
         /*

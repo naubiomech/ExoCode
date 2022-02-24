@@ -266,6 +266,9 @@
         {
             exo_data.left_leg.hip.calibrate_torque_sensor = true;
             exo_data.left_leg.ankle.calibrate_torque_sensor = true;
+            Serial.print("HipTorqueReading");
+            Serial.print(" ");
+            Serial.println("AnkleTorqueReading");
             
             first_run = false;
         }

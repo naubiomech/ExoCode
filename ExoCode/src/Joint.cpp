@@ -211,6 +211,7 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 , _heel_toe(id, exo_data)
 , _extension_angle(id, exo_data)
 {
+    //Serial.println("HipJoint::HipJoint");
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
     {
@@ -301,6 +302,7 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
 : _Joint(id, exo_data)
 , _zero_torque(id, exo_data)
 {
+    // Serial.println("KneeJoint::KneeJoint");
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
     {
@@ -381,6 +383,7 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 , _proportional_joint_moment(id, exo_data)
 , _zhang_collins(id, exo_data)
 {
+    // Serial.println("AnkleJoint::AnkleJoint");
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
     {
