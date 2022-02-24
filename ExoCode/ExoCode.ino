@@ -255,7 +255,6 @@
 //              last_print_timestamp = print_timestamp;
 //          }
           
-<<<<<<< HEAD
           /* Temp code to test the motors */
           //===============================================
           static bool first_time = true;
@@ -285,7 +284,6 @@
     
     
       
-=======
          //-----------------------------------------------
 
          /* 
@@ -323,7 +321,6 @@
         
         
         //-----------------------------------------------
->>>>>>> 7f2ebf5e25f89c53ca7e173ca375f4190cbbab7c
     }
 
 #elif defined(ARDUINO_ARDUINO_NANO33BLE)  // board name is ARDUINO_[build.board] property in the board.txt file here found at C:\Users\[USERNAME]\AppData\Local\Arduino15\packages\arduino\hardware\mbed_nano\2.6.1  They just already prepended it with ARDUINO so you have to do it twice.
