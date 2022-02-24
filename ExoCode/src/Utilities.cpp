@@ -74,7 +74,7 @@ namespace utils
         uint8_t keep_bit = ~(1<<loc);  //set a mask for the bits we aren't setting 
         
         return (original & keep_bit) | (val<<loc);
-    }
+    };
     
     /*
      * Returns the bit in a specific location in a uint8_t
@@ -84,5 +84,22 @@ namespace utils
         uint8_t bit_to_check = (1<<loc);  //set a mask for the bits we are checking
         
         return (original & bit_to_check) == bit_to_check;
-    }
+    };
+    
+    /*
+     * converts from degrees to radians
+     */
+    float degrees_to_radians(float angle_deg)
+    {
+        return angle_deg * 2 * PI / 180;
+    };
+    
+    /*
+     * converts from radians to degrees
+     */
+    float radians_to_degrees(float angle_rad)
+    {
+        return angle_rad * 180 / (2 * PI);
+    };
+    
 }

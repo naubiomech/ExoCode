@@ -91,6 +91,7 @@ namespace config_defs
         disabled = 1, 
         zero_torque = 2, 
         heel_toe =  3,
+        extension_angle = 4,
     };
     
     enum class knee_controllers : uint8_t
@@ -104,6 +105,7 @@ namespace config_defs
         disabled = 1, 
         zero_torque = 2, 
         pjmc = 3,
+        zhang_collins = 4,
     };
     
     static const int board_name_idx = 0;
@@ -196,6 +198,7 @@ namespace config_defs
             {"0", (uint8_t)config_defs::hip_controllers::disabled}, 
             {"zeroTorque", (uint8_t)config_defs::hip_controllers::zero_torque}, 
             {"4*toe-heel", (uint8_t)config_defs::hip_controllers::heel_toe},
+            {"extensionAngle", (uint8_t)config_defs::hip_controllers::extension_angle},
         };
         
         const IniKeyCode knee_controllers 
@@ -209,6 +212,8 @@ namespace config_defs
             {"0", (uint8_t)config_defs::ankle_controllers::disabled}, 
             {"zeroTorque", (uint8_t)config_defs::ankle_controllers::zero_torque}, 
             {"PJMC", (uint8_t)config_defs::ankle_controllers::pjmc},
+            {"zhangCollins", (uint8_t)config_defs::ankle_controllers::zhang_collins},
+            
         };  
     };
 

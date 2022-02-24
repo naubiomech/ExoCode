@@ -63,6 +63,7 @@ class Leg
         FSR _heel_fsr;
 		FSR _toe_fsr;
         AnkleJoint _ankle;
+        HipJoint _hip;
 	private:
 		
         /*
@@ -88,7 +89,7 @@ class Leg
         LegData* _leg_data;// breaks out the specific leg we are using so we don't have to keep checking if it is left.
         
         // joint objects for the leg.
-        HipJoint _hip;
+        
         KneeJoint _knee;
         
 		// stores which side the leg is on.

@@ -43,6 +43,16 @@ namespace utils
      */
     bool get_bit(uint8_t original, uint8_t loc);
     
+    /*
+     * converts from degrees to radians
+     */
+    float degrees_to_radians(float);
+    
+    /*
+     * converts from radians to degrees
+     */
+    float radians_to_degrees(float);
+    
     
 }
 

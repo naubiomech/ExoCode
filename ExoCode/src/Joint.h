@@ -45,7 +45,13 @@ class _Joint
         /*
          * reads data from motor and sensors
          */
-        virtual void read_data() = 0;  
+        virtual void read_data(); 
+
+        /*
+         * Checks if we need to do the calibration for the motor and sensors
+         * and runs the calibration.
+         */
+        virtual void check_calibration();         
 		
         /*
          * changes the high level controller in Controller, and the low level controller in Motor
@@ -92,12 +98,13 @@ class HipJoint : public _Joint
         ~HipJoint(){};
         
         void run_joint();  // See _Joint 
-        void read_data(); // See _Joint 
+        //void read_data(); // See _Joint 
         void set_controller(uint8_t);  // See _Joint 
     protected:
         // Objects for joint specific controllers
         ZeroTorque _zero_torque;
         HeelToe _heel_toe;
+        ExtensionAngle _extension_angle;
     
 };
 
@@ -108,7 +115,7 @@ class KneeJoint : public _Joint
         ~KneeJoint(){};
         
         void run_joint();  // See _Joint
-        void read_data(); // See _Joint
+        //void read_data(); // See _Joint
         void set_controller(uint8_t);  // See _Joint
 	
     protected:
@@ -123,13 +130,14 @@ class AnkleJoint : public _Joint
         ~AnkleJoint(){};
         
         void run_joint();  // See _Joint
-        void read_data(); // See _Joint
+        //void read_data(); // See _Joint
         void set_controller(uint8_t);  // See _Joint
 		
     protected:
         // Objects for joint specific controllers
         ZeroTorque _zero_torque;
         ProportionalJointMoment _proportional_joint_moment;
+        ZhangCollins _zhang_collins;
 };
 
 #endif

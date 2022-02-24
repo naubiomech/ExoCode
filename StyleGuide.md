@@ -47,6 +47,9 @@ and https://www.python.org/dev/peps/pep-0008/
 ### Namespace
 - Namespaces should normally use the CapWords convention.
 
+### Misc
+- Angles should be in radians if not specified.
+
 
 
 

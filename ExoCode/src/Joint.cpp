@@ -65,7 +65,25 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
     // }
 };  
 
+/*
+ * reads data for sensors for the joint, torque and motor.
+ */
+void _Joint::read_data()  
+{
+    // Read the torque sensor.
+    _joint_data->torque_reading = _torque_sensor.read();
+};
 
+/*
+ * Checks if we need to do the calibration for the motor and sensors
+ * and runs the calibration.
+ */
+void _Joint::check_calibration()  
+{
+    // Check if we are doing the calibration on the torque sensor
+    _joint_data->calibrate_torque_sensor = _torque_sensor.calibrate(_joint_data->calibrate_torque_sensor);
+    //Serial.println("_Joint::check_calibration"); 
+};
 
 /*
  * Takes in the joint id and exo data, and checks if the current joint is used.
@@ -191,6 +209,7 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 : _Joint(id, exo_data)
 , _zero_torque(id, exo_data)
 , _heel_toe(id, exo_data)
+, _extension_angle(id, exo_data)
 {
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
@@ -226,20 +245,28 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 };
 
 /*
- * Reads the data and sends motor commands
+ * Calculates and sends motor commands, all data should be read prior to runing this.
  */
 void HipJoint::run_joint()
 {
-    
+    // Calculate the motor command
+    _joint_data->controller.setpoint = _controller->calc_motor_cmd();
+    // Send the new command to the motor.
 };  
 
 /*
  * reads data for sensors for the joint, torque and motor.
  */
+ /*
 void HipJoint::read_data() 
 {
+    // Check if we are doing the calibration on the torque sensor
+    calibrate_torque_sensor = _torque_sensor.calibrate(calibrate_torque_sensor);
     
+    // Read the torque sensor.
+    _torque_sensor.read();
 };
+*/
 
 /*
  * Changes the high level controller in Controller
@@ -258,6 +285,9 @@ void HipJoint::set_controller(uint8_t controller_id)
             break;
         case (uint8_t)config_defs::hip_controllers::heel_toe :
             _controller = &_heel_toe;
+            break;
+        case (uint8_t)config_defs::hip_controllers::extension_angle :
+            _controller = &_extension_angle;
             break;
         default :
             _controller = nullptr;
@@ -306,16 +336,22 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
  */
 void KneeJoint::run_joint()
 {
-    
+    _joint_data->controller.setpoint = _controller->calc_motor_cmd();
 };  
 
 /*
  * reads data for sensors for the joint, torque and motor.
  */
+ /*
 void KneeJoint::read_data() // reads data from motor and sensors
 {
+    // Check if we are doing the calibration on the torque sensor
+    calibrate_torque_sensor = _torque_sensor.calibrate(calibrate_torque_sensor);
     
+    // Read the torque sensor.
+    _torque_sensor.read();
 };
+*/
 
 /*
  * Changes the high level controller in Controller
@@ -343,6 +379,7 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 : _Joint(id, exo_data)
 , _zero_torque(id, exo_data)
 , _proportional_joint_moment(id, exo_data)
+, _zhang_collins(id, exo_data)
 {
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
@@ -388,10 +425,16 @@ void AnkleJoint::run_joint()
 /*
  * reads data for sensors for the joint, torque and motor.
  */
+ /*
 void AnkleJoint::read_data()  
 {
+    // Check if we are doing the calibration on the torque sensor
+    calibrate_torque_sensor = _torque_sensor.calibrate(calibrate_torque_sensor);
     
+    // Read the torque sensor.
+    _torque_sensor.read();
 };
+*/
 
 /*
  * Changes the high level controller in Controller
@@ -410,6 +453,9 @@ void AnkleJoint::set_controller(uint8_t controller_id)  // changes the high leve
             break;
         case (uint8_t)config_defs::ankle_controllers::pjmc :
             _controller = &_proportional_joint_moment;
+            break;
+        case (uint8_t)config_defs::ankle_controllers::zhang_collins :
+            _controller = &_zhang_collins;
             break;
         default :
             _controller = nullptr;
