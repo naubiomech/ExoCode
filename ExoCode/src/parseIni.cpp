@@ -113,7 +113,7 @@
         }
         if(Serial)
         {
-            Serial.println("Ini file exists");
+            //Serial.println("Ini file exists");
         }
        
 
@@ -202,12 +202,12 @@
         if (ini.getValue(section, key, buffer, buffer_len)) {
             if(Serial)
             {
-                Serial.print("section '");
-                Serial.print(section);
-                Serial.print("' has an entry '");
-                Serial.print(key);
-                Serial.print("' with value ");
-                Serial.println(buffer);
+                // Serial.print("section '");
+                // Serial.print(section);
+                // Serial.print("' has an entry '");
+                // Serial.print(key);
+                // Serial.print("' with value ");
+                // Serial.println(buffer);
             }
         }
         // Print the error if the key can't be found.
