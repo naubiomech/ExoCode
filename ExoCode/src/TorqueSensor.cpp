@@ -15,11 +15,16 @@
  */
 TorqueSensor::TorqueSensor(unsigned int pin)
 {
-    this->_is_used = (pin == logic_micro_pins::not_connected_pin?  true:false);
+    this->_is_used = (pin == logic_micro_pins::not_connected_pin?  false:true);
     this->_pin = pin;
     this->_calibration = 0;
     this->_raw_reading = 0;
     this->_calibrated_reading = 0;
+    this->_start_time = 0;
+    this->_last_do_calibrate = false; 
+    this->_zero_sum = 0; 
+    this->_num_calibration_samples = 0;  
+        
     
     // Configure pin if it is used
     if (this->_is_used)
@@ -34,9 +39,12 @@ TorqueSensor::TorqueSensor(unsigned int pin)
 */
 bool TorqueSensor::calibrate(bool do_calibrate)
 {
+    // Serial.print("TorqueSensor::calibrate : do_calibrate = ");
+    // Serial.println(do_calibrate);
     if (_is_used)
     {
-    // check for rising edge of do_calibrate, and reset the values
+        // Serial.println("TorqueSensor::calibrate : _is_used");
+        // check for rising edge of do_calibrate, and reset the values
         if (do_calibrate > _last_do_calibrate)
         {
             _start_time = millis();
@@ -58,7 +66,7 @@ bool TorqueSensor::calibrate(bool do_calibrate)
             {
                 _calibration = _zero_sum/_num_calibration_samples;
             }
-            Serial.println("TorqueSensor::calibrate : Torque Cal Done");
+            //Serial.println("TorqueSensor::calibrate : Torque Cal Done");
             do_calibrate = false;
         }
         
@@ -71,6 +79,7 @@ bool TorqueSensor::calibrate(bool do_calibrate)
     }
     else
     {
+        Serial.println("TorqueSensor::calibrate : Not _is_used");
         do_calibrate = false;
     }
     return do_calibrate;

@@ -218,45 +218,80 @@
           
           //-----------------------------------------------
 
-          exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::mass_idx] = 100;
-          exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::peak_normalized_torque_mNm_idx] = 200;  // should give 20 Nm for a 100 kg person
-          // these are average values from the zhang collins paper
-          exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t0_x10_idx] = 0;
-          exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t1_x10_idx] = 271;
-          exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t2_x10_idx] = 504;
-          exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t3_x10_idx] = 627;
-          
-          exo_data.left_leg.ankle.controller.controller = (uint8_t)config_defs::ankle_controllers::zhang_collins;
-          
-          exo.left_leg._ankle.set_controller(exo_data.left_leg.ankle.controller.controller);
-
-          // create a false percent gait for the controller to use.
-          int percent_gait_period = 5000000; //us 
-          static int step_start_timestamp = micros();
-          int current_timestamp = micros();
-          exo_data.left_leg.percent_gait_x10 = 1000 *  (float)(current_timestamp - step_start_timestamp) / percent_gait_period;
-          if (exo_data.left_leg.percent_gait_x10 > 1000)
-          {
-              exo_data.left_leg.percent_gait_x10 = 0;
-              step_start_timestamp = current_timestamp; 
-          }
-
-          exo.left_leg._ankle.run_joint();
-          
-          int print_time_ms = 100;
-          static int last_print_timestamp = millis();
-          int print_timestamp = millis();
-          if ((print_timestamp-last_print_timestamp)>print_time_ms)
-          {
-              Serial.print(exo_data.left_leg.ankle.controller.setpoint);
-              Serial.print(" ");
-              Serial.print(exo_data.left_leg.percent_gait_x10 * 10);
-              Serial.println(" ");
-              last_print_timestamp = print_timestamp;
-          }
+//          exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::mass_idx] = 100;
+//          exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::peak_normalized_torque_mNm_idx] = 200;  // should give 20 Nm for a 100 kg person
+//          // these are average values from the zhang collins paper
+//          exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t0_x10_idx] = 0;
+//          exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t1_x10_idx] = 271;
+//          exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t2_x10_idx] = 504;
+//          exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t3_x10_idx] = 627;
+//          
+//          exo_data.left_leg.ankle.controller.controller = (uint8_t)config_defs::ankle_controllers::zhang_collins;
+//          
+//          exo.left_leg._ankle.set_controller(exo_data.left_leg.ankle.controller.controller);
+//
+//          // create a false percent gait for the controller to use.
+//          int percent_gait_period = 5000000; //us 
+//          static int step_start_timestamp = micros();
+//          int current_timestamp = micros();
+//          exo_data.left_leg.percent_gait_x10 = 1000 *  (float)(current_timestamp - step_start_timestamp) / percent_gait_period;
+//          if (exo_data.left_leg.percent_gait_x10 > 1000)
+//          {
+//              exo_data.left_leg.percent_gait_x10 = 0;
+//              step_start_timestamp = current_timestamp; 
+//          }
+//
+//          exo.left_leg._ankle.run_joint();
+//          
+//          int print_time_ms = 100;
+//          static int last_print_timestamp = millis();
+//          int print_timestamp = millis();
+//          if ((print_timestamp-last_print_timestamp)>print_time_ms)
+//          {
+//              Serial.print(exo_data.left_leg.ankle.controller.setpoint);
+//              Serial.print(" ");
+//              Serial.print(exo_data.left_leg.percent_gait_x10 * 10);
+//              Serial.println(" ");
+//              last_print_timestamp = print_timestamp;
+//          }
           
          //-----------------------------------------------
-      
+
+         /* 
+          * Temp code to test torque sensor 
+          */
+        static bool first_run = true;
+        
+        if (first_run)
+        {
+            exo_data.left_leg.hip.calibrate_torque_sensor = true;
+            exo_data.left_leg.ankle.calibrate_torque_sensor = true;
+            
+            first_run = false;
+        }
+
+        exo.left_leg.check_calibration();
+        exo.left_leg.read_data();
+
+        int print_time_ms = 100;
+        static int last_print_timestamp = millis();
+        int print_timestamp = millis();
+        if ((print_timestamp-last_print_timestamp)>print_time_ms)
+        {
+            Serial.print(exo_data.left_leg.hip.torque_reading);
+            Serial.print(" ");
+            Serial.print(exo_data.left_leg.ankle.torque_reading);
+            Serial.println(" ");
+
+//            Serial.print(exo_data.left_leg.hip.calibrate_torque_sensor);
+//            Serial.print(" ");
+//            Serial.print(exo_data.left_leg.ankle.calibrate_torque_sensor);
+//            Serial.println(" ");
+            last_print_timestamp = print_timestamp;
+        }
+        
+        
+        //-----------------------------------------------
     }
 
 #elif defined(ARDUINO_ARDUINO_NANO33BLE)  // board name is ARDUINO_[build.board] property in the board.txt file here found at C:\Users\[USERNAME]\AppData\Local\Arduino15\packages\arduino\hardware\mbed_nano\2.6.1  They just already prepended it with ARDUINO so you have to do it twice.

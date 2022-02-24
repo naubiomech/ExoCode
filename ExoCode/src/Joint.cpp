@@ -65,7 +65,25 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
     // }
 };  
 
+/*
+ * reads data for sensors for the joint, torque and motor.
+ */
+void _Joint::read_data()  
+{
+    // Read the torque sensor.
+    _joint_data->torque_reading = _torque_sensor.read();
+};
 
+/*
+ * Checks if we need to do the calibration for the motor and sensors
+ * and runs the calibration.
+ */
+void _Joint::check_calibration()  
+{
+    // Check if we are doing the calibration on the torque sensor
+    _joint_data->calibrate_torque_sensor = _torque_sensor.calibrate(_joint_data->calibrate_torque_sensor);
+    //Serial.println("_Joint::check_calibration"); 
+};
 
 /*
  * Takes in the joint id and exo data, and checks if the current joint is used.
@@ -227,20 +245,28 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 };
 
 /*
- * Reads the data and sends motor commands
+ * Calculates and sends motor commands, all data should be read prior to runing this.
  */
 void HipJoint::run_joint()
 {
+    // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
+    // Send the new command to the motor.
 };  
 
 /*
  * reads data for sensors for the joint, torque and motor.
  */
+ /*
 void HipJoint::read_data() 
 {
+    // Check if we are doing the calibration on the torque sensor
+    calibrate_torque_sensor = _torque_sensor.calibrate(calibrate_torque_sensor);
     
+    // Read the torque sensor.
+    _torque_sensor.read();
 };
+*/
 
 /*
  * Changes the high level controller in Controller
@@ -316,10 +342,16 @@ void KneeJoint::run_joint()
 /*
  * reads data for sensors for the joint, torque and motor.
  */
+ /*
 void KneeJoint::read_data() // reads data from motor and sensors
 {
+    // Check if we are doing the calibration on the torque sensor
+    calibrate_torque_sensor = _torque_sensor.calibrate(calibrate_torque_sensor);
     
+    // Read the torque sensor.
+    _torque_sensor.read();
 };
+*/
 
 /*
  * Changes the high level controller in Controller
@@ -393,10 +425,16 @@ void AnkleJoint::run_joint()
 /*
  * reads data for sensors for the joint, torque and motor.
  */
+ /*
 void AnkleJoint::read_data()  
 {
+    // Check if we are doing the calibration on the torque sensor
+    calibrate_torque_sensor = _torque_sensor.calibrate(calibrate_torque_sensor);
     
+    // Read the torque sensor.
+    _torque_sensor.read();
 };
+*/
 
 /*
  * Changes the high level controller in Controller

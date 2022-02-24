@@ -43,6 +43,7 @@ Leg::Leg(bool is_left, ExoData* exo_data)
  */
 void Leg::read_data()
 {
+    // Check the FSRs
     _leg_data->heel_fsr = _heel_fsr.read();
     _leg_data->toe_fsr = _toe_fsr.read();
     _leg_data->ground_strike = _check_ground_strike();
@@ -52,6 +53,19 @@ void Leg::read_data()
     }
     _leg_data->percent_gait_x10 = _calc_percent_gait();
     
+    // Check the joint sensors if the joint is used.
+    if (_leg_data->hip.is_used)
+    {
+        _hip.read_data();
+    }
+    if (_leg_data->knee.is_used)
+    {
+        _knee.read_data();
+    }
+    if (_leg_data->ankle.is_used)
+    {
+        _ankle.read_data();
+    }
 };
 
 /*
@@ -80,7 +94,20 @@ void Leg::check_calibration()
             _leg_data->do_calibration_refinement_heel_fsr = _heel_fsr.refine_calibration(_leg_data->do_calibration_refinement_heel_fsr);
         }
         
-        // check torque sensor calibrations
+        // check torque sensor calibrations if joint is use
+        // Check the joint sensors if the joint is used.
+        if (_leg_data->hip.is_used)
+        {
+            _hip.check_calibration();
+        }
+        if (_leg_data->knee.is_used)
+        {
+            _knee.check_calibration();
+        }
+        if (_leg_data->ankle.is_used)
+        {
+            _ankle.check_calibration();
+        }
         
     }        
 };
