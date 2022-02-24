@@ -66,14 +66,16 @@ class _Joint
          */
         static unsigned int get_torque_sensor_pin(config_defs::joint_id, ExoData*);
         
-        
+        //TODO: Make these protected
+        _Motor* _motor; // using pointer to the base class so we can use any motor type.
+        JointData* _joint_data;
     protected:
         // give access to the larger data object and the joint specific data 
         ExoData* _data;
-        JointData* _joint_data;
+        
         
         // IO objects for the joint
-        _Motor* _motor; // using pointer to the base class so we can use any motor type.
+        //_Motor* _motor; // using pointer to the base class so we can use any motor type.
 		TorqueSensor _torque_sensor;
 		_Controller* _controller; // Using pointer so we just need to change the object we are pointing to when the controller changes.
         
