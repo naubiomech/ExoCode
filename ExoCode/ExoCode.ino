@@ -255,6 +255,35 @@
 //              last_print_timestamp = print_timestamp;
 //          }
           
+          /* Temp code to test the motors */
+          //===============================================
+          static bool first_time = true;
+          static int switch_count = 0;
+          if (first_time)
+          {
+              //initialize motor data
+              exo.left_leg._ankle._joint_data->motor.t_ff = 0;
+              //turn on the motor
+              exo.left_leg._ankle._motor->on_off(true);
+          }
+          static int last_time = millis();
+          int time = millis();
+          if ((time - last_time)>2000)
+          {
+              int sign = (switch_count ? -1:1);
+              exo.left_leg._ankle._joint_data->motor.t_ff = sign*2;
+              exo.left_leg._ankle._motor->send_data();
+          }
+          
+
+
+
+
+          //==============================================
+         
+    
+    
+      
          //-----------------------------------------------
 
          /* 

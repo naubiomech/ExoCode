@@ -28,10 +28,10 @@ class MotorData
         float p; // read position
         float v; // read velocity
         float i; // read current
-        float p_des; // 
+        float p_des;  
         float v_des;
-        float kp;
-        float kd;
+        float kp = 0;
+        float kd = 0;
         float t_ff;
         
         bool is_left;

@@ -58,6 +58,17 @@ class _CANMotor : public _Motor
         void read_data();
         void send_data();
         void on_off(bool is_on);
+    protected:
+        float float_to_uint(float x, float x_min, float x_max, int bits);
+        float uint_to_float(unsigned int x_int, float x_min, float x_max, int bits);
+        float _KP_MIN;
+        float _KP_MAX;
+        float _KD_MIN;
+        float _KD_MAX;
+        float _P_MAX;
+        float _T_MAX;
+        float _V_MAX;
+        const uint32_t _timeout = 2;
 };
 
 
@@ -74,5 +85,6 @@ class AK80 : public _CANMotor
         AK80(config_defs::joint_id id, ExoData* exo_data); // constructor: type is the motor type
 		~AK80(){};   
 };
+
 #endif
 #endif
