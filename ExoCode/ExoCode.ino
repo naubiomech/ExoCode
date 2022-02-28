@@ -260,41 +260,50 @@
          /* 
           * Temp code to test torque sensor 
           */
-        static bool first_run = true;
-        
-        if (first_run)
-        {
-            exo_data.left_leg.hip.calibrate_torque_sensor = true;
-            exo_data.left_leg.ankle.calibrate_torque_sensor = true;
-            Serial.print("HipTorqueReading");
-            Serial.print(" ");
-            Serial.println("AnkleTorqueReading");
-            
-            first_run = false;
-        }
-
-        exo.left_leg.check_calibration();
-        exo.left_leg.read_data();
-
-        int print_time_ms = 100;
-        static int last_print_timestamp = millis();
-        int print_timestamp = millis();
-        if ((print_timestamp-last_print_timestamp)>print_time_ms)
-        {
-            Serial.print(exo_data.left_leg.hip.torque_reading);
-            Serial.print(" ");
-            Serial.print(exo_data.left_leg.ankle.torque_reading);
-            Serial.println(" ");
-
-//            Serial.print(exo_data.left_leg.hip.calibrate_torque_sensor);
+//        static bool first_run = true;
+//        
+//        if (first_run)
+//        {
+//            exo_data.left_leg.hip.calibrate_torque_sensor = true;
+//            exo_data.left_leg.ankle.calibrate_torque_sensor = true;
+//            Serial.print("HipTorqueReading");
 //            Serial.print(" ");
-//            Serial.print(exo_data.left_leg.ankle.calibrate_torque_sensor);
+//            Serial.println("AnkleTorqueReading");
+//            
+//            first_run = false;
+//        }
+//
+//        exo.left_leg.check_calibration();
+//        exo.left_leg.read_data();
+//
+//        int print_time_ms = 100;
+//        static int last_print_timestamp = millis();
+//        int print_timestamp = millis();
+//        if ((print_timestamp-last_print_timestamp)>print_time_ms)
+//        {
+//            Serial.print(exo_data.left_leg.hip.torque_reading);
+//            Serial.print(" ");
+//            Serial.print(exo_data.left_leg.ankle.torque_reading);
 //            Serial.println(" ");
-            last_print_timestamp = print_timestamp;
-        }
+//
+////            Serial.print(exo_data.left_leg.hip.calibrate_torque_sensor);
+////            Serial.print(" ");
+////            Serial.print(exo_data.left_leg.ankle.calibrate_torque_sensor);
+////            Serial.println(" ");
+//            last_print_timestamp = print_timestamp;
+//        }
         
         
         //-----------------------------------------------
+
+        /* Code to test the motor communication */
+        //===============================================
+        static bool first_run = true;
+        if(first_run)
+        {   Serial.println("Starting right hip");
+            first_run = false;
+            exo.right_leg._hip._motor->on_off(true);
+        }
     }
 
 #elif defined(ARDUINO_ARDUINO_NANO33BLE)  // board name is ARDUINO_[build.board] property in the board.txt file here found at C:\Users\[USERNAME]\AppData\Local\Arduino15\packages\arduino\hardware\mbed_nano\2.6.1  They just already prepended it with ARDUINO so you have to do it twice.

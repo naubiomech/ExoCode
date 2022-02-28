@@ -161,6 +161,9 @@ void _CANMotor::on_off(bool is_on)
         // disable motor
         data[7] = 0xFD;
     }
+    Serial.print(is_on);
+    Serial.print("\t");
+    Serial.println(uint32_t(_motor_data->id));
     CAN* can = can->getInstance();
     can->send(uint32_t(_motor_data->id), data);
 }
