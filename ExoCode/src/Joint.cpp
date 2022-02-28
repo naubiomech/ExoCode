@@ -70,8 +70,8 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
  */
 void _Joint::read_data()  
 {
-    // Read the torque sensor.
-    _joint_data->torque_reading = _torque_sensor.read();
+    // Read the torque sensor, and change sign based on side.
+    _joint_data->torque_reading = _is_left ? -1*_torque_sensor.read() : _torque_sensor.read();
 };
 
 /*
