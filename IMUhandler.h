@@ -32,10 +32,7 @@ class IMUhandler {
   inline void check_for_fall() {
     float x, y, z;
     if (IMU.readAcceleration(x, y, z)) {
-      y = -y;
-      #ifdef BOARD_VERSION == DUAL_BOARD_REV8_1
-      y = -y;
-      #endif
+      y = YAXIS_SIGN*y;
       
       float acc_angle;
       if (abs(y) < 0.00001) {

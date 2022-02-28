@@ -1,3 +1,5 @@
+#include "Serialization.h"
+
 const char* UARTUUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
 const char* txUUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
 const char* rxUUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
@@ -14,8 +16,8 @@ void setupBLE()
   if (BLE.begin())
   {
     //Advertised name and service
-    BLE.setLocalName("EXOBLE_Dur2"); //SET DEVICE ID HERE "EXOBLE_#"
-    BLE.setDeviceName("EXOBLE_Dur2"); //SET DEVICE ID HERE "EXOBLE_#"
+    BLE.setLocalName(BT_NAME); //SET DEVICE ID HERE "EXOBLE_#"
+    BLE.setDeviceName(BT_NAME); //SET DEVICE ID HERE "EXOBLE_#"
     BLE.setAdvertisedService(UARTService);
     //Add chars to service
     UARTService.addCharacteristic(TXChar);

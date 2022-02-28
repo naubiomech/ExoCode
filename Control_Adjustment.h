@@ -1,3 +1,7 @@
+#ifndef CONTROL_ADJUSTMENT_H
+#define CONTROL_ADJUSTMENT_H
+
+#include "Parameters.h"
 // Stuctur in order to have all the needed values to adjust the torque or the shaping as a function of the force applied or of the speed respectively
 typedef struct {
   int    n_steps;
@@ -42,3 +46,5 @@ typedef struct {
 
 steps val_L;
 steps val_R;
+
+#endif

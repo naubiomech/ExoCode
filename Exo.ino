@@ -21,7 +21,7 @@
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD_REV8_1
+#define BOARD_VERSION DUAL_BOARD_REV6
 
 #define CONTROL_LOOP_HZ           500
 #define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
@@ -51,6 +51,7 @@ bool motors_on = false;
 #include "IMUhandler.h"
 #include "fault_detection.h"
 #include "SMBattery.h"
+#include "BatteryMonitor.h"
 #include "ema_filter.h"
 #include "motor_utils.h"
 //----------------------------------------------------------------------------------
@@ -172,10 +173,9 @@ void loop()
 
 //---------------------------------------------------------------------------------
 void update_GUI() {
-  //Real Time data
-  //Serial.println("Updatate GUI");
-  if (stream)
-    {
+  static BatteryMonitor battery_monitor = BatteryMonitor();
+
+  if (stream) {
       counter_msgs++;
       callback_thread.set_priority(osPriorityNormal);
       send_data_message_wc();
@@ -187,6 +187,22 @@ void update_GUI() {
     int battery_parameter;
     #ifdef SMA_BATTERY
     battery_parameter = smart_battery.readSOC();
+    bool battery_error = battery_monitor.handle(battery_parameter);
+    if(battery_error) {
+      left_leg->Setpoint_Ankle = 0;
+      left_leg->Dorsi_Setpoint_Ankle = 0;
+      left_leg->first_step = 1;
+      left_leg->activate_in_3_steps = 1;
+      
+      right_leg->Setpoint_Ankle = 0;
+      right_leg->Dorsi_Setpoint_Ankle = 0;
+      right_leg->first_step = 1;
+      right_leg->activate_in_3_steps = 1;
+
+      digitalWrite(RED, !LED_ON);
+      digitalWrite(BLUE, !LED_ON);
+      digitalWrite(GREEN, !LED_ON);
+    }
     #else
     battery_parameter = readBatteryVoltage()/100;
     #endif

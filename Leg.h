@@ -5,6 +5,7 @@ const int dim = 5;
 
 #include "PID_v2.h"
 #include "Control_Adjustment.h"
+#include <vector>
 
 struct Leg {
   int torque_sensor_ankle_pin;
@@ -153,8 +154,8 @@ struct Leg {
 
   // Shaping_Parameters.h
   double exp_mult = 1500.0;
-  boolean sigm_flag = true;
-  boolean sigm_done;
+  bool sigm_flag = true;
+  bool sigm_done;
 
   double New_PID_Setpoint = 0.0;
   double Old_PID_Setpoint = 0.0;
@@ -172,7 +173,7 @@ struct Leg {
 
   int n_iter, N_step;
 
-  boolean signm_done = true;
+  bool signm_done = true;
 
   // Trigger parameter  // SS 8/6/2020
   int Trigger = 0;
@@ -270,6 +271,9 @@ struct Leg {
   //------------------------------------------------
 
   // Torque_Speed_ADJ.h
+  const int time_array_length = 4;
+  std::vector<int> stance_times;
+  bool full_times_array = false;
   //steps steps;
   steps* p_steps;
 
@@ -283,6 +287,5 @@ Leg* right_leg = &right_leg_value;
 void initialize_leg(Leg* leg);
 void initialize_left_leg(Leg* left_leg);
 void initialize_right_leg(Leg* right_leg);
-
 
 #endif

@@ -77,6 +77,7 @@ void receive_and_transmit()
       streamTimerCount = 0;
       timeElapsed = 0;
       stepper->trial_start = millis();  //CFC 1/22/21 Gathers time at start of trial
+
       /* Send torque calibration values */
       trqCalData[0] = right_leg->torque_calibration_value;
       trqCalData[1] = left_leg->torque_calibration_value;
@@ -178,8 +179,6 @@ void receive_and_transmit()
       break;
 
     case 'N':
-      //Increment Mark Count
-      markCount++;
       markFlag = true;
       break;
 

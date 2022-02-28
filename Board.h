@@ -11,6 +11,7 @@
 #define ENABLE_PWM
 #define SMA_BATTERY
 #define LED_ON HIGH
+#define YAXIS_SIGN 1
 
 const unsigned int FSR_SENSE_LEFT_TOE_PIN = A2;
 const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A3;
@@ -40,6 +41,7 @@ const unsigned int PWR_SDA = A4;   //SDA
 #if BOARD_VERSION == DUAL_BOARD_REV6
 #define ENABLE_PWM
 #define LED_ON LOW
+#define YAXIS_SIGN -1
 
 const unsigned int FSR_SENSE_LEFT_TOE_PIN = A2;
 const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A3;
@@ -70,6 +72,7 @@ const unsigned int PWR_SDA = A4;   //SDA
 #if BOARD_VERSION == DUAL_BOARD_REV6_1
 #define ENABLE_PWM
 #define LED_ON LOW
+#define YAXIS_SIGN -1
 
 const unsigned int FSR_SENSE_LEFT_TOE_PIN = A2;
 const unsigned int FSR_SENSE_RIGHT_TOE_PIN = A3;
