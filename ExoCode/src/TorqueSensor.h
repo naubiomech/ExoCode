@@ -11,7 +11,7 @@
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)
 
-#include "board.h"
+#include "Board.h"
 #include "Arduino.h"
 
 class TorqueSensor

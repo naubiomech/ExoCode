@@ -11,8 +11,8 @@
 #include "Arduino.h"
 
 #include "JointData.h"
-#include "parseIni.h"
-#include "board.h"
+#include "ParseIni.h"
+#include "Board.h"
 
 #include <stdint.h>
 

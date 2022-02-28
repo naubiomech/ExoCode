@@ -1,7 +1,7 @@
 #ifndef Utilities_h
 #define Utilities_h
 
-#include "parseIni.h"
+#include "ParseIni.h"
 #include <stdint.h>
 
 namespace utils

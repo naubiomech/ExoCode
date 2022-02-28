@@ -14,8 +14,8 @@
 #include "Arduino.h"
 
 #include "ExoData.h"
-#include "board.h"
-#include "parseIni.h"
+#include "Board.h"
+#include "ParseIni.h"
 #include <stdint.h>
 #include "Utilities.h"
 

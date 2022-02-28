@@ -16,8 +16,8 @@
 #include "joint.h"
 #include "controller.h"
 #include "FSR.h"
-#include "parseIni.h"
-#include "board.h"
+#include "ParseIni.h"
+#include "Board.h"
 #include "Utilities.h"
 
 #include <stdint.h>

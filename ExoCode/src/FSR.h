@@ -12,7 +12,7 @@
 #if defined(ARDUINO_TEENSY36)
 
 #include "Arduino.h"
-#include "board.h"
+#include "Board.h"
 #include "Utilities.h"
 
 

@@ -17,7 +17,7 @@
 #include "Motor.h"
 #include "Controller.h"
 #include "TorqueSensor.h"
-#include "parseIni.h"
+#include "ParseIni.h"
 #include "board.h"
 #include "Joint.h"
 #include "Utilities.h"

@@ -25,7 +25,7 @@
 */
 
 #include "Arduino.h"
-#include "Sync_Led.h"
+#include "SyncLed.h"
 //#include <IntervalTimer.h>
 //#include "IntervalTimerEx.h"
 

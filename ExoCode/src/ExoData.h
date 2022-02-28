@@ -12,8 +12,8 @@
 
 #include "LegData.h"
 #include <stdint.h>
-#include "parseIni.h"
-#include "board.h"
+#include "ParseIni.h"
+#include "Board.h"
 
 
 //TODO: Add an output data that creates an array that can be used to send to the other board.

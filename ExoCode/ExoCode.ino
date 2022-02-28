@@ -13,15 +13,15 @@
     
     // for the include files we can eventually create a library properties files but right now just providing the path should work.
     // Common Libraries
-    #include "src\board.h"
+    #include "src\Board.h"
     #include "src\ExoData.h"
     #include "src\Exo.h"
     #include "src\Utilities.h"
     
     // Specific Librarys
-    #include "src\parseIni.h"
-    #include "src\Sync_Led.h"
-    #include "src\Status_Led.h"
+    #include "src\ParseIni.h"
+    #include "src\SyncLed.h"
+    #include "src\StatusLed.h"
     #include "src\TSPISlave.h"
     
     

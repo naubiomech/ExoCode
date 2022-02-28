@@ -11,8 +11,8 @@
 
 #include "Arduino.h"
 
-#include "board.h"
-#include "parseIni.h"
+#include "Board.h"
+#include "ParseIni.h"
 #include <stdint.h>
 
 // forward declaration
