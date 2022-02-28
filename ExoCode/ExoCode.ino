@@ -26,8 +26,8 @@
     
     
     namespace led{
-        IntervalTimer syncTimer;  // Create a timer for setting for handling the interupt, this is needed as the ISR cannot access class variables since you cannot pass a self to the ISR.
-        Sync_Led syncLed(logic_micro_pins::sync_led_pin, SYNC_START_STOP_HALF_PERIOD_US, SYNC_HALF_PERIOD_US, SYNC_LED_ON_STATE, logic_micro_pins::sync_default_pin);  // Create a sync LED object, the first and last arguments (pin) are found in Board.h, and the rest are in Sync_Led.h.  If you do not have a digital input for the default state you can remove SYNC_DEFAULT_STATE_PIN.  
+        IntervalTimer sync_timer;  // Create a timer for setting for handling the interupt, this is needed as the ISR cannot access class variables since you cannot pass a self to the ISR.
+        SyncLed sync_led(logic_micro_pins::sync_led_pin, SYNC_START_STOP_HALF_PERIOD_US, SYNC_HALF_PERIOD_US, SYNC_LED_ON_STATE, logic_micro_pins::sync_default_pin);  // Create a sync LED object, the first and last arguments (pin) are found in Board.h, and the rest are in Sync_Led.h.  If you do not have a digital input for the default state you can remove SYNC_DEFAULT_STATE_PIN.  
         Status_Led statusLed(logic_micro_pins::status_led_r_pin, logic_micro_pins::status_led_g_pin, logic_micro_pins::status_led_b_pin);  // Create the status LED object.  
     
        /* 
@@ -38,12 +38,12 @@
         */
         void grossLedInteruptWrapper(void)
         {
-            led::syncLed.syncLedHandler(); // calculate the LED state based on the timer, but don't change the actual LED state.
-            led::syncTimer.begin(led::grossLedInteruptWrapper, led::syncLed.currentSyncPeriod);  // update the timer period ideally we would only do this if it changed, might add a flag to syncLed if needed
+            led::sync_led.sync_led_handler(); // calculate the LED state based on the timer, but don't change the actual LED state.
+            led::sync_timer.begin(led::grossLedInteruptWrapper, led::sync_led.current_sync_period);  // update the timer period ideally we would only do this if it changed, might add a flag to sync_led if needed
         }
     }
     // this creates a does not name a type error not sure why as it worked before.  Could be an issue with the lib.  Commenting out for now.
-    //led::syncTimer.begin(Led::grossLedInteruptWrapper, Led::syncLed.currentSyncPeriod);
+    //led::sync_timer.begin(Led::grossLedInteruptWrapper, Led::sync_led.currentSyncPeriod);
     
     
     namespace config_info
@@ -101,10 +101,10 @@
         
         
          
-        //Led::syncLed.updateLed();  // actually change the led state, this also updates ledIsOn for recording the actual on/off state 
+        //led::sync_led.update_led();  // actually change the led state, this also updates ledIsOn for recording the actual on/off state 
         
         // Need to update this for the new bluetooth stream
-//        if (led::syncLed.doBlink | led::syncLed.doStartStopSequence) //if we are within a trial stream data
+//        if (led::sync_led.do_blink | led::sync_led.do_start_stop_sequence) //if we are within a trial stream data
 //        {
 //          //stream = 1; 
 //        }
@@ -255,35 +255,6 @@
 //              last_print_timestamp = print_timestamp;
 //          }
           
-          /* Temp code to test the motors */
-          //===============================================
-          static bool first_time = true;
-          static int switch_count = 0;
-          if (first_time)
-          {
-              //initialize motor data
-              exo.left_leg._ankle._joint_data->motor.t_ff = 0;
-              //turn on the motor
-              exo.left_leg._ankle._motor->on_off(true);
-          }
-          static int last_time = millis();
-          int time = millis();
-          if ((time - last_time)>2000)
-          {
-              int sign = (switch_count ? -1:1);
-              exo.left_leg._ankle._joint_data->motor.t_ff = sign*2;
-              exo.left_leg._ankle._motor->send_data();
-          }
-          
-
-
-
-
-          //==============================================
-         
-    
-    
-      
          //-----------------------------------------------
 
          /* 
