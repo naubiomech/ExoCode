@@ -34,11 +34,14 @@
         // Sync LED Pins
         const unsigned int sync_led_pin = 29;
         const unsigned int sync_default_pin = 25;
+        const unsigned int sync_led_on_state = HIGH;
+        const unsigned int sync_led_off_state = LOW;
         
         // Status LED Pins
         const unsigned int status_led_r_pin= 28;
         const unsigned int status_led_g_pin = 27;
         const unsigned int status_led_b_pin = 26;
+        const bool status_has_pwm = false;
         
         // SPI Follower Pins
         const unsigned int miso_pin = 12;

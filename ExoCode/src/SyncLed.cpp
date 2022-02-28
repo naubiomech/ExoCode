@@ -44,10 +44,10 @@ SyncLed::SyncLed(int pin, int sync_start_stop_half_period_us, int sync_half_peri
 	current_sync_period = sync_half_period_us;
 	_sync_start_stop_half_period_us = sync_start_stop_half_period_us;
 	_sync_half_period_us = sync_half_period_us;
-	_default_led_state = SYNC_LED_ON_STATE;
+	_default_led_state = logic_micro_pins::sync_led_on_state;
 	led_state = _default_led_state;
     _led_default_state_pin = -1;
-    led_is_on = led_state == SYNC_LED_ON_STATE;
+    led_is_on = led_state == logic_micro_pins::sync_led_on_state;
   
 	_state_change_count = 0; 
 	do_blink = false; 
@@ -74,7 +74,7 @@ SyncLed::SyncLed(int pin, int sync_start_stop_half_period_us, int sync_half_peri
 	_default_led_state = default_led_state;
     _led_default_state_pin = -1;
     led_state = _default_led_state;
-    led_is_on = led_state == SYNC_LED_ON_STATE;
+    led_is_on = led_state == logic_micro_pins::sync_led_on_state;
 	
 	_state_change_count = 0; // Track how many 
 	do_blink = false; // use volatile for shared variables
@@ -101,7 +101,7 @@ SyncLed::SyncLed(int pin, int sync_start_stop_half_period_us, int sync_half_peri
   _default_led_state = default_led_state;
   _led_default_state_pin = led_default_state_pin;
   led_state = _default_led_state;
-  led_is_on = led_state == SYNC_LED_ON_STATE;
+  led_is_on = led_state == logic_micro_pins::sync_led_on_state;
   
   _state_change_count = 0; // Track how many 
   do_blink = false; // use volatile for shared variables
@@ -148,7 +148,7 @@ void SyncLed::update_led()
 	digitalWrite(_pin, temp_led_state);  // Change the LED state
     _default_led_state = digitalRead(_led_default_state_pin);  // technically this will update for the next call, but functionally this shouldn't really matter as it will change before you can use the sync.
   
-    led_is_on = temp_led_state == SYNC_LED_ON_STATE;
+    led_is_on = temp_led_state == logic_micro_pins::sync_led_on_state;
 	//return led_is_on;
 }
 
@@ -200,18 +200,18 @@ void SyncLed::_blink_start_stop(void)
 
   // If the period is not correct it is the first call in the sequence
   if (current_sync_period == _sync_half_period_us){
-    current_sync_period = _sync_start_stop_half_period_us;  // set teh correct period
+    current_sync_period = _sync_start_stop_half_period_us;  // set the correct period
     // Serial.print("blinkStartStop: sync half period changed to  : ");
     // Serial.println(current_sync_period);
-    led_state = SYNC_LED_ON_STATE; // set the LED to on so that way end of the first call in the sequence will be off
+    led_state = logic_micro_pins::sync_led_on_state; // set the LED to on so that way end of the first call in the sequence will be off
   }
 
   // toggle state
-  if (led_state == SYNC_LED_OFF_STATE) {
-    led_state = SYNC_LED_ON_STATE;
+  if (led_state == logic_micro_pins::sync_led_off_state) {
+    led_state = logic_micro_pins::sync_led_on_state;
   } 
   else {
-    led_state = SYNC_LED_OFF_STATE;
+    led_state = logic_micro_pins::sync_led_off_state;
   }
  
   _state_change_count = _state_change_count + 1;   // iterate the state change counter
@@ -220,7 +220,7 @@ void SyncLed::_blink_start_stop(void)
   // Serial.println(led_state);
 
   // once we have done the approprate number of state change stop the start stop sequence.
-  if (_state_change_count == (2*_num_start_stop_blinks+1*(_default_led_state==SYNC_LED_ON_STATE))) // if the default state is 1 you need and extra one so make it low before it goes to the default state.
+  if (_state_change_count == (2*_num_start_stop_blinks+1*(_default_led_state==logic_micro_pins::sync_led_on_state))) // if the default state is 1 you need and extra one so make it low before it goes to the default state.
   {
     do_start_stop_sequence = false;
   }
@@ -245,12 +245,12 @@ void SyncLed::_blink(void)
   }
 
   // toggle LED state
-  if (led_state == SYNC_LED_OFF_STATE) {
-    led_state = SYNC_LED_ON_STATE;
+  if (led_state == logic_micro_pins::sync_led_off_state) {
+    led_state = logic_micro_pins::sync_led_on_state;
     // _blinkCount = _blinkCount + 1;  // increase when LED turns on
   } 
   else {
-    led_state = SYNC_LED_OFF_STATE;
+    led_state = logic_micro_pins::sync_led_off_state;
   }
   //digitalWrite(syncLEDPin, led_state);
  

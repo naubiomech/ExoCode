@@ -17,25 +17,50 @@
 #define StatusLed_h
 
 #include "Arduino.h"
+#include "Board.h"
 
 // Define the on and off state of the LED.  This is handy for if you are using a P Channel MOSFET where low is on.
-#define STATUS_LED_ON_STATE 0
-#define STATUS_LED_OFF_STATE 255
+//#define STATUS_LED_ON_STATE 0
+//#define STATUS_LED_OFF_STATE 255
 
 // color assumes 255 is on.  The code will use the on/off state above to compensate for the code.
-#define STATUS_MESSAGE_LED_OFF 0  // set the message index
-#define STATUS_COLOR_LED_OFF {0, 0, 0}  // set the color in {R, G, B} format 0-255
+//#define STATUS_MESSAGE_LED_OFF 0  // set the message index
+//#define STATUS_COLOR_LED_OFF {0, 0, 0}  // set the color in {R, G, B} format 0-255
 
-#define STATUS_MESSAGE_TRIAL_OFF 1  // set the message index
-#define STATUS_COLOR_TRIAL_OFF {0, 0, 255}   // set the color in {R, G, B} format 0-255 
+//#define STATUS_MESSAGE_TRIAL_OFF 1  // set the message index
+//#define STATUS_COLOR_TRIAL_OFF {0, 0, 255}   // set the color in {R, G, B} format 0-255 
 
-#define STATUS_MESSAGE_TRIAL_ON 2 // set the message index
-#define STATUS_COLOR_TRIAL_ON {0, 255, 0}  // set the color in {R, G, B} format 0-255
+//#define STATUS_MESSAGE_TRIAL_ON 2 // set the message index
+//#define STATUS_COLOR_TRIAL_ON {0, 255, 0}  // set the color in {R, G, B} format 0-255
 
-#define STATUS_MESSAGE_ERROR 3  // set the message index
-#define STATUS_COLOR_ERROR {255, 0, 0}  // set the color in {R, G, B} format 0-255
+//#define STATUS_MESSAGE_ERROR 3  // set the message index
+//#define STATUS_COLOR_ERROR {255, 0, 0}  // set the color in {R, G, B} format 0-255
 
-#define NO_PWM true // true if using simple digital pins, false if using pwm pins
+//#define NO_PWM true // true if using simple digital pins, false if using pwm pins
+
+
+namespace status_led_def
+{
+    namespace messages 
+    {
+        const uint8_t off =  0;
+        const uint8_t trial_off = 1;
+        const uint8_t trial_on = 2;
+        const uint8_t error = 3;
+    }
+    
+    namespace colors // just used namespace due to the complex structure.
+    {
+        const int off[] =  {0, 0, 0};
+        const int trial_off[] = {0, 0, 255};
+        const int trial_on[] = {0, 255, 0};
+        const int error[] = {255, 0, 0};
+    }
+    
+    const uint8_t on_state = 0;
+    const uint8_t off_state = 255;  
+    
+}
 
 
 // Declare the class
@@ -59,11 +84,14 @@ class StatusLed
     int _brightness;  // Brightness of LED this scales the RGB colors, color * brightness/255
     int _current_message;  // index of the current message used to select the correct color.
     
-    // make sure to keep in index order from defines, this is an array of the colors to use _messageColors[_currentMessage][color] where color is 0 for r, 1 for g, and 2 for b
-    int _message_colors[4][3] = {  STATUS_COLOR_LED_OFF, \
-                  STATUS_COLOR_TRIAL_OFF, \
-                  STATUS_COLOR_TRIAL_ON, \
-                  STATUS_COLOR_ERROR};
+    // make sure to keep in index order from messages, this is an array of the colors to use _messageColors[_currentMessage][color] where color is 0 for r, 1 for g, and 2 for b.
+    // This method of accessing array elements is bulky but works.
+    const int _message_colors[4][3] = {{status_led_def::colors::off[0], status_led_def::colors::off[1], status_led_def::colors::off[2]}, \
+                {status_led_def::colors::trial_off[0], status_led_def::colors::trial_off[1], status_led_def::colors::trial_off[2]}, \
+                {status_led_def::colors::trial_on[0], status_led_def::colors::trial_on[1], status_led_def::colors::trial_on[2]}, \
+                {status_led_def::colors::error[0], status_led_def::colors::error[1], status_led_def::colors::error[2]}};
+              
+    
 };
 
 #endif

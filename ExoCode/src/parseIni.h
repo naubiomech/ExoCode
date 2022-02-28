@@ -18,7 +18,7 @@ namespace ini_config{
     const int section_length = 10;
     const int number_of_keys = 10;
     //const char *config_filename = "/config.ini";  // this line creates an "Error compiling for board Teensy 3.6." so I am just hard coding it.
-};
+}
 
 // Includes for reading the ini file from the SD card.
 
