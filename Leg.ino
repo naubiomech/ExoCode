@@ -15,7 +15,6 @@ void initialize_leg(Leg* leg) {
 
   leg->p_steps->fsr_Toe = leg->fsr_sense_Toe;
   leg->zero = zero;
-  leg->stance_times.reserve(leg->time_array_length);
 }
 
 void initialize_left_leg(Leg* left_leg) {

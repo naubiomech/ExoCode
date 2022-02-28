@@ -5,7 +5,7 @@ const int dim = 5;
 
 #include "PID_v2.h"
 #include "Control_Adjustment.h"
-#include <vector>
+#include <deque>
 
 struct Leg {
   int torque_sensor_ankle_pin;
@@ -272,11 +272,10 @@ struct Leg {
 
   // Torque_Speed_ADJ.h
   const int time_array_length = 4;
-  std::vector<int> stance_times;
+  std::deque<int> stance_times = {0, 0, 0, 0};
   bool full_times_array = false;
-  //steps steps;
-  steps* p_steps;
 
+  steps* p_steps;
 };
 
 Leg left_leg_value = Leg();

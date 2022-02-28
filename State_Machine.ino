@@ -1,4 +1,4 @@
-#include <vector>
+#include <deque>
 //--------------------NEW FUNCTIONS-----------------
 // Before state 3 in case of balance control was activated just in case of not negligible value
 // of the force on the toe i.e. if you just walk on the heel you never feel the balance.
@@ -47,15 +47,13 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
               stepper->left_step_start = millis();
             }
           }
-          
-          if(leg->stance_times.size() < leg->time_array_length) {
-            leg->stance_times.push_back(millis());
-          } else {
-            leg->stance_times.push_back(millis());
-            leg->stance_times.erase(leg->stance_times.begin());
+
+          leg->stance_times.push_back(millis());
+          if(leg->stance_times.size() >= (leg->time_array_length-1)) {
+            leg->stance_times.pop_front();
             leg->full_times_array = true;
           }
-          
+
           if(leg->full_times_array && ((leg->stance_times[leg->time_array_length-1] - leg->stance_times[0]) < 1000)) {
             right_leg->Previous_Setpoint_Ankle = 0;
             right_leg->Previous_Dorsi_Setpoint_Ankle = 0;
