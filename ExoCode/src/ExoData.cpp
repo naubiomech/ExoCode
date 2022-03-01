@@ -17,7 +17,7 @@ ExoData::ExoData(uint8_t* config_to_send)
 : left_leg(true, config_to_send)  // using initializer list for member objects.
 , right_leg(false, config_to_send)
 {
-    this->status = ExoStatus::not_enabled;
+    this->status = status_led_def::messages::trial_off;
     this->sync_led_state = false;
     
 };

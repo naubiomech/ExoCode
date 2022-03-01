@@ -306,7 +306,42 @@ void loop()
 
   if ((print_timestamp - last_print_timestamp) >= print_time_ms)
   {
-    Serial.println(exo_data.sync_led_state);
+    //Serial.println(exo_data.sync_led_state);
+  }
+
+
+  /*
+     Test Status LED
+  */
+  int status_trigger_timestamp_ms = millis();
+  static int last_status_trigger_timestamp_ms = status_trigger_timestamp_ms;
+  const int status_period_ms = 1000;
+  if ((status_trigger_timestamp_ms - last_status_trigger_timestamp_ms) >= status_period_ms)
+  {
+      exo_data.status++;
+      if (exo_data.status > 3)
+      {
+          exo_data.status = 0;
+      }
+      switch (exo_data.status)
+      {
+          case 0 :
+            Serial.println("Status: off");
+            break;
+          case 1 :
+            Serial.println("Status: trial off");
+            break;
+          case 2 :
+            Serial.println("Status: trial on");
+            break;
+          case 3 :
+            Serial.println("Status: error");
+            break;
+          default :
+            Serial.println("Status: not defined");
+            break;  
+      }
+      last_status_trigger_timestamp_ms = status_trigger_timestamp_ms;
   }
 
 }

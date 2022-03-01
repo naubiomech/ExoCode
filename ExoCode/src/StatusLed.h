@@ -57,8 +57,8 @@ namespace status_led_def
         const int error[] = {255, 0, 0};
     }
     
-    const uint8_t on_state = 0;
-    const uint8_t off_state = 255;  
+    const uint8_t on_state = logic_micro_pins::status_led_on_state;
+    const uint8_t off_state = logic_micro_pins::status_led_off_state;  
     
 }
 
@@ -71,7 +71,7 @@ class StatusLed
     StatusLed(int r_pin, int g_pin, int b_pin);   // pins are the pins assocated with the different LED inputs
     StatusLed(int r_pin, int g_pin, int b_pin, int brightness);  // pins are the pins assocated with the different LED inputs, brightness is used to scale the colors that are sent: color * brightness/255
    
-    void update_led(int message); // Changes the LED State to the current state
+    void update(uint8_t message); // Changes the LED State to the current state
     void set_brightness(int brightness);  // Used if you need to change the brightness after initialization, brightness is used to scale the colors that are sent: color * brightness/255
     
   private:

@@ -36,6 +36,10 @@ void Exo::run()
     left_leg.run_leg();
     right_leg.run_leg();
     
+    // update status LED
+    status_led.update(data->status);
+    
+    
     // send data over SPI
 };
 

@@ -36,7 +36,7 @@ StatusLed::StatusLed(int r_pin, int g_pin, int b_pin)
   pinMode(_g_pin, OUTPUT);  // sets the pin as output
   pinMode(_b_pin, OUTPUT);  // sets the pin as output
   
-  update_led(_current_message); // set status
+  update(_current_message); // set status
   
 }
 
@@ -56,7 +56,7 @@ StatusLed::StatusLed(int r_pin, int g_pin, int b_pin, int brightness)
   pinMode(_g_pin, OUTPUT);  // sets the pin as output
   pinMode(_b_pin, OUTPUT);  // sets the pin as output
   
-  update_led(_current_message); // set status
+  update(_current_message); // set status
 
 }
 
@@ -67,7 +67,7 @@ Public
 /*
 * Change the message and LED state
 */
-void StatusLed::update_led(int message)
+void StatusLed::update(uint8_t message)
 {
   _current_message = message;  // Update _current_message
   _set_color(_message_colors[_current_message][0],_message_colors[_current_message][1],_message_colors[_current_message][2]);   // Set the LED state
