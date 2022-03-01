@@ -38,6 +38,21 @@ Leg::Leg(bool is_left, ExoData* exo_data)
 };
 
 /*
+ * read FSR,  calc percent gait, read joint data, send joint commands
+ */
+void Leg::run_leg()
+{
+    check_calibration();
+    
+    // read all the data before we calculate and send the new motor commands
+    read_data();
+    
+    // calculates the new motor commands and sends them.
+    update_motor_cmds();
+        
+}; 
+
+/*
  * Reads the FSR, detects ground strike, and calculates percent gait.
  * Sets the values to the corresponding place in data class.
  */
@@ -232,6 +247,26 @@ void Leg::clear_step_time_estimate()
     for (int i = 0; i<_num_steps_avg; i++)
     {
         _step_times[i] = 0;
+    }
+};
+
+/*
+ * sends new command to the motors
+ */
+void Leg::update_motor_cmds()
+{
+    // Check the joint sensors if the joint is used.
+    if (_leg_data->hip.is_used)
+    {
+        _hip.run_joint();
+    }
+    if (_leg_data->knee.is_used)
+    {
+        _knee.run_joint();
+    }
+    if (_leg_data->ankle.is_used)
+    {
+        _ankle.run_joint();
     }
 };
 #endif

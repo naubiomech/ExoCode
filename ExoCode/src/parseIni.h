@@ -12,7 +12,8 @@
 #include <stdint.h>
 
 // define the constants to use for the various arrays.
-namespace ini_config{
+namespace ini_config
+{
     const int buffer_length = 500;
     const int key_length = 25;
     const int section_length = 10;
