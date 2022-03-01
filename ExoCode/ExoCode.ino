@@ -244,107 +244,119 @@ void loop()
 
   //-----------------------------------------------
 
-  /*
-     Temp code to test torque sensor
-  */
-  static bool first_run = true;
+      /*
+         Temp code to test torque sensor
+      */
+//      static bool first_run = true;
+//
+//      if (first_run)
+//      {
+//        exo_data.left_leg.hip.calibrate_torque_sensor = true;
+//        exo_data.left_leg.ankle.calibrate_torque_sensor = true;
+//        Serial.print("HipTorqueReading");
+//        Serial.print(" ");
+//        Serial.println("AnkleTorqueReading");
+//
+//        first_run = false;
+//      }
 
-  if (first_run)
-  {
-    exo_data.left_leg.hip.calibrate_torque_sensor = true;
-    exo_data.left_leg.ankle.calibrate_torque_sensor = true;
-    Serial.print("HipTorqueReading");
-    Serial.print(" ");
-    Serial.println("AnkleTorqueReading");
+      //        exo.left_leg.check_calibration();
+      //        exo.left_leg.read_data();
 
-    first_run = false;
-  }
+      exo.run();
 
-  //        exo.left_leg.check_calibration();
-  //        exo.left_leg.read_data();
+      //        int print_time_ms = 100;
+      //        static int last_print_timestamp = millis();
+      //        int print_timestamp = millis();
+      //        if ((print_timestamp-last_print_timestamp)>print_time_ms)
+      //        {
+      //            Serial.print(exo_data.left_leg.hip.torque_reading);
+      //            Serial.print(" ");
+      //            Serial.print(exo_data.left_leg.ankle.torque_reading);
+      //            Serial.println(" ");
 
-  exo.run();
+      //            Serial.print(exo_data.left_leg.hip.calibrate_torque_sensor);
+      //            Serial.print(" ");
+      //            Serial.print(exo_data.left_leg.ankle.calibrate_torque_sensor);
+      //            Serial.println(" ");
+      //            last_print_timestamp = print_timestamp;
 
-  //        int print_time_ms = 100;
-  //        static int last_print_timestamp = millis();
-  //        int print_timestamp = millis();
-  //        if ((print_timestamp-last_print_timestamp)>print_time_ms)
-  //        {
-  //            Serial.print(exo_data.left_leg.hip.torque_reading);
-  //            Serial.print(" ");
-  //            Serial.print(exo_data.left_leg.ankle.torque_reading);
-  //            Serial.println(" ");
-
-  //            Serial.print(exo_data.left_leg.hip.calibrate_torque_sensor);
-  //            Serial.print(" ");
-  //            Serial.print(exo_data.left_leg.ankle.calibrate_torque_sensor);
-  //            Serial.println(" ");
-  //            last_print_timestamp = print_timestamp;
-
-  //        }
-
-
-  //-----------------------------------------------
+      //        }
 
 
-  /*
-     Test Sync LED
-  */
-  int sync_trigger_timestamp_ms = millis();
-  static int last_sync_trigger_timestamp_ms = sync_trigger_timestamp_ms;
-  const int trigger_period_ms = 5000;
-  if ((sync_trigger_timestamp_ms - last_sync_trigger_timestamp_ms) >= trigger_period_ms)
-  {
-    exo.sync_led.trigger();
-    Serial.println("Sync LED Triggered");
-    last_sync_trigger_timestamp_ms = sync_trigger_timestamp_ms;
-  }
-
-  int print_time_ms = 100;
-  int print_timestamp = millis();
-  static int last_print_timestamp = print_timestamp;
-
-  if ((print_timestamp - last_print_timestamp) >= print_time_ms)
-  {
-    //Serial.println(exo_data.sync_led_state);
-  }
+      //-----------------------------------------------
 
 
-  /*
-     Test Status LED
-  */
-  int status_trigger_timestamp_ms = millis();
-  static int last_status_trigger_timestamp_ms = status_trigger_timestamp_ms;
-  const int status_period_ms = 1000;
-  if ((status_trigger_timestamp_ms - last_status_trigger_timestamp_ms) >= status_period_ms)
-  {
-      exo_data.status++;
-      if (exo_data.status > 3)
+      /*
+         Test Sync LED
+      */
+      int sync_trigger_timestamp_ms = millis();
+      static int last_sync_trigger_timestamp_ms = sync_trigger_timestamp_ms;
+      const int trigger_period_ms = 5000;
+      if ((sync_trigger_timestamp_ms - last_sync_trigger_timestamp_ms) >= trigger_period_ms)
       {
-          exo_data.status = 0;
+        exo.sync_led.trigger();
+        Serial.println("Sync LED Triggered");
+        last_sync_trigger_timestamp_ms = sync_trigger_timestamp_ms;
       }
-      switch (exo_data.status)
+
+      int print_time_ms = 100;
+      int print_timestamp = millis();
+      static int last_print_timestamp = print_timestamp;
+
+      if ((print_timestamp - last_print_timestamp) >= print_time_ms)
       {
-          case 0 :
-            Serial.println("Status: off");
-            break;
-          case 1 :
-            Serial.println("Status: trial off");
-            break;
-          case 2 :
-            Serial.println("Status: trial on");
-            break;
-          case 3 :
-            Serial.println("Status: error");
-            break;
-          default :
-            Serial.println("Status: not defined");
-            break;  
+        //Serial.println(exo_data.sync_led_state);
       }
-      last_status_trigger_timestamp_ms = status_trigger_timestamp_ms;
-  }
+
+      //-----------------------------------------------
+      /*
+         Test Status LED
+      */
+      int status_trigger_timestamp_ms = millis();
+      static int last_status_trigger_timestamp_ms = status_trigger_timestamp_ms;
+      const int status_period_ms = 1000;
+      if ((status_trigger_timestamp_ms - last_status_trigger_timestamp_ms) >= status_period_ms)
+      {
+          exo_data.status++;
+          if (exo_data.status > 3)
+          {
+              exo_data.status = 0;
+          }
+          switch (exo_data.status)
+          {
+              case 0 :
+                Serial.println("Status: off");
+                break;
+              case 1 :
+                Serial.println("Status: trial off");
+                break;
+              case 2 :
+                Serial.println("Status: trial on");
+                break;
+              case 3 :
+                Serial.println("Status: error");
+                break;
+              default :
+                Serial.println("Status: not defined");
+                break;  
+          }
+          last_status_trigger_timestamp_ms = status_trigger_timestamp_ms;
+      }
+      
+      //-----------------------------------------------
+
+    /* Code to test the motor communication */
+    //===============================================
+//    static bool first_run = true;
+//    if(first_run)
+//    {   Serial.println("Starting right hip");
+//        first_run = false;
+//        exo.right_leg._hip._motor->on_off(true);
+//    }
 
 }
+
 
 #elif defined(ARDUINO_ARDUINO_NANO33BLE)  // board name is ARDUINO_[build.board] property in the board.txt file here found at C:\Users\[USERNAME]\AppData\Local\Arduino15\packages\arduino\hardware\mbed_nano\2.6.1  They just already prepended it with ARDUINO so you have to do it twice.
 #include "src\ParseIni.h"
