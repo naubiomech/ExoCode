@@ -270,9 +270,8 @@ struct Leg {
   bool FLAG_UPDATE_VALUES = false;
   //------------------------------------------------
 
-  // Torque_Speed_ADJ.h
-  const int time_array_length = 4;
-  std::deque<int> stance_times = {0, 0, 0, 0};
+  const int time_array_length = 3;
+  std::deque<double> stance_times = {0, 0, 0, 0};
   bool full_times_array = false;
 
   steps* p_steps;

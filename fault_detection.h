@@ -104,7 +104,7 @@ inline void torque_check(Leg* leg) {
   leg->previous_torque_average = abs_trq;
 }
 
-inline void pid_check(Leg* leg) {
+inline void pid_check(Leg* leg) { //TODO: Add the check to see if the torque isnt changing during redline
   static uint32_t r_count = 0;
   static uint32_t l_count = 0;
 

@@ -44,7 +44,7 @@ void setupBLE()
 void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
   static bool collecting = false;
   char data[32] = {0};
-  //callback_thread.set_priority(osPriorityNormal);
+  callback_thread.set_priority(osPriorityBelowNormal);
   int val_len = RXChar.valueLength();
   RXChar.readValue(data, val_len);
   if (data[0] == '!') {
@@ -60,7 +60,7 @@ void onRxCharValueUpdate(BLEDevice central, BLECharacteristic characteristic) {
       return;
     }
   }
-  //callback_thread.set_priority(osPriorityAboveNormal);
+  callback_thread.set_priority(osPriorityAboveNormal);
 }//End onRxCharValueUpdate
 
 void onBLEConnected(BLEDevice central)
