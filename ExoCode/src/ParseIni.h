@@ -33,6 +33,7 @@ namespace config_defs
     enum class board_version : uint8_t
     { 
         zero_one = 1,
+        zero_two = 2,
     };
 
     enum class exo_name : uint8_t
@@ -166,7 +167,11 @@ namespace config_defs
         typedef std::map<std::string, uint8_t> IniKeyCode;
         
         const IniKeyCode board_name = {{"AK_Board", (uint8_t)config_defs::board_name::AK_board},};
-        const IniKeyCode board_version = { {"0.1", (uint8_t)config_defs::board_version::zero_one}, };
+        const IniKeyCode board_version = 
+        { 
+                    {"0.1", (uint8_t)config_defs::board_version::zero_one},
+                    {"0.2", (uint8_t)config_defs::board_version::zero_two},        
+        };
 
         const IniKeyCode exo_name 
         { 
