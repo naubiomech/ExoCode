@@ -70,6 +70,7 @@ class SyncLed
 	volatile int _current_sync_period; // The current period to use.  Whenever syncLedHandler is called the interupt should have another begin call to make sure the period is correct.
 	volatile bool _do_blink ; // flag which says if the blink sequence is active, use volatile for shared variables
     volatile bool _do_start_stop_sequence; // flag for if we are in the start stop region of the sequence, use volatile for shared variables
+    bool _is_blinking; // True while the system is blinking.
     
     int _pin;  // pin the LED is on.
   	int _default_led_state;  // Default LED state

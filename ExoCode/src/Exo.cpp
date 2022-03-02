@@ -31,6 +31,15 @@ void Exo::run()
     
     // check if we should update the sync LED and record the LED on/off state.
     data->sync_led_state = sync_led.handler();
+    bool trial_running = sync_led.get_is_blinking();
+    if (trial_running & (data->status != status_led_defs::messages::error))
+    {
+        data->status = status_led_defs::messages::trial_on;
+    }
+    else if (!trial_running & (data->status != status_led_defs::messages::error))
+    {
+        data->status = status_led_defs::messages::trial_off;
+    }
     
     // Record the leg data and send new commands to the motors.
     left_leg.run_leg();

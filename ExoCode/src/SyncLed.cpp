@@ -44,12 +44,13 @@ SyncLed::SyncLed(int pin, int sync_start_stop_half_period_us, int sync_half_peri
 	_led_state = _default_led_state;
     _led_default_state_pin = -1;
     _led_is_on = _led_state == logic_micro_pins::sync_led_on_state;
-  
+    
 	_state_change_count = 0; 
 	_do_blink = false; 
 	_do_start_stop_sequence = false; 
 	_num_start_stop_blinks = NUM_START_STOP_BLINKS;
-	
+	_is_blinking = false;
+    
 	// Configure the pin for the LED
 	pinMode(_pin, OUTPUT);
 	digitalWrite(_pin,_default_led_state);
@@ -77,7 +78,8 @@ SyncLed::SyncLed(int pin, int sync_start_stop_half_period_us, int sync_half_peri
 	_do_blink = false; // use volatile for shared variables
 	_do_start_stop_sequence = false; // use volatile for shared variables
 	_num_start_stop_blinks = NUM_START_STOP_BLINKS;
-	
+	_is_blinking = false;
+    
 	// Configure the pin for the LED
 	pinMode(_pin, OUTPUT);
 	digitalWrite(_pin,_default_led_state);
@@ -105,6 +107,7 @@ SyncLed::SyncLed(int pin, int sync_start_stop_half_period_us, int sync_half_peri
   _do_blink = false; // use volatile for shared variables
   _do_start_stop_sequence = false; // use volatile for shared variables
   _num_start_stop_blinks = NUM_START_STOP_BLINKS;
+  _is_blinking = false;
   
   // Configure the pin for the LED
   pinMode(_pin, OUTPUT);
@@ -168,6 +171,7 @@ bool SyncLed::handler()
         if(_do_start_stop_sequence)
         {
             _blink_start_stop();
+            _is_blinking = true;  // this way it will be recorded as blinking anytime not in the default state
         }
         // do the main blinks
         else if (_do_blink)
@@ -177,6 +181,7 @@ bool SyncLed::handler()
         // hold default state
         else
         {
+            _is_blinking = false; // in the default state it is not blinking.
             _default_state();
         }
       
@@ -282,5 +287,5 @@ bool SyncLed::get_led_is_on()
  */
 bool SyncLed::get_is_blinking()
 {
-    return _do_blink | _do_start_stop_sequence;
+    return _is_blinking;
 }; 

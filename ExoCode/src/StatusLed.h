@@ -39,7 +39,7 @@
 //#define NO_PWM true // true if using simple digital pins, false if using pwm pins
 
 
-namespace status_led_def
+namespace status_led_defs
 {
     namespace messages 
     {
@@ -86,10 +86,10 @@ class StatusLed
     
     // make sure to keep in index order from messages, this is an array of the colors to use _messageColors[_currentMessage][color] where color is 0 for r, 1 for g, and 2 for b.
     // This method of accessing array elements is bulky but works.
-    const int _message_colors[4][3] = {{status_led_def::colors::off[0], status_led_def::colors::off[1], status_led_def::colors::off[2]}, \
-                {status_led_def::colors::trial_off[0], status_led_def::colors::trial_off[1], status_led_def::colors::trial_off[2]}, \
-                {status_led_def::colors::trial_on[0], status_led_def::colors::trial_on[1], status_led_def::colors::trial_on[2]}, \
-                {status_led_def::colors::error[0], status_led_def::colors::error[1], status_led_def::colors::error[2]}};
+    const int _message_colors[4][3] = {{status_led_defs::colors::off[0], status_led_defs::colors::off[1], status_led_defs::colors::off[2]}, \
+                {status_led_defs::colors::trial_off[0], status_led_defs::colors::trial_off[1], status_led_defs::colors::trial_off[2]}, \
+                {status_led_defs::colors::trial_on[0], status_led_defs::colors::trial_on[1], status_led_defs::colors::trial_on[2]}, \
+                {status_led_defs::colors::error[0], status_led_defs::colors::error[1], status_led_defs::colors::error[2]}};
               
     
 };
