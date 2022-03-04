@@ -106,7 +106,7 @@
         const unsigned int status_led_g_pin = 16;
         const unsigned int status_led_b_pin = 17;
         // if you have connected to pins with PWM set to true.
-        const bool status_has_pwm = false;
+        const bool status_has_pwm = true;
         // For high to be on use 255 for the on state and 0 for the off, for low as on flip it.
         const uint8_t status_led_on_state = 0;//255;
         const uint8_t status_led_off_state = 255;//0;  

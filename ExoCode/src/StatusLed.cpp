@@ -91,7 +91,7 @@ Protected
  */
 void StatusLed::_set_color(int r_color, int g_color, int b_color)
 {
-  if (logic_micro_pins::status_has_pwm)  // using simple digital pins
+  if (status_led_defs::has_pwm)  // using simple digital pins
   {
     int r_color_scaled = floor(r_color * _brightness/255); // scale by brightness
     int g_color_scaled = floor(g_color * _brightness/255); // scale by brightness

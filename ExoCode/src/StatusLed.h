@@ -60,6 +60,8 @@ namespace status_led_defs
     const uint8_t on_state = logic_micro_pins::status_led_on_state;
     const uint8_t off_state = logic_micro_pins::status_led_off_state;  
     
+    const bool has_pwm = logic_micro_pins::status_has_pwm;
+    
 }
 
 
