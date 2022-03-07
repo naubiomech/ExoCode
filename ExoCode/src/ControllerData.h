@@ -55,15 +55,15 @@ namespace controller_defs
         // user mass kg
         const uint8_t mass_idx = 0;
         // peak torque divided by user mass 
-        const uint8_t peak_normalized_torque_mNm_idx = 1;
+        const uint8_t peak_normalized_torque_Nm_kg_idx = 1;
         // ramp start percent gait x10
-        const uint8_t t0_x10_idx = 2;
+        const uint8_t t0_idx = 2;
         // torque onset percent gait x10
-        const uint8_t t1_x10_idx = 3;
+        const uint8_t t1_idx = 3;
         // peak torque point as percent gait x10
-        const uint8_t t2_x10_idx = 4;
+        const uint8_t t2_idx = 4;
         // offset as percent gait x10
-        const uint8_t t3_x10_idx = 5;
+        const uint8_t t3_idx = 5;
         const uint8_t num_parameter = 6;
         
     }
@@ -78,8 +78,9 @@ class ControllerData {
         
         uint8_t controller;
         config_defs::JointType joint; 
-        int16_t setpoint;  //  controller setpoint, basically the motor command.
-        int16_t parameters[controller_defs::max_parameters];  // Parameter list for the controller see the controller_defs namespace for the specific controller.  
+        // These were made floats to dummy proof the math for people but will double the data needed to be sent over SPI, we double the speed of the SPI if we move to fixed point.
+        float setpoint;  //  controller setpoint, basically the motor command.
+        float parameters[controller_defs::max_parameters];  // Parameter list for the controller see the controller_defs namespace for the specific controller.  
 };
 
 

@@ -30,7 +30,7 @@ class LegData{
         JointData ankle; 
         
         
-        int percent_gait_x10; // likely want to do fixed point 
+        float percent_gait; // likely want to do fixed point 
         // Calibrated FSR readings
         float heel_fsr;
         float toe_fsr;

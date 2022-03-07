@@ -66,7 +66,7 @@ void Leg::read_data()
     {
         _update_expected_duration();
     }
-    _leg_data->percent_gait_x10 = _calc_percent_gait();
+    _leg_data->percent_gait = _calc_percent_gait();
     
     // Check the joint sensors if the joint is used.
     if (_leg_data->hip.is_used)
@@ -159,22 +159,22 @@ bool Leg::_check_ground_strike()
 };
 
 /*
- * Uses the expected duration of the step to calculate the percent gait * 10 and returns the value
+ * Uses the expected duration of the step to calculate the percent gait and returns the value
  * Saturates at 100%
  */
-int Leg::_calc_percent_gait()
+float Leg::_calc_percent_gait()
 {
     int timestamp = millis();
-    int percent_gait_x10 = -1;
+    int percent_gait = -1;
     // only calulate if the expected step duration has been established.
     if (_expected_step_duration>0)
     {
-        percent_gait_x10 = 10*100 * ((float)timestamp - _ground_strike_timestamp) / _expected_step_duration;
-        percent_gait_x10 = min(percent_gait_x10, 1000); // set saturation.
+        percent_gait = 100 * ((float)timestamp - _ground_strike_timestamp) / _expected_step_duration;
+        percent_gait = min(percent_gait, 1000); // set saturation.
         // Serial.print("Leg::_calc_percent_gait : percent_gait_x10 = ");
         // Serial.println(percent_gait_x10);
     }
-    return percent_gait_x10;
+    return percent_gait;
 };
 
 /*

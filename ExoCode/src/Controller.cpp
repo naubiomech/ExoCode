@@ -85,9 +85,9 @@ ZeroTorque::ZeroTorque(config_defs::joint_id id, ExoData* exo_data)
     
 };
 
-int ZeroTorque::calc_motor_cmd()
+float ZeroTorque::calc_motor_cmd()
 {
-    int cmd = 0;
+    float cmd = 0;
     return cmd;
 };
 
@@ -106,9 +106,9 @@ ProportionalJointMoment::ProportionalJointMoment(config_defs::joint_id id, ExoDa
     
 };
 
-int ProportionalJointMoment::calc_motor_cmd()
+float ProportionalJointMoment::calc_motor_cmd()
 {
-    int cmd = 0;
+    float cmd = 0;
     //Serial.println("ProportionalJointMoment::calc_motor_cmd : Entered");
     cmd = _leg_data->toe_fsr * _controller_data->parameters[controller_defs::proportional_joint_moment::max_torque_idx];
     cmd = max(0, cmd);  // if the fsr is negative use zero torque so it doesn't dorsiflex.
@@ -131,10 +131,10 @@ HeelToe::HeelToe(config_defs::joint_id id, ExoData* exo_data)
     
 };
 
-int HeelToe::calc_motor_cmd()
+float HeelToe::calc_motor_cmd()
 {
     // this code is just temporary while we are under construction.
-    int cmd = 0;
+    float cmd = 0;
     return cmd;
 };
 
@@ -153,7 +153,7 @@ ExtensionAngle::ExtensionAngle(config_defs::joint_id id, ExoData* exo_data)
     
 };
 
-int ExtensionAngle::calc_motor_cmd()
+float ExtensionAngle::calc_motor_cmd()
 {
     // check if the angle range should be reset
     if (_controller_data->parameters[controller_defs::extension_angle::clear_angle_idx])
@@ -198,7 +198,7 @@ int ExtensionAngle::calc_motor_cmd()
     
     _update_state(angle);
     
-    int cmd = 0;
+    float cmd = 0;
     // calculate torque based on state
     switch (_state)
     {
@@ -271,16 +271,16 @@ ZhangCollins::ZhangCollins(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
     _mass = -1;
-    _peak_normalized_torque_mNm = -1;
-    _t0_x10 = -1;
-    _t1_x10 = -1;
-    _t2_x10 = -1;
-    _t3_x10 = -1;
+    _peak_normalized_torque_Nm_kg = -1;
+    _t0 = -1;
+    _t1 = -1;
+    _t2 = -1;
+    _t3 = -1;
             
     // peak torque
-    _tp_mNm = -1;
+    _tp_Nm = -1;
     // cable tension torque.  Not needed for our design, but used to match the paper.
-    _ts_mNm = -1;
+    _ts_Nm = -1;
     // parameters for rising spline
     _a1 = -1;
     _b1 = -1;
@@ -300,41 +300,46 @@ ZhangCollins::ZhangCollins(config_defs::joint_id id, ExoData* exo_data)
  * 
  * Takes in the parameters that define the curve shape.
  */
-void ZhangCollins::_update_spline_parameters(int mass, int peak_normalized_torque_mNm, int ramp_start_percent_gait_x10, int onset_percent_gait_x10, int peak_percent_gait_x10, int stop_percent_gait_x10)
+void ZhangCollins::_update_spline_parameters(int mass, float peak_normalized_torque_Nm_kg, float ramp_start_percent_gait, float onset_percent_gait, float peak_percent_gait, float stop_percent_gait)
 {
     // TODO: add config file read;
     // 1 cout << "\n exoBoot :: initCollinsProfile : Doing the init." << endl;
 
     _mass = mass; // kg
+    _t0 = ramp_start_percent_gait;
+    _t1 = onset_percent_gait;
+    _t2 = peak_percent_gait;
+    _t3 = stop_percent_gait;
+    
     // todo : add fixed point
-    _t0_x10 = ramp_start_percent_gait_x10;
-    float t0 = (float)_t0_x10/10;
-    _t1_x10 = onset_percent_gait_x10;
-    float t1 = (float)_t1_x10/10;
-    _t2_x10 = peak_percent_gait_x10;
-    float t2 = (float)_t2_x10/10;
-    _t3_x10 = stop_percent_gait_x10;
-    float t3 = (float)_t3_x10/10;
-
-    _peak_normalized_torque_mNm = peak_normalized_torque_mNm; // 0.76; // Using a smaller value due to Dephy Exo Limit.
+    float t0 = ramp_start_percent_gait;
+    float t1 = onset_percent_gait;
+    float t2 = peak_percent_gait;
+    float t3 = stop_percent_gait;
+    
+    
+    
     
 
-    _tp_mNm = _mass * (float)peak_normalized_torque_mNm;
-    _ts_mNm = 2000;
+    _peak_normalized_torque_Nm_kg = peak_normalized_torque_Nm_kg; // 0.76; // Using a smaller value due to Dephy Exo Limit.
+    
 
-    _a1 = (2 *(_tp_mNm - _ts_mNm))/pow((t1 - t2),3);
-    _b1 = -((3 *(t1 + t2) *(_tp_mNm - _ts_mNm)) / pow((t1 - t2),3));
-    _c1 = (6* t1 * t2 * (_tp_mNm - _ts_mNm))/pow((t1 - t2),3);
-    _d1 = -((-pow(t1, 3) * _tp_mNm + 3 * pow(t1, 2) * t2 * _tp_mNm - 3 * t1 * pow(t2,2) * _ts_mNm +
-            pow(t2,3) * _ts_mNm)/pow((t1 - t2),3));
+    _tp_Nm = _mass * (float)peak_normalized_torque_Nm_kg;
+    _ts_Nm = 2;
+
+    _a1 = (2 *(_tp_Nm - _ts_Nm))/pow((t1 - t2),3);
+    _b1 = -((3 *(t1 + t2) *(_tp_Nm - _ts_Nm)) / pow((t1 - t2),3));
+    _c1 = (6* t1 * t2 * (_tp_Nm - _ts_Nm))/pow((t1 - t2),3);
+    _d1 = -((-pow(t1, 3) * _tp_Nm + 3 * pow(t1, 2) * t2 * _tp_Nm - 3 * t1 * pow(t2,2) * _ts_Nm +
+            pow(t2,3) * _ts_Nm)/pow((t1 - t2),3));
 
     // 1 cout << "exoBoot :: initCollinsProfile : \na1 = " << a1 << "\nb1 = " << b1 << "\nc1 = " << c1 << "\nd1 = " << d1 << endl;
 
-    _a2 = -((_tp_mNm - _ts_mNm)/(2* pow((t2 - t3),3)));
-    _b2 = (3 *t3 *(_tp_mNm - _ts_mNm))/(2 *pow((t2 - t3),3));
-    _c2 = (3 *(pow(t2,2) - 2 *t2 *t3) * (_tp_mNm - _ts_mNm))/(2* pow((t2 - t3),3));
-    _d2 = -((3 * pow(t2,2) * t3 * _tp_mNm - 6 * t2 * pow(t3, 2) * _tp_mNm + 2 * pow(t3,3) * _tp_mNm -
-              2 * pow(t2,3) * _ts_mNm + 3 * pow(t2, 2) * t3 * _ts_mNm)/(2 * pow((t2 - t3), 3)));
+    _a2 = -((_tp_Nm - _ts_Nm)/(2* pow((t2 - t3),3)));
+    _b2 = (3 *t3 *(_tp_Nm - _ts_Nm))/(2 *pow((t2 - t3),3));
+    _c2 = (3 *(pow(t2,2) - 2 *t2 *t3) * (_tp_Nm - _ts_Nm))/(2* pow((t2 - t3),3));
+    _d2 = -((3 * pow(t2,2) * t3 * _tp_Nm - 6 * t2 * pow(t3, 2) * _tp_Nm + 2 * pow(t3,3) * _tp_Nm -
+              2 * pow(t2,3) * _ts_Nm + 3 * pow(t2, 2) * t3 * _ts_Nm)/(2 * pow((t2 - t3), 3)));
 
     // 1 cout << "exoBoot :: initCollinsProfile : \na2 = " << a2 << "\nb2 = " << b2 << "\nc2 = " << c2 << "\nd2 = " << d2 << endl;
 
@@ -349,35 +354,35 @@ void ZhangCollins::_update_spline_parameters(int mass, int peak_normalized_torqu
 /*
  *
  */
-int ZhangCollins::calc_motor_cmd()
+float ZhangCollins::calc_motor_cmd()
 {
     // check if the parameters have changed and update the spline if they have
     if ((_mass != _controller_data->parameters[controller_defs::zhang_collins::mass_idx])
-        | (_peak_normalized_torque_mNm != _controller_data->parameters[controller_defs::zhang_collins::peak_normalized_torque_mNm_idx])
-        | (_t0_x10 != _controller_data->parameters[controller_defs::zhang_collins::t0_x10_idx])
-        | (_t1_x10 != _controller_data->parameters[controller_defs::zhang_collins::t1_x10_idx])
-        | (_t2_x10 != _controller_data->parameters[controller_defs::zhang_collins::t2_x10_idx])
-        | (_t3_x10 != _controller_data->parameters[controller_defs::zhang_collins::t3_x10_idx]))
+        | (_peak_normalized_torque_Nm_kg != _controller_data->parameters[controller_defs::zhang_collins::peak_normalized_torque_Nm_kg_idx])
+        | (_t0 != _controller_data->parameters[controller_defs::zhang_collins::t0_idx])
+        | (_t1 != _controller_data->parameters[controller_defs::zhang_collins::t1_idx])
+        | (_t2 != _controller_data->parameters[controller_defs::zhang_collins::t2_idx])
+        | (_t3 != _controller_data->parameters[controller_defs::zhang_collins::t3_idx]))
     {
         _update_spline_parameters(_controller_data->parameters[controller_defs::zhang_collins::mass_idx]
-            , _controller_data->parameters[controller_defs::zhang_collins::peak_normalized_torque_mNm_idx]
-            , _controller_data->parameters[controller_defs::zhang_collins::t0_x10_idx]
-            , _controller_data->parameters[controller_defs::zhang_collins::t1_x10_idx]
-            , _controller_data->parameters[controller_defs::zhang_collins::t2_x10_idx]
-            , _controller_data->parameters[controller_defs::zhang_collins::t3_x10_idx]);
-        // Serial.print("ZhangCollins::calc_motor_cmd : Updated parameters");
+            , _controller_data->parameters[controller_defs::zhang_collins::peak_normalized_torque_Nm_kg_idx]
+            , _controller_data->parameters[controller_defs::zhang_collins::t0_idx]
+            , _controller_data->parameters[controller_defs::zhang_collins::t1_idx]
+            , _controller_data->parameters[controller_defs::zhang_collins::t2_idx]
+            , _controller_data->parameters[controller_defs::zhang_collins::t3_idx]);
+        // Serial.println("ZhangCollins::calc_motor_cmd : Updated parameters");
         // delay(1000);
     
     }
     
     // based on the percent gait find the torque to apply.
     // convert to floats so we don't need to modify everywhere in the code.
-    float percent_gait = (float)(_leg_data->percent_gait_x10)/10;
-    float t0 = (float)_t0_x10/10;
-    float t1 = (float)_t1_x10/10;
-    float t2 = (float)_t2_x10/10;
-    float t3 = (float)_t3_x10/10;
-    int torque_cmd = 0;
+    float percent_gait = _leg_data->percent_gait;
+    float t0 = _t0;
+    float t1 = _t1;
+    float t2 = _t2;
+    float t3 = _t3;
+    float torque_cmd = 0;
     
     // Serial.print("ZhangCollins::calc_motor_cmd : Percent Gait = ");
     // Serial.println(percent_gait);
@@ -396,7 +401,7 @@ int ZhangCollins::calc_motor_cmd()
     {
         if ((percent_gait <= t1) && (0 <= percent_gait))  // torque ramp to ts at t1
         {
-            torque_cmd = _ts_mNm / (t1 - t0) * percent_gait - _ts_mNm/(t1 - t0) * t0;  
+            torque_cmd = _ts_Nm / (t1 - t0) * percent_gait - _ts_Nm/(t1 - t0) * t0;  
             // Serial.println("ZhangCollins::calc_motor_cmd : Ramp");
             
         }

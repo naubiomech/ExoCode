@@ -71,9 +71,9 @@ class Leg
         /*
          * Calculates the percent of gait based on the ground contact reading
          * and an estimate of the step time based on the average time of the last few steps.
-         * returns the percent gait * 10
+         * returns the percent gait
          */
-        int _calc_percent_gait();
+        float _calc_percent_gait();
         
         /*
          * Creates an average step time based on the last few steps

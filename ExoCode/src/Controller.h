@@ -24,7 +24,7 @@
 
 /*
  * This class defines the interface for controllers.  
- * All controllers must have a int calc_motor_cmd() that returns a torque cmd in mNm.  
+ * All controllers must have a float calc_motor_cmd() that returns a torque cmd in Nm.  
  * Torques towards the posterior are positive.
  *
  */
@@ -36,7 +36,7 @@ class _Controller
 		// Virtual destructor is needed to make sure the correct destructor is called when the derived class is deleted.
         virtual ~_Controller(){};
 		//virtual void set_controller(int joint, int controller) = 0; // Changes the controller for an individual joint
-		virtual int calc_motor_cmd() = 0;
+		virtual float calc_motor_cmd() = 0;
 
     protected:
         ExoData* _data;
@@ -61,7 +61,7 @@ class ProportionalJointMoment : public _Controller
         ProportionalJointMoment(config_defs::joint_id id, ExoData* exo_data);
         ~ProportionalJointMoment(){};
         
-        int calc_motor_cmd();
+        float calc_motor_cmd();
 };
 
 
@@ -78,7 +78,7 @@ class ZeroTorque : public _Controller
         ZeroTorque(config_defs::joint_id id, ExoData* exo_data);
         ~ZeroTorque(){};
         
-        int calc_motor_cmd();
+        float calc_motor_cmd();
 };
 
 /*
@@ -96,7 +96,7 @@ class HeelToe: public _Controller
         HeelToe(config_defs::joint_id id, ExoData* exo_data);
         ~HeelToe(){};
         
-        int calc_motor_cmd();
+        float calc_motor_cmd();
 };
 
 /*
@@ -115,7 +115,7 @@ class ExtensionAngle: public _Controller
         ExtensionAngle(config_defs::joint_id id, ExoData* exo_data);
         ~ExtensionAngle(){};
         
-        int calc_motor_cmd();
+        float calc_motor_cmd();
     private:
         void _update_max_angle(float angle);
         void _update_state(float angle);
@@ -125,7 +125,7 @@ class ExtensionAngle: public _Controller
         const float _initial_max_angle = utils::degrees_to_radians(90);
         const float _initial_min_angle = utils::degrees_to_radians(-30);
         
-        // Used to track the range of motion
+        // Used to track the range of motion, angles are in rad.
         float _max_angle;
         float _min_angle;
         
@@ -158,23 +158,23 @@ class ZhangCollins: public _Controller
         ZhangCollins(config_defs::joint_id id, ExoData* exo_data);
         ~ZhangCollins(){};
         
-        int calc_motor_cmd();
+        float calc_motor_cmd();
     private:
         // when we change a parameter we need to recalculate the splines.
-        void _update_spline_parameters(int mass, int peak_normalized_torque_x100, int t0_x10, int t1_x10, int t2_x10, int t3_x10);
+        void _update_spline_parameters(int mass, float peak_normalized_torque, float t0, float t1, float t2, float t3);
                 
         // store the parameters so we can check if they change.
         int _mass;
-        int _peak_normalized_torque_mNm;
-        int _t0_x10;
-        int _t1_x10;
-        int _t2_x10;
-        int _t3_x10;
+        float _peak_normalized_torque_Nm_kg;
+        float _t0;
+        float _t1;
+        float _t2;
+        float _t3;
                 
         // peak torque
-        float _tp_mNm;
+        float _tp_Nm;
         // cable tension torque.  Not needed for our design, but used to match the paper.
-        float _ts_mNm;
+        float _ts_Nm;
         // parameters for rising spline
         float _a1;
         float _b1;
