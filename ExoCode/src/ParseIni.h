@@ -71,8 +71,8 @@ namespace config_defs
     enum class joint_id : uint8_t
     {
         // byte format : [0, is_left, !is_left, unused_joint, unused_joint, is_ankle, is_knee, is_hip]
-        left = 0b010000000,
-        right = 0b001000000,
+        left = 0b01000000,
+        right = 0b00100000,
         
         hip = 0b00000001,
         knee = 0b00000010,
