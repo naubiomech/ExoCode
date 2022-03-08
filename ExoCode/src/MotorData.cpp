@@ -23,14 +23,17 @@ MotorData::MotorData(config_defs::joint_id id, uint8_t* config_to_send)
         case (uint8_t)config_defs::joint_id::hip:
         {
             motor_type = config_to_send[config_defs::hip_idx];
+            break;
         }
         case (uint8_t)config_defs::joint_id::knee:
         {
             motor_type = config_to_send[config_defs::knee_idx];
+            break;
         }
         case (uint8_t)config_defs::joint_id::ankle:
         {
             motor_type = config_to_send[config_defs::ankle_idx];
+            break;
         }
     }
     

@@ -211,6 +211,7 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 , _heel_toe(id, exo_data)
 , _extension_angle(id, exo_data)
 {
+
     //Serial.println("HipJoint::HipJoint");
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
@@ -224,6 +225,7 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
         
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
+    
     switch (exo_data->left_leg.hip.motor.motor_type)
     {
         // using new so the object of the specific motor type persists.
@@ -237,12 +239,12 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
             break;
         default :
             //_motor = nullptr;
-            HipJoint::set_motor(nullptr);
+            HipJoint::set_motor(new NullMotor(id, exo_data));
             break;
     }
+    delay(5);
     
     set_controller(exo_data->left_leg.hip.controller.controller);
-   
 };
 
 /*
@@ -315,22 +317,23 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
     
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
+   
     switch (_data->left_leg.knee.motor.motor_type)
     {
         // using new so the object of the specific motor type persists.
         case (uint8_t)config_defs::motor::AK60 :
-            _motor = new AK60(id, exo_data);
+            KneeJoint::set_motor(new AK60(id, exo_data));
             break;
         case (uint8_t)config_defs::motor::AK80 :
-            _motor = new AK80(id, exo_data);
+            KneeJoint::set_motor(new AK80(id, exo_data));
             break;
         default :
-            _motor = nullptr;
+            KneeJoint::set_motor(new NullMotor(id, exo_data));
             break;
     }
-    
+    delay(5);
+
     set_controller(exo_data->left_leg.knee.controller.controller);
-     
 };
 
 /*
@@ -396,23 +399,23 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
             
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
+    
     switch (_data->left_leg.ankle.motor.motor_type)
     {
         // using new so the object of the specific motor type persists.
         case (uint8_t)config_defs::motor::AK60 :
-            _motor = new AK60(id, exo_data);
+            AnkleJoint::set_motor(new AK60(id, exo_data));
             break;
         case (uint8_t)config_defs::motor::AK80 :
-            _motor = new AK80(id, exo_data);
+            AnkleJoint::set_motor(new AK80(id, exo_data));
             break;
         default :
-            _motor = nullptr;
+           AnkleJoint::set_motor(new NullMotor(id, exo_data));
             break;
     }
-    
-    set_controller(exo_data->left_leg.ankle.controller.controller);
-    
-    
+    delay(5);
+
+    set_controller(exo_data->left_leg.ankle.controller.controller);  
 };
 
 /*
