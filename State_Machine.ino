@@ -49,25 +49,28 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           }
 
           leg->stance_times.push_back(millis());
-          if(leg->stance_times.size() >= (leg->time_array_length-1)) {
+          if(leg->stance_times.size() >= (leg->time_array_length)) {
             leg->stance_times.pop_front();
             leg->full_times_array = true;
           }
 
           if(!FSR_CAL_FLAG && leg->full_times_array && ((leg->stance_times[leg->time_array_length-1] - leg->stance_times[0]) < 1000)) {
-//            right_leg->Previous_Setpoint_Ankle = 0;
-//            right_leg->Previous_Dorsi_Setpoint_Ankle = 0;
-//            right_leg->first_step = 1;
-//            right_leg->activate_in_3_steps = 1;
-//            right_leg->coef_in_3_steps = 0;
-//            right_leg->start_step = 0;
-//            
-//            left_leg->Previous_Setpoint_Ankle = 0;
-//            left_leg->Previous_Dorsi_Setpoint_Ankle = 0;
-//            left_leg->first_step = 1;
-//            left_leg->activate_in_3_steps = 1;
-//            left_leg->coef_in_3_steps = 0;
-//            left_leg->start_step = 0;
+            
+            right_leg->Previous_Setpoint_Ankle = 0;
+            right_leg->Previous_Setpoint_Ankle_Pctrl = 0;
+            right_leg->Previous_Dorsi_Setpoint_Ankle = 0;
+            right_leg->first_step = 1;
+            right_leg->activate_in_3_steps = 1;
+            right_leg->coef_in_3_steps = 0;
+            right_leg->start_step = 0;
+            
+            left_leg->Previous_Setpoint_Ankle = 0;
+            left_leg->Previous_Setpoint_Ankle_Pctrl = 0;
+            left_leg->Previous_Dorsi_Setpoint_Ankle = 0;
+            left_leg->first_step = 1;
+            left_leg->activate_in_3_steps = 1;
+            left_leg->coef_in_3_steps = 0;
+            left_leg->start_step = 0;
 
             jitter_flag = true;
           }
@@ -202,11 +205,11 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
   else {
 
     if (N1 < 1 || N2 < 1 || N3 < 1) {
-      leg->PID_Setpoint = leg->New_PID_Setpoint;
+      //leg->PID_Setpoint = leg->New_PID_Setpoint;
     }
     else {
       // Create the smoothed reference and call the PID
-      PID_Sigm_Curve(leg);
+      //PID_Sigm_Curve(leg);
     }
   }
 
@@ -238,11 +241,11 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
   else {
 
     if (N1 < 1 || N2 < 1 || N3 < 1) {
-      leg->PID_Setpoint = leg->New_PID_Setpoint;
+      //leg->PID_Setpoint = leg->New_PID_Setpoint;
     }
     else {
       // Create the smoothed reference and call the PID
-      PID_Sigm_Curve(leg);
+      //PID_Sigm_Curve(leg);
     }
   }
 }// end function

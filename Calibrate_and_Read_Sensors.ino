@@ -19,27 +19,31 @@ void torque_calibration()
 
 void FSR_calibration()
 {
-
+  static double temp_r_fsr_peak = 0;
+  static double temp_l_fsr_peak = 0;
+  static double temp_r_fsr_trough = 1000;
+  static double temp_l_fsr_trough = 1000;
+  
 
   if (FSR_FIRST_Cycle) {
     FSR_FIRST_Cycle = 0;
 
     startTime = millis();
     
-    right_leg->Curr_Combined = 0;
-    left_leg->Curr_Combined = 0;
-
-    right_leg->fsr_Combined_peak_ref = 0;
-    left_leg->fsr_Combined_peak_ref = 0;
+//    right_leg->Curr_Combined = 0;
+//    left_leg->Curr_Combined = 0;
+//
+//    right_leg->fsr_Combined_peak_ref = 0;
+//    left_leg->fsr_Combined_peak_ref = 0;
     
-    left_leg->fsr_Toe_peak_ref = 0;
-    right_leg->fsr_Toe_peak_ref = 0;
+    temp_l_fsr_peak = 0;
+    temp_r_fsr_peak = 0;
     
-    left_leg->fsr_Toe_trough_ref = 1000;
-    right_leg->fsr_Toe_trough_ref = 1000;
+    temp_l_fsr_trough = 1000;
+    temp_r_fsr_trough = 1000;
     
-    left_leg->fsr_Heel_peak_ref = 0;
-    right_leg->fsr_Heel_peak_ref = 0;
+//    left_leg->fsr_Heel_peak_ref = 0;
+//    right_leg->fsr_Heel_peak_ref = 0;
 
     //Automatically take the PJMC basline during FSR calibration
     left_leg->FSR_baseline_FLAG = 1;
@@ -75,24 +79,24 @@ void FSR_calibration()
     */
     
     // Toe
-    if (left_leg->Curr_Toe > left_leg->fsr_Toe_peak_ref)
+    if (left_leg->Curr_Toe > temp_l_fsr_peak)
     {
-      left_leg->fsr_Toe_peak_ref = left_leg->Curr_Toe;
+      temp_l_fsr_peak = left_leg->Curr_Toe;
     }
 
-    if (right_leg->Curr_Toe > right_leg->fsr_Toe_peak_ref)
+    if (right_leg->Curr_Toe > temp_r_fsr_peak)
     {
-      right_leg->fsr_Toe_peak_ref = right_leg->Curr_Toe;
+      temp_r_fsr_peak = right_leg->Curr_Toe;
     }
 
-    if (left_leg->Curr_Toe < left_leg->fsr_Toe_trough_ref)
+    if (left_leg->Curr_Toe < temp_l_fsr_trough)
     {
-      left_leg->fsr_Toe_trough_ref = left_leg->Curr_Toe;
+      temp_l_fsr_trough = left_leg->Curr_Toe;
     }
 
-    if (right_leg->Curr_Toe < right_leg->fsr_Toe_trough_ref)
+    if (right_leg->Curr_Toe < temp_r_fsr_trough)
     {
-      right_leg->fsr_Toe_trough_ref = right_leg->Curr_Toe;
+      temp_r_fsr_trough = right_leg->Curr_Toe;
     }
 
     // Heel
@@ -109,7 +113,10 @@ void FSR_calibration()
     */
 
   } else {
-
+    left_leg->fsr_Toe_peak_ref = temp_l_fsr_peak;
+    right_leg->fsr_Toe_peak_ref = temp_r_fsr_peak;
+    left_leg->fsr_Toe_trough_ref = temp_l_fsr_trough;
+    right_leg->fsr_Toe_trough_ref = temp_r_fsr_trough;
     FSR_FIRST_Cycle = 1;
     FSR_CAL_FLAG = 0;
   }
