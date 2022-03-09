@@ -34,6 +34,17 @@ void send_data_message_wc() //with COP
     data_to_send[7] = 0;
   }
 
+  if(jitter_flag) {
+    jitter_flag = false;
+    data_to_send[0] = 50;
+    data_to_send[1] = 50;
+  }
+  if(battery_flag) {
+    battery_flag = false;
+    data_to_send[3] = 50;
+    data_to_send[4] = 50;    
+  }
+
   //data_to_send[8] = time;
   send_command_message('?', data_to_send, 8);
 }

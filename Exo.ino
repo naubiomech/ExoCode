@@ -21,7 +21,7 @@
 // Several parameters can be modified thanks to the Receive and Transmit functions
 
 #define VERSION 314
-#define BOARD_VERSION DUAL_BOARD_REV6
+#define BOARD_VERSION DUAL_BOARD_REV8_1
 
 #define CONTROL_LOOP_HZ           500
 #define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
@@ -187,21 +187,24 @@ void update_GUI() {
     int battery_parameter;
     #ifdef SMA_BATTERY
     battery_parameter = smart_battery.readSOC();
-    bool battery_error = battery_monitor.handle(battery_parameter);
-    if(battery_error) {
+    processed_bat_t msg = battery_monitor.handle(battery_parameter);
+    battery_parameter = msg.scaled_val;
+    if(msg.too_low) {
       left_leg->Setpoint_Ankle = 0;
-      left_leg->Dorsi_Setpoint_Ankle = 0;
+      //left_leg->Dorsi_Setpoint_Ankle = 0;
       left_leg->first_step = 1;
       left_leg->activate_in_3_steps = 1;
       
       right_leg->Setpoint_Ankle = 0;
-      right_leg->Dorsi_Setpoint_Ankle = 0;
+      //right_leg->Dorsi_Setpoint_Ankle = 0;
       right_leg->first_step = 1;
       right_leg->activate_in_3_steps = 1;
 
       digitalWrite(RED, !LED_ON);
       digitalWrite(BLUE, !LED_ON);
       digitalWrite(GREEN, !LED_ON);
+
+      battery_flag = true;
     }
     #else
     battery_parameter = readBatteryVoltage()/100;

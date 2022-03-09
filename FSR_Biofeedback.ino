@@ -71,7 +71,7 @@ void refresh_biofeedback(Leg* leg) { // run immediately after a new step is dete
         }
         else {
           if (leg->biofeedback_target_score > 1) {
-            leg->biofeedback_target_score = leg->biofeedback_target_score - BF_scale / 2; // decrease target score by 0.02 until you reach 1. but don't go below 1 (baseline value)
+            leg->biofeedback_target_score = leg->biofeedback_target_score - (BF_scale / 2); // decrease target score by 0.02 until you reach 1. but don't go below 1 (baseline value)
           }
         }
       }

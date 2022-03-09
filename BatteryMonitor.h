@@ -1,15 +1,18 @@
 #ifndef BATTERYMONITOR_H
 #define BATTERYMONITOR_H
 
+typedef struct {
+  bool too_low;
+  int scaled_val;
+} processed_bat_t;
 
 class BatteryMonitor
 {
   public:
-    bool handle(int& new_value);
+    processed_bat_t handle(int new_value);
   private:
     bool _check(int new_value);
-    const int _new_zero = 20;
-    const float _shutdown_value = 0.18;
+    const int _shutdown_value = 18;
 };
 
 #endif

@@ -54,18 +54,22 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
             leg->full_times_array = true;
           }
 
-          if(leg->full_times_array && ((leg->stance_times[leg->time_array_length-1] - leg->stance_times[0]) < 1000)) {
-            right_leg->Previous_Setpoint_Ankle = 0;
-            right_leg->Previous_Dorsi_Setpoint_Ankle = 0;
-            right_leg->first_step = 1;
-            right_leg->activate_in_3_steps = 1;
-            right_leg->coef_in_3_steps = 0;
-            
-            left_leg->Previous_Setpoint_Ankle = 0;
-            left_leg->Previous_Dorsi_Setpoint_Ankle = 0;
-            left_leg->first_step = 1;
-            left_leg->activate_in_3_steps = 1;
-            left_leg->coef_in_3_steps = 0;
+          if(!FSR_CAL_FLAG && leg->full_times_array && ((leg->stance_times[leg->time_array_length-1] - leg->stance_times[0]) < 1000)) {
+//            right_leg->Previous_Setpoint_Ankle = 0;
+//            right_leg->Previous_Dorsi_Setpoint_Ankle = 0;
+//            right_leg->first_step = 1;
+//            right_leg->activate_in_3_steps = 1;
+//            right_leg->coef_in_3_steps = 0;
+//            right_leg->start_step = 0;
+//            
+//            left_leg->Previous_Setpoint_Ankle = 0;
+//            left_leg->Previous_Dorsi_Setpoint_Ankle = 0;
+//            left_leg->first_step = 1;
+//            left_leg->activate_in_3_steps = 1;
+//            left_leg->coef_in_3_steps = 0;
+//            left_leg->start_step = 0;
+
+            jitter_flag = true;
           }
 
           if (Control_Mode == 100) { //Increment set point for bang-bang GO - 5/19/19
