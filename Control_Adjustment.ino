@@ -123,6 +123,7 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
           if (leg->whos == 'R') {baselineRight = true;}
           if (leg->whos == 'L') {baselineLeft = true;}
           if ((baselineRight) && (baselineLeft)) {
+            update_biofeedback_baseline();
             send_command_message('n', emptyData, 1); //GO 4/23/19 to communicate that baseline is done, the array sent in position two has one position initialized as zero
             baselineRight = false;
             baselineLeft = false;
