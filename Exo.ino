@@ -189,7 +189,7 @@ void update_GUI() {
     battery_parameter = smart_battery.readSOC();
     processed_bat_t msg = battery_monitor.handle(battery_parameter);
     battery_parameter = msg.scaled_val;
-    if(msg.too_low) {
+    if(stream && msg.too_low) {
       left_leg->Setpoint_Ankle = 0;
       //left_leg->Dorsi_Setpoint_Ankle = 0;
       left_leg->first_step = 1;
