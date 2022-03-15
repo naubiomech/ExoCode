@@ -32,11 +32,11 @@ void Exo::run()
     // check if we should update the sync LED and record the LED on/off state.
     data->sync_led_state = sync_led.handler();
     bool trial_running = sync_led.get_is_blinking();
-    if (trial_running & (data->status != status_led_defs::messages::error))
+    if (trial_running & (((data->status & status_led_defs::messages::error) != status_led_defs::messages::error) & (data->status != status_led_defs::messages::test)))
     {
         data->status = status_led_defs::messages::trial_on;
     }
-    else if (!trial_running & (data->status != status_led_defs::messages::error))
+    else if (!trial_running & (((data->status & status_led_defs::messages::error) != status_led_defs::messages::error) & (data->status != status_led_defs::messages::test)))
     {
         data->status = status_led_defs::messages::trial_off;
     }
