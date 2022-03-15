@@ -22,7 +22,7 @@ namespace ini_config
 }
 
 // Includes for reading the ini file from the SD card.
-
+// 1 is the lowest value to confirm that data is present for sending over SPI
 namespace config_defs
 {
     enum class board_name : uint8_t
@@ -56,9 +56,9 @@ namespace config_defs
     
     enum class JointType
     {
-        hip = 0,
-        knee = 1,
-        ankle = 2,
+        hip = 1,
+        knee = 2,
+        ankle = 3,
     };
     
     enum class motor : uint8_t

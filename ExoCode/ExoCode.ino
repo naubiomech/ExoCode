@@ -22,7 +22,6 @@
 #include "src\ParseIni.h"
 #include "src\TSPISlave.h"
 
-
 /*namespace led{
     IntervalTimer sync_timer;  // Create a timer for setting for handling the interupt, this is needed as the ISR cannot access class variables since you cannot pass a self to the ISR.
     SyncLed sync_led(logic_micro_pins::sync_led_pin, SYNC_START_STOP_HALF_PERIOD_US, SYNC_HALF_PERIOD_US, logic_micro_pins::sync_led_on_state, logic_micro_pins::sync_default_pin);  // Create a sync LED object, the first and last arguments (pin) are found in Board.h, and the rest are in Sync_Led.h.  If you do not have a digital input for the default state you can remove SYNC_DEFAULT_STATE_PIN.
@@ -55,22 +54,24 @@ void setup()
     ; // wait for serial port to connect. Needed for native USB
   }
   //        Serial.println("Teensy Microcontroller");
-
+  
+  
+    
 
   ini_parser(config_info::config_to_send);
-  //uint8_t (config_to_send)[ini_config::number_of_keys];
+  uint8_t (config_to_send)[ini_config::number_of_keys];
 
-  //        Serial.println();
-  //        Serial.println("setup : Coded Config Data");
-  //        for (int i = 0; i<ini_config::number_of_keys; i++)
-  //        {
-  //            Serial.print("[");
-  //            Serial.print(i);
-  //            Serial.print("] : ");
-  //            Serial.println((int)config_info::config_to_send[i]);
-  //
-  //        }
-  //        Serial.println();
+//          Serial.println();
+//          Serial.println("setup : Coded Config Data");
+//          for (int i = 0; i<ini_config::number_of_keys; i++)
+//          {
+//              Serial.print("[");
+//              Serial.print(i);
+//              Serial.print("] : ");
+//              Serial.println((int)config_info::config_to_send[i]);
+//  
+//          }
+//          Serial.println();
   //
   //        Serial.println();
   //        Serial.println(static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_info::config_to_send[config_defs::exo_side_idx]);
@@ -84,9 +85,6 @@ void loop()
 {
   static ExoData exo_data(config_info::config_to_send);
   static Exo exo(&exo_data);
-
-
-
 
   //led::sync_led.update_led();  // actually change the led state, this also updates ledIsOn for recording the actual on/off state
 
@@ -275,7 +273,7 @@ void loop()
       //        exo.left_leg.check_calibration();
       //        exo.left_leg.read_data();
 
-      exo.run();
+      //exo.run();
 
       //        int print_time_ms = 100;
       //        static int last_print_timestamp = millis();
@@ -366,13 +364,41 @@ void loop()
 
     /* Code to test the motor communication */
     //===============================================
-//    static bool first_run = true;
-//    if(first_run)
-//    {   Serial.println("Starting right hip");
-//        first_run = false;
-//        exo.right_leg._hip._motor->on_off(true);
-//    }
-
+    static bool first_run = true;
+    static int count = 0;
+    static int sign = 1;
+    static float torque = 1; 
+    delay(1000);
+    if(first_run)
+    {
+        first_run = false;
+        Serial.println("Turning on");
+        exo.left_leg._hip._motor->on_off(true);
+        //delay(2000);
+    }
+    if (count >= 25) {
+      sign = -sign;
+      //exo.left_leg._hip._motor->on_off(first_run);
+      //first_run = !first_run;
+      count = 0;
+    }
+    count++;
+    exo_data.left_leg.hip.motor.t_ff = 0;//sign*(torque);
+//    exo.left_leg._hip._motor->transaction();
+    exo.left_leg._hip._motor->send_data();
+    //delayMicroseconds(250);
+    exo.left_leg._hip._motor->read_data();
+    Serial.print(exo_data.left_leg.hip.motor.p);
+    Serial.print("\t");
+    Serial.print(exo_data.left_leg.hip.motor.v);
+    Serial.print("\t");
+    Serial.print(exo_data.left_leg.hip.motor.i);
+    Serial.print("\t");
+    Serial.print(exo_data.left_leg.hip.motor.t_ff);
+    Serial.println();
+    Serial.print("\t");
+    Serial.println(millis());
+    delay(100);
 }
 
 

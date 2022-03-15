@@ -67,7 +67,6 @@ config_defs::joint_id _Motor::get_id()
     return _id;
 };
 
-
 /*
  * Constructor for the CAN Motor.  
  * We are using multilevel inheritance, so we have a general motor type, which is inherited by the CAN (e.g. TMotor) or other type (e.g. Maxon) since models within these types will share communication protocols, which is then inherited by the specific motor model (e.g. AK60), which may have specific torque constants etc.
@@ -84,31 +83,47 @@ _CANMotor::_CANMotor(config_defs::joint_id id, ExoData* exo_data) // constructor
     _P_MAX = 12.5f;
 };
 
+void _CANMotor::transaction()
+{
+    // send data and read response 
+    send_data();
+    read_data();
+};
+
 void _CANMotor::read_data()
 {
     // read date from motor
     bool searching = true;
     uint8_t data[8];
-    uint32_t start = millis();
+    uint32_t start = micros();
     CAN* can = can->getInstance();
-    do 
+    do
     {
-        uint32_t id = can->read(data);
-        if (id == uint32_t(_motor_data->id))
+        CAN_message_t msg = can->read();
+        Serial.print("read_data  ");
+        Serial.print(msg.buf[0]);
+        // Serial.print("\t");
+        // Serial.println(uint32_t(_motor_data->id));
+        if (msg.buf[0] == uint32_t(_motor_data->id))
         {
             // unpack data
-            uint32_t p_int = (data[1] << 8) | data[2];
-            uint32_t v_int = (data[3]) << 4 | (data[4] >> 4);
-            uint32_t i_int = ((data[4] & 0xF) << 8) | data[5];
+            uint32_t p_int = (msg.buf[1] << 8) | msg.buf[2];
+            uint32_t v_int = (msg.buf[3]) << 4 | (msg.buf[4] >> 4);
+            uint32_t i_int = ((msg.buf[4] & 0xF) << 8) | msg.buf[5];
             // set data in ExoData object
-            _motor_data->p = uint_to_float(p_int, -_P_MAX, _P_MAX, 16);
-            _motor_data->v = uint_to_float(v_int, -_V_MAX, _V_MAX, 12);
-            _motor_data->i = uint_to_float(i_int, -_T_MAX, _T_MAX, 12);
+            _motor_data->p = _uint_to_float(p_int, -_P_MAX, _P_MAX, 16);
+            _motor_data->v = _uint_to_float(v_int, -_V_MAX, _V_MAX, 12);
+            _motor_data->i = _uint_to_float(i_int, -_T_MAX, _T_MAX, 12);
+            // reset timout_count because we got a valid message
+            this->_timeout_count = 0;
+            // Serial.println("Got data");
             return;
         }
-        searching = ((millis() - start) < _timeout);
+        searching = ((micros() - start) < _timeout);
     }
     while(searching);
+    _handle_read_failure();
+    return;
 };
 
 void _CANMotor::send_data()
@@ -119,56 +134,79 @@ void _CANMotor::send_data()
     float kp_sat = constrain(_motor_data->kp, _KP_MIN, _KP_MAX);
     float kd_sat = constrain(_motor_data->kd, _KD_MIN, _KD_MAX);
     float t_sat = constrain(_motor_data->t_ff, -_T_MAX, _T_MAX);
-    Serial.print("Sending t_sat:");
-    Serial.println(t_sat);
-    uint32_t p_int = float_to_uint(p_sat, -_P_MAX, _P_MAX, 16);
-    uint32_t v_int = float_to_uint(v_sat, -_V_MAX, _V_MAX, 12);
-    uint32_t kp_int = float_to_uint(kp_sat, _KP_MIN, _KP_MAX, 12);
-    uint32_t kd_int = float_to_uint(kd_sat, _KD_MIN, _KD_MAX, 12);
-    uint32_t t_int = float_to_uint(t_sat, -_T_MAX, _T_MAX, 12);
-    uint8_t data[8];
-    data[0] = p_int >> 8;
-    data[1] = p_int & 0xFF;
-    data[2] = v_int >> 4;
-    data[3] = ((v_int & 0xF) << 4) | (kp_int >> 8);
-    data[4] = kp_int & 0xFF;
-    data[5] = kd_int >> 4;
-    data[6] = ((kd_int & 0xF) << 4) | (t_int >> 8);
-    data[7] = t_int & 0xFF;
+    uint32_t p_int = _float_to_uint(p_sat, -_P_MAX, _P_MAX, 16);
+    uint32_t v_int = _float_to_uint(v_sat, -_V_MAX, _V_MAX, 12);
+    uint32_t kp_int = _float_to_uint(kp_sat, _KP_MIN, _KP_MAX, 12);
+    uint32_t kd_int = _float_to_uint(kd_sat, _KD_MIN, _KD_MAX, 12);
+    uint32_t t_int = _float_to_uint(t_sat, -_T_MAX, _T_MAX, 12);
+    CAN_message_t msg;
+    msg.id = uint32_t(_motor_data->id);
+    msg.buf[0] = p_int >> 8;
+    msg.buf[1] = p_int & 0xFF;
+    msg.buf[2] = v_int >> 4;
+    msg.buf[3] = ((v_int & 0xF) << 4) | (kp_int >> 8);
+    msg.buf[4] = kp_int & 0xFF;
+    msg.buf[5] = kd_int >> 4;
+    msg.buf[6] = ((kd_int & 0xF) << 4) | (t_int >> 8);
+    msg.buf[7] = t_int & 0xFF;
     // set data in motor
     CAN* can = can->getInstance();
-    can->send(uint32_t(_motor_data->id), data);
+    can->send(msg);
     return;
 };
 
 void _CANMotor::on_off(bool is_on)
 {
-    uint8_t data[8];
-    data[0] = 0xFF;
-    data[1] = 0xFF;
-    data[2] = 0xFF;
-    data[3] = 0xFF;
-    data[4] = 0xFF;
-    data[5] = 0xFF;
-    data[6] = 0xFF;
+    CAN_message_t msg;
+    msg.id = uint32_t(_motor_data->id);
+    msg.buf[0] = 0xFF;
+    msg.buf[1] = 0xFF;
+    msg.buf[2] = 0xFF;
+    msg.buf[3] = 0xFF;
+    msg.buf[4] = 0xFF;
+    msg.buf[5] = 0xFF;
+    msg.buf[6] = 0xFF;
     if (is_on)
     {
         // enable motor
-        data[7] = 0xFC;
+        msg.buf[7] = 0xFC;
     }
     else 
     {
         // disable motor
-        data[7] = 0xFD;
+        msg.buf[7] = 0xFD;
     }
-    Serial.print(is_on);
-    Serial.print("\t");
-    Serial.println(uint32_t(_motor_data->id));
     CAN* can = can->getInstance();
-    can->send(uint32_t(_motor_data->id), data);
-}
+    can->send(msg);
+};
 
-float _CANMotor::float_to_uint(float x, float x_min, float x_max, int bits)
+void _CANMotor::zero()
+{
+    CAN_message_t msg;
+    msg.id = uint32_t(_motor_data->id);
+    msg.buf[0] = 0xFF;
+    msg.buf[1] = 0xFF;
+    msg.buf[2] = 0xFF;
+    msg.buf[3] = 0xFF;
+    msg.buf[4] = 0xFF;
+    msg.buf[5] = 0xFF;
+    msg.buf[6] = 0xFF;
+    msg.buf[7] = 0xFE;
+    CAN* can = can->getInstance();
+    can->send(msg);
+};
+
+void _CANMotor::_handle_read_failure()
+{
+    Serial.println("Timeout");
+    this->_timeout_count++;
+    if (this->_timeout_count > 50)
+    {
+        // TODO: handle excessive timout errors
+    }
+};
+
+float _CANMotor::_float_to_uint(float x, float x_min, float x_max, int bits)
 {
     float span = x_max - x_min;
     float offset = x_min;
@@ -180,8 +218,8 @@ float _CANMotor::float_to_uint(float x, float x_min, float x_max, int bits)
       pgg = (unsigned int) ((x-offset)*65535.0/span);
     }
     return pgg;
-}
-float _CANMotor::uint_to_float(unsigned int x_int, float x_min, float x_max, int bits)
+};
+float _CANMotor::_uint_to_float(unsigned int x_int, float x_min, float x_max, int bits)
 {
     float span = x_max - x_min;
     float offset = x_min;
@@ -193,7 +231,7 @@ float _CANMotor::uint_to_float(unsigned int x_int, float x_min, float x_max, int
       pgg = ((float)x_int)*span/65535.0 + offset;
     }
     return pgg;
-}
+};
 
 //**************************************
 /*
@@ -204,8 +242,8 @@ float _CANMotor::uint_to_float(unsigned int x_int, float x_min, float x_max, int
 AK60::AK60(config_defs::joint_id id, ExoData* exo_data): // constructor: type is the motor type
 _CANMotor(id, exo_data)
 {
-    _T_MAX = 18.0f;
-    _V_MAX = 25.65f;
+    _T_MAX = 9.0f;
+    _V_MAX = 41.87f;
 };
 
 /*
@@ -216,8 +254,8 @@ _CANMotor(id, exo_data)
 AK80::AK80(config_defs::joint_id id, ExoData* exo_data): // constructor: type is the motor type
 _CANMotor(id, exo_data)
 {
-    _T_MAX = 9.0f;
-    _V_MAX = 41.87f;
+    _T_MAX = 18.0f;
+    _V_MAX = 25.65f;
 };
 
 
