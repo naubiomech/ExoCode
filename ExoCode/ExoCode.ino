@@ -324,29 +324,33 @@ void loop()
       //-----------------------------------------------
       /*
          Test Status LED
+         Need to comment out the status handling in Exo::run()
       */
 //      int status_trigger_timestamp_ms = millis();
 //      static int last_status_trigger_timestamp_ms = status_trigger_timestamp_ms;
-//      const int status_period_ms = 1000;
+//      const int status_period_ms = 10000;
 //      if ((status_trigger_timestamp_ms - last_status_trigger_timestamp_ms) >= status_period_ms)
 //      {
 //          exo_data.status++;
-//          if (exo_data.status > 3)
+//          if (exo_data.status > status_led_defs::messages::error)
 //          {
-//              exo_data.status = 0;
+//              exo_data.status = status_led_defs::messages::off;
 //          }
 //          switch (exo_data.status)
 //          {
-//              case 0 :
+//              case status_led_defs::messages::off :
 //                Serial.println("Status: off");
 //                break;
-//              case 1 :
+//              case status_led_defs::messages::trial_off :
 //                Serial.println("Status: trial off");
 //                break;
-//              case 2 :
+//              case status_led_defs::messages::trial_on :
 //                Serial.println("Status: trial on");
 //                break;
-//              case 3 :
+//              case status_led_defs::messages::test :
+//                Serial.println("Status: test");
+//                break;
+//              case status_led_defs::messages::error :
 //                Serial.println("Status: error");
 //                break;
 //              default :
@@ -355,7 +359,9 @@ void loop()
 //          }
 //          last_status_trigger_timestamp_ms = status_trigger_timestamp_ms;
 //      }
+
       
+      // exo_data.status = status_led_defs::messages::test;
       //-----------------------------------------------
 
     /* Code to test the motor communication */
