@@ -124,7 +124,7 @@ void StatusLed::_set_color(int r_color, int g_color, int b_color)
   // Serial.print(g_color);
   // Serial.print("\t");
   // Serial.print(b_color);
-  // Serial.println();
+  // Serial.print("\n");
   
   if (status_led_defs::has_pwm)  // using simple digital pins
   {
@@ -171,7 +171,8 @@ void StatusLed::_pulse()
         
         float angle_deg = 360.0 * (timestamp - _pattern_start_timestamp) / _period_ms;
         _pattern_brightness_percent = 100 * sin (angle_deg * PI / 180);
-        //Serial.println(angle_deg);
+        //Serial.print(angle_deg);
+        //Serial.print("\n");
         
         
         _set_color(_pattern_brightness_percent * _message_colors[_current_message][0] / 100, _pattern_brightness_percent * _message_colors[_current_message][1]/100, _pattern_brightness_percent * _message_colors[_current_message][2]/100);   // Set the LED state
