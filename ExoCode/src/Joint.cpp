@@ -82,7 +82,7 @@ void _Joint::check_calibration()
 {
     // Check if we are doing the calibration on the torque sensor
     _joint_data->calibrate_torque_sensor = _torque_sensor.calibrate(_joint_data->calibrate_torque_sensor);
-    //Serial.println("_Joint::check_calibration"); 
+    //Serial.print("_Joint::check_calibration\n"); 
 };
 
 /*
@@ -212,7 +212,7 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 , _extension_angle(id, exo_data)
 {
 
-    //Serial.println("HipJoint::HipJoint");
+    //Serial.print("HipJoint::HipJoint\n");
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
     {
@@ -304,7 +304,7 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
 : _Joint(id, exo_data)
 , _zero_torque(id, exo_data)
 {
-    // Serial.println("KneeJoint::KneeJoint");
+    // Serial.print("KneeJoint::KneeJoint\n");
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
     {
@@ -386,7 +386,7 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 , _proportional_joint_moment(id, exo_data)
 , _zhang_collins(id, exo_data)
 {
-    // Serial.println("AnkleJoint::AnkleJoint");
+    // Serial.print("AnkleJoint::AnkleJoint\n");
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
     {
@@ -423,9 +423,9 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
  */
 void AnkleJoint::run_joint()
 {
-    //Serial.println("AnkleJoint::run_joint : Entered");
+    //Serial.print("AnkleJoint::run_joint : Entered\n");
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
-    //Serial.println("AnkleJoint::run_joint : Exiting");
+    //Serial.print("AnkleJoint::run_joint : Exiting\n");
 };  
 
 /*

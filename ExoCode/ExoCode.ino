@@ -53,7 +53,7 @@ void setup()
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB
   }
-  //        Serial.println("Teensy Microcontroller");
+  //        Serial.print("Teensy Microcontroller\n");
   
   
     
@@ -61,20 +61,21 @@ void setup()
   ini_parser(config_info::config_to_send);
   uint8_t (config_to_send)[ini_config::number_of_keys];
 
-//          Serial.println();
-//          Serial.println("setup : Coded Config Data");
+//          Serial.print();
+//          Serial.print("setup : Coded Config Data\n");
 //          for (int i = 0; i<ini_config::number_of_keys; i++)
 //          {
 //              Serial.print("[");
 //              Serial.print(i);
 //              Serial.print("] : ");
-//              Serial.println((int)config_info::config_to_send[i]);
+//              Serial.print((int)config_info::config_to_send[i]\n);
 //  
 //          }
-//          Serial.println();
+//          Serial.print(\n);
   //
-  //        Serial.println();
-  //        Serial.println(static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_info::config_to_send[config_defs::exo_side_idx]);
+  //        Serial.print(\n);
+  //        Serial.print(static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_info::config_to_send[config_defs::exo_side_idx]);
+  //        Serial.print(\n);
 
   // Now that we have read the config file create the data structure and exoskeleton object.
 
@@ -122,14 +123,15 @@ void loop()
     //              Serial.print("toe reading : \t");
     //              Serial.print(exo_data.left_leg.toe_fsr);
     //              Serial.print("\t heel reading : \t");
-    //              Serial.println(exo_data.left_leg.heel_fsr);
+    //              Serial.print(exo_data.left_leg.heel_fsr);
+    //              Serial.print("\n");
                 if (exo_data.left_leg.ground_strike)
                 {
                     ground_strike_count++;
     //                  Serial.print("Main - ground_strike_count = ");
-    //                  Serial.println(ground_strike_count);
+    //                  Serial.print(ground_strike_count);
     //
-    //                  Serial.println("");
+    //                  Serial.print("\n");
                 }
 
             }
@@ -181,9 +183,11 @@ void loop()
 //                if ((timestamp-last_timestamp)>print_time_ms)
 //                {
 //  //                  Serial.print("Main -\n\ttorque CMD = ");
-//  //                  Serial.println(exo_data.left_leg.ankle.controller.setpoint);
+//  //                  Serial.print(exo_data.left_leg.ankle.controller.setpoint);
+//  //                  Serial.print("\n");
 //  //                  Serial.print("\tToe FSR = ");
-//  //                  Serial.println(exo_data.left_leg.toe_fsr);
+//  //                  Serial.print(exo_data.left_leg.toe_fsr);
+//  //                  Serial.print("\n");
 //                    //Serial.print("\t\t\t\t\t\t\r");
 //  
 //  //                  Serial.print(exo_data.left_leg.ankle.controller.setpoint);
@@ -194,7 +198,7 @@ void loop()
 //                    Serial.print(exo_data.left_leg.hip.controller.setpoint);
 //                    Serial.print(" ");
 //                    Serial.print(utils::radians_to_degrees(exo_data.left_leg.hip.motor.p) * 1);
-//                    Serial.println(" ");
+//                    Serial.print("\n");
 //  
 //                    last_timestamp = timestamp;
 //                }
@@ -212,16 +216,21 @@ void loop()
 //            exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t3_idx] = 62.7;
 //
 ////            Serial.print("SuperLoop : Percent Gait = ");
-////            Serial.println(exo_data.left_leg.percent_gait);
+////            Serial.print(exo_data.left_leg.percent_gait);
+////            Serial.print("\n");
 ////            Serial.print("SuperLoop : t0 = ");
-////            Serial.println(exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t0_idx]);
+////            Serial.print(exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t0_idx]);
+////            Serial.print("\n");
 ////            Serial.print("SuperLoop : t1 = ");
-////            Serial.println(exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t1_idx]);
+////            Serial.print(exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t1_idx]);
+////            Serial.print("\n");
 ////            Serial.print("SuperLoop : t2 = ");
-////            Serial.println(exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t2_idx]);
+////            Serial.print(exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t2_idx]);
+////            Serial.print("\n");
 ////            Serial.print("SuperLoop : t3 = ");
-////            Serial.println(exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t3_idx]);
-////            Serial.println();
+////            Serial.print(exo_data.left_leg.ankle.controller.parameters[controller_defs::zhang_collins::t3_idx]);
+////            Serial.print("\n");
+////            Serial.print("\n");
 //  
 //            exo_data.left_leg.ankle.controller.controller = (uint8_t)config_defs::ankle_controllers::zhang_collins;
 //  
@@ -248,7 +257,7 @@ void loop()
 //                Serial.print(exo_data.left_leg.ankle.controller.setpoint);
 //                Serial.print(" ");
 //                Serial.print(exo_data.left_leg.percent_gait);
-//                Serial.println(" ");
+//                Serial.print("\n");
 //                last_print_timestamp = print_timestamp;
 //            }
 
@@ -265,7 +274,8 @@ void loop()
 //        exo_data.left_leg.ankle.calibrate_torque_sensor = true;
 //        Serial.print("HipTorqueReading");
 //        Serial.print(" ");
-//        Serial.println("AnkleTorqueReading");
+//        Serial.print("AnkleTorqueReading");
+//        Serial.print("\n");
 //
 //        first_run = false;
 //      }
@@ -283,12 +293,12 @@ void loop()
       //            Serial.print(exo_data.left_leg.hip.torque_reading);
       //            Serial.print(" ");
       //            Serial.print(exo_data.left_leg.ankle.torque_reading);
-      //            Serial.println(" ");
+      //            Serial.print("\n\n");
 
       //            Serial.print(exo_data.left_leg.hip.calibrate_torque_sensor);
       //            Serial.print(" ");
       //            Serial.print(exo_data.left_leg.ankle.calibrate_torque_sensor);
-      //            Serial.println(" ");
+      //            Serial.print("\n\n");
       //            last_print_timestamp = print_timestamp;
 
       //        }
@@ -306,7 +316,7 @@ void loop()
 //      if ((sync_trigger_timestamp_ms - last_sync_trigger_timestamp_ms) >= trigger_period_ms)
 //      {
 //        exo.sync_led.trigger();
-//        Serial.println("Sync LED Triggered");
+//        Serial.print("Sync LED Triggered\n");
 //        last_sync_trigger_timestamp_ms = sync_trigger_timestamp_ms;
 //      }
 //
@@ -316,7 +326,8 @@ void loop()
 //
 //      if ((print_timestamp - last_print_timestamp) >= print_time_ms)
 //      {
-//        //Serial.println(exo_data.sync_led_state);
+//        //Serial.print(exo_data.sync_led_state);
+//        //Serial.print("\n");
 //      }
 
       //-----------------------------------------------
@@ -337,22 +348,28 @@ void loop()
 //          switch (exo_data.status)
 //          {
 //              case status_led_defs::messages::off :
-//                Serial.println("Status: off");
+//                Serial.print("Status: off");
+//                Serial.print("\n");
 //                break;
 //              case status_led_defs::messages::trial_off :
-//                Serial.println("Status: trial off");
+//                Serial.print("Status: trial off");
+//                Serial.print("\n");
 //                break;
 //              case status_led_defs::messages::trial_on :
-//                Serial.println("Status: trial on");
+//                Serial.print("Status: trial on");
+//                Serial.print("\n");
 //                break;
 //              case status_led_defs::messages::test :
-//                Serial.println("Status: test");
+//                Serial.print("Status: test");
+//                Serial.print("\n");
 //                break;
 //              case status_led_defs::messages::error :
-//                Serial.println("Status: error");
+//                Serial.print("Status: error");
+//                Serial.print("\n");
 //                break;
 //              default :
-//                Serial.println("Status: not defined");
+//                Serial.print("Status: not defined");
+//                Serial.print("\n");
 //                break;  
 //          }
 //          last_status_trigger_timestamp_ms = status_trigger_timestamp_ms;
@@ -372,7 +389,8 @@ void loop()
     if(first_run)
     {
         first_run = false;
-        Serial.println("Turning on");
+        Serial.print("Turning on");
+        Serial.print("\n");
         exo.left_leg._hip._motor->on_off(true);
         //delay(2000);
     }
@@ -395,9 +413,10 @@ void loop()
     Serial.print(exo_data.left_leg.hip.motor.i);
     Serial.print("\t");
     Serial.print(exo_data.left_leg.hip.motor.t_ff);
-    Serial.println();
+    Serial.print("\n");
     Serial.print("\t");
-    Serial.println(millis());
+    Serial.print(millis());
+    Serial.print("\n");
     delay(100);
 }
 
@@ -414,22 +433,23 @@ void setup()
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB
   }
-  Serial.println("Nano Microcontroller");
+  Serial.print("Nano Microcontroller\n");
 
   // something to work with till the SPI works.
   uint8_t test_config[] = {1, 1, 3, 1, 2, 1, 3, 1, 1, 1};
 
-  Serial.println();
-  Serial.println("Coded Config Data");
+  Serial.print("\n");
+  Serial.print("Coded Config Data\n");
   for (int i = 0; i < ini_config::number_of_keys; i++)
   {
     Serial.print("[");
     Serial.print(i);
     Serial.print("] : ");
-    Serial.println((int)test_config[i]);
+    Serial.print((int)test_config[i]);
+    Serial.print("\n");
 
   }
-  Serial.println();
+  Serial.print("\n");
 }
 
 void loop()
@@ -445,7 +465,8 @@ void setup()
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB
   }
-  Serial.println("Unknown Microcontroller");
+  Serial.print("Unknown Microcontroller");
+  Serial.print("\n");
 }
 
 void loop()

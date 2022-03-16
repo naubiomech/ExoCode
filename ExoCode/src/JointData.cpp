@@ -26,19 +26,19 @@ JointData::JointData(config_defs::joint_id id, uint8_t* config_to_send)
         case (uint8_t)config_defs::joint_id::hip:
         {
             is_used = config_to_send[config_defs::hip_idx] != (uint8_t)config_defs::motor::not_used;
-            // Serial.println("Hip");
+            // Serial.print("Hip\n");
             break;
         }
         case (uint8_t)config_defs::joint_id::knee:
         {
             is_used = config_to_send[config_defs::knee_idx] != (uint8_t)config_defs::motor::not_used;
-            // Serial.println("Knee");
+            // Serial.print("Knee\n");
             break;
         }
         case (uint8_t)config_defs::joint_id::ankle:
         {
             is_used = config_to_send[config_defs::ankle_idx] != (uint8_t)config_defs::motor::not_used;
-            // Serial.println("Ankle");
+            // Serial.print("Ankle\n");
             break;
         }
     }

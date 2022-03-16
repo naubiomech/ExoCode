@@ -53,7 +53,7 @@
                 break;
             }
             if (eol)
-                Serial.println();
+                Serial.print(\n);
         }
     }
 
@@ -96,7 +96,8 @@
             while (1)
             if(Serial)
             {
-                Serial.println("SD.begin() failed");
+                Serial.print("SD.begin() failed");
+                Serial.print("\n");
             }
 
         // Check the for the ini file
@@ -106,14 +107,16 @@
             {
                 Serial.print("Ini file ");
                 Serial.print(filename);
-                Serial.println(" does not exist");
+                Serial.print(" does not exist");
+                Serial.print("\n");
             }
         // Cannot do anything else
             while (1);
         }
         if(Serial)
         {
-            //Serial.println("Ini file exists");
+            //Serial.print("Ini file exists");
+            //Serial.print("\n");
         }
        
 
@@ -207,7 +210,8 @@
                 // Serial.print("' has an entry '");
                 // Serial.print(key);
                 // Serial.print("' with value ");
-                // Serial.println(buffer);
+                // Serial.print(buffer);
+                // Serial.print("\n");
             }
         }
         // Print the error if the key can't be found.

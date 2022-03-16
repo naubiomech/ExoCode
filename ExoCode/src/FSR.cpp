@@ -60,9 +60,10 @@ bool FSR::calibrate(bool do_calibrate)
     // The time window ran out so we are done.
     else if (do_calibrate)
     {
-        // Serial.println("FSR::calibrate : FSR Cal Done");
+        // Serial.print("FSR::calibrate : FSR Cal Done\n");
         // Serial.print("FSR::calibrate : _calibration_max - ");
-        // Serial.println(_calibration_max);
+        // Serial.print(_calibration_max);
+        // Serial.print("\n");
         do_calibrate = false;
     }
         
@@ -118,7 +119,8 @@ bool FSR::refine_calibration(bool do_refinement)
                 
                 _step_count++;
                 // Serial.print("FSR::refine_calibration : New Step - ");
-                // Serial.println(_step_count);
+                // Serial.print(_step_count);
+                // Serial.print("\n");
             }
         }
         else // we are still at do_refinement but the _step_count is at the _num_steps
@@ -128,14 +130,17 @@ bool FSR::refine_calibration(bool do_refinement)
             _calibration_refinement_max = static_cast<decltype(_calibration_refinement_max)>(_step_max_sum)/_num_steps;  // casting to the type of _calibration_refinement_max before division 
             _calibration_refinement_min = static_cast<decltype(_calibration_refinement_min)>(_step_min_sum)/_num_steps;
             
-            // Serial.println("FSR::refine_calibration : FSR Cal Done");
+            // Serial.print("FSR::refine_calibration : FSR Cal Done\n");
             // Serial.print("FSR::refine_calibration : New Step - ");
-            // Serial.println(_step_count);
+            // Serial.print(_step_count);
+            // Serial.print("\n");
             
             // Serial.print("FSR::refine_calibration : _calibration_refinement_max - ");
-            // Serial.println(_calibration_refinement_max);
+            // Serial.print(_calibration_refinement_max);
+            // Serial.print("\n");
             // Serial.print("FSR::refine_calibration : _calibration_refinement_min - ");
-            // Serial.println(_calibration_refinement_min);
+            // Serial.print(_calibration_refinement_min);
+            // Serial.print("\n");
             //delay(1000);
             
             // refinement is done

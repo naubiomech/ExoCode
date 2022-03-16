@@ -109,11 +109,13 @@ ProportionalJointMoment::ProportionalJointMoment(config_defs::joint_id id, ExoDa
 float ProportionalJointMoment::calc_motor_cmd()
 {
     float cmd = 0;
-    //Serial.println("ProportionalJointMoment::calc_motor_cmd : Entered");
+    //Serial.print("ProportionalJointMoment::calc_motor_cmd : Entered");
+    //Serial.print("\n");
     cmd = _leg_data->toe_fsr * _controller_data->parameters[controller_defs::proportional_joint_moment::max_torque_idx];
     cmd = max(0, cmd);  // if the fsr is negative use zero torque so it doesn't dorsiflex.
     
-    //Serial.println("ProportionalJointMoment::calc_motor_cmd : Exiting");
+    //Serial.print("ProportionalJointMoment::calc_motor_cmd : Exiting");
+    //Serial.print("\n");
     return cmd;
 };
 
@@ -193,7 +195,8 @@ float ExtensionAngle::calc_motor_cmd()
         // Serial.print(" ");
         // Serial.print(-100);
         // Serial.print(" ");
-        // Serial.println(normalized_angle*100);
+        // Serial.print(normalized_angle*100);
+        // Serial.print("\n");
     // }
     
     _update_state(angle);
@@ -257,7 +260,7 @@ void ExtensionAngle::_update_state(float angle)
         // Serial.print(angle);
         // Serial.print(" ");
         // Serial.print(_controller_data->parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] * _max_angle/100);
-        // Serial.println(" ");
+        // Serial.print("\n");
     // }
 }
 
@@ -370,7 +373,8 @@ float ZhangCollins::calc_motor_cmd()
             , _controller_data->parameters[controller_defs::zhang_collins::t1_idx]
             , _controller_data->parameters[controller_defs::zhang_collins::t2_idx]
             , _controller_data->parameters[controller_defs::zhang_collins::t3_idx]);
-        // Serial.println("ZhangCollins::calc_motor_cmd : Updated parameters");
+        // Serial.print("ZhangCollins::calc_motor_cmd : Updated parameters");
+        // Serial.print("\n");
         // delay(1000);
     
     }
@@ -385,16 +389,21 @@ float ZhangCollins::calc_motor_cmd()
     float torque_cmd = 0;
     
     // Serial.print("ZhangCollins::calc_motor_cmd : Percent Gait = ");
-    // Serial.println(percent_gait);
+    // Serial.print(percent_gait);
+    // Serial.print("\n");
     // Serial.print("ZhangCollins::calc_motor_cmd : t0 = ");
-    // Serial.println(t0);
+    // Serial.print(t0);
+    // Serial.print("\n");
     // Serial.print("ZhangCollins::calc_motor_cmd : t1 = ");
-    // Serial.println(t1);
+    // Serial.print(t1);
+    // Serial.print("\n");
     // Serial.print("ZhangCollins::calc_motor_cmd : t2 = ");
-    // Serial.println(t2);
+    // Serial.print(t2);
+    //Serial.print("\n");
     // Serial.print("ZhangCollins::calc_motor_cmd : t3 = ");
-    // Serial.println(t3);
-    // Serial.println();
+    // Serial.print(t3);
+    //Serial.print("\n\n");
+    
     
     
     if (-1 != percent_gait) //we have a valid calculation for percent_gait
@@ -402,23 +411,27 @@ float ZhangCollins::calc_motor_cmd()
         if ((percent_gait <= t1) && (0 <= percent_gait))  // torque ramp to ts at t1
         {
             torque_cmd = _ts_Nm / (t1 - t0) * percent_gait - _ts_Nm/(t1 - t0) * t0;  
-            // Serial.println("ZhangCollins::calc_motor_cmd : Ramp");
+            // Serial.print("ZhangCollins::calc_motor_cmd : Ramp");
+            // Serial.print("\n");
             
         }
         else if (percent_gait <= t2) // the rising spline
         {
             torque_cmd = _a1 * pow(percent_gait,3) + _b1 * pow(percent_gait,2) + _c1 * percent_gait + _d1;
-            // Serial.println("ZhangCollins::calc_motor_cmd : Rising");
+            // Serial.print("ZhangCollins::calc_motor_cmd : Rising");
+            // Serial.print("\n");
         }
         else if (percent_gait <= t3)  // the falling spline
         {
             torque_cmd = _a2 * pow(percent_gait,3) + _b2 * pow(percent_gait,2) + _c2 * percent_gait + _d2;
-            // Serial.println("ZhangCollins::calc_motor_cmd : Falling");
+            // Serial.print("ZhangCollins::calc_motor_cmd : Falling");
+            // Serial.print("\n");
         }
         else  // go to the slack position if we aren't commanding a specific value
         {
             torque_cmd = 0;
-            // Serial.println("ZhangCollins::calc_motor_cmd : Swing");
+            // Serial.print("ZhangCollins::calc_motor_cmd : Swing");
+            // Serial.print("\n");
         }
     }
     return torque_cmd;

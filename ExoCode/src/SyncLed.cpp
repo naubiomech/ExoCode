@@ -207,13 +207,15 @@ Protected
 void SyncLed::_blink_start_stop(void)
 {
   // Serial.print("blinkStartStop: State Change Count : ");
-  // Serial.println(stateChangeCount);
+  // Serial.print(stateChangeCount);
+  //Serial.print("\n");
 
   // If the period is not correct it is the first call in the sequence
   if (_current_sync_period == _sync_half_period_us){
     _current_sync_period = _sync_start_stop_half_period_us;  // set the correct period
     // Serial.print("blinkStartStop: sync half period changed to  : ");
-    // Serial.println(current_sync_period);
+    // Serial.print(current_sync_period);
+    // Serial.print("\n");
     _led_state = logic_micro_pins::sync_led_on_state; // set the LED to on so that way end of the first call in the sequence will be off
   }
 
@@ -228,7 +230,8 @@ void SyncLed::_blink_start_stop(void)
   _state_change_count = _state_change_count + 1;   // iterate the state change counter
   
   // Serial.print("The LED is: ");
-  // Serial.println(_led_state);
+  // Serial.print(_led_state);
+  // Serial.print("\n");
 
   // once we have done the appropriate number of state change stop the start stop sequence.
   if (_state_change_count == (2*_num_start_stop_blinks+1*(_default_led_state==logic_micro_pins::sync_led_on_state))) // if the default state is 1 you need and extra one so make it low before it goes to the default state.
@@ -245,13 +248,15 @@ void SyncLed::_blink_start_stop(void)
 void SyncLed::_blink(void)
 {
   // Serial.print("blinkLED: State Change Count : ");
-  // Serial.println(blinkCount);
+  // Serial.print(blinkCount);
+  // Serial.print("\n");
 
   // if the period is wrong change it to the correct one.
   if (_current_sync_period == _sync_start_stop_half_period_us ){
     _current_sync_period = _sync_half_period_us;
     // Serial.print("blinkLED: sync half period changed to  : ");
-    // Serial.println(current_sync_period);
+    // Serial.print(current_sync_period);
+    // Serial.print("\n");
   }
 
   // toggle LED state

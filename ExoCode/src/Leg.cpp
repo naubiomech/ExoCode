@@ -138,9 +138,11 @@ bool Leg::_check_ground_strike()
     
     
     // Serial.print("Leg::_check_ground_strike : _prev_heel_contact_state - ");
-    // Serial.println(_prev_heel_contact_state);
+    // Serial.print(_prev_heel_contact_state);
+    // Serial.print("\n");
     // Serial.print("\t_prev_toe_contact_state - ");
-    // Serial.println(_prev_toe_contact_state);
+    // Serial.print(_prev_toe_contact_state);
+    // Serial.print("\n");
     // only check if in swing
     if(!_prev_heel_contact_state & !_prev_toe_contact_state)
     {
@@ -172,7 +174,8 @@ float Leg::_calc_percent_gait()
         percent_gait = 100 * ((float)timestamp - _ground_strike_timestamp) / _expected_step_duration;
         percent_gait = min(percent_gait, 1000); // set saturation.
         // Serial.print("Leg::_calc_percent_gait : percent_gait_x10 = ");
-        // Serial.println(percent_gait_x10);
+        // Serial.print(percent_gait_x10);
+        // Serial.print("\n");
     }
     return percent_gait;
 };
@@ -216,7 +219,7 @@ void Leg::_update_expected_duration()
             // Serial.print(_step_times[i]);
             // Serial.print("\t");
         // }
-        // Serial.println("\t]");
+        // Serial.print("\t]\n");
         
         
     }
@@ -235,7 +238,8 @@ void Leg::_update_expected_duration()
         // TODO: Add rate limiter for change in expected duration so it can't make big jumps
         _expected_step_duration = sum_step_times/_num_steps_avg;  // Average to the nearest ms
         // Serial.print("Leg::_update_expected_duration : _expected_step_duration - ");
-        // Serial.println(_expected_step_duration);
+        // Serial.print(_expected_step_duration);
+        // Serial.print("\n");
     }
 };
 
