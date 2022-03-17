@@ -35,6 +35,7 @@ class _Motor
 		virtual void transaction() = 0;
         //void set_controller(int controller); // Changes the low level controller for an individual joint
 		virtual void on_off(bool is_on) = 0;  // motor enable/disable
+        virtual void zero() = 0; // set position to zero
 		 
         virtual bool get_is_left();  // lets you know if it is a left or right leg.
         virtual config_defs::joint_id get_id();
@@ -54,6 +55,7 @@ class NullMotor : public _Motor
     void send_data() {};
     void transaction() {};
     void on_off(bool is_on) {};
+    void zero() {};
 };
 
 

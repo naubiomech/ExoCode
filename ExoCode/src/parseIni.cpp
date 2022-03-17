@@ -53,7 +53,7 @@
                 break;
             }
             if (eol)
-                Serial.print(\n);
+                Serial.print("\n");
         }
     }
 
