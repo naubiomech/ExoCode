@@ -54,7 +54,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
             leg->full_times_array = true;
           }
 
-          if(!FSR_CAL_FLAG && leg->full_times_array && ((leg->stance_times[leg->time_array_length-1] - leg->stance_times[0]) < 0.75)) {
+          if(!FSR_CAL_FLAG && leg->full_times_array && ((leg->stance_times[leg->time_array_length-1] - leg->stance_times[0]) < 750)) {
             
             right_leg->Previous_Setpoint_Ankle = 0;
             right_leg->Previous_Setpoint_Ankle_Pctrl = 0;
