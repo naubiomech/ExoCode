@@ -82,27 +82,27 @@ void setup()
   // Now that we have read the config file create the data structure and exoskeleton object.
 }
 
-bool first_run = true;
-int print_count = 0;
+//bool first_run = true;
+//int print_count = 0;
 
 void loop()
 {
   static ExoData exo_data(config_info::config_to_send);
   static Exo exo(&exo_data);
   
-  if(first_run)
-    {
-        first_run = false;
-
-        exo.left_leg._hip._motor->on_off(true);
-        //exo.left_leg._ankle._motor->on_off(true);
-    }
+  //if(first_run)
+//    {
+//        first_run = false;
+//
+//        exo.left_leg._hip._motor->on_off(true);
+//        //exo.left_leg._ankle._motor->on_off(true);
+//    }
     
-  static uint32_t last_time = micros();
-  uint32_t new_time = micros();
+//  static uint32_t last_time = micros();
+//  uint32_t new_time = micros();
   
-  if(new_time - last_time > 1000)
-  {
+  //if(new_time - last_time > 1000)
+  //{
 //    
 //    if (set_count >= 5000)
 //    {
@@ -114,17 +114,17 @@ void loop()
 //      setpoint = setpoints[index++];
 //    }
 
-    exo_data.left_leg.hip.motor.p = 0;
+    //exo_data.left_leg.hip.motor.p = 0;
     //exo_data.left_leg.ankle.motor.p = 1;
     
     //exo.left_leg._ankle._motor->transaction();
-    exo.left_leg._hip._motor->transaction();
+    //exo.left_leg._hip._motor->transaction();
 //    exo.right_leg._hip._motor->transaction();
 //    exo.right_leg._ankle._motor->transaction();
     
     
-    if (print_count >= 100)
-    {
+    //if (print_count >= 100)
+    //{
 //        Serial.print(exo_data.right_leg.hip.motor.p);
 //        Serial.print("\t");
 //        Serial.print(exo_data.left_leg.hip.motor.p);
@@ -134,12 +134,12 @@ void loop()
 //        Serial.print(exo_data.left_leg.ankle.motor.p);
 //        Serial.print("\t");
 //        Serial.print("\r\n");
-        print_count = 0;
-    }
-    print_count++;
+        //print_count = 0;
+   // }
+    //print_count++;
     //set_count++;
-    last_time = new_time;
-  }
+    //last_time = new_time;
+  //}
 
   //led::sync_led.update_led();  // actually change the led state, this also updates ledIsOn for recording the actual on/off state
 
@@ -364,52 +364,56 @@ void loop()
       /*
          Test Sync LED
       */
-//      int sync_trigger_timestamp_ms = millis();
-//      static int last_sync_trigger_timestamp_ms = sync_trigger_timestamp_ms;
-//      const int trigger_period_ms = 5000;
-//      if ((sync_trigger_timestamp_ms - last_sync_trigger_timestamp_ms) >= trigger_period_ms)
-//      {
-//        exo.sync_led.trigger();
-//        Serial.print("Sync LED Triggered\n");
-//        last_sync_trigger_timestamp_ms = sync_trigger_timestamp_ms;
-//      }
-//
-//      int print_time_ms = 100;
-//      int print_timestamp = millis();
-//      static int last_print_timestamp = print_timestamp;
-//
-//      if ((print_timestamp - last_print_timestamp) >= print_time_ms)
-//      {
-//        //Serial.print(exo_data.sync_led_state);
-//        //Serial.print("\n");
-//      }
+      int sync_trigger_timestamp_ms = millis();
+      static int last_sync_trigger_timestamp_ms = sync_trigger_timestamp_ms;
+      const int trigger_period_ms = 5000;
+      if ((sync_trigger_timestamp_ms - last_sync_trigger_timestamp_ms) >= trigger_period_ms)
+      {
+        exo.sync_led.trigger();
+        Serial.print("Sync LED Triggered\n");
+        last_sync_trigger_timestamp_ms = sync_trigger_timestamp_ms;
+      }
+
+      int print_time_ms = 100;
+      int print_timestamp = millis();
+      static int last_print_timestamp = print_timestamp;
+
+      if ((print_timestamp - last_print_timestamp) >= print_time_ms)
+      {
+        //Serial.print(exo_data.sync_led_state);
+        //Serial.print("\n");
+      }
 
       //-----------------------------------------------
       /*
          Test Status LED
       */
+      exo.run();
 //      int status_trigger_timestamp_ms = millis();
 //      static int last_status_trigger_timestamp_ms = status_trigger_timestamp_ms;
-//      const int status_period_ms = 1000;
+//      const int status_period_ms = 5000;
 //      if ((status_trigger_timestamp_ms - last_status_trigger_timestamp_ms) >= status_period_ms)
 //      {
 //          exo_data.status++;
-//          if (exo_data.status > 3)
+//          if (exo_data.status > status_led_defs::messages::error)
 //          {
 //              exo_data.status = 0;
 //          }
 //          switch (exo_data.status)
 //          {
-//              case 0 :
+//              case status_led_defs::messages::off :
 //                Serial.println("Status: off");
 //                break;
-//              case 1 :
+//              case status_led_defs::messages::trial_off :
 //                Serial.println("Status: trial off");
 //                break;
-//              case 2 :
+//              case status_led_defs::messages::trial_on :
 //                Serial.println("Status: trial on");
 //                break;
-//              case 3 :
+//              case status_led_defs::messages::test :
+//                Serial.println("Status: test");
+//                break;
+//              case status_led_defs::messages::error :
 //                Serial.println("Status: error");
 //                break;
 //              default :
