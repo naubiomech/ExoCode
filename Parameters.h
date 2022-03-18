@@ -39,7 +39,7 @@ int change = 1;
 int just_first_time = 1;
 
 // ===== State Machine Parameters =====
-double state_counter_th = 10;
+double state_counter_th = 3;
 double swing_counter_th = 75;
 double step_time_length = 150;
 
