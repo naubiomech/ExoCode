@@ -100,10 +100,6 @@ void _CANMotor::read_data()
     do
     {
         CAN_message_t msg = can->read();
-        Serial.print("read_data  ");
-        Serial.print(msg.buf[0]);
-        // Serial.print("\t");
-        // Serial.println(uint32_t(_motor_data->id));
         if (msg.buf[0] == uint32_t(_motor_data->id))
         {
             // unpack data
@@ -116,7 +112,6 @@ void _CANMotor::read_data()
             _motor_data->i = _uint_to_float(i_int, -_T_MAX, _T_MAX, 12);
             // reset timout_count because we got a valid message
             this->_timeout_count = 0;
-            // Serial.println("Got data");
             return;
         }
         searching = ((micros() - start) < _timeout);
@@ -178,6 +173,7 @@ void _CANMotor::on_off(bool is_on)
     }
     CAN* can = can->getInstance();
     can->send(msg);
+    delayMicroseconds(500);
 };
 
 void _CANMotor::zero()
@@ -198,11 +194,14 @@ void _CANMotor::zero()
 
 void _CANMotor::_handle_read_failure()
 {
-    Serial.println("Timeout");
     this->_timeout_count++;
-    if (this->_timeout_count > 50)
+    if (this->_timeout_count > 100)
     {
         // TODO: handle excessive timout errors
+        this->_timeout_count = 0;
+        Serial.print("Timeout: ");
+        Serial.print(uint32_t(this->_motor_data->id));
+        Serial.print("\n");
     }
 };
 

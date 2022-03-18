@@ -14,10 +14,7 @@ class CAN
     public:
         static CAN* getInstance()
         {
-            if (!instance)
-            {
-                instance = new CAN;
-            }
+            static CAN* instance = new CAN;
             return instance;
         }
 
@@ -43,7 +40,5 @@ class CAN
             Can0.begin(1000000);
         }
 };
-
-CAN* CAN::instance = 0;
 
 #endif

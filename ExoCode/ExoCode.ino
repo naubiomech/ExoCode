@@ -3,8 +3,9 @@
 
    P. Stegall Jan 2022
 */
-
 #if defined(ARDUINO_TEENSY36)
+
+#define INCLUDE_FLEXCAN_DEBUG
 
 // Standard Libraries
 #include <stdint.h>
@@ -32,6 +33,8 @@
 //led::sync_timer.begin(Led::grossLedInteruptWrapper, Led::sync_led.currentSyncPeriod);
 
 
+
+
 namespace config_info
 {
 uint8_t (config_to_send)[ini_config::number_of_keys];
@@ -45,18 +48,21 @@ void callback()//executed every 2ms
 
 }
 
+inline float modulate_torque(float& count)
+{
+    const float pi = 3.14159;
+    count = (count >= 10*pi) ? 0:count;
+    count += pi/2000;
+    return sin(count/pi);
+}
+
 void setup()
 {
-
   Serial.begin(115200);
   //TODO: Remove serial while for deployed version as this would hang
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB
   }
-  //        Serial.print("Teensy Microcontroller\n");
-  
-  
-    
 
   ini_parser(config_info::config_to_send);
   uint8_t (config_to_send)[ini_config::number_of_keys];
@@ -71,21 +77,69 @@ void setup()
 //              Serial.print((int)config_info::config_to_send[i]\n);
 //  
 //          }
-//          Serial.print(\n);
-  //
-  //        Serial.print(\n);
-  //        Serial.print(static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_info::config_to_send[config_defs::exo_side_idx]);
-  //        Serial.print(\n);
+
 
   // Now that we have read the config file create the data structure and exoskeleton object.
-
 }
 
-//
+bool first_run = true;
+int print_count = 0;
+
 void loop()
 {
   static ExoData exo_data(config_info::config_to_send);
   static Exo exo(&exo_data);
+  
+  if(first_run)
+    {
+        first_run = false;
+
+        exo.left_leg._hip._motor->on_off(true);
+        //exo.left_leg._ankle._motor->on_off(true);
+    }
+    
+  static uint32_t last_time = micros();
+  uint32_t new_time = micros();
+  
+  if(new_time - last_time > 1000)
+  {
+//    
+//    if (set_count >= 5000)
+//    {
+//      set_count = 0;
+//      if (index == 4) 
+//      {
+//          index = 0;
+//      }
+//      setpoint = setpoints[index++];
+//    }
+
+    exo_data.left_leg.hip.motor.p = 0;
+    //exo_data.left_leg.ankle.motor.p = 1;
+    
+    //exo.left_leg._ankle._motor->transaction();
+    exo.left_leg._hip._motor->transaction();
+//    exo.right_leg._hip._motor->transaction();
+//    exo.right_leg._ankle._motor->transaction();
+    
+    
+    if (print_count >= 100)
+    {
+//        Serial.print(exo_data.right_leg.hip.motor.p);
+//        Serial.print("\t");
+//        Serial.print(exo_data.left_leg.hip.motor.p);
+//        Serial.print("\t");
+////        Serial.print(exo_data.right_leg.ankle.motor.p);
+////        Serial.print("\t");
+//        Serial.print(exo_data.left_leg.ankle.motor.p);
+//        Serial.print("\t");
+//        Serial.print("\r\n");
+        print_count = 0;
+    }
+    print_count++;
+    //set_count++;
+    last_time = new_time;
+  }
 
   //led::sync_led.update_led();  // actually change the led state, this also updates ledIsOn for recording the actual on/off state
 
@@ -121,7 +175,7 @@ void loop()
             if(!exo_data.left_leg.do_calibration_toe_fsr & !exo_data.left_leg.do_calibration_refinement_toe_fsr & !exo_data.left_leg.do_calibration_heel_fsr & !exo_data.left_leg.do_calibration_refinement_heel_fsr)
             {
     //              Serial.print("toe reading : \t");
-    //              Serial.print(exo_data.left_leg.toe_fsr);
+    //              Serial.print(exo_data.left_leg.toe_fsrf);
     //              Serial.print("\t heel reading : \t");
     //              Serial.print(exo_data.left_leg.heel_fsr);
     //              Serial.print("\n");
@@ -333,39 +387,30 @@ void loop()
       //-----------------------------------------------
       /*
          Test Status LED
-         Need to comment out the status handling in Exo::run()
       */
 //      int status_trigger_timestamp_ms = millis();
 //      static int last_status_trigger_timestamp_ms = status_trigger_timestamp_ms;
-//      const int status_period_ms = 10000;
+//      const int status_period_ms = 1000;
 //      if ((status_trigger_timestamp_ms - last_status_trigger_timestamp_ms) >= status_period_ms)
 //      {
 //          exo_data.status++;
-//          if (exo_data.status > status_led_defs::messages::error)
+//          if (exo_data.status > 3)
 //          {
-//              exo_data.status = status_led_defs::messages::off;
+//              exo_data.status = 0;
 //          }
 //          switch (exo_data.status)
 //          {
-//              case status_led_defs::messages::off :
-//                Serial.print("Status: off");
-//                Serial.print("\n");
+//              case 0 :
+//                Serial.println("Status: off");
 //                break;
-//              case status_led_defs::messages::trial_off :
-//                Serial.print("Status: trial off");
-//                Serial.print("\n");
+//              case 1 :
+//                Serial.println("Status: trial off");
 //                break;
-//              case status_led_defs::messages::trial_on :
-//                Serial.print("Status: trial on");
-//                Serial.print("\n");
+//              case 2 :
+//                Serial.println("Status: trial on");
 //                break;
-//              case status_led_defs::messages::test :
-//                Serial.print("Status: test");
-//                Serial.print("\n");
-//                break;
-//              case status_led_defs::messages::error :
-//                Serial.print("Status: error");
-//                Serial.print("\n");
+//              case 3 :
+//                Serial.println("Status: error");
 //                break;
 //              default :
 //                Serial.print("Status: not defined");
@@ -374,50 +419,48 @@ void loop()
 //          }
 //          last_status_trigger_timestamp_ms = status_trigger_timestamp_ms;
 //      }
-
       
-      // exo_data.status = status_led_defs::messages::test;
       //-----------------------------------------------
-
     /* Code to test the motor communication */
     //===============================================
-    static bool first_run = true;
-    static int count = 0;
-    static int sign = 1;
-    static float torque = 1; 
-    delay(1000);
-    if(first_run)
-    {
-        first_run = false;
-        Serial.print("Turning on");
-        Serial.print("\n");
-        exo.left_leg._hip._motor->on_off(true);
-        //delay(2000);
-    }
-    if (count >= 25) {
-      sign = -sign;
-      //exo.left_leg._hip._motor->on_off(first_run);
-      //first_run = !first_run;
-      count = 0;
-    }
-    count++;
-    exo_data.left_leg.hip.motor.t_ff = 0;//sign*(torque);
-//    exo.left_leg._hip._motor->transaction();
-    exo.left_leg._hip._motor->send_data();
-    //delayMicroseconds(250);
-    exo.left_leg._hip._motor->read_data();
-    Serial.print(exo_data.left_leg.hip.motor.p);
-    Serial.print("\t");
-    Serial.print(exo_data.left_leg.hip.motor.v);
-    Serial.print("\t");
-    Serial.print(exo_data.left_leg.hip.motor.i);
-    Serial.print("\t");
-    Serial.print(exo_data.left_leg.hip.motor.t_ff);
-    Serial.print("\n");
-    Serial.print("\t");
-    Serial.print(millis());
-    Serial.print("\n");
-    delay(100);
+//    static bool first_run = true;
+//    static int count = 0;
+//    static int sign = 1;
+//    static float torque = 1; 
+//    delay(1000);
+//    if(first_run)
+//    {
+//        first_run = false;
+//        Serial.print("Turning on");
+//        Serial.print("\n");
+//        exo.left_leg._hip._motor->on_off(true);
+//        //delay(2000);
+//    }
+//    if (count >= 25) {
+//      sign = -sign;
+//      //exo.left_leg._hip._motor->on_off(first_run);
+//      //first_run = !first_run;
+//      count = 0;
+//    }
+//    count++;
+//    exo_data.left_leg.hip.motor.t_ff = 0;//sign*(torque);
+////    exo.left_leg._hip._motor->transaction();
+//    exo.left_leg._hip._motor->send_data();
+//    //delayMicroseconds(250);
+//    exo.left_leg._hip._motor->read_data();
+//    Serial.print(exo_data.left_leg.hip.motor.p);
+//    Serial.print("\t");
+//    Serial.print(exo_data.left_leg.hip.motor.v);
+//    Serial.print("\t");
+//    Serial.print(exo_data.left_leg.hip.motor.i);
+//    Serial.print("\t");
+//    Serial.print(exo_data.left_leg.hip.motor.t_ff);
+//    Serial.print("\n");
+//    Serial.print("\t");
+//    Serial.print(millis());
+//    Serial.print("\n");
+//    delay(100);
+
 }
 
 
