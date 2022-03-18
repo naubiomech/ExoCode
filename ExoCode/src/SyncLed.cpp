@@ -23,7 +23,8 @@
 #include "SyncLed.h"
 //#include <IntervalTimer.h>
 //#include "IntervalTimerEx.h"
-
+// Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
+#if defined(ARDUINO_TEENSY36)
 #define NUM_START_STOP_BLINKS 1  // the number of times to have the LED on during the start stop sequence.
 
 /*
@@ -294,3 +295,5 @@ bool SyncLed::get_is_blinking()
 {
     return _is_blinking;
 }; 
+
+#endif

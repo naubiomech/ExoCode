@@ -115,7 +115,8 @@ namespace status_led_defs
     
 }
 
-
+// Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
+#if defined(ARDUINO_TEENSY36)
 // Declare the class
 class StatusLed
 {
@@ -166,5 +167,5 @@ class StatusLed
               
     
 };
-
+#endif
 #endif

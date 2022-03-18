@@ -12,6 +12,8 @@
  * P. Stegall Dec. 2021
 */
 
+// Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
+#if defined(ARDUINO_TEENSY36)
 #include "Arduino.h"
 #include "StatusLed.h"
 #include <math.h>
@@ -276,3 +278,4 @@ void StatusLed::_rainbow_hsv()
     _set_color(colors[0], colors[1], colors[2]);   // Set the LED state
     return;
 };
+#endif

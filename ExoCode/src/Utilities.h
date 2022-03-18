@@ -2,6 +2,7 @@
 #define Utilities_h
 
 #include "ParseIni.h"
+#include "Arduino.h"
 #include <stdint.h>
 
 namespace utils

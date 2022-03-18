@@ -27,7 +27,8 @@
 
 #ifndef SyncLed_h
 #define SyncLed_h
-
+// Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
+#if defined(ARDUINO_TEENSY36)
 #include "Arduino.h"
 #include "Board.h"
 //#include "IntervalTimer.h"
@@ -83,5 +84,5 @@ class SyncLed
 	int _last_state_change_timestamp_us;
 	
 };
-
+#endif
 #endif

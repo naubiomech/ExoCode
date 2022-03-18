@@ -7,6 +7,8 @@
 #define CAN_H
 
 #include "Arduino.h"
+// Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
+#if defined(ARDUINO_TEENSY36)
 #include "FlexCAN.h"
 
 class CAN 
@@ -40,5 +42,5 @@ class CAN
             Can0.begin(1000000);
         }
 };
-
+#endif
 #endif
