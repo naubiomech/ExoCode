@@ -139,9 +139,5 @@ double oldVolt;
 double emaVolt;
 double voltAlpha = 0.001;
 
-// Torque Offsets
-double trqOffsetR = -1.219;  //DEFINE TRANSDUCER OFFSET HERE S07
-double trqOffsetL = -1.503;  //DEFINE TRANSDUCER OFFSET HERE S08
-
 double markCount = 10;
 bool markFlag = false;

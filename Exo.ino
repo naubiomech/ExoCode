@@ -191,14 +191,18 @@ void update_GUI() {
     battery_parameter = msg.scaled_val;
     if(stream && msg.too_low) {
       left_leg->Setpoint_Ankle = 0;
-      //left_leg->Dorsi_Setpoint_Ankle = 0;
+      left_leg->Previous_Setpoint_Ankle = 0;
+      left_leg->Previous_Setpoint_Ankle_Pctrl = 0;
       left_leg->first_step = 1;
       left_leg->activate_in_3_steps = 1;
+      left_leg->start_step = 0;
       
       right_leg->Setpoint_Ankle = 0;
-      //right_leg->Dorsi_Setpoint_Ankle = 0;
+      right_leg->Previous_Setpoint_Ankle = 0;
+      right_leg->Previous_Setpoint_Ankle_Pctrl = 0;
       right_leg->first_step = 1;
       right_leg->activate_in_3_steps = 1;
+      right_leg->start_step = 0;
 
       digitalWrite(RED, !LED_ON);
       digitalWrite(BLUE, !LED_ON);
