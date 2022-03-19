@@ -148,7 +148,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
         leg->Previous_Setpoint_Ankle_Pctrl = 0; //GO 4/21/19
       }
 
-      else if (leg->p_steps->curr_voltage_Toe <= (leg->fsr_Toe_trough_ref + (leg->fsr_percent_thresh_Toe * (leg->fsr_Toe_peak_ref - leg->fsr_Toe_trough_ref))))
+      else if (leg->p_steps->curr_voltage_Toe <= (leg->fsr_Toe_trough_ref + ((leg->fsr_percent_thresh_Toe-swing_percent_change) * (leg->fsr_Toe_peak_ref - leg->fsr_Toe_trough_ref))))
       {
         leg->state_count_31++;
         if (leg->state_count_31 >= state_counter_th)

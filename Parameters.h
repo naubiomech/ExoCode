@@ -42,6 +42,7 @@ int just_first_time = 1;
 double state_counter_th = 3;
 double swing_counter_th = 75;
 double step_time_length = 150;
+double swing_percent_change = 0.5;
 
 // ===== PID and CTRL Parameters =====
 //All the needed parameters to set torque bias, PID ctrl, to enable the motors and to average the torque signals
