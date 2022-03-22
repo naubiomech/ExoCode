@@ -32,7 +32,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
         leg->set_2_zero = 0;
         leg->One_time_set_2_zero = 1;
       }
-      else if (leg->p_steps->curr_voltage_Toe > (leg->fsr_Toe_trough_ref + (leg->fsr_percent_thresh_Toe * (leg->fsr_Toe_peak_ref - leg->fsr_Toe_trough_ref)))) //If the overall FSR reading is greater than the threshold we need to be in state 3
+      else if (leg->p_steps->curr_voltage_Toe > (leg->fsr_Toe_trough_ref + ((leg->fsr_percent_thresh_Toe+swing_percent_change) * (leg->fsr_Toe_peak_ref - leg->fsr_Toe_trough_ref)))) //If the overall FSR reading is greater than the threshold we need to be in state 3
       {
         leg->state_count_13++;
         // if you're in the same state for more than state_counter_th it means that it is not noise
@@ -130,6 +130,8 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           leg->state_count_13 = 0;
           leg->state_count_31 = 0;
           leg->Max_FSR_Ratio = 0; 
+
+          leg->pid.SetTunings(300, 0, 3);
         }
       }
 
@@ -148,7 +150,7 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
         leg->Previous_Setpoint_Ankle_Pctrl = 0; //GO 4/21/19
       }
 
-      else if (leg->p_steps->curr_voltage_Toe <= (leg->fsr_Toe_trough_ref + ((leg->fsr_percent_thresh_Toe-swing_percent_change) * (leg->fsr_Toe_peak_ref - leg->fsr_Toe_trough_ref))))
+      else if (leg->p_steps->curr_voltage_Toe <= (leg->fsr_Toe_trough_ref + ((leg->fsr_percent_thresh_Toe) * (leg->fsr_Toe_peak_ref - leg->fsr_Toe_trough_ref))))
       {
         leg->state_count_31++;
         if (leg->state_count_31 >= state_counter_th)
@@ -192,6 +194,8 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           leg->state_count_21 = 0;
           leg->swing_counter = 0;
           leg->allow_inc_flag = true; //TH 8/7/19
+
+          leg->pid.SetTunings(330, 0, 3);
         }
       }
   }//end switch
