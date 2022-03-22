@@ -24,7 +24,10 @@ class CAN
         {
             msg.ext = 0;
             msg.len = 8;
-            Can0.write(msg);
+            if(!Can0.write(msg)) 
+            {
+                Serial.print("Error Sending\n");
+            }
         }
 
         CAN_message_t read()
@@ -38,7 +41,8 @@ class CAN
         static CAN* instance;
 
         CAN()
-        {
+        {   
+            Can0.setTxBufferSize(16);
             Can0.begin(1000000);
         }
 };

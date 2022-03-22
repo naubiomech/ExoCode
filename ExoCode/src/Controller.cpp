@@ -180,23 +180,24 @@ float ExtensionAngle::calc_motor_cmd()
         normalized_angle = angle / _min_angle;
         
     }
+
     // int print_time_ms = 100;
     // static int last_timestamp = millis();
     // int timestamp = millis();
     // if ((timestamp-last_timestamp)>print_time_ms)
     // {
-        // Serial.print(utils::radians_to_degrees(angle));
-        // Serial.print(" ");
-        // Serial.print(utils::radians_to_degrees(_max_angle));
-        // Serial.print(" ");
-        // Serial.print(utils::radians_to_degrees(_min_angle));
-        // Serial.print(" ");
-        // Serial.print(100);
-        // Serial.print(" ");
-        // Serial.print(-100);
-        // Serial.print(" ");
-        // Serial.print(normalized_angle*100);
-        // Serial.print("\n");
+    //     Serial.print(utils::radians_to_degrees(angle));
+    //     Serial.print(" ");
+    //     Serial.print(utils::radians_to_degrees(_max_angle));
+    //     Serial.print(" ");
+    //     Serial.print(utils::radians_to_degrees(_min_angle));
+    //     Serial.print(" ");
+    //     Serial.print(100);
+    //     Serial.print(" ");
+    //     Serial.print(-100);
+    //     Serial.print(" ");
+    //     Serial.print(normalized_angle*100);
+    //     Serial.print("\n");
     // }
     
     _update_state(angle);

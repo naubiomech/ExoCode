@@ -255,6 +255,9 @@ void HipJoint::run_joint()
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     // Send the new command to the motor.
+    Serial.print(_joint_data->controller.setpoint);
+    Serial.print("\t");
+    //_motor.tranaction();
 };  
 
 /*
@@ -277,7 +280,7 @@ void HipJoint::read_data()
  */
 void HipJoint::set_controller(uint8_t controller_id)   
 {
-    switch (_data->left_leg.hip.controller.controller)
+    switch (controller_id)
     {
         case (uint8_t)config_defs::hip_controllers::disabled :
             _motor->on_off(false);
@@ -426,6 +429,8 @@ void AnkleJoint::run_joint()
     //Serial.print("AnkleJoint::run_joint : Entered\n");
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     //Serial.print("AnkleJoint::run_joint : Exiting\n");
+    Serial.print(_joint_data->controller.setpoint);
+    Serial.print("\t");
 };  
 
 /*

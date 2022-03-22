@@ -110,6 +110,10 @@ void _CANMotor::read_data()
             _motor_data->p = _uint_to_float(p_int, -_P_MAX, _P_MAX, 16);
             _motor_data->v = _uint_to_float(v_int, -_V_MAX, _V_MAX, 12);
             _motor_data->i = _uint_to_float(i_int, -_T_MAX, _T_MAX, 12);
+
+            // Serial.print("Got data: ");
+            // Serial.print(uint32_t(_motor_data->id));
+            // Serial.print("\t");
             // reset timout_count because we got a valid message
             this->_timeout_count = 0;
             return;
@@ -123,6 +127,9 @@ void _CANMotor::read_data()
 
 void _CANMotor::send_data()
 {
+    // Serial.print("Sending data: ");
+    // Serial.print(uint32_t(_motor_data->id));
+    // Serial.print("\t");
     // read data from ExoData object, constraint it, and package it
     float p_sat = constrain(_motor_data->p_des, -_P_MAX, _P_MAX);
     float v_sat = constrain(_motor_data->v_des, -_V_MAX, _V_MAX);
