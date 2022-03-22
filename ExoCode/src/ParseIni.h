@@ -45,6 +45,8 @@ namespace config_defs
         right_ankle = 5,
         left_hip = 6,
         right_hip = 7,
+        left_hip_ankle = 8,
+        right_hip_ankle = 9,
     };
     
     enum class exo_side : uint8_t
@@ -182,6 +184,8 @@ namespace config_defs
             {"rightAnkle", (uint8_t)config_defs::exo_name::right_ankle},
             {"leftHip", (uint8_t)config_defs::exo_name::left_hip},
             {"rightHip", (uint8_t)config_defs::exo_name::right_hip},
+            {"leftHipAnkle", (uint8_t)config_defs::exo_name::left_hip_ankle},
+            {"rightHipAnkle", (uint8_t)config_defs::exo_name::right_hip_ankle},
         };
         
         const IniKeyCode exo_side 
