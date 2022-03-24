@@ -7,7 +7,7 @@
 
 // We only need to parse the INI file if we have access to the SD card.
 // The nano will get the info through SPI so doesn't need these functions.
-#if defined(ARDUINO_TEENSY36) 
+#if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
     /*
      * ini_print_error_message(uint8_t e, bool eol = true)
      * 

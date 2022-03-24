@@ -9,7 +9,7 @@
 #define TorqueSensor_h
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
-#if defined(ARDUINO_TEENSY36)
+#if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
 
 #include "Board.h"
 #include "Arduino.h"
@@ -29,10 +29,10 @@ class TorqueSensor
          */
         int read();
 				
-		
+		int _pin;
 	private:
 		bool _is_used;
-        int _pin;
+        
         int _calibration;  // Stores the value used for calibration.
         int _raw_reading;
 		int _calibrated_reading;

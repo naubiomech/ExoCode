@@ -9,7 +9,7 @@
 #define Motor_h
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
-#if defined(ARDUINO_TEENSY36)
+#if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
 
 #include "Arduino.h"
 
@@ -31,8 +31,8 @@ class _Motor
 		
         //Pure virtual functions, these will have to be defined for each one.
         virtual void read_data() = 0; // reads motor data from each motor used in the leg and stores the values
-		virtual void send_data() = 0;  // sends new control command to the motors used in the leg, based on the defined controllers
-		virtual void transaction() = 0;
+		virtual void send_data(float torque) = 0;  // sends new control command to the motors used in the leg, based on the defined controllers
+		virtual void transaction(float torque) = 0;
         //void set_controller(int controller); // Changes the low level controller for an individual joint
 		virtual void on_off(bool is_on) = 0;  // motor enable/disable
         virtual void zero() = 0; // set position to zero
@@ -52,8 +52,8 @@ class NullMotor : public _Motor
     public:
     NullMotor(config_defs::joint_id id, ExoData* exo_data):_Motor(id, exo_data) {};
     void read_data() {};
-    void send_data() {};
-    void transaction() {};
+    void send_data(float torque) {};
+    void transaction(float torque) {};
     void on_off(bool is_on) {};
     void zero() {};
 };
@@ -67,9 +67,9 @@ class _CANMotor : public _Motor
     public:
         _CANMotor(config_defs::joint_id id, ExoData* exo_data);
         virtual ~_CANMotor(){};
-        void transaction();
+        void transaction(float torque);
         void read_data();
-        void send_data();
+        void send_data(float torque);
         void on_off(bool is_on);
         void zero();
     protected:

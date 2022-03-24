@@ -7,7 +7,7 @@
 
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
-#if defined(ARDUINO_TEENSY36) 
+#if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
 // initialize the used joint counters that will be used to select the TorqueSensor pin.  If you don't do it it won't work.
 uint8_t _Joint::left_used_joint_count = 0;
 uint8_t _Joint::right_used_joint_count = 0;
@@ -26,6 +26,13 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
     _is_left = utils::get_is_left(_id); //((uint8_t)this->id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
     
     _data = exo_data;
+
+    // Serial.print(uint8_t(id));
+    // Serial.print("\t");
+    // Serial.print(_is_used);
+    // Serial.print("\t");
+    // Serial.print(uint8_t(_torque_sensor._pin));
+    // Serial.print("\t");
     
     // set _joint_data to point to the data specific to this joint.
     // switch (utils::get_joint_type(_id))
@@ -80,6 +87,9 @@ void _Joint::read_data()
  */
 void _Joint::check_calibration()  
 {
+    // Serial.print("id: ");
+    // Serial.print(uint8_t(_id));
+    // Serial.print("\t");
     // Check if we are doing the calibration on the torque sensor
     _joint_data->calibrate_torque_sensor = _torque_sensor.calibrate(_joint_data->calibrate_torque_sensor);
     //Serial.print("_Joint::check_calibration\n"); 
@@ -191,6 +201,7 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
         {
             return logic_micro_pins::not_connected_pin;
         }
+
     }
 };
 
@@ -222,29 +233,34 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
     {
         _joint_data = &(exo_data->right_leg.hip);
     }
-        
+    Serial.print(uint8_t(id));
+    Serial.print("\t");
+    Serial.print(_joint_data->is_used);
+    Serial.print("\t");
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
-    
-    switch (exo_data->left_leg.hip.motor.motor_type)
+    if(_joint_data->is_used)
     {
-        // using new so the object of the specific motor type persists.
-        case (uint8_t)config_defs::motor::AK60 :
-            //_motor = new AK60(id, exo_data);
-            HipJoint::set_motor(new AK60(id, exo_data));
-            break;
-        case (uint8_t)config_defs::motor::AK80 :
-            //_motor = new AK80(id, exo_data);
-            HipJoint::set_motor(new AK80(id, exo_data));
-            break;
-        default :
-            //_motor = nullptr;
-            HipJoint::set_motor(new NullMotor(id, exo_data));
-            break;
+        switch (exo_data->left_leg.hip.motor.motor_type)
+        {
+            // using new so the object of the specific motor type persists.
+            case (uint8_t)config_defs::motor::AK60 :
+                //_motor = new AK60(id, exo_data);
+                HipJoint::set_motor(new AK60(id, exo_data));
+                break;
+            case (uint8_t)config_defs::motor::AK80 :
+                //_motor = new AK80(id, exo_data);
+                HipJoint::set_motor(new AK80(id, exo_data));
+                break;
+            default :
+                //_motor = nullptr;
+                HipJoint::set_motor(new NullMotor(id, exo_data));
+                break;
+        }
+        delay(5);
+        
+        set_controller(exo_data->left_leg.hip.controller.controller);
     }
-    delay(5);
-    
-    set_controller(exo_data->left_leg.hip.controller.controller);
 };
 
 /*
@@ -256,8 +272,9 @@ void HipJoint::run_joint()
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     // Send the new command to the motor.
     Serial.print(_joint_data->controller.setpoint);
-    Serial.print("\t");
-    //_motor.tranaction();
+    Serial.print(" Hip\t");
+    // Use transaction because the motors are call and response
+    _motor->transaction(0);
 };  
 
 /*
@@ -317,26 +334,31 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
     {
         _joint_data = &(exo_data->right_leg.knee);
     }
-    
+    Serial.print(uint8_t(id));
+    Serial.print("\t");
+    Serial.print(_joint_data->is_used);
+    Serial.print("\t");
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
-   
-    switch (_data->left_leg.knee.motor.motor_type)
-    {
-        // using new so the object of the specific motor type persists.
-        case (uint8_t)config_defs::motor::AK60 :
-            KneeJoint::set_motor(new AK60(id, exo_data));
-            break;
-        case (uint8_t)config_defs::motor::AK80 :
-            KneeJoint::set_motor(new AK80(id, exo_data));
-            break;
-        default :
-            KneeJoint::set_motor(new NullMotor(id, exo_data));
-            break;
-    }
-    delay(5);
+   if(_joint_data->is_used)
+   {
+        switch (_data->left_leg.knee.motor.motor_type)
+        {
+            // using new so the object of the specific motor type persists.
+            case (uint8_t)config_defs::motor::AK60 :
+                KneeJoint::set_motor(new AK60(id, exo_data));
+                break;
+            case (uint8_t)config_defs::motor::AK80 :
+                KneeJoint::set_motor(new AK80(id, exo_data));
+                break;
+            default :
+                KneeJoint::set_motor(new NullMotor(id, exo_data));
+                break;
+        }
+        delay(5);
 
-    set_controller(exo_data->left_leg.knee.controller.controller);
+        set_controller(exo_data->left_leg.knee.controller.controller);
+   }
 };
 
 /*
@@ -344,7 +366,13 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
  */
 void KneeJoint::run_joint()
 {
+    // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
+    // Send the new command to the motor.
+    Serial.print(_joint_data->controller.setpoint);
+    Serial.print(" Knee\t");
+    // Use transaction because the motors are call and response
+    _motor->transaction(0);
 };  
 
 /*
@@ -399,26 +427,32 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
     {
         _joint_data = &(exo_data->right_leg.ankle);
     }
+    Serial.print(uint8_t(id));
+    Serial.print("\t");
+    Serial.print(_joint_data->is_used);
+    Serial.print("\t");
             
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
-    
-    switch (_data->left_leg.ankle.motor.motor_type)
+    if(_joint_data->is_used)
     {
-        // using new so the object of the specific motor type persists.
-        case (uint8_t)config_defs::motor::AK60 :
-            AnkleJoint::set_motor(new AK60(id, exo_data));
-            break;
-        case (uint8_t)config_defs::motor::AK80 :
-            AnkleJoint::set_motor(new AK80(id, exo_data));
-            break;
-        default :
-           AnkleJoint::set_motor(new NullMotor(id, exo_data));
-            break;
-    }
-    delay(5);
+        switch (_data->left_leg.ankle.motor.motor_type)
+        {
+            // using new so the object of the specific motor type persists.
+            case (uint8_t)config_defs::motor::AK60 :
+                AnkleJoint::set_motor(new AK60(id, exo_data));
+                break;
+            case (uint8_t)config_defs::motor::AK80 :
+                AnkleJoint::set_motor(new AK80(id, exo_data));
+                break;
+            default :
+            AnkleJoint::set_motor(new NullMotor(id, exo_data));
+                break;
+        }
+        delay(5);
 
-    set_controller(exo_data->left_leg.ankle.controller.controller);  
+        set_controller(exo_data->left_leg.ankle.controller.controller);
+    }  
 };
 
 /*
@@ -426,11 +460,13 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
  */
 void AnkleJoint::run_joint()
 {
-    //Serial.print("AnkleJoint::run_joint : Entered\n");
+    // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
-    //Serial.print("AnkleJoint::run_joint : Exiting\n");
+    // Send the new command to the motor.
     Serial.print(_joint_data->controller.setpoint);
     Serial.print("\t");
+    // Use transaction because the motors are call and response
+    _motor->transaction(0);
 };  
 
 /*
