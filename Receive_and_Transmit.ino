@@ -75,7 +75,6 @@ void receive_and_transmit()
       change_motor_state(true);                                      //The GUI user is ready to start the trial so Motor is enabled
       stream = 1;                                                     //and the torque data is allowed to be streamed
       streamTimerCount = 0;
-      timeElapsed = 0;
       stepper->trial_start = millis();  //CFC 1/22/21 Gathers time at start of trial
 
       /* Send torque calibration values */

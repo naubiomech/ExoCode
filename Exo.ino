@@ -32,7 +32,6 @@ const unsigned int zero = 2048; //1540;
 bool motors_on = false;
 
 #include <ArduinoBLE.h>
-#include <elapsedMillis.h>
 #include <PID_v2.h>
 #include <Wire.h>
 #include <mbed.h>

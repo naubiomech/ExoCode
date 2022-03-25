@@ -8,7 +8,6 @@ const int voltageTimerCountNum = 50;
 const int32_t imuTimerCount = 50;
 
 // Variable used to schedule some actions
-elapsedMillis timeElapsed;
 double startTime = 0;
 int streamTimerCount = 0;
 int voltageTimerCount = 0;
