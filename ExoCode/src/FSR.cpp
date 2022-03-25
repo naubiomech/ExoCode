@@ -6,7 +6,7 @@
 #include "FSR.h"
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
-#if defined(ARDUINO_TEENSY36) 
+#if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
 /*
  * Constructor for the force sensitive resistor
  * Takes in the pin to use and sets it as an analog input

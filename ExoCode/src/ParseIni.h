@@ -127,7 +127,7 @@ namespace config_defs
     static const int exo_ankle_default_controller_idx = 9;
 }
 
-#if defined(ARDUINO_TEENSY36) 
+#if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
     #include <SD.h>
     #include <SPI.h>
     #include "IniFile.h"

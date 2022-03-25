@@ -3,7 +3,7 @@
 
    P. Stegall Jan 2022
 */
-#if defined(ARDUINO_TEENSY36)
+#if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
 
 #define INCLUDE_FLEXCAN_DEBUG
 
@@ -68,6 +68,8 @@ void setup()
   ini_parser(config_info::config_to_send);
   uint8_t (config_to_send)[ini_config::number_of_keys];
 
+  
+
   // Now that we have read the config file create the data structure and exoskeleton object.
 }
 
@@ -87,26 +89,17 @@ void loop()
         first_run = false;
         
         exo.left_leg._ankle._motor->on_off(true);
-        exo.right_leg._ankle._motor->on_off(true);
+//        exo.right_leg._ankle._motor->on_off(true);
         exo.left_leg._hip._motor->on_off(true);
-        exo.right_leg._hip._motor->on_off(true);
-        
-
-        exo_data.left_leg.ankle.motor.kp = 0;
-        exo_data.left_leg.ankle.motor.kd = 0;
-
-        exo_data.left_leg.hip.motor.kp = 0;
-        exo_data.left_leg.hip.motor.kd = 0;
-
+//        exo.right_leg._hip._motor->on_off(true);
         
         exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 1.5;
         exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = 1.0;
         exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] = 80;
         exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
         exo.left_leg._hip.set_controller(exo_data.left_leg.hip.controller.controller);
-        
-        
-        
+        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::clear_angle_idx] = 1;
+
         exo_data.left_leg.ankle.controller.parameters[controller_defs::proportional_joint_moment::max_torque_idx] = 2;
         exo_data.left_leg.ankle.controller.controller = uint8_t(config_defs::ankle_controllers::pjmc);
         exo.left_leg._ankle.set_controller(exo_data.left_leg.ankle.controller.controller);
@@ -116,18 +109,21 @@ void loop()
         exo_data.left_leg.do_calibration_heel_fsr = true;
         exo_data.left_leg.do_calibration_refinement_heel_fsr = true;
 
-//        bool do_calibration_toe_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
-//        bool do_calibration_refinement_toe_fsr; 
-//        bool do_calibration_heel_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
-//        bool do_calibration_refinement_heel_fsr;
+        bool do_calibration_toe_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
+        bool do_calibration_refinement_toe_fsr; 
+        bool do_calibration_heel_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
+        bool do_calibration_refinement_heel_fsr;
     }
 
     
     static float old_time = micros();
     static int send_count = 0;
     float new_time = micros();
-//    if(new_time - old_time > 1000)
-//    {
+    if(new_time - old_time > 2000)
+    {
+      exo.run();
+      //Serial.print("End run \n");
+      old_time = new_time;
 //        exo.left_leg._ankle._motor->transaction();
 //        exo.right_leg._ankle._motor->transaction();
 //        exo.left_leg._hip._motor->transaction();
@@ -144,10 +140,7 @@ void loop()
 //          Serial.print("\n");
 //          send_count = 0;
 //        }
-//    }
-
-    exo.run();
-    Serial.print("\n");
+    }
 }
 
 

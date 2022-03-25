@@ -9,7 +9,7 @@
 #include "CAN.h"
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
-#if defined(ARDUINO_TEENSY36) 
+#if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
 
 
 _Motor::_Motor(config_defs::joint_id id, ExoData* exo_data)
@@ -83,10 +83,10 @@ _CANMotor::_CANMotor(config_defs::joint_id id, ExoData* exo_data) // constructor
     _P_MAX = 12.5f;
 };
 
-void _CANMotor::transaction()
+void _CANMotor::transaction(float torque)
 {
     // send data and read response 
-    send_data();
+    send_data(torque);
     read_data();
 };
 
@@ -125,11 +125,12 @@ void _CANMotor::read_data()
     return;
 };
 
-void _CANMotor::send_data()
+void _CANMotor::send_data(float torque)
 {
     // Serial.print("Sending data: ");
     // Serial.print(uint32_t(_motor_data->id));
     // Serial.print("\t");
+    _motor_data->t_ff = torque;
     // read data from ExoData object, constraint it, and package it
     float p_sat = constrain(_motor_data->p_des, -_P_MAX, _P_MAX);
     float v_sat = constrain(_motor_data->v_des, -_V_MAX, _V_MAX);
@@ -202,7 +203,7 @@ void _CANMotor::zero()
 void _CANMotor::_handle_read_failure()
 {
     this->_timeout_count++;
-    if (this->_timeout_count > 100)
+    if (this->_timeout_count >= 1)
     {
         // TODO: handle excessive timout errors
         this->_timeout_count = 0;

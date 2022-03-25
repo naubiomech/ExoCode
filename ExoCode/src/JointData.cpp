@@ -25,19 +25,28 @@ JointData::JointData(config_defs::joint_id id, uint8_t* config_to_send)
     {
         case (uint8_t)config_defs::joint_id::hip:
         {
-            is_used = config_to_send[config_defs::hip_idx] != (uint8_t)config_defs::motor::not_used;
+            // Check if joint and side is used
+            is_used = (config_to_send[config_defs::hip_idx] != (uint8_t)config_defs::motor::not_used) & ((static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_to_send[config_defs::exo_side_idx]) 
+                || (((uint8_t)config_defs::exo_side::left == config_to_send[config_defs::exo_side_idx]) & this->is_left)
+                || (((uint8_t)config_defs::exo_side::right == config_to_send[config_defs::exo_side_idx]) & !this->is_left));
             // Serial.print("Hip\n");
             break;
         }
         case (uint8_t)config_defs::joint_id::knee:
         {
-            is_used = config_to_send[config_defs::knee_idx] != (uint8_t)config_defs::motor::not_used;
+            // Check if joint and side is used
+            is_used = config_to_send[config_defs::knee_idx] != (uint8_t)config_defs::motor::not_used & ((static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_to_send[config_defs::exo_side_idx]) 
+                || (((uint8_t)config_defs::exo_side::left == config_to_send[config_defs::exo_side_idx]) & this->is_left)
+                || (((uint8_t)config_defs::exo_side::right == config_to_send[config_defs::exo_side_idx]) & !this->is_left));
             // Serial.print("Knee\n");
             break;
         }
         case (uint8_t)config_defs::joint_id::ankle:
         {
-            is_used = config_to_send[config_defs::ankle_idx] != (uint8_t)config_defs::motor::not_used;
+            // Check if joint and side is used
+            is_used = config_to_send[config_defs::ankle_idx] != (uint8_t)config_defs::motor::not_used & ((static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_to_send[config_defs::exo_side_idx]) 
+                || (((uint8_t)config_defs::exo_side::left == config_to_send[config_defs::exo_side_idx]) & this->is_left)
+                || (((uint8_t)config_defs::exo_side::right == config_to_send[config_defs::exo_side_idx]) & !this->is_left));
             // Serial.print("Ankle\n");
             break;
         }
