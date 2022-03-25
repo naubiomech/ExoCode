@@ -22,7 +22,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 */
-#if defined(ARDUINO_TEENSY36)
+//#if defined(ARDUINO_TEENSY36)
 #include "Arduino.h"
 #include "TSPISlave.h"
 #include "SPI.h"
@@ -302,4 +302,4 @@ void tspi2_isr(void) {
   SPI2_SR |= SPI_SR_RFDF;
 }
 #endif
-#endif
+//#endif

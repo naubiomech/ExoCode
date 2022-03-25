@@ -26,7 +26,7 @@
 #if !defined(_TSPISLAVE_H_)
 #define _TSPISLAVE_H_
 
-#if defined(ARDUINO_TEENSY36)
+//#if defined(ARDUINO_TEENSY36)
 #include "Arduino.h"
 #include <SPI.h>
 
@@ -54,5 +54,5 @@ class TSPISlave {
     bool setSlaveSCK(uint8_t pin);
     bool setSlaveCS(uint8_t pin);
 };
-#endif
+//#endif
 #endif

@@ -20,7 +20,7 @@
 
 // Specific Librarys
 #include "src\ParseIni.h"
-#include "src\TSPISlave.h"
+#include <TSPISlave.h>
 
 //#include "src\Motor.h"
 
@@ -98,16 +98,18 @@ void loop()
         exo_data.left_leg.hip.motor.kp = 0;
         exo_data.left_leg.hip.motor.kd = 0;
 
-        exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
-        exo.left_leg._hip.set_controller(exo_data.left_leg.hip.controller.controller);
+        
         exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 1.5;
         exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = 1.0;
         exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] = 80;
-
+        exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
+        exo.left_leg._hip.set_controller(exo_data.left_leg.hip.controller.controller);
+        
+        
+        
+        exo_data.left_leg.ankle.controller.parameters[controller_defs::proportional_joint_moment::max_torque_idx] = 2;
         exo_data.left_leg.ankle.controller.controller = uint8_t(config_defs::ankle_controllers::pjmc);
         exo.left_leg._ankle.set_controller(exo_data.left_leg.ankle.controller.controller);
-        exo_data.left_leg.ankle.controller.parameters[controller_defs::proportional_joint_moment::max_torque_idx] = 2;
-        
 
         exo_data.left_leg.do_calibration_toe_fsr = true;
         exo_data.left_leg.do_calibration_refinement_toe_fsr = true;
