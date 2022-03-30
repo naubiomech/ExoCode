@@ -1,7 +1,3 @@
-// TODO: remove 
-bool battery_flag = false;
-bool jitter_flag = false;
-
 //Manual Timer for Nano version
 const int streamTimerCountNum = 1;
 const int voltageTimerCountNum = 50;

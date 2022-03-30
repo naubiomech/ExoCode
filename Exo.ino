@@ -206,8 +206,6 @@ void update_GUI() {
       digitalWrite(RED, !LED_ON);
       digitalWrite(BLUE, !LED_ON);
       digitalWrite(GREEN, !LED_ON);
-
-      battery_flag = true;
     }
     #else
     battery_parameter = readBatteryVoltage()/100;
