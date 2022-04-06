@@ -4,7 +4,7 @@
 */
 
 #include "MotorData.h"
-#include "parseIni.h"
+#include "ParseIni.h"
 
 /*
  * Constructor for the motor data.
@@ -23,16 +23,40 @@ MotorData::MotorData(config_defs::joint_id id, uint8_t* config_to_send)
         case (uint8_t)config_defs::joint_id::hip:
         {
             motor_type = config_to_send[config_defs::hip_idx];
+            if ((config_to_send[config_defs::hip_flip_dir_idx] == (uint8_t)config_defs::flip_dir::both) || ((config_to_send[config_defs::hip_flip_dir_idx] == (uint8_t)config_defs::flip_dir::left) && this->is_left) || ((config_to_send[config_defs::hip_flip_dir_idx] == (uint8_t)config_defs::flip_dir::right) && (!this->is_left)))
+            {
+                this->flip_direction = 1;
+            }
+            else
+            {
+                this->flip_direction = 0;
+            }
             break;
         }
         case (uint8_t)config_defs::joint_id::knee:
         {
             motor_type = config_to_send[config_defs::knee_idx];
+            if ((config_to_send[config_defs::knee_flip_dir_idx] == (uint8_t)config_defs::flip_dir::both) || ((config_to_send[config_defs::knee_flip_dir_idx] == (uint8_t)config_defs::flip_dir::left) && this->is_left) || ((config_to_send[config_defs::knee_flip_dir_idx] == (uint8_t)config_defs::flip_dir::right) && (!this->is_left)))
+            {
+                this->flip_direction = 1;
+            }
+            else
+            {
+                this->flip_direction = 0;
+            }
             break;
         }
         case (uint8_t)config_defs::joint_id::ankle:
         {
             motor_type = config_to_send[config_defs::ankle_idx];
+            if ((config_to_send[config_defs::ankle_flip_dir_idx] == (uint8_t)config_defs::flip_dir::both) || ((config_to_send[config_defs::ankle_flip_dir_idx] == (uint8_t)config_defs::flip_dir::left) && this->is_left) || ((config_to_send[config_defs::ankle_flip_dir_idx] == (uint8_t)config_defs::flip_dir::right) && (!this->is_left)))
+            {
+                this->flip_direction = 1;
+            }
+            else
+            {
+                this->flip_direction = 0;
+            }
             break;
         }
     }

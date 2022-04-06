@@ -32,6 +32,7 @@ class JointData {
         ControllerData controller;
         int torque_reading;  // reading from the torque sensor
         bool is_left;
+        bool flip_direction;
         bool is_used;
         bool calibrate_torque_sensor;  // flag for if we should calibrate.
 };

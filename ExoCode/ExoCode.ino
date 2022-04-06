@@ -3,7 +3,7 @@
 
    P. Stegall Jan 2022
 */
-#if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
+#if defined(ARDUINO_TEENSY36)
 
 #define INCLUDE_FLEXCAN_DEBUG
 
@@ -60,18 +60,29 @@ void callback()//executed every 2ms
 void setup()
 {
   Serial.begin(115200);
-  //TODO: Remove serial while for deployed version as this would hang
+//  TODO: Remove serial while for deployed version as this would hang
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB
   }
 
   ini_parser(config_info::config_to_send);
-  uint8_t (config_to_send)[ini_config::number_of_keys];
-
   
-
+  
+//  for (int i = 0; i < ini_config::number_of_keys; i++)
+//  {
+//    Serial.print("[");
+//    Serial.print(i);
+//    Serial.print("] : ");
+//    Serial.print((int)config_info::config_to_send[i]);
+//    Serial.print("\n");
+//  }
+//    Serial.print("\n");
+//    delay(60000);
+    
   // Now that we have read the config file create the data structure and exoskeleton object.
 }
+
+
 
 void loop()
 {
@@ -83,47 +94,80 @@ void loop()
 //    static AK60 left_hip = AK60(config_defs::joint_id::left_hip, &exo_data);
 //    static AK60 right_hip = AK60(config_defs::joint_id::right_hip, &exo_data);
 
+//    static int cnt = 0;
+//    Serial.print("Superloop :: cnt = ");
+//    Serial.print(cnt++);
+//    Serial.print("\n\r");    
+
+    
     static bool first_run = true;
     if (first_run)
     {
         first_run = false;
-        
-        exo.left_leg._ankle._motor->on_off(true);
-//        exo.right_leg._ankle._motor->on_off(true);
+//        Serial.print("Superloop :: Start First Run Conditional");
+        // Need to comment out motors not in use otherwise code hangs.
+        //exo.left_leg._ankle._motor->on_off(false);
+        //exo.right_leg._ankle._motor->on_off(false);
         exo.left_leg._hip._motor->on_off(true);
-//        exo.right_leg._hip._motor->on_off(true);
+        exo.right_leg._hip._motor->on_off(true);
+//        Serial.print("Superloop :: Motors Turned on/off");
+
+//        exo_data.left_leg.ankle.motor.kp = 0;
+//        exo_data.left_leg.ankle.motor.kd = 0;
+
+        exo_data.left_leg.hip.motor.kp = 0;
+        exo_data.left_leg.hip.motor.kd = 0;
+
+        exo_data.right_leg.hip.motor.kp = 0;
+        exo_data.right_leg.hip.motor.kd = 0;
+//        Serial.print("Superloop :: Motor gains set");
+        exo.left_leg._hip._motor->zero();
+        exo.right_leg._hip._motor->zero();
+//        Serial.print("Superloop :: Motors zeroed");
         
-        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 1.5;
-        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = 1.0;
+        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 1.0;
+        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -1.5;
         exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] = 80;
         exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
         exo.left_leg._hip.set_controller(exo_data.left_leg.hip.controller.controller);
-        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::clear_angle_idx] = 1;
 
-        exo_data.left_leg.ankle.controller.parameters[controller_defs::proportional_joint_moment::max_torque_idx] = 2;
-        exo_data.left_leg.ankle.controller.controller = uint8_t(config_defs::ankle_controllers::pjmc);
-        exo.left_leg._ankle.set_controller(exo_data.left_leg.ankle.controller.controller);
+        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 1.0;
+        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -1.5;
+        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] = 80;
+        exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
+        exo.right_leg._hip.set_controller(exo_data.right_leg.hip.controller.controller);
+//        Serial.print("Superloop :: Controller Set");
+        
+        
+//        exo_data.left_leg.ankle.controller.parameters[controller_defs::proportional_joint_moment::max_torque_idx] = 2;
+//        exo_data.left_leg.ankle.controller.controller = uint8_t(config_defs::ankle_controllers::pjmc);
+//        exo.left_leg._ankle.set_controller(exo_data.left_leg.ankle.controller.controller);
 
-        exo_data.left_leg.do_calibration_toe_fsr = true;
-        exo_data.left_leg.do_calibration_refinement_toe_fsr = true;
-        exo_data.left_leg.do_calibration_heel_fsr = true;
-        exo_data.left_leg.do_calibration_refinement_heel_fsr = true;
+//        exo_data.left_leg.do_calibration_toe_fsr = true;
+//        exo_data.left_leg.do_calibration_refinement_toe_fsr = true;
+//        exo_data.left_leg.do_calibration_heel_fsr = true;
+//        exo_data.left_leg.do_calibration_refinement_heel_fsr = true;
 
-        bool do_calibration_toe_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
-        bool do_calibration_refinement_toe_fsr; 
-        bool do_calibration_heel_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
-        bool do_calibration_refinement_heel_fsr;
+//        bool do_calibration_toe_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
+//        bool do_calibration_refinement_toe_fsr; 
+//        bool do_calibration_heel_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
+//        bool do_calibration_refinement_heel_fsr;
+
+//        Serial.print("Superloop :: End First Run Conditional");
+
+          Serial.print("Left_hip_angle, ");
+          Serial.print("Right_hip_angle, ");
+          Serial.print("Left_hip_setpoint, ");
+          Serial.print("Right_hip_setpoint, ");
+          Serial.print("\n");
     }
 
     
     static float old_time = micros();
     static int send_count = 0;
     float new_time = micros();
-    if(new_time - old_time > 2000)
-    {
-      exo.run();
-      //Serial.print("End run \n");
-      old_time = new_time;
+//    if(new_time - old_time > 1000)
+//    {
 //        exo.left_leg._ankle._motor->transaction();
 //        exo.right_leg._ankle._motor->transaction();
 //        exo.left_leg._hip._motor->transaction();
@@ -140,7 +184,19 @@ void loop()
 //          Serial.print("\n");
 //          send_count = 0;
 //        }
-    }
+//    }
+
+    exo.run();
+
+    Serial.print(exo_data.left_leg.hip.motor.p);
+    Serial.print(", ");
+    Serial.print(exo_data.right_leg.hip.motor.p);
+    Serial.print(", ");
+    Serial.print(exo_data.left_leg.hip.controller.setpoint);
+    Serial.print(", ");
+    Serial.print(exo_data.right_leg.hip.controller.setpoint);
+    Serial.print("\n");
+//    Serial.print("\n");
 }
 
 

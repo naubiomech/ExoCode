@@ -35,6 +35,7 @@ class MotorData
         float t_ff = 0;
         
         bool is_left;
+        bool flip_direction;
 };
 
 

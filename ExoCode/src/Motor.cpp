@@ -99,6 +99,7 @@ void _CANMotor::read_data()
     CAN* can = can->getInstance();
     do
     {
+        int direction_modifier = _motor_data->flip_direction ? -1 : 1;
         CAN_message_t msg = can->read();
         if (msg.buf[0] == uint32_t(_motor_data->id))
         {
@@ -107,9 +108,9 @@ void _CANMotor::read_data()
             uint32_t v_int = (msg.buf[3]) << 4 | (msg.buf[4] >> 4);
             uint32_t i_int = ((msg.buf[4] & 0xF) << 8) | msg.buf[5];
             // set data in ExoData object
-            _motor_data->p = _uint_to_float(p_int, -_P_MAX, _P_MAX, 16);
-            _motor_data->v = _uint_to_float(v_int, -_V_MAX, _V_MAX, 12);
-            _motor_data->i = _uint_to_float(i_int, -_T_MAX, _T_MAX, 12);
+            _motor_data->p = direction_modifier * _uint_to_float(p_int, -_P_MAX, _P_MAX, 16);
+            _motor_data->v = direction_modifier * _uint_to_float(v_int, -_V_MAX, _V_MAX, 12);
+            _motor_data->i = direction_modifier * _uint_to_float(i_int, -_T_MAX, _T_MAX, 12);
 
             // Serial.print("Got data: ");
             // Serial.print(uint32_t(_motor_data->id));
@@ -130,13 +131,14 @@ void _CANMotor::send_data(float torque)
     // Serial.print("Sending data: ");
     // Serial.print(uint32_t(_motor_data->id));
     // Serial.print("\t");
+    int direction_modifier = _motor_data->flip_direction ? -1 : 1;
     _motor_data->t_ff = torque;
     // read data from ExoData object, constraint it, and package it
-    float p_sat = constrain(_motor_data->p_des, -_P_MAX, _P_MAX);
-    float v_sat = constrain(_motor_data->v_des, -_V_MAX, _V_MAX);
+    float p_sat = constrain(direction_modifier * _motor_data->p_des, -_P_MAX, _P_MAX);
+    float v_sat = constrain(direction_modifier * _motor_data->v_des, -_V_MAX, _V_MAX);
     float kp_sat = constrain(_motor_data->kp, _KP_MIN, _KP_MAX);
     float kd_sat = constrain(_motor_data->kd, _KD_MIN, _KD_MAX);
-    float t_sat = constrain(_motor_data->t_ff, -_T_MAX, _T_MAX);
+    float t_sat = constrain(direction_modifier * _motor_data->t_ff, -_T_MAX, _T_MAX);
     uint32_t p_int = _float_to_uint(p_sat, -_P_MAX, _P_MAX, 16);
     uint32_t v_int = _float_to_uint(v_sat, -_V_MAX, _V_MAX, 12);
     uint32_t kp_int = _float_to_uint(kp_sat, _KP_MIN, _KP_MAX, 12);

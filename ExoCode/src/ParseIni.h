@@ -17,7 +17,7 @@ namespace ini_config
     const int buffer_length = 500;
     const int key_length = 25;
     const int section_length = 10;
-    const int number_of_keys = 10;
+    const int number_of_keys = 13;
     //const char *config_filename = "/config.ini";  // this line creates an "Error compiling for board Teensy 3.6." so I am just hard coding it.
 }
 
@@ -112,6 +112,14 @@ namespace config_defs
         zhang_collins = 4,
     };
     
+    enum class flip_dir : uint8_t
+    {
+        neither = 1, 
+        left = 2, 
+        right = 3,
+        both = 4,
+    };
+    
     static const int board_name_idx = 0;
     static const int board_version_idx = 1;
     
@@ -125,6 +133,10 @@ namespace config_defs
     static const int exo_hip_default_controller_idx = 7;
     static const int exo_knee_default_controller_idx = 8;
     static const int exo_ankle_default_controller_idx = 9;
+    
+    static const int hip_flip_dir_idx = 10;
+    static const int knee_flip_dir_idx = 11;
+    static const int ankle_flip_dir_idx = 12;
 }
 
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
@@ -225,6 +237,15 @@ namespace config_defs
             {"zhangCollins", (uint8_t)config_defs::ankle_controllers::zhang_collins},
             
         };  
+        
+        const IniKeyCode flip_dir 
+        { 
+            {"0", (uint8_t)config_defs::flip_dir::neither}, 
+            {"left", (uint8_t)config_defs::flip_dir::left}, 
+            {"right", (uint8_t)config_defs::flip_dir::right},
+            {"both", (uint8_t)config_defs::flip_dir::both},
+            
+        }; 
     };
 
 
@@ -249,7 +270,9 @@ namespace config_defs
         std::string exo_knee_default_controller;
         std::string exo_ankle_default_controller;
         
-        
+        std::string hip_flip_dir;
+        std::string knee_flip_dir;
+        std::string ankle_flip_dir;
     };
 #endif
 

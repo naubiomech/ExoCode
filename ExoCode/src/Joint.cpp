@@ -24,7 +24,7 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
 {
     _id = id;
     _is_left = utils::get_is_left(_id); //((uint8_t)this->id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
-    
+        
     _data = exo_data;
 
     // Serial.print(uint8_t(id));
@@ -78,7 +78,7 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
 void _Joint::read_data()  
 {
     // Read the torque sensor, and change sign based on side.
-    _joint_data->torque_reading = _is_left ? -1*_torque_sensor.read() : _torque_sensor.read();
+    _joint_data->torque_reading = _joint_data->flip_direction ? -1*_torque_sensor.read() : _torque_sensor.read();
 };
 
 /*
@@ -233,10 +233,10 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
     {
         _joint_data = &(exo_data->right_leg.hip);
     }
-    Serial.print(uint8_t(id));
-    Serial.print("\t");
-    Serial.print(_joint_data->is_used);
-    Serial.print("\t");
+    // Serial.print(uint8_t(id));
+    // Serial.print("\t");
+    // Serial.print(_joint_data->is_used);
+    // Serial.print("\t");
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
     if(_joint_data->is_used)
@@ -271,8 +271,8 @@ void HipJoint::run_joint()
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     // Send the new command to the motor.
-    Serial.print(_joint_data->controller.setpoint);
-    Serial.print(" Hip\t");
+    // Serial.print(_joint_data->controller.setpoint);
+    // Serial.print(" Hip\t");
     // Use transaction because the motors are call and response
     _motor->transaction(0);
 };  
@@ -334,10 +334,10 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
     {
         _joint_data = &(exo_data->right_leg.knee);
     }
-    Serial.print(uint8_t(id));
-    Serial.print("\t");
-    Serial.print(_joint_data->is_used);
-    Serial.print("\t");
+    // Serial.print(uint8_t(id));
+    // Serial.print("\t");
+    // Serial.print(_joint_data->is_used);
+    // Serial.print("\t");
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
    if(_joint_data->is_used)
@@ -369,8 +369,8 @@ void KneeJoint::run_joint()
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     // Send the new command to the motor.
-    Serial.print(_joint_data->controller.setpoint);
-    Serial.print(" Knee\t");
+    // Serial.print(_joint_data->controller.setpoint);
+    // Serial.print(" Knee\t");
     // Use transaction because the motors are call and response
     _motor->transaction(0);
 };  
@@ -427,10 +427,10 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
     {
         _joint_data = &(exo_data->right_leg.ankle);
     }
-    Serial.print(uint8_t(id));
-    Serial.print("\t");
-    Serial.print(_joint_data->is_used);
-    Serial.print("\t");
+    // Serial.print(uint8_t(id));
+    // Serial.print("\t");
+    // Serial.print(_joint_data->is_used);
+    // Serial.print("\t");
             
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
@@ -463,8 +463,8 @@ void AnkleJoint::run_joint()
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     // Send the new command to the motor.
-    Serial.print(_joint_data->controller.setpoint);
-    Serial.print("\t");
+    // Serial.print(_joint_data->controller.setpoint);
+    // Serial.print("\t");
     // Use transaction because the motors are call and response
     _motor->transaction(0);
 };  
