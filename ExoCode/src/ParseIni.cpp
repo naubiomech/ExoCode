@@ -210,26 +210,26 @@
         
         //--------------------------------------------------------
         
-        get_section_key(ini, temp_exo_name, "hip", buffer, buffer_len);
-        data.exo_hip = buffer;
-        // Serial.print(data.exo_hip.c_str());
+        get_section_key(ini, temp_exo_name, "hipGearRatio", buffer, buffer_len);
+        data.hip_gearing = buffer;
+        // Serial.print(data.hip_gearing.c_str());
         // Serial.print("\t");
-        // Serial.println(config_map::motor[data.exo_hip]);
-        config_to_send[config_defs::hip_idx] = config_map::motor[data.exo_hip];
+        // Serial.println(config_map::motor[data.hip_gearing]);
+        config_to_send[config_defs::hip_gear_idx] = config_map::gearing[data.hip_gearing];
         
-        get_section_key(ini, temp_exo_name, "knee", buffer, buffer_len);
-        data.exo_knee = buffer;
-        // Serial.print(data.exo_knee.c_str());
+        get_section_key(ini, temp_exo_name, "kneeGearRatio", buffer, buffer_len);
+        data.knee_gearing = buffer;
+        // Serial.print(data.knee_gearing.c_str());
         // Serial.print("\t");
-        // Serial.println(config_map::motor[data.exo_knee]);
-        config_to_send[config_defs::knee_idx] = config_map::motor[data.exo_knee];
+        // Serial.println(config_map::motor[data.knee_gearing]);
+        config_to_send[config_defs::knee_gear_idx] = config_map::gearing[data.knee_gearing];
         
-        get_section_key(ini, temp_exo_name, "ankle", buffer, buffer_len);
-        data.exo_ankle = buffer;
+        get_section_key(ini, temp_exo_name, "ankleGearRatio", buffer, buffer_len);
+        data.ankle_gearing = buffer;
         // Serial.print(data.exo_ankle.c_str());
         // Serial.print("\t");
         // Serial.println(config_map::motor[data.exo_ankle]);
-        config_to_send[config_defs::ankle_idx] = config_map::motor[data.exo_ankle];
+        config_to_send[config_defs::ankle_gear_idx] = config_map::gearing[data.ankle_gearing];
         
         //--------------------------------------------------------
         
