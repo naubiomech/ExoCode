@@ -17,12 +17,18 @@ namespace ini_config
     const int buffer_length = 500;
     const int key_length = 25;
     const int section_length = 10;
-    const int number_of_keys = 13;
+    const int number_of_keys = 17;
     //const char *config_filename = "/config.ini";  // this line creates an "Error compiling for board Teensy 3.6." so I am just hard coding it.
 }
 
 // Includes for reading the ini file from the SD card.
 // 1 is the lowest value to confirm that data is present for sending over SPI
+
+// TODO: Add battery parsing
+// TODO: Add gearing ration for motor
+// TODO: Add Bluetooth name.
+
+
 namespace config_defs
 {
     enum class board_name : uint8_t
@@ -34,6 +40,12 @@ namespace config_defs
     { 
         zero_one = 1,
         zero_two = 2,
+    };
+    
+    enum class battery : uint8_t
+    { 
+        smart = 1,
+        dumb = 2,
     };
 
     enum class exo_name : uint8_t
@@ -68,6 +80,12 @@ namespace config_defs
         not_used = 1, 
         AK60 = 2, 
         AK80 = 3,
+    };
+    
+    enum class gearing : uint8_t
+    { 
+        gearing_1_1 = 1,
+        gearing_3_1 = 2,
     };
     
     enum class joint_id : uint8_t
@@ -123,20 +141,26 @@ namespace config_defs
     static const int board_name_idx = 0;
     static const int board_version_idx = 1;
     
-    static const int exo_name_idx = 2;
-    static const int exo_side_idx = 3;
+    static const int battery_idx = 2;
     
-    static const int hip_idx = 4;
-    static const int knee_idx = 5;
-    static const int ankle_idx = 6;
+    static const int exo_name_idx = 3;
+    static const int exo_side_idx = 4;
     
-    static const int exo_hip_default_controller_idx = 7;
-    static const int exo_knee_default_controller_idx = 8;
-    static const int exo_ankle_default_controller_idx = 9;
+    static const int hip_idx = 5;
+    static const int knee_idx = 6;
+    static const int ankle_idx = 7;
     
-    static const int hip_flip_dir_idx = 10;
-    static const int knee_flip_dir_idx = 11;
-    static const int ankle_flip_dir_idx = 12;
+    static const int hip_gear_idx = 8;
+    static const int knee_gear_idx = 9;
+    static const int ankle_gear_idx = 10;
+    
+    static const int exo_hip_default_controller_idx = 11;
+    static const int exo_knee_default_controller_idx = 12;
+    static const int exo_ankle_default_controller_idx = 13;
+    
+    static const int hip_flip_dir_idx = 14;
+    static const int knee_flip_dir_idx = 15;
+    static const int ankle_flip_dir_idx = 16;
 }
 
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
@@ -186,6 +210,12 @@ namespace config_defs
                     {"0.1", (uint8_t)config_defs::board_version::zero_one},
                     {"0.2", (uint8_t)config_defs::board_version::zero_two},        
         };
+        
+        const IniKeyCode battery = 
+        { 
+                    {"smart", (uint8_t)config_defs::battery::smart},
+                    {"dumb", (uint8_t)config_defs::battery::dumb},        
+        };
 
         const IniKeyCode exo_name 
         { 
@@ -212,6 +242,12 @@ namespace config_defs
             {"0", (uint8_t)config_defs::motor::not_used}, 
             {"AK60", (uint8_t)config_defs::motor::AK60}, 
             {"AK80", (uint8_t)config_defs::motor::AK80},
+        };
+        
+        const IniKeyCode gearing 
+        { 
+            {"1", (uint8_t)config_defs::gearing::gearing_1_1}, 
+            {"3", (uint8_t)config_defs::gearing::gearing_3_1}, 
         };
         
         
@@ -259,12 +295,18 @@ namespace config_defs
         std::string board_name;
         std::string board_version;
         
+        std::string battery;
+        
         std::string exo_name;
         std::string exo_sides;
         
         std::string exo_hip;
         std::string exo_knee;
         std::string exo_ankle;
+        
+        std::string hip_gearing;
+        std::string knee_gearing;
+        std::string ankle_gearing;
         
         std::string exo_hip_default_controller;
         std::string exo_knee_default_controller;

@@ -155,6 +155,15 @@
         
         //=========================================================
         
+        get_section_key(ini, "Battery" , "name",  buffer, buffer_len);
+        data.battery = buffer;
+        // Serial.print(data.board_version.c_str());
+        // Serial.print("\t");
+        // Serial.println(config_map::board_version[data.board_version]);
+        config_to_send[config_defs::battery_idx] = config_map::battery[data.battery];
+        
+        //=========================================================
+        
         get_section_key(ini, "Exo" , "name",  buffer, buffer_len);
         data.exo_name = buffer;
         // Serial.print(data.exo_name.c_str());
@@ -175,6 +184,8 @@
         // Serial.print("\t");
         // Serial.println(config_map::exo_side[data.exo_sides]);
         config_to_send[config_defs::exo_side_idx] = config_map::exo_side[data.exo_sides];
+        
+        //--------------------------------------------------------
         
         get_section_key(ini, temp_exo_name, "hip", buffer, buffer_len);
         data.exo_hip = buffer;
@@ -197,6 +208,31 @@
         // Serial.println(config_map::motor[data.exo_ankle]);
         config_to_send[config_defs::ankle_idx] = config_map::motor[data.exo_ankle];
         
+        //--------------------------------------------------------
+        
+        get_section_key(ini, temp_exo_name, "hip", buffer, buffer_len);
+        data.exo_hip = buffer;
+        // Serial.print(data.exo_hip.c_str());
+        // Serial.print("\t");
+        // Serial.println(config_map::motor[data.exo_hip]);
+        config_to_send[config_defs::hip_idx] = config_map::motor[data.exo_hip];
+        
+        get_section_key(ini, temp_exo_name, "knee", buffer, buffer_len);
+        data.exo_knee = buffer;
+        // Serial.print(data.exo_knee.c_str());
+        // Serial.print("\t");
+        // Serial.println(config_map::motor[data.exo_knee]);
+        config_to_send[config_defs::knee_idx] = config_map::motor[data.exo_knee];
+        
+        get_section_key(ini, temp_exo_name, "ankle", buffer, buffer_len);
+        data.exo_ankle = buffer;
+        // Serial.print(data.exo_ankle.c_str());
+        // Serial.print("\t");
+        // Serial.println(config_map::motor[data.exo_ankle]);
+        config_to_send[config_defs::ankle_idx] = config_map::motor[data.exo_ankle];
+        
+        //--------------------------------------------------------
+        
         get_section_key(ini, temp_exo_name, "hipDefaultController", buffer, buffer_len);
         data.exo_hip_default_controller = buffer;
         // Serial.print(data.exo_hip_default_controller.c_str());
@@ -217,6 +253,8 @@
         // Serial.print("\t");
         // Serial.println(config_map::ankle_controllers[data.exo_ankle_default_controller]);
         config_to_send[config_defs::exo_ankle_default_controller_idx] = config_map::ankle_controllers[data.exo_ankle_default_controller];
+        
+        //--------------------------------------------------------
         
         get_section_key(ini, temp_exo_name, "hipFlipDir", buffer, buffer_len);
         data.hip_flip_dir = buffer;
