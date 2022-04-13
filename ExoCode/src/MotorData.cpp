@@ -17,12 +17,37 @@ MotorData::MotorData(config_defs::joint_id id, uint8_t* config_to_send)
 {
     this->id = id;
     this->is_left = ((uint8_t)this->id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
+     
     
     switch ((uint8_t)this->id & (~(uint8_t)config_defs::joint_id::left & ~(uint8_t)config_defs::joint_id::right))  // use the id with the side masked out.
     {
         case (uint8_t)config_defs::joint_id::hip:
         {
             motor_type = config_to_send[config_defs::hip_idx];
+            
+            switch (config_to_send[config_defs::hip_gear_idx])
+            {
+                case (uint8_t)config_defs::gearing::gearing_1_1:
+                {
+                    gearing = 1;
+                    break;
+                }
+                case (uint8_t)config_defs::gearing::gearing_2_1:
+                {
+                    gearing = 2;
+                    break;
+                }                
+                case (uint8_t)config_defs::gearing::gearing_3_1:
+                {
+                    gearing = 3;
+                    break;
+                }
+                default:
+                {
+                    gearing = 1;
+                    break;
+                }
+            }  
             if ((config_to_send[config_defs::hip_flip_dir_idx] == (uint8_t)config_defs::flip_dir::both) || ((config_to_send[config_defs::hip_flip_dir_idx] == (uint8_t)config_defs::flip_dir::left) && this->is_left) || ((config_to_send[config_defs::hip_flip_dir_idx] == (uint8_t)config_defs::flip_dir::right) && (!this->is_left)))
             {
                 this->flip_direction = 1;
@@ -36,6 +61,31 @@ MotorData::MotorData(config_defs::joint_id id, uint8_t* config_to_send)
         case (uint8_t)config_defs::joint_id::knee:
         {
             motor_type = config_to_send[config_defs::knee_idx];
+            
+            switch (config_to_send[config_defs::knee_gear_idx])
+            {
+                case (uint8_t)config_defs::gearing::gearing_1_1:
+                {
+                    gearing = 1;
+                    break;
+                }
+                case (uint8_t)config_defs::gearing::gearing_2_1:
+                {
+                    gearing = 2;
+                    break;
+                } 
+                case (uint8_t)config_defs::gearing::gearing_3_1:
+                {
+                    gearing = 3;
+                    break;
+                }
+                default:
+                {
+                    gearing = 1;
+                    break;
+                }
+            }  
+            
             if ((config_to_send[config_defs::knee_flip_dir_idx] == (uint8_t)config_defs::flip_dir::both) || ((config_to_send[config_defs::knee_flip_dir_idx] == (uint8_t)config_defs::flip_dir::left) && this->is_left) || ((config_to_send[config_defs::knee_flip_dir_idx] == (uint8_t)config_defs::flip_dir::right) && (!this->is_left)))
             {
                 this->flip_direction = 1;
@@ -49,6 +99,31 @@ MotorData::MotorData(config_defs::joint_id id, uint8_t* config_to_send)
         case (uint8_t)config_defs::joint_id::ankle:
         {
             motor_type = config_to_send[config_defs::ankle_idx];
+            
+            switch (config_to_send[config_defs::ankle_gear_idx])
+            {
+                case (uint8_t)config_defs::gearing::gearing_1_1:
+                {
+                    gearing = 1;
+                    break;
+                }
+                case (uint8_t)config_defs::gearing::gearing_2_1:
+                {
+                    gearing = 2;
+                    break;
+                } 
+                case (uint8_t)config_defs::gearing::gearing_3_1:
+                {
+                    gearing = 3;
+                    break;
+                }
+                default:
+                {
+                    gearing = 1;
+                    break;
+                }
+            }  
+            
             if ((config_to_send[config_defs::ankle_flip_dir_idx] == (uint8_t)config_defs::flip_dir::both) || ((config_to_send[config_defs::ankle_flip_dir_idx] == (uint8_t)config_defs::flip_dir::left) && this->is_left) || ((config_to_send[config_defs::ankle_flip_dir_idx] == (uint8_t)config_defs::flip_dir::right) && (!this->is_left)))
             {
                 this->flip_direction = 1;

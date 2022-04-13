@@ -85,7 +85,8 @@ namespace config_defs
     enum class gearing : uint8_t
     { 
         gearing_1_1 = 1,
-        gearing_3_1 = 2,
+        gearing_2_1 = 2,
+        gearing_3_1 = 3,
     };
     
     enum class joint_id : uint8_t
@@ -247,6 +248,7 @@ namespace config_defs
         const IniKeyCode gearing 
         { 
             {"1", (uint8_t)config_defs::gearing::gearing_1_1}, 
+            {"2", (uint8_t)config_defs::gearing::gearing_2_1}, 
             {"3", (uint8_t)config_defs::gearing::gearing_3_1}, 
         };
         

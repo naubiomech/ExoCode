@@ -35,6 +35,9 @@ class JointData {
         bool flip_direction;
         bool is_used;
         bool calibrate_torque_sensor;  // flag for if we should calibrate.
+        
+        float position;
+        float velocity;
 };
 
 

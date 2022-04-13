@@ -126,14 +126,18 @@ void loop()
 //        Serial.print("Superloop :: Motors zeroed");
         
         exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 1.0;
-        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -1.5;
+        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -3;
         exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] = 80;
+        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::angle_threshold_idx] = 5;
+        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::velocity_threshold_idx] = -10;
         exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
         exo.left_leg._hip.set_controller(exo_data.left_leg.hip.controller.controller);
 
         exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 1.0;
-        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -1.5;
+        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -3;
         exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] = 80;
+        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::angle_threshold_idx] = 5;
+        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::velocity_threshold_idx] = -10;
         exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
         exo.right_leg._hip.set_controller(exo_data.right_leg.hip.controller.controller);
 //        Serial.print("Superloop :: Controller Set");

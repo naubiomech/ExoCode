@@ -79,6 +79,9 @@ void _Joint::read_data()
 {
     // Read the torque sensor, and change sign based on side.
     _joint_data->torque_reading = _joint_data->flip_direction ? -1*_torque_sensor.read() : _torque_sensor.read();
+    
+    _joint_data->position = _joint_data->motor.p / _joint_data->motor.gearing;
+    _joint_data->velocity = _joint_data->motor.v / _joint_data->motor.gearing;
 };
 
 /*
@@ -274,7 +277,8 @@ void HipJoint::run_joint()
     // Serial.print(_joint_data->controller.setpoint);
     // Serial.print(" Hip\t");
     // Use transaction because the motors are call and response
-    _motor->transaction(0);
+    // _motor->transaction(0 / _joint_data->motor.gearing);
+    _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
 };  
 
 /*
@@ -372,7 +376,7 @@ void KneeJoint::run_joint()
     // Serial.print(_joint_data->controller.setpoint);
     // Serial.print(" Knee\t");
     // Use transaction because the motors are call and response
-    _motor->transaction(0);
+    _motor->transaction(0 / _joint_data->motor.gearing);
 };  
 
 /*
@@ -466,7 +470,7 @@ void AnkleJoint::run_joint()
     // Serial.print(_joint_data->controller.setpoint);
     // Serial.print("\t");
     // Use transaction because the motors are call and response
-    _motor->transaction(0);
+    _motor->transaction(0 / _joint_data->motor.gearing);
 };  
 
 /*

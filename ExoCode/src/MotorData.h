@@ -36,6 +36,7 @@ class MotorData
         
         bool is_left;
         bool flip_direction;
+        float gearing;
 };
 
 
