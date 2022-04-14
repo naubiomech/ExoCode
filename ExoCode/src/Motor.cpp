@@ -112,9 +112,9 @@ void _CANMotor::read_data()
             _motor_data->v = direction_modifier * _uint_to_float(v_int, -_V_MAX, _V_MAX, 12);
             _motor_data->i = direction_modifier * _uint_to_float(i_int, -_T_MAX, _T_MAX, 12);
 
-            // Serial.print("Got data: ");
+            // Serial.print("_CANMotor::read_data() : Got data - ");
             // Serial.print(uint32_t(_motor_data->id));
-            // Serial.print("\t");
+            // Serial.print("\n");
             // reset timout_count because we got a valid message
             this->_timeout_count = 0;
             return;
@@ -175,15 +175,24 @@ void _CANMotor::on_off(bool is_on)
     {
         // enable motor
         msg.buf[7] = 0xFC;
+        // Serial.print("_CANMotor::on_off(bool is_on) : Enabled - ");
+        // Serial.print(uint32_t(_motor_data->id));
+        // Serial.print("\n");
     }
     else 
     {
         // disable motor
         msg.buf[7] = 0xFD;
+        // Serial.print("_CANMotor::on_off(bool is_on) : Disabled - ");
+        // Serial.print(uint32_t(_motor_data->id));
+        // Serial.print("\n");
     }
     CAN* can = can->getInstance();
     can->send(msg);
     delayMicroseconds(500);
+    read_data();
+    
+    
 };
 
 void _CANMotor::zero()
@@ -200,6 +209,12 @@ void _CANMotor::zero()
     msg.buf[7] = 0xFE;
     CAN* can = can->getInstance();
     can->send(msg);
+    
+    // Serial.print("_CANMotor::zero() : Zeroed -  ");
+    // Serial.print(uint32_t(_motor_data->id));
+    // Serial.print("\n");
+    
+    read_data();
 };
 
 void _CANMotor::_handle_read_failure()
@@ -209,7 +224,7 @@ void _CANMotor::_handle_read_failure()
     {
         // TODO: handle excessive timout errors
         this->_timeout_count = 0;
-        Serial.print("Timeout: ");
+        Serial.print("_CANMotor::_handle_read_failure() : Timeout: ");
         Serial.print(uint32_t(this->_motor_data->id));
         Serial.print("\n");
     }

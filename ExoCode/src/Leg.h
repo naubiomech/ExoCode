@@ -78,7 +78,7 @@ class Leg
         /*
          * Creates an average step time based on the last few steps
          */
-        void _update_expected_duration();
+        float _update_expected_duration();
         
         /*
          * Checks for state changes in the FSRs to find the point when ground contact is made

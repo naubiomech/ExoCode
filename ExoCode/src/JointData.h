@@ -38,6 +38,7 @@ class JointData {
         
         float position;
         float velocity;
+        
 };
 
 

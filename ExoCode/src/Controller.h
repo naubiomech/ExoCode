@@ -123,7 +123,7 @@ class ExtensionAngle: public _Controller
         
         // the initial angles used for tracking the extent of the range of motions 
         const float _initial_max_angle = utils::degrees_to_radians(45);
-        const float _initial_min_angle = utils::degrees_to_radians(-15);
+        const float _initial_min_angle = utils::degrees_to_radians(-5);
         
         // Used to track the range of motion, angles are in rad.
         float _max_angle;

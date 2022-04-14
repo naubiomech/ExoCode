@@ -38,8 +38,7 @@ namespace controller_defs
         const uint8_t num_parameter = 2;
     }
     
-    
-        namespace extension_angle
+    namespace extension_angle
     {
         // parameters for maximum exo extension and flexion torque.
         const uint8_t flexion_setpoint_idx = 0;

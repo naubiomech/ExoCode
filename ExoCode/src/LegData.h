@@ -31,6 +31,7 @@ class LegData{
         
         
         float percent_gait; // likely want to do fixed point 
+        float expected_step_duration;
         // Calibrated FSR readings
         float heel_fsr;
         float toe_fsr;

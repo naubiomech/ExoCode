@@ -108,8 +108,18 @@ void loop()
         // Need to comment out motors not in use otherwise code hangs.
         //exo.left_leg._ankle._motor->on_off(false);
         //exo.right_leg._ankle._motor->on_off(false);
+        Serial.print("\nSuperloop : Line 111\n");;
         exo.left_leg._hip._motor->on_off(true);
+        Serial.print("\nSuperloop : Line 113\n");
         exo.right_leg._hip._motor->on_off(true);
+        Serial.print("\nSuperloop : Line 115\n");
+        // This is hacky as the first one doesn't go through.  
+        // Changing initalization order of legs in Exo changes behaviour.  
+        // First initialized fails to enable, independent of what is here.
+        // TODO : Figure out why the first initalization fails.
+        exo.left_leg._hip._motor->on_off(true);  
+        Serial.print("\nSuperloop : Line 117\n");
+        
 //        Serial.print("Superloop :: Motors Turned on/off");
 
 //        exo_data.left_leg.ankle.motor.kp = 0;
@@ -121,24 +131,37 @@ void loop()
         exo_data.right_leg.hip.motor.kp = 0;
         exo_data.right_leg.hip.motor.kd = 0;
 //        Serial.print("Superloop :: Motor gains set");
+
+        // TODO : Confirm that motors are zeroing
+        // Left zeros, right doesn't.
+        // Possibly related to enabling issue.
+        // Adding another zeroing for the right leg doesn't help.  
+        Serial.print("\nSuperloop : Line 130\n");
         exo.left_leg._hip._motor->zero();
+        Serial.print("\nSuperloop : Line 132\n");
         exo.right_leg._hip._motor->zero();
+        Serial.print("\nSuperloop : Line 134\n");
+        exo.right_leg._hip._motor->zero();
+        Serial.print("\nSuperloop : Line 134\n");
 //        Serial.print("Superloop :: Motors zeroed");
         
-        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 1.0;
-        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -3;
+        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 2;
+        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -3; // this should be negative
         exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] = 80;
-        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::angle_threshold_idx] = 5;
-        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::velocity_threshold_idx] = -10;
+        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::angle_threshold_idx] = utils::degrees_to_radians(5);
+        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
         exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
+//        exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::zero_torque);
         exo.left_leg._hip.set_controller(exo_data.left_leg.hip.controller.controller);
+        
 
-        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 1.0;
-        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -3;
+        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 2;
+        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -3;  // this should be negative
         exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] = 80;
-        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::angle_threshold_idx] = 5;
-        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::velocity_threshold_idx] = -10;
+        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::angle_threshold_idx] = utils::degrees_to_radians(5);
+        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
         exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
+//        exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::zero_torque);
         exo.right_leg._hip.set_controller(exo_data.right_leg.hip.controller.controller);
 //        Serial.print("Superloop :: Controller Set");
         
@@ -170,8 +193,8 @@ void loop()
     static float old_time = micros();
     static int send_count = 0;
     float new_time = micros();
-//    if(new_time - old_time > 1000)
-//    {
+    if(new_time - old_time > 50)
+    {
 //        exo.left_leg._ankle._motor->transaction();
 //        exo.right_leg._ankle._motor->transaction();
 //        exo.left_leg._hip._motor->transaction();
@@ -187,19 +210,22 @@ void loop()
 //          Serial.print(exo_data.right_leg.hip.motor.p);
 //          Serial.print("\n");
 //          send_count = 0;
-//        }
-//    }
+//          }
+        Serial.print(exo_data.left_leg.hip.position);
+        Serial.print(", ");
+        Serial.print(exo_data.right_leg.hip.position);
+        Serial.print(", ");
+        Serial.print(exo_data.left_leg.hip.controller.setpoint);
+        Serial.print(", ");
+        Serial.print(exo_data.right_leg.hip.controller.setpoint);
+        Serial.print("\n");
+
+        
+    }
 
     exo.run();
 
-    Serial.print(exo_data.left_leg.hip.motor.p);
-    Serial.print(", ");
-    Serial.print(exo_data.right_leg.hip.motor.p);
-    Serial.print(", ");
-    Serial.print(exo_data.left_leg.hip.controller.setpoint);
-    Serial.print(", ");
-    Serial.print(exo_data.right_leg.hip.controller.setpoint);
-    Serial.print("\n");
+    
 //    Serial.print("\n");
 }
 

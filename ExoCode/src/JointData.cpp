@@ -21,6 +21,10 @@ JointData::JointData(config_defs::joint_id id, uint8_t* config_to_send)
     this->torque_reading = 0;
     this->is_left = ((uint8_t)this->id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
     
+    this->position = 0;
+    this->velocity = 0;
+    this->calibrate_torque_sensor = 0;
+    
     switch ((uint8_t)this->id & (~(uint8_t)config_defs::joint_id::left & ~(uint8_t)config_defs::joint_id::right))  // use the id with the side masked out.
     {
         case (uint8_t)config_defs::joint_id::hip:

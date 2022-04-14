@@ -34,7 +34,7 @@ Leg::Leg(bool is_left, ExoData* exo_data)
     }
     _ground_strike_timestamp = 0;
     _prev_ground_strike_timestamp = 0;
-    _expected_step_duration = 0;
+    //_expected_step_duration = 0;
 };
 
 /*
@@ -64,7 +64,7 @@ void Leg::read_data()
     _leg_data->ground_strike = _check_ground_strike();
     if (_leg_data->ground_strike)
     {
-        _update_expected_duration();
+        _leg_data->expected_step_duration = _update_expected_duration();
     }
     _leg_data->percent_gait = _calc_percent_gait();
     
@@ -169,9 +169,9 @@ float Leg::_calc_percent_gait()
     int timestamp = millis();
     int percent_gait = -1;
     // only calulate if the expected step duration has been established.
-    if (_expected_step_duration>0)
+    if (_leg_data->expected_step_duration>0)
     {
-        percent_gait = 100 * ((float)timestamp - _ground_strike_timestamp) / _expected_step_duration;
+        percent_gait = 100 * ((float)timestamp - _ground_strike_timestamp) / _leg_data->expected_step_duration;
         percent_gait = min(percent_gait, 1000); // set saturation.
         // Serial.print("Leg::_calc_percent_gait : percent_gait_x10 = ");
         // Serial.print(percent_gait_x10);
@@ -185,13 +185,14 @@ float Leg::_calc_percent_gait()
  * Should only be called when a ground strike has occurred.
  * 
  */
-void Leg::_update_expected_duration()
+float Leg::_update_expected_duration()
 {
     unsigned int step_time = _ground_strike_timestamp - _prev_ground_strike_timestamp;
+    float expected_step_duration = _leg_data->expected_step_duration;
 		
     if (0 == _prev_ground_strike_timestamp) // if the prev time isn't set just return.
     {
-        return;
+        return expected_step_duration;
     }
     uint8_t num_uninitialized = 0;
     // check that everything is set.
@@ -236,11 +237,12 @@ void Leg::_update_expected_duration()
         _step_times[0] = step_time;
         
         // TODO: Add rate limiter for change in expected duration so it can't make big jumps
-        _expected_step_duration = sum_step_times/_num_steps_avg;  // Average to the nearest ms
+        expected_step_duration = sum_step_times/_num_steps_avg;  // Average to the nearest ms
         // Serial.print("Leg::_update_expected_duration : _expected_step_duration - ");
         // Serial.print(_expected_step_duration);
         // Serial.print("\n");
     }
+    return expected_step_duration;
 };
 
 /*
