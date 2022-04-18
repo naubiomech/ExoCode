@@ -1,0 +1,18 @@
+# Adding a new CAN motor
+## parseIni.h
+1. Go to the config_defs namespace and add an enumeration to the motor enum.
+2. Go to the config_map namespace and add a case for your new motor in the motor mapping.
+
+## Motor.h
+1. Define a new CAN motor class. To define a motor class, copy and paste the other CAN motor classes at the bottom of the file and change the name. 
+  Make sure the class name is unique and descriptive.
+
+## Motor.cpp
+1. Define the constructor for your new class. Following the other CAN classes, define your _T_MAX and _V_MAX to reflect the motors maximal torque
+  and velocity respectively. You can find these values on the motors datasheet. 
+
+## Joint.cpp
+1. For each Joint constructor, add a case to the switch statement for your motor. 
+
+## Done 
+Modify the config.ini file to use your new motors!
