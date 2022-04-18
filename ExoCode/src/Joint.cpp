@@ -277,8 +277,8 @@ void HipJoint::run_joint()
     // Serial.print(_joint_data->controller.setpoint);
     // Serial.print(" Hip\t");
     // Use transaction because the motors are call and response
-    _motor->transaction(0 / _joint_data->motor.gearing);
-    // _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
+    // _motor->transaction(0 / _joint_data->motor.gearing);
+    _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
 };  
 
 /*
@@ -376,7 +376,8 @@ void KneeJoint::run_joint()
     // Serial.print(_joint_data->controller.setpoint);
     // Serial.print(" Knee\t");
     // Use transaction because the motors are call and response
-    _motor->transaction(0 / _joint_data->motor.gearing);
+    // _motor->transaction(0 / _joint_data->motor.gearing);
+    _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
 };  
 
 /*
@@ -470,7 +471,8 @@ void AnkleJoint::run_joint()
     // Serial.print(_joint_data->controller.setpoint);
     // Serial.print("\t");
     // Use transaction because the motors are call and response
-    _motor->transaction(0 / _joint_data->motor.gearing);
+    // _motor->transaction(0 / _joint_data->motor.gearing);
+    _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
 };  
 
 /*
