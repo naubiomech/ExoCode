@@ -224,6 +224,7 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 , _zero_torque(id, exo_data)
 , _heel_toe(id, exo_data)
 , _extension_angle(id, exo_data)
+, _franks_collins_hip(id, exo_data)
 {
 
     //Serial.print("HipJoint::HipJoint\n");
@@ -316,6 +317,8 @@ void HipJoint::set_controller(uint8_t controller_id)
         case (uint8_t)config_defs::hip_controllers::extension_angle :
             _controller = &_extension_angle;
             break;
+        case (uint8_t)config_defs::hip_controllers::franks_collins_hip :
+            _controller = &_franks_collins_hip;
         default :
             _controller = nullptr;
             break;

@@ -256,7 +256,6 @@ void setup()
     Serial.print("] : ");
     Serial.print((int)test_config[i]);
     Serial.print("\n");
-
   }
   Serial.print("\n");
 }

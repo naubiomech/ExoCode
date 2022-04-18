@@ -70,7 +70,22 @@ namespace controller_defs
         // offset as percent gait x10
         const uint8_t t3_idx = 5;
         const uint8_t num_parameter = 6;
-        
+    }
+
+    namespace franks_collins_hip
+    {
+        //TODO: Add comments for parameters
+        const uint8_t mass_idx = 0;
+        const uint8_t trough_normalized_torque_Nm_kg_idx = 1;
+        const uint8_t peak_normalized_torque_Nm_kg_idx = 2;
+        const uint8_t start_percent_gait_idx = 3;
+        const uint8_t trough_onset_percent_gait_idx = 4;
+        const uint8_t trough_percent_gait_idx = 5;
+        const uint8_t mid_time_idx = 6;
+        const uint8_t mid_duration_idx = 7;
+        const uint8_t peak_percent_gait_idx = 8;
+        const uint8_t peak_offset_percent_gait_idx = 9;
+        const uint8_t num_parameter = 10;
     }
     
     const uint8_t max_parameters = 6;  // this should be the largest of all the num_parameters
