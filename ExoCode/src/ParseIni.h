@@ -39,7 +39,7 @@ namespace config_defs
     enum class board_version : uint8_t
     { 
         zero_one = 1,
-        zero_two = 2,
+        zero_three = 2,
     };
     
     enum class battery : uint8_t
@@ -80,6 +80,7 @@ namespace config_defs
         not_used = 1, 
         AK60 = 2, 
         AK80 = 3,
+        AK60_v1_1 = 4,
     };
     
     enum class gearing : uint8_t
@@ -209,7 +210,7 @@ namespace config_defs
         const IniKeyCode board_version = 
         { 
                     {"0.1", (uint8_t)config_defs::board_version::zero_one},
-                    {"0.2", (uint8_t)config_defs::board_version::zero_two},        
+                    {"0.3", (uint8_t)config_defs::board_version::zero_three},        
         };
         
         const IniKeyCode battery = 
@@ -243,6 +244,7 @@ namespace config_defs
             {"0", (uint8_t)config_defs::motor::not_used}, 
             {"AK60", (uint8_t)config_defs::motor::AK60}, 
             {"AK80", (uint8_t)config_defs::motor::AK80},
+            {"AK60v1.1", (uint8_t)config_defs::motor::AK60_v1_1}, 
         };
         
         const IniKeyCode gearing 

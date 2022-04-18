@@ -255,6 +255,10 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
                 //_motor = new AK80(id, exo_data);
                 HipJoint::set_motor(new AK80(id, exo_data));
                 break;
+            case (uint8_t)config_defs::motor::AK60_v1_1 :
+                //_motor = new AK60(id, exo_data);
+                HipJoint::set_motor(new AK60_v1_1(id, exo_data));
+                break;
             default :
                 //_motor = nullptr;
                 HipJoint::set_motor(new NullMotor(id, exo_data));
@@ -355,6 +359,10 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
             case (uint8_t)config_defs::motor::AK80 :
                 KneeJoint::set_motor(new AK80(id, exo_data));
                 break;
+            case (uint8_t)config_defs::motor::AK60_v1_1 :
+                //_motor = new AK60(id, exo_data);
+                KneeJoint::set_motor(new AK60_v1_1(id, exo_data));
+                break;
             default :
                 KneeJoint::set_motor(new NullMotor(id, exo_data));
                 break;
@@ -449,6 +457,10 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
                 break;
             case (uint8_t)config_defs::motor::AK80 :
                 AnkleJoint::set_motor(new AK80(id, exo_data));
+                break;
+            case (uint8_t)config_defs::motor::AK60_v1_1 :
+                //_motor = new AK60(id, exo_data);
+                AnkleJoint::set_motor(new AK60_v1_1(id, exo_data));
                 break;
             default :
             AnkleJoint::set_motor(new NullMotor(id, exo_data));

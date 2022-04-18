@@ -61,9 +61,9 @@ void setup()
 {
   Serial.begin(115200);
 //  TODO: Remove serial while for deployed version as this would hang
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB
-  }
+  // while (!Serial) {
+    // ; // wait for serial port to connect. Needed for native USB
+  // }
 
   ini_parser(config_info::config_to_send);
   
@@ -141,8 +141,8 @@ void loop()
         Serial.print("\nSuperloop : Line 132\n");
         exo.right_leg._hip._motor->zero();
         Serial.print("\nSuperloop : Line 134\n");
-        exo.right_leg._hip._motor->zero();
-        Serial.print("\nSuperloop : Line 134\n");
+//        exo.right_leg._hip._motor->zero();
+//        Serial.print("\nSuperloop : Line 134\n");
 //        Serial.print("Superloop :: Motors zeroed");
         
         exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 2;

@@ -39,7 +39,7 @@
             const unsigned int sync_led_off_state = HIGH;//LOW;
             
             // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
-            #if defined(ARDUINO_TEENSY36))
+            #if defined(ARDUINO_TEENSY36)
                 // Status LED Pins
                 const unsigned int status_led_r_pin= 28;
                 const unsigned int status_led_g_pin = 27;
@@ -52,7 +52,7 @@
             const uint8_t status_led_off_state = 255;//0;
             
             // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
-            #if defined(ARDUINO_TEENSY36))
+            #if defined(ARDUINO_TEENSY36)
                 // SPI Follower Pins
                 const unsigned int miso_pin = 12;
                 const unsigned int mosi_pin= 11;
