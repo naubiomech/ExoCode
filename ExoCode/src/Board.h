@@ -1,13 +1,14 @@
 #ifndef BOARD_SETTINGS_HEADER
     #define BOARD_SETTINGS_HEADER
 
+    // TODO : Incorporate into parse INI
     #define BOARD_VERSION AK_Board_V0_1
 
     #if BOARD_VERSION == AK_Board_V0_1
         #include "Arduino.h"
         namespace logic_micro_pins  //teensy
         {
-            #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
+            #if defined(ARDUINO_TEENSY36)
                 // Serial Pins, NC
                 const unsigned int rx1_pin = 0;
                 const unsigned int tx1_pin = 1;
@@ -38,7 +39,7 @@
             const unsigned int sync_led_off_state = HIGH;//LOW;
             
             // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
-            #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
+            #if defined(ARDUINO_TEENSY36))
                 // Status LED Pins
                 const unsigned int status_led_r_pin= 28;
                 const unsigned int status_led_g_pin = 27;
@@ -51,7 +52,7 @@
             const uint8_t status_led_off_state = 255;//0;
             
             // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
-            #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
+            #if defined(ARDUINO_TEENSY36))
                 // SPI Follower Pins
                 const unsigned int miso_pin = 12;
                 const unsigned int mosi_pin= 11;
@@ -64,6 +65,11 @@
             #endif
             // Pin to use when we need a value but don't actually want to use it.
             const unsigned int not_connected_pin = 42;  // selected 42 as it is a pad on the back so I figure it won't hurt anything if something goes wrong.
+            
+            const unsigned int enable_l0_pin = not_connected_pin;
+            const unsigned int enable_l1_pin = not_connected_pin;
+            const unsigned int enable_r0_pin = not_connected_pin;
+            const unsigned int enable_r1_pin = not_connected_pin;
         };
         
         #if defined(ARDUINO_ARDUINO_NANO33BLE)
@@ -72,8 +78,8 @@
                 
             };
         #endif    
-    #elif BOARD_VERSION == AK_Board_V0_2
-        #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
+    #elif BOARD_VERSION == AK_Board_V0_3 
+        #if defined(defined(ARDUINO_TEENSY41)
             #include "Arduino.h"
             namespace logic_micro_pins  //teensy
             {
@@ -82,33 +88,33 @@
                 const unsigned int tx1_pin = 1;
                 
                 // CAN Pins
-                const unsigned int can_rx_pin = 4;
-                const unsigned int can_tx_pin = 3;
+                const unsigned int can_rx_pin = 23;
+                const unsigned int can_tx_pin = 22;
                 
                 // FSR Pins
                 const unsigned int fsr_sense_left_heel_pin = A14;
                 const unsigned int fsr_sense_left_toe_pin = A15;
-                const unsigned int fsr_sense_right_heel_pin= A7;
-                const unsigned int fsr_sense_right_toe_pin = A6;
+                const unsigned int fsr_sense_right_heel_pin= A5;
+                const unsigned int fsr_sense_right_toe_pin = A4;
                 
                 // Torque Sensor Pins
                 const unsigned int num_available_joints = 2;
-                const unsigned int torque_sensor_left[] = {A17, A16};
+                const unsigned int torque_sensor_left[] = {A12, A13};
                 //const unsigned int torque_sensor_left1 = A16;
-                const unsigned int torque_sensor_right[] = {A9, A8};
+                const unsigned int torque_sensor_right[] = {A7, A6};
                 //const unsigned int torque_sensor_right1 = A8;
                 
                 
                 // Sync LED Pins
-                const unsigned int sync_led_pin = 28;
-                const unsigned int sync_default_pin = 27;
+                const unsigned int sync_led_pin = 15;
+                const unsigned int sync_default_pin = 5;
                 const unsigned int sync_led_on_state = LOW;//HIGH;
                 const unsigned int sync_led_off_state = HIGH;//LOW;
                 
                 // Status LED Pins
                 const unsigned int status_led_r_pin= 14;
-                const unsigned int status_led_g_pin = 16;
-                const unsigned int status_led_b_pin = 17;
+                const unsigned int status_led_g_pin = 25;
+                const unsigned int status_led_b_pin = 24;
                 // if you have connected to pins with PWM set to true.
                 const bool status_has_pwm = true;
                 // For high to be on use 255 for the on state and 0 for the off, for low as on flip it.
@@ -123,10 +129,18 @@
                 const unsigned int spi_mode = 16;
                 
                 // Pin to Stop the Motors
-                const unsigned int motor_stop_pin = 6;
+                const unsigned int motor_stop_pin = 9;
                 
                 // Pin to use when we need a value but don't actually want to use it.
                 const unsigned int not_connected_pin = 42;  // selected 42 as it is a pad on the back so I figure it won't hurt anything if something goes wrong.
+                
+                // Motor enable Pins
+                const unsigned int enable_l0_pin = 28;
+                const unsigned int enable_l1_pin = 29;
+                const unsigned int enable_r0_pin = 8;
+                const unsigned int enable_r1_pin = 7;
+                
+                
             };
         
         #elif defined(ARDUINO_ARDUINO_NANO33BLE)
