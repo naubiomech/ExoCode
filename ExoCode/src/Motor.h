@@ -95,6 +95,13 @@ class AK60 : public _CANMotor
 		~AK60(){};
 };
 
+class AK60_v1_1 : public _CANMotor
+{
+    public:
+        AK60_v1_1(config_defs::joint_id id, ExoData* exo_data); // constructor: type is the motor type
+		~AK60_v1_1(){};
+};
+
 class AK80 : public _CANMotor
 {
     public:

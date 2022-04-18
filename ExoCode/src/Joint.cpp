@@ -256,6 +256,10 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
                 //_motor = new AK80(id, exo_data);
                 HipJoint::set_motor(new AK80(id, exo_data));
                 break;
+            case (uint8_t)config_defs::motor::AK60_v1_1 :
+                //_motor = new AK60(id, exo_data);
+                HipJoint::set_motor(new AK60_v1_1(id, exo_data));
+                break;
             default :
                 //_motor = nullptr;
                 HipJoint::set_motor(new NullMotor(id, exo_data));
@@ -278,8 +282,8 @@ void HipJoint::run_joint()
     // Serial.print(_joint_data->controller.setpoint);
     // Serial.print(" Hip\t");
     // Use transaction because the motors are call and response
-    _motor->transaction(0 / _joint_data->motor.gearing);
-    // _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
+    // _motor->transaction(0 / _joint_data->motor.gearing);
+    _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
 };  
 
 /*
@@ -358,6 +362,10 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
             case (uint8_t)config_defs::motor::AK80 :
                 KneeJoint::set_motor(new AK80(id, exo_data));
                 break;
+            case (uint8_t)config_defs::motor::AK60_v1_1 :
+                //_motor = new AK60(id, exo_data);
+                KneeJoint::set_motor(new AK60_v1_1(id, exo_data));
+                break;
             default :
                 KneeJoint::set_motor(new NullMotor(id, exo_data));
                 break;
@@ -379,7 +387,8 @@ void KneeJoint::run_joint()
     // Serial.print(_joint_data->controller.setpoint);
     // Serial.print(" Knee\t");
     // Use transaction because the motors are call and response
-    _motor->transaction(0 / _joint_data->motor.gearing);
+    // _motor->transaction(0 / _joint_data->motor.gearing);
+    _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
 };  
 
 /*
@@ -452,6 +461,10 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
             case (uint8_t)config_defs::motor::AK80 :
                 AnkleJoint::set_motor(new AK80(id, exo_data));
                 break;
+            case (uint8_t)config_defs::motor::AK60_v1_1 :
+                //_motor = new AK60(id, exo_data);
+                AnkleJoint::set_motor(new AK60_v1_1(id, exo_data));
+                break;
             default :
             AnkleJoint::set_motor(new NullMotor(id, exo_data));
                 break;
@@ -473,7 +486,8 @@ void AnkleJoint::run_joint()
     // Serial.print(_joint_data->controller.setpoint);
     // Serial.print("\t");
     // Use transaction because the motors are call and response
-    _motor->transaction(0 / _joint_data->motor.gearing);
+    // _motor->transaction(0 / _joint_data->motor.gearing);
+    _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
 };  
 
 /*

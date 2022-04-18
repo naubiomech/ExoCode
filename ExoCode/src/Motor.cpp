@@ -275,6 +275,18 @@ _CANMotor(id, exo_data)
  * Takes the joint id and a pointer to the exo_data
  * Only stores the id, exo_data pointer, and if it is left (for easy access)
  */
+AK60_v1_1::AK60_v1_1(config_defs::joint_id id, ExoData* exo_data): // constructor: type is the motor type
+_CANMotor(id, exo_data)
+{
+    _T_MAX = 9.0f;
+    _V_MAX = 23.04f;
+};
+
+/*
+ * Constructor for the motor
+ * Takes the joint id and a pointer to the exo_data
+ * Only stores the id, exo_data pointer, and if it is left (for easy access)
+ */
 AK80::AK80(config_defs::joint_id id, ExoData* exo_data): // constructor: type is the motor type
 _CANMotor(id, exo_data)
 {
