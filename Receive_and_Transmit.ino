@@ -238,17 +238,37 @@ void receive_and_transmit()
 
     // TN 6/13/19
     case 'M':
-      receiveVals(48);                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
-      //MATLAB Sent Kp, then Kd, then Ki.
-      memcpy(&left_leg->kp, holdOnPoint, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-      memcpy(&left_leg->kd, holdOnPoint + 8, 8);                              //memory space pointed to by the variable kp_L.  Essentially a roundabout way to change a variable value, but since the bluetooth
-      memcpy(&left_leg->ki, holdOnPoint + 16, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-      memcpy(&right_leg->kp, holdOnPoint + 24, 8);                                  //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-      memcpy(&right_leg->kd, holdOnPoint + 32, 8);                              //memory space pointed to by the variable kp_L.  Essentially a roundabout way to change a variable value, but since the bluetooth
-      memcpy(&right_leg->ki, holdOnPoint + 40, 8);                             //Recieved the large data chunk chopped into bytes, a roundabout way was needed
-      left_leg->pid.SetTunings(left_leg->kp, left_leg->ki, left_leg->kd);
-      right_leg->pid.SetTunings(right_leg->kp, right_leg->ki, right_leg->kd);
-      break;
+      {
+          receiveVals(40);
+  
+          double isLeft = 0;
+          double isStance = 0;
+          double temp_kp = 0;
+          double temp_ki = 0;
+          double temp_kd = 0;
+          
+          memcpy(&isLeft, holdOnPoint, 8);
+          memcpy(&isStance, holdOnPoint + 8, 8);
+          memcpy(&temp_kp, holdOnPoint + 16, 8);
+          memcpy(&temp_ki, holdOnPoint + 24, 8);
+          memcpy(&temp_kd, holdOnPoint + 32, 8);
+    
+          Leg* leg = (isLeft ? left_leg:right_leg);
+          temp_kp = constrain(temp_kp, leg->kp_range[0], leg->kp_range[1]);
+          temp_ki = constrain(temp_ki, leg->ki_range[0], leg->ki_range[1]);
+          temp_kd = constrain(temp_kd, leg->kd_range[0], leg->kd_range[1]);
+    
+          if (isStance) {
+            leg->kp = temp_kp;
+            leg->ki = temp_ki;
+            leg->kd = temp_kd;
+          } else {
+            leg->swing_kp = temp_kp;
+            leg->swing_ki = temp_ki;
+            leg->swing_kd = temp_kd;
+          }
+          break;
+        }
 
     case 'm':
 

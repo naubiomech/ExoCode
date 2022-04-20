@@ -127,6 +127,14 @@ struct Leg {
   double ki = 0;
   double kd = 3;
 #endif
+  double swing_kp = 330;
+  double swing_ki = 0;
+  double swing_kd = 3;
+  //===============================================
+  const double kp_range[2] = {250, 350};
+  const double ki_range[2] = {-1, 1};
+  const double kd_range[2] = {0, 6};
+  
   double KF = 1;
 
   double PID_Setpoint, Input, Output;

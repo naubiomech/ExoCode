@@ -87,6 +87,8 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           leg->state_count_31 = 0;
 
           takestridetime(leg);
+
+          leg->pid.SetTunings(leg->kp, leg->ki, leg->kd);
         }
       }
 
@@ -136,6 +138,8 @@ void State_Machine_One_Toe_Sensor(Leg * leg) {
           leg->state_count_31 = 0;
           leg->state_count_13 = 0;
           leg->allow_inc_flag = true; //TH 8/7/19
+
+          leg->pid.SetTunings(leg->swing_kp, leg->swing_ki, leg->swing_kd);
         }
       }
   }//end switch
