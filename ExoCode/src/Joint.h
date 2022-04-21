@@ -105,7 +105,7 @@ class HipJoint : public _Joint
         ZeroTorque _zero_torque;
         HeelToe _heel_toe;
         ExtensionAngle _extension_angle;
-    
+        FranksCollinsHip _franks_collins_hip;
 };
 
 class KneeJoint : public _Joint

@@ -188,6 +188,102 @@ class ZhangCollins: public _Controller
         float _d2;
 };
 
+/*
+ * Franks Collins Controller
+ * This controller is for the Hip Joint
+ *
+ * Is 0 between t0_trough and t1_trough to (t1, 0).
+ * From t1_trough to t2_trough applies a spline going down to (t2_trough,mass*normalized_trough_torque).
+ * From t2_trough to t3_trough rises to (t3_trough, 0)
+ * From t3_trough to t1_peak applies zero torque
+ * From t1_peak to t2_peak applies a spline going up to (t2_peak,mass*normalized_peak_torque).
+ * From t2_peak to t3_peak falls to (t3_peak, 0)
+ *
+ * 2022-04 : This controller was based on:
+ * Franks, P. W., Bryan, G. M., Martin, R. M., Reyes, R., Lakmazaheri, A. C., & Collins, S. H.
+ * (2021). Comparing optimized exoskeleton assistance of the hip, knee, and ankle in single and multi-joint configurations. Wearable Technologies, 2.
+ * and written by P. Stegall
+ *
+ * see ControllerData.h for details on the parameters used.
+ */
+class FranksCollinsHip: public _Controller
+{
+    public:
+        FranksCollinsHip(config_defs::joint_id id, ExoData* exo_data);
+        ~FranksCollinsHip(){};
+       
+        float calc_motor_cmd();
+       
+         // when we change a parameter we need to recalculate the splines.
+        void _update_spline_parameters(int mass,
+            float trough_normalized_torque_Nm_kg, float peak_normalized_torque_Nm_kg,
+            float start_percent_gait, float trough_onset_percent_gait, float trough_percent_gait,
+            float mid_percent_gait, float mid_duration_gait,
+            float peak_percent_gait, float peak_offset_percent_gait);
+    private:
+        // store the parameters so we can check if they change.
+        int _mass;
+       
+        int _last_start_time;
+        float _last_percent_gait;
+       
+        float _start_percent_gait;
+       
+        float _mid_time;
+        float _mid_duration;
+       
+        float _trough_normalized_torque_Nm_kg;
+        float _peak_normalized_torque_Nm_kg;
+       
+        float _trough_onset_percent_gait;
+        float _trough_percent_gait;
+       
+        float _peak_percent_gait;
+        float _peak_offset_percent_gait;
+       
+        float _t0_trough;
+        float _t1_trough;
+        float _t2_trough;
+        float _t3_trough;
+       
+        float _t0_peak;
+        float _t1_peak;
+        float _t2_peak;
+        float _t3_peak;
+               
+        // peak torque
+        float _tt_Nm;
+        float _tp_Nm;
+       
+        // cable tension torque.  Not needed for our design, but used to match the paper.
+        float _tts_Nm;
+        float _tps_Nm;
+       
+        // parameters for falling spline
+        float _a1_trough;
+        float _b1_trough;
+        float _c1_trough;
+        float _d1_trough;
+       
+        // parameters for rising spline
+        float _a2_trough;
+        float _b2_trough;
+        float _c2_trough;
+        float _d2_trough;
+       
+        // parameters for rising spline
+        float _a1_peak;
+        float _b1_peak;
+        float _c1_peak;
+        float _d1_peak;
+       
+        // parameters for falling spline
+        float _a2_peak;
+        float _b2_peak;
+        float _c2_peak;
+        float _d2_peak;
+};
+
 
 #endif
 #endif
