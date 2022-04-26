@@ -12,11 +12,19 @@
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
 
 
-_Motor::_Motor(config_defs::joint_id id, ExoData* exo_data)
+_Motor::_Motor(config_defs::joint_id id, ExoData* exo_data, int enable_pin)
 {
     _id = id;
     _is_left = ((uint8_t)this->_id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
     _data = exo_data;
+    _enable_pin = enable_pin;
+    _prev_motor_enabled = false;
+    
+    // Serial.print("_Motor::_Motor : _enable_pin = ");
+    // Serial.print(_enable_pin);
+    // Serial.print("\n");
+    
+    pinMode(_enable_pin, OUTPUT);
     
     // set _motor_data to point to the data specific to this motor.
     switch (utils::get_joint_type(_id))
@@ -73,8 +81,8 @@ config_defs::joint_id _Motor::get_id()
  * 
  * 
  */
-_CANMotor::_CANMotor(config_defs::joint_id id, ExoData* exo_data) // constructor: type is the motor type
-: _Motor(id, exo_data)
+_CANMotor::_CANMotor(config_defs::joint_id id, ExoData* exo_data, int enable_pin) // constructor: type is the motor type
+: _Motor(id, exo_data, enable_pin)
 {
     _KP_MIN = 0.0f;
     _KP_MAX = 500.0f;
@@ -94,35 +102,39 @@ void _CANMotor::read_data()
 {
     // read date from motor
     bool searching = true;
-    uint8_t data[8];
+    // uint8_t data[8];
     uint32_t start = micros();
-    CAN* can = can->getInstance();
-    do
+    // only send and receive data if enabled
+    if (_motor_data->enabled)
     {
-        int direction_modifier = _motor_data->flip_direction ? -1 : 1;
-        CAN_message_t msg = can->read();
-        if (msg.buf[0] == uint32_t(_motor_data->id))
+        CAN* can = can->getInstance();
+        do
         {
-            // unpack data
-            uint32_t p_int = (msg.buf[1] << 8) | msg.buf[2];
-            uint32_t v_int = (msg.buf[3]) << 4 | (msg.buf[4] >> 4);
-            uint32_t i_int = ((msg.buf[4] & 0xF) << 8) | msg.buf[5];
-            // set data in ExoData object
-            _motor_data->p = direction_modifier * _uint_to_float(p_int, -_P_MAX, _P_MAX, 16);
-            _motor_data->v = direction_modifier * _uint_to_float(v_int, -_V_MAX, _V_MAX, 12);
-            _motor_data->i = direction_modifier * _uint_to_float(i_int, -_T_MAX, _T_MAX, 12);
+            int direction_modifier = _motor_data->flip_direction ? -1 : 1;
+            CAN_message_t msg = can->read();
+            if (msg.buf[0] == uint32_t(_motor_data->id))
+            {
+                // unpack data
+                uint32_t p_int = (msg.buf[1] << 8) | msg.buf[2];
+                uint32_t v_int = (msg.buf[3]) << 4 | (msg.buf[4] >> 4);
+                uint32_t i_int = ((msg.buf[4] & 0xF) << 8) | msg.buf[5];
+                // set data in ExoData object
+                _motor_data->p = direction_modifier * _uint_to_float(p_int, -_P_MAX, _P_MAX, 16);
+                _motor_data->v = direction_modifier * _uint_to_float(v_int, -_V_MAX, _V_MAX, 12);
+                _motor_data->i = direction_modifier * _uint_to_float(i_int, -_T_MAX, _T_MAX, 12);
 
-            // Serial.print("_CANMotor::read_data() : Got data - ");
-            // Serial.print(uint32_t(_motor_data->id));
-            // Serial.print("\n");
-            // reset timout_count because we got a valid message
-            this->_timeout_count = 0;
-            return;
+                // Serial.print("_CANMotor::read_data() : Got data - ");
+                // Serial.print(uint32_t(_motor_data->id));
+                // Serial.print("\n");
+                // reset timout_count because we got a valid message
+                this->_timeout_count = 0;
+                return;
+            }
+            searching = ((micros() - start) < _timeout);
         }
-        searching = ((micros() - start) < _timeout);
+        while(searching);
+        _handle_read_failure();
     }
-    while(searching);
-    _handle_read_failure();
     return;
 };
 
@@ -130,7 +142,7 @@ void _CANMotor::send_data(float torque)
 {
     // Serial.print("Sending data: ");
     // Serial.print(uint32_t(_motor_data->id));
-    // Serial.print("\t");
+    // Serial.print("\n");
     int direction_modifier = _motor_data->flip_direction ? -1 : 1;
     _motor_data->t_ff = torque;
     // read data from ExoData object, constraint it, and package it
@@ -154,45 +166,69 @@ void _CANMotor::send_data(float torque)
     msg.buf[5] = kd_int >> 4;
     msg.buf[6] = ((kd_int & 0xF) << 4) | (t_int >> 8);
     msg.buf[7] = t_int & 0xFF;
-    // set data in motor
-    CAN* can = can->getInstance();
-    can->send(msg);
+    
+    // only send messages if enabled
+    if (_motor_data->enabled)
+    {
+        // set data in motor
+        CAN* can = can->getInstance();
+        can->send(msg);
+    }
     return;
 };
 
 void _CANMotor::on_off(bool is_on)
 {
-    CAN_message_t msg;
-    msg.id = uint32_t(_motor_data->id);
-    msg.buf[0] = 0xFF;
-    msg.buf[1] = 0xFF;
-    msg.buf[2] = 0xFF;
-    msg.buf[3] = 0xFF;
-    msg.buf[4] = 0xFF;
-    msg.buf[5] = 0xFF;
-    msg.buf[6] = 0xFF;
-    if (is_on)
-    {
-        // enable motor
-        msg.buf[7] = 0xFC;
-        // Serial.print("_CANMotor::on_off(bool is_on) : Enabled - ");
-        // Serial.print(uint32_t(_motor_data->id));
-        // Serial.print("\n");
-    }
-    else 
-    {
-        // disable motor
-        msg.buf[7] = 0xFD;
-        // Serial.print("_CANMotor::on_off(bool is_on) : Disabled - ");
-        // Serial.print(uint32_t(_motor_data->id));
-        // Serial.print("\n");
-    }
-    CAN* can = can->getInstance();
-    can->send(msg);
-    delayMicroseconds(500);
-    read_data();
+    // Serial.print(_prev_motor_enabled);
+    // Serial.print("\t");
+    // Serial.print(_motor_data->enabled);
+    // Serial.print("\t");
+    // Serial.print(is_on);
+    // Serial.print("\n");
     
-    
+    // only change the state and send messages if the enabled state has changed.
+    if (_prev_motor_enabled != _motor_data->enabled || _prev_motor_enabled != is_on)
+    {
+        
+        _motor_data->enabled = is_on;
+        
+        CAN_message_t msg;
+        msg.id = uint32_t(_motor_data->id);
+        msg.buf[0] = 0xFF;
+        msg.buf[1] = 0xFF;
+        msg.buf[2] = 0xFF;
+        msg.buf[3] = 0xFF;
+        msg.buf[4] = 0xFF;
+        msg.buf[5] = 0xFF;
+        msg.buf[6] = 0xFF;
+        
+        if (_motor_data->enabled)
+        {
+            digitalWrite(_enable_pin, logic_micro_pins::motor_enable_on_state);
+            // !!! A delay check between when turning on power and when timeouts stopped happening gave a delay of 1930 ms rounding to 2000.
+            // TODO: make something more elegant than a delay for both.
+            delay(2000);
+            // enable motor
+            msg.buf[7] = 0xFC;
+            Serial.print("_CANMotor::on_off(bool is_on) : Enabled - ");
+            Serial.print(uint32_t(_motor_data->id));
+            Serial.print("\n");
+        }
+        else 
+        {
+            digitalWrite(_enable_pin, logic_micro_pins::motor_enable_off_state);
+            // disable motor, the message after this shouldn't matter as the power is cut, and the send() doesn't send a message if not enabled.
+            msg.buf[7] = 0xFD;
+            Serial.print("_CANMotor::on_off(bool is_on) : Disabled - ");
+            Serial.print(uint32_t(_motor_data->id));
+            Serial.print("\n");
+        }
+        CAN* can = can->getInstance();
+        can->send(msg);
+        delayMicroseconds(500);
+        read_data();
+    }
+    _prev_motor_enabled = _motor_data->enabled;
 };
 
 void _CANMotor::zero()
@@ -210,9 +246,9 @@ void _CANMotor::zero()
     CAN* can = can->getInstance();
     can->send(msg);
     
-    // Serial.print("_CANMotor::zero() : Zeroed -  ");
-    // Serial.print(uint32_t(_motor_data->id));
-    // Serial.print("\n");
+    Serial.print("_CANMotor::zero() : Zeroed -  ");
+    Serial.print(uint32_t(_motor_data->id));
+    Serial.print("\n");
     
     read_data();
 };
@@ -263,8 +299,8 @@ float _CANMotor::_uint_to_float(unsigned int x_int, float x_min, float x_max, in
  * Takes the joint id and a pointer to the exo_data
  * Only stores the id, exo_data pointer, and if it is left (for easy access)
  */
-AK60::AK60(config_defs::joint_id id, ExoData* exo_data): // constructor: type is the motor type
-_CANMotor(id, exo_data)
+AK60::AK60(config_defs::joint_id id, ExoData* exo_data, int enable_pin): // constructor: type is the motor type
+_CANMotor(id, exo_data, enable_pin)
 {
     _T_MAX = 9.0f;
     _V_MAX = 41.87f;
@@ -275,8 +311,8 @@ _CANMotor(id, exo_data)
  * Takes the joint id and a pointer to the exo_data
  * Only stores the id, exo_data pointer, and if it is left (for easy access)
  */
-AK60_v1_1::AK60_v1_1(config_defs::joint_id id, ExoData* exo_data): // constructor: type is the motor type
-_CANMotor(id, exo_data)
+AK60_v1_1::AK60_v1_1(config_defs::joint_id id, ExoData* exo_data, int enable_pin): // constructor: type is the motor type
+_CANMotor(id, exo_data, enable_pin)
 {
     _T_MAX = 9.0f;
     _V_MAX = 23.04f;
@@ -287,8 +323,8 @@ _CANMotor(id, exo_data)
  * Takes the joint id and a pointer to the exo_data
  * Only stores the id, exo_data pointer, and if it is left (for easy access)
  */
-AK80::AK80(config_defs::joint_id id, ExoData* exo_data): // constructor: type is the motor type
-_CANMotor(id, exo_data)
+AK80::AK80(config_defs::joint_id id, ExoData* exo_data, int enable_pin): // constructor: type is the motor type
+_CANMotor(id, exo_data, enable_pin)
 {
     _T_MAX = 18.0f;
     _V_MAX = 25.65f;

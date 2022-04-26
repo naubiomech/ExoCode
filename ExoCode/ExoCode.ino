@@ -3,7 +3,7 @@
 
    P. Stegall Jan 2022
 */
-#if defined(ARDUINO_TEENSY36)
+#if defined(ARDUINO_TEENSY36) | defined(ARDUINO_TEENSY41)
 
 #define INCLUDE_FLEXCAN_DEBUG
 
@@ -20,8 +20,11 @@
 
 // Specific Librarys
 #include "src\ParseIni.h"
-#include <TSPISlave.h>
-
+#if defined(ARDUINO_TEENSY36)
+  #include <TSPISlave.h>
+#elif defined(ARDUINO_TEENSY41)
+  #include "SPISlave_T4.h"
+#endif
 //#include "src\Motor.h"
 
 /*namespace led{
@@ -80,6 +83,8 @@ void setup()
 //    delay(60000);
     
   // Now that we have read the config file create the data structure and exoskeleton object.
+
+  
 }
 
 
@@ -106,18 +111,18 @@ void loop()
         first_run = false;
 //        Serial.print("Superloop :: Start First Run Conditional");
         // Need to comment out motors not in use otherwise code hangs.
-        //exo.left_leg._ankle._motor->on_off(false);
-        //exo.right_leg._ankle._motor->on_off(false);
-        Serial.print("\nSuperloop : Line 111\n");;
-        exo.left_leg._hip._motor->on_off(true);
-        Serial.print("\nSuperloop : Line 113\n");
-        exo.right_leg._hip._motor->on_off(true);
-        Serial.print("\nSuperloop : Line 115\n");
+        exo.left_leg._hip._motor->_motor_data->enabled = true;
+        exo.right_leg._hip._motor->_motor_data->enabled = true;
+
+        exo.left_leg._hip._motor->on_off(exo.left_leg._hip._motor->_motor_data->enabled);
+        exo.right_leg._hip._motor->on_off(exo.right_leg._hip._motor->_motor_data->enabled);
+        
         // This is hacky as the first one doesn't go through.  
         // Changing initalization order of legs in Exo changes behaviour.  
         // First initialized fails to enable, independent of what is here.
         // TODO : Figure out why the first initalization fails.
-        exo.left_leg._hip._motor->on_off(true);  
+//        exo.left_leg._hip._motor->on_off(false);
+//        exo.left_leg._hip._motor->on_off(true);  
         Serial.print("\nSuperloop : Line 117\n");
         
 //        Serial.print("Superloop :: Motors Turned on/off");
@@ -191,7 +196,6 @@ void loop()
 
     
     static float old_time = micros();
-    static int send_count = 0;
     float new_time = micros();
     if(new_time - old_time > 50)
     {

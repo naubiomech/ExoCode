@@ -26,8 +26,11 @@
 
 class _Joint
 {
-	static uint8_t left_used_joint_count;
-    static uint8_t right_used_joint_count;
+	static uint8_t left_torque_sensor_used_count;
+    static uint8_t right_torque_sensor_used_count;
+    
+    static uint8_t left_motor_used_count;
+    static uint8_t right_motor_used_count;
     
     
     // TODO: create object for each type of controller (joint type specific) and pointer to current controller.
@@ -67,10 +70,11 @@ class _Joint
         
         /*
          * Takes in the joint id and exo data, and checks if the current joint is used.
-         * If it is used it pulls the next open torque sensor pin for the side, and increments the counter.
+         * If it is used it pulls the next open torque sensor/motor enable pin for the side, and increments the counter.
          * If the joint is not used, or we have used up all the available torque sensor pins for the side, it sets the pin to a pin that is not connected.
          */
         static unsigned int get_torque_sensor_pin(config_defs::joint_id, ExoData*);
+        static unsigned int get_motor_enable_pin(config_defs::joint_id, ExoData*);
         
         //TODO: Make these protected
         _Motor* _motor; // using pointer to the base class so we can use any motor type.

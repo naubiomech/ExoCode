@@ -19,6 +19,7 @@ ExoData::ExoData(uint8_t* config_to_send)
 {
     this->status = status_led_defs::messages::trial_off;
     this->sync_led_state = false;
+    this->estop = false;
     
 };
 

@@ -34,6 +34,7 @@ class ExoData
         
         uint8_t status;
         bool sync_led_state;
+        bool estop;
         LegData left_leg;
         LegData right_leg;
 };

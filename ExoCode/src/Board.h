@@ -1,8 +1,11 @@
 #ifndef BOARD_SETTINGS_HEADER
     #define BOARD_SETTINGS_HEADER
-
+    
+    #define AK_Board_V0_1 1
+    #define AK_Board_V0_3 2
+    
     // TODO : Incorporate into parse INI
-    #define BOARD_VERSION AK_Board_V0_1
+    #define BOARD_VERSION AK_Board_V0_3
 
     #if BOARD_VERSION == AK_Board_V0_1
         #include "Arduino.h"
@@ -66,10 +69,11 @@
             // Pin to use when we need a value but don't actually want to use it.
             const unsigned int not_connected_pin = 42;  // selected 42 as it is a pad on the back so I figure it won't hurt anything if something goes wrong.
             
-            const unsigned int enable_l0_pin = not_connected_pin;
-            const unsigned int enable_l1_pin = not_connected_pin;
-            const unsigned int enable_r0_pin = not_connected_pin;
-            const unsigned int enable_r1_pin = not_connected_pin;
+            const unsigned int enable_left_pin[] = {not_connected_pin, not_connected_pin};
+            const unsigned int enable_right_pin[] = {not_connected_pin, not_connected_pin};
+            
+            const unsigned int motor_enable_on_state = HIGH;
+            const unsigned int motor_enable_off_state = LOW;
         };
         
         #if defined(ARDUINO_ARDUINO_NANO33BLE)
@@ -79,7 +83,7 @@
             };
         #endif    
     #elif BOARD_VERSION == AK_Board_V0_3 
-        #if defined(defined(ARDUINO_TEENSY41)
+        #if defined(ARDUINO_TEENSY41)
             #include "Arduino.h"
             namespace logic_micro_pins  //teensy
             {
@@ -135,12 +139,11 @@
                 const unsigned int not_connected_pin = 42;  // selected 42 as it is a pad on the back so I figure it won't hurt anything if something goes wrong.
                 
                 // Motor enable Pins
-                const unsigned int enable_l0_pin = 28;
-                const unsigned int enable_l1_pin = 29;
-                const unsigned int enable_r0_pin = 8;
-                const unsigned int enable_r1_pin = 7;
+                const unsigned int enable_left_pin[] = {28, 29};
+                const unsigned int enable_right_pin[] = {8, 7};
                 
-                
+                const unsigned int motor_enable_on_state = HIGH;
+                const unsigned int motor_enable_off_state = LOW;
             };
         
         #elif defined(ARDUINO_ARDUINO_NANO33BLE)

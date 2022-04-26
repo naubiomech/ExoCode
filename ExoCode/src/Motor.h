@@ -26,7 +26,7 @@
 class _Motor
 {
 	public:
-		_Motor(config_defs::joint_id id, ExoData* exo_data);
+		_Motor(config_defs::joint_id id, ExoData* exo_data, int enable_pin);
         virtual ~_Motor(){};
 		
         //Pure virtual functions, these will have to be defined for each one.
@@ -45,12 +45,14 @@ class _Motor
         config_defs::joint_id _id; //motor id 
 		bool _is_left;
         ExoData* _data;
+        int _enable_pin;
+        bool _prev_motor_enabled;
 };
 
 class NullMotor : public _Motor
 {
     public:
-    NullMotor(config_defs::joint_id id, ExoData* exo_data):_Motor(id, exo_data) {};
+    NullMotor(config_defs::joint_id id, ExoData* exo_data, int enable_pin):_Motor(id, exo_data, enable_pin) {};
     void read_data() {};
     void send_data(float torque) {};
     void transaction(float torque) {};
@@ -65,7 +67,7 @@ class NullMotor : public _Motor
 class _CANMotor : public _Motor
 {
     public:
-        _CANMotor(config_defs::joint_id id, ExoData* exo_data);
+        _CANMotor(config_defs::joint_id id, ExoData* exo_data, int enable_pin);
         virtual ~_CANMotor(){};
         void transaction(float torque);
         void read_data();
@@ -91,21 +93,21 @@ class _CANMotor : public _Motor
 class AK60 : public _CANMotor
 {
     public:
-        AK60(config_defs::joint_id id, ExoData* exo_data); // constructor: type is the motor type
+        AK60(config_defs::joint_id id, ExoData* exo_data, int enable_pin); // constructor: type is the motor type
 		~AK60(){};
 };
 
 class AK60_v1_1 : public _CANMotor
 {
     public:
-        AK60_v1_1(config_defs::joint_id id, ExoData* exo_data); // constructor: type is the motor type
+        AK60_v1_1(config_defs::joint_id id, ExoData* exo_data, int enable_pin); // constructor: type is the motor type
 		~AK60_v1_1(){};
 };
 
 class AK80 : public _CANMotor
 {
     public:
-        AK80(config_defs::joint_id id, ExoData* exo_data); // constructor: type is the motor type
+        AK80(config_defs::joint_id id, ExoData* exo_data, int enable_pin); // constructor: type is the motor type
 		~AK80(){};   
 };
 

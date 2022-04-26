@@ -34,6 +34,7 @@ class MotorData
         float kd = 0;
         float t_ff = 0;
         
+        bool enabled;
         bool is_left;
         bool flip_direction;
         float gearing;

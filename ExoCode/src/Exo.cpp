@@ -20,6 +20,7 @@ Exo::Exo(ExoData* exo_data)
 , status_led(logic_micro_pins::status_led_r_pin, logic_micro_pins::status_led_g_pin, logic_micro_pins::status_led_b_pin)  // Create the status LED object. 
 {
     this->data = exo_data; 
+    pinMode(logic_micro_pins::motor_stop_pin,INPUT_PULLUP);
 };
 
 /* 
@@ -32,15 +33,19 @@ void Exo::run()
     // check if we should update the sync LED and record the LED on/off state.
     data->sync_led_state = sync_led.handler();
     bool trial_running = sync_led.get_is_blinking();
+    
+    // check the estop
+    data->estop = !digitalRead(logic_micro_pins::motor_stop_pin);
+    
     // Serial.print("Exo::run: is error : ");
     // Serial.print(((data->status & status_led_defs::messages::error) == status_led_defs::messages::error));
     // Serial.print("\n");
-    if (trial_running & (((data->status & status_led_defs::messages::error) != status_led_defs::messages::error) & (data->status != status_led_defs::messages::test)))
+    if (trial_running && (((data->status & status_led_defs::messages::error) != status_led_defs::messages::error) && (data->status != status_led_defs::messages::test)))
     {
         data->status = status_led_defs::messages::trial_on;
         // Serial.print("Exo::run:trial on\n");
     }
-    else if (!trial_running & (((data->status & status_led_defs::messages::error) != status_led_defs::messages::error) & (data->status != status_led_defs::messages::test)))
+    else if ((!trial_running) && (((data->status & status_led_defs::messages::error) != status_led_defs::messages::error) && (data->status != status_led_defs::messages::test)))
     {
         data->status = status_led_defs::messages::trial_off;
         // Serial.print("Exo::run:trial off\n");

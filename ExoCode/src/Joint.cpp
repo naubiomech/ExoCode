@@ -9,8 +9,11 @@
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
 // initialize the used joint counters that will be used to select the TorqueSensor pin.  If you don't do it it won't work.
-uint8_t _Joint::left_used_joint_count = 0;
-uint8_t _Joint::right_used_joint_count = 0;
+uint8_t _Joint::left_torque_sensor_used_count = 0;
+uint8_t _Joint::right_torque_sensor_used_count = 0;
+
+uint8_t _Joint::left_motor_used_count = 0;
+uint8_t _Joint::right_motor_used_count = 0;
 
 /*
  * Constructor for the joint
@@ -114,9 +117,9 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
         {
             if (utils::get_is_left(id) & exo_data->left_leg.hip.is_used)  // check if the left leg is used
             {
-                if (_Joint::left_used_joint_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
+                if (_Joint::left_torque_sensor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
-                    return logic_micro_pins::torque_sensor_left[_Joint::left_used_joint_count++];
+                    return logic_micro_pins::torque_sensor_left[_Joint::left_torque_sensor_used_count++];
                 }
                 else
                 {
@@ -125,9 +128,9 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
             }
             else if (exo_data->right_leg.hip.is_used)  // check if the right leg is used
             {
-                if (_Joint::right_used_joint_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
+                if (_Joint::right_torque_sensor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
-                    return logic_micro_pins::torque_sensor_right[_Joint::right_used_joint_count++];
+                    return logic_micro_pins::torque_sensor_right[_Joint::right_torque_sensor_used_count++];
                 }
                 else
                 {
@@ -144,9 +147,9 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
         {
             if (utils::get_is_left(id) & exo_data->left_leg.knee.is_used)  // check if the left leg is used
             {
-                if (_Joint::left_used_joint_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
+                if (_Joint::left_torque_sensor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
-                    return logic_micro_pins::torque_sensor_left[_Joint::left_used_joint_count++];
+                    return logic_micro_pins::torque_sensor_left[_Joint::left_torque_sensor_used_count++];
                 }
                 else
                 {
@@ -155,9 +158,9 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
             }
             else if (exo_data->right_leg.knee.is_used)  // check if the right leg is used
             {
-                if (_Joint::right_used_joint_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
+                if (_Joint::right_torque_sensor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
-                    return logic_micro_pins::torque_sensor_right[_Joint::right_used_joint_count++];
+                    return logic_micro_pins::torque_sensor_right[_Joint::right_torque_sensor_used_count++];
                 }
                 else
                 {
@@ -174,9 +177,9 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
         {
             if (utils::get_is_left(id) & exo_data->left_leg.ankle.is_used)  // check if the left leg is used
             {
-                if (_Joint::left_used_joint_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
+                if (_Joint::left_torque_sensor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
-                    return logic_micro_pins::torque_sensor_left[_Joint::left_used_joint_count++];
+                    return logic_micro_pins::torque_sensor_left[_Joint::left_torque_sensor_used_count++];
                 }
                 else
                 {
@@ -185,9 +188,9 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
             }
             else if (exo_data->right_leg.ankle.is_used)  // check if the right leg is used
             {
-                if (_Joint::right_used_joint_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
+                if (_Joint::right_torque_sensor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
-                    return logic_micro_pins::torque_sensor_right[_Joint::right_used_joint_count++];
+                    return logic_micro_pins::torque_sensor_right[_Joint::right_torque_sensor_used_count++];
                 }
                 else
                 {
@@ -207,6 +210,117 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
 
     }
 };
+
+/*
+ * Takes in the joint id and exo data, and checks if the current joint is used.
+ * If it is used it pulls the next open torque sensor pin for the side, and increments the counter.
+ * If the joint is not used, or we have used up all the available torque sensor pins for the side, it sets the pin to a pin that is not connected.
+ */
+unsigned int _Joint::get_motor_enable_pin(config_defs::joint_id id, ExoData* exo_data)
+{
+    // First check which joint we are looking at.  
+    // Then go through and if it is the left or right and if it is used.  
+    // If it is set return the appropriate pin and increment the counter.
+    switch (utils::get_joint_type(id))
+    {
+        case (uint8_t)config_defs::joint_id::hip:
+        {
+            if (utils::get_is_left(id) & exo_data->left_leg.hip.is_used)  // check if the left leg is used
+            {
+                if (_Joint::left_motor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
+                {
+                    return logic_micro_pins::enable_left_pin[_Joint::left_motor_used_count++];
+                }
+                else
+                {
+                    return logic_micro_pins::not_connected_pin;
+                }
+            }
+            else if (exo_data->right_leg.hip.is_used)  // check if the right leg is used
+            {
+                if (_Joint::right_motor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
+                {
+                    return logic_micro_pins::enable_right_pin[_Joint::right_motor_used_count++];
+                }
+                else
+                {
+                    return logic_micro_pins::not_connected_pin;
+                }
+            }
+            else  // the joint isn't used.  I didn't optimize for the minimal number of logical checks because this should just be used at startup.
+            {
+                return logic_micro_pins::not_connected_pin;
+            }
+            break;
+        }
+        case (uint8_t)config_defs::joint_id::knee:
+        {
+            if (utils::get_is_left(id) & exo_data->left_leg.knee.is_used)  // check if the left leg is used
+            {
+                if (_Joint::left_motor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
+                {
+                    return logic_micro_pins::enable_left_pin[_Joint::left_motor_used_count++];
+                }
+                else
+                {
+                    return logic_micro_pins::not_connected_pin;
+                }
+            }
+            else if (exo_data->right_leg.knee.is_used)  // check if the right leg is used
+            {
+                if (_Joint::right_motor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
+                {
+                    return logic_micro_pins::enable_right_pin[_Joint::right_motor_used_count++];
+                }
+                else
+                {
+                    return logic_micro_pins::not_connected_pin;
+                }
+            }
+            else  // the joint isn't used.  I didn't optimize for the minimal number of logical checks because this should just be used at startup.
+            {
+                return logic_micro_pins::not_connected_pin;
+            }
+            break;
+        }
+        case (uint8_t)config_defs::joint_id::ankle:
+        {
+            if (utils::get_is_left(id) & exo_data->left_leg.ankle.is_used)  // check if the left leg is used
+            {
+                if (_Joint::left_motor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
+                {
+                    return logic_micro_pins::enable_left_pin[_Joint::left_motor_used_count++];
+                }
+                else
+                {
+                    return logic_micro_pins::not_connected_pin;
+                }
+            }
+            else if (exo_data->right_leg.ankle.is_used)  // check if the right leg is used
+            {
+                if (_Joint::right_motor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
+                {
+                    return logic_micro_pins::enable_right_pin[_Joint::right_motor_used_count++];
+                }
+                else
+                {
+                    return logic_micro_pins::not_connected_pin;
+                }
+            }
+            else  // the joint isn't used.  I didn't optimize for the minimal number of logical checks because this should just be used at startup.
+            {
+                return logic_micro_pins::not_connected_pin;
+            }
+            break;
+        }
+        default :
+        {
+            return logic_micro_pins::not_connected_pin;
+        }
+
+    }
+};
+
 
 /*
  * A method to set the _motor to point to the new motor.  
@@ -250,19 +364,19 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
             // using new so the object of the specific motor type persists.
             case (uint8_t)config_defs::motor::AK60 :
                 //_motor = new AK60(id, exo_data);
-                HipJoint::set_motor(new AK60(id, exo_data));
+                HipJoint::set_motor(new AK60(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             case (uint8_t)config_defs::motor::AK80 :
                 //_motor = new AK80(id, exo_data);
-                HipJoint::set_motor(new AK80(id, exo_data));
+                HipJoint::set_motor(new AK80(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             case (uint8_t)config_defs::motor::AK60_v1_1 :
                 //_motor = new AK60(id, exo_data);
-                HipJoint::set_motor(new AK60_v1_1(id, exo_data));
+                HipJoint::set_motor(new AK60_v1_1(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             default :
                 //_motor = nullptr;
-                HipJoint::set_motor(new NullMotor(id, exo_data));
+                HipJoint::set_motor(new NullMotor(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
         }
         delay(5);
@@ -276,6 +390,9 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
  */
 void HipJoint::run_joint()
 {
+    // enable or disable the motor.
+    _motor->on_off(_joint_data->motor.enabled & _data->estop);
+    
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     // Send the new command to the motor.
@@ -357,17 +474,17 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
         {
             // using new so the object of the specific motor type persists.
             case (uint8_t)config_defs::motor::AK60 :
-                KneeJoint::set_motor(new AK60(id, exo_data));
+                KneeJoint::set_motor(new AK60(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             case (uint8_t)config_defs::motor::AK80 :
-                KneeJoint::set_motor(new AK80(id, exo_data));
+                KneeJoint::set_motor(new AK80(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             case (uint8_t)config_defs::motor::AK60_v1_1 :
                 //_motor = new AK60(id, exo_data);
-                KneeJoint::set_motor(new AK60_v1_1(id, exo_data));
+                KneeJoint::set_motor(new AK60_v1_1(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             default :
-                KneeJoint::set_motor(new NullMotor(id, exo_data));
+                KneeJoint::set_motor(new NullMotor(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
         }
         delay(5);
@@ -381,6 +498,9 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
  */
 void KneeJoint::run_joint()
 {
+    // enable or disable the motor.
+    _motor->on_off(_joint_data->motor.enabled);
+    
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     // Send the new command to the motor.
@@ -456,17 +576,17 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
         {
             // using new so the object of the specific motor type persists.
             case (uint8_t)config_defs::motor::AK60 :
-                AnkleJoint::set_motor(new AK60(id, exo_data));
+                AnkleJoint::set_motor(new AK60(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             case (uint8_t)config_defs::motor::AK80 :
-                AnkleJoint::set_motor(new AK80(id, exo_data));
+                AnkleJoint::set_motor(new AK80(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             case (uint8_t)config_defs::motor::AK60_v1_1 :
                 //_motor = new AK60(id, exo_data);
-                AnkleJoint::set_motor(new AK60_v1_1(id, exo_data));
+                AnkleJoint::set_motor(new AK60_v1_1(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             default :
-            AnkleJoint::set_motor(new NullMotor(id, exo_data));
+            AnkleJoint::set_motor(new NullMotor(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
         }
         delay(5);
@@ -480,6 +600,9 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
  */
 void AnkleJoint::run_joint()
 {
+    // enable or disable the motor.
+    _motor->on_off(_joint_data->motor.enabled);
+    
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     // Send the new command to the motor.
