@@ -59,21 +59,21 @@ void pid(Leg* leg, double input) {
         leg->Vol = 2100;
       } else {}
     } else if ((leg->whos == 'L') && (leg->state == 1)) {
-      if (leg->Vol>=2304) {
-        leg->Vol = 2304; //Upper limit 2A  
-      } else if (leg->Vol<=1792) {
-        leg->Vol = 1792; //Lower limit -2A
-      } else {}
+//      if (leg->Vol>=2304) {
+//        leg->Vol = 2304; //Upper limit 2A  
+//      } else if (leg->Vol<=1792) {
+//        leg->Vol = 1792; //Lower limit -2A
+//      } else {}
     } else if ((leg->whos == 'R') && (leg->state == 3)) { //Direction reversed for right leg
       if (leg->Vol>=2100) {
         leg->Vol = 2100;
       } else {}
     } else if ((leg->whos == 'R') && (leg->state == 1)) { //Will this work?
-      if (leg->Vol>=2304) {
-        leg->Vol = 2304; //Upper limit 2A  
-      } else if (leg->Vol<=1792) {
-        leg->Vol = 1792; //Lower limit -2A
-      } else {}
+//      if (leg->Vol>=2304) {
+//        leg->Vol = 2304; //Upper limit 2A  
+//      } else if (leg->Vol<=1792) {
+//        leg->Vol = 1792; //Lower limit -2A
+//      } else {}
     }
   }
 
