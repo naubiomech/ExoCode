@@ -83,10 +83,11 @@
             };
         #endif    
     #elif BOARD_VERSION == AK_Board_V0_3 
-        #if defined(ARDUINO_TEENSY41)
-            #include "Arduino.h"
-            namespace logic_micro_pins  //teensy
-            {
+       
+        #include "Arduino.h"
+        namespace logic_micro_pins  //teensy
+        {
+             #if defined(ARDUINO_TEENSY41)
                 // Serial Pins, NC
                 const unsigned int rx1_pin = 0;
                 const unsigned int tx1_pin = 1;
@@ -112,19 +113,24 @@
                 // Sync LED Pins
                 const unsigned int sync_led_pin = 15;
                 const unsigned int sync_default_pin = 5;
-                const unsigned int sync_led_on_state = LOW;//HIGH;
-                const unsigned int sync_led_off_state = HIGH;//LOW;
-                
+            #endif
+            const unsigned int sync_led_on_state = LOW;//HIGH;
+            const unsigned int sync_led_off_state = HIGH;//LOW;
+
+             #if defined(ARDUINO_TEENSY41)
                 // Status LED Pins
                 const unsigned int status_led_r_pin= 14;
                 const unsigned int status_led_g_pin = 25;
                 const unsigned int status_led_b_pin = 24;
-                // if you have connected to pins with PWM set to true.
-                const bool status_has_pwm = true;
-                // For high to be on use 255 for the on state and 0 for the off, for low as on flip it.
-                const uint8_t status_led_on_state = 0;//255;
-                const uint8_t status_led_off_state = 255;//0;  
+            #endif
+
+            // if you have connected to pins with PWM set to true.
+            const bool status_has_pwm = true;             
+            // For high to be on use 255 for the on state and 0 for the off, for low as on flip it.
+            const uint8_t status_led_on_state = 0;//255;
+            const uint8_t status_led_off_state = 255;//0;  
                 
+            #if defined(ARDUINO_TEENSY41)    
                 // SPI Follower Pins
                 const unsigned int miso_pin = 11;
                 const unsigned int mosi_pin= 12;
@@ -141,12 +147,13 @@
                 // Motor enable Pins
                 const unsigned int enable_left_pin[] = {28, 29};
                 const unsigned int enable_right_pin[] = {8, 7};
-                
-                const unsigned int motor_enable_on_state = HIGH;
-                const unsigned int motor_enable_off_state = LOW;
-            };
+            #endif
+            
+            const unsigned int motor_enable_on_state = HIGH;
+            const unsigned int motor_enable_off_state = LOW;
+        };
         
-        #elif defined(ARDUINO_ARDUINO_NANO33BLE)
+        #if defined(ARDUINO_ARDUINO_NANO33BLE)
         namespace coms_micro_pins  //nano
         {
             

@@ -53,6 +53,11 @@ namespace utils
      * converts from radians to degrees
      */
     float radians_to_degrees(float);
+
+    /*
+     * Searches str for 'rmv characters and deletes them all, returns new string
+     */
+    String remove_all_chars(String str, char rmv);
     
     
 }
