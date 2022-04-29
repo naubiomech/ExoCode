@@ -149,24 +149,46 @@ void loop()
 //        exo.right_leg._hip._motor->zero();
 //        Serial.print("\nSuperloop : Line 134\n");
 //        Serial.print("Superloop :: Motors zeroed");
-        
-        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 2;
-        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -3; // this should be negative
-        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] = 80;
-        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::angle_threshold_idx] = utils::degrees_to_radians(5);
-        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
-        exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
-//        exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::zero_torque);
-        exo.left_leg._hip.set_controller(exo_data.left_leg.hip.controller.controller);
-        
 
-        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 2;
-        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -3;  // this should be negative
-        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] = 80;
-        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::angle_threshold_idx] = utils::degrees_to_radians(5);
-        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
-        exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
+// Left leg controller selection, comment out the ones not used.
+// Extension Angle *******************************        
+//        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 2;
+//        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -8; // this should be negative
+//        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] = 80;
+//        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::angle_threshold_idx] = utils::degrees_to_radians(5);
+//        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
+//        exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
+// Bang Bang *******************************
+        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::flexion_setpoint_idx] = 2;
+        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::extension_setpoint_idx] = -4; // this should be negative
+        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::target_flexion_percent_max_idx] = 80;
+        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::angle_threshold_idx] = utils::degrees_to_radians(5);
+        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
+        exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::bang_bang);
+// Zero Torque *******************************        
+//        exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::zero_torque);
+//===============================
+        exo.left_leg._hip.set_controller(exo_data.left_leg.hip.controller.controller);
+
+
+// Right leg controller selection, comment out the ones not used.        
+// Extension Angle *******************************
+//        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 2;
+//        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::extension_setpoint_idx] = -8;  // this should be negative
+//        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] = 80;
+//        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::angle_threshold_idx] = utils::degrees_to_radians(5);
+//        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
+//        exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
+// Bang Bang *******************************
+        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::flexion_setpoint_idx] = 2;
+        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::extension_setpoint_idx] = -4;  // this should be negative
+        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::target_flexion_percent_max_idx] = 80;
+        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::angle_threshold_idx] = utils::degrees_to_radians(5);
+        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
+        exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::bang_bang);
+// Zero Torque*******************************
 //        exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::zero_torque);
+//===============================
         exo.right_leg._hip.set_controller(exo_data.right_leg.hip.controller.controller);
 //        Serial.print("Superloop :: Controller Set");
         

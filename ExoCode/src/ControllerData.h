@@ -55,6 +55,23 @@ namespace controller_defs
         const uint8_t num_parameter = 6;
     }
     
+    namespace bang_bang
+    {
+        // parameters for maximum exo extension and flexion torque.
+        const uint8_t flexion_setpoint_idx = 0;
+        const uint8_t extension_setpoint_idx = 1;
+        // Parameter for fraction of peak flexion angle where mode will switch to extension angle.
+        const uint8_t target_flexion_percent_max_idx = 2;
+        // Parameter for flag to reset the the peak range of motion angles.
+        const uint8_t clear_angle_idx = 3;
+        // angle where the system will switch from extension assistance to flexion assistance
+        const uint8_t angle_threshold_idx = 4;
+        // Velocity where the system will switch from flexion assistance to extension assistance, if velocity inverts before the target_flexion_percent_max
+        // !! Value should be NEGATIVE !!
+        const uint8_t velocity_threshold_idx = 5;
+        const uint8_t num_parameter = 6;
+    }
+    
     namespace zhang_collins
     {
         // user mass kg

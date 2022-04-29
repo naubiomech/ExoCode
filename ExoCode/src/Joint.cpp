@@ -338,6 +338,7 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 , _zero_torque(id, exo_data)
 , _heel_toe(id, exo_data)
 , _extension_angle(id, exo_data)
+, _bang_bang(id, exo_data)
 , _franks_collins_hip(id, exo_data)
 {
 
@@ -437,6 +438,9 @@ void HipJoint::set_controller(uint8_t controller_id)
             break;
         case (uint8_t)config_defs::hip_controllers::extension_angle :
             _controller = &_extension_angle;
+            break;
+        case (uint8_t)config_defs::hip_controllers::bang_bang :
+            _controller = &_bang_bang;
             break;
         case (uint8_t)config_defs::hip_controllers::franks_collins_hip :
             _controller = &_franks_collins_hip;

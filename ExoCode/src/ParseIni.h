@@ -117,6 +117,7 @@ namespace config_defs
         heel_toe =  3,
         extension_angle = 4,
         franks_collins_hip = 5,
+        bang_bang = 6,
     };
     
     enum class knee_controllers : uint8_t
@@ -262,7 +263,8 @@ namespace config_defs
             {"zeroTorque", (uint8_t)config_defs::hip_controllers::zero_torque}, 
             {"4*toe-heel", (uint8_t)config_defs::hip_controllers::heel_toe},
             {"extensionAngle", (uint8_t)config_defs::hip_controllers::extension_angle},
-            {"franks_collins_hip", (uint8_t)config_defs::hip_controllers::franks_collins_hip},
+            {"franksCollinsHip", (uint8_t)config_defs::hip_controllers::franks_collins_hip},
+            {"bangBang", (uint8_t)config_defs::hip_controllers::bang_bang},
         };
         
         const IniKeyCode knee_controllers 

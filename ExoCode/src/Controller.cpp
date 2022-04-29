@@ -266,6 +266,131 @@ void ExtensionAngle::_update_state(float angle)
     // }
 }
 
+/*
+ * Constructor for the controller
+ * Takes the joint id and a pointer to the exo_data
+ * Only stores the id, exo_data pointer.
+ */
+BangBang::BangBang(config_defs::joint_id id, ExoData* exo_data)
+: _Controller(id, exo_data)
+{
+    _state = 0; // extension mode originally 
+    
+    _reset_angles();
+    
+};
+
+float BangBang::calc_motor_cmd()
+{
+    // check if the angle range should be reset
+    if (_controller_data->parameters[controller_defs::extension_angle::clear_angle_idx])
+    {
+        _reset_angles();
+    }
+    
+    float angle = _leg_data->hip.position;
+    // check the angle range
+    _max_angle = max(angle, _max_angle);
+    _min_angle = min(angle, _min_angle);
+    
+    
+    float normalized_angle = 0;
+    // calculate the normalized angle
+    if (angle >= 0)
+    {
+        normalized_angle = angle / _max_angle;
+    }
+    else
+    {
+        normalized_angle = angle / _min_angle;
+        
+    }
+
+    // int print_time_ms = 100;
+    // static int last_timestamp = millis();
+    // int timestamp = millis();
+    // if ((timestamp-last_timestamp)>print_time_ms)
+    // {
+    //     Serial.print(utils::radians_to_degrees(angle));
+    //     Serial.print(" ");
+    //     Serial.print(utils::radians_to_degrees(_max_angle));
+    //     Serial.print(" ");
+    //     Serial.print(utils::radians_to_degrees(_min_angle));
+    //     Serial.print(" ");
+    //     Serial.print(100);
+    //     Serial.print(" ");
+    //     Serial.print(-100);
+    //     Serial.print(" ");
+    //     Serial.print(normalized_angle*100);
+    //     Serial.print("\n");
+    // }
+    
+    _update_state(angle);
+    
+    float cmd = 0;
+    // calculate torque based on state
+    switch (_state)
+    {
+        case 0 :  // extension
+            cmd = _controller_data->parameters[controller_defs::extension_angle::extension_setpoint_idx];
+            break;
+        case 1 :  // flexion
+            cmd = _controller_data->parameters[controller_defs::extension_angle::flexion_setpoint_idx];
+            break;
+    }
+    
+    
+    return cmd;
+};
+
+/*
+ * Used to reset the range of motion to the starting values.
+ * There is no reset for the flag so the user must turn this off manually.
+ */
+void BangBang::_reset_angles()
+{
+    _max_angle = _initial_max_angle;
+    _min_angle = _initial_min_angle;
+};
+
+
+/*
+ *
+ */
+void BangBang::_update_state(float angle)
+{
+    switch (_state)
+    {
+        case 0 :  // extension assistance
+            if (angle <= _controller_data->parameters[controller_defs::extension_angle::angle_threshold_idx])
+            {
+                _state = 1;
+            }
+            break;
+        case 1 :  // flexion assistance 
+            
+            if ((angle > (_controller_data->parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] * _max_angle / 100)) 
+                | ((angle > _controller_data->parameters[controller_defs::extension_angle::angle_threshold_idx]+utils::degrees_to_radians(5)) 
+                    & (_leg_data->hip.velocity <= _controller_data->parameters[controller_defs::extension_angle::velocity_threshold_idx])))
+            {
+                _state = 0;
+            }
+            break;
+         
+        
+    }
+    // int print_time_ms = 100;
+    // static int last_timestamp = millis();
+    // int timestamp = millis();
+    // if ((timestamp-last_timestamp)>print_time_ms)
+    // {
+        // Serial.print(angle);
+        // Serial.print(" ");
+        // Serial.print(_controller_data->parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] * _max_angle/100);
+        // Serial.print("\n");
+    // }
+}
+
 
 /*
  * Constructor for the controller
