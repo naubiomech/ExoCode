@@ -12,17 +12,22 @@ bool ExoBLE::setup()
     {
         String name = utils::remove_all_chars(BLE.address(), ':');
         name.remove(6);
-        name = "EXOBLE_" + name; 
-        char* name_char;
-        name.toCharArray(name_char, 6);
-        BLE.setLocalName(name_char);
-        BLE.setDeviceName(name_char);
+        name = "EXOBLE_" + name;
+        Serial.print("ExoBLE::setup()"); 
+        Serial.print("Name: ");
+        Serial.println(name); 
+        char name_char[13];
+        name.toCharArray(name_char, 13+1);
+        for (int i=0; i<13; i++)
+            Serial.print(name_char[i]);
+        Serial.println();
+        const char* n = name_char;
+        BLE.setLocalName(n);
+        BLE.setDeviceName(n);
         BLE.setAdvertisedService(_gatt_db.UARTService);
         _gatt_db.UARTService.addCharacteristic(_gatt_db.TXChar);
         _gatt_db.UARTService.addCharacteristic(_gatt_db.RXChar);
         BLE.addService(_gatt_db.UARTService);
-        BLE.setEventHandler(BLEConnected, ExoBLE::onConnection);
-        BLE.setEventHandler(BLEDisconnected, ExoBLE::onDisconnection);
         advertising_onoff(true);
     }
     else
@@ -35,19 +40,27 @@ void ExoBLE::advertising_onoff(bool onoff)
 {
     if (onoff)
     {
+        Serial.println("Advertising");
         BLE.advertise();
     }
     else
     {
+        Serial.println("Stopped Advertising");
         BLE.stopAdvertise();
     }
 }
 
 BleMessage ExoBLE::handle_updates() 
 {
-    Serial.println("ExoBLE::handle_updates->Start");
+    //check connection status
+    if (_connected != BLE.connected()) 
+    {
+        _connected = BLE.connected();
+        advertising_onoff(!_connected);
+    }
+
     //check for update
-    if (_gatt_db.RXChar.valueUpdated())
+    if (_connected && _gatt_db.RXChar.valueUpdated())
     {
         Serial.println("ExoBLE::handle_updates->Updated");
         //parse new data
@@ -64,22 +77,6 @@ BleMessage ExoBLE::handle_updates()
         Serial.println();
         return _ble_parser.handle_raw_data(buffer, buffer_length);
     }
-    Serial.println("ExoBLE::handle_updates->End");
-}
-
-
-/*
-  Private Methods 
-*/
-
-void ExoBLE::onConnection(BLEDevice central)
-{
-    Serial.println("ExoBLE::onConnection->Connected");
-    advertising_onoff(false);
-}
-
-void ExoBLE::onDisconnection(BLEDevice central)
-{
-    Serial.println("ExoBLE::onDisconnection->Disconnected");
-    advertising_onoff(true);
+    BleMessage empty_message = BleMessage();
+    return empty_message;
 }

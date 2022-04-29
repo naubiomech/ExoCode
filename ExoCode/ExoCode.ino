@@ -292,19 +292,12 @@ void setup()
 
 void loop() 
 {
-    Serial.println("New Loop");
     static ExoData* exo_data = new ExoData(config_info::config_to_send);
-    Serial.println("New Loop 1");
     static ComsMCU* mcu = new ComsMCU(exo_data);
-    Serial.println("New Loop 2");
-    
     mcu->handle_ble();
-    Serial.println("New Loop 3");
     mcu->local_sample();
-    Serial.println("New Loop 4 ");
     // TODO: Get New Data over SPI
     mcu->update_gui();
-    Serial.println("New Loop 5");
 }
 
 #else

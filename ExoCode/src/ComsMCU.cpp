@@ -9,21 +9,12 @@ ComsMCU::ComsMCU(ExoData* data):_data{data}
 
 void ComsMCU::handle_ble()
 {
-    Serial.println("ComsMCU::handle_ble->Start");
     BleMessage msg = _exo_ble->handle_updates();
-    Serial.println("ComsMCU::handle_ble->Post handle");
-    Serial.print(msg.command); Serial.print("\t");
-    Serial.print(msg.expecting);
-    for (auto i = msg.data.begin(); i != msg.data.end(); i++)
-        Serial.print((float)i);
-    Serial.println();
     if(msg.is_complete)
     {
-        Serial.println("ComsMCU::handle_ble->Pre process");
+        Serial.println("ComsMCU::handle_ble->Got complete message");
         _process_complete_gui_command(msg);
-        Serial.println("ComsMCU::handle_ble->Post process");
     }
-    Serial.println("ComsMCU::handle_ble->End");
 }
 
 void ComsMCU::local_sample()

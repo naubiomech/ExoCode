@@ -32,11 +32,10 @@ class ExoBLE
         BleMessage handle_updates();
 
     private:
+        bool _connected = false;
         ExoData* _data;
         GattDb _gatt_db;
         BleParser _ble_parser = BleParser();
-        static void onConnection(BLEDevice central);
-        static void onDisconnection(BLEDevice central);
 };
 
 #endif
