@@ -4,6 +4,7 @@
 #include "ParseIni.h"
 #include "Arduino.h"
 #include <stdint.h>
+#include <vector>
 
 namespace utils
 {
@@ -59,12 +60,35 @@ namespace utils
      */
     String remove_all_chars(String str, char rmv);
     
+    /*
+     * Checks if all elements of the array are equal. Arrays must be the same length and type
+     */
+    template <typename T>
+    int elements_are_equal(T arr1, T arr2, int length)
+    {
+        for (int i=0; i<length; i++)
+        {
+            if(arr1[i] != arr2[i])
+            {
+                return 0;
+            }
+        }
+        return 1;
+    };
+
+    /*
+     * Sets arr2 elements equal to arr1 elements. Arrays must be the same length and type
+     */
+    template <typename T>
+    void set_elements_equal(T arr1, T arr2, int length)
+    {
+        for (int i=0; i<length; i++)
+        {
+            arr1[i] = arr2[i];
+        }
+    };
     
 }
-
-
-
-
 
 
 #endif

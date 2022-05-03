@@ -120,5 +120,4 @@ namespace utils
         }
         return str;
     };
-    
 }

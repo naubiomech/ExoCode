@@ -290,7 +290,7 @@ void setup()
     Serial.println("Starting!");
 }
 
-void loop() 
+void loop()
 {
     static ExoData* exo_data = new ExoData(config_info::config_to_send);
     static ComsMCU* mcu = new ComsMCU(exo_data);

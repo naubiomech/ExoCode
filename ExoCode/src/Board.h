@@ -79,7 +79,8 @@
         #if defined(ARDUINO_ARDUINO_NANO33BLE)
             namespace coms_micro_pins  //nano
             {
-                
+                const unsigned int ble_signal_pin = 24;
+                const unsigned int ble_signal_active = 0;
             };
         #endif    
     #elif BOARD_VERSION == AK_Board_V0_3 
@@ -156,7 +157,8 @@
         #if defined(ARDUINO_ARDUINO_NANO33BLE)
         namespace coms_micro_pins  //nano
         {
-            
+            const unsigned int ble_signal_pin = 24;
+            const unsigned int ble_signal_active = 0;
         };
         #endif
     #endif

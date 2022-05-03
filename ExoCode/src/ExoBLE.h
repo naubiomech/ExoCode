@@ -32,9 +32,11 @@ class ExoBLE
         BleMessage handle_updates();
 
     private:
+        char* _buffer;
+        char* _old_buffer;
         bool _connected = false;
         ExoData* _data;
-        GattDb _gatt_db;
+        GattDb _gatt_db = GattDb();
         BleParser _ble_parser = BleParser();
 };
 

@@ -29,6 +29,7 @@ class BleParser
         std::vector<char> _buffer;
 
         void _handle_command(char command);
+        std::vector<float> _convert_to_floats(std::vector<char> buffer, int buffer_len, int n_floats); 
 };
 
 
