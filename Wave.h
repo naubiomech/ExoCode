@@ -1,3 +1,5 @@
+// Wave Generator
+
 const double spacing = PI*0.005;
 const int waveLength = 2*PI/spacing;
 double x[waveLength] = {};

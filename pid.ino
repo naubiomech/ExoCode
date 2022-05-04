@@ -34,7 +34,7 @@ void pid(Leg* leg, double input) {
 //    }
   
   if (CURRENT_DIAGNOSTICS && MotorParams!=100) { //Diagnostics Mode, STEP FUNCTION
-    double Vol = wave[j]*4096.0;
+    double Vol = chirp[j]*4096.0;
     leg->Vol = Vol;
     
   } else if (MODEL_CONTROL && MotorParams!=100) {
@@ -79,7 +79,7 @@ void pid(Leg* leg, double input) {
 
   j++;
   analogWrite(leg->motor_ankle_pin, leg->Vol);
-  if (j>waveLength) {
+  if (j>timeLength) {
     j = 0;
   }
 }

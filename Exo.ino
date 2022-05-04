@@ -47,6 +47,7 @@ int j = 0;
 #include "ATP.h"
 #include "Trial_Data.h"
 #include "Step.h"
+#include "Chirp.h"
 bool iOS_Flag = 0;
 int streamTimerCountNum = 0;
 //----------------------------------------------------------------------------------
@@ -126,6 +127,8 @@ void setup()
   delay(100);
 
 //  calculateStep();
+//  calculateWave();
+  calculateChirp();
   Serial.println("Setup complete");
   
 }

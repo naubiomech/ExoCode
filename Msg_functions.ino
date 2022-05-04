@@ -28,7 +28,7 @@ void send_data_message_wc() //with COP
     //Right Leg
     data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
     data_to_send[1] = right_leg->state;
-    data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
+    data_to_send[2] = (right_leg->sign * right_leg->Vol);
 
     data_to_send[3] = right_leg->rawAnkleAverageAngle; // raw ankle angle regression
     //data_to_send[3] = readBatteryVoltage();

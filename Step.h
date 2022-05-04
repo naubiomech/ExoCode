@@ -1,3 +1,5 @@
+// Step Generator
+
 const double spacing = 0.002;
 const int waveLength = 1/0.001;
 double A = 7500.0/15000.0;
