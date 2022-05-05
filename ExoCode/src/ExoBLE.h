@@ -26,6 +26,7 @@
 class ExoBLE 
 {
     public:
+        GattDb gatt_db = GattDb();
         ExoBLE(ExoData* data);
         bool setup();
         static void advertising_onoff(bool onoff);
@@ -36,8 +37,15 @@ class ExoBLE
         char* _old_buffer;
         bool _connected = false;
         ExoData* _data;
-        GattDb _gatt_db = GattDb();
+        
         BleParser _ble_parser = BleParser();
 };
+
+namespace ble_rx
+{
+    //TODO: Lock the use of msg_queue
+    static std::vector<BleMessage> msg_queue;
+    void on_rx_recieved(BLEDevice central, BLECharacteristic characteristic);
+}
 
 #endif

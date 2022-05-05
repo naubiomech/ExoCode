@@ -14,6 +14,7 @@ namespace names
     static char cal_trq  = 'H';
     static char cal_fsr  = 'L';
     static char new_trq  = 'F';
+    static char new_fsr  = 'R';
     static char assist   = 'c';
     static char ressist  = 'S';
 };
@@ -29,6 +30,7 @@ namespace ble
         {names::assist,   0},
         {names::ressist,  0},
         {names::new_trq,  4},
+        {names::new_fsr,  2},
 
     };
 };

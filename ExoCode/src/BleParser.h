@@ -8,6 +8,7 @@
 #ifndef BLEPARSER_H
 #define BLEPARSER_H
 
+#include "Arduino.h"
 #include "BleMessage.h"
 #include "ble_commands.h"
 #include <vector>
@@ -22,14 +23,15 @@ class BleParser
         
         /* Packs data to be sent to the GUI, modifies the char array that you send it. returns final length */
         void package_raw_data(char* data, int start_length);
+        
     private:
         const BleMessage _empty_message = BleMessage();
         BleMessage _working_message = BleMessage();
         bool _waiting_for_data = false;
-        std::vector<char> _buffer;
+        int _bytes_collected = 0;
+        byte _buffer[64];
 
         void _handle_command(char command);
-        std::vector<float> _convert_to_floats(std::vector<char> buffer, int buffer_len, int n_floats); 
 };
 
 

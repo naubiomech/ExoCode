@@ -6,7 +6,7 @@ ExoBLE::ExoBLE(ExoData* data) : _data{data}
 {
     pinMode(coms_micro_pins::ble_signal_pin, OUTPUT);
     digitalWrite(coms_micro_pins::ble_signal_pin, !coms_micro_pins::ble_signal_active);
-    _old_buffer = new char[_gatt_db.BUFFER_SIZE];
+    _old_buffer = new char[gatt_db.BUFFER_SIZE];
 }
 
 bool ExoBLE::setup() 
@@ -23,16 +23,18 @@ bool ExoBLE::setup()
         BLE.setLocalName(n);
         BLE.setDeviceName(n);
         //Configure service and start advertising
-        BLE.setAdvertisedService(_gatt_db.UARTService);
-        _gatt_db.UARTService.addCharacteristic(_gatt_db.TXChar);
-        _gatt_db.UARTService.addCharacteristic(_gatt_db.RXChar);
-        BLE.addService(_gatt_db.UARTService);
+        BLE.setAdvertisedService(gatt_db.UARTService);
+        gatt_db.UARTService.addCharacteristic(gatt_db.TXChar);
+        gatt_db.UARTService.addCharacteristic(gatt_db.RXChar);
+        BLE.addService(gatt_db.UARTService);
+
+        gatt_db.RXChar.setEventHandler(BLEWritten, ble_rx::on_rx_recieved);
         advertising_onoff(true);
     }
     else
     {
         Serial.println("ExoBLE::setup->Failed to start BLE!");
-        while(true){;}
+        while(true) {;}
     }
 }
 
@@ -40,13 +42,11 @@ void ExoBLE::advertising_onoff(bool onoff)
 {
     if (onoff)
     {
-        Serial.println("Advertising");
         BLE.advertise();
         digitalWrite(coms_micro_pins::ble_signal_pin, !coms_micro_pins::ble_signal_active);
     }
     else
     {
-        Serial.println("Stopped Advertising");
         BLE.stopAdvertise();
         digitalWrite(coms_micro_pins::ble_signal_pin, coms_micro_pins::ble_signal_active);
     }
@@ -62,27 +62,55 @@ BleMessage ExoBLE::handle_updates()
         _connected = BLE.connected();
         advertising_onoff(!_connected);
     }
-
-    //check for update
-    int buffer_length = _gatt_db.RXChar.valueLength();
-    char buffer[buffer_length];
-    _gatt_db.RXChar.readValue(buffer, buffer_length);
-    if (_connected && !utils::elements_are_equal(_old_buffer, buffer, buffer_length))
-    {
-        utils::set_elements_equal(_old_buffer, buffer, buffer_length);
-        Serial.print("ExoBLE::handle_updates->Got Data: ");
-        Serial.println(buffer_length);
-        for (int i=0; i<buffer_length; i++)
-        {
-                Serial.print(buffer[i]);
-                Serial.print("\t");
-                int int_cast = (int) buffer[i];
-                Serial.print(int_cast);
-                Serial.print("\t");
-        }
-        Serial.println();
-        return _ble_parser.handle_raw_data(buffer, buffer_length);
-    }
     BleMessage empty_message = BleMessage();
     return empty_message;
+
+    //check for update
+    int buffer_length = gatt_db.RXChar.valueLength();
+    char buffer[buffer_length];
+    gatt_db.RXChar.readValue(buffer, buffer_length);
+    if (!ble_rx::msg_queue.empty())
+    {
+        Serial.print(ble_rx::msg_queue.size());
+        Serial.println(" Message need processing");
+        BleMessage msg;
+        BleMessage tmp = ble_rx::msg_queue.back();
+        msg.copy(tmp);
+        ble_rx::msg_queue.pop_back();
+        return msg;
+    }
+    else
+    {
+        BleMessage empty_message = BleMessage();
+        return empty_message;
+    }
+}
+
+void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
+{
+    static BleParser* parser = new BleParser();
+    char data[32] = {0};
+    int len = characteristic.valueLength();
+    characteristic.readValue(data, len);
+    Serial.print("On Rx Recieved: ");
+    for (int i=0; i<len;i++)
+    {
+        Serial.print(data[i]);
+        Serial.print(data[i], HEX);
+        Serial.print(", ");
+    }
+    Serial.println();
+    BleMessage msg = parser->handle_raw_data(data, len);
+    if (msg.is_complete)
+    {
+        Serial.print("on_rx_recieved->Command: ");
+        Serial.println(msg.command);
+        for (int i=0; i<msg.expecting/8; i++)
+        {
+            Serial.print(msg.data[i]);
+            Serial.print(", ");
+        }
+        Serial.println();
+        //ble_rx::msg_queue.push_back(msg);
+    }
 }

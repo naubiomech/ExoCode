@@ -17,6 +17,10 @@ void BleMessage::copy(BleMessage n)
 { 
     command = n.command; 
     is_complete = n.is_complete;
-    data.assign(n.data.begin(), n.data.end());
+    data.clear();
+    for (int i=0; i<n.data.size();i++)
+    {
+        data.push_back(n.data[i]);
+    }
     expecting = n.expecting;
 }

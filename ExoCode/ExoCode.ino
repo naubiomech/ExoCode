@@ -281,10 +281,9 @@ namespace config_info
     };
 }
 
-
 void setup()
 {
-    //TODO: ask for init data over spi
+    // TODO: ask for init data over spi
     Serial.begin(115200);
     while (!Serial);
     Serial.println("Starting!");
