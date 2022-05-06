@@ -6,7 +6,6 @@ ExoBLE::ExoBLE(ExoData* data) : _data{data}
 {
     pinMode(coms_micro_pins::ble_signal_pin, OUTPUT);
     digitalWrite(coms_micro_pins::ble_signal_pin, !coms_micro_pins::ble_signal_active);
-    _old_buffer = new char[gatt_db.BUFFER_SIZE];
 }
 
 bool ExoBLE::setup() 
@@ -23,12 +22,13 @@ bool ExoBLE::setup()
         BLE.setLocalName(n);
         BLE.setDeviceName(n);
         //Configure service and start advertising
-        BLE.setAdvertisedService(gatt_db.UARTService);
-        gatt_db.UARTService.addCharacteristic(gatt_db.TXChar);
-        gatt_db.UARTService.addCharacteristic(gatt_db.RXChar);
-        BLE.addService(gatt_db.UARTService);
+        BLE.setAdvertisedService(_gatt_db.UARTService);
+        _gatt_db.UARTService.addCharacteristic(_gatt_db.TXChar);
+        _gatt_db.UARTService.addCharacteristic(_gatt_db.RXChar);
+        BLE.addService(_gatt_db.UARTService);
 
-        gatt_db.RXChar.setEventHandler(BLEWritten, ble_rx::on_rx_recieved);
+        _gatt_db.RXChar.setEventHandler(BLEWritten, ble_rx::on_rx_recieved);
+        BLE.setConnectionInterval(6, 6);
         advertising_onoff(true);
     }
     else
@@ -52,8 +52,9 @@ void ExoBLE::advertising_onoff(bool onoff)
     }
 }
 
-BleMessage ExoBLE::handle_updates() 
+BleMessage* ExoBLE::handle_updates() 
 {
+    static BleMessage* empty_msg = new BleMessage();
     BLE.poll();
 
     //check connection status
@@ -62,33 +63,35 @@ BleMessage ExoBLE::handle_updates()
         _connected = BLE.connected();
         advertising_onoff(!_connected);
     }
-    BleMessage empty_message = BleMessage();
-    return empty_message;
+    
+    if (!ble_rx::queue_is_empty())
+    {
+       return ble_rx::pop_queue();
+    }
+    else 
+    {
+        return empty_msg;
+    }
+}
 
-    //check for update
-    int buffer_length = gatt_db.RXChar.valueLength();
-    char buffer[buffer_length];
-    gatt_db.RXChar.readValue(buffer, buffer_length);
-    if (!ble_rx::msg_queue.empty())
-    {
-        Serial.print(ble_rx::msg_queue.size());
-        Serial.println(" Message need processing");
-        BleMessage msg;
-        BleMessage tmp = ble_rx::msg_queue.back();
-        msg.copy(tmp);
-        ble_rx::msg_queue.pop_back();
-        return msg;
-    }
-    else
-    {
-        BleMessage empty_message = BleMessage();
-        return empty_message;
-    }
+
+void ExoBLE::send_message(BleMessage &msg)
+{
+    Serial.print("Address: ");
+    Serial.println(reinterpret_cast<long unsigned int>(&msg));
+    const int max_chars = 8;
+    int max_payload_length = ((3 + msg.expecting) * (max_chars + 1));
+    byte buffer[max_payload_length];
+    Serial.print("ExoBLE::send_message->Data: ");
+    Serial.println(msg.data[0]);
+    int bytes_to_send =  _ble_parser.package_raw_data(buffer, msg);
+    _gatt_db.TXChar.writeValue(buffer, bytes_to_send);
 }
 
 void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
 {
     static BleParser* parser = new BleParser();
+
     char data[32] = {0};
     int len = characteristic.valueLength();
     characteristic.readValue(data, len);
@@ -111,6 +114,24 @@ void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
             Serial.print(", ");
         }
         Serial.println();
-        //ble_rx::msg_queue.push_back(msg);
+        ble_rx::push_queue(msg);
     }
+}
+
+void ble_rx::push_queue(BleMessage &msg)
+{
+    ble_rx::queue.push_back(msg);
+}
+
+BleMessage* ble_rx::pop_queue()
+{
+    static BleMessage* msg = new BleMessage();
+    *msg = ble_rx::queue.back();
+    ble_rx::queue.pop_back();
+    return msg;
+}
+
+bool ble_rx::queue_is_empty()
+{
+    return ((ble_rx::queue.size() == 0) ? true:false);
 }

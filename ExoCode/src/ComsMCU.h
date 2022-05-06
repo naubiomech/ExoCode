@@ -23,13 +23,15 @@ class ComsMCU
         void local_sample();
         void update_gui();
     private:
-        void _process_complete_gui_command(BleMessage msg);
+        void _process_complete_gui_command(BleMessage* msg);
         ExoBLE* _exo_ble;
         BleMessage _latest_gui_message = BleMessage();
         //Data
         ExoData* _data;
         //Battery
-        _Battery* _battery;
+        _Battery* _battery = new RCBattery();
+
+        const float _status_millis = 1000;
 };
 
 #endif

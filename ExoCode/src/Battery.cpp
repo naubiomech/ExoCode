@@ -1,4 +1,5 @@
 #include "Battery.h"
+#include "Arduino.h"
 
 void SmartBattery::init() {;}
 float SmartBattery::get_parameter()
@@ -14,4 +15,12 @@ void RCBattery::init() {;}
 float RCBattery::get_parameter()
 {
     //TODO: Populate with INA219 reading
+    static float battery_percent = 101*10;
+    if (battery_percent < 1*10)
+    {
+        battery_percent = 101*10;
+    }
+
+    battery_percent = battery_percent - 10;
+    return battery_percent;
 }

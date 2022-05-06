@@ -59,6 +59,11 @@ namespace utils
      * Searches str for 'rmv characters and deletes them all, returns new string
      */
     String remove_all_chars(String str, char rmv);
+
+    /*
+     * given and integer, return the number of characters in it
+     */
+    int get_char_length(int ofInt);
     
     /*
      * Checks if all elements of the array are equal. Arrays must be the same length and type

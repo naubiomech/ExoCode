@@ -11,6 +11,7 @@
 #include "Arduino.h"
 #include "BleMessage.h"
 #include "ble_commands.h"
+#include "GattDb.h"
 #include <vector>
 
 
@@ -22,7 +23,7 @@ class BleParser
         BleMessage handle_raw_data(char* buffer, int length);
         
         /* Packs data to be sent to the GUI, modifies the char array that you send it. returns final length */
-        void package_raw_data(char* data, int start_length);
+        int package_raw_data(byte* buffer, BleMessage &msg);
         
     private:
         const BleMessage _empty_message = BleMessage();
