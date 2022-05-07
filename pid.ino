@@ -25,17 +25,9 @@ void pid(Leg* leg, double input) {
   } else {
     
   }
-
-//  if (CURRENT_CONTROL && leg->PID_Setpoint!=0) { //Simple Open-Loop Control
-//    //leg->Vol = ((leg->PID_Setpoint/(TrqConstant * GearRatio * PulleyRatio * MotorEff * GearboxEff))/NomCurrent*2048) + leg->zero; //Setpoint/(Motor torque constant, gear reduction, pulley reduction, motor eff, gearbox eff)
-//    leg->Vol = (0.275*(leg->PID_Setpoint))/NomCurrent*2048.0;
-//    if (Control_Mode == 6 && leg->state == 3) {
-//      leg->Vol = -leg->Vol;
-//    }
   
   if (CURRENT_DIAGNOSTICS && MotorParams!=100) { //Diagnostics Mode, STEP FUNCTION
-    double Vol = chirp[j]*4096.0;
-    leg->Vol = Vol;
+
     
   } else if (MODEL_CONTROL && MotorParams!=100) {
     leg->Vol = (0.34284*(leg->PID_Setpoint) + 0.023564*(motor_speed(leg->motor_speed_pin)) + 0.0043038*(leg->PID_Setpoint * motor_speed(leg->motor_speed_pin)))/NomCurrent*2048; //Regression control, complex model
@@ -46,40 +38,29 @@ void pid(Leg* leg, double input) {
     if (Control_Mode == 6 && leg->state == 3) {
       leg->PID_Setpoint = -leg->PID_Setpoint;
     }
-    leg->Input = input;
+    leg->PID_Setpoint = leg->Setpoint_Ankle*chirp[j]; //Chirp the torque setpoint 
+    leg->Input = input; 
     leg->pid.Compute_KF(leg->KF);
     leg->Vol = leg->Output; //need to map
   }
 
-  leg->Vol = leg->Vol + leg->zero; // Modify the span such that the PWM value is from 0 to 4096.0 instead of -2048.0 to 2048.0
-
-  if (CURRENT_CONTROL) { //Highjack CURRENT_CONTROL logical to switch to parallel elastic controller
-    if ((leg->whos == 'L') && (leg->state == 3)) {
-      if (leg->Vol<=2100) {
-        leg->Vol = 2100;
-      } else {}
-    } else if ((leg->whos == 'L') && (leg->state == 1)) {
-//      if (leg->Vol>=2304) {
-//        leg->Vol = 2304; //Upper limit 2A  
-//      } else if (leg->Vol<=1792) {
-//        leg->Vol = 1792; //Lower limit -2A
-//      } else {}
-    } else if ((leg->whos == 'R') && (leg->state == 3)) { //Direction reversed for right leg
-      if (leg->Vol>=2100) {
-        leg->Vol = 2100;
-      } else {}
-    } else if ((leg->whos == 'R') && (leg->state == 1)) { //Will this work?
-//      if (leg->Vol>=2304) {
-//        leg->Vol = 2304; //Upper limit 2A  
-//      } else if (leg->Vol<=1792) {
-//        leg->Vol = 1792; //Lower limit -2A
-//      } else {}
-    }
+  if (CURRENT_CONTROL) { //Highjack CURRENT_CONTROL logical to switch to STEP RESPONSE
+      leg->PID_Setpoint = leg->Setpoint_Ankle*stp[j];
+      leg->Input = input;
+      leg->pid.Compute_KF(leg->KF);
+      leg->Vol = leg->Output; //need to map
   }
 
+  leg->Vol = leg->Vol + leg->zero; // Modify the span such that the PWM value is from 0 to 4096.0 instead of -2048.0 to 2048.0
+
   j++;
+  
   analogWrite(leg->motor_ankle_pin, leg->Vol);
-  if (j>timeLength) {
+  if (CURRENT_CONTROL) {
+    if (j>=stepLength) {
+      j = 0;
+    }
+  } else if (j>=timeLength) {
     j = 0;
   }
 }

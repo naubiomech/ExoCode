@@ -1,17 +1,15 @@
 // Wave Generator
 
-const double spacing = PI*0.005;
-const int waveLength = 2*PI/spacing;
-double x[waveLength] = {};
-double A = 0.5;
-double wave[waveLength] = {};
+const double waveSpacing = 0.002; //Time step
+const int waveLength = 2/waveSpacing; //Total number of time points. e.g., 2 seconds/0.002 seconds = 1000 data points
+volatile double tWave = 0; //Time 
+float *wave = new float(waveLength);
 
-void calculateWave()
+void calculateSinWave()
 {
-  x[0] = 0;
   wave[0] = 0;
-  for (int i = 0; i < waveLength; i++) {
-    x[i + 1] = x[i] + spacing;
-    wave[i+1] = A*sin(x[i+1]);
+  for (int i = 1; i < waveLength+1; i++) {
+    tWave = tWave + waveSpacing;
+    wave[i] = sin(2*pi*tWave);
   }
 }

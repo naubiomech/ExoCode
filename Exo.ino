@@ -126,9 +126,9 @@ void setup()
   WireObj.endTransmission(); //End the transmission and calibration
   delay(100);
 
-//  calculateStep();
+  calculateStepUni();
 //  calculateWave();
-  calculateChirp();
+//  calculateChirp();
   Serial.println("Setup complete");
   
 }
