@@ -55,7 +55,9 @@ validation_data = [ 0.00,	699.65,	-0.09;...
 
 figure;                
 plot(1:size(validation_data,1),validation_data(:,1),1:size(validation_data,1),validation_data(:,3)); 
-legend("cmd (Nm)", "measured (Nm)"); 
+legend("cmd (Nm)", "measured (Nm)");
+xlabel("measurement number");
+ylabel("Torque (Nm)");
 figure;                
 plot(validation_data(:,1),validation_data(:,3)-validation_data(:,1)); 
 xlabel("Command (Nm)");
