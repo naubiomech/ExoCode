@@ -95,7 +95,7 @@
 //    right_motor.on_off(true);
           
     int state_period_ms = 1;
-    float left_magnitude = 0;//.5;
+    float left_magnitude = .5;
     float right_magnitude = 0;//1;
     static int last_transition_time = millis();
     int current_time = millis();

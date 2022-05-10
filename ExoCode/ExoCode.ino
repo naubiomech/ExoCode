@@ -159,11 +159,11 @@ void loop()
 //        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
 //        exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
 // Bang Bang *******************************
-        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::flexion_setpoint_idx] = 2;
-        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::extension_setpoint_idx] = -4; // this should be negative
+        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::flexion_setpoint_idx] = 4;
+        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::extension_setpoint_idx] = -8; // this should be negative
         exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::target_flexion_percent_max_idx] = 80;
         exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::angle_threshold_idx] = utils::degrees_to_radians(5);
-        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
+        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::velocity_threshold_idx] = utils::degrees_to_radians(-20);// this should be negative
         exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::bang_bang);
 // Zero Torque *******************************        
 //        exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::zero_torque);
@@ -180,11 +180,11 @@ void loop()
 //        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
 //        exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
 // Bang Bang *******************************
-        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::flexion_setpoint_idx] = 2;
-        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::extension_setpoint_idx] = -4;  // this should be negative
+        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::flexion_setpoint_idx] = 4;
+        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::extension_setpoint_idx] = -8;  // this should be negative
         exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::target_flexion_percent_max_idx] = 80;
         exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::angle_threshold_idx] = utils::degrees_to_radians(5);
-        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
+        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::velocity_threshold_idx] = utils::degrees_to_radians(-20);// this should be negative
         exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::bang_bang);
 // Zero Torque*******************************
 //        exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::zero_torque);
