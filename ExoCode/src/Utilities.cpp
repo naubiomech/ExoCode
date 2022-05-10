@@ -101,5 +101,53 @@ namespace utils
     {
         return angle_rad * 180 / (2 * PI);
     };
-    
+
+    /*
+     * Searches str for 'rmv' characters and deletes them all, returns new string
+     */
+    String remove_all_chars(String str, char rmv)
+    {
+        bool found = false;
+        while(!found)
+        {
+            int index = str.indexOf(rmv);
+            if (index == -1) 
+            {
+                found = true;
+                continue;
+            }
+            str.remove(index, 1);
+        }
+        return str;
+    };
+
+
+    /*
+     * given and integer, return the number of characters in it
+     */
+    int get_char_length(int ofInt)
+    {
+        int len = 0;
+        int localInt = ofInt;
+        if (localInt < 0) {
+            len += 1;
+            //Quick abs(x)
+            localInt = ((localInt < 0) ? -1 * localInt : localInt);
+        }
+        //Faster than loop
+        if (localInt < 10) {
+            len += 1;
+        } else if (localInt < 100) {
+            len += 2;
+        } else if (localInt < 1000) {
+            len += 3;
+        } else if (localInt < 10000) {
+            len += 4;
+        } else if (localInt < 100000) {
+            len += 5;
+        } else if (localInt < 1000000) {
+            len += 6;
+        }
+        return len;
+    };
 }

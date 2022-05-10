@@ -159,11 +159,11 @@ void loop()
 //        exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
 //        exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
 // Bang Bang *******************************
-        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::flexion_setpoint_idx] = 4;
-        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::extension_setpoint_idx] = -8; // this should be negative
+        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::flexion_setpoint_idx] = 2;
+        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::extension_setpoint_idx] = -4; // this should be negative
         exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::target_flexion_percent_max_idx] = 80;
         exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::angle_threshold_idx] = utils::degrees_to_radians(5);
-        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::velocity_threshold_idx] = utils::degrees_to_radians(-20);// this should be negative
+        exo_data.left_leg.hip.controller.parameters[controller_defs::bang_bang::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
         exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::bang_bang);
 // Zero Torque *******************************        
 //        exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::zero_torque);
@@ -180,11 +180,11 @@ void loop()
 //        exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
 //        exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::extension_angle);
 // Bang Bang *******************************
-        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::flexion_setpoint_idx] = 4;
-        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::extension_setpoint_idx] = -8;  // this should be negative
+        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::flexion_setpoint_idx] = 2;
+        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::extension_setpoint_idx] = -4;  // this should be negative
         exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::target_flexion_percent_max_idx] = 80;
         exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::angle_threshold_idx] = utils::degrees_to_radians(5);
-        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::velocity_threshold_idx] = utils::degrees_to_radians(-20);// this should be negative
+        exo_data.right_leg.hip.controller.parameters[controller_defs::bang_bang::velocity_threshold_idx] = utils::degrees_to_radians(-10);// this should be negative
         exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::bang_bang);
 // Zero Torque*******************************
 //        exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::zero_torque);
@@ -257,38 +257,46 @@ void loop()
 
 
 #elif defined(ARDUINO_ARDUINO_NANO33BLE)  // board name is ARDUINO_[build.board] property in the board.txt file here found at C:\Users\[USERNAME]\AppData\Local\Arduino15\packages\arduino\hardware\mbed_nano\2.6.1  They just already prepended it with ARDUINO so you have to do it twice.
-#include "src\ParseIni.h"
-//#include "src\ExoData.h"
 #include <stdint.h>
+#include "src/ParseIni.h"
+#include "src/ExoData.h"
+#include "src/ComsMCU.h"
+
+namespace config_info
+{
+    uint8_t (config_to_send)[ini_config::number_of_keys] = {
+      1,
+      2,
+      3,
+      1,
+      2,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+    };
+}
 
 void setup()
 {
-  Serial.begin(115200);
-  //TODO: Remove serial while for deployed version as this would hang
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB
-  }
-  Serial.print("Nano Microcontroller\n");
-
-  // something to work with till the SPI works.
-  uint8_t test_config[] = {1, 1, 3, 1, 2, 1, 3, 1, 1, 1};
-
-  Serial.print("\n");
-  Serial.print("Coded Config Data\n");
-  for (int i = 0; i < ini_config::number_of_keys; i++)
-  {
-    Serial.print("[");
-    Serial.print(i);
-    Serial.print("] : ");
-    Serial.print((int)test_config[i]);
-    Serial.print("\n");
-  }
-  Serial.print("\n");
+    // TODO: ask for init data over spi
+    Serial.begin(115200);
+    while (!Serial);
+    Serial.println("Starting!");
 }
 
 void loop()
 {
-
+    static ExoData* exo_data = new ExoData(config_info::config_to_send);
+    static ComsMCU* mcu = new ComsMCU(exo_data);
+    mcu->handle_ble();
+    mcu->local_sample();
+    // TODO: Get New Data over SPI
+    mcu->update_gui();
 }
 
 #else
@@ -310,3 +318,4 @@ void loop()
 
 
 #endif
+
