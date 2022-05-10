@@ -2,7 +2,7 @@
 
 const double stepSpacing = 0.002;
 const int stepLength = 10/stepSpacing;
-double A = 1;
+const double A = 1;
 float *stp = new float(stepLength);
 
 void calculateStepBi()
