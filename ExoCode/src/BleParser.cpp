@@ -1,6 +1,8 @@
+#if defined(ARDUINO_ARDUINO_NANO33BLE)
 #include "BleParser.h"
 #include "Utilities.h"
 #include <vector>
+
 
 BleParser::BleParser()
 {
@@ -124,3 +126,4 @@ void BleParser::_handle_command(char command)
         _working_message.is_complete = !_waiting_for_data;
     }
 }
+#endif

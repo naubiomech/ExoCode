@@ -1,3 +1,4 @@
+#if defined(ARDUINO_ARDUINO_NANO33BLE)
 #include "ComsMCU.h"
 
 ComsMCU::ComsMCU(ExoData* data):_data{data}
@@ -69,3 +70,4 @@ void ComsMCU::_process_complete_gui_command(BleMessage* msg)
     }
     Serial.println();
 }
+#endif

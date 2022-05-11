@@ -1,3 +1,4 @@
+#if defined(ARDUINO_ARDUINO_NANO33BLE)
 #include "ExoBLE.h"
 #include "Board.h"
 #include "Utilities.h"
@@ -135,3 +136,4 @@ bool ble_rx::queue_is_empty()
 {
     return ((ble_rx::queue.size() == 0) ? true:false);
 }
+#endif

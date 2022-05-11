@@ -15,6 +15,7 @@
 #ifndef EXOBLE_H
 #define EXOBLE_H
 
+#if defined(ARDUINO_ARDUINO_NANO33BLE)
 #include "Arduino.h"
 #include "ArduinoBLE.h"
 #include "BleParser.h"
@@ -52,4 +53,5 @@ namespace ble_rx
     bool queue_is_empty();
 }
 
+#endif
 #endif

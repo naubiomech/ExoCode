@@ -1,3 +1,4 @@
+#if defined(ARDUINO_ARDUINO_NANO33BLE)
 #include "BleMessage.h"
 
 BleMessage::BleMessage() 
@@ -24,3 +25,4 @@ void BleMessage::copy(BleMessage n)
     }
     expecting = n.expecting;
 }
+#endif
