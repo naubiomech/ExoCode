@@ -93,6 +93,17 @@ namespace utils
         }
     };
     
+    class SpeedCheck
+    {
+        public:
+            SpeedCheck(int pin);
+            void toggle();
+            
+        private:
+            int _pin;
+            bool _state;
+    };
+    
 }
 
 

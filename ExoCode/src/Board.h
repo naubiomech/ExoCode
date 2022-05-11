@@ -143,7 +143,7 @@
                 const unsigned int motor_stop_pin = 9;
                 
                 // Pin to use when we need a value but don't actually want to use it.
-                const unsigned int not_connected_pin = 42;  // selected 42 as it is a pad on the back so I figure it won't hurt anything if something goes wrong.
+                const unsigned int not_connected_pin = 51;  // selected 51 as it is a pad on the back so I figure it won't hurt anything if something goes wrong.
                 
                 // Motor enable Pins
                 const unsigned int enable_left_pin[] = {28, 29};

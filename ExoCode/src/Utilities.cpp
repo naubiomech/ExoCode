@@ -150,4 +150,29 @@ namespace utils
         }
         return len;
     };
+    
+    
+    /*
+     * Used to check the loop speed without a print.
+     * 
+     * after initialized, toggle will need to be called each loop
+     */
+    SpeedCheck::SpeedCheck(int pin)
+    {
+        _pin = pin;
+        _state = 0;
+        
+        pinMode(_pin, OUTPUT);
+        digitalWrite(_pin, _state);
+    };
+    
+    /*
+     * Toggle the pin when called.
+     */ 
+    void SpeedCheck::toggle()
+    {
+        _state = _state ^ 1;
+        
+        digitalWrite(_pin, _state);
+    };
 }

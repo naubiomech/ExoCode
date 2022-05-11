@@ -105,7 +105,25 @@ namespace controller_defs
         const uint8_t num_parameter = 10;
     }
     
-    const uint8_t max_parameters = 6;  // this should be the largest of all the num_parameters
+    namespace user_defined
+    {
+        const uint8_t num_sample_points = 25;  // not an index
+        
+        const uint8_t mass_idx = 0;
+        const uint8_t curve_start_idx = 1;
+        const uint8_t curve_stop_idx = curve_start_idx+num_sample_points;
+        const uint8_t num_parameter = curve_stop_idx+1;
+    }
+    
+    namespace sine
+    {
+        const uint8_t amplitude_idx = 0;    // amplitude in Nm
+        const uint8_t period_idx = 1;       // period in ms
+        const uint8_t phase_shift_idx = 2;  // phase shift in rad
+        const uint8_t num_parameter = 3;
+    }
+    
+    const uint8_t max_parameters = user_defined::num_parameter;  // this should be the largest of all the num_parameters
 }
 
 

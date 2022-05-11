@@ -929,4 +929,47 @@ float FranksCollinsHip::calc_motor_cmd()
     return torque_cmd;
 };
 
+
+/*
+ * Constructor for the controller
+ * Takes the joint id and a pointer to the exo_data
+ * Only stores the id, exo_data pointer.
+ */
+UserDefined::UserDefined(config_defs::joint_id id, ExoData* exo_data)
+: _Controller(id, exo_data)
+{
+    
+};
+
+/*
+ *
+ */
+
+float UserDefined::calc_motor_cmd()
+{
+    return 0;
+};
+
+/*
+ * Constructor for the controller
+ * Takes the joint id and a pointer to the exo_data
+ * Only stores the id, exo_data pointer.
+ */
+Sine::Sine(config_defs::joint_id id, ExoData* exo_data)
+: _Controller(id, exo_data)
+{
+    
+};
+
+/*
+ * returns amp * sine (frac_of_period * 2 * pi + phase_shift)
+ * where frac_of_period is (time % period)/period
+ */
+
+float Sine::calc_motor_cmd()
+{
+    //  converts period to int so % will work, but is only a float for convenience
+    return _controller_data->parameters[controller_defs::sine::amplitude_idx] * sin( (millis() % (int)_controller_data->parameters[controller_defs::sine::period_idx]) / _controller_data->parameters[controller_defs::sine::period_idx] * 2 * M_PI + _controller_data->parameters[controller_defs::sine::phase_shift_idx]  );
+};
+
 #endif

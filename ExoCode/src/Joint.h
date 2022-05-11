@@ -111,6 +111,8 @@ class HipJoint : public _Joint
         ExtensionAngle _extension_angle;
         BangBang _bang_bang;
         FranksCollinsHip _franks_collins_hip;
+        UserDefined _user_defined;
+        Sine _sine;
 };
 
 class KneeJoint : public _Joint
@@ -126,6 +128,8 @@ class KneeJoint : public _Joint
     protected:
         // Objects for joint specific controllers	
         ZeroTorque _zero_torque;
+        UserDefined _user_defined;
+        Sine _sine;
 };
 
 class AnkleJoint : public _Joint
@@ -143,6 +147,8 @@ class AnkleJoint : public _Joint
         ZeroTorque _zero_torque;
         ProportionalJointMoment _proportional_joint_moment;
         ZhangCollins _zhang_collins;
+        UserDefined _user_defined;
+        Sine _sine;
 };
 
 #endif

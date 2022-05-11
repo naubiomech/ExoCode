@@ -119,12 +119,16 @@ namespace config_defs
         extension_angle = 4,
         franks_collins_hip = 5,
         bang_bang = 6,
+        user_defined = 7,
+        sine = 8,
     };
     
     enum class knee_controllers : uint8_t
     { 
         disabled = 1, 
         zero_torque = 2,
+        user_defined = 3,
+        sine = 4,
     };
         
     enum class ankle_controllers : uint8_t
@@ -133,6 +137,8 @@ namespace config_defs
         zero_torque = 2, 
         pjmc = 3,
         zhang_collins = 4,
+        user_defined = 5,
+        sine = 6,
     };
     
     enum class flip_dir : uint8_t
@@ -267,12 +273,16 @@ namespace config_defs
             {"extensionAngle", (uint8_t)config_defs::hip_controllers::extension_angle},
             {"franksCollinsHip", (uint8_t)config_defs::hip_controllers::franks_collins_hip},
             {"bangBang", (uint8_t)config_defs::hip_controllers::bang_bang},
+            {"userDefined", (uint8_t)config_defs::hip_controllers::user_defined},
+            {"sine", (uint8_t)config_defs::hip_controllers::sine},
         };
         
         const IniKeyCode knee_controllers 
         { 
             {"0", (uint8_t)config_defs::knee_controllers::disabled}, 
             {"zeroTorque", (uint8_t)config_defs::knee_controllers::zero_torque}, 
+            {"userDefined", (uint8_t)config_defs::knee_controllers::user_defined},
+            {"sine", (uint8_t)config_defs::knee_controllers::sine},
         };
         
         const IniKeyCode ankle_controllers 
@@ -281,7 +291,8 @@ namespace config_defs
             {"zeroTorque", (uint8_t)config_defs::ankle_controllers::zero_torque}, 
             {"PJMC", (uint8_t)config_defs::ankle_controllers::pjmc},
             {"zhangCollins", (uint8_t)config_defs::ankle_controllers::zhang_collins},
-            
+            {"userDefined", (uint8_t)config_defs::ankle_controllers::user_defined},
+            {"sine", (uint8_t)config_defs::ankle_controllers::sine},
         };  
         
         const IniKeyCode flip_dir 

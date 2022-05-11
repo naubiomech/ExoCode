@@ -319,6 +319,48 @@ class FranksCollinsHip: public _Controller
         float _d2_peak;
 };
 
+/*
+ * UserDefined Controller
+ * This controller uses a simple lookup table with interpolation between values.
+ * Assumes table is evenly spaced across percent gait, 0 to 100 where f(0) = f(100)
+ * ex. controller_data
+ * 
+ * 2022-05 : by P. Stegall
+ * 
+ * see ControllerData.h for details on the parameters used.
+ */
+class UserDefined: public _Controller
+{
+    public:
+        UserDefined(config_defs::joint_id id, ExoData* exo_data);
+        ~UserDefined(){};
+        
+        float calc_motor_cmd();
+    private:
+        
+        
+};
+
+/*
+ * Sine Controller
+ * This controller plays a sine wave with a defined amplitude, period, and phase shift
+ * 
+ * 2022-05 : by P. Stegall
+ * 
+ * see ControllerData.h for details on the parameters used.
+ */
+class Sine: public _Controller
+{
+    public:
+        Sine(config_defs::joint_id id, ExoData* exo_data);
+        ~Sine(){};
+        
+        float calc_motor_cmd();
+    private:
+        
+        
+};
+
 
 #endif
 #endif
