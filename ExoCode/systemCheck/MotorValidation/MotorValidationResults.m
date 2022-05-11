@@ -14,7 +14,7 @@ calibration_data = [ 12, 15,    745;...
                     0,  1.66,   705];
 % confirm linearity      
 figure;
-plot(validation_data(:,2),validation_data(:,3));
+plot(calibration_data(:,2),calibration_data(:,3));
 xlabel("load (kg)");
 ylabel("reading");
 %%
