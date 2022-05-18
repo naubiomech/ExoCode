@@ -13,11 +13,13 @@ Most of the code should run with little modification but there will be some refo
             - 9 Digital output
                 - Ideally with 3 PWM for LED
             - 2 digital inputs
+	    - Floating Point Unit
         - Coms
             - I2C
             - SPI
-            - Bluetooth
-            - @Chance Are there other things I am missing
+            - Bluetooth Low Energy
+	    - IMU
+            - Floating Point Unit
     It is also good to check that there are existing arduino libraries for the modules, ideally with identical interfaces.
         - SPI peripheral (slave) can be particularly challenging as most SPI libraries assume the microcontroller is the controller (master)
 
@@ -44,7 +46,7 @@ Most of the code should run with little modification but there will be some refo
 
 ## Other files
     Here is where it gets tricker
-    1. Go through each of the files and add preprocessor defines around the areas that should compile for your controller
+    1. Go through each of the files and add preprocessor defines around the areas that should compile for your microcontroller
         - for the controller micro you can add your micro to the #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
         - for the coms micro you can add your micro to the #if defined(ARDUINO_ARDUINO_NANO33BLE)
         - There may be some locations were you need to add specific includes, ex. spi in ExoCode.ino
