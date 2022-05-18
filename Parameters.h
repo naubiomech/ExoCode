@@ -46,13 +46,13 @@ double step_time_length = 150;
 // ===== PID and CTRL Parameters =====
 //All the needed parameters to set torque bias, PID ctrl, to enable the motors and to average the torque signals
 int count = 0;
-int CURRENT_CONTROL = 1;
+int CURRENT_CONTROL = 0;
 int CURRENT_DIAGNOSTICS = 0;
 int MODEL_CONTROL = 0;
 int CtrlType = 100;
 
 //Includes the PID library so we can utilize PID control
-int PID_sample_time = 1;                                             //PID operates at 1000Hz, calling at a freq of 1 ms.
+const int PID_sample_time = 1000 / CONTROL_LOOP_HZ;                                             //PID operates at 1000Hz, calling at a freq of 1 ms.
 
 // ===== Memory Addrss Parameters =====
 //To store in memory. These are the address of the EEPROM of the Teensy

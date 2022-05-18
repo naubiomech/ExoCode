@@ -1,7 +1,7 @@
 #ifndef LEG_HEADER
 #define LEG_HEADER
 const int dim_FSR = 30;
-const int dim = 5;
+const int dim = 1;
 
 #include "PID_v2.h"
 #include "Control_Adjustment.h"
@@ -39,7 +39,7 @@ struct Leg {
 
   volatile double Average_Volt;
   volatile double Average_Volt_Heel;
-  volatile double Average_Trq;
+  volatile double Average_Trq = 0;
   volatile double Prev_Trq;
   volatile double FSR_Combined_Average;
   volatile double FSR_Toe_Average;
@@ -105,7 +105,7 @@ struct Leg {
   int Vol;
 
 #ifdef ENABLE_PWM   //PID Gains are different for PWM control
-  double kp = 300;
+  double kp = 800;
   double ki = 0;
   double kd = 3;
 #else

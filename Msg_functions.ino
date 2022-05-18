@@ -1,16 +1,26 @@
 #include "Msg_functions.h"
 #include "akxMotor.h"
+#include "ema_filter.h"
 
 //Real time data being sent to the GUI
 void send_data_message_wc() //with COP
 {
+  static float l_torque_filtered{0.0f};
+  static float r_torque_filtered{0.0f};
+
+  l_torque_filtered = ema_with_context(l_torque_filtered, -l_torque, 0.25);
+  r_torque_filtered = ema_with_context(r_torque_filtered, -r_torque, 0.25);
+  
   //Right Leg
   data_to_send[0] = (right_leg->sign * right_leg->Average_Trq);
   data_to_send[1] = right_leg->state / 3;
   data_to_send[2] = (right_leg->sign * right_leg->PID_Setpoint);
+  //data_to_send[2] = r_torque_filtered;
+  //data_to_send[2] = right_leg->Output;
+  //data_to_send[2] = akMotor.right_return.tor;
 
   //Left Leg
-  data_to_send[3] = (left_leg->sign * left_leg->Average_Trq); 
+  data_to_send[3] = (left_leg->sign * left_leg->Average_Trq);
   if (markFlag) {
     data_to_send[4] = markCount++;
     markFlag = false;
@@ -18,6 +28,9 @@ void send_data_message_wc() //with COP
     data_to_send[4] = left_leg->state / 3;
   }
   data_to_send[5] = (left_leg->sign * left_leg->PID_Setpoint);
+  //data_to_send[5] = l_torque_filtered;
+  //data_to_send[5] = left_leg->Output;
+  //data_to_send[5] = akMotor.left_return.tor;
 
   //Normalized FSR values
   if (right_leg->baseline_value != 0 && left_leg->baseline_value != 0) {

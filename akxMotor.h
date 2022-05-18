@@ -6,7 +6,7 @@
 #include "board.h"
 
 
-#define AK80
+#define AK60_V1_1
 
 //Motor max/mins
 #define P_MIN -12.5f
@@ -30,6 +30,12 @@
 #define V_MAX 41.87f
 #endif
 
+#ifdef AK60_V1_1
+#define T_MIN -18.0f
+#define T_MAX 18.0f
+#define V_MIN -45.0f
+#define V_MAX 45.0f
+#endif
 
 //Weigth Defaults
 #define KP_DEF 0.0f
@@ -49,6 +55,7 @@ constexpr canid_t R_ID = 2;
 
 
 
+
 class akxMotor {
   public: 
     /* Left and Right motor return data */
@@ -59,6 +66,9 @@ class akxMotor {
       pinMode(OE, OUTPUT);
       digitalWrite(OE, HIGH);
       delay(10);
+
+
+      
 
       mcp2515.init();
       mcp2515.reset();
@@ -74,19 +84,19 @@ class akxMotor {
     
     
     inline void send_and_read(canid_t id, float vol) {
-      map_and_apply(id, vol);
-      motor_frame_t update_frame;
-      update_frame.id = id;
-      updateFrame(&update_frame, 0.1);
-      if(id == L_ID) {
-        left_return.pos = update_frame.pos;
-      } else if(id == R_ID) {
-        right_return.pos = update_frame.pos;
-      }
+//      map_and_apply(id, vol);
+//      motor_frame_t update_frame;
+//      update_frame.id = id;
+//      updateFrame(&update_frame, 0.1);
+//      if(id == L_ID) {
+//        left_return.pos = update_frame.pos;
+//      } else if(id == R_ID) {
+//        right_return.pos = update_frame.pos;
+//      }
     }
 
     /* Takes the voltage output of PID, maps it to a torque and sends it */
-    inline void map_and_apply(canid_t id, float vol) {
+    inline void map_and_apply(canid_t id, float vol, float sign) {
       motor_frame_t out_frame;
       out_frame.id = id;
       out_frame.pos = 0;
@@ -94,9 +104,16 @@ class akxMotor {
       out_frame.kp = 0;
       out_frame.kd = 0;
 
-      float torque = (vol)*scaling_factor;
+      float torque = -1*(vol)*scaling_factor;
       out_frame.tor = torque;
       sendCAN(&out_frame);
+
+      if (id == L_ID) {
+        l_torque = torque;
+      }
+      else if (id == R_ID) {
+        r_torque = torque;
+      }
     }
 
     /* This function will read data from the motors. It updates the motor frame with position velocity and current. */

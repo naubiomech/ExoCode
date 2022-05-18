@@ -99,7 +99,7 @@ void receive_and_transmit()
       left_leg->PID_Setpoint = 0.0; //Makes sure that the next trial doesn't have any non-zero bias
       left_leg->New_PID_Setpoint = 0.0;
       left_leg->Old_PID_Setpoint = 0.0;
-      left_leg->KF = 1.0;
+      //left_leg->KF = 1.0;
 
 
       right_leg->p_steps->Setpoint = 0.0;
@@ -121,7 +121,7 @@ void receive_and_transmit()
       right_leg->PID_Setpoint = 0.0;
       right_leg->New_PID_Setpoint = 0.0;
       right_leg->Old_PID_Setpoint = 0.0;
-      right_leg->KF = 1.0;
+      //right_leg->KF = 1.0;
 
 
       //reset_count = 0;
@@ -166,7 +166,7 @@ void receive_and_transmit()
 
     case 'N':
       //Increment Mark Count
-      markCount++;
+      
       markFlag = true;
       break;
 
@@ -289,8 +289,8 @@ void receive_and_transmit()
 
     // TN 6/13/19
     case '_':                                          //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&left_leg->KF, holdOnPoint, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-      memcpy(&right_leg->KF, holdOnPoint + 8, 8);
+      //memcpy(&left_leg->KF, holdOnPoint, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+      //memcpy(&right_leg->KF, holdOnPoint + 8, 8);
       break;
 
 
@@ -430,10 +430,14 @@ void receive_and_transmit()
 
     // TN 6/13/19
     case 'R':                                           //MATLAB is only sending 1 value, a double, which is 8 bytes
-      memcpy(&left_leg->fsr_percent_thresh_Toe, holdOnPoint, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
-      memcpy(&right_leg->fsr_percent_thresh_Toe, holdOnPoint + 8, 8);
-      left_leg->p_steps->fsr_percent_thresh_Toe = left_leg->fsr_percent_thresh_Toe;
-      right_leg->p_steps->fsr_percent_thresh_Toe = right_leg->fsr_percent_thresh_Toe;
+      double l_temp;
+      double r_temp;
+      memcpy(&l_temp, holdOnPoint, 8);                      //Copies 8 bytes (Just so happens to be the exact number of bytes MATLAB sent) of data from the first memory space of Holdon to the
+      memcpy(&r_temp, holdOnPoint + 8, 8);
+      left_leg->kp = 300 + (1000*l_temp);
+      right_leg->kp = left_leg->kp;
+      left_leg->kd = 100*r_temp;
+      right_leg->kd = left_leg->kd;
       break;
 
     case 'T':

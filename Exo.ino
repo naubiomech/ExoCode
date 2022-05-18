@@ -5,11 +5,15 @@
 #define BOARD_VERSION TMOTOR_REV1
 
 #define CONTROL_LOOP_HZ           500
+#define SAMPLE_LOOP_MULT          2
 #define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
 #define COMMS_LOOP_HZ             50
 //The digital pin connected to the motor on/off swich
-const unsigned int zero = 2048; //1540;
+const unsigned int zero = 2048; 
 bool motors_on = false;
+
+float l_torque = 0;
+float r_torque = 0;
 
 #include <ArduinoBLE.h>
 #include <elapsedMillis.h>
@@ -37,6 +41,7 @@ bool motors_on = false;
 //----------------------------------------------------------------------------------
 rtos::Thread callback_thread(osPriorityNormal);
 rtos::Thread read_thread(osPriorityNormal);
+
 Ambulation_SM amb_sm;
 uint32_t imuCounter = 0;
 
@@ -45,28 +50,37 @@ motor_frame_t l_frame;
 motor_frame_t r_frame;
 
 void control_loop() {
+  int count = 0;
   while (true) {
-    imuCounter++;
+    //start = micros();
+    //imuCounter++;
     //resetMotorIfError();
     calculate_averages();
+    count++;
 
-    if (motors_on) {
-      detect_faults();
-      if (amb_sm.last_state == Walking) {
-          tracking_check(right_leg);
-          tracking_check(left_leg);
-          pid_check(right_leg);
-          pid_check(left_leg);
-      }
-      if (stream && (imuCounter > imuTimerCount)) {
-        //amb_sm.tick(stepper->steps);
-        imuCounter = 0;
-      }
+//    if (motors_on) {
+////      detect_faults();
+////      if (amb_sm.last_state == Walking) {
+////          tracking_check(right_leg);
+////          tracking_check(left_leg);
+////          pid_check(right_leg);
+////          pid_check(left_leg);
+////      }
+//      if (stream && (imuCounter > imuTimerCount)) {
+//        //amb_sm.tick(stepper->steps);
+//        imuCounter = 0;
+//      }
+//    }
+
+    if (count == SAMPLE_LOOP_MULT)
+    {
+      count = 0;
+      //rotate_motor();
     }
-    
     rotate_motor();
-
-    rtos::ThisThread::sleep_for(1000 / CONTROL_LOOP_HZ);
+    //time = micros()-start;
+    //Serial.println(time);
+    rtos::ThisThread::sleep_for(1000 / (CONTROL_LOOP_HZ));
   }
 }
 
@@ -200,7 +214,7 @@ void update_GUI() {
 
 void calculate_leg_average(Leg* leg, double alpha) {
 
-  if (alpha <= 0.0001) {
+  if (alpha <= 0.00000001) {
     //Calc the average value of Torque
     //Shift the arrays
     for (int j = dim - 1; j >= 0; j--)                  //Sets up the loop to loop the number of spaces in the memory space minus 2, since we are moving all the elements except for 1
@@ -230,9 +244,9 @@ void calculate_leg_average(Leg* leg, double alpha) {
     leg->Prev_Trq = leg->Average_Trq;
   }
   
-  if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
-      leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
-  }
+//  if (abs(leg->Average_Trq) > abs(leg->Max_Measured_Torque) && leg->state == 3) {
+//      leg->Max_Measured_Torque = leg->Average_Trq;  //Get max measured torque during stance
+//  }
   
   
   leg->p_steps->torque_average = leg->Average_Trq;
@@ -243,13 +257,13 @@ void calculate_leg_average(Leg* leg, double alpha) {
   leg->FSR_Heel_Average = 0;
 
   leg->FSR_Toe_Average = fsr(leg->fsr_sense_Toe);
-  leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
+//  leg->FSR_Heel_Average = fsr(leg->fsr_sense_Heel);
 
   // in case of two toe sensors we use the combined averate, i.e. the sum of the averages.
-  leg->FSR_Combined_Average = (leg->FSR_Toe_Average + leg->FSR_Heel_Average);
+  leg->FSR_Combined_Average = (leg->FSR_Toe_Average + 0);
 
   leg->p_steps->curr_voltage_Toe = leg->FSR_Toe_Average;
-  leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
+//  leg->p_steps->curr_voltage_Heel = leg->FSR_Heel_Average;
 
   if (FLAG_ONE_TOE_SENSOR)
   {
@@ -262,8 +276,8 @@ void calculate_leg_average(Leg* leg, double alpha) {
 //----------------------------------------------------------------------------------
 
 void calculate_averages() {
-  calculate_leg_average(left_leg,0.00);
-  calculate_leg_average(right_leg,0.00);
+  calculate_leg_average(left_leg, 0); //0.80);
+  calculate_leg_average(right_leg, 0);//0.80);
 }
 
 //----------------------------------------------------------------------------------
@@ -301,51 +315,29 @@ void rotate_motor() {
   //adjust some control parameters as a function of the control strategy decided (Control_Adjustment)
   if (stream == 1)
   {
-    float l_vol = pid(left_leg, left_leg->Average_Trq);
     float r_vol = pid(right_leg, right_leg->Average_Trq);
+    akMotor.map_and_apply(R_ID, r_vol, right_leg->sign);
+    //akMotor.updateFrame(&akMotor.right_return,0.1);
     
-    motor_frame_t print_frame;
-    akMotor.map_and_apply(L_ID, l_vol);
-    akMotor.updateFrame(&akMotor.left_return,0.1);
-    
-    akMotor.map_and_apply(R_ID, r_vol);
-    akMotor.updateFrame(&akMotor.right_return,0.1);
-    
+    float l_vol = pid(left_leg, left_leg->Average_Trq);
+    akMotor.map_and_apply(L_ID, l_vol, left_leg->sign);
+    //akMotor.updateFrame(&akMotor.left_return,0.1);
 
     if (flag_auto_KF) {
       Auto_KF(left_leg, Control_Mode);
       Auto_KF(right_leg, Control_Mode);
     }
-    
-    // modification to check the pid
-    if (FLAG_PID_VALS) {
 
-      Serial.print("LEFT PID INPUT:");
-      Serial.print(left_leg->Input);
-      Serial.print(" , AVG: ");
-      Serial.print(left_leg->Average_Trq);
-      Serial.print(" , VOL: ");
-      double cane = (left_leg->Vol);
-      Serial.println(cane - zero);
-      Serial.print("RIGHT PID INPUT:");
-      Serial.print(right_leg->Input);
-      Serial.print(" , AVG: ");
-      Serial.print(right_leg->Average_Trq);
-      cane = (right_leg->Vol);
-      Serial.print(" , VOL: ");
-      Serial.println(cane - zero);
-
-    }
-    // end modification
     state_machine(left_leg);  //for LL
     state_machine(right_leg);  //for RL
-    
+
+    double time = millis();
     if ((left_leg->state == 3) && ((left_leg->old_state == 1) || (left_leg->old_state == 2))) {   // TN 9/26/19
-      left_leg->state_3_start_time = millis();
+      left_leg->state_3_start_time = time;
     }
 
     if (((left_leg->state == 1) || (left_leg->state == 2)) && (left_leg->old_state == 3)) {     // TN 9/26/19
-      left_leg->state_3_stop_time = millis();
+      left_leg->state_3_stop_time = time;
     }
 
     if (left_leg->state_3_stop_time > left_leg->state_3_start_time) { // SS 8/6/2020
@@ -353,11 +345,11 @@ void rotate_motor() {
     }
 
     if ((left_leg->state == 1) && ((left_leg->old_state == 3) || (left_leg->old_state == 2))) {  // SS 8/6/2020
-      left_leg->state_1_start_time = millis();
+      left_leg->state_1_start_time = time;
     }
 
     if (((left_leg->state == 3) || (left_leg->state == 2)) && (left_leg->old_state == 1)) { // SS 8/6/2020
-      left_leg->state_1_stop_time = millis();
+      left_leg->state_1_stop_time = time;
     }
 
     if (left_leg->state_1_stop_time > left_leg->state_1_start_time) { // SS 8/6/2020
@@ -367,12 +359,12 @@ void rotate_motor() {
     left_leg->old_state = left_leg->state;
 
     if ((right_leg->state == 3) && ((right_leg->old_state == 1) || (right_leg->old_state == 2))) {    // TN 9/26/19
-      right_leg->state_3_start_time = millis();
+      right_leg->state_3_start_time = time;
     }
     else {
       if (((right_leg->state == 1) || (right_leg->state == 2)) && (right_leg->old_state == 3)) {   // TN 9/26/19
 
-        right_leg->state_3_stop_time = millis();
+        right_leg->state_3_stop_time = time;
 
         if (right_leg->state_3_stop_time > right_leg->state_3_start_time) { // SS 8/6/2020
           right_leg->state_3_duration = right_leg->state_3_stop_time - right_leg->state_3_start_time;
@@ -381,12 +373,12 @@ void rotate_motor() {
     }
 
     if ((right_leg->state == 1) && ((right_leg->old_state == 3) || (right_leg->old_state == 2))) {  // SS 8/6/2020
-      right_leg->state_1_start_time = millis();
+      right_leg->state_1_start_time = time;
     }
     else {
       if (((right_leg->state == 3) || (right_leg->state == 2)) && (right_leg->old_state == 1)) { // SS 8/6/2020
 
-        right_leg->state_1_stop_time = millis();
+        right_leg->state_1_stop_time = time;
 
         if (right_leg->state_1_stop_time > right_leg->state_1_start_time) { // SS 8/6/2020
           right_leg->state_1_duration = right_leg->state_1_stop_time - right_leg->state_1_start_time;
