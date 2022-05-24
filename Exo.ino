@@ -4,12 +4,12 @@
 #define VERSION 314
 #define BOARD_VERSION TMOTOR_REV1
 
-#define CONTROL_LOOP_HZ           500
+#define CONTROL_LOOP_HZ           1000
 #define SAMPLE_LOOP_MULT          2
 #define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
-#define COMMS_LOOP_HZ             50
+#define COMMS_LOOP_HZ             25
 //The digital pin connected to the motor on/off swich
-const unsigned int zero = 2048; 
+const unsigned int zero = 2048;
 bool motors_on = false;
 
 float l_torque = 0;
