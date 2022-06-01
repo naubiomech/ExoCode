@@ -6,7 +6,7 @@
 #if defined(ARDUINO_TEENSY36) | defined(ARDUINO_TEENSY41)
 
 #define INCLUDE_FLEXCAN_DEBUG
-#define VERBOSE
+//#define VERBOSE
 
 // Standard Libraries
 #include <stdint.h>
@@ -197,19 +197,19 @@ void loop()
             exo_data.left_leg.ankle.motor.kp = 0;
             exo_data.left_leg.ankle.motor.kd = 0;
             exo.left_leg._ankle._motor->zero();
-            Serial.println("Superloop :: Line 200");
+            
 //          Sine *************************************
             exo_data.left_leg.ankle.controller.parameters[controller_defs::sine::amplitude_idx] = 3;  // amplitude Nm
             exo_data.left_leg.ankle.controller.parameters[controller_defs::sine::period_idx] = 1000; // period ms
             exo_data.left_leg.ankle.controller.parameters[controller_defs::sine::phase_shift_idx] = utils::degrees_to_radians(0);  // phase shift rad
             exo_data.left_leg.ankle.controller.controller = uint8_t(config_defs::ankle_controllers::sine);
-            Serial.println("Superloop :: Line 206");
+            
 //          Zero Torque*******************************
 //            exo_data.left_leg.ankle.controller.controller = uint8_t(config_defs::ankle_controllers::zero_torque);
 //===============================
             exo.left_leg._ankle.set_controller(exo_data.left_leg.ankle.controller.controller);              
         }
-        Serial.println("Superloop :: Line 212");
+        
         if (exo_data.right_leg.ankle.is_used)
         {
             exo.right_leg._ankle._motor->_motor_data->enabled = true;
