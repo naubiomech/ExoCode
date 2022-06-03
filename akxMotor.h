@@ -21,6 +21,7 @@
 #define T_MAX 18.0f
 #define V_MIN -25.64f
 #define V_MAX 25.64f
+#define SIGN 1
 #endif
 
 #ifdef AK60
@@ -28,6 +29,7 @@
 #define T_MAX 9.0f
 #define V_MIN -41.87f
 #define V_MAX 41.87f
+#define SIGN 1
 #endif
 
 #ifdef AK60_V1_1
@@ -35,6 +37,7 @@
 #define T_MAX 18.0f
 #define V_MIN -45.0f
 #define V_MAX 45.0f
+#define SIGN -1
 #endif
 
 //Weigth Defaults
@@ -104,7 +107,7 @@ class akxMotor {
       out_frame.kp = 0;
       out_frame.kd = 0;
 
-      float torque = -1*(vol)*scaling_factor;
+      float torque = SIGN*(vol)*scaling_factor;
       out_frame.tor = torque;
       sendCAN(&out_frame);
 
