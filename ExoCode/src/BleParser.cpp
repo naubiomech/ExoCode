@@ -9,15 +9,15 @@ BleParser::BleParser()
   ;
 }
 
-BleMessage BleParser::handle_raw_data(char* buffer, int length)
+BleMessage* BleParser::handle_raw_data(char* buffer, int length)
 {
-    BleMessage return_msg = BleMessage();
+    static BleMessage* return_msg = new BleMessage();
     if (!_waiting_for_data)
     {
         _handle_command(*buffer);
         if (_working_message.is_complete)
         {   
-            return_msg.copy(&_working_message);
+            return_msg->copy(&_working_message);
             _working_message.clear();
             _waiting_for_data = false;
         }
@@ -28,14 +28,14 @@ BleMessage BleParser::handle_raw_data(char* buffer, int length)
         _bytes_collected += length;
         if (_bytes_collected == _working_message.expecting*8)
         {
-            return_msg.copy(&_working_message);
+            return_msg->copy(&_working_message);
             for (int i=0;i<(_working_message.expecting*8);i+=8)
             {
                 double f_tmp = 0;
                 memcpy(&f_tmp,&_buffer[i],8);
-                return_msg.data[i/8] = (float)f_tmp;
+                return_msg->data[i/8] = (float)f_tmp;
             }
-            return_msg.is_complete = true;
+            return_msg->is_complete = true;
             _working_message.clear();
             _waiting_for_data = false;
             _bytes_collected = 0;

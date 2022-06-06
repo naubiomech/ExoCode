@@ -22,7 +22,7 @@ class BleParser
     public:
         BleParser();
         /* Unpacks the data from the gui. Returns true if the message is complete */
-        BleMessage handle_raw_data(char* buffer, int length);
+        BleMessage* handle_raw_data(char* buffer, int length);
         
         /* Packs data to be sent to the GUI, modifies the char array that you send it. returns final length */
         int package_raw_data(byte* buffer, BleMessage &msg);

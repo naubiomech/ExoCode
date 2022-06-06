@@ -9,23 +9,9 @@ static const BleMessage empty_message = BleMessage();
 
 BleMessage pop_queue()
 {
-    Serial.println("BleMessageQueue::pop_queue->Popped");
-    for (int i=0; i<size; i++)
-    {
-        Serial.println(i);
-        Serial.println(queue[i].command);
-        Serial.println(queue[i].expecting);
-        for (int j=0; j<queue[i].expecting; j++)
-        {
-            Serial.print(queue[i].data[j]);
-        }
-        Serial.println();
-    }
-
     if(queue_size()) 
     {
         BleMessage msg = queue[size];
-        std::vector<float> o_data = msg.data;
         Serial.println("BleMessageQueue::pop_queue->Popped");
         Serial.print(msg.command);
         Serial.print("\t");
@@ -41,6 +27,7 @@ BleMessage pop_queue()
     }
     else
     {
+        Serial.println("BleMessageQueue::pop_queue->No messages in Queue!");
         return empty_message;
     }
 }

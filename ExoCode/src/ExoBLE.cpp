@@ -84,6 +84,7 @@ void ExoBLE::send_message(BleMessage &msg)
 void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
 {
     static BleParser* parser = new BleParser();
+    static BleMessage* msg = new BleMessage();
 
     char data[32] = {0};
     int len = characteristic.valueLength();
@@ -96,18 +97,18 @@ void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
         Serial.print(", ");
     }
     Serial.println();
-    BleMessage msg = parser->handle_raw_data(data, len);
-    if (msg.is_complete)
+    msg = parser->handle_raw_data(data, len);
+    if (msg->is_complete)
     {
         Serial.print("on_rx_recieved->Command: ");
-        Serial.println(msg.command);
-        for (int i=0; i<msg.expecting; i++)
+        Serial.println(msg->command);
+        for (int i=0; i<msg->expecting; i++)
         {
-            Serial.print(msg.data[i]);
+            Serial.print(msg->data[i]);
             Serial.print(", ");
         }
         Serial.println();
-        push_queue(&msg);
+        push_queue(msg);
     }
 }
 

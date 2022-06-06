@@ -2,7 +2,7 @@
 #define BLEMESSAGE_H
 
 #include <vector>
-
+static const int _max_size = 10;
 
 class BleMessage
 {
@@ -14,9 +14,9 @@ class BleMessage
         char command = 0;
         int expecting = 0;
         bool is_complete = false;
-        std::vector<float> data;
+        float data[_max_size];
     private:
-        static const int _max_size = 10;
+        int _size = 0;
 };
 
 #endif
