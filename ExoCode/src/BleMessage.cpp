@@ -14,15 +14,15 @@ void BleMessage::clear()
     expecting = 0;
 }
 
-void BleMessage::copy(BleMessage n) 
+void BleMessage::copy(BleMessage* n) 
 { 
-    command = n.command; 
-    is_complete = n.is_complete;
+    command = n->command; 
+    is_complete = n->is_complete;
     data.clear();
-    for (int i=0; i<n.data.size();i++)
+    for (int i=0; i<n->data.size();i++)
     {
-        data.push_back(n.data[i]);
+        data.push_back(n->data[i]);
     }
-    expecting = n.expecting;
+    expecting = n->expecting;
 }
 #endif

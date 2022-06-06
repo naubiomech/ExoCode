@@ -21,8 +21,8 @@
 #include "BleParser.h"
 #include "GattDb.h"
 #include "BleMessage.h"
-#include "BleMsgQueue.h"
 #include "ExoData.h"
+#include "BleMessageQueue.h"
 
 
 class ExoBLE 
@@ -32,7 +32,7 @@ class ExoBLE
         ExoBLE(ExoData* data);
         bool setup();
         static void advertising_onoff(bool onoff);
-        BleMessage* handle_updates();
+        bool handle_updates();
         void send_message(BleMessage &msg);
 
     private:
@@ -45,12 +45,7 @@ class ExoBLE
 
 namespace ble_rx
 {
-    //TODO: Lock the use of msg_queue
-    static std::vector<BleMessage> queue;
     void on_rx_recieved(BLEDevice central, BLECharacteristic characteristic);
-    void push_queue(BleMessage &msg);
-    BleMessage* pop_queue();
-    bool queue_is_empty();
 }
 
 #endif

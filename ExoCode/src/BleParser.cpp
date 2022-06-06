@@ -1,8 +1,8 @@
 #if defined(ARDUINO_ARDUINO_NANO33BLE)
 #include "BleParser.h"
 #include "Utilities.h"
+#include "BleMessageQueue.h"
 #include <vector>
-
 
 BleParser::BleParser()
 {
@@ -17,7 +17,7 @@ BleMessage BleParser::handle_raw_data(char* buffer, int length)
         _handle_command(*buffer);
         if (_working_message.is_complete)
         {   
-            return_msg.copy(_working_message);
+            return_msg.copy(&_working_message);
             _working_message.clear();
             _waiting_for_data = false;
         }
@@ -28,7 +28,7 @@ BleMessage BleParser::handle_raw_data(char* buffer, int length)
         _bytes_collected += length;
         if (_bytes_collected == _working_message.expecting*8)
         {
-            return_msg.copy(_working_message);
+            return_msg.copy(&_working_message);
             for (int i=0;i<(_working_message.expecting*8);i+=8)
             {
                 double f_tmp = 0;
@@ -52,14 +52,6 @@ BleMessage BleParser::handle_raw_data(char* buffer, int length)
 
 int BleParser::package_raw_data(byte* buffer, BleMessage &msg)
 {
-    Serial.println("BleParser::package_raw_data->Start");
-    Serial.print("BleParser::package_raw_data->Raw Data:");
-    for (int i=0; i<msg.data.size(); i++)
-    {
-        Serial.print(msg.data[i]);
-        Serial.print(",");
-    }
-    Serial.println();
     //6 max characters can transmit -XXXXX, or XXXXXX
     int maxChars = 8;
     //Size must be declared at initialization because of itoa()
@@ -73,13 +65,9 @@ int BleParser::package_raw_data(byte* buffer, BleMessage &msg)
     for (int i = 0; i < msg.expecting; i++)
     {
         double data_to_send = (double)msg.data[i];
-        Serial.print("BleParser::package_raw_data->sending: ");
-        Serial.println(data_to_send);
         //Send as Int to reduce bytes being sent
         int modData = int(data_to_send * 100);
         int cLength = utils::get_char_length(modData);
-        Serial.print("BleParser::package_raw_data->length: ");
-        Serial.println(cLength);
         if (cLength > maxChars)
         {
         cLength = 1;

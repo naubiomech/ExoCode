@@ -53,9 +53,8 @@ void ExoBLE::advertising_onoff(bool onoff)
     }
 }
 
-BleMessage* ExoBLE::handle_updates() 
+bool ExoBLE::handle_updates() 
 {
-    static BleMessage* empty_msg = new BleMessage();
     BLE.poll();
 
     //check connection status
@@ -64,27 +63,20 @@ BleMessage* ExoBLE::handle_updates()
         _connected = BLE.connected();
         advertising_onoff(!_connected);
     }
-    
-    if (!ble_rx::queue_is_empty())
-    {
-       return ble_rx::pop_queue();
-    }
-    else 
-    {
-        return empty_msg;
-    }
+
+    return queue_size();
 }
 
 
 void ExoBLE::send_message(BleMessage &msg)
 {
-    Serial.print("Address: ");
-    Serial.println(reinterpret_cast<long unsigned int>(&msg));
+    // Serial.print("Address: ");
+    // Serial.println(reinterpret_cast<long unsigned int>(&msg));
     const int max_chars = 8;
     int max_payload_length = ((3 + msg.expecting) * (max_chars + 1));
     byte buffer[max_payload_length];
-    Serial.print("ExoBLE::send_message->Data: ");
-    Serial.println(msg.data[0]);
+    // Serial.print("ExoBLE::send_message->Data: ");
+    // Serial.println(msg.data[0]);
     int bytes_to_send =  _ble_parser.package_raw_data(buffer, msg);
     _gatt_db.TXChar.writeValue(buffer, bytes_to_send);
 }
@@ -109,31 +101,14 @@ void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
     {
         Serial.print("on_rx_recieved->Command: ");
         Serial.println(msg.command);
-        for (int i=0; i<msg.expecting/8; i++)
+        for (int i=0; i<msg.expecting; i++)
         {
             Serial.print(msg.data[i]);
             Serial.print(", ");
         }
         Serial.println();
-        ble_rx::push_queue(msg);
+        push_queue(&msg);
     }
 }
 
-void ble_rx::push_queue(BleMessage &msg)
-{
-    ble_rx::queue.push_back(msg);
-}
-
-BleMessage* ble_rx::pop_queue()
-{
-    static BleMessage* msg = new BleMessage();
-    *msg = ble_rx::queue.back();
-    ble_rx::queue.pop_back();
-    return msg;
-}
-
-bool ble_rx::queue_is_empty()
-{
-    return ((ble_rx::queue.size() == 0) ? true:false);
-}
 #endif

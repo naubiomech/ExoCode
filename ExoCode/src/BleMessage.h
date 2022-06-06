@@ -9,7 +9,7 @@ class BleMessage
     public:
         BleMessage();
         void clear();
-        void copy(BleMessage n);
+        void copy(BleMessage* n);
         
         char command = 0;
         int expecting = 0;
