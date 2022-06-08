@@ -306,7 +306,6 @@ void loop()
 #include "src/ParseIni.h"
 #include "src/ExoData.h"
 #include "src/ComsMCU.h"
-#include "src/B2B_SPI.h"
 
 //namespace config_info
 //{
@@ -338,7 +337,6 @@ void setup()
     
     Serial.begin(115200);
     while (!Serial);
-    Serial.println("Starting!");
 }
 
 void loop()
@@ -348,6 +346,7 @@ void loop()
     mcu->handle_ble();
     mcu->local_sample();
     // TODO: Get New Data over SPI
+    
     mcu->update_gui();
 }
 
