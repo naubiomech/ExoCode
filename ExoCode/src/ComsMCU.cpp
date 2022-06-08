@@ -43,7 +43,6 @@ void ComsMCU::update_gui()
 
     // Send over bluetooth
 
-
     // Incrementally send status information
     static float then = millis();
     float now = millis();
@@ -77,4 +76,5 @@ void ComsMCU::_process_complete_gui_command(BleMessage* msg)
     }
     Serial.println();
 }
+
 #endif

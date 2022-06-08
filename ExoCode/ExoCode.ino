@@ -306,6 +306,12 @@ void loop()
 #include "src/ParseIni.h"
 #include "src/ExoData.h"
 #include "src/ComsMCU.h"
+#include "src/B2B_SPI.h"
+
+//namespace config_info
+//{
+//    uint8_t (config_to_send)[ini_config::number_of_keys];
+//}
 
 namespace config_info
 {
@@ -329,6 +335,7 @@ namespace config_info
 void setup()
 {
     // TODO: ask for init data over spi
+    
     Serial.begin(115200);
     while (!Serial);
     Serial.println("Starting!");
