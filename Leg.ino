@@ -32,8 +32,8 @@ void initialize_left_leg(Leg* left_leg) {
   left_leg->angle_address = 192;
   if (check_angle_bias(left_leg->angle_address)) { //If a saved angle calibration exists
     left_leg->angle_zero = read_angle_bias(left_leg->angle_address);
-    //Serial.println("Successful angle bias update");
-    //Serial.println(left_leg->angle_zero);
+    ////Serial.println("Successful angle bias update");
+    ////Serial.println(left_leg->angle_zero);
   } else {
     left_leg->angle_zero = 0;
   }

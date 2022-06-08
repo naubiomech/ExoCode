@@ -4,6 +4,9 @@
 // if the torque measured <25 the counter is reset.
 
 void pid(Leg* leg, double input) {
+
+  if (leg->whos == 'L') {
+  
   if (!CURRENT_CONTROL) {
     if ((abs(input) > 45)) //Was 25, increased to accomodate large exo
     {
@@ -52,10 +55,19 @@ void pid(Leg* leg, double input) {
   }
 
   leg->Vol = leg->Vol + leg->zero; // Modify the span such that the PWM value is from 0 to 4096.0 instead of -2048.0 to 2048.0
-
-  j++;
   
   analogWrite(leg->motor_ankle_pin, leg->Vol);
+  
+  
+    Serial.print(j); 
+    Serial.print(" ");
+    Serial.print(left_leg->PID_Setpoint);
+    Serial.print(" ");
+    Serial.println(left_leg->Input);
+  
+  
+  j++;
+  
   if (CURRENT_CONTROL) {
     if (j>=stepLength) {
       j = 0;
@@ -63,4 +75,5 @@ void pid(Leg* leg, double input) {
   } else if (j>=timeLength) {
     j = 0;
   }
+}
 }

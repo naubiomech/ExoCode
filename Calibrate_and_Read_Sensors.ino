@@ -39,7 +39,7 @@ void FSR_calibration()
     FSR_FIRST_Cycle = 0;
 
     startTime = millis();
-    //    Serial.println("First time");
+    //    //Serial.println("First time");
     right_leg->Curr_Combined = 0;
     left_leg->Curr_Combined = 0;
 

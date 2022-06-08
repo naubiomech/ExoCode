@@ -128,24 +128,24 @@ int clean_FSR_values(int address_FSR_l)
 // Since it is really big update I would suggest to do it before the trial not in the middle
 
 int write_EXP_parameters(int address_params_l)
-{ Serial.println();
+{ //Serial.println();
   EEPROM.put(address_params_l, 'y');
   address_params_l++;
   EEPROM.put(address_params_l, left_leg->KF);
   address_params_l += 8;
-  Serial.println(left_leg->KF);
+  //Serial.println(left_leg->KF);
   EEPROM.put(address_params_l, right_leg->KF);
   address_params_l += 8;
-  Serial.println(right_leg->KF);
+  //Serial.println(right_leg->KF);
   EEPROM.put(address_params_l, N1);
   address_params_l += 8;
-  Serial.println(N1);
+  //Serial.println(N1);
   EEPROM.put(address_params_l, N2);
   address_params_l += 8;
-  Serial.println(N2);
+  //Serial.println(N2);
   EEPROM.put(address_params_l, N3);
   address_params_l += 8;
-  Serial.println(N3);
+  //Serial.println(N3);
   EEPROM.put(address_params_l, left_leg->kp);
   address_params_l += 8;
   EEPROM.put(address_params_l, left_leg->kd);
@@ -162,23 +162,23 @@ int write_EXP_parameters(int address_params_l)
   address_params_l += 8;
   EEPROM.put(address_params_l, right_leg->fsr_percent_thresh_Toe);
   address_params_l += 8;
-  Serial.println("Completed Saving EXP Parameters");
+  //Serial.println("Completed Saving EXP Parameters");
 
   return 1;
 }
 
 int check_EXP_parameters(int address_params_l)
 {
-  //  Serial.print("Checking at pos ");
-  //  Serial.println(address_params_l);
+  //  //Serial.print("Checking at pos ");
+  //  //Serial.println(address_params_l);
   byte value = EEPROM.read(address_params_l);
-  Serial.println(char(value));
+  //Serial.println(char(value));
   if (char(value) == 'y') {
 
-    Serial.println(" EXP parameters are present in memory ");
+    //Serial.println(" EXP parameters are present in memory ");
     return 1;
   }
-  Serial.println(" EXP parameters are not present in memory ");
+  //Serial.println(" EXP parameters are not present in memory ");
   return 0;
 }
 

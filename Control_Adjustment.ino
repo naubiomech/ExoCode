@@ -19,11 +19,11 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
     {
       p_steps_l->peak = 0;
       p_steps_l->flag_start_plant = false;
-      //        Serial.println(" BASE Dorsi too short");
+      //        //Serial.println(" BASE Dorsi too short");
       return 0;
     } else {
       p_steps_l->flag_start_plant = true; // Parameters inizialized Start a step
-      //        Serial.println(" BASE Start Plantar");
+      //        //Serial.println(" BASE Start Plantar");
     }
   }
 
@@ -32,7 +32,7 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
     // if you transit from 3 to 1 plantar flexion is completed and start dorsiflexion
 
     if ((R_state_old_l == 3) && (R_state_l == 1 || R_state_l == 2)) {
-      //      Serial.println(" BASE Start Dorsi");
+      //      //Serial.println(" BASE Start Dorsi");
 
       // start dorsiflexion
 
@@ -43,17 +43,17 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
       if (p_steps_l->plant_time <= step_time_length)
       {
         p_steps_l->flag_start_plant = false;
-        //        Serial.println("BASE Plant too short"); // it means is a glitch not a real step
+        //        //Serial.println("BASE Plant too short"); // it means is a glitch not a real step
         return 0;
       } else {
         p_steps_l->flag_start_plant = false; // you have provided one plant
-        //        Serial.println("Increase Plant number");
+        //        //Serial.println("Increase Plant number");
         p_steps_l->count_plant_base++; // you have accomplished a step
-        //        Serial.println(p_steps_l->count_plant_base);
+        //        //Serial.println(p_steps_l->count_plant_base);
       }
 
-      //      Serial.print(" BASE Plant Time = ");
-      //      Serial.println(p_steps_l->plant_time);
+      //      //Serial.print(" BASE Plant Time = ");
+      //      //Serial.println(p_steps_l->plant_time);
 
       if ((p_steps_l->count_plant_base) >= 2) { // avoid the first step just to be sure
 
@@ -92,11 +92,11 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
 
           //HERE
 
-          //          Serial.println("BASE before return");
-          //          Serial.print(" Peak ");
-          //          Serial.println(p_steps_l->peak);
-          //          Serial.print(" N ");
-          //          Serial.println(p_steps_l->count_plant_base);
+          //          //Serial.println("BASE before return");
+          //          //Serial.print(" Peak ");
+          //          //Serial.println(p_steps_l->peak);
+          //          //Serial.print(" N ");
+          //          //Serial.println(p_steps_l->count_plant_base);
         }
         else {
           p_steps_l->four_step_dorsi_time[p_steps_l->count_plant_base - 2] = p_steps_l->dorsi_time;
@@ -104,16 +104,16 @@ int take_baseline(Leg* leg, int R_state_l, int R_state_old_l, steps* p_steps_l, 
           p_steps_l->four_step_plant_time[p_steps_l->count_plant_base - 2] = p_steps_l->plant_time;
 
           p_steps_l->four_step_plant_peak[p_steps_l->count_plant_base - 2] = p_steps_l->peak;
-          //          Serial.println("Inside Peak vector ");
+          //          //Serial.println("Inside Peak vector ");
 
           for (int i = 0; i < n_step_baseline; i++) {
-            //            Serial.println(p_steps_l->four_step_plant_peak[i]);
+            //            //Serial.println(p_steps_l->four_step_plant_peak[i]);
           }
         }
 
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
-          //          Serial.print("BASE return peak mean temporary");
-          //          Serial.println(p_steps_l->plant_peak_mean_temp);
+          //          //Serial.print("BASE return peak mean temporary");
+          //          //Serial.println(p_steps_l->plant_peak_mean_temp);
         }
         if (((p_steps_l->count_plant_base) - 2) >= n_step_baseline) {
           (p_steps_l->count_plant_base) = 0;
@@ -306,7 +306,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       {
         p_steps_l->peak = 0;
         p_steps_l->flag_start_plant = false;
-        //        Serial.println(" SPD ADJ dorsi time too short ");
+        //        //Serial.println(" SPD ADJ dorsi time too short ");
         return N3_l;
       }
 
@@ -335,7 +335,7 @@ double Control_Adjustment(Leg* leg, int R_state_l, int R_state_old_l, steps* p_s
       {
 
         p_steps_l->flag_start_plant = false;
-        Serial.println(" SPD ADJ plant time too short ");
+     //   //Serial.println(" SPD ADJ plant time too short ");
         return N3_l;
       }
 

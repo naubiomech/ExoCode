@@ -6,7 +6,7 @@ void receive_and_transmit()
 {
 
   cmd_from_Gui = bluetooth.read();
-  Serial.println((char) cmd_from_Gui);
+  ////Serial.println((char) cmd_from_Gui);
   switch (cmd_from_Gui)
   {
     case '?':
@@ -29,7 +29,7 @@ void receive_and_transmit()
 
     case 'F':                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
       receiveVals(32);
-      Serial.println("Received some setpoints");
+      ////Serial.println("Received some setpoints");
       left_leg->Previous_Setpoint_Ankle = left_leg->Setpoint_Ankle;
       left_leg->Previous_Dorsi_Setpoint_Ankle = left_leg->Dorsi_Setpoint_Ankle;
       right_leg->Previous_Setpoint_Ankle = right_leg->Setpoint_Ankle;
@@ -77,7 +77,7 @@ void receive_and_transmit()
         right_leg->first_step = 1;
         right_leg->num_3_steps = 0;
         right_leg->start_step = 0;
-        Serial.println("Right Setpoint Negative, going to zero");
+        //Serial.println("Right Setpoint Negative, going to zero");
 
       } else {
 
@@ -106,7 +106,7 @@ void receive_and_transmit()
         MotorEff = 0.89;
         GearboxEff = 0.59;
         PulleyRatio = 5; //Small aluminum pulley, large sprocket
-        Serial.println("22mm 90W");
+       // //Serial.println("22mm 90W");
 
       } else if (MotorParams == 1) {
         // 22mm 120W motor, 32HP C gearbox
@@ -118,7 +118,7 @@ void receive_and_transmit()
         MotorEff = 0.89;
         GearboxEff = 0.7;
         PulleyRatio = 30 / 10.3; //Small aluminum pulley, large sprocket
-        Serial.println("22mm 120W");
+      //  //Serial.println("22mm 120W");
 
       } else if (MotorParams == 2) {
         // 30mm 200W motor, 32HP gearbox (51:1)
@@ -130,7 +130,7 @@ void receive_and_transmit()
         MotorEff = 0.89;
         GearboxEff = 0.7;
         PulleyRatio = 74 / 10.3; //Large aluminum pulley, large sprocket
-        Serial.println("30mm 200W 51:1");
+      //  //Serial.println("30mm 200W 51:1");
 
       } else if (MotorParams == 3) {
         // 30mm 200W motor, 32HP gearbox (103:1)
@@ -142,7 +142,7 @@ void receive_and_transmit()
         MotorEff = 0.89;
         GearboxEff = 0.7;
         PulleyRatio = 30 / 13.25; //Carbon fiber pulley, motor pulley
-        Serial.println("30mm 200W 103:1");
+      //  //Serial.println("30mm 200W 103:1");
 
       }
 
@@ -166,18 +166,18 @@ void receive_and_transmit()
       //stepdata[2] = //XXXXX Will be used to send error information, must update stepData array size in msg_Functions header file
       if (true)//check_steps(stepper->kaddr))  //If the exo has saved a step count to EEPROM
       {
-        Serial.println("Check steps worked!");
+        //Serial.println("Check steps worked!");
         //write_steps(read_steps(stepper->kaddr) + stepper->steps, stepper->kaddr); //Write the new total to EEPROM
         stepper->steps = 0; //Clear trial step count
       } 
       else 
       {
-        Serial.println("Check steps didnt work.");
+        //Serial.println("Check steps didnt work.");
         //write_steps(stepper->steps, stepper->kaddr);
         stepper->steps = 0;
       }
       send_command_message(stepper->step_flag,stepData,2);
-      Serial.println("Sent Trial Data!");
+      //Serial.println("Sent Trial Data!");
       break;
 
     case 'H':
@@ -197,15 +197,15 @@ void receive_and_transmit()
     case 'k':
       receiveVals(1);
       memcpy(&CtrlType,holdOnPoint,1);  //Copy the values that indicate desired open-loop control
-      Serial.println(CtrlType);
+      ////Serial.println(CtrlType);
       if (CtrlType==0) {
         CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
         CURRENT_DIAGNOSTICS = 0;
         MODEL_CONTROL = 0;
         if (CURRENT_CONTROL) {
-          Serial.println("Current Control");
+         // //Serial.println("Current Control");
         } else {
-          Serial.println("Torque Control");
+         // //Serial.println("Torque Control");
         }
       //Comments have been made for iOS Demo
       } else if (CtrlType==1) {
@@ -213,18 +213,18 @@ void receive_and_transmit()
          CURRENT_DIAGNOSTICS = !CURRENT_DIAGNOSTICS;
          MODEL_CONTROL = 0;
          if (CURRENT_DIAGNOSTICS) {
-           Serial.println("Current Diagnostics");
+          // //Serial.println("Current Diagnostics");
          } else {
-           Serial.println("Torque Control");
+         //  //Serial.println("Torque Control");
          }
         } else if (CtrlType==2) {
          CURRENT_CONTROL = 0;
          CURRENT_DIAGNOSTICS = 0;
          MODEL_CONTROL = !MODEL_CONTROL;
          if (MODEL_CONTROL) {
-           Serial.println("Model Control");
+          // //Serial.println("Model Control");
          } else {
-           Serial.println("Torque Control");
+          // //Serial.println("Torque Control");
          }
       }
 
@@ -600,9 +600,9 @@ void receive_and_transmit()
         write_FSR_values((right_leg->address_FSR + sizeof(double) + sizeof(char)), right_leg->fsr_Heel_peak_ref);
 
         write_baseline(left_leg->baseline_address, left_leg->baseline_value);
-        Serial.println(left_leg->baseline_value);
+       // //Serial.println(left_leg->baseline_value);
         write_baseline(right_leg->baseline_address, right_leg->baseline_value);
-        Serial.println(right_leg->baseline_value);
+       // //Serial.println(right_leg->baseline_value);
 
         write_torque_bias(left_leg->torque_address, left_leg->torque_calibration_value);
         write_torque_bias(right_leg->torque_address, right_leg->torque_calibration_value);
@@ -868,12 +868,12 @@ void receive_and_transmit()
     // Optimization ------------------------------------------------
 
     case '%':
-      Serial.println("Start Optimization");
+      //Serial.println("Start Optimization");
       Flag_HLO = true;
       break;
 
     case 'h':
-      //Serial.println("End Optimization");
+      ////Serial.println("End Optimization");
       left_leg->Setpoint_Ankle = 0;
       right_leg->Setpoint_Ankle = 0;
       left_leg->Setpoint_Ankle_Pctrl = 0;
@@ -890,14 +890,14 @@ void receive_and_transmit()
         memcpy(&left_leg->T_Opt_p, holdOnPoint + 8, 8);       //Ankle torque rise time percentage for bang-bang
         right_leg->Setpoint_Ankle_Opt = -left_leg->Setpoint_Ankle_Opt;
         right_leg->T_Opt_p = left_leg->T_Opt_p;
-        //Serial.println(left_leg->FLAG_UPDATE_VALUES);
+        ////Serial.println(left_leg->FLAG_UPDATE_VALUES);
         left_leg->FLAG_UPDATE_VALUES = true;
         right_leg->FLAG_UPDATE_VALUES = true;
-        //Serial.println(left_leg->FLAG_UPDATE_VALUES);
-        //Serial.print("Received these values from HLO : ");
-        //Serial.print(left_leg->Setpoint_Ankle_Opt);
-        //Serial.print(" , ");
-        //Serial.println(left_leg->T_Opt_p);
+        ////Serial.println(left_leg->FLAG_UPDATE_VALUES);
+        ////Serial.print("Received these values from HLO : ");
+        ////Serial.print(left_leg->Setpoint_Ankle_Opt);
+        ////Serial.print(" , ");
+        ////Serial.println(left_leg->T_Opt_p);
 
         left_leg->activate_in_3_steps = 1;
         left_leg->num_3_steps = 0;
@@ -1002,18 +1002,18 @@ void receive_and_transmit()
       //      *(data_to_send_point + 1) = right_leg->p_steps->plant_peak_mean;
       //      send_command_message('P', data_to_send_point, 2);
 
-      //      Serial.println(left_leg->p_steps->plant_peak_mean);
-      //      Serial.println(right_leg->p_steps->plant_peak_mean);
-      //      Serial.println(left_leg->Curr_Combined);
-      //      Serial.println(right_leg->Curr_Combined);
-      //      Serial.println(left_leg->fsr_Combined_peak_ref);
-      //      Serial.println(right_leg->fsr_Combined_peak_ref);
-      //      Serial.println(left_leg->fsr_Toe_peak_ref);
-      //      Serial.println(right_leg->fsr_Toe_peak_ref);
-      //      Serial.println(left_leg->fsr_Heel_peak_ref);
-      //      Serial.println(right_leg->fsr_Heel_peak_ref);
-      Serial.println(left_leg->torque_calibration_value);
-      Serial.println(right_leg->torque_calibration_value);
+      //      //Serial.println(left_leg->p_steps->plant_peak_mean);
+      //      //Serial.println(right_leg->p_steps->plant_peak_mean);
+      //      //Serial.println(left_leg->Curr_Combined);
+      //      //Serial.println(right_leg->Curr_Combined);
+      //      //Serial.println(left_leg->fsr_Combined_peak_ref);
+      //      //Serial.println(right_leg->fsr_Combined_peak_ref);
+      //      //Serial.println(left_leg->fsr_Toe_peak_ref);
+      //      //Serial.println(right_leg->fsr_Toe_peak_ref);
+      //      //Serial.println(left_leg->fsr_Heel_peak_ref);
+      //      //Serial.println(right_leg->fsr_Heel_peak_ref);
+      //Serial.println(left_leg->torque_calibration_value);
+      //Serial.println(right_leg->torque_calibration_value);
 
 
 
@@ -1059,20 +1059,20 @@ void receive_and_transmit()
       memcpy(&right_leg->torque_calibration_value, holdOnPoint + 24, 8);//added
 
 
-      //      Serial.println("Old left_leg->p_steps->plant_peak_mean_temp");
-      //      Serial.println(left_leg->p_steps->plant_peak_mean_temp);
-      //      Serial.println("Old right_leg->p_steps->plant_peak_mean_temp");
-      //      Serial.println(right_leg->p_steps->plant_peak_mean_temp);
-      //      Serial.println(left_leg->Curr_Combined);
-      //      Serial.println(right_leg->Curr_Combined);
-      //      Serial.println(left_leg->fsr_Combined_peak_ref);
-      //      Serial.println(right_leg->fsr_Combined_peak_ref);
-      //      Serial.println(left_leg->fsr_Toe_peak_ref);
-      //      Serial.println(right_leg->fsr_Toe_peak_ref);
-      //      Serial.println(left_leg->fsr_Heel_peak_ref);
-      //      Serial.println(right_leg->fsr_Heel_peak_ref);
-      //      Serial.println(left_leg->torque_calibration_value);
-      //      Serial.println(right_leg->torque_calibration_value);
+      //      //Serial.println("Old left_leg->p_steps->plant_peak_mean_temp");
+      //      //Serial.println(left_leg->p_steps->plant_peak_mean_temp);
+      //      //Serial.println("Old right_leg->p_steps->plant_peak_mean_temp");
+      //      //Serial.println(right_leg->p_steps->plant_peak_mean_temp);
+      //      //Serial.println(left_leg->Curr_Combined);
+      //      //Serial.println(right_leg->Curr_Combined);
+      //      //Serial.println(left_leg->fsr_Combined_peak_ref);
+      //      //Serial.println(right_leg->fsr_Combined_peak_ref);
+      //      //Serial.println(left_leg->fsr_Toe_peak_ref);
+      //      //Serial.println(right_leg->fsr_Toe_peak_ref);
+      //      //Serial.println(left_leg->fsr_Heel_peak_ref);
+      //      //Serial.println(right_leg->fsr_Heel_peak_ref);
+      //      //Serial.println(left_leg->torque_calibration_value);
+      //      //Serial.println(right_leg->torque_calibration_value);
 
 
       break;
@@ -1113,8 +1113,8 @@ void receive_and_transmit()
       {
         totalSteps[0] = 0;
       }
-      Serial.print("Total Steps: ");
-      Serial.println(totalSteps[0]);
+      //Serial.print("Total Steps: ");
+      //Serial.println(totalSteps[0]);
       send_command_message('0',totalSteps,1);
       break;
       

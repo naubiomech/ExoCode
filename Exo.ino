@@ -57,7 +57,7 @@ int streamTimerCountNum = 0;
 void setup()
 {
   // set the interrupt timer
-  Serial.println("Started");
+  ////Serial.println("Started");
   #if BOARD_VERSION == DUAL_BOARD_REV4  //Use timer interrupts for teensy 3.6
     Timer1.initialize(2000);            // initialize timer1, and set a 2 ms period *note this is 2k microseconds*
     Timer1.attachInterrupt(callback);   // attaches callback() as a timer overflow interrupt
@@ -97,7 +97,7 @@ void setup()
   // set pin mode for motor pin
   pinMode(onoff, OUTPUT); //Enable disable the motors
   digitalWrite(onoff, LOW);
-  //Serial.println("ONOFF SET");
+  ////Serial.println("ONOFF SET");
 
 //  #if BOARD_VERSION == DUAL_BOARD_REV4
 //    pinMode(TRIGGER_PIN, OUTPUT); // Enable the trigger //SS  6/23/2020
@@ -126,10 +126,10 @@ void setup()
   WireObj.endTransmission(); //End the transmission and calibration
   delay(100);
 
-  calculateStepUni();
+//  calculateStepUni();
 //  calculateWave();
-//  calculateChirp();
-  Serial.println("Setup complete");
+  calculateChirp();
+//  //Serial.println("Setup complete");
   
 }
 
@@ -184,7 +184,7 @@ void loop()
     
     if (bluetooth.available() > 0) // If bluetooth buffer contains something
     {
-      Serial.println("Something to read");
+    //  //Serial.println("Something to read");
       receive_and_transmit();       //Recieve and transmit
       
     }
@@ -322,20 +322,20 @@ void calculate_averages() {
   calculate_leg_average(right_leg);
 
   if (FLAG_PRINT_TORQUES) {
-    Serial.print("LEFT [");
+    //Serial.print("LEFT [");
     for (int i = 0; i < dim; i++) {
-      Serial.print(left_leg->TarrayPoint[i]);
-      Serial.print(" , ");
+      //Serial.print(left_leg->TarrayPoint[i]);
+      //Serial.print(" , ");
     }
-    Serial.print(" ] Average: ");
-    Serial.println(left_leg->Average_Trq);
-    Serial.print("RIGHT [");
+    //Serial.print(" ] Average: ");
+    //Serial.println(left_leg->Average_Trq);
+    //Serial.print("RIGHT [");
     for (int i = 0; i < dim; i++) {
-      Serial.print(right_leg->TarrayPoint[i]);
-      Serial.print(" , ");
+      //Serial.print(right_leg->TarrayPoint[i]);
+      //Serial.print(" , ");
     }
-    Serial.print(" ] Average: ");
-    Serial.println(right_leg->Average_Trq);
+    //Serial.print(" ] Average: ");
+    //Serial.println(right_leg->Average_Trq);
   }
 
 }
@@ -419,20 +419,20 @@ void rotate_motor() {
     // modification to check the pid
     if (FLAG_PID_VALS) {
 
-      Serial.print("LEFT PID INPUT:");
-      Serial.print(left_leg->Input);
-      Serial.print(" , AVG: ");
-      Serial.print(left_leg->Average_Trq);
-      Serial.print(" , VOL: ");
+      //Serial.print("LEFT PID INPUT:");
+      //Serial.print(left_leg->Input);
+      //Serial.print(" , AVG: ");
+      //Serial.print(left_leg->Average_Trq);
+      //Serial.print(" , VOL: ");
       double cane = (left_leg->Vol);
-      Serial.println(cane - zero);
-      Serial.print("RIGHT PID INPUT:");
-      Serial.print(right_leg->Input);
-      Serial.print(" , AVG: ");
-      Serial.print(right_leg->Average_Trq);
+      //Serial.println(cane - zero);
+      //Serial.print("RIGHT PID INPUT:");
+      //Serial.print(right_leg->Input);
+      //Serial.print(" , AVG: ");
+      //Serial.print(right_leg->Average_Trq);
       cane = (right_leg->Vol);
-      Serial.print(" , VOL: ");
-      Serial.println(cane - zero);
+      //Serial.print(" , VOL: ");
+      //Serial.println(cane - zero);
 
     }
     // end modification

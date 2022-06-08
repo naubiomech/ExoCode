@@ -22,15 +22,15 @@ double Change_PID_Setpoint_Spline(Leg* p_leg_l, double New_PID_Setpoint_l, doubl
   //n_iter tells you at which of the Nth sample you are not counting the zero
   //Ts sampling time. In this case 0.001 with exp_mult=2000 results in 6 millisecond rise from 0 to 1
 
-  Serial.print("Old T Setpoint: ");
-  Serial.print(p_leg_l->Previous_T_Opt);
-  Serial.print(" New T Setpoint: ");
-  Serial.println(T_l);
+  //Serial.print("Old T Setpoint: ");
+  //Serial.print(p_leg_l->Previous_T_Opt);
+  //Serial.print(" New T Setpoint: ");
+  //Serial.println(T_l);
 
-  Serial.print("Old TRQ Setpoint: ");
-  Serial.print(Old_PID_Setpoint_l);
-  Serial.print(" New TRQ Setpoint: ");
-  Serial.println(New_PID_Setpoint_l);
+  //Serial.print("Old TRQ Setpoint: ");
+  //Serial.print(Old_PID_Setpoint_l);
+  //Serial.print(" New TRQ Setpoint: ");
+  //Serial.println(New_PID_Setpoint_l);
 
   p_leg_l->pf = New_PID_Setpoint_l;
   p_leg_l->p0 = Old_PID_Setpoint_l;
@@ -51,8 +51,8 @@ double Change_PID_Setpoint_Spline(Leg* p_leg_l, double New_PID_Setpoint_l, doubl
 
   Current_PID_Setpoint = spl;
 
-  Serial.print(" Current PID Setpoint: ");
-  Serial.println(Current_PID_Setpoint);
+  //Serial.print(" Current PID Setpoint: ");
+  //Serial.println(Current_PID_Setpoint);
   return Current_PID_Setpoint;
 }
 //----------------------------------------------------------------------------------
@@ -97,17 +97,17 @@ void PID_Sigm_Curve(Leg* leg) {
     //Optimization---------------------------------------------
     if (Flag_HLO && leg->FLAG_UPDATE_VALUES && not(leg->state == 3))
     {
-      Serial.print("Update ");
+      //Serial.print("Update ");
       leg->Previous_Setpoint_Ankle = leg->Setpoint_Ankle;
       leg->Setpoint_Ankle = leg->Setpoint_Ankle_Opt;
       leg->Previous_T_Opt = leg->T_Opt;
       leg->T_Opt = max(0.1, leg->T_Opt_p * 1 * (leg->p_steps->plant_mean) * 0.001); //leg->T_Opt_p is the percentage of the stance phase
-      Serial.print(" - Setpoint: ");
-      Serial.print(leg->Setpoint_Ankle);
-      Serial.print(" , Mean Time Stance Phase: ");
-      Serial.print((leg->p_steps->plant_mean) * 0.001);
-      Serial.print(" , Rise Time Optimization: ");
-      Serial.println(leg->T_Opt);
+      //Serial.print(" - Setpoint: ");
+      //Serial.print(leg->Setpoint_Ankle);
+      //Serial.print(" , Mean Time Stance Phase: ");
+      //Serial.print((leg->p_steps->plant_mean) * 0.001);
+      //Serial.print(" , Rise Time Optimization: ");
+      //Serial.println(leg->T_Opt);
       leg->FLAG_UPDATE_VALUES = false;
     }
     //---------------------------------------------------------
