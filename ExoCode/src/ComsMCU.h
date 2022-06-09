@@ -15,6 +15,7 @@
 #include "BleMessage.h"
 #include "ParseIni.h"
 #include "ExoData.h"
+#include "BleMessageQueue.h"
 
 
 class ComsMCU

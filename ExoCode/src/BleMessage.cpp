@@ -3,26 +3,26 @@
 
 BleMessage::BleMessage() 
 { 
-    data.reserve(_max_size);
+    
 }
 
 void BleMessage::clear() 
 {
     command = 0;
     is_complete = false;
-    data.clear();
+    _size = 0;
     expecting = 0;
 }
 
-void BleMessage::copy(BleMessage n) 
+void BleMessage::copy(BleMessage* n) 
 { 
-    command = n.command; 
-    is_complete = n.is_complete;
-    data.clear();
-    for (int i=0; i<n.data.size();i++)
+    command = n->command; 
+    is_complete = n->is_complete;
+    _size = n->_size;
+    expecting = n->expecting;
+    for (int i=0; i<expecting;i++)
     {
-        data.push_back(n.data[i]);
-    }
-    expecting = n.expecting;
+        data[i] = (n->data[i]);
+    }  
 }
 #endif
