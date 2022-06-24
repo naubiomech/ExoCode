@@ -4,10 +4,10 @@
 #define VERSION 314
 #define BOARD_VERSION TMOTOR_REV1
 
-#define CONTROL_LOOP_HZ           1000
+#define CONTROL_LOOP_HZ           500
 #define SAMPLE_LOOP_MULT          2
 #define CONTROL_TIME_STEP         1 / CONTROL_LOOP_HZ
-#define COMMS_LOOP_HZ             25
+#define COMMS_LOOP_HZ             50
 //The digital pin connected to the motor on/off swich
 const unsigned int zero = 2048;
 bool motors_on = false;
@@ -125,6 +125,7 @@ void setup()
   //set the resolution
   analogWriteResolution(12);                                          //change resolution to 12 bits
   analogReadResolution(12);                                           //ditto
+  //analogReference(AR_INTERNAL2V4);
 
   //initialize the leg objects
   initialize_left_leg(left_leg);

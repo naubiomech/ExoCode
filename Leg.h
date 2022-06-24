@@ -105,7 +105,7 @@ struct Leg {
   int Vol;
 
 #ifdef ENABLE_PWM   //PID Gains are different for PWM control
-  double kp = 800;
+  double kp = 300;
   double ki = 0;
   double kd = 3;
 #else
