@@ -107,7 +107,7 @@ namespace controller_defs
     
     namespace user_defined
     {
-        const uint8_t num_sample_points = 25;  // not an index
+        const uint8_t num_sample_points = 50;  // not an index
         
         const uint8_t mass_idx = 0;
         const uint8_t curve_start_idx = 1;
@@ -123,6 +123,13 @@ namespace controller_defs
         const uint8_t num_parameter = 3;
     }
     
+    /*
+     * Add phase delayed controller for hip
+     * peak and trough magnitude defined.
+     * Delay based on percent gait.
+     *
+     */
+    
     const uint8_t max_parameters = user_defined::num_parameter;  // this should be the largest of all the num_parameters
 }
 
@@ -130,6 +137,8 @@ namespace controller_defs
 class ControllerData {
 	public:
         ControllerData(config_defs::joint_id id, uint8_t* config_to_send);
+        void reconfigure(uint8_t* config_to_send);
+        
         
         uint8_t controller;
         config_defs::JointType joint; 

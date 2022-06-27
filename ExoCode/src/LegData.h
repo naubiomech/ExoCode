@@ -25,6 +25,8 @@ class LegData{
     public:
         LegData(bool is_left, uint8_t* config_to_send);
         
+        void reconfigure(uint8_t* config_to_send);
+        
         JointData hip;
         JointData knee;
         JointData ankle; 

@@ -26,6 +26,7 @@ class ExoData;
 class JointData {
 	public:
         JointData(config_defs::joint_id id, uint8_t* config_to_send);
+        void reconfigure(uint8_t* config_to_send);
         
         config_defs::joint_id id;
         MotorData motor;

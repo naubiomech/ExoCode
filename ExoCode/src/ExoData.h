@@ -31,6 +31,7 @@ class ExoData
 {
 	public:
         ExoData(uint8_t* config_to_send); // constructor
+        void reconfigure(uint8_t* config_to_send);
         
         uint8_t status;
         bool sync_led_state;

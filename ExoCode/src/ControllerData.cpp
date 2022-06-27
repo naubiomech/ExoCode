@@ -43,3 +43,32 @@ ControllerData::ControllerData(config_defs::joint_id id, uint8_t* config_to_send
     }
 };
 
+void ControllerData::reconfigure(uint8_t* config_to_send) 
+{
+    // just reset controller
+    switch ((uint8_t)joint)  // use the id with the side masked out.
+    {
+        case (uint8_t)config_defs::joint_id::hip:
+        {
+            controller = config_to_send[config_defs::exo_hip_default_controller_idx];
+            break;
+        }
+        case (uint8_t)config_defs::joint_id::knee:
+        {
+            controller = config_to_send[config_defs::exo_knee_default_controller_idx];
+            break;
+        }
+        case (uint8_t)config_defs::joint_id::ankle:
+        {
+            controller = config_to_send[config_defs::exo_ankle_default_controller_idx];
+            break;
+        }
+    }
+    
+    setpoint = 0;
+    for (int i=0; i < controller_defs::max_parameters; i++)
+    {    
+        parameters[i] = 0;
+    }
+};
+

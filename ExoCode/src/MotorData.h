@@ -22,6 +22,7 @@ class MotorData
 {
 	public:
         MotorData(config_defs::joint_id id, uint8_t* config_to_send);
+        void reconfigure(uint8_t* config_to_send);
         
         config_defs::joint_id id;
         uint8_t motor_type;
@@ -34,6 +35,8 @@ class MotorData
         float kd = 0;
         float t_ff = 0;
         
+        // add do_zero_flag and check in run.
+        bool do_zero;
         bool enabled;
         bool is_left;
         bool flip_direction;

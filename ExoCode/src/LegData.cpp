@@ -45,4 +45,23 @@ LegData::LegData(bool is_left, uint8_t* config_to_send)
     }
         
 };
+
+void LegData::reconfigure(uint8_t* config_to_send) 
+{
+    if ((static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_to_send[config_defs::exo_side_idx]) 
+        || (((uint8_t)config_defs::exo_side::left == config_to_send[config_defs::exo_side_idx]) & this->is_left)
+        || (((uint8_t)config_defs::exo_side::right == config_to_send[config_defs::exo_side_idx]) & !this->is_left)
+       )
+    {
+        this->is_used = true;
+    }
+    else
+    {
+        this->is_used = false;
+    }
+    
+    hip.reconfigure(config_to_send);
+    knee.reconfigure(config_to_send);
+    ankle.reconfigure(config_to_send);
+};
  

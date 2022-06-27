@@ -23,5 +23,10 @@ ExoData::ExoData(uint8_t* config_to_send)
     
 };
 
+void ExoData::reconfigure(uint8_t* config_to_send) 
+{
+    left_leg.reconfigure(config_to_send);
+    right_leg.reconfigure(config_to_send);
+};
 
 
