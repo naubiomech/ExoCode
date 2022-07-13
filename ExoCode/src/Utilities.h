@@ -39,11 +39,13 @@ namespace utils
      * Takes in the original uint8_t the bit value you would like to use and the location you are placing that bit.
      */
     uint8_t update_bit(uint8_t original, bool val, uint8_t loc);
+    uint16_t update_bit(uint16_t original, bool val, uint8_t loc);
     
     /*
      * Returns the bit in a specific location in a uint8_t
      */
     bool get_bit(uint8_t original, uint8_t loc);
+    bool get_bit(uint16_t original, uint8_t loc);
     
     /*
      * converts from degrees to radians
@@ -103,6 +105,10 @@ namespace utils
             int _pin;
             bool _state;
     };
+    
+    bool is_little_endian();
+    void float_to_uint8(float num_to_convert, uint8_t *converted_bytes);
+    void uint8_to_float(uint8_t *bytes_to_convert, float *converted_float);
     
 }
 

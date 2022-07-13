@@ -75,11 +75,23 @@ namespace utils
         
         return (original & keep_bit) | (val<<loc);
     };
+    uint16_t update_bit(uint16_t original, bool val, uint8_t loc)
+    {
+        uint16_t keep_bit = ~(1<<loc);  //set a mask for the bits we aren't setting 
+        
+        return (original & keep_bit) | (val<<loc);
+    };
     
     /*
      * Returns the bit in a specific location in a uint8_t
      */
     bool get_bit(uint8_t original, uint8_t loc)
+    {
+        uint8_t bit_to_check = (1<<loc);  //set a mask for the bits we are checking
+        
+        return (original & bit_to_check) == bit_to_check;
+    };
+    bool get_bit(uint16_t original, uint8_t loc)
     {
         uint8_t bit_to_check = (1<<loc);  //set a mask for the bits we are checking
         
@@ -121,7 +133,6 @@ namespace utils
         return str;
     };
 
-
     /*
      * given and integer, return the number of characters in it
      */
@@ -150,8 +161,7 @@ namespace utils
         }
         return len;
     };
-    
-    
+   
     /*
      * Used to check the loop speed without a print.
      * 
@@ -175,4 +185,101 @@ namespace utils
         
         digitalWrite(_pin, _state);
     };
+    
+    /*
+     * Used to convert between floats and bytes 
+     * 
+     * !! NOT to be used outside of utils
+     */
+    union FloatByteUnion
+    {
+        float f;
+        uint8_t b[sizeof(float)];
+    };
+    
+    /*
+     * Returns 1 if system uses little endian floating points.  This confirms that the floating points match if not the byte order needs to be flipped.
+     * Not tested with big endian or 64 bit systems
+     */
+    bool is_little_endian()
+    {
+        FloatByteUnion val;
+        switch (sizeof(float))
+        {
+            case 4: // 32 bit
+                val.f = 1.401298464324817e-45;  // only works for 32 bit floats, arduino doesn't handle -0.
+                return val.b[0] == 0x01;
+                break;
+            case 8: // 64 bit
+                val.f = 4.94065645841246544176568792868E-324;  // only works for 64 bit floats, arduino doesn't handle -0.
+                return val.b[0] == 0x01;
+                break;
+            default:
+                Serial.println("Utilities :: is_little_endian() : System does not appear to be 32 or 64 bit");    
+        }
+        
+    }
+    
+    /*
+     * Takes in a float and a byte array reference
+     * Puts the bytes of the float into the array in little endian 
+     * Not tested with big endian or 64 bit systems
+     */
+    void float_to_uint8(float num_to_convert, uint8_t *converted_bytes)
+    {
+        FloatByteUnion val;
+        val.f = num_to_convert;
+        int idx;
+        // Serial.println(val.f);
+        for(uint i = 0; i<sizeof(float); i++)
+        {
+            if (is_little_endian())
+            {
+                idx = i;
+            }
+            else
+            {
+                idx = sizeof(float)-i-1;
+            }
+            // Serial.println(idx);
+            // Serial.println(val.b[0],HEX);
+            converted_bytes[i] = val.b[idx];
+            // Serial.println(converted_bytes[i],HEX);
+        }
+        return;
+    }
+    
+    /*
+     * Takes in a byte array address in little endian form containing a broken up float
+     * Returns a reconstituted float from the bytes in the form (endianess) the system uses.
+     * Not tested with big endian or 64 bit systems
+     */
+    void uint8_to_float(uint8_t *bytes_to_convert, float *converted_float)
+    {
+        FloatByteUnion val;
+        int idx;
+        // Serial.println(bytes_to_convert[0],HEX);
+        
+        // flip the idx if not little endian
+        for(uint i = 0; i<sizeof(float); i++)
+        {
+            if (is_little_endian())
+            {
+                idx = i;
+            }
+            else
+            {
+                idx = sizeof(float)-i-1;
+            }
+            // Serial.println(idx);
+            val.b[i] = bytes_to_convert[idx];
+            // Serial.println(val.b[i],HEX);
+        }
+        
+        *converted_float = val.f;
+        // Serial.println(*converted_float);
+        
+         
+        return;
+    }
 }
