@@ -11,7 +11,11 @@ namespace utils
      */
     bool get_is_left(config_defs::joint_id id)
     {
-        return ((uint8_t)id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
+        return get_is_left((uint8_t) id);//((uint8_t)id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
+    };
+    bool get_is_left(uint8_t id)
+    {
+        return (id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
     };
 
     /*
@@ -20,7 +24,12 @@ namespace utils
      */
     uint8_t get_joint_type(config_defs::joint_id id)
     {
-        return (uint8_t)id & (~(uint8_t)config_defs::joint_id::left & ~(uint8_t)config_defs::joint_id::right);  // return the joint id with the left/right indicators masked out.  
+        return get_joint_type((uint8_t) id);//(uint8_t)id & (~(uint8_t)config_defs::joint_id::left & ~(uint8_t)config_defs::joint_id::right);  // return the joint id with the left/right indicators masked out.  
+    };
+    
+    uint8_t get_joint_type(uint8_t id)
+    {
+        return id & (~(uint8_t)config_defs::joint_id::left & ~(uint8_t)config_defs::joint_id::right);  // return the joint id with the left/right indicators masked out.  
     };
     
     /*
