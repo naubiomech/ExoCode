@@ -1,0 +1,4 @@
+3,"header Size, the first N rows will be ignored, except for this first cell",,,,
+,Parameter list for the BangBang controller,,,,
+,Parameter order:,,Flex Setpoint (Nm),Extension Setpoint  (Nm) Should be Negative,Target Flexion Percent Max
+2,-8,80,0,0.0872,-0.175

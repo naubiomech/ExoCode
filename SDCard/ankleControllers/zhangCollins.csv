@@ -1,0 +1,9 @@
+3,"header Size, the first N rows will be ignored, except for this first cell",,,,,,
+,Parameter list for the ZeroTorque controller,,,,,,
+,Parameter order:,Mass(kg),Peak Normalized Torque (Nm/kg),Ramp Start Percent,Torque Onset Percent Gait,peak Torque Percent Gait,Torque offset percent gait
+100,0.04,0,23,48,58,,
+100,0.04,0,23,40,58,,
+100,0.04,0,15,48,58,,
+100,0.04,0,15,40,58,,
+100,0.04,0,30,48,58,,
+100,0.04,0,30,40,58,,

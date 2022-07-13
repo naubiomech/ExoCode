@@ -1,0 +1,11 @@
+3,"header Size, the first N rows will be ignored, except for this first cell",,,,,,,,,,,
+,Parameter list for the FranksCollins controller,,,,,,,,,,,
+,Parameter order:,,mass,Trough Normalized Torque  (Nm/kg),Peak Normalized Torque (Nm/kg),start percent gait,trough onset percent gait,trough percent gait,mid time (% gait),mid duration(% gait),peak percent gait,peak offset percent gait
+100,-0.03,0.02,84,10,15,40,10,73,15,,,
+100,-0.03,0.02,84,10,15,40,10,73,15,,,
+100,-0.03,0.02,84,10,15,40,10,73,15,,,
+100,-0.03,0.02,84,10,15,40,10,73,15,,,
+100,-0.03,0.02,84,10,15,40,10,73,15,,,
+100,-0.03,0.02,84,10,15,40,10,73,15,,,
+100,-0.03,0.02,84,10,15,40,10,73,15,,,
+100,-0.03,0.02,84,10,15,40,10,73,15,,,

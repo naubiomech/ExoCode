@@ -1,0 +1,7 @@
+3,"header Size, the first N rows will be ignored, except for this first cell",,,
+,Parameter list for the  Sine controller,,,
+,Parameter order:,Ampitude(Nm),Period (ms),Phase Shift (rad)
+1,1000,0,,
+1,1000,90,,
+3,1000,0,,
+3,1000,90,,
