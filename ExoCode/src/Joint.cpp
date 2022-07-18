@@ -99,6 +99,11 @@ void _Joint::check_calibration()
     // Check if we are doing the calibration on the torque sensor
     _joint_data->calibrate_torque_sensor = _torque_sensor.calibrate(_joint_data->calibrate_torque_sensor);
     //Serial.print("_Joint::check_calibration\n"); 
+    if (_joint_data->motor.do_zero)
+    {
+        _motor->zero();
+    }
+    
 };
 
 /*
