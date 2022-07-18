@@ -16,6 +16,11 @@
 #include "Board.h"
 #include "StatusLed.h"
 
+/* 
+ * ExoData was broken out from the Exo class as we were originally going to have it mirrored on a second microcontroller that handled BLE.
+ * It doesn't need to be done this way if we aren't, and is pretty cumbersome.
+ * Just thought you might be wondering about the weirdness.
+ */
 
 //TODO: Add an output data that creates an array that can be used to send to the other board.
 // moved status values to StatusLed.h
