@@ -40,6 +40,7 @@ namespace config_defs
     { 
         zero_one = 1,
         zero_three = 2,
+        zero_four = 3,
     };
     
     enum class battery : uint8_t
@@ -188,7 +189,9 @@ namespace config_defs
 
 
     // The select pin used for the SD card
-    #define SD_SELECT BUILTIN_SDCARD
+    #ifndef SD_SELECT
+        #define SD_SELECT BUILTIN_SDCARD
+    #endif
 
     
 
