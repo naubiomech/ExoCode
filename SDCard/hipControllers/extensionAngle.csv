@@ -1,4 +1,5 @@
-3,"header Size, the first N rows will be ignored, except for this first cell",,,,,,,
+4,"header Size, the first N rows will be ignored, except for this first cells in the first two rows",,,,,,,
+6,"parameter number, the number of parameters to read per line",,,,,,,
 ,Parameter list for the ExtensionAngle controller,,,,,,,
 ,Parameter order:,,Flex Setpoint (Nm),Extension Setpoint  (Nm) Should be Negative,Target Flexion Percent Max,Clear Angle (Bool),Angle Threshold(rad),Velocity Threshold(rad/s) Should be Negative
 2,-8,80,0,0.0872,-0.175,,,
