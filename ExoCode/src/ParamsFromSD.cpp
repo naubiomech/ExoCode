@@ -219,19 +219,37 @@
             }
             case (uint8_t)config_defs::joint_id::knee:
             {
+                #ifdef SD_PARAM_DEBUG
+                    Serial.println("\n\nset_controller_params : Knee");
+                #endif
                 // Connect to SD card
                 SPI.begin();
+                #ifdef SD_PARAM_DEBUG
+                    Serial.println("set_controller_params : SPI Begin");
+                #endif
                 if (!SD.begin(SD_SELECT))
                 {
                     error_type = utils::update_bit((uint8_t)config_defs::joint_id::knee, 1, param_error::SD_not_found_idx);
+                    #ifdef SD_PARAM_DEBUG
+                        Serial.println("set_controller_params : SD Not Found");
+                    #endif
                     return error_type;
                 }
                 else 
                 {
                     // Get filename
                     filename = controller_parameter_filenames::knee[controller_id];
+                    #ifdef SD_PARAM_DEBUG
+                        Serial.print("set_controller_params : filename = ");
+                        Serial.println(filename.c_str());
+                    #endif
                     // Open File
                     param_file = SD.open(filename.c_str(), FILE_READ);
+                    #ifdef SD_PARAM_DEBUG
+                        Serial.print("set_controller_params : ");
+                        Serial.print(filename.c_str());
+                        Serial.println(" opened");
+                    #endif
                     // check file exists
                     if (param_file)
                     {   
@@ -239,36 +257,118 @@
                         {
                             // First value should be header size
                             header_size = param_file.parseInt();
+                            #ifdef SD_PARAM_DEBUG
+                                Serial.print("set_controller_params : header size ");
+                                Serial.println(header_size);
+                            #endif
                             // skip to the line we need
                             line_to_read = header_size + set_num;
                             for (int line_being_read = 0; line_being_read < line_to_read; line_being_read++)
                             { 
-                                param_file.readStringUntil('\n');
+                                // first value in second line should be parameter number
+                                if (line_being_read == 1)
+                                {
+                                    param_num_in_file = param_file.parseInt();
+                                    #ifdef SD_PARAM_DEBUG
+                                        Serial.print("set_controller_params : Number of parameters in file = ");
+                                        Serial.println(param_num_in_file);
+                                    #endif    
+                                } 
+                                // keep going through the file till the next new line.  This is so it will restart if timeout happens.          
+                                while(!param_file.findUntil('\n','\n'))
+                                {
+                                    ;
+                                }
+                                #ifdef SD_PARAM_DEBUG
+                                    Serial.print("set_controller_params : read line ");
+                                    Serial.println(line_being_read);
+                                #endif
                             }
+                            
                             // store the line start value so we can go back here
                             unsigned long line_start = param_file.position();
+                            #ifdef SD_PARAM_DEBUG
+                                Serial.print("set_controller_params : parameter set start ");
+                                Serial.println(line_start);
+                            #endif
+                            
                             // find the end of the line
                             param_file.readStringUntil('\n');
                             unsigned long line_end = param_file.position();
+                            #ifdef SD_PARAM_DEBUG
+                                Serial.print("set_controller_params : parameter set end ");
+                                Serial.println(line_end);
+                            #endif
+                            
                             // reset to the start of the line
                             param_file.seek(line_start);
+                            #ifdef SD_PARAM_DEBUG
+                                Serial.println("set_controller_params : reset to line start");
+                            #endif
                             // set the parameters.
                             uint8_t param_num = 0;
+                            float read_val = 0;
                             if(utils::get_is_left(joint_id))
                             {
+                                #ifdef SD_PARAM_DEBUG
+                                    Serial.println("set_controller_params : is Left ");
+                                #endif
+                                
                                 // read till the end of the line or all the parameters are full
-                                while ((line_end > param_file.position()) || (param_num < controller_defs::max_parameters))
+                                while (param_num < controller_defs::max_parameters)
                                 {
-                                    exo_data->left_leg.knee.controller.parameters[param_num] = param_file.parseFloat();
+                                    if (param_num_in_file > param_num)
+                                    {
+                                        read_val = param_file.parseFloat();
+                                        #ifdef SD_PARAM_DEBUG
+                                            Serial.print("+Value in file :\t");
+                                            Serial.println(read_val,6);
+                                        #endif
+                                        
+                                    }
+                                    else
+                                    {
+                                        read_val = 0;
+                                        #ifdef SD_PARAM_DEBUG
+                                            Serial.print("-File Line Ended :\t");
+                                            Serial.println(read_val,6);
+                                        #endif
+                                    }
+                                    
+                                    exo_data->left_leg.knee.controller.parameters[param_num] = read_val;
+                                    
                                     param_num++;
                                 }
                             }
                             else
-                            { 
+                            {
+                                #ifdef SD_PARAM_DEBUG
+                                    Serial.println("set_controller_params : is Right ");
+                                #endif
+                                
                                 // read till the end of the line or all the parameters are full
-                                while ((line_end > param_file.position()) || (param_num < controller_defs::max_parameters))
+                                while (param_num < controller_defs::max_parameters)
                                 {
-                                    exo_data->right_leg.knee.controller.parameters[param_num] = param_file.parseFloat();
+                                    if (param_num_in_file > param_num)
+                                    {
+                                        read_val = param_file.parseFloat();
+                                        #ifdef SD_PARAM_DEBUG
+                                            Serial.print("+Value in file :\t");
+                                            Serial.println(read_val,6);
+                                        #endif
+                                        
+                                    }
+                                    else
+                                    {
+                                        read_val = 0;
+                                        #ifdef SD_PARAM_DEBUG
+                                            Serial.print("-File Line Ended :\t");
+                                            Serial.println(read_val,6);
+                                        #endif
+                                    }
+                                    
+                                    exo_data->right_leg.knee.controller.parameters[param_num] = read_val;
+                                    
                                     param_num++;
                                 }
                             }
@@ -279,27 +379,51 @@
                     }
                     else
                     { 
-                        error_type = utils::update_bit((uint8_t)config_defs::joint_id::hip, 1, param_error::file_not_found_idx);
+                        error_type = utils::update_bit((uint8_t)config_defs::joint_id::knee, 1, param_error::file_not_found_idx);
+                        #ifdef SD_PARAM_DEBUG
+                            Serial.println("set_controller_params : File not found");
+                        #endif
                     }
                     param_file.close();
+                    #ifdef SD_PARAM_DEBUG
+                        Serial.println("set_controller_params : File Closed");
+                    #endif
                 }
                 break;
             }
             case (uint8_t)config_defs::joint_id::ankle:
             {
+                #ifdef SD_PARAM_DEBUG
+                    Serial.println("\n\nset_controller_params : Ankle");
+                #endif
                 // Connect to SD card
                 SPI.begin();
+                #ifdef SD_PARAM_DEBUG
+                    Serial.println("set_controller_params : SPI Begin");
+                #endif
                 if (!SD.begin(SD_SELECT))
                 {
                     error_type = utils::update_bit((uint8_t)config_defs::joint_id::ankle, 1, param_error::SD_not_found_idx);
+                    #ifdef SD_PARAM_DEBUG
+                        Serial.println("set_controller_params : SD Not Found");
+                    #endif
                     return error_type;
                 }
                 else 
                 {
                     // Get filename
                     filename = controller_parameter_filenames::ankle[controller_id];
+                    #ifdef SD_PARAM_DEBUG
+                        Serial.print("set_controller_params : filename = ");
+                        Serial.println(filename.c_str());
+                    #endif
                     // Open File
                     param_file = SD.open(filename.c_str(), FILE_READ);
+                    #ifdef SD_PARAM_DEBUG
+                        Serial.print("set_controller_params : ");
+                        Serial.print(filename.c_str());
+                        Serial.println(" opened");
+                    #endif
                     // check file exists
                     if (param_file)
                     {   
@@ -307,36 +431,118 @@
                         {
                             // First value should be header size
                             header_size = param_file.parseInt();
+                            #ifdef SD_PARAM_DEBUG
+                                Serial.print("set_controller_params : header size ");
+                                Serial.println(header_size);
+                            #endif
                             // skip to the line we need
                             line_to_read = header_size + set_num;
                             for (int line_being_read = 0; line_being_read < line_to_read; line_being_read++)
                             { 
-                                param_file.readStringUntil('\n');
+                                // first value in second line should be parameter number
+                                if (line_being_read == 1)
+                                {
+                                    param_num_in_file = param_file.parseInt();
+                                    #ifdef SD_PARAM_DEBUG
+                                        Serial.print("set_controller_params : Number of parameters in file = ");
+                                        Serial.println(param_num_in_file);
+                                    #endif    
+                                } 
+                                // keep going through the file till the next new line.  This is so it will restart if timeout happens.          
+                                while(!param_file.findUntil('\n','\n'))
+                                {
+                                    ;
+                                }
+                                #ifdef SD_PARAM_DEBUG
+                                    Serial.print("set_controller_params : read line ");
+                                    Serial.println(line_being_read);
+                                #endif
                             }
+                            
                             // store the line start value so we can go back here
                             unsigned long line_start = param_file.position();
+                            #ifdef SD_PARAM_DEBUG
+                                Serial.print("set_controller_params : parameter set start ");
+                                Serial.println(line_start);
+                            #endif
+                            
                             // find the end of the line
                             param_file.readStringUntil('\n');
                             unsigned long line_end = param_file.position();
+                            #ifdef SD_PARAM_DEBUG
+                                Serial.print("set_controller_params : parameter set end ");
+                                Serial.println(line_end);
+                            #endif
+                            
                             // reset to the start of the line
                             param_file.seek(line_start);
+                            #ifdef SD_PARAM_DEBUG
+                                Serial.println("set_controller_params : reset to line start");
+                            #endif
                             // set the parameters.
                             uint8_t param_num = 0;
+                            float read_val = 0;
                             if(utils::get_is_left(joint_id))
                             {
+                                #ifdef SD_PARAM_DEBUG
+                                    Serial.println("set_controller_params : is Left ");
+                                #endif
+                                
                                 // read till the end of the line or all the parameters are full
-                                while ((line_end > param_file.position()) || (param_num < controller_defs::max_parameters))
+                                while (param_num < controller_defs::max_parameters)
                                 {
-                                    exo_data->left_leg.ankle.controller.parameters[param_num] = param_file.parseFloat();
+                                    if (param_num_in_file > param_num)
+                                    {
+                                        read_val = param_file.parseFloat();
+                                        #ifdef SD_PARAM_DEBUG
+                                            Serial.print("+Value in file :\t");
+                                            Serial.println(read_val,6);
+                                        #endif
+                                        
+                                    }
+                                    else
+                                    {
+                                        read_val = 0;
+                                        #ifdef SD_PARAM_DEBUG
+                                            Serial.print("-File Line Ended :\t");
+                                            Serial.println(read_val,6);
+                                        #endif
+                                    }
+                                    
+                                    exo_data->left_leg.ankle.controller.parameters[param_num] = read_val;
+                                    
                                     param_num++;
                                 }
                             }
                             else
-                            { 
+                            {
+                                #ifdef SD_PARAM_DEBUG
+                                    Serial.println("set_controller_params : is Right ");
+                                #endif
+                                
                                 // read till the end of the line or all the parameters are full
-                                while ((line_end > param_file.position()) || (param_num < controller_defs::max_parameters))
+                                while (param_num < controller_defs::max_parameters)
                                 {
-                                    exo_data->right_leg.ankle.controller.parameters[param_num] = param_file.parseFloat();
+                                    if (param_num_in_file > param_num)
+                                    {
+                                        read_val = param_file.parseFloat();
+                                        #ifdef SD_PARAM_DEBUG
+                                            Serial.print("+Value in file :\t");
+                                            Serial.println(read_val,6);
+                                        #endif
+                                        
+                                    }
+                                    else
+                                    {
+                                        read_val = 0;
+                                        #ifdef SD_PARAM_DEBUG
+                                            Serial.print("-File Line Ended :\t");
+                                            Serial.println(read_val,6);
+                                        #endif
+                                    }
+                                    
+                                    exo_data->right_leg.ankle.controller.parameters[param_num] = read_val;
+                                    
                                     param_num++;
                                 }
                             }
@@ -347,9 +553,15 @@
                     }
                     else
                     { 
-                        error_type = utils::update_bit((uint8_t)config_defs::joint_id::hip, 1, param_error::file_not_found_idx);
+                        error_type = utils::update_bit((uint8_t)config_defs::joint_id::ankle, 1, param_error::file_not_found_idx);
+                        #ifdef SD_PARAM_DEBUG
+                            Serial.println("set_controller_params : File not found");
+                        #endif
                     }
                     param_file.close();
+                    #ifdef SD_PARAM_DEBUG
+                        Serial.println("set_controller_params : File Closed");
+                    #endif
                 }
                 break;
             }
