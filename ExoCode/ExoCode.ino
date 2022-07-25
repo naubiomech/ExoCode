@@ -6,7 +6,8 @@
 #if defined(ARDUINO_TEENSY36) | defined(ARDUINO_TEENSY41)
 
 #define INCLUDE_FLEXCAN_DEBUG
-//#define VERBOSE
+//#define MAKE_PLOTS
+#define MAIN_DEBUG
 
 // Standard Libraries
 #include <stdint.h>
@@ -21,6 +22,7 @@
 
 // Specific Librarys
 #include "src\ParseIni.h"
+#include "src\ParamsFromSD.h"
 #if defined(ARDUINO_TEENSY36)
   #include <TSPISlave.h>
 #elif defined(ARDUINO_TEENSY41)
@@ -50,21 +52,22 @@ void setup()
 
   ini_parser(config_info::config_to_send);
   
-  
-//  for (int i = 0; i < ini_config::number_of_keys; i++)
-//  {
-//    Serial.print("[");
-//    Serial.print(i);
-//    Serial.print("] : ");
-//    Serial.print((int)config_info::config_to_send[i]);
-//    Serial.print("\n");
-//  }
-//    Serial.print("\n");
+  #ifdef MAIN_DEBUG
+      for (int i = 0; i < ini_config::number_of_keys; i++)
+      {
+        Serial.print("[");
+        Serial.print(i);
+        Serial.print("] : ");
+        Serial.print((int)config_info::config_to_send[i]);
+        Serial.print("\n");
+      }
+      Serial.print("\n");
+  #endif
 //    delay(60000);
     
   // Now that we have read the config file create the data structure and exoskeleton object.
 
-    #ifdef VERBOSE
+    #ifdef MAKE_PLOTS
           Serial.print("Left_hip_trq_cmd, ");
           Serial.print("Left_hip_current, ");
           Serial.print("Right_hip_trq_cmd, ");
@@ -82,39 +85,56 @@ void setup()
 
 void loop()
 {
+    static bool first_run = true;
     // create the data and exo objects
     static ExoData exo_data(config_info::config_to_send);
+    #ifdef MAIN_DEBUG
+        if (first_run)
+        {
+            Serial.println("Superloop :: exo_data created"); 
+        }
+    #endif
     static Exo exo(&exo_data);
+    #ifdef MAIN_DEBUG
+        if (first_run)
+        {
+            Serial.println("Superloop :: exo created");
+        }
+    #endif
 
     // used to check loop speed but can be removed.
-    static utils::SpeedCheck speed_check(33);
-    speed_check.toggle();
+//    static utils::SpeedCheck speed_check(33);
+//    speed_check.toggle();
     
-    static bool first_run = true;
+    
     if (first_run)
     {
-        first_run = false;
+        first_run = false; 
+        #ifdef MAIN_DEBUG
+            Serial.println("Superloop :: Start First Run Conditional");
+            Serial.print("Superloop :: exo_data.left_leg.hip.is_used = ");
+            Serial.print(exo_data.left_leg.hip.is_used);
+            Serial.print("\n");
+            Serial.print("Superloop :: exo_data.right_leg.hip.is_used = ");
+            Serial.print(exo_data.right_leg.hip.is_used);
+            Serial.print("\n");
+            Serial.print("Superloop :: exo_data.left_leg.knee.is_used = ");
+            Serial.print(exo_data.left_leg.knee.is_used);
+            Serial.print("\n");
+            Serial.print("Superloop :: exo_data.right_leg.knee.is_used = ");
+            Serial.print(exo_data.right_leg.knee.is_used);
+            Serial.print("\n");
+            Serial.print("Superloop :: exo_data.left_leg.ankle.is_used = ");
+            Serial.print(exo_data.left_leg.ankle.is_used);
+            Serial.print("\n");
+            Serial.print("Superloop :: exo_data.right_leg.ankle.is_used = ");
+            Serial.print(exo_data.right_leg.ankle.is_used);
+            Serial.print("\n");
+            Serial.print("\n");
+        #endif
 
-//        Serial.println("Superloop :: Start First Run Conditional");
-//        Serial.print("Superloop :: exo_data.left_leg.hip.is_used = ");
-//        Serial.print(exo_data.left_leg.hip.is_used);
-//        Serial.print("\n");
-//        Serial.print("Superloop :: exo_data.right_leg.hip.is_used = ");
-//        Serial.print(exo_data.right_leg.hip.is_used);
-//        Serial.print("\n");
-//        Serial.print("Superloop :: exo_data.left_leg.knee.is_used = ");
-//        Serial.print(exo_data.left_leg.knee.is_used);
-//        Serial.print("\n");
-//        Serial.print("Superloop :: exo_data.right_leg.knee.is_used = ");
-//        Serial.print(exo_data.right_leg.knee.is_used);
-//        Serial.print("\n");
-//        Serial.print("Superloop :: exo_data.left_leg.ankle.is_used = ");
-//        Serial.print(exo_data.left_leg.ankle.is_used);
-//        Serial.print("\n");
-//        Serial.print("Superloop :: exo_data.right_leg.ankle.is_used = ");
-//        Serial.print(exo_data.right_leg.ankle.is_used);
-//        Serial.print("\n");
-//        Serial.print("\n");
+//        
+//        
         // Need to comment out motors not in use otherwise code hangs.
         if (exo_data.left_leg.hip.is_used)
         {
@@ -123,6 +143,9 @@ void loop()
             exo_data.left_leg.hip.motor.kp = 0;
             exo_data.left_leg.hip.motor.kd = 0;
             exo.left_leg._hip._motor->zero();
+            set_controller_params((uint8_t) exo_data.left_leg.hip.id, config_info::config_to_send[config_defs::exo_hip_default_controller_idx], 0, &exo_data);
+//            //wait till calibration is done
+            exo_data.left_leg.hip.controller.controller = (uint8_t)config_defs::hip_controllers::zero_torque; // start in zero torque
 
 //          Extension Angle *******************************        
 //            exo_data.left_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 2;
@@ -141,10 +164,10 @@ void loop()
 //            exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::bang_bang);
   
 //           Sine *************************************
-            exo_data.left_leg.hip.controller.parameters[controller_defs::sine::amplitude_idx] = 1;  // amplitude Nm
-            exo_data.left_leg.hip.controller.parameters[controller_defs::sine::period_idx] = 1000; // period ms
-            exo_data.left_leg.hip.controller.parameters[controller_defs::sine::phase_shift_idx] = utils::degrees_to_radians(0);  // phase shift rad
-            exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::sine);
+//            exo_data.left_leg.hip.controller.parameters[controller_defs::sine::amplitude_idx] = 1;  // amplitude Nm
+//            exo_data.left_leg.hip.controller.parameters[controller_defs::sine::period_idx] = 1000; // period ms
+//            exo_data.left_leg.hip.controller.parameters[controller_defs::sine::phase_shift_idx] = utils::degrees_to_radians(0);  // phase shift rad
+//            exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::sine);
           
 //           Zero Torque *******************************        
 //            exo_data.left_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::zero_torque);
@@ -160,6 +183,9 @@ void loop()
             exo_data.right_leg.hip.motor.kp = 0;
             exo_data.right_leg.hip.motor.kd = 0;
             exo.right_leg._hip._motor->zero();
+            set_controller_params((uint8_t) exo_data.right_leg.hip.id, config_info::config_to_send[config_defs::exo_hip_default_controller_idx], 0, &exo_data);
+//            //wait till calibration is done
+            exo_data.right_leg.hip.controller.controller = (uint8_t)config_defs::hip_controllers::zero_torque; // start in zero torque
 
 //          Extension Angle *******************************
 //            exo_data.right_leg.hip.controller.parameters[controller_defs::extension_angle::flexion_setpoint_idx] = 2;
@@ -178,10 +204,10 @@ void loop()
 //            exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::bang_bang);
 
 //          Sine *************************************
-            exo_data.right_leg.hip.controller.parameters[controller_defs::sine::amplitude_idx] = 1;  // amplitude Nm
-            exo_data.right_leg.hip.controller.parameters[controller_defs::sine::period_idx] = 1000; // period ms
-            exo_data.right_leg.hip.controller.parameters[controller_defs::sine::phase_shift_idx] = utils::degrees_to_radians(90);  // phase shift rad
-            exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::sine);
+//            exo_data.right_leg.hip.controller.parameters[controller_defs::sine::amplitude_idx] = 1;  // amplitude Nm
+//            exo_data.right_leg.hip.controller.parameters[controller_defs::sine::period_idx] = 1000; // period ms
+//            exo_data.right_leg.hip.controller.parameters[controller_defs::sine::phase_shift_idx] = utils::degrees_to_radians(90);  // phase shift rad
+//            exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::sine);
                 
 //          Zero Torque*******************************
 //            exo_data.right_leg.hip.controller.controller = uint8_t(config_defs::hip_controllers::zero_torque);
@@ -192,17 +218,30 @@ void loop()
 
         if (exo_data.left_leg.ankle.is_used)
         {
+            #ifdef MAIN_DEBUG
+              Serial.println("Superloop :: Left Ankle Used");
+            #endif
             exo.left_leg._ankle._motor->_motor_data->enabled = true;
             exo.left_leg._ankle._motor->on_off(exo.left_leg._ankle._motor->_motor_data->enabled);
             exo_data.left_leg.ankle.motor.kp = 0;
             exo_data.left_leg.ankle.motor.kd = 0;
             exo.left_leg._ankle._motor->zero();
+            #ifdef MAIN_DEBUG
+              Serial.println("Superloop :: Left Ankle Zeroed");
+            #endif
+            set_controller_params((uint8_t) exo_data.left_leg.ankle.id, config_info::config_to_send[config_defs::exo_ankle_default_controller_idx], 0, &exo_data);
+            #ifdef MAIN_DEBUG
+              Serial.println("Superloop :: Left Ankle Parameters Set");
+            #endif
+//            //wait till calibration is done
+            exo_data.left_leg.ankle.controller.controller = (uint8_t)config_defs::ankle_controllers::zero_torque; // start in zero torque
+
             
 //          Sine *************************************
-            exo_data.left_leg.ankle.controller.parameters[controller_defs::sine::amplitude_idx] = 3;  // amplitude Nm
-            exo_data.left_leg.ankle.controller.parameters[controller_defs::sine::period_idx] = 1000; // period ms
-            exo_data.left_leg.ankle.controller.parameters[controller_defs::sine::phase_shift_idx] = utils::degrees_to_radians(0);  // phase shift rad
-            exo_data.left_leg.ankle.controller.controller = uint8_t(config_defs::ankle_controllers::sine);
+//            exo_data.left_leg.ankle.controller.parameters[controller_defs::sine::amplitude_idx] = 3;  // amplitude Nm
+//            exo_data.left_leg.ankle.controller.parameters[controller_defs::sine::period_idx] = 1000; // period ms
+//            exo_data.left_leg.ankle.controller.parameters[controller_defs::sine::phase_shift_idx] = utils::degrees_to_radians(0);  // phase shift rad
+//            exo_data.left_leg.ankle.controller.controller = uint8_t(config_defs::ankle_controllers::sine);
             
 //          Zero Torque*******************************
 //            exo_data.left_leg.ankle.controller.controller = uint8_t(config_defs::ankle_controllers::zero_torque);
@@ -217,12 +256,15 @@ void loop()
             exo_data.right_leg.ankle.motor.kp = 0;
             exo_data.right_leg.ankle.motor.kd = 0;
             exo.right_leg._ankle._motor->zero();
+            set_controller_params((uint8_t) exo_data.right_leg.ankle.id, config_info::config_to_send[config_defs::exo_ankle_default_controller_idx], 0, &exo_data);
+//            //wait till calibration is done
+            exo_data.right_leg.ankle.controller.controller = (uint8_t)config_defs::ankle_controllers::zero_torque; // start in zero torque
 
 //          Sine *************************************
-            exo_data.right_leg.ankle.controller.parameters[controller_defs::sine::amplitude_idx] = 3;  // amplitude Nm
-            exo_data.right_leg.ankle.controller.parameters[controller_defs::sine::period_idx] = 1000; // period ms
-            exo_data.right_leg.ankle.controller.parameters[controller_defs::sine::phase_shift_idx] = utils::degrees_to_radians(90);  // phase shift rad
-            exo_data.right_leg.ankle.controller.controller = uint8_t(config_defs::ankle_controllers::sine);
+//            exo_data.right_leg.ankle.controller.parameters[controller_defs::sine::amplitude_idx] = 3;  // amplitude Nm
+//            exo_data.right_leg.ankle.controller.parameters[controller_defs::sine::period_idx] = 1000; // period ms
+//            exo_data.right_leg.ankle.controller.parameters[controller_defs::sine::phase_shift_idx] = utils::degrees_to_radians(90);  // phase shift rad
+//            exo_data.right_leg.ankle.controller.controller = uint8_t(config_defs::ankle_controllers::sine);
         
 //          Zero Torque*******************************
 //            exo_data.right_leg.ankle.controller.controller = uint8_t(config_defs::ankle_controllers::zero_torque);
@@ -235,25 +277,41 @@ void loop()
 //        exo_data.left_leg.ankle.controller.controller = uint8_t(config_defs::ankle_controllers::pjmc);
 //        exo.left_leg._ankle.set_controller(exo_data.left_leg.ankle.controller.controller);
 
-//        exo_data.left_leg.do_calibration_toe_fsr = true;
-//        exo_data.left_leg.do_calibration_refinement_toe_fsr = true;
-//        exo_data.left_leg.do_calibration_heel_fsr = true;
-//        exo_data.left_leg.do_calibration_refinement_heel_fsr = true;
+        if(exo_data.left_leg.is_used)
+        {
+            exo_data.left_leg.ankle.calibrate_torque_sensor = true;
+        }
+       
+        if(exo_data.right_leg.is_used)
+        {
+            exo_data.right_leg.ankle.calibrate_torque_sensor = true;  
+        }
+        
 
 //        bool do_calibration_toe_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
 //        bool do_calibration_refinement_toe_fsr; 
 //        bool do_calibration_heel_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
 //        bool do_calibration_refinement_heel_fsr;
 
-//        Serial.println("Superloop :: End First Run Conditional");
+          #ifdef MAIN_DEBUG
+              Serial.println("Superloop :: Motors Enabled");
+              Serial.println("Superloop :: Parameters Set");
+              Serial.println("Superloop :: End First Run Conditional");
+          #endif
 
           
     }
 
+    static bool static_calibration_done = false;
+    unsigned int pause_after_static_calibration_ms = 10000;
+    static unsigned int time_dynamic_calibration_finished; 
+    static bool pause_between_calibration_done = false;   
+    static bool dynamic_calibration_done = false;
+
     
     static float old_time = micros();
     float new_time = micros();
-    if(new_time - old_time > 500000)
+    if(new_time - old_time > 500000 && dynamic_calibration_done)
     {
 //        exo.left_leg._ankle._motor->transaction();
 //        exo.right_leg._ankle._motor->transaction();
@@ -272,7 +330,7 @@ void loop()
 //          send_count = 0;
 //          }
 
-        #ifdef VERBOSE
+        #ifdef MAKE_PLOTS
             Serial.print(exo_data.left_leg.hip.motor.t_ff);
             Serial.print(", ");
             Serial.print(exo_data.left_leg.hip.motor.i);
@@ -292,6 +350,88 @@ void loop()
         #endif
 
         
+    }
+
+    
+    
+    if ((!static_calibration_done) && (!exo_data.left_leg.ankle.calibrate_torque_sensor && !exo_data.right_leg.ankle.calibrate_torque_sensor))
+    {
+        #ifdef MAIN_DEBUG
+          Serial.println("Superloop : Static Calibration Done");
+        #endif
+        static_calibration_done  = true;
+        time_dynamic_calibration_finished = millis();
+        exo_data.status = status_led_defs::messages::test;
+    }
+
+    if (!pause_between_calibration_done && (static_calibration_done && ((time_dynamic_calibration_finished +  pause_after_static_calibration_ms) < millis() ))) 
+    {
+        #ifdef MAIN_DEBUG
+          Serial.println("Superloop : Pause Between Calibration Finished");
+        #endif
+        if(exo_data.left_leg.is_used)
+        {
+            exo_data.left_leg.do_calibration_toe_fsr = true;
+            exo_data.left_leg.do_calibration_refinement_toe_fsr = true;
+            exo_data.left_leg.do_calibration_heel_fsr = true;
+            exo_data.left_leg.do_calibration_refinement_heel_fsr = true;
+        }
+       
+        if(exo_data.right_leg.is_used)
+        {
+            exo_data.right_leg.do_calibration_toe_fsr = true;
+            exo_data.right_leg.do_calibration_refinement_toe_fsr = true;
+            exo_data.right_leg.do_calibration_heel_fsr = true;
+            exo_data.right_leg.do_calibration_refinement_heel_fsr = true;  
+        }
+        pause_between_calibration_done = true;
+    }
+        
+    
+    if ((!dynamic_calibration_done) && (pause_between_calibration_done) && (!exo_data.left_leg.do_calibration_toe_fsr && !exo_data.left_leg.do_calibration_refinement_toe_fsr && !exo_data.left_leg.do_calibration_heel_fsr && !exo_data.left_leg.do_calibration_refinement_heel_fsr))
+    {
+        #ifdef MAIN_DEBUG
+            Serial.println("Superloop : Dynamic Calibration Done");
+        #endif
+        
+        if (exo_data.left_leg.hip.is_used)
+        {
+            exo_data.left_leg.hip.controller.controller = config_info::config_to_send[config_defs::exo_hip_default_controller_idx];
+            exo.left_leg._hip.set_controller(exo_data.left_leg.hip.controller.controller);
+            #ifdef MAIN_DEBUG
+                Serial.println("Superloop : Left Hip Controller Set");
+            #endif
+        }
+        
+        if (exo_data.right_leg.hip.is_used)
+        {
+            exo_data.right_leg.hip.controller.controller = config_info::config_to_send[config_defs::exo_hip_default_controller_idx];
+            exo.right_leg._hip.set_controller(exo_data.right_leg.hip.controller.controller); 
+            #ifdef MAIN_DEBUG
+                Serial.println("Superloop : Right Hip Controller Set");
+            #endif
+        }
+        
+        if (exo_data.left_leg.ankle.is_used)
+        {
+            exo_data.left_leg.ankle.controller.controller = config_info::config_to_send[config_defs::exo_ankle_default_controller_idx];
+            exo.left_leg._ankle.set_controller(exo_data.left_leg.ankle.controller.controller);
+            #ifdef MAIN_DEBUG
+                Serial.println("Superloop : Left Ankle Controller Set");
+            #endif
+        }
+  
+        if (exo_data.right_leg.ankle.is_used)
+        {
+            exo_data.right_leg.ankle.controller.controller = config_info::config_to_send[config_defs::exo_ankle_default_controller_idx];
+            exo.right_leg._ankle.set_controller(exo_data.right_leg.ankle.controller.controller);
+            #ifdef MAIN_DEBUG
+                Serial.println("Superloop : Right Ankle Controller Set");
+            #endif
+        }
+        
+        dynamic_calibration_done = true;
+      
     }
 
     exo.run();
