@@ -49,34 +49,37 @@ namespace status_led_defs
         const uint8_t trial_off = 1;
         const uint8_t trial_on = 2;
         const uint8_t test = 3; // generally won't be used.
-        // Specific error messages will use the 5 highest bits, giving 31 error messages
-        const uint8_t error = 0b00000100;
+        const uint8_t torque_calibration = 4;
+        const uint8_t fsr_calibration = 5;
+        const uint8_t fsr_refinement =6;
+        // Specific error messages will use the 4 highest bits, giving 31 error messages
+        const uint8_t error = 0b00001000;
         
-        const uint8_t error_left_heel_fsr =  1<<3 | error;
-        const uint8_t error_left_toe =  2<<3 | error;
-        const uint8_t error_right_heel_fsr =  3<<3 | error;
-        const uint8_t error_right_toe_fsr =  4<<3 | error;
+        const uint8_t error_left_heel_fsr =  1<<4 | error;
+        const uint8_t error_left_toe =  2<<4 | error;
+        const uint8_t error_right_heel_fsr =  3<<4 | error;
+        const uint8_t error_right_toe_fsr =  4<<4 | error;
         
-        const uint8_t error_left_hip_torque_sensor =  5<<3 | error;
-        const uint8_t error_left_knee_torque_sensor =  6<<3 | error;
-        const uint8_t error_left_ankle_torque_sensor =  7<<3 | error;
-        const uint8_t error_right_hip_torque_sensor =  8<<3 | error;
-        const uint8_t error_right_knee_torque_sensor =  9<<3 | error;
-        const uint8_t error_right_ankle_torque_sensor =  10<<3 | error;
+        const uint8_t error_left_hip_torque_sensor =  5<<4 | error;
+        const uint8_t error_left_knee_torque_sensor =  6<<4 | error;
+        const uint8_t error_left_ankle_torque_sensor =  7<<4 | error;
+        const uint8_t error_right_hip_torque_sensor =  8<<4 | error;
+        const uint8_t error_right_knee_torque_sensor =  9<<4 | error;
+        const uint8_t error_right_ankle_torque_sensor =  10<<4 | error;
         
-        const uint8_t error_left_hip_motor =  11<<3 | error;
-        const uint8_t error_left_knee_motor =  12<<3 | error;
-        const uint8_t error_left_ankle_motor =  13<<3 | error;
-        const uint8_t error_right_hip_motor =  14<<3 | error;
-        const uint8_t error_right_knee_motor =  15<<3 | error;
-        const uint8_t error_right_ankle_motor =  16<<3 | error;
+        const uint8_t error_left_hip_motor =  11<<4 | error;
+        const uint8_t error_left_knee_motor =  12<<4 | error;
+        const uint8_t error_left_ankle_motor =  13<<4 | error;
+        const uint8_t error_right_hip_motor =  14<<4 | error;
+        const uint8_t error_right_knee_motor =  15<<4 | error;
+        // const uint8_t error_right_ankle_motor =  16<<4 | error;
         
-        const uint8_t error_left_hip_controller =  17<<3 | error;
-        const uint8_t error_left_knee_controller =  18<<3 | error;
-        const uint8_t error_left_ankle_controller =  19<<3 | error;
-        const uint8_t error_right_hip_controller =  20<<3 | error;
-        const uint8_t error_right_knee_controller =  21<<3 | error;
-        const uint8_t error_right_ankle_controller =  22<<3 | error;
+        // const uint8_t error_left_hip_controller =  17<<4 | error;
+        // const uint8_t error_left_knee_controller =  18<<4 | error;
+        // const uint8_t error_left_ankle_controller =  19<<4 | error;
+        // const uint8_t error_right_hip_controller =  20<<4 | error;
+        // const uint8_t error_right_knee_controller =  21<<4 | error;
+        // const uint8_t error_right_ankle_controller =  22<<4 | error;
         
         
     }
@@ -88,6 +91,9 @@ namespace status_led_defs
         const int trial_on[] = {0, 255, 0};
         const int test[] = {0, 255, 0};
         const int error[] = {255, 0, 0};
+        const int torque_calibration[] = {255, 255, 0};
+        const int fsr_calibration[] = {255, 0, 255};
+        const int fsr_refinement[] = {255, 0, 255};
         
     }
     
@@ -105,6 +111,9 @@ namespace status_led_defs
         const int trial_on[] = {pulse, 500}; // Solid
         const int test[] = {rainbow, 4000}; // pulse
         const int error[] = {blink, 250}; // blinking
+        const int torque_calibration[] = {solid, 0};
+        const int fsr_calibration[] = {solid, 0};
+        const int fsr_refinement[] = {pulse, 250};
         
     }
     
@@ -128,6 +137,7 @@ class StatusLed
     void update(uint8_t message); // Changes the LED State to the current state
     void set_brightness(int brightness);  // Used if you need to change the brightness after initialization, brightness is used to scale the colors that are sent: color * brightness/255
     
+    static void print_message(uint8_t message);
   private:
   
     void _set_color(int R, int G, int B);  // changes the color R, G, and B are 0-255 values to set the corresponding colors.
@@ -149,20 +159,26 @@ class StatusLed
     
     // make sure to keep in index order from messages, this is an array of the colors to use _messageColors[_currentMessage][color] where color is 0 for r, 1 for g, and 2 for b.
     // This method of accessing array elements is bulky but works.
-    const int _message_colors[5][3] = {{status_led_defs::colors::off[0], status_led_defs::colors::off[1], status_led_defs::colors::off[2]}, \
+    const int _message_colors[8][3] = {{status_led_defs::colors::off[0], status_led_defs::colors::off[1], status_led_defs::colors::off[2]}, \
                 {status_led_defs::colors::trial_off[0], status_led_defs::colors::trial_off[1], status_led_defs::colors::trial_off[2]}, \
                 {status_led_defs::colors::trial_on[0], status_led_defs::colors::trial_on[1], status_led_defs::colors::trial_on[2]}, \
                 {status_led_defs::colors::test[0], status_led_defs::colors::test[1], status_led_defs::colors::test[2]}, \
-                {status_led_defs::colors::error[0], status_led_defs::colors::error[1], status_led_defs::colors::error[2]} \
+                {status_led_defs::colors::error[0], status_led_defs::colors::error[1], status_led_defs::colors::error[2]}, \
+                {status_led_defs::colors::torque_calibration[0], status_led_defs::colors::torque_calibration[1], status_led_defs::colors::torque_calibration[2]}, \
+                {status_led_defs::colors::fsr_calibration[0], status_led_defs::colors::fsr_calibration[1], status_led_defs::colors::fsr_calibration[2]}, \
+                {status_led_defs::colors::fsr_refinement[0], status_led_defs::colors::fsr_refinement[1], status_led_defs::colors::fsr_refinement[2]} \
                 };
     
     // make sure to keep in index order from messages, this is an array of the colors to use _messageColors[_currentMessage][color] where color is 0 for r, 1 for g, and 2 for b.
     // This method of accessing array elements is bulky but works.
-    const int _message_pattern[5][2] = {{status_led_defs::patterns::off[0], status_led_defs::patterns::off[1]}, \
+    const int _message_pattern[8][2] = {{status_led_defs::patterns::off[0], status_led_defs::patterns::off[1]}, \
                 {status_led_defs::patterns::trial_off[0], status_led_defs::patterns::trial_off[1]}, \
                 {status_led_defs::patterns::trial_on[0], status_led_defs::patterns::trial_on[1]}, \
                 {status_led_defs::patterns::test[0], status_led_defs::patterns::test[1]}, \
-                {status_led_defs::patterns::error[0], status_led_defs::patterns::error[1]} \
+                {status_led_defs::patterns::error[0], status_led_defs::patterns::error[1]}, \
+                {status_led_defs::patterns::torque_calibration[0], status_led_defs::patterns::torque_calibration[1]}, \
+                {status_led_defs::patterns::fsr_calibration[0], status_led_defs::patterns::fsr_calibration[1]}, \
+                {status_led_defs::patterns::fsr_refinement[0], status_led_defs::patterns::fsr_refinement[1]} \
                 };
               
     
