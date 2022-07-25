@@ -4,6 +4,7 @@
 */
 
 #include "Controller.h"
+// #define CONTROLLER_DEBUG 1
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
@@ -21,43 +22,63 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
     
     // we just need to know the side to point at the right data location so it is only for the constructor
     bool is_left = utils::get_is_left(_id);
-    
+    #ifdef CONTROLLER_DEBUG
+        Serial.print(is_left ? "Left " : "Right ");
+    #endif
     // set _controller_data to point to the data specific to the controller.
     switch (utils::get_joint_type(_id))
     {
         case (uint8_t)config_defs::joint_id::hip:
+            #ifdef CONTROLLER_DEBUG
+                Serial.print("HIP ");
+            #endif
             if (is_left)
             {
                 _controller_data = &(exo_data->left_leg.hip.controller);
+                _joint_data = &(exo_data->left_leg.hip);
             }
             else
             {
                 _controller_data = &(exo_data->right_leg.hip.controller);
+                _joint_data = &(exo_data->right_leg.hip);
             }
             break;
             
         case (uint8_t)config_defs::joint_id::knee:
+            #ifdef CONTROLLER_DEBUG
+                Serial.print("KNEE ");
+            #endif
             if (is_left)
             {
                 _controller_data = &(exo_data->left_leg.knee.controller);
+                _joint_data = &(exo_data->left_leg.knee);
             }
             else
             {
                 _controller_data = &(exo_data->right_leg.knee.controller);
+                _joint_data = &(exo_data->right_leg.knee);
             }
             break;
         
         case (uint8_t)config_defs::joint_id::ankle:
+            #ifdef CONTROLLER_DEBUG
+                Serial.print("ANKLE ");
+            #endif
             if (is_left)
             {
                 _controller_data = &(exo_data->left_leg.ankle.controller);
+                _joint_data = &(exo_data->left_leg.ankle);
             }
             else
             {
                 _controller_data = &(exo_data->right_leg.ankle.controller);
+                _joint_data = &(exo_data->right_leg.ankle);
             }
             break;
     }
+    #ifdef CONTROLLER_DEBUG
+        Serial.print("Controller : \n\t_controller_data set \n\t_joint_data set");
+    #endif
     // added a pointer to the leg data as most controllers will need to access info specific to their leg.
     if (is_left)
     {
@@ -66,10 +87,26 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
     else
     {
         _leg_data = &(exo_data->right_leg);
-    }
+    } 
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("\n\t_leg_data set");
+    #endif
     
 };
 
+
+void _Controller::reset_integral()
+{
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("_Controller::reset_integral : Entered");
+    #endif
+    //_integral_val = 0;
+    
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("_Controller::reset_integral : Exited");
+    #endif
+    
+};
 
 //****************************************************
 /*
@@ -81,7 +118,9 @@ ZeroTorque::ZeroTorque(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
     
-    
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("ZeroTorque::Constructor");
+    #endif
     
 };
 
@@ -101,7 +140,9 @@ float ZeroTorque::calc_motor_cmd()
 ProportionalJointMoment::ProportionalJointMoment(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
-    
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("ProportionalJointMoment::Constructor");
+    #endif
     
     
 };
@@ -111,8 +152,16 @@ float ProportionalJointMoment::calc_motor_cmd()
     float cmd = 0;
     //Serial.print("ProportionalJointMoment::calc_motor_cmd : Entered");
     //Serial.print("\n");
-    cmd = _leg_data->toe_fsr * _controller_data->parameters[controller_defs::proportional_joint_moment::max_torque_idx];
-    cmd = max(0, cmd);  // if the fsr is negative use zero torque so it doesn't dorsiflex.
+    if (!_leg_data->do_calibration_toe_fsr)
+    {
+        cmd = _leg_data->toe_fsr * _controller_data->parameters[controller_defs::proportional_joint_moment::max_torque_idx];
+        cmd = (_controller_data->parameters[controller_defs::proportional_joint_moment::is_assitance_idx] ? -1 : 1) * min(max(0, cmd), _controller_data->parameters[controller_defs::proportional_joint_moment::max_torque_idx]);  // if the fsr is negative use zero torque so it doesn't dorsiflex.  Saturate at max
+    }
+    
+    if (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx])
+    {
+        // TODO : Add in PID.  Need to figure out torque calibration value.
+    }
     
     //Serial.print("ProportionalJointMoment::calc_motor_cmd : Exiting");
     //Serial.print("\n");
@@ -128,7 +177,9 @@ float ProportionalJointMoment::calc_motor_cmd()
 HeelToe::HeelToe(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
-    
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("HeelToe::Constructor");
+    #endif
     
     
 };
@@ -149,9 +200,13 @@ float HeelToe::calc_motor_cmd()
 ExtensionAngle::ExtensionAngle(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("ExtensionAngle::Constructor");
+    #endif
     _state = 0; // extension mode originally 
     
     _reset_angles();
+    
     
 };
 
@@ -274,6 +329,9 @@ void ExtensionAngle::_update_state(float angle)
 BangBang::BangBang(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("BangBang::Constructor");
+    #endif
     _state = 0; // extension mode originally 
     
     _reset_angles();
@@ -400,6 +458,9 @@ void BangBang::_update_state(float angle)
 ZhangCollins::ZhangCollins(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("ZhangCollins::Constructor");
+    #endif
     _mass = -1;
     _peak_normalized_torque_Nm_kg = -1;
     _t0 = -1;
@@ -569,6 +630,9 @@ float ZhangCollins::calc_motor_cmd()
 FranksCollinsHip::FranksCollinsHip(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("FranksCollinsHip::Constructor");
+    #endif
     _last_start_time = -1;
     _last_percent_gait = -1;
     _mass = -1;
@@ -938,7 +1002,9 @@ float FranksCollinsHip::calc_motor_cmd()
 UserDefined::UserDefined(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
-    
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("UserDefined::Constructor");
+    #endif
 };
 
 /*
@@ -958,7 +1024,9 @@ float UserDefined::calc_motor_cmd()
 Sine::Sine(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
-    
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("Sine::Constructor");
+    #endif
 };
 
 /*

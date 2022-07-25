@@ -37,13 +37,18 @@ class _Controller
         virtual ~_Controller(){};
 		//virtual void set_controller(int joint, int controller) = 0; // Changes the controller for an individual joint
 		virtual float calc_motor_cmd() = 0;
-
+        void reset_integral();
     protected:
         ExoData* _data;
         ControllerData* _controller_data;
         LegData* _leg_data;
+        JointData* _joint_data;
         
         config_defs::joint_id _id;
+        
+        float _integral_val;
+        
+        
 };
 
 /*
@@ -60,6 +65,7 @@ class ProportionalJointMoment : public _Controller
     public:
         ProportionalJointMoment(config_defs::joint_id id, ExoData* exo_data);
         ~ProportionalJointMoment(){};
+        
         
         float calc_motor_cmd();
 };
