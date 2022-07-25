@@ -5,25 +5,35 @@
 */
 
 #include "ParamsFromSD.h"
-// #define SD_PARAM_DEBUG 1
+#define SD_PARAM_DEBUG 1
 
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
 
-    // // returns 0 if cell is empty or eol
-    // bool read_cell(File* file, char delim, char* buff, uint8_t buff_len)
-    // {
-        // char ch;
-    // }
-    
-    // unsigned long go_to_eol(File file)
-    // {
-        // char ch;
-        // while (ch != '\n' || ch == -1)
-        // {
-            // ch = file.read()
-        // }
-        // return file.position;
-    // }
+    void print_param_error_message(uint8_t error_type)
+    {
+        Serial.print(utils::get_is_left(error_type)? "Left " : "Right ");
+        switch (error_type && ((uint8_t)config_defs::joint_id::hip || (uint8_t)config_defs::joint_id::knee || (uint8_t)config_defs::joint_id::ankle))
+        {
+            case (uint8_t)config_defs::joint_id::hip:
+                Serial.print("Hip ");    
+                break;
+            case (uint8_t)config_defs::joint_id::knee:
+                Serial.print("Knee ");
+                break;
+            case (uint8_t)config_defs::joint_id::ankle:
+                Serial.print("Ankle ");
+                break;
+        }
+        if (utils::get_bit(error_type, param_error::SD_not_found_idx))
+        {
+            Serial.print("SD Not Found, ");
+        }            
+        if (utils::get_bit(error_type, param_error::SD_not_found_idx))
+        {
+            Serial.print("File Not Found, ");
+        } 
+        Serial.println("File Not Found, ");
+    }
     
     uint8_t set_controller_params(uint8_t joint_id, uint8_t controller_id, uint8_t set_num, ExoData* exo_data)
     {   
@@ -34,12 +44,7 @@
         uint8_t param_num_in_file;
         uint8_t line_to_read;
         uint8_t error_type;
-        //uint8_t cell_size = 256; //max num chars in a cell
-        // char value[cell_size];
-        // char end_of_line = '\n';
-        // char delim = ',';
-        // uint8_t char_num = 0;
-        
+       
         switch(utils::get_joint_type(joint_id))
         {
             case (uint8_t)config_defs::joint_id::hip:

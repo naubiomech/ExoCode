@@ -66,6 +66,7 @@
         };
     };
     
+    void print_param_error_message(uint8_t error_type);
     
     /*
      * Reads files from SD card and sets them to the appropriate controller parameters in the exo_data object
