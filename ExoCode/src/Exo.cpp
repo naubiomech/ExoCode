@@ -5,6 +5,8 @@
 
 #include "Exo.h"
 
+#define EXO_DEBUG 1
+
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
 /*
@@ -19,8 +21,14 @@ Exo::Exo(ExoData* exo_data)
 , sync_led(logic_micro_pins::sync_led_pin, SYNC_START_STOP_HALF_PERIOD_US, SYNC_HALF_PERIOD_US, logic_micro_pins::sync_led_on_state, logic_micro_pins::sync_default_pin)  // Create a sync LED object, the first and last arguments (pin) are found in Board.h, and the rest are in Sync_Led.h.  If you do not have a digital input for the default state you can remove SYNC_DEFAULT_STATE_PIN.  
 , status_led(logic_micro_pins::status_led_r_pin, logic_micro_pins::status_led_g_pin, logic_micro_pins::status_led_b_pin)  // Create the status LED object. 
 {
-    this->data = exo_data; 
+    this->data = exo_data;
+    #ifdef EXO_DEBUG
+        Serial.println("Exo :: Constructor : _data set");
+    #endif
     pinMode(logic_micro_pins::motor_stop_pin,INPUT_PULLUP);
+    #ifdef EXO_DEBUG
+        Serial.println("Exo :: Constructor : motor_stop_pin Mode set");
+    #endif
 };
 
 /* 

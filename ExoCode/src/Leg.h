@@ -64,6 +64,7 @@ class Leg
 		FSR _toe_fsr;
         // The order these are listed are important as it will determine the order their constructors are called in the initalizer list.
         HipJoint _hip;
+        KneeJoint _knee;
         AnkleJoint _ankle;
         
 	private:
@@ -92,7 +93,7 @@ class Leg
         
         // joint objects for the leg.
         
-        KneeJoint _knee;
+        
         
 		// stores which side the leg is on.
         bool _is_left;

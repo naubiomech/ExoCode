@@ -4,6 +4,7 @@
 */
 
 #include "TorqueSensor.h"
+#define TORQUE_DEBUG 1
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
@@ -34,6 +35,12 @@ TorqueSensor::TorqueSensor(unsigned int pin)
     {
         pinMode(this->_pin, INPUT);  // Not required but I like to be explicit
     }
+    
+    #ifdef TORQUE_DEBUG
+        Serial.print("TorqueSensor :: Constructor : pin ");
+        Serial.print(_pin);
+        Serial.println(" set");
+    #endif
 };
 
 /*

@@ -29,9 +29,9 @@ class Exo
         void run(); // reads motor data from each motor used in the leg and stores the values
 		
         ExoData *data;  // pointer to ExoData that is getting updated by SPI so they share memory.
-        
-        Leg left_leg;
         Leg right_leg;
+        Leg left_leg;
+        
         
         SyncLed sync_led;
         StatusLed status_led;

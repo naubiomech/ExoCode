@@ -4,6 +4,7 @@
 */
 
 #include "Leg.h"
+// #define LEG_DEBUG 1
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
@@ -21,10 +22,15 @@ Leg::Leg(bool is_left, ExoData* exo_data)
 , _toe_fsr(is_left ? logic_micro_pins::fsr_sense_left_toe_pin : logic_micro_pins::fsr_sense_right_toe_pin)
 {
     _data = exo_data;
+    
     _is_left = is_left;
+    
     // This data object is set for the specific leg so we don't have to keep checking the side.
     _leg_data = _is_left ? &(_data->left_leg) : &(_data->right_leg);
-    
+    #ifdef LEG_DEBUG
+        Serial.print(_is_left ? "Left " : "Right ");
+        Serial.println("Leg :: Constructor : _data set");
+    #endif
     _prev_heel_contact_state = true; // initialized to true so we don't get a strike the first time we read
     _prev_toe_contact_state = true;
     
@@ -35,6 +41,10 @@ Leg::Leg(bool is_left, ExoData* exo_data)
     _ground_strike_timestamp = 0;
     _prev_ground_strike_timestamp = 0;
     //_expected_step_duration = 0;
+    #ifdef LEG_DEBUG
+        Serial.print(_is_left ? "Left " : "Right ");
+        Serial.println("Leg :: Constructor : Exit");
+    #endif
 };
 
 /*
@@ -94,19 +104,23 @@ void Leg::check_calibration()
         if (_leg_data->do_calibration_toe_fsr)
         {
             _leg_data->do_calibration_toe_fsr = _toe_fsr.calibrate(_leg_data->do_calibration_toe_fsr);
+            _data->status = status_led_defs::messages::fsr_calibration;
         }
         else if (_leg_data->do_calibration_refinement_toe_fsr) 
         {
             _leg_data->do_calibration_refinement_toe_fsr = _toe_fsr.refine_calibration(_leg_data->do_calibration_refinement_toe_fsr);
+            _data->status = status_led_defs::messages::fsr_refinement;
         }
         
         if (_leg_data->do_calibration_heel_fsr)
         {
             _leg_data->do_calibration_heel_fsr = _heel_fsr.calibrate(_leg_data->do_calibration_heel_fsr);
+            _data->status = status_led_defs::messages::fsr_calibration;
         }
         else if (_leg_data->do_calibration_refinement_heel_fsr) 
         {
             _leg_data->do_calibration_refinement_heel_fsr = _heel_fsr.refine_calibration(_leg_data->do_calibration_refinement_heel_fsr);
+            _data->status = status_led_defs::messages::fsr_refinement;
         }
         
         // check torque sensor calibrations if joint is use

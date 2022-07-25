@@ -4,6 +4,7 @@
 */
 
 #include "FSR.h"
+#define FSR_DEBUG 1
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
@@ -31,6 +32,11 @@ FSR::FSR(int pin)
     _step_count = 0;
     _calibration_refinement_min = 0;
     _calibration_refinement_max = 0;
+    
+    #ifdef FSR_DEBUG
+        
+        Serial.println("FSR:: Constructor : Exit");
+    #endif
 }
 
 /*
