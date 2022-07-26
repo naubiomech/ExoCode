@@ -5,7 +5,7 @@
 
 #include "Exo.h"
 
-#define EXO_DEBUG 1
+//#define EXO_DEBUG 1
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
