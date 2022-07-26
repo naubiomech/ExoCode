@@ -84,19 +84,19 @@
     
     
     // these should be changed to match the ID of the motors.
-    static AK60 right_motor(config_defs::joint_id::right_hip, &exo_data, _Joint::get_motor_enable_pin(config_defs::joint_id::right_hip, &exo_data));
-    static AK60 left_motor(config_defs::joint_id::left_hip, &exo_data, _Joint::get_motor_enable_pin(config_defs::joint_id::left_hip, &exo_data));
+    static AK60_v1_1 right_motor(config_defs::joint_id::right_hip, &exo_data, _Joint::get_motor_enable_pin(config_defs::joint_id::right_hip, &exo_data));
+    static AK60_v1_1 left_motor(config_defs::joint_id::left_hip, &exo_data, _Joint::get_motor_enable_pin(config_defs::joint_id::left_hip, &exo_data));
     
     
 
     static int motor_enable_time = millis();
-    int time_to_stay_on_ms = 20000;
+    int time_to_stay_on_ms = 60000;
 //    left_motor.on_off(true);
 //    right_motor.on_off(true);
           
     int state_period_ms = 1;
-    float left_magnitude = .5;
-    float right_magnitude = 0;//1;
+    float left_magnitude = 1;
+    float right_magnitude = 1;//1;
     static int last_transition_time = millis();
     int current_time = millis();
     

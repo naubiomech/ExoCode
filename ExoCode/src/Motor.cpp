@@ -207,7 +207,7 @@ void _CANMotor::on_off(bool is_on)
             digitalWrite(_enable_pin, logic_micro_pins::motor_enable_on_state);
             // !!! A delay check between when turning on power and when timeouts stopped happening gave a delay of 1930 ms rounding to 2000.
             // TODO: make something more elegant than a delay for both.
-            delay(2000);
+            delay(3000);
             // enable motor
             msg.buf[7] = 0xFC;
             Serial.print("_CANMotor::on_off(bool is_on) : Enabled - ");
