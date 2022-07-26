@@ -90,7 +90,9 @@ namespace config_defs
         gearing_1_1 = 1,
         gearing_2_1 = 2,
         gearing_3_1 = 3,
+        gearing_4_5_1 = 4,
     };
+    
     
     enum class joint_id : uint8_t
     {
@@ -265,6 +267,7 @@ namespace config_defs
             {"1", (uint8_t)config_defs::gearing::gearing_1_1}, 
             {"2", (uint8_t)config_defs::gearing::gearing_2_1}, 
             {"3", (uint8_t)config_defs::gearing::gearing_3_1}, 
+            {"4.5", (uint8_t)config_defs::gearing::gearing_4_5_1},
         };
         
         
