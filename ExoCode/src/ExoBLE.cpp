@@ -1,86 +1,208 @@
-#if defined(ARDUINO_ARDUINO_NANO33BLE)
 #include "ExoBLE.h"
-#include "Board.h"
 #include "Utilities.h"
 
+#if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
+#define FACTORYRESET_ENABLE         1
+#define MINIMUM_FIRMWARE_VERSION    "0.7.0"
+#define AT_COMMAND_TIMEOUT          2000   //milliseconds
+#endif
+
 ExoBLE::ExoBLE(ExoData* data) : _data{data}
+#if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
+    , _ble{logic_micro_pins::cs_pin, logic_micro_pins::irq_pin, logic_micro_pins::rst_pin}
+#endif
 {
-    pinMode(coms_micro_pins::ble_signal_pin, OUTPUT);
-    digitalWrite(coms_micro_pins::ble_signal_pin, !coms_micro_pins::ble_signal_active);
+    #if defined(ARDUINO_ARDUINO_NANO33BLE)
+        pinMode(coms_micro_pins::ble_signal_pin, OUTPUT);
+        digitalWrite(coms_micro_pins::ble_signal_pin, !coms_micro_pins::ble_signal_active);
+        
+    #endif
 }
 
 bool ExoBLE::setup() 
 {
-    if (BLE.begin())
-    {
-        //Setup name
-        String name = utils::remove_all_chars(BLE.address(), ':');
-        name.remove(6);
-        name = "EXOBLE_" + name;
-        char name_char[13];
-        name.toCharArray(name_char, 13+1);
-        const char* n = name_char;
-        BLE.setLocalName(n);
-        BLE.setDeviceName(n);
-        //Configure service and start advertising
-        BLE.setAdvertisedService(_gatt_db.UARTService);
-        _gatt_db.UARTService.addCharacteristic(_gatt_db.TXChar);
-        _gatt_db.UARTService.addCharacteristic(_gatt_db.RXChar);
-        BLE.addService(_gatt_db.UARTService);
+    #if defined(ARDUINO_ARDUINO_NANO33BLE)
+        if (BLE.begin())
+        {
+            //Setup name
+            String name = utils::remove_all_chars(BLE.address(), ':');
+            name.remove(name.length() - MAC_ADDRESS_NAME_LENGTH);
+            name = NAME_PREAMBLE + name;
+            char name_char[name.length()];
+            name.toCharArray(name_char, name.length()+1);
+            const char* k_name_pointer = name_char;
+            BLE.setLocalName(k_name_pointer);
+            BLE.setDeviceName(k_name_pointer);
+            //Configure service and start advertising
+            BLE.setAdvertisedService(_gatt_db.UARTService);
+            _gatt_db.UARTService.addCharacteristic(_gatt_db.TXChar);
+            _gatt_db.UARTService.addCharacteristic(_gatt_db.RXChar);
+            BLE.addService(_gatt_db.UARTService);
 
-        _gatt_db.RXChar.setEventHandler(BLEWritten, ble_rx::on_rx_recieved);
-        BLE.setConnectionInterval(6, 6);
+            _gatt_db.RXChar.setEventHandler(BLEWritten, ble_rx::on_rx_recieved);
+            BLE.setConnectionInterval(6, 6);
+            advertising_onoff(true);
+            return true;
+        }
+        else
+        {
+            Serial.println("ExoBLE::setup->Failed to start BLE!");
+            return false;
+        }
+    #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
+        if (!_ble.begin(0))
+        {
+            Serial.println(F("Couldn't find Bluefruit, make sure it's in Command mode & check wiring?"));
+            return false;
+        }
+        Serial.println( F("OK!") );
+        if (FACTORYRESET_ENABLE)
+        {
+            /* Perform a factory reset to make sure everything is in a known state */
+            Serial.println(F("Performing a factory reset: "));
+            if ( ! _ble.factoryReset() )
+            {
+                Serial.println(F("Couldn't factory reset"));
+                return false;
+            }
+        }
+
+        if ( !_ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION) )
+        {
+            Serial.println( F("Callback requires at least 0.7.0") );
+            while(true) {;}
+        }
+        
+        /* Disable command echo from Bluefruit */
+        _ble.echo(false);
+
+        /* Disables the BLE libraries internal print statements */
+        _ble.verbose(false);
+
+        /* Get MAC Address from BLE Module, this address is static (by default) and is used in the name of the device */
+        char mac_address[MAC_ADDRESS_TOTAL_LENGTH];
+        _ble.atcommandStrReply(F("AT+BLEGETADDR"), mac_address, MAC_ADDRESS_TOTAL_LENGTH, AT_COMMAND_TIMEOUT);
+        String name = utils::remove_all_chars(mac_address, ':');
+        name.remove(name.length() - MAC_ADDRESS_NAME_LENGTH);
+        // /* All Bluetooth names must include the preamble to connect to the GUI */
+        name = NAME_PREAMBLE + name;
+        // /* Package the name into the AT command */
+        String change_name_command = "AT+GAPDEVNAME=" + name;
+        char char_command[change_name_command.length()];
+        change_name_command.toCharArray(char_command, change_name_command.length()+1);
+        const __FlashStringHelper* name_command = reinterpret_cast<__FlashStringHelper*>(char_command);
+        /* Set the name on the module using the packaged string */
+        Serial.println(name_command);
+        if (!_ble.sendCommandCheckOK(F(name_command))) 
+        {
+            Serial.println(F("Could not set device name"));
+            return false;
+        }
+
+        /* Set event handler */
+        _ble.setBleUartRxCallback(ble_rx::on_rx_recieved);
+
+        //_ble.reset();
+
+        //_ble.setMode(BLUEFRUIT_MODE_DATA);
+        
+        /* Start Advertising */
         advertising_onoff(true);
-    }
-    else
-    {
-        Serial.println("ExoBLE::setup->Failed to start BLE!");
-        while(true) {;}
-    }
+        
+        Serial.println("Finished Setup and Started Advertising!");
+        return true;
+    #endif
 }
 
 void ExoBLE::advertising_onoff(bool onoff) 
 {
     if (onoff)
     {
-        BLE.advertise();
-        digitalWrite(coms_micro_pins::ble_signal_pin, !coms_micro_pins::ble_signal_active);
+        // Start Advertising
+        Serial.println("Start Advertising");
+        #if defined(ARDUINO_ARDUINO_NANO33BLE)
+            BLE.advertise();
+            digitalWrite(coms_micro_pins::ble_signal_pin, !coms_micro_pins::ble_signal_active);
+        #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
+            _ble.sendCommandCheckOK("AT+GAPSTARTADV" );
+        #endif
     }
     else
     {
-        BLE.stopAdvertise();
-        digitalWrite(coms_micro_pins::ble_signal_pin, coms_micro_pins::ble_signal_active);
+        // Stop Advertising
+        Serial.println("Stop Advertising");
+        #if defined(ARDUINO_ARDUINO_NANO33BLE)
+            BLE.stopAdvertise();
+            digitalWrite(coms_micro_pins::ble_signal_pin, coms_micro_pins::ble_signal_active);
+        #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
+            _ble.sendCommandCheckOK("AT+GAPSTOPADV" );
+        #endif
     }
 }
 
 bool ExoBLE::handle_updates() 
 {
-    BLE.poll();
-
-    //check connection status
-    if (_connected != BLE.connected()) 
+    // Poll for updates and check connection status
+    #if defined(ARDUINO_ARDUINO_NANO33BLE)
+        BLE.poll();
+        int32_t current_status = BLE.connected();
+    #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
+        _ble.update();
+        int32_t current_status;
+        if (!_ble.sendCommandWithIntReply("AT+GAPGETCONN", &current_status))
+        {
+            Serial.println("Unable to get connection status!");
+        }
+    #endif
+    
+    if (_connected == current_status) 
     {
-        _connected = BLE.connected();
-        advertising_onoff(!_connected);
+        return queue_size();
     }
 
+    // The BLE connection status changed
+    if (current_status < _connected)
+    {
+        // Disconnection
+        Serial.println("Disconnection");
+        #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
+        //_ble.reset();
+        #endif
+    }
+    else if (current_status > _connected)
+    {
+        // Connection
+        Serial.println("Connection");
+
+    }
+    advertising_onoff(current_status == 0);
+    _connected = current_status;
+        
     return queue_size();
 }
 
 
 void ExoBLE::send_message(BleMessage &msg)
 {
-    // Serial.print("Address: ");
-    // Serial.println(reinterpret_cast<long unsigned int>(&msg));
-    const int max_chars = 8;
-    int max_payload_length = ((3 + msg.expecting) * (max_chars + 1));
+    if (!this->_connected)
+    {
+        return; /* Don't bother sending anything if no one is listening */
+    }
+    Serial.println("Exoble::send_message->Sending:");
+    BleMessage::print(msg);
+    static const int k_preamble_length = 3;
+    int max_payload_length = ((k_preamble_length + msg.expecting) * (MAX_PARSER_CHARACTERS + 1));
     byte buffer[max_payload_length];
-    // Serial.print("ExoBLE::send_message->Data: ");
-    // Serial.println(msg.data[0]);
-    int bytes_to_send =  _ble_parser.package_raw_data(buffer, msg);
-    _gatt_db.TXChar.writeValue(buffer, bytes_to_send);
+
+    int bytes_to_send = _ble_parser.package_raw_data(buffer, msg);
+    #if (ARDUINO_ARDUINO_NANO33BLE)
+        _gatt_db.TXChar.writeValue(buffer, bytes_to_send);
+    #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
+        _ble.writeBLEUart(buffer, bytes_to_send);
+    #endif
 }
 
+#if defined(ARDUINO_ARDUINO_NANO33BLE)
 void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
 {
     static BleParser* parser = new BleParser();
@@ -110,6 +232,25 @@ void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
         Serial.println();
         push_queue(msg);
     }
+}
+
+#elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
+void ble_rx::on_rx_recieved(char data[], uint16_t len)
+{
+    static BleParser* parser = new BleParser();
+    static BleMessage* msg = new BleMessage();
+
+    for (int i=0; i<len; i++)
+    {
+        char working_char = data[i];
+        msg = parser->handle_raw_data(&working_char, 1);
+        if (msg->is_complete)
+        {
+            push_queue(msg);
+            msg->clear();
+        }
+    }
+   
 }
 
 #endif

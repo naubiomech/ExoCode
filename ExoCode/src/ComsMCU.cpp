@@ -1,9 +1,9 @@
-#if defined(ARDUINO_ARDUINO_NANO33BLE)
 #include "ComsMCU.h"
 
 ComsMCU::ComsMCU(ExoData* data):_data{data}
 {
-     //TODO: Use config data to set battery class
+    // TODO: Set battery type with config data
+    _battery->init();
     _exo_ble = new ExoBLE(data);
     _exo_ble->setup();
 }
@@ -16,16 +16,6 @@ void ComsMCU::handle_ble()
         BleMessage msg = pop_queue();
         if (msg.is_complete) 
         {
-            Serial.println("ComsMCU::handle_ble->Got complete message");
-            Serial.print(msg.command);
-            Serial.print("\t");
-            Serial.println(msg.expecting);
-            for (int i = 0; i < (msg.expecting); i++)
-            {
-                Serial.print(msg.data[i]);
-                Serial.print("\t");
-            }
-            Serial.println();
             _process_complete_gui_command(&msg);
         }
     }
@@ -61,20 +51,46 @@ void ComsMCU::update_gui()
 
 void ComsMCU::_process_complete_gui_command(BleMessage* msg) 
 {
-    //Update Data
-
-    //Process Command
-
     Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
-    Serial.print(msg->command);
-    Serial.print("\t");
-    Serial.println(msg->expecting);
-    for (int i = 0; i < (msg->expecting); i++)
-    {
-        Serial.print(msg->data[i]);
-        Serial.print("\t");
-    }
-    Serial.println();
-}
+    BleMessage::print(*msg);
 
-#endif
+    switch (msg->command)
+    {
+    case names::start:
+        handlers::start(_data);
+        break;
+    case names::stop:
+        handlers::stop(_data);
+        break;
+    case names::cal_trq:
+        handlers::cal_trq(_data);
+        break;
+    case names::cal_fsr:
+        handlers::cal_fsr(_data);
+        break;
+    case names::assist:
+        handlers::assist(_data);
+        break;
+    case names::resist:
+        handlers::resist(_data);
+        break;
+    case names::motors_on:
+        handlers::motors_on(_data);
+        break;
+    case names::motors_off:
+        handlers::motors_off(_data);
+        break;
+    case names::mark:
+        handlers::mark(_data);
+        break;
+    case names::new_fsr:
+        handlers::new_fsr(_data);
+        break;
+    case names::new_trq:
+        handlers::new_trq(_data);
+        break;
+    default:
+        Serial.println("ComsMCU::_process_complete_gui_command->No handler for command!");
+        break;
+    }
+}

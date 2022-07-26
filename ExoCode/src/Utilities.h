@@ -62,6 +62,7 @@ namespace utils
      * Searches str for 'rmv characters and deletes them all, returns new string
      */
     String remove_all_chars(String str, char rmv);
+    String remove_all_chars(char* arr, int len, char rmv);
 
     /*
      * given and integer, return the number of characters in it

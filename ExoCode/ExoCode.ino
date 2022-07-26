@@ -19,6 +19,7 @@
 #include "src\ExoData.h"
 #include "src\Exo.h"
 #include "src\Utilities.h"
+#include "src\ComsMCU.h"
 
 // Specific Librarys
 #include "src\ParseIni.h"
@@ -80,6 +81,7 @@ void loop()
     static bool first_run = true;
     // create the data and exo objects
     static ExoData exo_data(config_info::config_to_send);
+    static ComsMCU coms(&exo_data);
     #ifdef MAIN_DEBUG
         if (first_run)
         {

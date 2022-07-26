@@ -141,6 +141,11 @@ namespace utils
         }
         return str;
     };
+    String remove_all_chars(char* arr, char rmv)
+    {
+        String str = String(arr);
+        remove_all_chars(str, rmv);
+    }
 
     /*
      * given and integer, return the number of characters in it
