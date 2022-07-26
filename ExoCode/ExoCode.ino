@@ -6,7 +6,7 @@
 #if defined(ARDUINO_TEENSY36) | defined(ARDUINO_TEENSY41)
 
 #define INCLUDE_FLEXCAN_DEBUG
-#define MAKE_PLOTS
+//#define MAKE_PLOTS
 #define MAIN_DEBUG
 
 // Standard Libraries
@@ -360,6 +360,9 @@ void loop()
     }
 
     exo.run();
+    coms.handle_ble();
+    coms.local_sample();
+    coms.update_gui();
 
 }
 
