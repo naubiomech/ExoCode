@@ -31,6 +31,19 @@
         - Use the existing controllers for the template
         - This changes which controller object the _controller pointer is using.
 	- Note: The switch case references the config_defs name and the value passed to _controller references the object created in Joint.h
-        
+
+# Till we get the new features added to the app
+## Create parameter file
+1. In the SDCard folder go to the joint your controller is for.
+2. Create a new parameter csv file, I would recommend just copying one of the existing ones
+3. The first cell in the first line is the number of lines in the header.  Parameters will start being read after this number of lines.
+4. The first cell in the second line is the number of parameters to read, this should match what you put in ControllerData.h.  This was easier than trying to get the reading a full line of floats to be robust.
+5. After the header, put the parameter sets you would like to use, one set per line.  The parameters should be listed in the index order from ControllerData.h.  The first set will be default.
+6. If the controller is multi joint copy to the other joint folders.
+
+## ParamsFromSD.h
+1. In the controller_parameter_filenames namespace go to the appropriate joint
+2. Link the controller id from config_defs and the path on the SD card for the parameter file you just created.
+
 ## Done
 It should now be good to go.  You will need to change the controller and update the parameters.
