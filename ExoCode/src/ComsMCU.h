@@ -7,8 +7,6 @@
 #ifndef COMSMCU_H
 #define COMSMCU_H
 
-#if defined(ARDUINO_ARDUINO_NANO33BLE)
-
 #include "Arduino.h"
 #include "ExoBLE.h"
 #include "Battery.h"
@@ -37,5 +35,4 @@ class ComsMCU
         const float _status_millis = 1000;
 };
 
-#endif
 #endif

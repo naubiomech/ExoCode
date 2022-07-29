@@ -134,11 +134,14 @@
                 
             #if defined(ARDUINO_TEENSY41)    
                 // SPI Follower Pins
-                const unsigned int miso_pin = 11;
-                const unsigned int mosi_pin= 12;
+                const unsigned int miso_pin = 12;
+                const unsigned int mosi_pin= 11;
                 const unsigned int sck_pin = 13;
                 const unsigned int cs_pin = 10;
-                const unsigned int spi_mode = 16;
+                const unsigned int irq_pin = 34;
+                const unsigned int rst_pin = 4;
+                const unsigned int spi_mode = 8; // This is 8 or 16 bit, not the actual SPI mode, I know it is confusing but that is how they chose to make the library.
+                
                 
                 // Pin to Stop the Motors
                 const unsigned int motor_stop_pin = 9;
@@ -228,12 +231,13 @@
                 
             #if defined(ARDUINO_TEENSY41)    
                 // SPI Follower Pins
-                const unsigned int miso_pin = 11;
-                const unsigned int mosi_pin= 12;
+                const unsigned int miso_pin = 12;
+                const unsigned int mosi_pin= 11;
                 const unsigned int sck_pin = 13;
                 const unsigned int cs_pin = 10;
-                const unsigned int irq_pin = 36;
-                const unsigned int spi_mode = 16;
+                const unsigned int irq_pin = 34;
+                const unsigned int rst_pin = 4;
+                const unsigned int spi_mode = 8; // This is 8 or 16 bit, not the actual SPI mode, I know it is confusing but that is how they chose to make the library.
                 
                 
                 // Pin to Stop the Motors

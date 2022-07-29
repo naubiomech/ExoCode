@@ -6,7 +6,7 @@
 #if defined(ARDUINO_TEENSY36) | defined(ARDUINO_TEENSY41)
 
 #define INCLUDE_FLEXCAN_DEBUG
-#define MAKE_PLOTS
+//#define MAKE_PLOTS
 #define MAIN_DEBUG
 
 // Standard Libraries
@@ -19,6 +19,7 @@
 #include "src\ExoData.h"
 #include "src\Exo.h"
 #include "src\Utilities.h"
+#include "src\ComsMCU.h"
 
 // Specific Librarys
 #include "src\ParseIni.h"
@@ -80,6 +81,7 @@ void loop()
     static bool first_run = true;
     // create the data and exo objects
     static ExoData exo_data(config_info::config_to_send);
+    static ComsMCU coms(&exo_data);
     #ifdef MAIN_DEBUG
         if (first_run)
         {
@@ -358,6 +360,9 @@ void loop()
     }
 
     exo.run();
+    coms.handle_ble();
+    coms.local_sample();
+    coms.update_gui();
 
 }
 
