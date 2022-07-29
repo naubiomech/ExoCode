@@ -66,9 +66,9 @@
     config_info::config_to_send[config_defs::battery_idx] = (uint8_t)config_defs::battery::dumb;
     config_info::config_to_send[config_defs::exo_name_idx] = (uint8_t)config_defs::exo_name::bilateral_hip;
     config_info::config_to_send[config_defs::exo_side_idx] = (uint8_t)config_defs::exo_side::bilateral;
-    config_info::config_to_send[config_defs::hip_idx] = (uint8_t)config_defs::motor::AK60;
+    config_info::config_to_send[config_defs::hip_idx] = (uint8_t)config_defs::motor::AK60_v1_1;
     config_info::config_to_send[config_defs::knee_idx] = (uint8_t)config_defs::motor::not_used;
-    config_info::config_to_send[config_defs::ankle_idx] = (uint8_t)config_defs::motor::not_used;
+    config_info::config_to_send[config_defs::ankle_idx] = (uint8_t)config_defs::motor::AK60_v1_1;
     config_info::config_to_send[config_defs::hip_gear_idx] = (uint8_t)config_defs::gearing::gearing_1_1;
     config_info::config_to_send[config_defs::knee_gear_idx] = (uint8_t)config_defs::gearing::gearing_1_1;
     config_info::config_to_send[config_defs::ankle_gear_idx] = (uint8_t)config_defs::gearing::gearing_1_1;
@@ -84,15 +84,17 @@
     
     
     // these should be changed to match the ID of the motors.
-    static AK60_v1_1 right_motor(config_defs::joint_id::right_hip, &exo_data, _Joint::get_motor_enable_pin(config_defs::joint_id::right_hip, &exo_data));
-    static AK60_v1_1 left_motor(config_defs::joint_id::left_hip, &exo_data, _Joint::get_motor_enable_pin(config_defs::joint_id::left_hip, &exo_data));
+    
+        static AK60_v1_1 left_hip_motor(config_defs::joint_id::left_hip, &exo_data, _Joint::get_motor_enable_pin(config_defs::joint_id::left_hip, &exo_data));
+        static AK60_v1_1 right_hip_motor(config_defs::joint_id::right_hip, &exo_data, _Joint::get_motor_enable_pin(config_defs::joint_id::right_hip, &exo_data));
+        static AK60_v1_1 left_ankle_motor(config_defs::joint_id::left_ankle, &exo_data, _Joint::get_motor_enable_pin(config_defs::joint_id::left_ankle, &exo_data));
+        static AK60_v1_1 right_ankle_motor(config_defs::joint_id::right_ankle, &exo_data, _Joint::get_motor_enable_pin(config_defs::joint_id::right_ankle, &exo_data));
+    
     
     
 
-    static int motor_enable_time = millis();
     int time_to_stay_on_ms = 60000;
-//    left_motor.on_off(true);
-//    right_motor.on_off(true);
+
           
     int state_period_ms = 1;
     float left_magnitude = 1;
@@ -108,18 +110,36 @@
     if (first_run)
     {
         first_run = false;
-  
-        left_motor._motor_data->enabled = true;
-        right_motor._motor_data->enabled = true;
 
-        left_motor.on_off(left_motor._motor_data->enabled);
-        right_motor.on_off(right_motor._motor_data->enabled);
+        if (exo_data.left_leg.hip.is_used)
+        {
+            left_hip_motor._motor_data->enabled = true;
+            left_hip_motor.on_off(left_hip_motor._motor_data->enabled);
+            left_hip_motor.zero();
+        }
+        if (exo_data.right_leg.hip.is_used)
+        {
+            right_hip_motor._motor_data->enabled = true;
+            right_hip_motor.on_off(right_hip_motor._motor_data->enabled);
+            right_hip_motor.zero();
+        }
+        if (exo_data.left_leg.ankle.is_used)
+        {
+            left_ankle_motor._motor_data->enabled = true;
+            left_ankle_motor.on_off(left_ankle_motor._motor_data->enabled);
+            left_ankle_motor.zero();
+        }
+        if (exo_data.right_leg.ankle.is_used)
+        {
+            right_ankle_motor._motor_data->enabled = true;
+            right_ankle_motor.on_off(right_ankle_motor._motor_data->enabled);
+            right_ankle_motor.zero();
+        }
         
-        right_motor.zero();
-        left_motor.zero();
+
     }
     
-
+    static int motor_enable_time = millis();
     
     if (state_period_ms <= (current_time - last_transition_time))
     {
@@ -130,35 +150,64 @@
 
       if (time_to_stay_on_ms < (timestamp - motor_enable_time))
       {
-          left_motor._motor_data->enabled = false;
-          right_motor._motor_data->enabled = false;
+          if (exo_data.left_leg.hip.is_used)
+          {
+              left_hip_motor._motor_data->enabled = false;
+              left_hip_motor.on_off(left_hip_motor._motor_data->enabled);
+          }
+          if (exo_data.right_leg.hip.is_used)
+          {
+              right_hip_motor._motor_data->enabled = false;       
+              right_hip_motor.on_off(right_hip_motor._motor_data->enabled);
+          }
+          if (exo_data.left_leg.ankle.is_used)
+          {
+              left_ankle_motor._motor_data->enabled = false;
+              left_ankle_motor.on_off(left_ankle_motor._motor_data->enabled);
+          }
+          if (exo_data.right_leg.ankle.is_used)
+          {
+              right_ankle_motor._motor_data->enabled = false;
+              right_ankle_motor.on_off(right_ankle_motor._motor_data->enabled);
+          }
       }
-
-      left_motor.on_off(left_motor._motor_data->enabled);
-      right_motor.on_off(right_motor._motor_data->enabled);
-      
+    
       // This isn't the actual angle this is an angle used to create a sinusodal torque
       float angle_deg = 360.0 * (timestamp - pattern_start_timestamp) / pattern_period_ms;
       float left_torque_command = left_magnitude * sin (angle_deg * PI / 180);
       float right_torque_command = right_magnitude * sin (angle_deg * PI / 180);
       
-      left_motor.transaction(left_torque_command);
-      right_motor.transaction(right_torque_command);
       
+      if (exo_data.left_leg.hip.is_used)
+      {
+          left_hip_motor.transaction(left_torque_command);
+      }
+      if (exo_data.right_leg.hip.is_used)
+      {
+          right_hip_motor.transaction(right_torque_command); 
+      }
+      if (exo_data.left_leg.ankle.is_used)
+      {
+          left_ankle_motor.transaction(left_torque_command);
+      }
+      if (exo_data.right_leg.ankle.is_used)
+      {
+          right_ankle_motor.transaction(right_torque_command);
+      }
       
       last_transition_time = current_time;
-      if (left_motor._motor_data->enabled)
-      {
-          Serial.print(left_motor._motor_data->p);
-          Serial.print("\t");
-          Serial.print(right_motor._motor_data->p);
-          Serial.print("\t");
-          Serial.print(left_torque_command);
-          Serial.print("\t");
-          Serial.print(right_torque_command);
-         
-          Serial.print("\n");
-      }
+//      if (left_motor._motor_data->enabled)
+//      {
+//          Serial.print(left_motor._motor_data->p);
+//          Serial.print("\t");
+//          Serial.print(right_motor._motor_data->p);
+//          Serial.print("\t");
+//          Serial.print(left_torque_command);
+//          Serial.print("\t");
+//          Serial.print(right_torque_command);
+//         
+//          Serial.print("\n");
+//      }
       
     }
     
