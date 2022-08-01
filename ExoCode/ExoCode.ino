@@ -235,6 +235,14 @@ void loop()
         {
             exo_data.right_leg.ankle.calibrate_torque_sensor = true;  
         }
+        // wait for all motors to enable
+        while ((exo_data.left_leg.hip.is_used ? exo.left_leg._hip._motor->on_off(exo.left_leg._hip._motor->_motor_data->enabled): 1) 
+                && (exo_data.right_leg.hip.is_used ? exo.right_leg._hip._motor->on_off(exo.right_leg._hip._motor->_motor_data->enabled) : 1)
+                && (exo_data.left_leg.ankle.is_used ? exo.left_leg._ankle._motor->on_off(exo.left_leg._ankle._motor->_motor_data->enabled): 1) 
+                && (exo_data.right_leg.ankle.is_used ? exo.right_leg._ankle._motor->on_off(exo.right_leg._ankle._motor->_motor_data->enabled) : 1) )
+        {
+          
+        }
         #ifdef MAIN_DEBUG
             Serial.println("Superloop :: Motors Enabled");
             Serial.println("Superloop :: Parameters Set");

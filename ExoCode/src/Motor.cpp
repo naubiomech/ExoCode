@@ -89,6 +89,9 @@ _CANMotor::_CANMotor(config_defs::joint_id id, ExoData* exo_data, int enable_pin
     _KD_MIN = 0.0f;
     _KD_MAX = 5.0f;
     _P_MAX = 12.5f;
+    
+    _powered = false;
+    _enable_response = false;
 };
 
 void _CANMotor::transaction(float torque)
@@ -177,7 +180,12 @@ void _CANMotor::send_data(float torque)
     return;
 };
 
-void _CANMotor::on_off(bool is_on)
+bool _CANMotor::on_off(bool is_on)
+{
+    return on_off(is_on, false);
+};
+
+bool _CANMotor::on_off(bool is_on, bool overide)
 {
     // Serial.print(_prev_motor_enabled);
     // Serial.print("\t");
@@ -187,7 +195,7 @@ void _CANMotor::on_off(bool is_on)
     // Serial.print("\n");
     
     // only change the state and send messages if the enabled state has changed.
-    if (_prev_motor_enabled != _motor_data->enabled || _prev_motor_enabled != is_on)
+    if (_prev_motor_enabled != _motor_data->enabled || _prev_motor_enabled != is_on || overide || !_enable_response)
     {
         
         _motor_data->enabled = is_on;
@@ -205,21 +213,22 @@ void _CANMotor::on_off(bool is_on)
         if (_motor_data->enabled)
         {
             digitalWrite(_enable_pin, logic_micro_pins::motor_enable_on_state);
+            _powered = true;
             // !!! A delay check between when turning on power and when timeouts stopped happening gave a delay of 1930 ms rounding to 2000.
-            // TODO: make something more elegant than a delay for both.
-            delay(3000);
             // enable motor
             msg.buf[7] = 0xFC;
-            Serial.print("_CANMotor::on_off(bool is_on) : Enabled - ");
+            Serial.print("_CANMotor::on_off(bool is_on) : Powered on- ");
             Serial.print(uint32_t(_motor_data->id));
             Serial.print("\n");
         }
         else 
         {
             digitalWrite(_enable_pin, logic_micro_pins::motor_enable_off_state);
+            _powered = false;
+            _enable_response = false;
             // disable motor, the message after this shouldn't matter as the power is cut, and the send() doesn't send a message if not enabled.
             msg.buf[7] = 0xFD;
-            Serial.print("_CANMotor::on_off(bool is_on) : Disabled - ");
+            Serial.print("_CANMotor::on_off(bool is_on) : Powered off - ");
             Serial.print(uint32_t(_motor_data->id));
             Serial.print("\n");
         }
@@ -227,8 +236,13 @@ void _CANMotor::on_off(bool is_on)
         can->send(msg);
         delayMicroseconds(500);
         read_data();
+        if (_timeout_count == 0)
+        {
+            _enable_response = true;
+        }
     }
     _prev_motor_enabled = _motor_data->enabled;
+    return _enable_response;
 };
 
 void _CANMotor::zero()
