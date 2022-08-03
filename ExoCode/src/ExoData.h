@@ -32,11 +32,15 @@
 	error = 3,
 }; */
 
+// Type used for the for each joint method, the function should take JointData as input and return void
+typedef void (*for_each_joint_function_t) (JointData*);
+
 class ExoData 
 {
 	public:
         ExoData(uint8_t* config_to_send); // constructor
         void reconfigure(uint8_t* config_to_send);
+        void for_each_joint(for_each_joint_function_t function);
         
         uint8_t status;
         bool sync_led_state;
