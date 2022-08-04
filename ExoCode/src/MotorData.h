@@ -38,6 +38,7 @@ class MotorData
         // add do_zero_flag and check in run.
         bool do_zero;
         bool enabled;
+        bool is_on;
         bool is_left;
         bool flip_direction;
         float gearing;

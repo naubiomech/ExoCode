@@ -84,6 +84,11 @@ MotorData::MotorData(config_defs::joint_id id, uint8_t* config_to_send)
                     gearing = 3;
                     break;
                 }
+                case (uint8_t)config_defs::gearing::gearing_4_5_1:
+                {
+                    gearing = 4.5;
+                    break;
+                }
                 default:
                 {
                     gearing = 1;
@@ -120,6 +125,11 @@ MotorData::MotorData(config_defs::joint_id id, uint8_t* config_to_send)
                 case (uint8_t)config_defs::gearing::gearing_3_1:
                 {
                     gearing = 3;
+                    break;
+                }
+                case (uint8_t)config_defs::gearing::gearing_4_5_1:
+                {
+                    gearing = 4.5;
                     break;
                 }
                 default:
@@ -182,6 +192,11 @@ void MotorData::reconfigure(uint8_t* config_to_send)
                     gearing = 3;
                     break;
                 }
+                case (uint8_t)config_defs::gearing::gearing_4_5_1:
+                {
+                    gearing = 4.5;
+                    break;
+                }
                 default:
                 {
                     gearing = 1;
@@ -217,6 +232,11 @@ void MotorData::reconfigure(uint8_t* config_to_send)
                 case (uint8_t)config_defs::gearing::gearing_3_1:
                 {
                     gearing = 3;
+                    break;
+                }
+                case (uint8_t)config_defs::gearing::gearing_4_5_1:
+                {
+                    gearing = 4.5;
                     break;
                 }
                 default:
@@ -255,6 +275,11 @@ void MotorData::reconfigure(uint8_t* config_to_send)
                 case (uint8_t)config_defs::gearing::gearing_3_1:
                 {
                     gearing = 3;
+                    break;
+                }
+                case (uint8_t)config_defs::gearing::gearing_4_5_1:
+                {
+                    gearing = 4.5;
                     break;
                 }
                 default:

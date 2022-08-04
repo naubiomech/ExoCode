@@ -129,8 +129,8 @@ void loop()
         // Only make calls to used motors.
         if (exo_data.left_leg.hip.is_used)
         {
-            exo.left_leg._hip._motor->_motor_data->enabled = true;
-            exo.left_leg._hip._motor->on_off(exo.left_leg._hip._motor->_motor_data->enabled);
+            //exo.left_leg._hip._motor->_motor_data->is_on = true;
+            exo.left_leg._hip._motor->on_off(true);
             exo_data.left_leg.hip.motor.kp = 0;
             exo_data.left_leg.hip.motor.kd = 0;
             exo.left_leg._hip._motor->zero();
@@ -151,8 +151,8 @@ void loop()
         
         if (exo_data.right_leg.hip.is_used)
         {
-            exo.right_leg._hip._motor->_motor_data->enabled = true;
-            exo.right_leg._hip._motor->on_off(exo.right_leg._hip._motor->_motor_data->enabled);
+            //exo.right_leg._hip._motor->_motor_data->is_on = true;
+            exo.right_leg._hip._motor->on_off(true);
             exo_data.right_leg.hip.motor.kp = 0;
             exo_data.right_leg.hip.motor.kd = 0;
             exo.right_leg._hip._motor->zero();
@@ -176,8 +176,8 @@ void loop()
             #ifdef MAIN_DEBUG
               Serial.println("Superloop :: Left Ankle Used");
             #endif
-            exo.left_leg._ankle._motor->_motor_data->enabled = true;
-            exo.left_leg._ankle._motor->on_off(exo.left_leg._ankle._motor->_motor_data->enabled);
+            //exo.left_leg._ankle._motor->_motor_data->is_on = true;
+            exo.left_leg._ankle._motor->on_off(true);
             exo_data.left_leg.ankle.motor.kp = 0;
             exo_data.left_leg.ankle.motor.kd = 0;
             exo.left_leg._ankle._motor->zero();
@@ -197,8 +197,8 @@ void loop()
         
         if (exo_data.right_leg.ankle.is_used)
         {
-            exo.right_leg._ankle._motor->_motor_data->enabled = true;
-            exo.right_leg._ankle._motor->on_off(exo.right_leg._ankle._motor->_motor_data->enabled);
+            //exo.right_leg._ankle._motor->_motor_data->is_on = true;
+            exo.right_leg._ankle._motor->on_off(true);
             exo_data.right_leg.ankle.motor.kp = 0;
             exo_data.right_leg.ankle.motor.kd = 0;
             exo.right_leg._ankle._motor->zero();
@@ -216,33 +216,39 @@ void loop()
             exo.right_leg._ankle.set_controller(exo_data.right_leg.ankle.controller.controller);
             
         }
+
+        delay(5000);
         
         if(exo_data.left_leg.hip.is_used)
         {
             exo_data.left_leg.hip.calibrate_torque_sensor = true;
+             exo.left_leg._hip._motor->enable(true, true);
         }
        
         if(exo_data.right_leg.hip.is_used)
         {
             exo_data.right_leg.hip.calibrate_torque_sensor = true;  
+            exo.right_leg._hip._motor->enable(true, true);
         }
         if(exo_data.left_leg.ankle.is_used)
         {
             exo_data.left_leg.ankle.calibrate_torque_sensor = true;
+            exo.left_leg._ankle._motor->enable(true, true);
         }
        
         if(exo_data.right_leg.ankle.is_used)
         {
             exo_data.right_leg.ankle.calibrate_torque_sensor = true;  
+            exo.right_leg._ankle._motor->enable(true, true);
         }
         // wait for all motors to enable
-        while ((exo_data.left_leg.hip.is_used ? exo.left_leg._hip._motor->on_off(exo.left_leg._hip._motor->_motor_data->enabled): 1) 
-                && (exo_data.right_leg.hip.is_used ? exo.right_leg._hip._motor->on_off(exo.right_leg._hip._motor->_motor_data->enabled) : 1)
-                && (exo_data.left_leg.ankle.is_used ? exo.left_leg._ankle._motor->on_off(exo.left_leg._ankle._motor->_motor_data->enabled): 1) 
-                && (exo_data.right_leg.ankle.is_used ? exo.right_leg._ankle._motor->on_off(exo.right_leg._ankle._motor->_motor_data->enabled) : 1) )
-        {
-          
-        }
+//        while ((exo_data.left_leg.hip.is_used ? exo.left_leg._hip._motor->enable(exo.left_leg._hip._motor->_motor_data->enabled): 1) 
+//                && (exo_data.right_leg.hip.is_used ? exo.right_leg._hip._motor->enable(exo.right_leg._hip._motor->_motor_data->enabled) : 1)
+//                && (exo_data.left_leg.ankle.is_used ? exo.left_leg._ankle._motor->enable(exo.left_leg._ankle._motor->_motor_data->enabled): 1) 
+//                && (exo_data.right_leg.ankle.is_used ? exo.right_leg._ankle._motor->enable(exo.right_leg._ankle._motor->_motor_data->enabled) : 1) )
+//        {
+//          
+//        }
         #ifdef MAIN_DEBUG
             Serial.println("Superloop :: Motors Enabled");
             Serial.println("Superloop :: Parameters Set");

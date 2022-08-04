@@ -180,13 +180,29 @@ void _CANMotor::send_data(float torque)
     return;
 };
 
-bool _CANMotor::on_off(bool is_on)
+void _CANMotor::on_off(bool is_on)
 {
-    return on_off(is_on, false);
+    _motor_data->is_on = is_on;
+    
+          
+    if (_motor_data->is_on)
+    {
+        digitalWrite(_enable_pin, logic_micro_pins::motor_enable_on_state);
+    }
+    else 
+    {
+        digitalWrite(_enable_pin, logic_micro_pins::motor_enable_off_state);
+    }
+    
 };
 
-bool _CANMotor::on_off(bool is_on, bool overide)
-{
+bool _CANMotor::enable(bool is_enabled)
+{ 
+    return enable(is_enabled, false);
+};
+
+bool _CANMotor::enable(bool is_enabled, bool overide)
+{ 
     // Serial.print(_prev_motor_enabled);
     // Serial.print("\t");
     // Serial.print(_motor_data->enabled);
@@ -195,10 +211,10 @@ bool _CANMotor::on_off(bool is_on, bool overide)
     // Serial.print("\n");
     
     // only change the state and send messages if the enabled state has changed.
-    if (_prev_motor_enabled != _motor_data->enabled || _prev_motor_enabled != is_on || overide || !_enable_response)
+    if ( _motor_data->is_on && (_prev_motor_enabled != _motor_data->enabled || _prev_motor_enabled != is_enabled || overide || !_enable_response))
     {
         
-        _motor_data->enabled = is_on;
+        _motor_data->enabled = is_enabled;
         
         CAN_message_t msg;
         msg.id = uint32_t(_motor_data->id);
@@ -212,8 +228,6 @@ bool _CANMotor::on_off(bool is_on, bool overide)
         
         if (_motor_data->enabled)
         {
-            digitalWrite(_enable_pin, logic_micro_pins::motor_enable_on_state);
-            _powered = true;
             // !!! A delay check between when turning on power and when timeouts stopped happening gave a delay of 1930 ms rounding to 2000.
             // enable motor
             msg.buf[7] = 0xFC;
@@ -223,8 +237,6 @@ bool _CANMotor::on_off(bool is_on, bool overide)
         }
         else 
         {
-            digitalWrite(_enable_pin, logic_micro_pins::motor_enable_off_state);
-            _powered = false;
             _enable_response = false;
             // disable motor, the message after this shouldn't matter as the power is cut, and the send() doesn't send a message if not enabled.
             msg.buf[7] = 0xFD;
