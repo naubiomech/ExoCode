@@ -13,6 +13,8 @@ inline void change_motor_state(akxMotor* akMotor, bool to)
   //digitalWrite(onoff, to);
   akMotor->setMotorState(L_ID, to);
   akMotor->setMotorState(R_ID, to);
+  akMotor->setMotorState(L_HIP_ID, to);
+  akMotor->setMotorState(R_HIP_ID, to);
 }
 
 inline void change_motor_stateless(akxMotor* akMotor, bool to) {
@@ -21,6 +23,8 @@ inline void change_motor_stateless(akxMotor* akMotor, bool to) {
   //digitalWrite(onoff, to);
   akMotor->setMotorState(L_ID, to);
   akMotor->setMotorState(R_ID, to);
+  akMotor->setMotorState(L_HIP_ID, to);
+  akMotor->setMotorState(R_HIP_ID, to);
 }
 
 

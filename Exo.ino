@@ -147,11 +147,12 @@ void setup()
   send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
 
   torque_calibration(); //Sets a torque zero on startup  
-
   //Initailize motor driver IC
   akMotor.init();
-  akMotor.setMotorState(L_ID, false);
-  akMotor.setMotorState(R_ID, false);
+  delay(100);
+  change_motor_stateless(&akMotor, 1);
+  delay(100);
+  change_motor_stateless(&akMotor, 0);
   
   //Initialize the standing/walking state detector and provide callback functions
   amb_sm.init();
@@ -321,8 +322,11 @@ void rotate_motor() {
     //akMotor.updateFrame(&akMotor.right_return,0.1);
     
     float l_vol = pid(left_leg, left_leg->Average_Trq);
-    akMotor.map_and_apply(L_ID, l_vol, left_leg->sign);
+    akMotor.map_and_apply(L_ID, r_vol, left_leg->sign);
     //akMotor.updateFrame(&akMotor.left_return,0.1);
+
+    akMotor.map_and_apply(R_HIP_ID, r_vol, left_leg->sign);
+    akMotor.map_and_apply(L_HIP_ID, r_vol, left_leg->sign);
 
     if (flag_auto_KF) {
       Auto_KF(left_leg, Control_Mode);

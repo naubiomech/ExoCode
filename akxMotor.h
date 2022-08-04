@@ -53,11 +53,10 @@ typedef struct {
   float kd;
 } motor_frame_t;
 
-constexpr canid_t L_ID = 1;
-constexpr canid_t R_ID = 2;
-
-
-
+constexpr canid_t L_ID = 68;
+constexpr canid_t R_ID = 65;
+constexpr canid_t L_HIP_ID = 33;
+constexpr canid_t R_HIP_ID = 36;
 
 class akxMotor {
   public: 
