@@ -1,4 +1,6 @@
 #include "ComsMCU.h"
+#include "StatusLed.h"
+#include "Time_Helper.h"
 
 ComsMCU::ComsMCU(ExoData* data):_data{data}
 {
@@ -29,11 +31,33 @@ void ComsMCU::local_sample()
 
 void ComsMCU::update_gui() 
 {
-    // Get real time data from ExoData
+    // Get real time data from ExoData and send to GUI
+    if (_data->status == status_led_defs::messages::trial_on)
+    {
+        Time_Helper* t_helper = Time_Helper::get_instance();
+        static const float timer_context = t_helper->generate_new_context();
+        static float del_t;
+        del_t = t_helper->tick(timer_context);
+        
+        BleMessage rt_data_msg = BleMessage();
+        rt_data_msg.command = names::send_real_time_data;
+        rt_data_msg.expecting = ble_command_helpers::get_length_for_command(rt_data_msg.command);
+        // TODO: populate rt_data_msg and send
+        rt_data_msg.data[0] = _data->right_leg.ankle.torque_reading;
+        rt_data_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
+        rt_data_msg.data[2] = _data->right_leg.ankle.controller.setpoint;
+        rt_data_msg.data[3] = _data->left_leg.ankle.torque_reading;
+        //TODO: Implement Mark Feature
+        rt_data_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
+        rt_data_msg.data[5] = _data->left_leg.ankle.controller.setpoint;
+        rt_data_msg.data[6] = _data->right_leg.toe_fsr;
+        rt_data_msg.data[7] = _data->left_leg.toe_fsr;
+        rt_data_msg.data[8] = del_t;
 
-    // Send over bluetooth
+        _exo_ble->send_message(rt_data_msg);        
+    }
 
-    // Incrementally send status information
+    // Periodically send status information
     static float then = millis();
     float now = millis();
     if ((now-then) > _status_millis)
@@ -42,9 +66,10 @@ void ComsMCU::update_gui()
         float batt_param = _battery->get_parameter();
         BleMessage batt_msg = BleMessage();
         batt_msg.command = names::send_batt;
-        batt_msg.expecting = 1;
+        batt_msg.expecting = ble_command_helpers::get_length_for_command(batt_msg.command);
         batt_msg.data[0] = batt_param;
         _exo_ble->send_message(batt_msg);
+
         then = now;
     }
 }
@@ -68,6 +93,8 @@ void ComsMCU::_process_complete_gui_command(BleMessage* msg)
     case names::cal_fsr:
         handlers::cal_fsr(_data);
         break;
+    case names::cal_fsr_finished:
+        handlers::cal_fsr_finished(_data);
     case names::assist:
         handlers::assist(_data);
         break;
