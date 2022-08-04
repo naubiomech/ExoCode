@@ -93,8 +93,6 @@ void ComsMCU::_process_complete_gui_command(BleMessage* msg)
     case names::cal_fsr:
         handlers::cal_fsr(_data);
         break;
-    case names::cal_fsr_finished:
-        handlers::cal_fsr_finished(_data);
     case names::assist:
         handlers::assist(_data);
         break;

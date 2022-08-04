@@ -83,8 +83,6 @@ class CAN
         }
 
     private:
-        
-
         CAN()
         {   
             Can0.begin();

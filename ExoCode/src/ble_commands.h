@@ -18,7 +18,6 @@ namespace names
     static const char stop              = 'G';
     static const char cal_trq           = 'H';
     static const char cal_fsr           = 'L';
-    static const char cal_fsr_finished  = 'n';
     static const char new_trq           = 'F';
     static const char new_fsr           = 'R';
     static const char assist            = 'c';
@@ -34,6 +33,7 @@ namespace names
     static const char send_error_count    = 'w';
     static const char send_trq_cal        = 'H';
     static const char send_step_count     = 's';
+    static const char cal_fsr_finished  = 'n';
 };
 
 namespace ble
@@ -45,7 +45,6 @@ namespace ble
         {names::stop,               0},
         {names::cal_trq,            0},
         {names::cal_fsr,            0},
-        {names::cal_fsr_finished,   0},
         {names::assist,             0},
         {names::resist,             0},
         {names::motors_on,          0},
@@ -60,7 +59,8 @@ namespace ble
         {names::send_error_count, 1},
         {names::send_cal_done, 0},
         {names::send_trq_cal, 2},
-        {names::send_step_count, 2}
+        {names::send_step_count, 2},
+        {names::cal_fsr_finished, 0},
     };
 };
 
@@ -105,47 +105,56 @@ namespace handlers
     }
     inline static void stop(ExoData* data)
     {
-        // Stop the trial
+        // Stop the trial (inverse of start)
+        // Send trial summary data (step information)
 
     }
     inline static void cal_trq(ExoData* data)
-    {
-
+    {   
+        // Raise cal_trq flag for all joints being used, (Out of context: Should send calibration info upon cal completion)
+        data->for_each_joint([](JointData* j_data) {j_data->calibrate_torque_sensor = j_data->is_used;});
     }
     inline static void cal_fsr(ExoData* data)
     {
-
-    }
-    inline static void cal_fsr_finished(ExoData* data)
-    {
-
+        // Raise cal_fsr flag, send fsr finished flag when done
+        // Q: Difference between calibration and refinement?
+        data->right_leg.do_calibration_toe_fsr = 1;
+        data->left_leg.do_calibration_toe_fsr = 1;
     }
     inline static void assist(ExoData* data)
     {
-
+        // Change PJMC parameter to assist
+        // Need to implement PJMC
     }
     inline static void resist(ExoData* data)
     {
-
+        // Change PJMC parameter to resist
+        // Need to implement PJMC
     }
     inline static void motors_on(ExoData* data)
     {
-
+        // Enable Motors, stateless (ie keep running fault detection algorithms)
+        // For pause functionality, are we disabling or setting to zero_torque? Do we have to worry about saving the prev controller params?
     }
     inline static void motors_off(ExoData* data)
     {
-
+        // Disable Motors, stateless (ie keep running fault detection algorithms)
+        // For pause functionality, are we disabling or setting to zero_torque? 
     }
     inline static void mark(ExoData* data)
     {
-
+        // Increment mark variable (Done by sending different data on one of the real time signals, we should raise a flag or inc a var in exo_data)
     }
     inline static void new_trq(ExoData* data)
     {
+        // Change PJMC parameters for setpoint scaling
+        // Need to implement PJMC
 
     }
     inline static void new_fsr(ExoData* data)
     {
+        // Change PJMC fsr threshold parameters
+        // Need to implement PJMC
 
     }
 
