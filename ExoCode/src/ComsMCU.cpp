@@ -1,5 +1,6 @@
 #include "ComsMCU.h"
 #include "StatusLed.h"
+#include "StatusDefs.h"
 #include "Time_Helper.h"
 
 ComsMCU::ComsMCU(ExoData* data):_data{data}
@@ -32,7 +33,7 @@ void ComsMCU::local_sample()
 void ComsMCU::update_gui() 
 {
     // Get real time data from ExoData and send to GUI
-    if (_data->status == status_led_defs::messages::trial_on)
+    if (_data->status == status_defs::messages::trial_on)
     {
         Time_Helper* t_helper = Time_Helper::get_instance();
         static const float timer_context = t_helper->generate_new_context();

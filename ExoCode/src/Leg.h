@@ -19,6 +19,7 @@
 #include "ParseIni.h"
 #include "Board.h"
 #include "Utilities.h"
+#include "StatusDefs.h"
 
 #include <stdint.h>
 #include <algorithm>

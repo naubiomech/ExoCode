@@ -43,7 +43,7 @@
         uint8_t header_size;
         uint8_t param_num_in_file;
         uint8_t line_to_read;
-        uint8_t error_type;
+        uint8_t error_type = 0;
        
         switch(utils::get_joint_type(joint_id))
         {

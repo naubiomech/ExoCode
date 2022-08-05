@@ -18,6 +18,7 @@
 
 #include "Arduino.h"
 #include "Board.h"
+#include "StatusDefs.h"
 
 // Define the on and off state of the LED.  This is handy for if you are using a P Channel MOSFET where low is on.
 //#define STATUS_LED_ON_STATE 0
@@ -41,49 +42,7 @@
 
 namespace status_led_defs
 {
-    namespace messages 
-    {
         
-        //0b error ,trial_on, trial_off
-        const uint8_t off =  0;
-        const uint8_t trial_off = 1;
-        const uint8_t trial_on = 2;
-        const uint8_t test = 3; // generally won't be used.
-        const uint8_t torque_calibration = 4;
-        const uint8_t fsr_calibration = 5;
-        const uint8_t fsr_refinement =6;
-        // Specific error messages will use the 4 highest bits, giving 31 error messages
-        const uint8_t error = 0b00001000;
-        
-        const uint8_t error_left_heel_fsr =  1<<4 | error;
-        const uint8_t error_left_toe =  2<<4 | error;
-        const uint8_t error_right_heel_fsr =  3<<4 | error;
-        const uint8_t error_right_toe_fsr =  4<<4 | error;
-        
-        const uint8_t error_left_hip_torque_sensor =  5<<4 | error;
-        const uint8_t error_left_knee_torque_sensor =  6<<4 | error;
-        const uint8_t error_left_ankle_torque_sensor =  7<<4 | error;
-        const uint8_t error_right_hip_torque_sensor =  8<<4 | error;
-        const uint8_t error_right_knee_torque_sensor =  9<<4 | error;
-        const uint8_t error_right_ankle_torque_sensor =  10<<4 | error;
-        
-        const uint8_t error_left_hip_motor =  11<<4 | error;
-        const uint8_t error_left_knee_motor =  12<<4 | error;
-        const uint8_t error_left_ankle_motor =  13<<4 | error;
-        const uint8_t error_right_hip_motor =  14<<4 | error;
-        const uint8_t error_right_knee_motor =  15<<4 | error;
-        // const uint8_t error_right_ankle_motor =  16<<4 | error;
-        
-        // const uint8_t error_left_hip_controller =  17<<4 | error;
-        // const uint8_t error_left_knee_controller =  18<<4 | error;
-        // const uint8_t error_left_ankle_controller =  19<<4 | error;
-        // const uint8_t error_right_hip_controller =  20<<4 | error;
-        // const uint8_t error_right_knee_controller =  21<<4 | error;
-        // const uint8_t error_right_ankle_controller =  22<<4 | error;
-        
-        
-    }
-    
     namespace colors // just used namespace due to the complex structure.
     {
         const int off[] =  {0, 0, 0};
@@ -134,10 +93,9 @@ class StatusLed
     StatusLed(int r_pin, int g_pin, int b_pin);   // pins are the pins assocated with the different LED inputs
     StatusLed(int r_pin, int g_pin, int b_pin, int brightness);  // pins are the pins assocated with the different LED inputs, brightness is used to scale the colors that are sent: color * brightness/255
    
-    void update(uint8_t message); // Changes the LED State to the current state
+    void update(uint16_t message); // Changes the LED State to the current state
     void set_brightness(int brightness);  // Used if you need to change the brightness after initialization, brightness is used to scale the colors that are sent: color * brightness/255
     
-    static void print_message(uint8_t message);
   private:
   
     void _set_color(int R, int G, int B);  // changes the color R, G, and B are 0-255 values to set the corresponding colors.

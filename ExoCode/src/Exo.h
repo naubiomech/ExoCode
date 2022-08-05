@@ -20,6 +20,7 @@
 #include "Utilities.h"
 #include "SyncLed.h"
 #include "StatusLed.h"
+#include "StatusDefs.h"
 
 class Exo
 {

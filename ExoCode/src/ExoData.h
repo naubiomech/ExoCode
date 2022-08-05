@@ -15,7 +15,7 @@
 #include "ParseIni.h"
 #include "Board.h"
 #include "StatusLed.h"
-
+#include "StatusDefs.h"
 /* 
  * ExoData was broken out from the Exo class as we were originally going to have it mirrored on a second microcontroller that handled BLE.
  * It doesn't need to be done this way if we aren't, and is pretty cumbersome.
@@ -42,7 +42,7 @@ class ExoData
         void reconfigure(uint8_t* config_to_send);
         void for_each_joint(for_each_joint_function_t function);
         
-        uint8_t status;
+        uint16_t status;
         bool sync_led_state;
         bool estop;
         LegData left_leg;

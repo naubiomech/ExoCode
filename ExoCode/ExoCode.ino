@@ -19,6 +19,7 @@
 #include "src\ExoData.h"
 #include "src\Exo.h"
 #include "src\Utilities.h"
+#include "src\StatusDefs.h"
 
 // Specific Librarys
 #include "src\ParseIni.h"
@@ -298,7 +299,7 @@ void loop()
         #endif
         static_calibration_done  = true;
         time_dynamic_calibration_finished = millis();
-        exo_data.status = status_led_defs::messages::test;
+        exo_data.status = status_defs::messages::test;
     }
 
     if (!pause_between_calibration_done && (static_calibration_done && ((time_dynamic_calibration_finished +  pause_after_static_calibration_ms) < millis() ))) 

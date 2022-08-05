@@ -3,7 +3,7 @@
 
 #include "ExoData.h"
 #include "ParseIni.h" // For config_defs
-#include "StatusLed.h" // For ExoDataStatus_t
+#include "StatusDefs.h" // For ExoDataStatus_t
 
 typedef struct
 {
@@ -101,7 +101,7 @@ namespace handlers
             }
         );
         // Set the data status to running
-        data->status = status_led_defs::messages::trial_on;
+        data->status = status_defs::messages::trial_on;
     }
     inline static void stop(ExoData* data)
     {

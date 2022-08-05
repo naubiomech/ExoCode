@@ -33,7 +33,7 @@ StatusLed::StatusLed(int r_pin, int g_pin, int b_pin)
   
   _brightness = 125; // range 0 - 255, off to full on.
   
-  _current_message = status_led_defs::messages::trial_off;  // initalize message to trial off
+  _current_message = status_defs::messages::trial_off;  // initalize message to trial off
   
   // Configure the pin for the LED
   pinMode(_r_pin, OUTPUT);  // sets the pin as output
@@ -53,7 +53,7 @@ StatusLed::StatusLed(int r_pin, int g_pin, int b_pin, int brightness)
   
   _brightness = brightness ; // range 0 - 255, off to full on.
   
-  _current_message = status_led_defs::messages::trial_off;  // initalize message to trial off
+  _current_message = status_defs::messages::trial_off;  // initalize message to trial off
   
   // Configure the pin for the LED
   pinMode(_r_pin, OUTPUT);  // sets the pin as output
@@ -71,7 +71,7 @@ Public
 /*
 * Change the message and LED state
 */
-void StatusLed::update(uint8_t message)
+void StatusLed::update(uint16_t message)
 {
     if (message != _current_message)
     {
@@ -80,7 +80,7 @@ void StatusLed::update(uint8_t message)
         _period_ms = _message_pattern[_current_message][1];
         #ifdef STATUS_LED_DEBUG
             Serial.print("StatusLed::update : Message updated to ");
-            print_message(message);
+            print_status_message(message);
             Serial.print("\n");
         #endif
     }
@@ -109,103 +109,7 @@ void StatusLed::update(uint8_t message)
     //_set_color(_message_colors[_current_message][0],_message_colors[_current_message][1],_message_colors[_current_message][2]);   // Set the LED state
 };
 
-void StatusLed::print_message(uint8_t message)
-{
-    switch (message)
-    {
-        case status_led_defs::messages::off :
-            Serial.print("Off");
-            break;    
-        case status_led_defs::messages::trial_off :
-            Serial.print("Trial Off");
-            break;
-        case status_led_defs::messages::trial_on :
-            Serial.print("Trial On");
-            break;
-        case status_led_defs::messages::test :
-            Serial.print("Test");
-            break;    
-        case status_led_defs::messages::torque_calibration :
-            Serial.print("Torque Calibration");
-            break;
-        case status_led_defs::messages::fsr_calibration :
-            Serial.print("FSR Calibration");
-            break;
-        case status_led_defs::messages::fsr_refinement :
-            Serial.print("FSR Refinement");
-            break;    
-        case status_led_defs::messages::error :
-            Serial.print("General Error");
-            break;
-        case status_led_defs::messages::error_left_heel_fsr :
-            Serial.print("Error :: Left Heel FSR");
-            break;
-        case status_led_defs::messages::error_left_toe :
-            Serial.print("Error :: Left Toe FSR");
-            break;
-        case status_led_defs::messages::error_right_heel_fsr :
-            Serial.print("Error :: Right Heel FSR");
-            break;
-        case status_led_defs::messages::error_right_toe_fsr :
-            Serial.print("Error :: Right Toe FSR");
-            break;    
-        case status_led_defs::messages::error_left_hip_torque_sensor :
-            Serial.print("Error :: Left Hip Torque Sensor");
-            break;
-        case status_led_defs::messages::error_left_knee_torque_sensor :
-            Serial.print("Error :: Left Knee Torque Sensor");
-            break;
-        case status_led_defs::messages::error_left_ankle_torque_sensor :
-            Serial.print("Error :: Left Ankle Torque Sensor");
-            break;    
-        case status_led_defs::messages::error_right_hip_torque_sensor :
-            Serial.print("Error :: Right Hip Torque Sensor");
-            break;
-        case status_led_defs::messages::error_right_knee_torque_sensor :
-            Serial.print("Error :: Right Knee Torque Sensor");
-            break;
-        case status_led_defs::messages::error_right_ankle_torque_sensor :
-            Serial.print("Error :: Right Ankle Torque Sensor");
-            break;
-        case status_led_defs::messages::error_left_hip_motor :
-            Serial.print("Error :: Left Hip Motor");
-            break;
-        case status_led_defs::messages::error_left_knee_motor :
-            Serial.print("Error :: Left Knee Motor");
-            break;    
-        case status_led_defs::messages::error_left_ankle_motor :
-            Serial.print("Error :: Left Ankle Motor");
-            break;
-        case status_led_defs::messages::error_right_hip_motor :
-            Serial.print("Error :: Right Hip Motor");
-            break;
-        case status_led_defs::messages::error_right_knee_motor :
-            Serial.print("Error :: Right Knee Motor");
-            break; 
-        // Commented out as ran out of bits for size. Can change to uint16_t to gibe you more room.
-        // case status_led_defs::messages::error_right_ankle_motor :
-            // Serial.print("Error :: Right Ankle Motor");
-            // break;
-        // case status_led_defs::messages::error_left_hip_controller :
-            // Serial.print("Error :: Left Hip Controller");
-            // break;
-        // case status_led_defs::messages::error_left_knee_controller :
-            // Serial.print("Error :: Left Knee Controller");
-            // break;
-        // case status_led_defs::messages::error_left_ankle_controller :
-            // Serial.print("Error :: Left Ankle Controller");
-            // break;
-        // case status_led_defs::messages::error_right_hip_controller :
-            // Serial.print("Error :: Right Hip Controller");
-            // break;    
-        // case status_led_defs::messages::error_right_knee_controller :
-            // Serial.print("Error :: Right Knee Controller");
-            // break;
-        // case status_led_defs::messages::error_right_ankle_controller :
-            // Serial.print("Error :: Right Ankle Controller");
-            // break;
-    }
-};
+
 
 
 /*

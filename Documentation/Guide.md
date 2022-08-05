@@ -2,7 +2,7 @@
 1.  [Introduction](#intro)
     a. [Code location](#code-loc)
     b. [How to Deploy](#deploy)
-2.  [High level functionality](#)
+2.  [High level functionality](#high-level)
     a. [Code structure](#)
     b. [Guiding principles](#)
     c. [Operation](#)
@@ -29,4 +29,4 @@
 
 ## How to Deploy {#deploy}
 
-# High Level Functionality {
+# High Level Functionality {#high-level}

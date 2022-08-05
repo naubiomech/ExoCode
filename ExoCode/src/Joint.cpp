@@ -122,7 +122,7 @@ void _Joint::check_calibration()
     _joint_data->calibrate_torque_sensor = _torque_sensor.calibrate(_joint_data->calibrate_torque_sensor);
     if(_joint_data->calibrate_torque_sensor)
     {
-        _data->status = status_led_defs::messages::torque_calibration;
+        _data->status = status_defs::messages::torque_calibration;
     }
     //Serial.print("_Joint::check_calibration\n"); 
     if (_joint_data->motor.do_zero)

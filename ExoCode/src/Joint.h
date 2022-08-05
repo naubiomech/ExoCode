@@ -21,6 +21,7 @@
 #include "board.h"
 #include "Joint.h"
 #include "Utilities.h"
+#include "StatusDefs.h"
 
 #include <stdint.h>
 
