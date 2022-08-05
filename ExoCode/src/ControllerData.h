@@ -25,6 +25,11 @@ namespace controller_defs
         const uint8_t num_parameter = 0;
     }
     
+    namespace stasis
+    {
+        const uint8_t num_parameter = 0;
+    }
+    
     namespace proportional_joint_moment
     {
         const uint8_t max_torque_idx = 0;  // parameter for peak exo torque

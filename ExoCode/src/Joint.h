@@ -113,6 +113,7 @@ class HipJoint : public _Joint
         FranksCollinsHip _franks_collins_hip;
         UserDefined _user_defined;
         Sine _sine;
+        Stasis _stasis;
 };
 
 class KneeJoint : public _Joint
@@ -130,6 +131,7 @@ class KneeJoint : public _Joint
         ZeroTorque _zero_torque;
         UserDefined _user_defined;
         Sine _sine;
+        Stasis _stasis;
 };
 
 class AnkleJoint : public _Joint
@@ -149,6 +151,7 @@ class AnkleJoint : public _Joint
         ZhangCollins _zhang_collins;
         UserDefined _user_defined;
         Sine _sine;
+        Stasis _stasis;
 };
 
 #endif

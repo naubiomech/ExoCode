@@ -88,6 +88,22 @@ class ZeroTorque : public _Controller
 };
 
 /*
+ * Stasis Controller
+ * This controller is for the any joint
+ * Simply applies zero torque cmd to motor
+ * 
+ * see ControllerData.h for details on the parameters used.
+ */
+class Stasis : public _Controller
+{
+    public:
+        Stasis(config_defs::joint_id id, ExoData* exo_data);
+        ~Stasis(){};
+        
+        float calc_motor_cmd();
+};
+
+/*
  * Heel Toe Controller
  * This controller is for the hip joint 
  * Applies torque based on the heel and toe readings with some adjustments for swing

@@ -373,6 +373,7 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 , _franks_collins_hip(id, exo_data)
 , _user_defined(id, exo_data)
 , _sine(id, exo_data)
+, _stasis(id, exo_data)
 {
 
     //Serial.print("HipJoint::HipJoint\n");
@@ -519,6 +520,9 @@ void HipJoint::set_controller(uint8_t controller_id)
         case (uint8_t)config_defs::hip_controllers::sine :
             _controller = &_sine;
             break;
+        case (uint8_t)config_defs::hip_controllers::stasis :
+            _controller = &_stasis;
+            break;
         default :
             _controller = nullptr;
             break;
@@ -532,6 +536,7 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
 , _zero_torque(id, exo_data)
 , _user_defined(id, exo_data)
 , _sine(id, exo_data)
+, _stasis(id, exo_data)
 {
     // Serial.print("KneeJoint::KneeJoint\n");
     // set _joint_data to point to the data specific to this joint.
@@ -663,6 +668,9 @@ void KneeJoint::set_controller(uint8_t controller_id)  // changes the high level
         case (uint8_t)config_defs::knee_controllers::sine :
             _controller = &_sine;
             break;
+        case (uint8_t)config_defs::knee_controllers::stasis :
+            _controller = &_stasis;
+            break;
         default :
             _controller = nullptr;
             break;
@@ -677,6 +685,7 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 , _zhang_collins(id, exo_data)
 , _user_defined(id, exo_data)
 , _sine(id, exo_data)
+, _stasis(id, exo_data)
 {
     // Serial.print("AnkleJoint::AnkleJoint\n");
     // set _joint_data to point to the data specific to this joint.
@@ -814,6 +823,9 @@ void AnkleJoint::set_controller(uint8_t controller_id)  // changes the high leve
             break;
         case (uint8_t)config_defs::ankle_controllers::sine :
             _controller = &_sine;
+            break;
+        case (uint8_t)config_defs::ankle_controllers::stasis :
+            _controller = &_stasis;
             break;
         default :
             _controller = nullptr;

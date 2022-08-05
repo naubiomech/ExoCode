@@ -130,6 +130,28 @@ float ZeroTorque::calc_motor_cmd()
     return cmd;
 };
 
+//****************************************************
+/*
+ * Constructor for the controller
+ * Takes the joint id and a pointer to the exo_data
+ * Only stores the id, exo_data pointer.
+ */
+Stasis::Stasis(config_defs::joint_id id, ExoData* exo_data)
+: _Controller(id, exo_data)
+{
+    
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("Stasis::Constructor");
+    #endif
+    
+};
+
+float Stasis::calc_motor_cmd()
+{
+    float cmd = 0;
+    return cmd;
+};
+
 
 //****************************************************
 /*
