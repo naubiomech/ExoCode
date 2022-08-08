@@ -83,37 +83,37 @@ void ComsMCU::_process_complete_gui_command(BleMessage* msg)
     switch (msg->command)
     {
     case names::start:
-        handlers::start(_data);
+        handlers::start(_data, msg);
         break;
     case names::stop:
-        handlers::stop(_data);
+        handlers::stop(_data, msg);
         break;
     case names::cal_trq:
-        handlers::cal_trq(_data);
+        handlers::cal_trq(_data, msg);
         break;
     case names::cal_fsr:
-        handlers::cal_fsr(_data);
+        handlers::cal_fsr(_data, msg);
         break;
     case names::assist:
-        handlers::assist(_data);
+        handlers::assist(_data, msg);
         break;
     case names::resist:
-        handlers::resist(_data);
+        handlers::resist(_data, msg);
         break;
     case names::motors_on:
-        handlers::motors_on(_data);
+        handlers::motors_on(_data, msg);
         break;
     case names::motors_off:
-        handlers::motors_off(_data);
+        handlers::motors_off(_data, msg);
         break;
     case names::mark:
-        handlers::mark(_data);
+        handlers::mark(_data, msg);
         break;
     case names::new_fsr:
-        handlers::new_fsr(_data);
+        handlers::new_fsr(_data, msg);
         break;
     case names::new_trq:
-        handlers::new_trq(_data);
+        handlers::new_trq(_data, msg);
         break;
     default:
         Serial.println("ComsMCU::_process_complete_gui_command->No handler for command!");
