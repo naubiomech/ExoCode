@@ -5,13 +5,18 @@ This code is for the CAN based motors on boards where the nano handles low frequ
 ## Common Code (Mixed [in progress])
 - [x] Configuration reading (Paul)
 - [x] Data structure (Paul [Structure done, may need to add as we go])
+- [ ] Modify Run methods to check Exo_Data and perform Exo tasks
+- [ ] Add a check to the controller to ensure that the user updates the controller parameters when changing 
+controllers.
+
 
 ## Nano Specific Code (Chance [in progress])
 ### Classes
 Chance I am going to let you handle most of this but I am going to provide some structure, feel free to change.  You can find the pins in the TMotor_Exo_PCB, WithTeensy branch.
-- [ ] Bluetooth handler
-- [ ] spi handler (Teensy Communication)
-- [ ] i2c handler (Battery Voltage)
+- [X] Bluetooth handler
+- [] spi handler (Teensy Communication)
+- [X] i2c handler (Battery Voltage)
+- [ ] Use the modified torque command to set the controller from the sd card
 
 ## Teensy Specific Code (Mixed [in progress])
 ### Classes
