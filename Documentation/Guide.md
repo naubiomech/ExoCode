@@ -1,81 +1,81 @@
 # Outline
-1.  [Introduction](#intro)
-    a. [Code location](#code-loc)
-    b. [How to Deploy](#deploy)
-    c. [Style Guide](#style)
-2.  [High level functionality](#high-level)
-    a. [Code Structure](#code-struct)
-    b. [Guiding Principles](#principals)
+1.  [Introduction](#introduction)
+    a. [Code location](#code-location)
+    b. [How to Deploy](#how-to-deploy)
+    c. [Style Guide](#style-guide)
+2.  [High level functionality](#high-level-functionality)
+    a. [Code Structure](#code-structure)
+    b. [Guiding Principles](#guiding-principals)
     c. [Operation](#operation)
-3.  [SD Card](#sd)
-    a. [Configuration](#config)
-    b. [Controller Parameters](#sd-params)
+3.  [SD Card](#sd-card)
+    a. [Configuration](#sd-configuration)
+    b. [Controller Parameters](#sd-controller-parameters)
 3.  [Sensors](#sensors)
-    a. [Structure](#sensor-struct)
-    b. [Adding New](#sensor-new)
+    a. [Structure](#sensor-structure)
+    b. [Adding New](#adding-new-sensors)
 4.  [Actuators](#actuators)
-    a. [Structure](#actuator-struct)
-    b. [Adding New](#actuator-new)
-    c. [T-motor Initialization](#tmotor) (Get info from Chance)
+    a. [Structure](#actuator-structure)
+    b. [Adding New](#adding-new-actuators)
+    c. [T-motor Initialization](#t-motor-initialization) (Get info from Chance)
 5.  [Controllers](#controllers)
-    a. [Structure](#controller-struct)
-    b. [Adding new](#controller-new)
-    c. [Parameters](#controller-params)
+    a. [Structure](#controller-structure)
+    b. [Adding new](#adding-new-controllers)
+    c. [Parameters](#controller-parameters)
 6. [Bluetooth Communication](#bluetooth) (Get info from Chance)
 7. [Resources](#resources)
 
 ***
-# Introduction {#intro}
+# Introduction 
 
-## Code Location {#code-loc}
+## Code Location 
 
-## How to Deploy {#deploy} 
+## How to Deploy 
 
-## Style Guide {#style}
-
-***
-# High Level Functionality {#high-level}
-
-## Code Structure {#code-struct}
-
-## Guiding Principals {#principals}
-
-## Operation {#operation} 
+## Style Guide 
 
 ***
-# SD Card {#sd} 
+# High Level Functionality 
 
-## Configuration {#config}  
+## Code Structure 
 
-## Controller Parameters {#sd-params} 
+## Guiding Principals 
+
+## Operation  
+
+***
+# SD Card  
+
+## SD Configuration  
+
+## SD Controller Parameters 
 
 *** 
 # Sensors {#sensors}
 
-## Structure {#sensor-struct}
+## Sensor Structure 
 
-## Adding New {#sensor-new}
-
-*** 
-# Actuators {#actuators}
-
-## Structure {#actuator-struct}
-
-## Adding New {#actuator-new}
-
-## T-motor Initialization {#tmotor}
+## Adding New Sensors
 
 *** 
-# Controllers {#controllers}
+# Actuators
 
-## Structure {#controller-struct}
+## Actuator Structure 
 
-## Adding New {#controller-new}
+## Adding New Actuators 
 
-## Parameters {#controller-params} 
+## T-motor Initialization 
+
+*** 
+# Controllers 
+
+## Controller Structure 
+
+## Adding New Controllers
+
+## Controller Parameters  
 
 ***
-# Bluetooth {#bluetooth} 
+# Bluetooth 
 
 ***
-# Resources {#resources}
+# Resources 
