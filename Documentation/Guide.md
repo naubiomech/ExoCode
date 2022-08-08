@@ -50,7 +50,7 @@
 ## SD Controller Parameters 
 
 *** 
-# Sensors {#sensors}
+# Sensors
 
 ## Sensor Structure 
 
