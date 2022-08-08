@@ -14,7 +14,7 @@ controllers.
 ### Classes
 Chance I am going to let you handle most of this but I am going to provide some structure, feel free to change.  You can find the pins in the TMotor_Exo_PCB, WithTeensy branch.
 - [X] Bluetooth handler
-- [] spi handler (Teensy Communication)
+- [ ] spi handler (Teensy Communication)
 - [X] i2c handler (Battery Voltage)
 - [ ] Use the modified torque command to set the controller from the sd card
 
