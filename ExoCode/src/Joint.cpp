@@ -453,7 +453,8 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 void HipJoint::run_joint()
 {
     // enable or disable the motor.
-    _motor->on_off(_joint_data->motor.enabled & _data->estop);
+    _motor->on_off(); 
+    _motor->enable();
     
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
@@ -496,8 +497,8 @@ void HipJoint::set_controller(uint8_t controller_id)
     switch (controller_id)
     {
         case (uint8_t)config_defs::hip_controllers::disabled :
-            _motor->on_off(false);
-            _controller = &_zero_torque;
+            _joint_data->motor.enabled = false;
+            _controller = &_stasis;
             break;
         case (uint8_t)config_defs::hip_controllers::zero_torque :
             _controller = &_zero_torque;
@@ -595,7 +596,7 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
                 break;
         }
         delay(5);
-#       ifdef JOINT_DEBUG
+        #ifdef JOINT_DEBUG
             Serial.print(_is_left ? "Left " : "Right ");
             Serial.println("Knee : Setting Controller");
         #endif
@@ -613,7 +614,8 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
 void KneeJoint::run_joint()
 {
     // enable or disable the motor.
-    _motor->on_off(_joint_data->motor.enabled);
+    _motor->on_off(); 
+    _motor->enable();
     
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
@@ -656,8 +658,8 @@ void KneeJoint::set_controller(uint8_t controller_id)  // changes the high level
     switch (controller_id)
     {
         case (uint8_t)config_defs::knee_controllers::disabled :
-            _motor->on_off(false);
-            _controller = &_zero_torque;
+            _joint_data->motor.enabled = false;
+            _controller = &_stasis;
             break;
         case (uint8_t)config_defs::knee_controllers::zero_torque :
             _controller = &_zero_torque;
@@ -763,7 +765,8 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 void AnkleJoint::run_joint()
 {
     // enable or disable the motor.
-    _motor->on_off(_joint_data->motor.enabled);
+    _motor->on_off(); 
+    _motor->enable();
     
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
@@ -806,8 +809,8 @@ void AnkleJoint::set_controller(uint8_t controller_id)  // changes the high leve
     switch (controller_id)
     {
         case (uint8_t)config_defs::ankle_controllers::disabled :
-            _motor->on_off(false);
-            _controller = &_zero_torque;
+            _joint_data->motor.enabled = false;
+            _controller = &_stasis;
             break;
         case (uint8_t)config_defs::ankle_controllers::zero_torque :
             _controller = &_zero_torque;

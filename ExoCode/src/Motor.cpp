@@ -18,7 +18,8 @@ _Motor::_Motor(config_defs::joint_id id, ExoData* exo_data, int enable_pin)
     _is_left = ((uint8_t)this->_id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
     _data = exo_data;
     _enable_pin = enable_pin;
-    _prev_motor_enabled = false;
+    _prev_motor_enabled = false; 
+    _prev_on_state = false;
     
     // Serial.print("_Motor::_Motor : _enable_pin = ");
     // Serial.print(_enable_pin);
@@ -90,7 +91,6 @@ _CANMotor::_CANMotor(config_defs::joint_id id, ExoData* exo_data, int enable_pin
     _KD_MAX = 5.0f;
     _P_MAX = 12.5f;
     
-    _powered = false;
     _enable_response = false;
 };
 
@@ -180,28 +180,32 @@ void _CANMotor::send_data(float torque)
     return;
 };
 
-void _CANMotor::on_off(bool is_on)
-{
-    _motor_data->is_on = is_on;
-    
-          
-    if (_motor_data->is_on)
+void _CANMotor::on_off()
+{          
+    if (_data->estop)
     {
-        digitalWrite(_enable_pin, logic_micro_pins::motor_enable_on_state);
+        _motor_data->is_on = false;
     }
-    else 
+    if (_prev_on_state != _motor_data->is_on) // if was here to save time, can be removed if making problems, or add overide
     {
-        digitalWrite(_enable_pin, logic_micro_pins::motor_enable_off_state);
+        if (_motor_data->is_on)
+        {
+            digitalWrite(_enable_pin, logic_micro_pins::motor_enable_on_state);
+        }
+        else 
+        {
+            digitalWrite(_enable_pin, logic_micro_pins::motor_enable_off_state);
+        } 
     }
-    
+    _prev_on_state = _motor_data->is_on;
 };
 
-bool _CANMotor::enable(bool is_enabled)
+bool _CANMotor::enable()
 { 
-    return enable(is_enabled, false);
+    return enable(false);
 };
 
-bool _CANMotor::enable(bool is_enabled, bool overide)
+bool _CANMotor::enable(bool overide)
 { 
     // Serial.print(_prev_motor_enabled);
     // Serial.print("\t");
@@ -211,11 +215,8 @@ bool _CANMotor::enable(bool is_enabled, bool overide)
     // Serial.print("\n");
     
     // only change the state and send messages if the enabled state has changed.
-    if ( _motor_data->is_on && (_prev_motor_enabled != _motor_data->enabled || _prev_motor_enabled != is_enabled || overide || !_enable_response))
+    if ( _motor_data->is_on && (_prev_motor_enabled != _motor_data->enabled || overide || !_enable_response))
     {
-        
-        _motor_data->enabled = is_enabled;
-        
         CAN_message_t msg;
         msg.id = uint32_t(_motor_data->id);
         msg.buf[0] = 0xFF;

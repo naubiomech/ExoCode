@@ -34,9 +34,9 @@ class _Motor
 		virtual void send_data(float torque) = 0;  // sends new control command to the motors used in the leg, based on the defined controllers
 		virtual void transaction(float torque) = 0;
         //void set_controller(int controller); // Changes the low level controller for an individual joint
-		virtual void on_off(bool is_on) = 0;  // motor enable/disable
-        virtual bool enable(bool is_enabled) = 0;  // motor enable/disable
-        virtual bool enable(bool is_enabled, bool overide) = 0;  // motor enable/disable
+		virtual void on_off() = 0;  // motor enable/disable
+        virtual bool enable() = 0;  // motor enable/disable
+        virtual bool enable(bool overide) = 0;  // motor enable/disable
         virtual void zero() = 0; // set position to zero
 		 
         virtual bool get_is_left();  // lets you know if it is a left or right leg.
@@ -48,7 +48,8 @@ class _Motor
 		bool _is_left;
         ExoData* _data;
         int _enable_pin;
-        bool _prev_motor_enabled;
+        bool _prev_motor_enabled; 
+        bool _prev_on_state;
 };
 
 class NullMotor : public _Motor
@@ -58,9 +59,9 @@ class NullMotor : public _Motor
     void read_data() {};
     void send_data(float torque) {};
     void transaction(float torque) {};
-    void on_off(bool is_on) {};
-    bool enable(bool is_enabled) {return true;};
-    bool enable(bool is_enabled, bool overide) {return true;};
+    void on_off() {};
+    bool enable() {return true;};
+    bool enable(bool overide) {return true;};
     void zero() {};
 };
 
@@ -76,9 +77,9 @@ class _CANMotor : public _Motor
         void transaction(float torque);
         void read_data();
         void send_data(float torque);
-        void on_off(bool is_on);
-        bool enable(bool is_enabled);
-        bool enable(bool is_enabled, bool overide);
+        void on_off();
+        bool enable();
+        bool enable(bool overide);
         void zero();
     protected:
         float _float_to_uint(float x, float x_min, float x_max, int bits);
@@ -92,7 +93,6 @@ class _CANMotor : public _Motor
         float _T_MAX;
         float _V_MAX;
         int _timeout_count = 0;
-        bool _powered;
         bool _enable_response;
         const uint32_t _timeout = 500; //micro-seconds
 };
