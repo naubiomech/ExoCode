@@ -61,8 +61,10 @@ The libraries should be moved to C:\Users\\\[USER\]\Documents\Arduino\libraries\
 - Commit: 16412c28c5d25eb2577c0d5bbac85f3c7dc7baae
 - Modifications: 
     - Adafruit_BluefruitLE_SPI.cpp 
-        - line 45 changed to: 
+        - line 45 changed to:  
+        
             ```SPISettings bluefruitSPI(1000000, MSBFIRST, SPI_MODE0);```  
+            
             Due to teensy speed issue
 
 ## MORE DETAILS TO COME
