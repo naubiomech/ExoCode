@@ -27,7 +27,7 @@ class TorqueSensor
         /*
          * reads the pins and updates the data object.
          */
-        int read();
+        float read();
 				
 		int _pin;
 	private:

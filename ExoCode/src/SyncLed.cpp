@@ -25,7 +25,7 @@
 //#include "IntervalTimerEx.h"
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
-#define NUM_START_STOP_BLINKS 1  // the number of times to have the LED on during the start stop sequence.
+
 
 /*
 Constructors
@@ -49,7 +49,7 @@ SyncLed::SyncLed(int pin, int sync_start_stop_half_period_us, int sync_half_peri
 	_state_change_count = 0; 
 	_do_blink = false; 
 	_do_start_stop_sequence = false; 
-	_num_start_stop_blinks = NUM_START_STOP_BLINKS;
+	_num_start_stop_blinks = sync_time::NUM_START_STOP_BLINKS;
 	_is_blinking = false;
     
 	// Configure the pin for the LED
@@ -78,7 +78,7 @@ SyncLed::SyncLed(int pin, int sync_start_stop_half_period_us, int sync_half_peri
 	_state_change_count = 0; // Track how many 
 	_do_blink = false; // use volatile for shared variables
 	_do_start_stop_sequence = false; // use volatile for shared variables
-	_num_start_stop_blinks = NUM_START_STOP_BLINKS;
+	_num_start_stop_blinks = sync_time::NUM_START_STOP_BLINKS;
 	_is_blinking = false;
     
 	// Configure the pin for the LED
@@ -107,7 +107,7 @@ SyncLed::SyncLed(int pin, int sync_start_stop_half_period_us, int sync_half_peri
   _state_change_count = 0; // Track how many 
   _do_blink = false; // use volatile for shared variables
   _do_start_stop_sequence = false; // use volatile for shared variables
-  _num_start_stop_blinks = NUM_START_STOP_BLINKS;
+  _num_start_stop_blinks = sync_time::NUM_START_STOP_BLINKS;
   _is_blinking = false;
   
   // Configure the pin for the LED

@@ -99,10 +99,10 @@ bool TorqueSensor::calibrate(bool do_calibrate)
 /*
  * Reads the sensor and returns the calibrated value.
  */
-int TorqueSensor::read()
+float TorqueSensor::read()
 {
     _raw_reading = analogRead(_pin);
-    _calibrated_reading = _raw_reading - _calibration;
+    _calibrated_reading = (_raw_reading - _calibration) * torque_calibration::AI_CNT_TO_V * torque_calibration::TRQ_V_TO_NM;
     
     return _calibrated_reading;
 };
