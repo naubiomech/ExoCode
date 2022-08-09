@@ -31,12 +31,15 @@
 
 ## How to Deploy 
 
-## Style Guide 
+## Style Guide  
+The detailed style guide can be found [here](/StyleGuide.md)
 
 ***
 # High Level Functionality 
 
 ## Code Structure 
+[Data Structure](/ExoDataStructure.md) 
+[Exo Structure](/ExoStructure.md)
 
 ## Guiding Principals 
 
