@@ -103,7 +103,7 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
 void _Joint::read_data()  
 {
     // Read the torque sensor, and change sign based on side.
-    _joint_data->torque_reading = _joint_data->flip_direction ? -1*_torque_sensor.read() : _torque_sensor.read();
+    _joint_data->torque_reading = (_joint_data->flip_direction ? -1 : 1) * _torque_sensor.read();
     
     _joint_data->position = _joint_data->motor.p / _joint_data->motor.gearing;
     _joint_data->velocity = _joint_data->motor.v / _joint_data->motor.gearing;
@@ -455,6 +455,7 @@ void HipJoint::run_joint()
     // enable or disable the motor.
     _motor->on_off(); 
     _motor->enable();
+    
     
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();

@@ -31,7 +31,7 @@ class JointData {
         config_defs::joint_id id;
         MotorData motor;
         ControllerData controller;
-        int torque_reading;  // reading from the torque sensor
+        float torque_reading;  // reading from the torque sensor
         bool is_left;
         bool flip_direction;
         bool is_used;
