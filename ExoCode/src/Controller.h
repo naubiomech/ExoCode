@@ -18,6 +18,7 @@
 #include "ParseIni.h"
 #include <stdint.h>
 #include "Utilities.h"
+#include "config.h"
 
 //TODO: Create motor base class with interface : int calc_motor_cmd()
 
@@ -47,9 +48,12 @@ class _Controller
         config_defs::joint_id _id;
         
         float _integral_val;
+        float _prev_error;  
+        
+        float _pid(float cmd, float measurement, float p_gain, float i_gain, float d_gain);
         
         
-};
+}; 
 
 /*
  * Proportional Joint Moment Controller
@@ -359,6 +363,8 @@ class UserDefined: public _Controller
         
         float calc_motor_cmd();
     private:
+        float _percent_x[controller_defs::user_defined::num_sample_points];
+        const float _step_size = 100/controller_defs::user_defined::num_sample_points;
         
         
 };

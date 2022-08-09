@@ -528,6 +528,8 @@ void HipJoint::set_controller(uint8_t controller_id)
             _controller = nullptr;
             break;
     } 
+    
+    _controller->reset_integral();
 };
 
 //================================================================
@@ -677,6 +679,8 @@ void KneeJoint::set_controller(uint8_t controller_id)  // changes the high level
             _controller = nullptr;
             break;
     } 
+    
+    _controller->reset_integral();
 };
 
 //=================================================================
@@ -834,5 +838,7 @@ void AnkleJoint::set_controller(uint8_t controller_id)  // changes the high leve
             _controller = nullptr;
             break;
     } 
+    
+    _controller->reset_integral();
 };
 #endif

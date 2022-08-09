@@ -24,7 +24,11 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
     bool is_left = utils::get_is_left(_id);
     #ifdef CONTROLLER_DEBUG
         Serial.print(is_left ? "Left " : "Right ");
-    #endif
+    #endif 
+    
+    _integral_val = 0;
+    _prev_error = 0;
+        
     // set _controller_data to point to the data specific to the controller.
     switch (utils::get_joint_type(_id))
     {
@@ -93,14 +97,26 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
     #endif
     
 };
-
+ 
+float _Controller::_pid(float cmd, float measurement, float p_gain, float i_gain, float d_gain)
+{ 
+    float error_val = cmd - measurement;  
+    _integral_val += error_val / LOOP_FREQ_HZ;     
+    float de_dt = (error_val - _prev_error) * LOOP_FREQ_HZ;  
+    _prev_error = error_val;
+    float p = p_gain * error_val;  
+    float i = i_gain * _integral_val;
+    float d = d_gain * de_dt; 
+    
+    return p + i + d;
+};
 
 void _Controller::reset_integral()
 {
     #ifdef CONTROLLER_DEBUG
         Serial.println("_Controller::reset_integral : Entered");
     #endif
-    //_integral_val = 0;
+    _integral_val = 0;
     
     #ifdef CONTROLLER_DEBUG
         Serial.println("_Controller::reset_integral : Exited");
@@ -126,7 +142,12 @@ ZeroTorque::ZeroTorque(config_defs::joint_id id, ExoData* exo_data)
 
 float ZeroTorque::calc_motor_cmd()
 {
-    float cmd = 0;
+    float cmd_ff = 0;
+    
+    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::zero_torque::use_pid_idx] 
+                ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::zero_torque::p_gain_idx], _controller_data->parameters[controller_defs::zero_torque::i_gain_idx], _controller_data->parameters[controller_defs::zero_torque::d_gain_idx]) 
+                : 0);
+   
     return cmd;
 };
 
@@ -171,20 +192,20 @@ ProportionalJointMoment::ProportionalJointMoment(config_defs::joint_id id, ExoDa
 
 float ProportionalJointMoment::calc_motor_cmd()
 {
-    float cmd = 0;
+    float cmd_ff = 0;
     //Serial.print("ProportionalJointMoment::calc_motor_cmd : Entered");
     //Serial.print("\n");
     if (!_leg_data->do_calibration_toe_fsr)
     {
-        cmd = _leg_data->toe_fsr * _controller_data->parameters[controller_defs::proportional_joint_moment::max_torque_idx];
-        cmd = (_controller_data->parameters[controller_defs::proportional_joint_moment::is_assitance_idx] ? -1 : 1) * min(max(0, cmd), _controller_data->parameters[controller_defs::proportional_joint_moment::max_torque_idx]);  // if the fsr is negative use zero torque so it doesn't dorsiflex.  Saturate at max
+        cmd_ff = _leg_data->toe_fsr * _controller_data->parameters[controller_defs::proportional_joint_moment::max_torque_idx];
+        cmd_ff = (_controller_data->parameters[controller_defs::proportional_joint_moment::is_assitance_idx] ? -1 : 1) * min(max(0, cmd_ff), _controller_data->parameters[controller_defs::proportional_joint_moment::max_torque_idx]);  // if the fsr is negative use zero torque so it doesn't dorsiflex.  Saturate at max
     }
     
-    if (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx])
-    {
-        // TODO : Add in PID.  Need to figure out torque calibration value.
-    }
-    
+    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx] 
+                ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]) 
+                : 0);
+   
+       
     //Serial.print("ProportionalJointMoment::calc_motor_cmd : Exiting");
     //Serial.print("\n");
     return cmd;
@@ -209,7 +230,12 @@ HeelToe::HeelToe(config_defs::joint_id id, ExoData* exo_data)
 float HeelToe::calc_motor_cmd()
 {
     // this code is just temporary while we are under construction.
-    float cmd = 0;
+    float cmd_ff = 0;
+    
+    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::heel_toe::use_pid_idx] 
+                ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::heel_toe::p_gain_idx], _controller_data->parameters[controller_defs::heel_toe::i_gain_idx], _controller_data->parameters[controller_defs::heel_toe::d_gain_idx]) 
+                : 0); 
+                         
     return cmd;
 };
 
@@ -279,18 +305,21 @@ float ExtensionAngle::calc_motor_cmd()
     
     _update_state(angle);
     
-    float cmd = 0;
+    float cmd_ff = 0;
     // calculate torque based on state
     switch (_state)
     {
         case 0 :  // extension
-            cmd = _controller_data->parameters[controller_defs::extension_angle::extension_setpoint_idx] * normalized_angle;
+            cmd_ff = _controller_data->parameters[controller_defs::extension_angle::extension_setpoint_idx] * normalized_angle;
             break;
         case 1 :  // flexion
-            cmd = _controller_data->parameters[controller_defs::extension_angle::flexion_setpoint_idx];
+            cmd_ff = _controller_data->parameters[controller_defs::extension_angle::flexion_setpoint_idx];
             break;
     }
     
+    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::extension_angle::use_pid_idx] 
+                ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::extension_angle::p_gain_idx], _controller_data->parameters[controller_defs::extension_angle::i_gain_idx], _controller_data->parameters[controller_defs::extension_angle::d_gain_idx]) 
+                : 0);
     
     return cmd;
 };
@@ -363,7 +392,7 @@ BangBang::BangBang(config_defs::joint_id id, ExoData* exo_data)
 float BangBang::calc_motor_cmd()
 {
     // check if the angle range should be reset
-    if (_controller_data->parameters[controller_defs::extension_angle::clear_angle_idx])
+    if (_controller_data->parameters[controller_defs::bang_bang::clear_angle_idx])
     {
         _reset_angles();
     }
@@ -407,18 +436,22 @@ float BangBang::calc_motor_cmd()
     
     _update_state(angle);
     
-    float cmd = 0;
+    float cmd_ff = 0;
     // calculate torque based on state
     switch (_state)
     {
         case 0 :  // extension
-            cmd = _controller_data->parameters[controller_defs::extension_angle::extension_setpoint_idx];
+            cmd_ff = _controller_data->parameters[controller_defs::bang_bang::extension_setpoint_idx];
             break;
         case 1 :  // flexion
-            cmd = _controller_data->parameters[controller_defs::extension_angle::flexion_setpoint_idx];
+            cmd_ff = _controller_data->parameters[controller_defs::bang_bang::flexion_setpoint_idx];
             break;
     }
     
+    
+    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::bang_bang::use_pid_idx] 
+                ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::bang_bang::p_gain_idx], _controller_data->parameters[controller_defs::bang_bang::i_gain_idx], _controller_data->parameters[controller_defs::bang_bang::d_gain_idx]) 
+                : 0);
     
     return cmd;
 };
@@ -442,16 +475,16 @@ void BangBang::_update_state(float angle)
     switch (_state)
     {
         case 0 :  // extension assistance
-            if (angle <= _controller_data->parameters[controller_defs::extension_angle::angle_threshold_idx])
+            if (angle <= _controller_data->parameters[controller_defs::bang_bang::angle_threshold_idx])
             {
                 _state = 1;
             }
             break;
         case 1 :  // flexion assistance 
             
-            if ((angle > (_controller_data->parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] * _max_angle / 100)) 
-                | ((angle > _controller_data->parameters[controller_defs::extension_angle::angle_threshold_idx]+utils::degrees_to_radians(5)) 
-                    & (_leg_data->hip.velocity <= _controller_data->parameters[controller_defs::extension_angle::velocity_threshold_idx])))
+            if ((angle > (_controller_data->parameters[controller_defs::bang_bang::target_flexion_percent_max_idx] * _max_angle / 100)) 
+                | ((angle > _controller_data->parameters[controller_defs::bang_bang::angle_threshold_idx]+utils::degrees_to_radians(5)) 
+                    & (_leg_data->hip.velocity <= _controller_data->parameters[controller_defs::bang_bang::velocity_threshold_idx])))
             {
                 _state = 0;
             }
@@ -643,8 +676,13 @@ float ZhangCollins::calc_motor_cmd()
             // Serial.print("ZhangCollins::calc_motor_cmd : Swing");
             // Serial.print("\n");
         }
-    }
-    return torque_cmd;
+    }  
+    
+    float cmd = torque_cmd + (_controller_data->parameters[controller_defs::zhang_collins::use_pid_idx] 
+                ? _pid(torque_cmd, _joint_data->torque_reading,_controller_data->parameters[controller_defs::zhang_collins::p_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::i_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::d_gain_idx]) 
+                : 0); 
+                
+    return cmd;
 };
 
 
@@ -1011,8 +1049,13 @@ float FranksCollinsHip::calc_motor_cmd()
    
     // Serial.print("FranksCollinsHip::calc_motor_cmd : torque_cmd = ");
     // Serial.print(torque_cmd);
-    // Serial.print("\n\n");
-    return torque_cmd;
+    // Serial.print("\n\n");  
+    
+    float cmd = torque_cmd + (_controller_data->parameters[controller_defs::franks_collins_hip::use_pid_idx] 
+                ? _pid(torque_cmd, _joint_data->torque_reading,_controller_data->parameters[controller_defs::franks_collins_hip::p_gain_idx], _controller_data->parameters[controller_defs::franks_collins_hip::i_gain_idx], _controller_data->parameters[controller_defs::franks_collins_hip::d_gain_idx]) 
+                : 0);  
+                
+    return cmd;
 };
 
 
@@ -1027,6 +1070,13 @@ UserDefined::UserDefined(config_defs::joint_id id, ExoData* exo_data)
     #ifdef CONTROLLER_DEBUG
         Serial.println("UserDefined::Constructor");
     #endif
+    
+    
+    
+    for(int i = 0; i < controller_defs::user_defined::num_sample_points; i++) 
+    {
+        _percent_x[i] = i * _step_size;
+    } 
 };
 
 /*
@@ -1035,6 +1085,22 @@ UserDefined::UserDefined(config_defs::joint_id id, ExoData* exo_data)
 
 float UserDefined::calc_motor_cmd()
 {
+    
+    int lower_idx = _leg_data->percent_gait/_step_size; //rounds down  
+    float cmd_ff = 0;
+    //  yp = y0 + ((y1-y0)/(x1-x0)) * (xp - x0);
+    if(lower_idx < controller_defs::user_defined::num_sample_points - 1)
+    {
+        cmd_ff = _controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx] + ((_controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx+1]-_controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx])/(_percent_x[lower_idx+1]-_percent_x[lower_idx])) * (_leg_data->percent_gait - _percent_x[lower_idx]);
+    } 
+    else
+    {
+        cmd_ff = _controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx] + ((_controller_data->parameters[0]-_controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx])/(100-_percent_x[lower_idx])) * (_leg_data->percent_gait - _percent_x[lower_idx]);
+    }
+    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::user_defined::use_pid_idx] 
+                ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::user_defined::p_gain_idx], _controller_data->parameters[controller_defs::user_defined::i_gain_idx], _controller_data->parameters[controller_defs::user_defined::d_gain_idx]) 
+                : 0);
+    
     return 0;
 };
 
@@ -1058,8 +1124,13 @@ Sine::Sine(config_defs::joint_id id, ExoData* exo_data)
 
 float Sine::calc_motor_cmd()
 {
-    //  converts period to int so % will work, but is only a float for convenience
-    return _controller_data->parameters[controller_defs::sine::amplitude_idx] * sin( (millis() % (int)_controller_data->parameters[controller_defs::sine::period_idx]) / _controller_data->parameters[controller_defs::sine::period_idx] * 2 * M_PI + _controller_data->parameters[controller_defs::sine::phase_shift_idx]  );
+    //  converts period to int so % will work, but is only a float for convenience  
+    float cmd_ff = _controller_data->parameters[controller_defs::sine::amplitude_idx] * sin( (millis() % (int)_controller_data->parameters[controller_defs::sine::period_idx]) / _controller_data->parameters[controller_defs::sine::period_idx] * 2 * M_PI + _controller_data->parameters[controller_defs::sine::phase_shift_idx]  );
+    
+    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::sine::use_pid_idx] 
+                ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::sine::p_gain_idx], _controller_data->parameters[controller_defs::sine::i_gain_idx], _controller_data->parameters[controller_defs::sine::d_gain_idx]) 
+                : 0); 
+    return cmd;
 };
 
 #endif

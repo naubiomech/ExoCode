@@ -22,7 +22,11 @@ namespace controller_defs
 {
     namespace zero_torque
     {
-        const uint8_t num_parameter = 0;
+        const uint8_t use_pid_idx = 0;
+        const uint8_t p_gain_idx = 1;
+        const uint8_t i_gain_idx = 2;
+        const uint8_t d_gain_idx = 3;
+        const uint8_t num_parameter = 4;
     }
     
     namespace stasis
@@ -45,7 +49,11 @@ namespace controller_defs
     {
         const uint8_t max_torque_idx = 0;
         const uint8_t min_torque_idx = 1;
-        const uint8_t num_parameter = 2;
+        const uint8_t use_pid_idx = 2;
+        const uint8_t p_gain_idx = 3;
+        const uint8_t i_gain_idx = 4;
+        const uint8_t d_gain_idx = 5;
+        const uint8_t num_parameter = 6;
     }
     
     namespace extension_angle
@@ -61,8 +69,12 @@ namespace controller_defs
         const uint8_t angle_threshold_idx = 4;
         // Velocity where the system will switch from flexion assistance to extension assistance, if velocity inverts before the target_flexion_percent_max
         // !! Value should be NEGATIVE !!
-        const uint8_t velocity_threshold_idx = 5;
-        const uint8_t num_parameter = 6;
+        const uint8_t velocity_threshold_idx = 5; 
+        const uint8_t use_pid_idx = 6;
+        const uint8_t p_gain_idx = 7;
+        const uint8_t i_gain_idx = 8;
+        const uint8_t d_gain_idx = 9;
+        const uint8_t num_parameter = 10;
     }
     
     namespace bang_bang
@@ -78,8 +90,12 @@ namespace controller_defs
         const uint8_t angle_threshold_idx = 4;
         // Velocity where the system will switch from flexion assistance to extension assistance, if velocity inverts before the target_flexion_percent_max
         // !! Value should be NEGATIVE !!
-        const uint8_t velocity_threshold_idx = 5;
-        const uint8_t num_parameter = 6;
+        const uint8_t velocity_threshold_idx = 5; 
+        const uint8_t use_pid_idx = 6;
+        const uint8_t p_gain_idx = 7;
+        const uint8_t i_gain_idx = 8;
+        const uint8_t d_gain_idx = 9;
+        const uint8_t num_parameter = 10;
     }
     
     namespace zhang_collins
@@ -96,7 +112,11 @@ namespace controller_defs
         const uint8_t t2_idx = 4;
         // offset as percent gait x10
         const uint8_t t3_idx = 5;
-        const uint8_t num_parameter = 6;
+        const uint8_t use_pid_idx = 6;
+        const uint8_t p_gain_idx = 7;
+        const uint8_t i_gain_idx = 8;
+        const uint8_t d_gain_idx = 9;
+        const uint8_t num_parameter = 10;
     }
 
     namespace franks_collins_hip
@@ -112,15 +132,23 @@ namespace controller_defs
         const uint8_t mid_duration_idx = 7;
         const uint8_t peak_percent_gait_idx = 8;
         const uint8_t peak_offset_percent_gait_idx = 9;
-        const uint8_t num_parameter = 10;
+        const uint8_t use_pid_idx = 10;
+        const uint8_t p_gain_idx = 11;
+        const uint8_t i_gain_idx = 12;
+        const uint8_t d_gain_idx = 13;
+        const uint8_t num_parameter = 14;
     }
     
     namespace user_defined
     {
         const uint8_t num_sample_points = 50;  // not an index
         
-        const uint8_t mass_idx = 0;
-        const uint8_t curve_start_idx = 1;
+        const uint8_t mass_idx = 0; 
+        const uint8_t use_pid_idx = 1;
+        const uint8_t p_gain_idx = 2;
+        const uint8_t i_gain_idx = 3;
+        const uint8_t d_gain_idx = 4;
+        const uint8_t curve_start_idx = 5;
         const uint8_t curve_stop_idx = curve_start_idx+num_sample_points;
         const uint8_t num_parameter = curve_stop_idx+1;
     }
@@ -130,7 +158,11 @@ namespace controller_defs
         const uint8_t amplitude_idx = 0;    // amplitude in Nm
         const uint8_t period_idx = 1;       // period in ms
         const uint8_t phase_shift_idx = 2;  // phase shift in rad
-        const uint8_t num_parameter = 3;
+        const uint8_t use_pid_idx = 3;
+        const uint8_t p_gain_idx = 4;
+        const uint8_t i_gain_idx = 5;
+        const uint8_t d_gain_idx = 6;
+        const uint8_t num_parameter = 7;
     }
     
     /*
