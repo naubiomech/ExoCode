@@ -20,7 +20,7 @@
     
     namespace torque_calibration
     {
-        const unsigned int AI_CNT_TO_V = 3.3 / 4096; 
-        const unsigned int TRQ_V_TO_NM = 56.5 / (2.1);
+        const float AI_CNT_TO_V = 3.3 / 4096; 
+        const float TRQ_V_TO_NM = 56.5 / (2.1);
     }
 #endif
