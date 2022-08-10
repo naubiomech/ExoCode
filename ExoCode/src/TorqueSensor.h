@@ -35,7 +35,7 @@ class TorqueSensor
         
         int _calibration;  // Stores the value used for calibration.
         int _raw_reading;
-		int _calibrated_reading;
+		float _calibrated_reading;
         
         const uint16_t _cal_time = 1000; // this is time to do the initial calibration
         uint16_t _start_time;  // time the calibration starts.

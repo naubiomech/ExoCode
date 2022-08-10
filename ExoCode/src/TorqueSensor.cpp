@@ -102,7 +102,27 @@ bool TorqueSensor::calibrate(bool do_calibrate)
 float TorqueSensor::read()
 {
     _raw_reading = analogRead(_pin);
-    _calibrated_reading = (_raw_reading - _calibration) * torque_calibration::AI_CNT_TO_V * torque_calibration::TRQ_V_TO_NM;
+    _calibrated_reading = ((float)_raw_reading - _calibration) * torque_calibration::AI_CNT_TO_V * torque_calibration::TRQ_V_TO_NM;
+
+    #ifdef TORQUE_DEBUG
+        Serial.print("TorqueSensor :: Read : pin ");
+        Serial.print(_pin);
+        Serial.print(" : Calibrated Reading = ");
+        Serial.println(_calibrated_reading, 12);
+
+        Serial.print("TorqueSensor :: Read : pin ");
+        Serial.print(_pin);
+        Serial.print(" : Raw Reading = ");
+        Serial.println(_raw_reading);
+        Serial.println(" ");
+
+        Serial.print("_calibration : ");
+        Serial.println(_calibration);
+        Serial.print("torque_calibration::AI_CNT_TO_V : ");
+        Serial.println(torque_calibration::AI_CNT_TO_V, 12);
+        Serial.print("torque_calibration::TRQ_V_TO_NM : ");
+        Serial.println(torque_calibration::TRQ_V_TO_NM);
+    #endif
     
     return _calibrated_reading;
 };
