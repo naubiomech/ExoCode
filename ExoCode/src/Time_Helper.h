@@ -41,7 +41,7 @@ class Time_Helper
         void destroy_context(float context);
     private:
         bool _context_conflicts(float context);
-        ticker_t _ticker_from_context(float context);
+        ticker_t* _ticker_from_context(float context);
 
         int ticker_count = 0;
         std::vector<ticker_t> tickers;

@@ -296,4 +296,17 @@ namespace utils
          
         return;
     }
+
+    /* Exponentially weighted moving average filter. Takes in a new value, the current filtered value, and 
+     * a filter parameter (alpha). The filter weights the new input. See the link below for more
+     * information on this filter. 
+     * 
+     * https://en.wikipedia.org/wiki/Exponential_smoothing
+     * https://towardsdatascience.com/time-series-from-scratch-exponentially-weighted-moving-averages-ewma-theory-and-implementation-607661d574fe 
+     * 
+     */
+    float ewma(float new_value, float filter_value, float alpha)
+    {
+        return (filter_value + alpha*(new_value-filter_value));
+    }
 }

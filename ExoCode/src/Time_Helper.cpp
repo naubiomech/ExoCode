@@ -1,38 +1,11 @@
 #include "Time_Helper.h"
 #include <Arduino.h>
 
-/*
-typedef struct {
-    float context;
-    float old_time = -1;
-    int k_index;
-} ticker_t;
-
-class Time_Helper
-{
-    public:
-        Time_Helper(bool use_micros=false);
-        static Time_Helper* get_instance();
-
-        float tick(float context);
-
-        float generate_new_context();
-        void destroy_context(float context);
-    private:
-        bool _context_conflicts(float context);
-        ticker_t _ticker_from_context(float context);
-
-        int ticker_count;
-        ticker_t tickers[MAX_TICKERS];
-};
-*/
-
 /* Public */
 
 Time_Helper::Time_Helper(bool use_micros)
 {
-    _k_use_micros == use_micros;
-
+    _k_use_micros = use_micros;
 }
 
 Time_Helper* Time_Helper::get_instance()
@@ -44,13 +17,15 @@ Time_Helper* Time_Helper::get_instance()
 float Time_Helper::tick(float context)
 {
     float new_time = ((_k_use_micros) ? (micros()):(millis()));
-    ticker_t ticker = _ticker_from_context(context);
+    
+    ticker_t* ticker = _ticker_from_context(context);
     // The context does not exist or this is the tickers first tick
-    if (ticker.k_index < 0 || ticker.old_time < 0) {
+    if (ticker->k_index < 0 || ticker->old_time < 0) {
         return 0;
     }
-    float return_time = new_time - ticker.old_time; //TODO: Handle overflow
-    ticker.old_time = new_time;
+    
+    float return_time = new_time - ticker->old_time; //TODO: Handle overflow
+    ticker->old_time = new_time;
     return return_time;
 }
 
@@ -70,20 +45,20 @@ float Time_Helper::generate_new_context()
     }
 
     // Track new ticker instance
-    ticker_t new_ticker = {
-        .context = found,
-        .old_time = -1,
-        .k_index = ticker_count,
-    };
-    tickers.push_back(new_ticker); 
+    ticker_t* new_ticker = new ticker_t;
+    new_ticker->context = found;
+    new_ticker->old_time = 0;
+    new_ticker->k_index = ticker_count;
+    
+    tickers.push_back(*new_ticker); 
 
     return found;
 }
 
 void Time_Helper::destroy_context(float context)
 {
-    ticker_t ticker_to_destroy = _ticker_from_context(context);
-    tickers.erase(tickers.begin()+(ticker_to_destroy.k_index-1)); // TODO: check off by one error
+    ticker_t* ticker_to_destroy = _ticker_from_context(context);
+    tickers.erase(tickers.begin()+(ticker_to_destroy->k_index-1)); // TODO: check off by one error
     ticker_count--;
 }
 
@@ -99,7 +74,7 @@ bool Time_Helper::_context_conflicts(float context)
     return false;
 }
 
-ticker_t Time_Helper::_ticker_from_context(float context)
+ticker_t* Time_Helper::_ticker_from_context(float context)
 {
     static ticker_t err_ticker = {
         .context = 0,
@@ -108,8 +83,8 @@ ticker_t Time_Helper::_ticker_from_context(float context)
     };
     for (int i=0; i < tickers.size(); i++) {
         if (context == tickers[i].context) {
-            return tickers[i];
+            return &tickers[i];
         }
     }
-    return err_ticker;
+    return &err_ticker;
 }

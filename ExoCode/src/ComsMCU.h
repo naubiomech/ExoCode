@@ -19,7 +19,7 @@
 class ComsMCU
 {
     public:
-        ComsMCU(ExoData* data);
+        ComsMCU(ExoData* data, uint8_t* config_to_send);
         void handle_ble();
         void local_sample();
         void update_gui();
@@ -30,9 +30,11 @@ class ComsMCU
         //Data
         ExoData* _data;
         //Battery
-        _Battery* _battery = new RCBattery();
+        _Battery* _battery;
 
-        const float _status_millis = 1000;
+        const float _status_msg_delay = 1000; //milliseconds
+        const float _real_time_msg_delay = 20; //milliseconds
+        const float _battery_ewma_alpha = 0.1;
 };
 
 #endif

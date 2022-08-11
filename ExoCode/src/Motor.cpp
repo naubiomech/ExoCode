@@ -287,9 +287,9 @@ void _CANMotor::_handle_read_failure()
     {
         // TODO: handle excessive timout errors
         this->_timeout_count = 0;
-        Serial.print("_CANMotor::_handle_read_failure() : Timeout: ");
-        Serial.print(uint32_t(this->_motor_data->id));
-        Serial.print("\n");
+        // Serial.print("_CANMotor::_handle_read_failure() : Timeout: ");
+        // Serial.print(uint32_t(this->_motor_data->id));
+        // Serial.print("\n");
     }
 };
 
