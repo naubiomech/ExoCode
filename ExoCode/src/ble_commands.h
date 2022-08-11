@@ -194,18 +194,26 @@ namespace ble_handlers
     }
     inline static void new_trq(ExoData* data, BleMessage* msg)
     {
-        Serial.print("Ankle ID: "); Serial.println((uint8_t)data->left_leg.ankle.id);
-        Serial.println("Got New Trq:");
-        Serial.print(msg->data[0]); Serial.print("\t");
-        Serial.print(msg->data[1]); Serial.print("\t");
-        Serial.print(msg->data[2]); Serial.print("\t");
-        Serial.print(msg->data[3]); Serial.print("\t\r\n");
+        // Serial.print("Ankle ID: "); Serial.println((uint8_t)data->left_leg.ankle.id);
+        // Serial.println("Got New Trq:");
+        // Serial.print(msg->data[0]); Serial.print("\t");
+        // Serial.print(msg->data[1]); Serial.print("\t");
+        // Serial.print(msg->data[2]); Serial.print("\t");
+        // Serial.print(msg->data[3]); Serial.print("\t\r\n");
         // (LSP, LDSP, RSP, RDSP) Unpack message data
-        const config_defs::joint_id joint_id = (config_defs::joint_id)msg->data[0];
+        config_defs::joint_id joint_id = (config_defs::joint_id)msg->data[0];
         uint8_t controller_id = (uint8_t)msg->data[1];
         uint8_t set_num = (uint8_t)msg->data[2];
         // Update Exo_Data controller for each joint
         ControllerData* cont_data = NULL;
+
+        // Map the joint IDs because the GUI limits the maximum number for the message
+        joint_id = (joint_id==(config_defs::joint_id)1)?(data->left_leg.hip.id):(joint_id);
+        joint_id = (joint_id==(config_defs::joint_id)2)?(data->left_leg.knee.id):(joint_id);
+        joint_id = (joint_id==(config_defs::joint_id)3)?(data->left_leg.ankle.id):(joint_id);
+        joint_id = (joint_id==(config_defs::joint_id)4)?(data->right_leg.hip.id):(joint_id);
+        joint_id = (joint_id==(config_defs::joint_id)5)?(data->right_leg.knee.id):(joint_id);
+        joint_id = (joint_id==(config_defs::joint_id)6)?(data->right_leg.ankle.id):(joint_id);
 
         if (joint_id == data->left_leg.ankle.id) {
             cont_data = &data->left_leg.ankle.controller;

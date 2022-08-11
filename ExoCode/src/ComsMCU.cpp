@@ -60,7 +60,10 @@ void ComsMCU::update_gui()
     static float del_t = 0;
     del_t += t_helper->tick(rt_context);
 
-    if (_data->status == status_defs::messages::trial_on && (del_t > _real_time_msg_delay))
+    if ((_data->status == status_defs::messages::trial_on) || 
+    (_data->status == status_defs::messages::fsr_calibration) ||
+    (_data->status == status_defs::messages::fsr_refinement) && 
+    (del_t > _real_time_msg_delay))
     {
         Serial.println("Sending rt data");
         static const float msg_context = t_helper->generate_new_context();
