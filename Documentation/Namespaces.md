@@ -59,6 +59,10 @@
 ### torque_calibration
 - AI_CNT_TO_V
 - TRQ_V_TO_NM
+ 
+### BLE_times
+- _status_msg_delay
+- _real_time_msg_delay
 
 ## ParseIni.h
 

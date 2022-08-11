@@ -34,7 +34,8 @@ StatusLed::StatusLed(int r_pin, int g_pin, int b_pin)
   _brightness = 125; // range 0 - 255, off to full on.
   
   _current_message = status_defs::messages::trial_off;  // initalize message to trial off
-  
+  _msg_idx = status_led_defs::status_led_idx[_current_message];
+        
   // Configure the pin for the LED
   pinMode(_r_pin, OUTPUT);  // sets the pin as output
   pinMode(_g_pin, OUTPUT);  // sets the pin as output
@@ -54,7 +55,8 @@ StatusLed::StatusLed(int r_pin, int g_pin, int b_pin, int brightness)
   _brightness = brightness ; // range 0 - 255, off to full on.
   
   _current_message = status_defs::messages::trial_off;  // initalize message to trial off
-  
+  _msg_idx = status_led_defs::status_led_idx[_current_message];
+        
   // Configure the pin for the LED
   pinMode(_r_pin, OUTPUT);  // sets the pin as output
   pinMode(_g_pin, OUTPUT);  // sets the pin as output
@@ -75,9 +77,10 @@ void StatusLed::update(uint16_t message)
 {
     if (message != _current_message)
     {
-        _current_message = message;  // Update _current_message
+        _current_message = message;  // Update _current_message 
+        _msg_idx = status_led_defs::status_led_idx[_current_message];
         _pattern_start_timestamp = millis();  // restart the timer
-        _period_ms = _message_pattern[_current_message][1];
+        _period_ms = _message_pattern[_msg_idx][1];
         #ifdef STATUS_LED_DEBUG
             Serial.print("StatusLed::update : Message updated to ");
             print_status_message(message);
@@ -89,7 +92,7 @@ void StatusLed::update(uint16_t message)
     // int green = _message_colors[_current_message][1];
     // int blue = _message_colors[_current_message][2];
         
-    switch (_message_pattern[_current_message][0])
+    switch (_message_pattern[_msg_idx][0])
     {
         case status_led_defs::patterns::blink :
             _blink();
@@ -161,7 +164,7 @@ void StatusLed::_set_color(int r_color, int g_color, int b_color)
  */
 void StatusLed::_solid()
 {
-    _set_color(_message_colors[_current_message][0],_message_colors[_current_message][1],_message_colors[_current_message][2]);   // Set the LED state
+    _set_color(_message_colors[_msg_idx][0],_message_colors[_msg_idx][1],_message_colors[_msg_idx][2]);   // Set the LED state
     return;
 };
 
@@ -186,7 +189,7 @@ void StatusLed::_pulse()
         //Serial.print("\n");
         
         
-        _set_color(_pattern_brightness_percent * _message_colors[_current_message][0] / 100, _pattern_brightness_percent * _message_colors[_current_message][1]/100, _pattern_brightness_percent * _message_colors[_current_message][2]/100);   // Set the LED state
+        _set_color(_pattern_brightness_percent * _message_colors[_msg_idx][0] / 100, _pattern_brightness_percent * _message_colors[_msg_idx][1]/100, _pattern_brightness_percent * _message_colors[_msg_idx][2]/100);   // Set the LED state
     }
     else
     {
@@ -208,7 +211,7 @@ void StatusLed::_blink()
     }
     
     bool on = (timestamp - _pattern_start_timestamp) < (_period_ms/2);
-    _set_color(on * _message_colors[_current_message][0], on * _message_colors[_current_message][1], on * _message_colors[_current_message][2]);   // Set the LED state
+    _set_color(on * _message_colors[_msg_idx][0], on * _message_colors[_msg_idx][1], on * _message_colors[_msg_idx][2]);   // Set the LED state
     return;
 };
 

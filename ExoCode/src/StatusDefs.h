@@ -60,9 +60,40 @@ namespace status_defs
         const uint16_t error_left_ankle_controller =  19<<error_bit | error;
         const uint16_t error_right_hip_controller =  20<<error_bit | error;
         const uint16_t error_right_knee_controller =  21<<error_bit | error;
-        const uint16_t error_right_ankle_controller =  22<<error_bit | error;
+        const uint16_t error_right_ankle_controller =  22<<error_bit | error; 
         
+        const uint16_t error_to_be_used_1 =  23<<error_bit | error;
+        const uint16_t error_to_be_used_2 =  24<<error_bit | error;
+        const uint16_t error_to_be_used_3 =  25<<error_bit | error;
+        const uint16_t error_to_be_used_4 =  26<<error_bit | error;
+        const uint16_t error_to_be_used_5 =  27<<error_bit | error;
+        const uint16_t error_to_be_used_6 =  28<<error_bit | error;
+        const uint16_t error_to_be_used_7 =  29<<error_bit | error;
+        const uint16_t error_to_be_used_8 =  30<<error_bit | error;
+        const uint16_t error_to_be_used_9 =  31<<error_bit | error;
+        const uint16_t error_to_be_used_10 =  32<<error_bit | error;
+        const uint16_t error_to_be_used_11 =  33<<error_bit | error;
+        const uint16_t error_to_be_used_12 =  34<<error_bit | error; 
+        const uint16_t error_to_be_used_13 =  35<<error_bit | error;
         
+        const uint16_t warning_bit = error_bit + 6 + 1; //error bit plus 2^6-1 error messages, bit 11 for warning and 2^5-1 warning messages.
+        const uint16_t warning = 1<<(warning_bit-1);
+        const uint16_t warning_exo_run_time =  1<<warning_bit | warning;  
+        
+        const uint16_t warning_to_be_used_1 =  2<<warning_bit | warning;
+        const uint16_t warning_to_be_used_2 =  3<<warning_bit | warning;
+        const uint16_t warning_to_be_used_3 =  4<<warning_bit | warning;
+        const uint16_t warning_to_be_used_4 =  5<<warning_bit | warning;
+        const uint16_t warning_to_be_used_5 =  6<<warning_bit | warning;
+        const uint16_t warning_to_be_used_6 =  7<<warning_bit | warning;
+        const uint16_t warning_to_be_used_7 =  8<<warning_bit | warning;
+        const uint16_t warning_to_be_used_8 =  9<<warning_bit | warning;
+        const uint16_t warning_to_be_used_9 =  10<<warning_bit | warning;
+        const uint16_t warning_to_be_used_10 =  11<<warning_bit | warning;
+        const uint16_t warning_to_be_used_11 =  12<<warning_bit | warning;
+        const uint16_t warning_to_be_used_12 =  13<<warning_bit | warning;
+        const uint16_t warning_to_be_used_13 =  14<<warning_bit | warning;
+        const uint16_t warning_to_be_used_14 =  15<<warning_bit | warning; 
     }
 }
 

@@ -20,6 +20,77 @@
 #include "Board.h"
 #include "StatusDefs.h"
 
+#if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
+#include <map>
+namespace status_led_defs
+{
+    typedef std::map<uint16_t, uint16_t> IdxRemap;
+    const IdxRemap status_led_idx = 
+    { 
+        {status_defs::messages::off, 0},
+        {status_defs::messages::trial_off, 1},    
+        {status_defs::messages::trial_on, 3},
+        {status_defs::messages::test, 4},  
+        {status_defs::messages::torque_calibration, 5},
+        {status_defs::messages::fsr_calibration, 6},    
+        {status_defs::messages::fsr_refinement, 7},
+        
+        {status_defs::messages::error, 8}, 
+        {status_defs::messages::error_left_heel_fsr, 8},
+        {status_defs::messages::error_left_toe, 8},    
+        {status_defs::messages::error_right_heel_fsr, 8},
+        {status_defs::messages::error_right_toe_fsr, 8},
+        {status_defs::messages::error_left_hip_torque_sensor, 8},
+        {status_defs::messages::error_left_knee_torque_sensor, 8},
+        {status_defs::messages::error_left_ankle_torque_sensor, 8},
+        {status_defs::messages::error_right_hip_torque_sensor, 8},
+        {status_defs::messages::error_right_knee_torque_sensor, 8},
+        {status_defs::messages::error_right_ankle_torque_sensor, 8},
+        {status_defs::messages::error_left_hip_motor, 8},
+        {status_defs::messages::error_left_knee_motor, 8},
+        {status_defs::messages::error_left_ankle_motor, 8},
+        {status_defs::messages::error_right_hip_motor, 8},
+        {status_defs::messages::error_right_knee_motor, 8},
+        {status_defs::messages::error_right_ankle_motor, 8},
+        {status_defs::messages::error_left_hip_controller, 8},
+        {status_defs::messages::error_left_knee_controller, 8},
+        {status_defs::messages::error_left_ankle_controller, 8},
+        {status_defs::messages::error_right_hip_controller, 8},
+        {status_defs::messages::error_right_knee_controller, 8},
+        {status_defs::messages::error_right_ankle_controller, 8},
+        {status_defs::messages::error_to_be_used_1, 8},
+        {status_defs::messages::error_to_be_used_2, 8},
+        {status_defs::messages::error_to_be_used_3, 8},
+        {status_defs::messages::error_to_be_used_4, 8},
+        {status_defs::messages::error_to_be_used_5, 8},
+        {status_defs::messages::error_to_be_used_6, 8},
+        {status_defs::messages::error_to_be_used_7, 8},
+        {status_defs::messages::error_to_be_used_8, 8},
+        {status_defs::messages::error_to_be_used_9, 8},
+        {status_defs::messages::error_to_be_used_10, 8},
+        {status_defs::messages::error_to_be_used_11, 8},
+        {status_defs::messages::error_to_be_used_12, 8},
+        {status_defs::messages::error_to_be_used_13, 8},
+        
+        {status_defs::messages::warning, 9},
+        {status_defs::messages::warning_exo_run_time, 9}, 
+        {status_defs::messages::warning_to_be_used_1, 9}, 
+        {status_defs::messages::warning_to_be_used_2, 9}, 
+        {status_defs::messages::warning_to_be_used_3, 9}, 
+        {status_defs::messages::warning_to_be_used_4, 9}, 
+        {status_defs::messages::warning_to_be_used_5, 9}, 
+        {status_defs::messages::warning_to_be_used_6, 9}, 
+        {status_defs::messages::warning_to_be_used_7, 9}, 
+        {status_defs::messages::warning_to_be_used_8, 9}, 
+        {status_defs::messages::warning_to_be_used_9, 9}, 
+        {status_defs::messages::warning_to_be_used_10, 9}, 
+        {status_defs::messages::warning_to_be_used_11, 9}, 
+        {status_defs::messages::warning_to_be_used_12, 9}, 
+        {status_defs::messages::warning_to_be_used_13, 9}, 
+        {status_defs::messages::warning_to_be_used_14, 9},
+    }; 
+}
+#endif
 // Define the on and off state of the LED.  This is handy for if you are using a P Channel MOSFET where low is on.
 //#define STATUS_LED_ON_STATE 0
 //#define STATUS_LED_OFF_STATE 255
@@ -41,18 +112,18 @@
 
 
 namespace status_led_defs
-{
-        
+{   
     namespace colors // just used namespace due to the complex structure.
     {
         const int off[] =  {0, 0, 0};
         const int trial_off[] = {0, 0, 255};
         const int trial_on[] = {0, 255, 0};
         const int test[] = {0, 255, 0};
-        const int error[] = {255, 0, 0};
         const int torque_calibration[] = {255, 255, 0};
         const int fsr_calibration[] = {255, 0, 255};
         const int fsr_refinement[] = {255, 0, 255};
+        const int error[] = {255, 0, 0};
+        const int warning[] = {255, 255, 0};
         
     }
     
@@ -69,17 +140,19 @@ namespace status_led_defs
         const int trial_off[] = {solid,0}; // Solid
         const int trial_on[] = {pulse, 500}; // Solid
         const int test[] = {rainbow, 4000}; // pulse
-        const int error[] = {blink, 250}; // blinking
         const int torque_calibration[] = {solid, 0};
         const int fsr_calibration[] = {solid, 0};
         const int fsr_refinement[] = {pulse, 250};
-        
+        const int error[] = {blink, 250}; // blinking
+        const int warning[] = {blink, 250}; // blinking
     }
     
     const uint8_t on_state = logic_micro_pins::status_led_on_state;
     const uint8_t off_state = logic_micro_pins::status_led_off_state;  
     
-    const bool has_pwm = logic_micro_pins::status_has_pwm;
+    const bool has_pwm = logic_micro_pins::status_has_pwm; 
+    
+    
     
 }
 
@@ -110,6 +183,7 @@ class StatusLed
     int _b_pin;  // pin used for the blue LED
     int _brightness;  // Max brightness of LED this scales the RGB colors, color * brightness/255
     int _current_message;  // index of the current message used to select the correct color.
+    uint16_t _msg_idx;
     
     int _pattern_start_timestamp; // keeps track of the time the current pattern has run.
     int _period_ms; // period of the pattern
@@ -117,26 +191,28 @@ class StatusLed
     
     // make sure to keep in index order from messages, this is an array of the colors to use _messageColors[_currentMessage][color] where color is 0 for r, 1 for g, and 2 for b.
     // This method of accessing array elements is bulky but works.
-    const int _message_colors[8][3] = {{status_led_defs::colors::off[0], status_led_defs::colors::off[1], status_led_defs::colors::off[2]}, \
-                {status_led_defs::colors::trial_off[0], status_led_defs::colors::trial_off[1], status_led_defs::colors::trial_off[2]}, \
-                {status_led_defs::colors::trial_on[0], status_led_defs::colors::trial_on[1], status_led_defs::colors::trial_on[2]}, \
-                {status_led_defs::colors::test[0], status_led_defs::colors::test[1], status_led_defs::colors::test[2]}, \
-                {status_led_defs::colors::error[0], status_led_defs::colors::error[1], status_led_defs::colors::error[2]}, \
-                {status_led_defs::colors::torque_calibration[0], status_led_defs::colors::torque_calibration[1], status_led_defs::colors::torque_calibration[2]}, \
-                {status_led_defs::colors::fsr_calibration[0], status_led_defs::colors::fsr_calibration[1], status_led_defs::colors::fsr_calibration[2]}, \
-                {status_led_defs::colors::fsr_refinement[0], status_led_defs::colors::fsr_refinement[1], status_led_defs::colors::fsr_refinement[2]} \
+    const int _message_colors[9][3] = {{status_led_defs::colors::off[0], status_led_defs::colors::off[1], status_led_defs::colors::off[2]}, 
+                {status_led_defs::colors::trial_off[0], status_led_defs::colors::trial_off[1], status_led_defs::colors::trial_off[2]}, 
+                {status_led_defs::colors::trial_on[0], status_led_defs::colors::trial_on[1], status_led_defs::colors::trial_on[2]}, 
+                {status_led_defs::colors::test[0], status_led_defs::colors::test[1], status_led_defs::colors::test[2]}, 
+                {status_led_defs::colors::torque_calibration[0], status_led_defs::colors::torque_calibration[1], status_led_defs::colors::torque_calibration[2]}, 
+                {status_led_defs::colors::fsr_calibration[0], status_led_defs::colors::fsr_calibration[1], status_led_defs::colors::fsr_calibration[2]}, 
+                {status_led_defs::colors::fsr_refinement[0], status_led_defs::colors::fsr_refinement[1], status_led_defs::colors::fsr_refinement[2]},
+                {status_led_defs::colors::error[0], status_led_defs::colors::error[1], status_led_defs::colors::error[2]}, 
+                {status_led_defs::colors::warning[0], status_led_defs::colors::warning[1], status_led_defs::colors::warning[2]} 
                 };
     
     // make sure to keep in index order from messages, this is an array of the colors to use _messageColors[_currentMessage][color] where color is 0 for r, 1 for g, and 2 for b.
     // This method of accessing array elements is bulky but works.
-    const int _message_pattern[8][2] = {{status_led_defs::patterns::off[0], status_led_defs::patterns::off[1]}, \
-                {status_led_defs::patterns::trial_off[0], status_led_defs::patterns::trial_off[1]}, \
-                {status_led_defs::patterns::trial_on[0], status_led_defs::patterns::trial_on[1]}, \
-                {status_led_defs::patterns::test[0], status_led_defs::patterns::test[1]}, \
-                {status_led_defs::patterns::error[0], status_led_defs::patterns::error[1]}, \
-                {status_led_defs::patterns::torque_calibration[0], status_led_defs::patterns::torque_calibration[1]}, \
-                {status_led_defs::patterns::fsr_calibration[0], status_led_defs::patterns::fsr_calibration[1]}, \
-                {status_led_defs::patterns::fsr_refinement[0], status_led_defs::patterns::fsr_refinement[1]} \
+    const int _message_pattern[9][2] = {{status_led_defs::patterns::off[0], status_led_defs::patterns::off[1]}, 
+                {status_led_defs::patterns::trial_off[0], status_led_defs::patterns::trial_off[1]}, 
+                {status_led_defs::patterns::trial_on[0], status_led_defs::patterns::trial_on[1]}, 
+                {status_led_defs::patterns::test[0], status_led_defs::patterns::test[1]}, 
+                {status_led_defs::patterns::torque_calibration[0], status_led_defs::patterns::torque_calibration[1]}, 
+                {status_led_defs::patterns::fsr_calibration[0], status_led_defs::patterns::fsr_calibration[1]}, 
+                {status_led_defs::patterns::fsr_refinement[0], status_led_defs::patterns::fsr_refinement[1]},
+                {status_led_defs::patterns::error[0], status_led_defs::patterns::error[1]},
+                {status_led_defs::patterns::warning[0], status_led_defs::patterns::warning[1]} 
                 };
               
     
