@@ -20,6 +20,7 @@
 #include "src\Exo.h"
 #include "src\Utilities.h"
 #include "src\StatusDefs.h"
+#include "src\ComsMCU.h"
 
 // Specific Librarys
 #include "src\ParseIni.h"
@@ -45,7 +46,25 @@ void setup()
 //     ; // wait for serial port to connect. Needed for native USB
 //    }
 
-    ini_parser(config_info::config_to_send);
+    //ini_parser(config_info::config_to_send);
+    config_info::config_to_send[0] = 1;
+    config_info::config_to_send[1] = 3;
+    config_info::config_to_send[2] = 2;
+    config_info::config_to_send[3] = 3;
+    config_info::config_to_send[4] = 1;
+    config_info::config_to_send[5] = 2;
+    config_info::config_to_send[6] = 1;
+    config_info::config_to_send[7] = 2;
+    config_info::config_to_send[8] = 1;
+    config_info::config_to_send[9] = 2;
+    config_info::config_to_send[10] = 4;
+    config_info::config_to_send[11] = 5;
+    config_info::config_to_send[12] = 1;
+    config_info::config_to_send[13] = 3;
+    config_info::config_to_send[14] = 1;
+    config_info::config_to_send[15] = 1;
+    config_info::config_to_send[16] = 1;
+    
   
     #ifdef MAIN_DEBUG
         for (int i = 0; i < ini_config::number_of_keys; i++)
@@ -81,6 +100,7 @@ void loop()
     static bool first_run = true;
     // create the data and exo objects
     static ExoData exo_data(config_info::config_to_send);
+    static ComsMCU comms(&exo_data, config_info::config_to_send);
     #ifdef MAIN_DEBUG
         if (first_run)
         {
@@ -376,8 +396,11 @@ void loop()
       
     }
 
-    exo.run();
+    comms.handle_ble();
+    comms.local_sample();
+    comms.update_gui();
 
+    exo.run();
 }
 
 

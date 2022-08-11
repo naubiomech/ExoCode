@@ -45,6 +45,7 @@ class ExoData
         uint16_t status;
         bool sync_led_state;
         bool estop;
+        float battery_value; // Could be Voltage or SOC, depending on the battery type
         LegData left_leg;
         LegData right_leg;
 };

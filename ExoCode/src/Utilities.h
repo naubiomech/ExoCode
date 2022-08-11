@@ -111,6 +111,8 @@ namespace utils
     bool is_little_endian();
     void float_to_uint8(float num_to_convert, uint8_t *converted_bytes);
     void uint8_to_float(uint8_t *bytes_to_convert, float *converted_float);
+
+    float ewma(float new_value, float filter_value, float alpha);
     
 }
 

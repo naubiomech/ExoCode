@@ -3,9 +3,21 @@
 #include "StatusDefs.h"
 #include "Time_Helper.h"
 
-ComsMCU::ComsMCU(ExoData* data):_data{data}
+ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
 {
-    // TODO: Set battery type with config data
+    switch (config_to_send[config_defs::battery_idx])
+    {
+    case (uint8_t)config_defs::battery::smart:
+        _battery = new SmartBattery();
+        break;
+    case (uint8_t)config_defs::battery::dumb:
+        _battery = new RCBattery();
+        break;
+    default:
+        Serial.println("ERROR: ComsMCU::ComsMCU->Unrecognized battery type!");
+        _battery = new RCBattery();
+        break;
+    }
     _battery->init();
     _exo_ble = new ExoBLE(data);
     _exo_ble->setup();
@@ -26,22 +38,37 @@ void ComsMCU::handle_ble()
 
 void ComsMCU::local_sample()
 {
-    // Get the data that the ComsMCU is responsible for collecting
-
+    Time_Helper* t_helper = Time_Helper::get_instance();
+    static const float context = t_helper->generate_new_context();
+    static float del_t = 0;
+    del_t += t_helper->tick(context);
+    if (del_t > (_status_msg_delay/2)) 
+    {
+        static float filtered_value = _battery->get_parameter();
+        float raw_battery_value = _battery->get_parameter();
+        filtered_value = utils::ewma(raw_battery_value, filtered_value, _battery_ewma_alpha);
+        _data->battery_value = filtered_value;
+        del_t = 0;
+    }
 }
 
 void ComsMCU::update_gui() 
 {
     // Get real time data from ExoData and send to GUI
-    if (_data->status == status_defs::messages::trial_on)
+    Time_Helper* t_helper = Time_Helper::get_instance();
+    static const float rt_context = t_helper->generate_new_context();
+    static float del_t = 0;
+    del_t += t_helper->tick(rt_context);
+
+    if (_data->status == status_defs::messages::trial_on && (del_t > _real_time_msg_delay))
     {
-        Time_Helper* t_helper = Time_Helper::get_instance();
-        static const float timer_context = t_helper->generate_new_context();
-        static float del_t;
-        del_t = t_helper->tick(timer_context);
+        Serial.println("Sending rt data");
+        static const float msg_context = t_helper->generate_new_context();
+        static float time_since_last_message;
+        time_since_last_message = t_helper->tick(msg_context);
         
         BleMessage rt_data_msg = BleMessage();
-        rt_data_msg.command = names::send_real_time_data;
+        rt_data_msg.command = ble_names::send_real_time_data;
         rt_data_msg.expecting = ble_command_helpers::get_length_for_command(rt_data_msg.command);
         // TODO: populate rt_data_msg and send
         rt_data_msg.data[0] = _data->right_leg.ankle.torque_reading;
@@ -53,70 +80,72 @@ void ComsMCU::update_gui()
         rt_data_msg.data[5] = _data->left_leg.ankle.controller.setpoint;
         rt_data_msg.data[6] = _data->right_leg.toe_fsr;
         rt_data_msg.data[7] = _data->left_leg.toe_fsr;
-        rt_data_msg.data[8] = del_t;
+        rt_data_msg.data[8] = time_since_last_message;
 
         _exo_ble->send_message(rt_data_msg);        
+
+        del_t = 0;
     }
 
     // Periodically send status information
-    static float then = millis();
-    float now = millis();
-    if ((now-then) > _status_millis)
+    static const float status_context = t_helper->generate_new_context();
+    static float del_t_status = 0;
+    del_t_status += t_helper->tick(status_context);
+    if (del_t_status > _status_msg_delay)
     {
         // Send status data
-        float batt_param = _battery->get_parameter();
         BleMessage batt_msg = BleMessage();
-        batt_msg.command = names::send_batt;
+        batt_msg.command = ble_names::send_batt;
         batt_msg.expecting = ble_command_helpers::get_length_for_command(batt_msg.command);
-        batt_msg.data[0] = batt_param;
+        batt_msg.data[0] = _data->battery_value;
         _exo_ble->send_message(batt_msg);
 
-        then = now;
+        del_t_status = 0;
     }
 }
 
 void ComsMCU::_process_complete_gui_command(BleMessage* msg) 
 {
-    Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
-    BleMessage::print(*msg);
+    // Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
+    // BleMessage::print(*msg);
 
     switch (msg->command)
     {
-    case names::start:
-        handlers::start(_data, msg);
+    case ble_names::start:
+        ble_handlers::start(_data, msg);
         break;
-    case names::stop:
-        handlers::stop(_data, msg);
+    case ble_names::stop:
+        ble_handlers::stop(_data, msg);
         break;
-    case names::cal_trq:
-        handlers::cal_trq(_data, msg);
+    case ble_names::cal_trq:
+        ble_handlers::cal_trq(_data, msg);
         break;
-    case names::cal_fsr:
-        handlers::cal_fsr(_data, msg);
+    case ble_names::cal_fsr:
+        ble_handlers::cal_fsr(_data, msg);
         break;
-    case names::assist:
-        handlers::assist(_data, msg);
+    case ble_names::assist:
+        ble_handlers::assist(_data, msg);
         break;
-    case names::resist:
-        handlers::resist(_data, msg);
+    case ble_names::resist:
+        ble_handlers::resist(_data, msg);
         break;
-    case names::motors_on:
-        handlers::motors_on(_data, msg);
+    case ble_names::motors_on:
+        ble_handlers::motors_on(_data, msg);
         break;
-    case names::motors_off:
-        handlers::motors_off(_data, msg);
+    case ble_names::motors_off:
+        ble_handlers::motors_off(_data, msg);
         break;
-    case names::mark:
-        handlers::mark(_data, msg);
+    case ble_names::mark:
+        ble_handlers::mark(_data, msg);
         break;
-    case names::new_fsr:
-        handlers::new_fsr(_data, msg);
+    case ble_names::new_fsr:
+        ble_handlers::new_fsr(_data, msg);
         break;
-    case names::new_trq:
-        handlers::new_trq(_data, msg);
+    case ble_names::new_trq:
+        ble_handlers::new_trq(_data, msg);
         break;
     default:
-        Serial.println("ComsMCU::_process_complete_gui_command->No handler for command!");
+        Serial.println("ComsMCU::_process_complete_gui_command->No case for command!");
         break;
     }
 }
