@@ -46,24 +46,7 @@ void setup()
 //     ; // wait for serial port to connect. Needed for native USB
 //    }
 
-    //ini_parser(config_info::config_to_send);
-    config_info::config_to_send[0] = 1;
-    config_info::config_to_send[1] = 3;
-    config_info::config_to_send[2] = 2;
-    config_info::config_to_send[3] = 3;
-    config_info::config_to_send[4] = 1;
-    config_info::config_to_send[5] = 2;
-    config_info::config_to_send[6] = 1;
-    config_info::config_to_send[7] = 2;
-    config_info::config_to_send[8] = 1;
-    config_info::config_to_send[9] = 2;
-    config_info::config_to_send[10] = 4;
-    config_info::config_to_send[11] = 5;
-    config_info::config_to_send[12] = 1;
-    config_info::config_to_send[13] = 3;
-    config_info::config_to_send[14] = 1;
-    config_info::config_to_send[15] = 1;
-    config_info::config_to_send[16] = 1;
+    ini_parser(config_info::config_to_send);
     
   
     #ifdef MAIN_DEBUG
