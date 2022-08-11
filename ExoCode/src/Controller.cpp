@@ -351,8 +351,8 @@ void ExtensionAngle::_update_state(float angle)
         case 1 :  // flexion assistance 
             
             if ((angle > (_controller_data->parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] * _max_angle / 100)) 
-                | ((angle > _controller_data->parameters[controller_defs::extension_angle::angle_threshold_idx]+utils::degrees_to_radians(5)) 
-                    & (_leg_data->hip.velocity <= _controller_data->parameters[controller_defs::extension_angle::velocity_threshold_idx])))
+                || ((angle > _controller_data->parameters[controller_defs::extension_angle::angle_threshold_idx]+utils::degrees_to_radians(5)) 
+                    && (_leg_data->hip.velocity <= _controller_data->parameters[controller_defs::extension_angle::velocity_threshold_idx])))
             {
                 _state = 0;
             }
@@ -483,8 +483,8 @@ void BangBang::_update_state(float angle)
         case 1 :  // flexion assistance 
             
             if ((angle > (_controller_data->parameters[controller_defs::bang_bang::target_flexion_percent_max_idx] * _max_angle / 100)) 
-                | ((angle > _controller_data->parameters[controller_defs::bang_bang::angle_threshold_idx]+utils::degrees_to_radians(5)) 
-                    & (_leg_data->hip.velocity <= _controller_data->parameters[controller_defs::bang_bang::velocity_threshold_idx])))
+                || ((angle > _controller_data->parameters[controller_defs::bang_bang::angle_threshold_idx]+utils::degrees_to_radians(5)) 
+                    && (_leg_data->hip.velocity <= _controller_data->parameters[controller_defs::bang_bang::velocity_threshold_idx])))
             {
                 _state = 0;
             }
@@ -604,11 +604,11 @@ float ZhangCollins::calc_motor_cmd()
 {
     // check if the parameters have changed and update the spline if they have
     if ((_mass != _controller_data->parameters[controller_defs::zhang_collins::mass_idx])
-        | (_peak_normalized_torque_Nm_kg != _controller_data->parameters[controller_defs::zhang_collins::peak_normalized_torque_Nm_kg_idx])
-        | (_t0 != _controller_data->parameters[controller_defs::zhang_collins::t0_idx])
-        | (_t1 != _controller_data->parameters[controller_defs::zhang_collins::t1_idx])
-        | (_t2 != _controller_data->parameters[controller_defs::zhang_collins::t2_idx])
-        | (_t3 != _controller_data->parameters[controller_defs::zhang_collins::t3_idx]))
+        || (_peak_normalized_torque_Nm_kg != _controller_data->parameters[controller_defs::zhang_collins::peak_normalized_torque_Nm_kg_idx])
+        || (_t0 != _controller_data->parameters[controller_defs::zhang_collins::t0_idx])
+        || (_t1 != _controller_data->parameters[controller_defs::zhang_collins::t1_idx])
+        || (_t2 != _controller_data->parameters[controller_defs::zhang_collins::t2_idx])
+        || (_t3 != _controller_data->parameters[controller_defs::zhang_collins::t3_idx]))
     {
         _update_spline_parameters(_controller_data->parameters[controller_defs::zhang_collins::mass_idx]
             , _controller_data->parameters[controller_defs::zhang_collins::peak_normalized_torque_Nm_kg_idx]
@@ -845,15 +845,15 @@ float FranksCollinsHip::calc_motor_cmd()
 {
     // check if the parameters have changed and update the spline if they have
     if ((_mass != _controller_data->parameters[controller_defs::franks_collins_hip::mass_idx])
-        | (_trough_normalized_torque_Nm_kg != _controller_data->parameters[controller_defs::franks_collins_hip::trough_normalized_torque_Nm_kg_idx])
-        | (_peak_normalized_torque_Nm_kg != _controller_data->parameters[controller_defs::franks_collins_hip::peak_normalized_torque_Nm_kg_idx])
-        | (_start_percent_gait != _controller_data->parameters[controller_defs::franks_collins_hip::start_percent_gait_idx])
-        | (_trough_onset_percent_gait != _controller_data->parameters[controller_defs::franks_collins_hip::trough_onset_percent_gait_idx])
-        | (_trough_percent_gait != _controller_data->parameters[controller_defs::franks_collins_hip::trough_percent_gait_idx])
-        | (_mid_time != _controller_data->parameters[controller_defs::franks_collins_hip::mid_time_idx])
-        | (_mid_duration != _controller_data->parameters[controller_defs::franks_collins_hip::mid_duration_idx])
-        | (_peak_percent_gait != _controller_data->parameters[controller_defs::franks_collins_hip::peak_percent_gait_idx])
-        | (_peak_offset_percent_gait != _controller_data->parameters[controller_defs::franks_collins_hip::peak_offset_percent_gait_idx]))
+        || (_trough_normalized_torque_Nm_kg != _controller_data->parameters[controller_defs::franks_collins_hip::trough_normalized_torque_Nm_kg_idx])
+        || (_peak_normalized_torque_Nm_kg != _controller_data->parameters[controller_defs::franks_collins_hip::peak_normalized_torque_Nm_kg_idx])
+        || (_start_percent_gait != _controller_data->parameters[controller_defs::franks_collins_hip::start_percent_gait_idx])
+        || (_trough_onset_percent_gait != _controller_data->parameters[controller_defs::franks_collins_hip::trough_onset_percent_gait_idx])
+        || (_trough_percent_gait != _controller_data->parameters[controller_defs::franks_collins_hip::trough_percent_gait_idx])
+        || (_mid_time != _controller_data->parameters[controller_defs::franks_collins_hip::mid_time_idx])
+        || (_mid_duration != _controller_data->parameters[controller_defs::franks_collins_hip::mid_duration_idx])
+        || (_peak_percent_gait != _controller_data->parameters[controller_defs::franks_collins_hip::peak_percent_gait_idx])
+        || (_peak_offset_percent_gait != _controller_data->parameters[controller_defs::franks_collins_hip::peak_offset_percent_gait_idx]))
     {
         _update_spline_parameters(_controller_data->parameters[controller_defs::franks_collins_hip::mass_idx]
             , _controller_data->parameters[controller_defs::franks_collins_hip::trough_normalized_torque_Nm_kg_idx]
