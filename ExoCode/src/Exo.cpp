@@ -4,6 +4,7 @@
 */
 
 #include "Exo.h"
+#include "Time_Helper.h"
 
 //#define EXO_DEBUG 1
 
@@ -36,42 +37,63 @@ Exo::Exo(ExoData* exo_data)
  */
 void Exo::run()
 {
-    // check if anything new has come in over SPI
+    static Time_Helper* t_helper = Time_Helper::get_instance();
+    static float context = t_helper->generate_new_context();
+    static float delta_t = 0;
+    delta_t += t_helper->tick(context);
     
-    // check if we should update the sync LED and record the LED on/off state.
-    data->sync_led_state = sync_led.handler();
-    bool trial_running = sync_led.get_is_blinking();
-    
-    // check the estop
-    data->estop = !digitalRead(logic_micro_pins::motor_stop_pin);
-    
-    // Serial.print("Exo::run: is error : ");
-    // Serial.print(((data->status & status_defs::messages::error) == status_defs::messages::error));
-    // Serial.print("\n");
-    if (trial_running && (((data->status & status_defs::messages::error) != status_defs::messages::error) && (data->status != status_defs::messages::test)))
+    if (((delta_t <= ((float) 1/LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE))) && (delta_t >= ((float)1 / LOOP_FREQ_HZ * 1000000 * (1 - LOOP_TIME_TOLERANCE)))))
     {
-        data->status = status_defs::messages::trial_on;
-        // Serial.print("Exo::run:trial on\n");
+
+        // check if anything new has come in over SPI
+
+        // check if we should update the sync LED and record the LED on/off state.
+        data->sync_led_state = sync_led.handler();
+        bool trial_running = sync_led.get_is_blinking();
+
+        // check the estop
+        data->estop = !digitalRead(logic_micro_pins::motor_stop_pin);
+
+        // Serial.print("Exo::run: is error : ");
+        // Serial.print(((data->status & status_defs::messages::error) == status_defs::messages::error));
+        // Serial.print("\n");
+        if (trial_running && (((data->status & status_defs::messages::error) != status_defs::messages::error) && (data->status != status_defs::messages::test)))
+        {
+            data->status = status_defs::messages::trial_on;
+            // Serial.print("Exo::run:trial on\n");
+        }
+        else if ((!trial_running) && (((data->status & status_defs::messages::error) != status_defs::messages::error) && (data->status != status_defs::messages::test)))
+        {
+            data->status = status_defs::messages::trial_off;
+            // Serial.print("Exo::run:trial off\n");
+        }
+        else
+        {
+            // Serial.print("Exo::run:Error or Test\n");
+        }
+
+        // Record the leg data and send new commands to the motors.
+        left_leg.run_leg();
+        right_leg.run_leg();
+
+        // update status LED
+        status_led.update(data->status);
+
+        Serial.println("Exo::Run:Time_OK");
+        Serial.println(delta_t);
+        Serial.println(((float)1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
+
+        delta_t = 0;
+        // send data over SPI
     }
-    else if ((!trial_running) && (((data->status & status_defs::messages::error) != status_defs::messages::error) && (data->status != status_defs::messages::test)))
+    else if (delta_t > ((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)))
     {
-        data->status = status_defs::messages::trial_off;
-        // Serial.print("Exo::run:trial off\n");
+        data->status = status_defs::messages::error;
+        Serial.println("Exo::Run:Timeoverflow");
+        Serial.println(delta_t);
+        Serial.println(((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
+        delta_t = 0;
     }
-    else
-    {
-        // Serial.print("Exo::run:Error or Test\n");
-    }
-    
-    // Record the leg data and send new commands to the motors.
-    left_leg.run_leg();
-    right_leg.run_leg();
-    
-    // update status LED
-    status_led.update(data->status);
-    
-    
-    // send data over SPI
 };
 
 #endif

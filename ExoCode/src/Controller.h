@@ -38,7 +38,8 @@ class _Controller
         virtual ~_Controller(){};
 		//virtual void set_controller(int joint, int controller) = 0; // Changes the controller for an individual joint
 		virtual float calc_motor_cmd() = 0;
-        void reset_integral();
+        void reset_integral(); 
+        
     protected:
         ExoData* _data;
         ControllerData* _controller_data;

@@ -4,7 +4,7 @@
 */
 
 #include "Joint.h"
-// #define JOINT_DEBUG
+//#define JOINT_DEBUG
 
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.

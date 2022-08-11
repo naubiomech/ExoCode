@@ -42,7 +42,7 @@ void ComsMCU::local_sample()
     static const float context = t_helper->generate_new_context();
     static float del_t = 0;
     del_t += t_helper->tick(context);
-    if (del_t > (_status_msg_delay/2)) 
+    if (del_t > (BLE_times::_status_msg_delay/2)) 
     {
         static float filtered_value = _battery->get_parameter();
         float raw_battery_value = _battery->get_parameter();
@@ -63,7 +63,7 @@ void ComsMCU::update_gui()
     if ((_data->status == status_defs::messages::trial_on) || 
     (_data->status == status_defs::messages::fsr_calibration) ||
     (_data->status == status_defs::messages::fsr_refinement) && 
-    (del_t > _real_time_msg_delay))
+    (del_t > BLE_times::_real_time_msg_delay))
     {
         Serial.println("Sending rt data");
         static const float msg_context = t_helper->generate_new_context();
@@ -94,7 +94,7 @@ void ComsMCU::update_gui()
     static const float status_context = t_helper->generate_new_context();
     static float del_t_status = 0;
     del_t_status += t_helper->tick(status_context);
-    if (del_t_status > _status_msg_delay)
+    if (del_t_status > BLE_times::_status_msg_delay)
     {
         // Send status data
         BleMessage batt_msg = BleMessage();

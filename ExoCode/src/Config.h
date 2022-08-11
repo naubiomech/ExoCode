@@ -10,6 +10,8 @@
     #define BOARD_VERSION AK_Board_V0_4  
     
     #define LOOP_FREQ_HZ 500
+
+    #define LOOP_TIME_TOLERANCE 0.1 
     
     namespace sync_time
     {
@@ -22,5 +24,11 @@
     {
         const float AI_CNT_TO_V = 3.3 / 4096; 
         const float TRQ_V_TO_NM = 42.500;
+    }
+
+    namespace BLE_times
+    {
+        const float _status_msg_delay = 1000000; //microseconds
+        const float _real_time_msg_delay = 20000; //microseconds
     }
 #endif

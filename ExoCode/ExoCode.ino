@@ -7,7 +7,7 @@
 
 #define INCLUDE_FLEXCAN_DEBUG
 //#define MAKE_PLOTS
-//#define MAIN_DEBUG
+#define MAIN_DEBUG
 
 // Standard Libraries
 #include <stdint.h>
@@ -379,9 +379,9 @@ void loop()
       
     }
 
-    comms.handle_ble();
-    comms.local_sample();
-    comms.update_gui();
+//    comms.handle_ble();
+//    comms.local_sample();
+//    comms.update_gui();
 
     exo.run();
 }

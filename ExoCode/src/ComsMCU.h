@@ -32,8 +32,6 @@ class ComsMCU
         //Battery
         _Battery* _battery;
 
-        const float _status_msg_delay = 1000; //milliseconds
-        const float _real_time_msg_delay = 20; //milliseconds
         const float _battery_ewma_alpha = 0.1;
 };
 

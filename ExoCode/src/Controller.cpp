@@ -4,7 +4,7 @@
 */
 
 #include "Controller.h"
-// #define CONTROLLER_DEBUG 1
+//#define CONTROLLER_DEBUG 1
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
@@ -101,14 +101,14 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
 float _Controller::_pid(float cmd, float measurement, float p_gain, float i_gain, float d_gain)
 { 
     float error_val = cmd - measurement;  
-    _integral_val += error_val / LOOP_FREQ_HZ;     
+    //_integral_val += error_val / LOOP_FREQ_HZ;     
     float de_dt = (error_val - _prev_error) * LOOP_FREQ_HZ;  
     _prev_error = error_val;
     float p = p_gain * error_val;  
-    float i = i_gain * _integral_val;
+    //float i = i_gain * _integral_val;
     float d = d_gain * de_dt; 
     
-    return p + i + d;
+    return p + d;
 };
 
 void _Controller::reset_integral()
@@ -116,7 +116,7 @@ void _Controller::reset_integral()
     #ifdef CONTROLLER_DEBUG
         Serial.println("_Controller::reset_integral : Entered");
     #endif
-    _integral_val = 0;
+    //this -> _integral_val = 0;
     
     #ifdef CONTROLLER_DEBUG
         Serial.println("_Controller::reset_integral : Exited");

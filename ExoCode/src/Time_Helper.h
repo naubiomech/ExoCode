@@ -32,7 +32,7 @@ typedef struct {
 class Time_Helper
 {
     public:
-        Time_Helper(bool use_micros=false);
+        Time_Helper(bool use_micros=true);
         static Time_Helper* get_instance();
 
         float tick(float context);
