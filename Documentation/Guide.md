@@ -26,7 +26,8 @@
 
 ***
 # Introduction 
-
+Hello, welcome to the guide.  
+This guide is designed to provide background information 
 ## Code Location 
 
 ## How to Deploy 
@@ -38,6 +39,9 @@ The detailed style guide can be found [here](StyleGuide.md)
 # High Level Functionality 
 
 ## Code Structure 
+
+[Namespaces](Namespaces.md)
+
 [Data Structure](ExoDataStructure.md) 
 
 [Exo Structure](ExoStructure.md)
