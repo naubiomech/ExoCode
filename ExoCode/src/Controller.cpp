@@ -20,6 +20,10 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
     _id = id;
     _data = exo_data;
     
+    _t_helper = Time_Helper::get_instance();
+    _t_helper_context = _t_helper->generate_new_context();
+    _t_helper_delta_t = 0;
+    
     // we just need to know the side to point at the right data location so it is only for the constructor
     bool is_left = utils::get_is_left(_id);
     #ifdef CONTROLLER_DEBUG
@@ -27,7 +31,8 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
     #endif 
     
     _integral_val = 0;
-    _prev_error = 0;
+    _prev_error = 0; 
+    _prev_de_dt = 0;
         
     // set _controller_data to point to the data specific to the controller.
     switch (utils::get_joint_type(_id))
@@ -100,9 +105,26 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
  
 float _Controller::_pid(float cmd, float measurement, float p_gain, float i_gain, float d_gain)
 { 
+    //check if time is ok
+    bool time_good = true;
+    if (_t_helper->tick(_t_helper_context) > ((float) 1/LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)))
+    {
+        time_good = false;
+    }
+    
     float error_val = cmd - measurement;  
     //_integral_val += error_val / LOOP_FREQ_HZ;     
-    float de_dt = (error_val - _prev_error) * LOOP_FREQ_HZ;  
+    float de_dt = 0;
+    if (time_good)
+    {
+       de_dt = (error_val - _prev_error) * LOOP_FREQ_HZ; 
+       _prev_de_dt = de_dt;
+    }
+    else 
+    {
+        de_dt = _prev_de_dt;
+    }
+      
     _prev_error = error_val;
     float p = p_gain * error_val;  
     //float i = i_gain * _integral_val;

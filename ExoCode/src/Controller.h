@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include "Utilities.h"
 #include "config.h"
+#include "Time_Helper.h"
 
 //TODO: Create motor base class with interface : int calc_motor_cmd()
 
@@ -46,10 +47,15 @@ class _Controller
         LegData* _leg_data;
         JointData* _joint_data;
         
-        config_defs::joint_id _id;
+        config_defs::joint_id _id; 
+        
+        Time_Helper* _t_helper;
+        float _t_helper_context;
+        float _t_helper_delta_t;
         
         float _integral_val;
         float _prev_error;  
+        float _prev_de_dt;
         
         float _pid(float cmd, float measurement, float p_gain, float i_gain, float d_gain);
         
