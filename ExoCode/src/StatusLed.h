@@ -25,6 +25,7 @@
 namespace status_led_defs
 {
     typedef std::map<uint16_t, uint16_t> IdxRemap;
+    // maps messages to idx used for color and pattern.  Mainly needed so errors and warnings will look the same.
     const IdxRemap status_led_idx = 
     { 
         {status_defs::messages::off, 0},

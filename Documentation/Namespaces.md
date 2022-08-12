@@ -222,7 +222,8 @@
     - error_right_ankle_controller 
     
 ## StatusLed.h
-- status_led_defs     
+- status_led_defs   
+    - status_led_idx 
     - colors
         - off[]
         - trial_off[]
