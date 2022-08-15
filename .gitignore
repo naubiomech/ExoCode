@@ -2,3 +2,7 @@
 *.emf
 *.png
 ExoCode/src/.vscode/settings.json
+.vscode
+ExoCode/.vscode
+
+
