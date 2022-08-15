@@ -55,7 +55,7 @@ void ComsMCU::local_sample()
 void ComsMCU::update_gui() 
 {
     // Get real time data from ExoData and send to GUI
-    Time_Helper* t_helper = Time_Helper::get_instance();
+    static Time_Helper* t_helper = Time_Helper::get_instance();
     static const float rt_context = t_helper->generate_new_context();
     static float del_t = 0;
     del_t += t_helper->tick(rt_context);
@@ -65,7 +65,7 @@ void ComsMCU::update_gui()
     (_data->status == status_defs::messages::fsr_refinement) && 
     (del_t > BLE_times::_real_time_msg_delay))
     {
-        Serial.println("Sending rt data");
+        //Serial.println("Sending rt data");
         static const float msg_context = t_helper->generate_new_context();
         static float time_since_last_message;
         time_since_last_message = t_helper->tick(msg_context);
@@ -81,11 +81,16 @@ void ComsMCU::update_gui()
         //TODO: Implement Mark Feature
         rt_data_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
         rt_data_msg.data[5] = _data->left_leg.ankle.controller.setpoint;
-        rt_data_msg.data[6] = _data->right_leg.toe_fsr;
-        rt_data_msg.data[7] = _data->left_leg.toe_fsr;
-        rt_data_msg.data[8] = time_since_last_message;
+        rt_data_msg.data[6] = 0;//_data->right_leg.toe_fsr;
+        rt_data_msg.data[7] = 0;//_data->left_leg.toe_fsr;
+        rt_data_msg.data[8] = time_since_last_message/1000.0;
 
-        _exo_ble->send_message(rt_data_msg);        
+        static const float send_context = t_helper->generate_new_context();
+        static float send_del_t = 0;
+        send_del_t = t_helper->tick(send_context);
+        //_exo_ble->send_message(rt_data_msg);  
+        send_del_t = t_helper->tick(send_context);
+        Serial.print("ComsMCU :: update_gui : Rt send time -> "); Serial.println(send_del_t);      
 
         del_t = 0;
     }
@@ -109,8 +114,8 @@ void ComsMCU::update_gui()
 
 void ComsMCU::_process_complete_gui_command(BleMessage* msg) 
 {
-    // Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
-    // BleMessage::print(*msg);
+    Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
+    BleMessage::print(*msg);
 
     switch (msg->command)
     {

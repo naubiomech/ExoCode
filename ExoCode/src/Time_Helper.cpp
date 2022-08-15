@@ -14,6 +14,19 @@ Time_Helper* Time_Helper::get_instance()
     return instance;
 }
 
+float Time_Helper::peek(float context)
+{
+    float new_time = ((_k_use_micros) ? (micros()):(millis()));
+    
+    ticker_t* ticker = _ticker_from_context(context);
+    // The context does not exist or this is the tickers first tick
+    if (ticker->k_index < 0 || ticker->old_time < 0) {
+        return 0;
+    }
+    
+    return new_time - ticker->old_time;
+}
+
 float Time_Helper::tick(float context)
 {
     float new_time = ((_k_use_micros) ? (micros()):(millis()));
@@ -24,7 +37,7 @@ float Time_Helper::tick(float context)
         return 0;
     }
     
-    float return_time = new_time - ticker->old_time; //TODO: Handle overflow
+    float return_time = new_time - ticker->old_time;
     ticker->old_time = new_time;
     return return_time;
 }

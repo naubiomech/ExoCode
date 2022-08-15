@@ -17,7 +17,7 @@
         const unsigned int NUM_START_STOP_BLINKS = 1;  // the number of times to have the LED on during the start stop sequence
         const unsigned int SYNC_HALF_PERIOD_US = 125000;  // half blink period in micro seconds
         const unsigned int SYNC_START_STOP_HALF_PERIOD_US = 4 * SYNC_HALF_PERIOD_US; // Half blink period for the begining and end of the sequence.  This is usually longer so it is easy to identify.
-    } 
+    }
     
     namespace torque_calibration
     {
@@ -28,6 +28,7 @@
     namespace BLE_times
     {
         const float _status_msg_delay = 1000000; //microseconds
-        const float _real_time_msg_delay = 20000; //microseconds
+        const float _real_time_msg_delay = 40000; //microseconds (20000)
+        const float _update_delay = 100000; //microseconds
     }
 #endif

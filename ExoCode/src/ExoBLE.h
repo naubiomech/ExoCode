@@ -15,6 +15,8 @@
 #ifndef EXOBLE_H
 #define EXOBLE_H
 
+//#define EXOBLE_DEBUG
+
 #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
     #include <SPI.h>
     #include "Adafruit_BLE.h"
@@ -65,6 +67,15 @@ namespace ble_rx
         void on_rx_recieved(BLEDevice central, BLECharacteristic characteristic);
     #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
         void on_rx_recieved(char data[], uint16_t len);
+    #endif
+}
+
+namespace connection_callbacks
+{
+    static bool is_connected = false;
+    #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
+        void connected(void);
+        void disconnected(void);
     #endif
 }
 

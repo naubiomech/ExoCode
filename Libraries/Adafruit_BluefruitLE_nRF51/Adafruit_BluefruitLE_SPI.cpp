@@ -42,8 +42,7 @@
 #endif
 
 
-
-SPISettings bluefruitSPI(1000000, MSBFIRST, SPI_MODE0);//(4000000, MSBFIRST, SPI_MODE0);  // Had to lower speed to get it working with teensy 4.1
+SPISettings bluefruitSPI(1000000, MSBFIRST, SPI_MODE0);
 
 
 /******************************************************************************/
@@ -376,6 +375,7 @@ size_t Adafruit_BluefruitLE_SPI::write(const uint8_t *buf, size_t size)
     }else
     {
       size_t remain = size;
+      
       while(remain)
       {
         size_t len = min(remain, SDEP_MAX_PACKETSIZE);
@@ -384,8 +384,11 @@ size_t Adafruit_BluefruitLE_SPI::write(const uint8_t *buf, size_t size)
         sendPacket(SDEP_CMDTYPE_BLE_UARTTX, buf, (uint8_t) len, remain ? 1 : 0);
         buf += len;
       }
-
+      
+      //Serial.print("Adafruit_BluefruitLE_SPI :: write : getResponse time -> ");
+      //float start = micros();
       getResponse();
+      //Serial.println(micros()-start);
     }
 
     return size;
@@ -618,7 +621,8 @@ bool Adafruit_BluefruitLE_SPI::getPacket(sdepMsgResponse_t* p_response)
     // note that we should always get the right header at this point, and not doing so will really mess up things.
     while ( p_header->msg_type != SDEP_MSGTYPE_RESPONSE && p_header->msg_type != SDEP_MSGTYPE_ERROR && !tt.expired() )
     {
-      p_header->msg_type = spixfer(0xff);
+      //p_header->msg_type = spixfer(0xff);
+      break;
     }
     
     if ( tt.expired() ) break;
@@ -682,6 +686,7 @@ uint8_t Adafruit_BluefruitLE_SPI::spixfer(uint8_t x) {
     //SerialDebug.println(reply, HEX);
     return reply;
   }
+
 
   // software spi
   uint8_t reply = 0;

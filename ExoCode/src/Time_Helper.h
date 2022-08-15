@@ -35,6 +35,7 @@ class Time_Helper
         Time_Helper(bool use_micros=true);
         static Time_Helper* get_instance();
 
+        float peek(float context);
         float tick(float context);
 
         float generate_new_context();

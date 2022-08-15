@@ -79,19 +79,21 @@ void Exo::run()
         // update status LED
         status_led.update(data->status);
 
-        Serial.println("Exo::Run:Time_OK");
-        Serial.println(delta_t);
-        Serial.println(((float)1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
+        // Serial.println("Exo::Run:Time_OK");
+        // Serial.println(delta_t);
+        // Serial.println(((float)1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
 
         delta_t = 0;
         // send data over SPI
     }
     else if (delta_t > ((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)))
     {
-        data->status = status_defs::messages::error;
-        Serial.println("Exo::Run:Timeoverflow");
-        Serial.println(delta_t);
-        Serial.println(((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
+        //data->status = status_defs::messages::error;
+        if (delta_t >= 4000) {
+            Serial.println("Exo::Run:Timeoverflow");
+            Serial.println(delta_t);
+            Serial.println(((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
+        }
         delta_t = 0;
     }
 };

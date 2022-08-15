@@ -35,7 +35,7 @@ namespace ble_names
     static const char send_error_count    = 'w';
     static const char send_trq_cal        = 'H';
     static const char send_step_count     = 's';
-    static const char cal_fsr_finished  = 'n';
+    static const char cal_fsr_finished    = 'n';
 };
 
 namespace ble
@@ -135,6 +135,7 @@ namespace ble_handlers
     }
     inline static void cal_trq(ExoData* data, BleMessage* msg)
     {   
+        Serial.println("Calibrating Torque!");
         // Raise cal_trq flag for all joints being used, (Out of context: Should send calibration info upon cal completion)
         data->for_each_joint([](JointData* j_data) {j_data->calibrate_torque_sensor = j_data->is_used;});
     }

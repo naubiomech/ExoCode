@@ -1,5 +1,6 @@
 #include "ExoBLE.h"
 #include "Utilities.h"
+#include "Time_Helper.h"
 
 #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
 #define FACTORYRESET_ENABLE         1
@@ -99,12 +100,14 @@ bool ExoBLE::setup()
             return false;
         }
 
-        /* Set event handler */
+        /* Set event handler(s) */
+        _ble.setConnectCallback(connection_callbacks::connected);
+        _ble.setDisconnectCallback(connection_callbacks::disconnected);
         _ble.setBleUartRxCallback(ble_rx::on_rx_recieved);
 
-        //_ble.reset();
+        _ble.reset();
 
-        //_ble.setMode(BLUEFRUIT_MODE_DATA);
+        _ble.setMode(BLUEFRUIT_MODE_DATA);
         
         /* Start Advertising */
         advertising_onoff(true);
@@ -124,7 +127,7 @@ void ExoBLE::advertising_onoff(bool onoff)
             BLE.advertise();
             digitalWrite(coms_micro_pins::ble_signal_pin, !coms_micro_pins::ble_signal_active);
         #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-            _ble.sendCommandCheckOK("AT+GAPSTARTADV" );
+            _ble.sendCommandCheckOK("AT+GAPSTARTADV");
         #endif
     }
     else
@@ -135,49 +138,87 @@ void ExoBLE::advertising_onoff(bool onoff)
             BLE.stopAdvertise();
             digitalWrite(coms_micro_pins::ble_signal_pin, coms_micro_pins::ble_signal_active);
         #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-            _ble.sendCommandCheckOK("AT+GAPSTOPADV" );
+            _ble.sendCommandCheckOK("AT+GAPSTOPADV");
         #endif
     }
 }
 
 bool ExoBLE::handle_updates() 
 {
-    // Poll for updates and check connection status
-    #if defined(ARDUINO_ARDUINO_NANO33BLE)
-        BLE.poll();
-        int32_t current_status = BLE.connected();
-    #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-        _ble.update();
-        int32_t current_status;
-        if (!_ble.sendCommandWithIntReply("AT+GAPGETCONN", &current_status))
-        {
-            Serial.println("Unable to get connection status!");
-        }
-    #endif
-    
-    if (_connected == current_status) 
-    {
-        return queue_size();
-    }
+    static Time_Helper *t_helper = Time_Helper::get_instance();
+    static float update_context = t_helper->generate_new_context();
+    static float del_t = 0;
+    del_t += t_helper->tick(update_context);
 
-    // The BLE connection status changed
-    if (current_status < _connected)
+    if (del_t > BLE_times::_update_delay)
     {
-        // Disconnection
-        Serial.println("Disconnection");
-        #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-        //_ble.reset();
+        del_t = 0;
+        #ifdef EXOBLE_DEBUG
+        static float poll_context = t_helper->generate_new_context();
+        static float poll_time = 0;
+        static float connected_context = t_helper->generate_new_context();
+        static float connected_time = 0;
         #endif
-    }
-    else if (current_status > _connected)
-    {
-        // Connection
-        Serial.println("Connection");
 
-    }
-    advertising_onoff(current_status == 0);
-    _connected = current_status;
+        // Poll for updates and check connection status
+        #if defined(ARDUINO_ARDUINO_NANO33BLE)
+            BLE.poll();
+            int32_t current_status = BLE.connected();
+        #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
+            #ifdef EXOBLE_DEBUG
+            t_helper->tick(poll_context);
+            //Serial.println("ExoBLE :: handle_updates : running update");
+            #endif
+            
+            Serial.println("ExoBLE :: handle_updates : running update");
+            _ble.update(0);
+
+            #ifdef EXOBLE_DEBUG
+
+            poll_time = t_helper->tick(poll_context);
+            if (poll_time > 1000) {
+                //Serial.print("ExoBLE :: handle_updates : poll time: "); Serial.println(poll_time);
+                poll_time = 0;
+            }
+            t_helper->tick(connected_context);
+            #endif
+
+            int32_t current_status = connection_callbacks::is_connected;
+
+            #ifdef EXOBLE_DEBUG
+            connected_time = t_helper->tick(connected_context);
+            if (connected_time > 1000) {
+                //Serial.print("ExoBLE :: handle_updates : connected time: "); Serial.println(connected_time);
+                connected_time = 0;
+            }
+            #endif
+        #endif
         
+        if (_connected == current_status) 
+        {
+            return queue_size();
+        }
+
+        // The BLE connection status changed
+        if (current_status < _connected)
+        {
+            // Disconnection
+            #ifdef EXOBLE_DEBUG
+            Serial.println("Disconnection");
+            #endif
+        }
+        else if (current_status > _connected)
+        {
+            // Connection
+            #ifdef EXOBLE_DEBUG
+            Serial.println("Connection");
+            #endif
+
+        }
+        advertising_onoff(current_status == 0);
+        _connected = current_status;
+            
+    }
     return queue_size();
 }
 
@@ -188,8 +229,10 @@ void ExoBLE::send_message(BleMessage &msg)
     {
         return; /* Don't bother sending anything if no one is listening */
     }
+    #ifdef EXOBLE_DEBUG
     Serial.println("Exoble::send_message->Sending:");
     BleMessage::print(msg);
+    #endif
     static const int k_preamble_length = 3;
     int max_payload_length = ((k_preamble_length + msg.expecting) * (MAX_PARSER_CHARACTERS + 1));
     byte buffer[max_payload_length];
@@ -211,17 +254,23 @@ void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
     char data[32] = {0};
     int len = characteristic.valueLength();
     characteristic.readValue(data, len);
-    Serial.print("On Rx Recieved: ");
-    for (int i=0; i<len;i++)
-    {
-        Serial.print(data[i]);
-        Serial.print(data[i], HEX);
-        Serial.print(", ");
-    }
-    Serial.println();
+
+        #ifdef EXOBLE_DEBUG
+        Serial.print("On Rx Recieved: ");
+        for (int i=0; i<len;i++)
+        {
+            Serial.print(data[i]);
+            Serial.print(data[i], HEX);
+            Serial.print(", ");
+        }
+        Serial.println();
+        #endif
+
     msg = parser->handle_raw_data(data, len);
     if (msg->is_complete)
     {
+
+        #ifdef EXOBLE_DEBUG
         Serial.print("on_rx_recieved->Command: ");
         Serial.println(msg->command);
         for (int i=0; i<msg->expecting; i++)
@@ -230,6 +279,8 @@ void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
             Serial.print(", ");
         }
         Serial.println();
+        #endif
+
         push_queue(msg);
     }
 }
@@ -239,6 +290,17 @@ void ble_rx::on_rx_recieved(char data[], uint16_t len)
 {
     static BleParser* parser = new BleParser();
     static BleMessage* msg = new BleMessage();
+
+        #ifdef EXOBLE_DEBUG
+        Serial.print("On Rx Recieved: ");
+        for (int i=0; i<len;i++)
+        {
+            Serial.print(data[i]);
+            Serial.print(data[i], HEX);
+            Serial.print(", ");
+        }
+        Serial.println();
+        #endif
 
     for (int i=0; i<len; i++)
     {
@@ -250,7 +312,15 @@ void ble_rx::on_rx_recieved(char data[], uint16_t len)
             msg->clear();
         }
     }
-   
+}
+
+void connection_callbacks::connected(void)
+{
+    connection_callbacks::is_connected = true;
+}
+void connection_callbacks::disconnected(void)
+{
+    connection_callbacks::is_connected = false;
 }
 
 #endif
