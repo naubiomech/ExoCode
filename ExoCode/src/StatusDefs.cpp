@@ -40,7 +40,10 @@ void print_status_message(uint16_t message)
             break;
         case status_defs::messages::fsr_refinement :
             Serial.print("FSR Refinement");
-            break;    
+            break;  
+        case status_defs::messages::motor_start_up :
+            Serial.print("Motor Start Up");
+            break;
         case status_defs::messages::error :
             Serial.print("General Error");
             break;

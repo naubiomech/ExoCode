@@ -30,11 +30,12 @@ namespace status_led_defs
     { 
         {status_defs::messages::off, 0},
         {status_defs::messages::trial_off, 1},    
-        {status_defs::messages::trial_on, 3},
-        {status_defs::messages::test, 4},  
-        {status_defs::messages::torque_calibration, 5},
-        {status_defs::messages::fsr_calibration, 6},    
-        {status_defs::messages::fsr_refinement, 7},
+        {status_defs::messages::trial_on, 2},
+        {status_defs::messages::test, 3},  
+        {status_defs::messages::torque_calibration, 4},
+        {status_defs::messages::fsr_calibration, 5},    
+        {status_defs::messages::fsr_refinement, 6},   
+        {status_defs::messages::motor_start_up, 7},
         
         {status_defs::messages::error, 8}, 
         {status_defs::messages::error_left_heel_fsr, 8},
@@ -123,8 +124,9 @@ namespace status_led_defs
         const int torque_calibration[] = {255, 255, 0};
         const int fsr_calibration[] = {255, 0, 255};
         const int fsr_refinement[] = {255, 0, 255};
+        const int motor_start_up[] = {255, 68, 0};
         const int error[] = {255, 0, 0};
-        const int warning[] = {255, 255, 0};
+        const int warning[] = {255, 68, 0};
         
     }
     
@@ -144,6 +146,7 @@ namespace status_led_defs
         const int torque_calibration[] = {solid, 0};
         const int fsr_calibration[] = {solid, 0};
         const int fsr_refinement[] = {pulse, 250};
+        const int motor_start_up[] = {pulse, 4000};
         const int error[] = {blink, 250}; // blinking
         const int warning[] = {blink, 250}; // blinking
     }
@@ -192,26 +195,28 @@ class StatusLed
     
     // make sure to keep in index order from messages, this is an array of the colors to use _messageColors[_currentMessage][color] where color is 0 for r, 1 for g, and 2 for b.
     // This method of accessing array elements is bulky but works.
-    const int _message_colors[9][3] = {{status_led_defs::colors::off[0], status_led_defs::colors::off[1], status_led_defs::colors::off[2]}, 
+    const int _message_colors[10][3] = {{status_led_defs::colors::off[0], status_led_defs::colors::off[1], status_led_defs::colors::off[2]}, 
                 {status_led_defs::colors::trial_off[0], status_led_defs::colors::trial_off[1], status_led_defs::colors::trial_off[2]}, 
                 {status_led_defs::colors::trial_on[0], status_led_defs::colors::trial_on[1], status_led_defs::colors::trial_on[2]}, 
                 {status_led_defs::colors::test[0], status_led_defs::colors::test[1], status_led_defs::colors::test[2]}, 
                 {status_led_defs::colors::torque_calibration[0], status_led_defs::colors::torque_calibration[1], status_led_defs::colors::torque_calibration[2]}, 
                 {status_led_defs::colors::fsr_calibration[0], status_led_defs::colors::fsr_calibration[1], status_led_defs::colors::fsr_calibration[2]}, 
                 {status_led_defs::colors::fsr_refinement[0], status_led_defs::colors::fsr_refinement[1], status_led_defs::colors::fsr_refinement[2]},
+                {status_led_defs::colors::motor_start_up[0], status_led_defs::colors::motor_start_up[1], status_led_defs::colors::motor_start_up[2]},
                 {status_led_defs::colors::error[0], status_led_defs::colors::error[1], status_led_defs::colors::error[2]}, 
                 {status_led_defs::colors::warning[0], status_led_defs::colors::warning[1], status_led_defs::colors::warning[2]} 
                 };
     
     // make sure to keep in index order from messages, this is an array of the colors to use _messageColors[_currentMessage][color] where color is 0 for r, 1 for g, and 2 for b.
     // This method of accessing array elements is bulky but works.
-    const int _message_pattern[9][2] = {{status_led_defs::patterns::off[0], status_led_defs::patterns::off[1]}, 
+    const int _message_pattern[10][2] = {{status_led_defs::patterns::off[0], status_led_defs::patterns::off[1]}, 
                 {status_led_defs::patterns::trial_off[0], status_led_defs::patterns::trial_off[1]}, 
                 {status_led_defs::patterns::trial_on[0], status_led_defs::patterns::trial_on[1]}, 
                 {status_led_defs::patterns::test[0], status_led_defs::patterns::test[1]}, 
                 {status_led_defs::patterns::torque_calibration[0], status_led_defs::patterns::torque_calibration[1]}, 
                 {status_led_defs::patterns::fsr_calibration[0], status_led_defs::patterns::fsr_calibration[1]}, 
                 {status_led_defs::patterns::fsr_refinement[0], status_led_defs::patterns::fsr_refinement[1]},
+                {status_led_defs::patterns::motor_start_up[0], status_led_defs::patterns::motor_start_up[1]},
                 {status_led_defs::patterns::error[0], status_led_defs::patterns::error[1]},
                 {status_led_defs::patterns::warning[0], status_led_defs::patterns::warning[1]} 
                 };

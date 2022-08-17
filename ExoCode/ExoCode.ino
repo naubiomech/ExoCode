@@ -220,8 +220,29 @@ void loop()
             exo.right_leg._ankle.set_controller(exo_data.right_leg.ankle.controller.controller);
             
         }
-
-        delay(5000);
+        #ifdef MAIN_DEBUG
+          Serial.println("Superloop :: Motor Charging Delay - Please be patient");
+        #endif 
+        exo_data.status = status_defs::messages::motor_start_up; 
+        int motor_start_delay_ms = 60000;
+        int motor_start_time = millis();
+        int dot_print_ms = 1000;
+        int last_dot_time = millis();
+        while (millis() - motor_start_time < motor_start_delay_ms)
+        {
+            exo.status_led.update(exo_data.status);
+            #ifdef MAIN_DEBUG
+              if(millis() - last_dot_time > dot_print_ms)
+              {
+                last_dot_time = millis();
+                Serial.print(".");
+              }
+              
+            #endif
+        }
+        #ifdef MAIN_DEBUG
+          Serial.println();
+        #endif
         bool enable_overide = true;
         if(exo_data.left_leg.hip.is_used)
         {
@@ -379,11 +400,18 @@ void loop()
       
     }
 
-//    comms.handle_ble();
-//    comms.local_sample();
-//    comms.update_gui();
+    comms.handle_ble();
+    comms.local_sample();
+    comms.update_gui();
 
     exo.run();
+    int dot_print_ms = 5000;
+    static int last_dot_time = millis();
+    if(millis() - last_dot_time > dot_print_ms)
+    {
+      last_dot_time = millis();
+      Serial.print(".");
+    }
 }
 
 

@@ -52,11 +52,23 @@ Leg::Leg(bool is_left, ExoData* exo_data)
  */
 void Leg::run_leg()
 {
+    #ifdef LEG_DEBUG
+        Serial.print("\nmicros : ");
+        Serial.println(micros());
+        Serial.print(_is_left ? "Left " : "Right ");
+        Serial.println("Leg :: run_leg : checking calibration");
+    #endif
     check_calibration();
-    
+    #ifdef LEG_DEBUG
+        Serial.print(_is_left ? "Left " : "Right ");
+        Serial.println("Leg :: run_leg : reading data");
+    #endif
     // read all the data before we calculate and send the new motor commands
     read_data();
-    
+    #ifdef LEG_DEBUG
+        Serial.print(_is_left ? "Left " : "Right ");
+        Serial.println("Leg :: run_leg : updating motor commands");
+    #endif
     // calculates the new motor commands and sends them.
     update_motor_cmds();
         

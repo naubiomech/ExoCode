@@ -32,6 +32,7 @@ namespace status_defs
         const uint16_t torque_calibration = 4;
         const uint16_t fsr_calibration = 5;
         const uint16_t fsr_refinement =6;
+        const uint16_t motor_start_up =7;
         // Specific error messages will use the 4 highest bits, giving 31 error messages
         const uint16_t error_bit = 4;  // gives 12 bits of error messages
         const uint16_t error = 1<<(error_bit-1);
