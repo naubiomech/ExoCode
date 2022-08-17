@@ -365,7 +365,7 @@ uint16_t Adafruit_ATParser::readline(char * buf, uint16_t bufsize, uint16_t time
     }
 
     // delay if needed
-    if (timeout) delayMicroseconds(50);
+    if (timeout) delayMicroseconds(100);
   }
 
   buf[replyidx] = 0;  // null term

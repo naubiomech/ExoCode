@@ -288,6 +288,7 @@ void Adafruit_BLE::update(uint32_t period_ms)
 {
   static TimeoutTimer tt;
 
+
   if ( tt.expired() )
   {
     tt.set(period_ms);
@@ -302,6 +303,7 @@ void Adafruit_BLE::update(uint32_t period_ms)
 
     println( F("AT+EVENTSTATUS") );
     readline();
+
     waitForOK();
 
     // parse event status system_event, gatts_event
@@ -362,6 +364,7 @@ void Adafruit_BLE::update(uint32_t period_ms)
           print( F("AT+GATTCHARRAW=") ); // use RAW command version
           println(charid);
 
+          
           uint16_t len = readraw(); // readraw swallow OK/ERROR already
           memcpy(tempbuf, this->buffer, len);
 

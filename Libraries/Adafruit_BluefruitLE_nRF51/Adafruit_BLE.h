@@ -44,7 +44,7 @@
 #include "utility/TimeoutTimer.h"
 #include "Adafruit_ATParser.h"
 
-#define BLE_DEFAULT_TIMEOUT      200
+#define BLE_DEFAULT_TIMEOUT      250
 
 enum BLEDataType_t
 {
