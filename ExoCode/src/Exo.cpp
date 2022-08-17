@@ -52,7 +52,7 @@ void Exo::run()
         bool trial_running = sync_led.get_is_blinking();
 
         // check the estop
-        data->estop = !digitalRead(logic_micro_pins::motor_stop_pin);
+        data->estop = digitalRead(logic_micro_pins::motor_stop_pin);
 
         // Serial.print("Exo::run: is error : ");
         // Serial.print(((data->status & status_defs::messages::error) == status_defs::messages::error));

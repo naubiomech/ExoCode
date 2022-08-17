@@ -185,16 +185,25 @@ void _CANMotor::on_off()
     if (_data->estop)
     {
         _motor_data->is_on = false;
+        Serial.print("_CANMotor::on_off(bool is_on) : E-stop pulled - ");
+        Serial.print(uint32_t(_motor_data->id));
+        Serial.print("\n");
     }
     if (_prev_on_state != _motor_data->is_on) // if was here to save time, can be removed if making problems, or add overide
     {
         if (_motor_data->is_on)
         {
             digitalWrite(_enable_pin, logic_micro_pins::motor_enable_on_state);
+            Serial.print("_CANMotor::on_off(bool is_on) : Power on- ");
+            Serial.print(uint32_t(_motor_data->id));
+            Serial.print("\n");
         }
         else 
         {
             digitalWrite(_enable_pin, logic_micro_pins::motor_enable_off_state);
+            Serial.print("_CANMotor::on_off(bool is_on) : Power off- ");
+            Serial.print(uint32_t(_motor_data->id));
+            Serial.print("\n");
         } 
     }
     _prev_on_state = _motor_data->is_on;
@@ -232,7 +241,7 @@ bool _CANMotor::enable(bool overide)
             // !!! A delay check between when turning on power and when timeouts stopped happening gave a delay of 1930 ms rounding to 2000.
             // enable motor
             msg.buf[7] = 0xFC;
-            Serial.print("_CANMotor::on_off(bool is_on) : Powered on- ");
+            Serial.print("_CANMotor::enable(bool is_on) : Enable on- ");
             Serial.print(uint32_t(_motor_data->id));
             Serial.print("\n");
         }
@@ -241,7 +250,7 @@ bool _CANMotor::enable(bool overide)
             _enable_response = false;
             // disable motor, the message after this shouldn't matter as the power is cut, and the send() doesn't send a message if not enabled.
             msg.buf[7] = 0xFD;
-            Serial.print("_CANMotor::on_off(bool is_on) : Powered off - ");
+            Serial.print("_CANMotor::enable(bool is_on) : Enable off - ");
             Serial.print(uint32_t(_motor_data->id));
             Serial.print("\n");
         }
