@@ -21,6 +21,7 @@
 #include "SyncLed.h"
 #include "StatusLed.h"
 #include "StatusDefs.h"
+#include "Config.h"
 
 class Exo
 {
@@ -33,6 +34,9 @@ class Exo
         Leg right_leg;
         Leg left_leg;
         
+        #ifdef USE_SPEED_CHECK
+            utils::SpeedCheck speed_check;
+        #endif
         
         SyncLed sync_led;
         StatusLed status_led;

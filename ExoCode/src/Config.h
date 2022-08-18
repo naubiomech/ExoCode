@@ -12,6 +12,8 @@
     #define LOOP_FREQ_HZ 500
     #define LOOP_TIME_TOLERANCE 0.1 
     
+    #define USE_SPEED_CHECK 1 
+    
     namespace sync_time
     {
         const unsigned int NUM_START_STOP_BLINKS = 1;  // the number of times to have the LED on during the start stop sequence

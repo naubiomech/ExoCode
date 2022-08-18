@@ -97,11 +97,6 @@ void loop()
             Serial.println("Superloop :: exo created");
         }
     #endif
-
-    // used to check loop speed but can be removed.
-//    static utils::SpeedCheck speed_check(33);
-//    speed_check.toggle();
-    
     
     if (first_run)
     {

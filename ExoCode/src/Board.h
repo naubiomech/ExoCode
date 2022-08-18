@@ -148,6 +148,9 @@
                 const unsigned int enable_left_pin[] = {28, 29};
                 const unsigned int enable_right_pin[] = {8, 7};
                 
+                
+                const unsigned int speed_check_pin = 33;
+                
                 // I2C 
                 // SDA 18
                 // SCL 19
@@ -244,6 +247,9 @@
                 // Motor enable Pins
                 const unsigned int enable_left_pin[] = {28, 29};
                 const unsigned int enable_right_pin[] = {8, 7};
+                
+                
+                const unsigned int speed_check_pin = 33;
                 
                 // I2C 
                 // SDA 18

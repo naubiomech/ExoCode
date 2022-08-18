@@ -21,6 +21,9 @@ Exo::Exo(ExoData* exo_data)
 , right_leg(false, exo_data) // constructor: uses initializer list for the legs.
 , sync_led(logic_micro_pins::sync_led_pin, sync_time::SYNC_START_STOP_HALF_PERIOD_US, sync_time::SYNC_HALF_PERIOD_US, logic_micro_pins::sync_led_on_state, logic_micro_pins::sync_default_pin)  // Create a sync LED object, the first and last arguments (pin) are found in Board.h, and the rest are in Sync_Led.h.  If you do not have a digital input for the default state you can remove SYNC_DEFAULT_STATE_PIN.  
 , status_led(logic_micro_pins::status_led_r_pin, logic_micro_pins::status_led_g_pin, logic_micro_pins::status_led_b_pin)  // Create the status LED object. 
+#ifdef USE_SPEED_CHECK
+    ,speed_check(logic_micro_pins::speed_check_pin)
+#endif
 {
     this->data = exo_data;
     #ifdef EXO_DEBUG
@@ -45,7 +48,10 @@ void Exo::run()
     if (((delta_t <= ((float) 1/LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE))) && (delta_t >= ((float)1 / LOOP_FREQ_HZ * 1000000 * (1 - LOOP_TIME_TOLERANCE)))))
     {
 
-        // check if anything new has come in over SPI
+        #ifdef USE_SPEED_CHECK
+            speed_check.toggle();
+        #endif
+// check if anything new has come in over SPI
 
         // check if we should update the sync LED and record the LED on/off state.
         data->sync_led_state = sync_led.handler();
@@ -78,22 +84,24 @@ void Exo::run()
 
         // update status LED
         status_led.update(data->status);
-
-        // Serial.println("Exo::Run:Time_OK");
-        // Serial.println(delta_t);
-        // Serial.println(((float)1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
-
+        #ifdef EXO_DEBUG
+            // Serial.println("Exo::Run:Time_OK");
+            // Serial.println(delta_t);
+            // Serial.println(((float)1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
+        #endif
         delta_t = 0;
         // send data over SPI
     }
     else if (delta_t > ((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)))
     {
         //data->status = status_defs::messages::error;
-        if (delta_t >= 4000) {
-            Serial.println("Exo::Run:Timeoverflow");
-            Serial.println(delta_t);
-            Serial.println(((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
-        }
+        #ifdef EXO_DEBUG
+            if (delta_t >= 4000) {
+                Serial.println("Exo::Run:Timeoverflow");
+                Serial.println(delta_t);
+                Serial.println(((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
+            }
+        #endif
         delta_t = 0;
     }
 };
