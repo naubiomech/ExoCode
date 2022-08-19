@@ -64,53 +64,48 @@
 
 
     #ifdef SIMPLE_EXAMPLE  
-
+        // namespace to store variables used in t ge SPI callback
         namespace spi_peripheral
         {
             SPISlave_T4<&SPI, SPI_8_BITS> my_spi;
-            const uint8_t message_len = 4;
-            uint8_t message_number = 0;
-            bool loop_running = false;
-            uint8_t controller_message[message_len+1]= {0,0,0,0,0};
-            uint8_t peripheral_message[message_len+1]= {0x04, 0xAA, 0xF0, 0x0F, 0x00};
-            uint8_t debug_location;
-            bool is_unread_message = false;
+            const uint8_t message_len = 4;// length of the actual message
+            uint8_t message_number = 0;// counter to keep track of changes
+            bool loop_running = false;// not used intended to be used to signal the controller board that the peripheral is ready
+            uint8_t controller_message[message_len+1]= {0,0,0,0,0};// end messages with extra zero that will be read by the other board at the start of the message
+            uint8_t peripheral_message[message_len+1]= {0x04, 0xAA, 0xF0, 0x0F, 0x00};//message_length, message_num, data1, data2, dummy_val(must be 0)
+            uint8_t debug_location;// used to see where we get in the callback
+            bool is_unread_message = false;  // let the main loop know something new has come in
             void spi_callback() 
             {    
-                uint8_t i = 0;
-                uint8_t j = 0;
+                uint8_t i = 0;// send idx
+                uint8_t j = 0;// recv idx
                 while ( my_spi.active() ) 
                 {
                     if (my_spi.available()) 
                     {
                         if(0==i)
                         {
-                          peripheral_message[1] = message_number;
+                          peripheral_message[1] = message_number;// pack current message num
                           Serial.print("spi_callback :: message_number : 0x");
-                          Serial.println(message_number++,HEX);
+                          Serial.println(message_number++,HEX); // print and increment message num
                         }
-                        if ( j > sizeof(peripheral_message) ) 
+                        if ( j > sizeof(peripheral_message) ) // recieving data beyond message size likely due to error
                         {
                             //my_spi.pushr(0);
                         }
-                        else
+                        else// Still normally operating keep putting in data
                         {
-                            my_spi.pushr(utils::ff_to_fe(peripheral_message[i]));
+                            my_spi.pushr(utils::ff_to_fe(peripheral_message[i]));//converts any FF to FE before sending as the message appears as FF on the other side when there is an error
                         }
                         
-//                        Serial.print("\t[");
-//                        Serial.print(i);
-//                        Serial.print("] -> 0x");
-//                        Serial.println(my_spi.popr(),HEX);
-                        controller_message[j] = my_spi.popr();
+                        controller_message[j] = my_spi.popr();//pull the message off the buffer
                         i++;
                         
-                        if((0xFF!=controller_message[j]&&0!=j)||(0==j && 0!=controller_message[j]))
+                        if((0xFF!=controller_message[j]&&0!=j)||(0==j && 0!=controller_message[j]))//remove leading 0s and ignore FF as the other side sends this back if it was received
                         {
                             j++;
                         }
                         is_unread_message = true;
-                        //Serial.print(".");
                     }
                 }
             }
@@ -125,17 +120,12 @@
             Serial.println("Setup :: SPI Begin");
             spi_peripheral::my_spi.onReceive(spi_peripheral::spi_callback);
             Serial.println("Setup :: SPI callback set");
-            //spi_peripheral::my_spi.popr();
+            //spi_peripheral::my_spi.popr();// thought this might be needed as the controller does
         }
 
         void loop()
         {
             static int time_of_last_message = millis();
-            
-//            spi_peripheral::peripheral_message[0] = spi_peripheral::message_len;
-//            spi_peripheral::peripheral_message[1] = 0xAA;
-//            spi_peripheral::peripheral_message[2] = 0xF0;
-//            spi_peripheral::peripheral_message[3] = 0x0F;
            
             static bool first_run = true;
       
@@ -143,10 +133,6 @@
             {
                 Serial.println("Superloop :: First Run Start");
                 
-//                for(int i = 0; i<sizeof(spi_peripheral::message_len); i++)
-//                {
-//                    spi_peripheral::my_spi.pushr(spi_peripheral::peripheral_message[i]);
-//                }
                 first_run = false;
             }
       
@@ -154,15 +140,10 @@
             {
                 spi_peripheral::loop_running = true;
                 Serial.print("\n\n\n\n");  
-                //simple_static_spi_handler::print_debug(spi_peripheral::debug_location);
                 Serial.println("Superloop :: controller_message");
                 print_message(spi_peripheral::controller_message, spi_peripheral::message_len+1);
                 Serial.println("Superloop :: peripheral_message");
                 print_message(spi_peripheral::peripheral_message, spi_peripheral::message_len+1);
-//                for(int i = 0; i<spi_peripheral::message_len; i++)
-//                {
-//                    spi_peripheral::my_spi.pushr(spi_peripheral::peripheral_message[i]);
-//                }
                 spi_peripheral::is_unread_message = false;
                 time_of_last_message = millis();
             }
@@ -421,29 +402,27 @@
       digitalWrite(coms_micro_pins::cs_pin, HIGH);
       
       SPI.begin();
-      SPI.transfer(0);
+      SPI.transfer(0);//begin doesn't actually enable the system so send zero to nowhere to enable
       Serial.println("===========================================================");
       
     }
     
     void loop()
     {
-        static uint8_t msg_num = 0;
+        static uint8_t msg_num = 0;//  keep track of message num
         
-        const uint8_t len = 4;
-        uint8_t controller_message[len+1];
+        const uint8_t len = 4; // length of data to send
+        uint8_t controller_message[len+1];  // add extra zero to be read at the start of the message by the other system
         uint8_t peripheral_message[len+1];
-        uint8_t debug_location;
+        uint8_t debug_location;// keep track of where we get without printing
   
-        static uint8_t start_val = 0xBB;
-        
         controller_message[0] = len;
         controller_message[1] = msg_num;//0x55;
         controller_message[2] = 0x0F;
         controller_message[3] = 0xF0;
         controller_message[4] = 0x00;//dummy value
 
-        peripheral_message[0] = len;
+        peripheral_message[0] = 0x00;
         peripheral_message[1] = 0x00;
         peripheral_message[2] = 0x00;
         peripheral_message[3] = 0x00;
@@ -452,25 +431,25 @@
   
         Serial.println("Superloop :: Starting Transaction");
         Serial.print("Superloop :: msg_num : 0x");
-        Serial.println(msg_num++,HEX);
-        SPI.beginTransaction(SPISettings(100, MSBFIRST, coms_micro_pins::spi_mode));  // teensy seems limited to 26 MHz
+        Serial.println(msg_num++,HEX);// print msg num
+        SPI.beginTransaction(SPISettings(5000000, MSBFIRST, coms_micro_pins::spi_mode));  // teensy seems limited to 5 MHz
         
-        digitalWrite(coms_micro_pins::cs_pin, LOW);
+        digitalWrite(coms_micro_pins::cs_pin, LOW); // let the peripheral know you are talking to it
         
         for( int i = 0, j = 0; j<(len+1); i++)
         {
-            peripheral_message[j] = SPI.transfer(utils::ff_to_fe(controller_message[i]));
-            while(0xFF == peripheral_message[j])
+            peripheral_message[j] = SPI.transfer(utils::ff_to_fe(controller_message[i]));// send the data converting FF to FE so it isn't seen as error
+            while(0xFF == peripheral_message[j])// if error recieved send it back so the other system knows
             {
               peripheral_message[j] = SPI.transfer(0xFF);
             }
-            if((0 == j && 0 != peripheral_message[j])|| 0!=j)
+            if((0 == j && 0 != peripheral_message[j])|| 0!=j)// ignore leading 0s
             {
               j++;
             }
         } 
         //uint8_t temp = SPI.transfer(0x00);
-        digitalWrite(coms_micro_pins::cs_pin, HIGH);
+        digitalWrite(coms_micro_pins::cs_pin, HIGH);// tell the other system you are done with it
         SPI.endTransaction();
         
         Serial.println("Superloop :: controller_message");
