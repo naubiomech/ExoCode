@@ -113,7 +113,11 @@ namespace utils
     void uint8_to_float(uint8_t *bytes_to_convert, float *converted_float);
 
     float ewma(float new_value, float filter_value, float alpha);
-    
+    /*
+     * Takes in the in a byte and if it is 0xFF changes to 0xFE
+     *
+     */
+    uint8_t ff_to_fe(uint8_t);
 }
 
 

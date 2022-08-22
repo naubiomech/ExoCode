@@ -309,4 +309,17 @@ namespace utils
     {
         return (filter_value + alpha*(new_value-filter_value));
     }
+    
+    /*
+     * Takes in the in a byte and if it is 0xFF changes to 0xFE
+     *
+     */
+    uint8_t ff_to_fe(uint8_t val)
+    {
+        if(0xFF==val)
+        {
+            return 0xFE;
+        }
+        return val;
+    }
 }
