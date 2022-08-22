@@ -1,3 +1,11 @@
+/**
+ * @file ble_commands.h
+ * @author Chance Cuddeback
+ * @brief This file declares the BLE commands, and the functions that should be called when they are received. 
+ * @date 2022-08-22
+ * 
+ */
+
 #ifndef BLE_COMMANDS_H
 #define BLE_COMMADNS_H
 #include "Arduino.h"
@@ -7,12 +15,20 @@
 #include "BleMessage.h"
 #include "ParamsFromSD.h"
 
+/**
+ * @brief Type to associate a command with an ammount of data
+ * 
+ */
 typedef struct
 {
     char command;
     int length;  
 } ble_command_t;
 
+/**
+ * @brief Creates a variable for each command value
+ * 
+ */
 namespace ble_names
 {
     // Recieved Commands
@@ -38,6 +54,10 @@ namespace ble_names
     static const char cal_fsr_finished    = 'n';
 };
 
+/**
+ * @brief Associates the command and ammount of data that it expects to be sent/received
+ * 
+ */
 namespace ble
 {
     static const ble_command_t commands[] = 
@@ -66,8 +86,18 @@ namespace ble
     };
 };
 
+/**
+ * @brief Helper function(s) to be used with the command array
+ * 
+ */
 namespace ble_command_helpers
 {
+    /**
+     * @brief Get the ammount of data a command is expecting
+     * 
+     * @param command command to get the length
+     * @return int Ammount of data for a command, -1 if command not found
+     */
     inline static int get_length_for_command(char command)
     {
         int length = -1;
@@ -84,6 +114,10 @@ namespace ble_command_helpers
     }
 }
 
+/**
+ * @brief Variables used by the Handlers to track state
+ * 
+ */
 namespace ble_handler_vars
 {
     // Should be used sparingly, we chose to do this so that ExoData wasn't needlessly populated with variables
@@ -92,7 +126,12 @@ namespace ble_handler_vars
 
 }
 
-// All command handlers should have static linkage, return void, and accept a pointer to ExoData, ie "inline static void my_handler(ExoData* data, BleMessage* msg)"
+/**
+ * @brief Holds the functions that should be called when a command is received. All command handlers should have 
+ * static linkage, return void, and accept a pointer to ExoData.
+ * ie "inline static void my_handler(ExoData* data, BleMessage* msg)"
+ * 
+ */
 namespace ble_handlers
 {
     inline static void start(ExoData* data, BleMessage* msg)

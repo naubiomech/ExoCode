@@ -108,7 +108,6 @@ void BleParser::_handle_command(char command)
     {
         _waiting_for_data = (length != 0);
         _working_message.command = command;
-        // Must multiply by 8 to account for the number of bytes to expect
         _working_message.expecting = length;
         _working_message.is_complete = !_waiting_for_data;
     }

@@ -1,9 +1,8 @@
 /* 
+    This class is using the singleton pattern. To use you must first get a referance to the singleton instance.
+    Do this with the line 'I2C* instance = I2C::get_instance();'. Then you can read with 'instance->read_i2c(...)'
 
-   This class is using the singleton pattern. To use you must first get a referance to the singleton instance.
-   Do this with the line 'I2C* instance = I2C::get_instance();'. Then you can read with 'instance->read_i2c(...)'
-
-   Chance Cuddeback 2022
+    Chance Cuddeback 2022
 */
 
 #ifndef I2CHANDLER_H
