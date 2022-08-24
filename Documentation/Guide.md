@@ -1,6 +1,7 @@
 # New Code User Guide
 
 ## Outline
+1.  [Background](##background)
 1.  [Introduction](##introduction)
     1. [Code location](##code-location)
     2. [How to Deploy](##how-to-deploy)
@@ -28,6 +29,97 @@
     2. [Structure](##bluetooth-structure)
     3. [Sending a Message](##sending-a-message)
 7. [Resources](##resources)
+
+***
+## Background 
+The code is written Arduino and C++.
+This background section is intended to give you and understanding about the different things you may see in the code and how to interpret them.
+More detailed information can be found on the internet, I like [tutorialspoint](https://www.tutorialspoint.com/cplusplus/index.htm) and [w3schools](https://www.w3schools.com/cpp/default.asp) but there are other resources that are good.
+
+### Bits and Bytes
+
+### Addresses
+
+### Variables
+
+### Types
+
+#### Bool
+
+#### Char
+
+#### Int
+
+#### Float
+
+#### Double
+
+#### Void
+
+#### Modifiers
+
+##### Signed vs Unsigned
+
+##### Long and Short
+
+##### Static
+
+##### Volatile
+
+### Functions
+
+### Classes
+
+#### Initializer List
+
+### Pointers
+
+#### Function Pointers
+
+### .h vs .cpp files
+You may notice two files with the same name but different extensions, one .h and one .cpp.
+The .h file is known as a [header file](https://www.learncpp.com/cpp-tutorial/header-files/) and is a place where you declare different items you want to use in a different file.
+If you look at the top of the Arduino code [ExoCode.ino](https://github.com/naubiomech/ExoCode/tree/nano_teensy_board/ExoCode) you will see includes like:
+```
+#include "src\ExoData.h"
+```
+This tells the code that you want to use the stuff that is declared in that file, this example file declares a class called ExoData that we use to store data.
+
+I have said declare a bunch of times now but it may be unclear what that means.
+A "declaration" tells the compiler that puts everything together for the processor what things are available and how they are called, but nothing about what they do.
+In our example we have a class named ExoData which contains some other stuff, like the classes, functions, and variables we already discussed.
+Within this class there is a member function ```void reconfigure(uint8_t* config_to_send); ```, so the complier knows that we can call reconfigure if we give it a uint8_t pointer and it won't send anything back.
+What happens when we call it?
+The compiler doesn't care at this point, it just wants to know that we can use it.
+Similarly there are some variables inside that we can also call, ```bool estop;``` is a Boolean that lets us know the status of the emergency stop button, but we can also store objects for other classes like ```LegData left_leg;```.
+```
+class ExoData 
+{
+	public:
+        ExoData(uint8_t* config_to_send); // constructor
+        void reconfigure(uint8_t* config_to_send);
+        void for_each_joint(for_each_joint_function_t function);
+        
+        uint16_t status;
+        bool sync_led_state;
+        bool estop;
+        float battery_value; // Could be Voltage or SOC, depending on the battery type
+        LegData left_leg;
+        LegData right_leg;
+};
+```
+
+So when we want to actually say what values the variables have or what happens when we call the function we need to "define" them.
+This is where the .cpp file comes in.
+If we want to define what happens when we call reconfigure for an ExoData object we code it out 
+```void ExoData::reconfigure(uint8_t* config_to_send) 
+{
+    left_leg.reconfigure(config_to_send);
+    right_leg.reconfigure(config_to_send);
+};
+```
+So when we call reconfigure for the ExoData objects we call the reconfigure member functions for the left_leg and right_leg objects the class contains.
+
 
 ***
 ## Introduction 
