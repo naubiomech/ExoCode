@@ -24,6 +24,9 @@
     2. [Adding new](##adding-new-controllers)
     3. [Parameters](##controller-parameters)
 6. [Bluetooth Communication](##bluetooth) (Get info from Chance)
+    1. [Background](##bluetooth-background)
+    2. [Structure](##bluetooth-structure)
+    3. [Sending a Message](##sending-a-message)
 7. [Resources](##resources)
 
 ***
@@ -87,6 +90,12 @@ The hierarchy is:
             - TorqueSensor
             - Motor/MotorData
             - Controller/ControllerData
+A subset of the firmware can run on a seperate microcontroller, intended to handle bluetooth communication and soft real-time functionality. The main microcontroller 
+communicates with the communication microcontroller via SPI. 
+The hierarchy is:
+- ComsMCU/ExoData
+    - ExoBLE/ExoData
+        - BleParser
             
 More info can be found below in [Code Structure](#code-structure).
 
@@ -146,6 +155,25 @@ They are used as little as possible to minimize the amount of dependencies as th
 
 ***
 ## Bluetooth 
+The system uses Bluetooth Low Energy (BLE) to communicate with a graphical user interface (GUI). For an introduction to BLE, [see](https://learn.adafruit.com/introduction-to-bluetooth-low-energy).
+
+### Bluetooth Background
+The Exosekeleton uses Norduc's UART Service (NUS) to communicate with the GUI. This service has RX and TX characteristics mimicking UART. In order for the app to connect with the Exoskeleton it's name must beging with "EXOBLE_" and advertise the NUS. When the Exoskeleton connects with the GUI, it will begin sending battery data. When a trial is started the device will begin transmitting a subset of the ExoData struct. 
+
+### Bluetooth Structure
+The CommsMCU class is the highest class in the Communications firmware heirarchy. It contains the battery object, and the ExoBLE object. This class manages the bluetooth connection and data. The class also performs battery sampling. 
+The ExoBLE class handles all bluetooth work. This includes initialization, advertising, connection, and data transfer. 
+The BleParser class is used to serialize and deserialize the BLE data. The application uses Nordic's UART service to pass all of the data. Therefore, the command-data pairs must be packaged together and unpackaged on the peripheral and central.
+There are several variables in config.h that control the timing of data transmission. 
+
+### Sending a Message
+If you would like to add a new message, see the "AddingNewBLEMessage" doc. The messages are all created in the ble_commands.h file. ble_commands.h also defines the functions that are called when a command is received. To send a new message you must package a BleMessage object with your desired command and data. The data must be packaged correctly, both in length and index. Currently there is no method to ensure the correct index is used for a specific command, but the length of the commands can be found in the ble namespace. Here is an example message (Sending messages must be done in the ComsMCU):
+    BleMessage batt_msg = BleMessage();
+    batt_msg.command = ble_names::send_batt;
+    batt_msg.expecting = ble_command_helpers::get_length_for_command(batt_msg.command);
+    batt_msg.data[0] = _data->battery_value;
+    _exo_ble->send_message(batt_msg);
+
 
 ***
 ## Resources 
