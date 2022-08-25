@@ -66,6 +66,10 @@ The libraries should be moved to C:\Users\\\[USER\]\Documents\Arduino\libraries\
             ```SPISettings bluefruitSPI(1000000, MSBFIRST, SPI_MODE0);```  
             
             Due to teensy speed issue
+## Optimizations
+- SPI direct memory access. Should change SPI time from 20 $\mu$s per byte to the time to write the memory.
+- BLEparser change from char representation to num bytes, expect 3 to 6x speed up.
+- CAN direct memory access, should cut about 250 $\mu$s per motor.
 
 ## MORE DETAILS TO COME
 Probably need to create a consistent/shared SPI interface
