@@ -111,13 +111,17 @@ namespace utils
     bool is_little_endian();
     void float_to_uint8(float num_to_convert, uint8_t *converted_bytes);
     void uint8_to_float(uint8_t *bytes_to_convert, float *converted_float);
+    void float_to_short_fixed_point_bytes(float num_to_convert, uint8_t *converted_bytes, uint8_t factor);
+    void short_fixed_point_bytes_to_float(uint8_t *bytes_to_convert, float *converted_val, uint8_t factor);
+    
+    
 
     float ewma(float new_value, float filter_value, float alpha);
     /*
      * Takes in the in a byte and if it is 0xFF changes to 0xFE
      *
      */
-    uint8_t ff_to_fe(uint8_t);
+    
 }
 
 
