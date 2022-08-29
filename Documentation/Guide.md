@@ -54,6 +54,8 @@ More detailed information can be found on the internet, I like [tutorialspoint](
 
 #### Double
 
+#### Arrays
+
 #### Void
 
 #### Modifiers
@@ -66,9 +68,17 @@ More detailed information can be found on the internet, I like [tutorialspoint](
 
 ##### Volatile
 
+##### Extern
+
 ### Functions
 
 ### Classes
+
+#### Inheritance
+
+#### Friend Classes
+
+#### Abstact Classes
 
 #### Initializer List
 
@@ -112,7 +122,8 @@ class ExoData
 So when we want to actually say what values the variables have or what happens when we call the function we need to "define" them.
 This is where the .cpp file comes in.
 If we want to define what happens when we call reconfigure for an ExoData object we code it out 
-```void ExoData::reconfigure(uint8_t* config_to_send) 
+```
+void ExoData::reconfigure(uint8_t* config_to_send) 
 {
     left_leg.reconfigure(config_to_send);
     right_leg.reconfigure(config_to_send);
@@ -122,8 +133,7 @@ So when we call reconfigure for the ExoData objects we call the reconfigure memb
 
 
 ***
-## Introduction 
-Hello, welcome to the guide.  
+## Introduction   
 This guide is designed to provide background information on the new (at time of writing) code used to control the NAU Biomechatronics Lab's exo.
 This system is designed to be flexible, where the system can be easily adapted to the user's needs, changing the motors used, number of joints, etc. 
  
@@ -182,7 +192,7 @@ The hierarchy is:
             - TorqueSensor
             - Motor/MotorData
             - Controller/ControllerData
-A subset of the firmware can run on a seperate microcontroller, intended to handle bluetooth communication and soft real-time functionality. The main microcontroller 
+A subset of the firmware can run on a separate microcontroller, intended to handle Bluetooth communication and soft real-time functionality. The main microcontroller 
 communicates with the communication microcontroller via SPI. 
 The hierarchy is:
 - ComsMCU/ExoData
@@ -210,8 +220,13 @@ They are used as little as possible to minimize the amount of dependencies as th
 [Exo Structure](ExoStructure.md)
 
 ### Guiding Principals 
+The guiding principals of the code is to make it adaptable and modular. 
+There are still some shortcomings with how we achieved this due to the nature of the dual microcontroller system but overall it should work well.
+To this end we have utilized abstract classes for things like the motors where we define an interface so if we need to add motors that work in a different way, e.g. CAN vs PWM, we don't have to change the rest of the code just add the underlying private member functions.
+Additionally sensors do not need access to the ExoData object, we considered doing this for all IO but decided it didn't make sense in all cases.
 
 ### Operation  
+TODO: Update when the app portion is incorporated.
 
 ***
 ## SD Card  
@@ -243,7 +258,32 @@ They are used as little as possible to minimize the amount of dependencies as th
 
 ### Adding New Controllers
 
-### Controller Parameters  
+### Controller Parameters 
+ 
+#### Hip
+- [Stasis](Controllers/Stasis.md)
+- [Zero Torque](Controllers/ZeroTorque.md)
+- [Sine](Controllers/Sine.md)
+- [User Defined](Controllers/UserDefined.md)
+- [Heel Toe](Controllers/UserDefined.md)
+- [Extension Angle](Controllers/Hip/ExtensionAngle.md)
+- [Bang Bang](Controllers/Hip/BangBang.md)
+- [Franks Collins Hip](Controllers/Hip/FranksCollinsHip.md)
+
+
+#### Knee
+- [Stasis](Controllers/Stasis.md)
+- [Zero Torque](Controllers/ZeroTorque.md)
+- [Sine](Controllers/Sine.md)
+- [User Defined](Controllers/UserDefined.md)
+
+#### Ankle
+- [Stasis](Controllers/Stasis.md)
+- [Zero Torque](Controllers/ZeroTorque.md)
+- [Sine](Controllers/Sine.md)
+- [User Defined](Controllers/UserDefined.md)
+- [Proportional Joint Moment](Controllers/Ankle/ProportionalJointMoment.md)
+- [Zhang Collins](Controllers/Ankle/ZhangCollins.md)
 
 ***
 ## Bluetooth 
