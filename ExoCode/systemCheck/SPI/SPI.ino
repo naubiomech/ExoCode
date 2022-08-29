@@ -214,7 +214,8 @@
             Serial.println("Superloop :: SPI callback set");
 
             exo_data.right_leg.ankle.motor.t_ff = -100.12;
-            exo_data.right_leg.hip.motor.t_ff = -1.0;
+            exo_data.right_leg.ankle.motor.v = -1;
+            exo_data.right_leg.hip.motor.t_ff = -2.58;
             exo_data.right_leg.hip.motor.p = -1.0;
             
             first_run = false;
