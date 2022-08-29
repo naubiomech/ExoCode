@@ -139,19 +139,19 @@ namespace controller_defs
         const uint8_t num_parameter = 14;
     }
     
-    namespace user_defined
-    {
-        const uint8_t num_sample_points = 50;  // not an index
+    // namespace user_defined
+    // {
+        // const uint8_t num_sample_points = 50;  // not an index
         
-        const uint8_t mass_idx = 0; 
-        const uint8_t use_pid_idx = 1;
-        const uint8_t p_gain_idx = 2;
-        const uint8_t i_gain_idx = 3;
-        const uint8_t d_gain_idx = 4;
-        const uint8_t curve_start_idx = 5;
-        const uint8_t curve_stop_idx = curve_start_idx+num_sample_points;
-        const uint8_t num_parameter = curve_stop_idx+1;
-    }
+        // const uint8_t mass_idx = 0; 
+        // const uint8_t use_pid_idx = 1;
+        // const uint8_t p_gain_idx = 2;
+        // const uint8_t i_gain_idx = 3;
+        // const uint8_t d_gain_idx = 4;
+        // const uint8_t curve_start_idx = 5;
+        // const uint8_t curve_stop_idx = curve_start_idx+num_sample_points;
+        // const uint8_t num_parameter = curve_stop_idx+1;
+    // }
     
     namespace sine
     {
@@ -172,7 +172,7 @@ namespace controller_defs
      *
      */
     
-    const uint8_t max_parameters = user_defined::num_parameter;  // this should be the largest of all the num_parameters
+    const uint8_t max_parameters = franks_collins_hip::num_parameter;//user_defined::num_parameter;  // this should be the largest of all the num_parameters
 }
 
 
