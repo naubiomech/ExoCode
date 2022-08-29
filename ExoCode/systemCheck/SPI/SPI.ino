@@ -1,7 +1,7 @@
 
 #include "src\SPIHandler.h"
 #include "src\Utilities.h"
-#define SIMPLE_EXAMPLE 1 
+//#define SIMPLE_EXAMPLE 1 
 
 #if defined(ARDUINO_TEENSY36)
     
@@ -160,100 +160,25 @@
         // I don't like having this here but I was having an issue with the spi object and functions in the callback having the right scope.
         namespace spi_peripheral
         {
-    
-            
             SPISlave_T4<&SPI, SPI_8_BITS> my_spi;
-            const uint8_t message_len = 4;
-            uint8_t controller_message[message_len]= {message_len,3,2,1};
-            uint8_t peripheral_message[message_len];
-            uint8_t debug_location;
+            ExoData* data;
             bool is_unread_message = false;
-    
-    
-    
-    //        uint8_t controller_message[spi_cmd::max_param_len];
-    //        uint8_t cmd = spi_cmd::send_config::id;
-    //        bool is_unread_message = false;
-    //        uint16_t debug_location;
-    
-            
-            
-    //        ExoData* data; // !! THIS NEEDS TO GET POINTED TO THE RIGHT SPOT IN THE FIRST RUN OF THE LOOP AFTER THE ExoData INSTANCE IS CREATED.
+            uint8_t debug_location;
             // !! Will also need to do a static_spi_handler::send_length(my_spi, get_data_len(config_info::config_to_send)); before attaching the callback to the SPI
             
-    //        void (function_pointer_spi_handler) (SPISlave_T4<&SPI, SPI_8_BITS> my_spi, uint8_t* config_to_send, ExoData* data, uint8_t* cmd) = &(StaticSPIHandler::transaction);  //pointer to the function that will be used during the callback.  This will be filled in after we create the SPIHandler object.
-            void spi_callback() 
+            //uint8_t (*function_pointer_spi_handler) (SPISlave_T4<&SPI, SPI_8_BITS> my_spi, uint8_t* config_to_send, ExoData* data) = &(static_spi_handler::peripheral_transaction);  //pointer to the function that will be used during the callback.  This will be filled in after we create the SPIHandler object.
+            
+            void spi_callback()
             {
-    //            (*function_pointer_spi_handler)(my_spi, config_info::config_to_send, data, );
-    //            debug_location = static_spi_handler::peripheral_transaction(my_spi, config_info::config_to_send, data, &cmd, controller_message); 
-    //            static_spi_handler::set_message_flag(&is_unread_message);// this really didn't need to be a function
-    
-                debug_location = simple_static_spi_handler::peripheral_transaction(my_spi, controller_message, peripheral_message, message_len);
-    // read
-    //            uint8_t i = 0;
-    //            uint8_t temp_len = 0;
-    //            uint8_t trash;
-    //            uint8_t prev_val;
-    //            uint8_t cur_val;
-    //            while (my_spi.active()) 
-    //            {
-    //                if (my_spi.available()) 
-    //                {
-    //                      if (i++ > len) 
-    //                      {
-    //                        i=0;
-    //                      }
-    //                      
-    ////                      controller_message[i] = i;
-    //                
-    ////                    if (0 == i)
-    ////                    {
-    ////                        temp_len = my_spi.popr();
-    ////                        //i++;
-    ////                    }
-    ////                    else if (i <= len)
-    ////                    {                    
-    ////                        controller_message[i-1] = my_spi.popr();
-    ////                        //i++;                        
-    ////                    }
-    ////                    else
-    ////                    {
-    ////                        trash = my_spi.popr();
-    ////                        Serial.print(trash);
-    ////                    }
-    //                    
-    //                    // controller_message[i] = i;
-    //                    // Serial.print("static_spi_handler::read_message: controller_message[i] = 0x");
-    //                    // Serial.println(controller_message[i-1],HEX);
-    //                }
-    //                // i++;
-    //            }
-    //            Serial.println();
-    //            debug_location = 0;
-    //            debug_location = utils::update_bit(debug_location, temp_len == len, simple_static_spi_handler::debug_lengths_match_bit);
-    //// send
-    //            my_spi.pushr(len);
-    //            for(int i = 0; i<len; i++)
-    //            {
-    //                my_spi.pushr(peripheral_message[i]);
-    //            }
-    //            
-    //            is_unread_message = true;
-    //            return;
+                debug_location = static_spi_handler::peripheral_transaction(my_spi, config_info::config_to_send, data);
+                is_unread_message = true;
             }
         }
-    
-        void dummy()
-        {
-          return;
-        }
-    
-      
     
       void setup()
       {
         Serial.begin(115200);
-    //    while(!Serial);
+        while(!Serial);
         //delay(1000);
         Serial.println("\n\nSetup : Serial Started");
     //    Serial.print("\tcontroller_message address : 0x");
@@ -269,96 +194,76 @@
     
       void loop()
       {
-    //      static ExoData exo_data(config_info::config_to_send);
-    //
-    //      static uint8_t prev_cmd = 0;
+          static ExoData exo_data(config_info::config_to_send);
           static int time_of_last_message = millis();
-          
-          //static SPISlave_T4<&SPI, SPI_8_BITS> my_spi;
-    //      static SPIHandler spi_handler(spi_peripheral::my_spi, config_info::config_to_send, &exo_data);
-    
-          static uint8_t start_val = 0xAA;
-    
-    //      for(int i = 0; i<spi_peripheral::len; i++)
-    //      {
-    //          spi_peripheral::peripheral_message[spi_peripheral::len - 1 - i] = start_val + i;
-    //      }
-    //      
-    //      start_val = start_val + 1;
-          
-          spi_peripheral::peripheral_message[0] = 0x0A;
-          spi_peripheral::peripheral_message[1] = 0xA0;
-          spi_peripheral::peripheral_message[2] = 0xAA;
-          
-          
-          
           static bool first_run = true;
     
           if (first_run)
           {
             Serial.println("Superloop :: First Run Start");
-    //        spi_peripheral::data = &exo_data;
-    //        Serial.println("Superloop :: SPI Data pointer updated");
-    //        Serial.print("\tdata address : 0x");
-    //        Serial.println((long)spi_peripheral::data,HEX);
+            spi_peripheral::data = &exo_data;
+            Serial.println("Superloop :: SPI Data pointer updated");
+            Serial.print("\tdata address : 0x");
+            Serial.println((long)spi_peripheral::data,HEX);
             
-            // Set the message for the first SPI transaction
-    //        static_spi_handler::send_length(spi_peripheral::my_spi, static_spi_handler::get_data_len(config_info::config_to_send));
-    //        Serial.println("Superloop :: sent length");
-    //        static_spi_handler::send_config(spi_peripheral::my_spi, config_info::config_to_send);
-    //        Serial.println("Superloop :: sent config");
-            
-            //spi_peripheral::function_pointer_spi_handler = &spi_handler.transaction;
-            
-            //spi_peripheral::my_spi.onReceive(spi_peripheral::spi_callback);
-            Serial.println("Superloop :: SPI callback set");
-            
-            //spi_peripheral::my_spi.begin();
+            spi_peripheral::my_spi.begin();
             Serial.println("Superloop :: SPI Begin");
+            
+           
+            spi_peripheral::my_spi.onReceive(spi_peripheral::spi_callback);
+            Serial.println("Superloop :: SPI callback set");
+
+            exo_data.right_leg.ankle.motor.t_ff = -100.12;
+            exo_data.right_leg.hip.motor.t_ff = -1.0;
+            exo_data.right_leg.hip.motor.p = -1.0;
+            
             first_run = false;
           }
     
           if (spi_peripheral::is_unread_message)
           {
-              Serial.print("\n\n\n\n");
-              
-              //uint8_t debug_location = static_spi_handler::peripheral_transaction(spi_peripheral::my_spi, config_info::config_to_send, spi_peripheral::data, &(spi_peripheral::cmd), spi_peripheral::controller_message); 
-              
-              //Serial.print("Superloop:: spi_peripheral::cmd = ");
-    
-    //            static_spi_handler::read_message(spi_peripheral::my_spi, spi_peripheral::controller_message); 
-    
-    
-    //            for(int i = 0 ; i<static_spi_handler::get_data_len(config_info::config_to_send) ; i++)
-    //            {
-    //                //static_spi_handler::send_length(spi_peripheral::my_spi, static_spi_handler::get_data_len(config_info::config_to_send));
-    ////                Serial.println("Superloop :: sent length");
-    //                //static_spi_handler::send_config(spi_peripheral::my_spi, config_info::config_to_send);
-    ////                Serial.println("Superloop :: sent config");
-    ////                Serial.print("message num : ");
-    ////                Serial.print(i);
-    ////                Serial.print(" = ");
-    ////                Serial.println(spi_peripheral::controller_message[i]);
-    //            }
-    //            Serial.print("\n");
-    
+              spi_peripheral::is_unread_message = false;
+              time_of_last_message = millis();
+              static_spi_handler::print_debug(spi_peripheral::debug_location);
+              Serial.println(spi_peripheral::debug_location,BIN);
+//              Serial.print("\n\n\n\n");
+//              
+//              //uint8_t debug_location = static_spi_handler::peripheral_transaction(spi_peripheral::my_spi, config_info::config_to_send, spi_peripheral::data, &(spi_peripheral::cmd), spi_peripheral::controller_message); 
+//              
+//              //Serial.print("Superloop:: spi_peripheral::cmd = ");
+//    
+//    //            static_spi_handler::read_message(spi_peripheral::my_spi, spi_peripheral::controller_message); 
+//    
+//    
+//    //            for(int i = 0 ; i<static_spi_handler::get_data_len(config_info::config_to_send) ; i++)
+//    //            {
+//    //                //static_spi_handler::send_length(spi_peripheral::my_spi, static_spi_handler::get_data_len(config_info::config_to_send));
+//    ////                Serial.println("Superloop :: sent length");
+//    //                //static_spi_handler::send_config(spi_peripheral::my_spi, config_info::config_to_send);
+//    ////                Serial.println("Superloop :: sent config");
+//    ////                Serial.print("message num : ");
+//    ////                Serial.print(i);
+//    ////                Serial.print(" = ");
+//    ////                Serial.println(spi_peripheral::controller_message[i]);
+//    //            }
+//    //            Serial.print("\n");
+//    
+//                
+//                //simple_static_spi_handler::print_debug(spi_peripheral::debug_location);
+////                Serial.println("Superloop :: controller_message");
+////                print_message(spi_peripheral::controller_message, spi_peripheral::message_len);
+////                Serial.println("Superloop :: peripheral_message");
+////                print_message(spi_peripheral::peripheral_message, spi_peripheral::message_len);
+//                
                 
-                simple_static_spi_handler::print_debug(spi_peripheral::debug_location);
-                Serial.println("Superloop :: controller_message");
-                print_message(spi_peripheral::controller_message, spi_peripheral::message_len);
-                Serial.println("Superloop :: peripheral_message");
-                print_message(spi_peripheral::peripheral_message, spi_peripheral::message_len);
-                
-                spi_peripheral::is_unread_message = false;
-                time_of_last_message = millis();
-    
-    //            static_spi_handler::print_debug(spi_peripheral::debug_location);
-    //            //print_config(config_info::config_to_send);
-    //            static_spi_handler::print_message(spi_peripheral::controller_message, &exo_data, spi_peripheral::cmd);
-    //            static_spi_handler::clear_message(spi_peripheral::controller_message);
+//    
+//    //            static_spi_handler::print_debug(spi_peripheral::debug_location);
+//    //            //print_config(config_info::config_to_send);
+//    //            static_spi_handler::print_message(spi_peripheral::controller_message, &exo_data, spi_peripheral::cmd);
+//    //            static_spi_handler::clear_message(spi_peripheral::controller_message);
           }
     
-          if((millis() - time_of_last_message) > 1000)
+          if((millis() - time_of_last_message) > 9000)
           {
               Serial.println("+++++++++++++++++++++++++++++");
               time_of_last_message = millis();
@@ -368,44 +273,46 @@
     #endif  
 #elif defined(ARDUINO_ARDUINO_NANO33BLE)
   #include <SPI.h>
-  namespace config_info
-  {
-      uint8_t config_to_send[ini_config::number_of_keys] = {
-            1,  // board name
-            3,  // board version
-            2,  // battery
-            1,  // exo name
-            1,  // exo side
-            2,  // hip
-            1,  // knee
-            3,  // ankle
-            1,  // hip gear
-            1,  // knee gear
-            1,  // ankle gear
-            1,  // hip default controller
-            1,  // knee default controller
-            1,  // ankle default controller
-            3,  // hip flip dir
-            3,  // knee flip dir
-            3,  // ankle flip dir
-          };
-      
-  }
+  
 
   #ifdef SIMPLE_EXAMPLE
+      namespace config_info
+      {
+          uint8_t config_to_send[ini_config::number_of_keys] = {
+                1,  // board name
+                3,  // board version
+                2,  // battery
+                1,  // exo name
+                1,  // exo side
+                2,  // hip
+                1,  // knee
+                3,  // ankle
+                1,  // hip gear
+                1,  // knee gear
+                1,  // ankle gear
+                1,  // hip default controller
+                1,  // knee default controller
+                1,  // ankle default controller
+                3,  // hip flip dir
+                3,  // knee flip dir
+                3,  // ankle flip dir
+              };
+          
+      }
+      
       void setup()
-    {
-      Serial.begin(115200);
-      while(!Serial);
-      Serial.println("Setup : Serial Started");
-      pinMode(coms_micro_pins::cs_pin, OUTPUT);
-      digitalWrite(coms_micro_pins::cs_pin, HIGH);
-      
-      SPI.begin();
-      SPI.transfer(0);//begin doesn't actually enable the system so send zero to nowhere to enable
-      Serial.println("===========================================================");
-      
-    }
+      {
+          Serial.begin(115200);
+          while(!Serial);
+          Serial.println("Setup : Serial Started");
+          pinMode(coms_micro_pins::cs_pin, OUTPUT);
+          digitalWrite(coms_micro_pins::cs_pin, HIGH);
+          
+          SPI.begin();
+          SPI.transfer(0);//begin doesn't actually enable the system so send zero to nowhere to enable
+          Serial.println("===========================================================");
+        
+      }
     
     void loop()
     {
@@ -461,6 +368,12 @@
         delay(100);
     }
   #else
+      #include <algorithm>
+      namespace config_info
+      {
+          uint8_t config_to_send[ini_config::number_of_keys];
+      }
+      
     void setup()
     {
       Serial.begin(115200);
@@ -477,37 +390,100 @@
     
     void loop()
     {
-        const uint8_t len = 4;
-        uint8_t controller_message[len];
-        uint8_t peripheral_message[len];
-        uint8_t debug_location;
-  
-        static uint8_t start_val = 0xBB;
-        
-        controller_message[0] = len;
-        controller_message[1] = 0xBB;
-        controller_message[2] = 0x0B;
-        controller_message[3] = 0xB0;
-  
-        Serial.println("Superloop :: Starting Transaction");
-  
-        SPI.beginTransaction(SPISettings(400000, MSBFIRST, coms_micro_pins::spi_mode));  // teensy seems limited to 26 MHz
-        digitalWrite(coms_micro_pins::cs_pin, LOW);
-        for( int i = 0; i<len; i++)
+        static ExoData exo_data(config_info::config_to_send);
+        static SPIHandler spi_handler(config_info::config_to_send, &exo_data);
+        int delay_ms = 10000;
+        while(std::find(config_info::config_to_send, config_info::config_to_send + ini_config::number_of_keys, 0) != config_info::config_to_send + ini_config::number_of_keys)
         {
-            peripheral_message[i] = SPI.transfer(controller_message[i]);
-        } 
-  
+            spi_handler.transaction(spi_cmd::send_config::id);
+            delay(delay_ms);
+        }
         
-        //debug_location = simple_static_spi_handler::controller_transaction(controller_message, peripheral_message, len);
-  
-        simple_static_spi_handler::print_debug(debug_location);
-        Serial.println("Superloop :: controller_message");
-        print_message(controller_message, len);
-        Serial.println("Superloop :: peripheral_message");
-        print_message(peripheral_message, len);
-  
-        delay(21000);
+        exo_data.left_leg.do_calibration_toe_fsr = 1;
+        exo_data.left_leg.do_calibration_heel_fsr = 1;
+        exo_data.right_leg.do_calibration_toe_fsr = 1;
+        exo_data.right_leg.do_calibration_heel_fsr = 1;
+        
+        spi_handler.transaction(spi_cmd::calibrate_fsr::id);
+        delay(delay_ms);
+        // Need to set things between transmissions as parsing data will set it to whatever is on the teensy
+        exo_data.left_leg.do_calibration_refinement_toe_fsr = 1;
+        exo_data.left_leg.do_calibration_refinement_heel_fsr = 1;
+        exo_data.right_leg.do_calibration_refinement_toe_fsr = 1;
+        exo_data.right_leg.do_calibration_refinement_heel_fsr = 1;
+        spi_handler.transaction(spi_cmd::refine_fsr::id);
+        delay(delay_ms);
+        
+        exo_data.left_leg.hip.calibrate_torque_sensor = 1;
+        spi_handler.transaction(spi_cmd::calibrate_torque_sensor::id,(uint8_t)config_defs::joint_id::left_hip);
+        delay(delay_ms);
+        
+        exo_data.left_leg.ankle.calibrate_torque_sensor = 1;
+        spi_handler.transaction(spi_cmd::calibrate_torque_sensor::id,(uint8_t)config_defs::joint_id::left_ankle);
+        delay(delay_ms);
+        exo_data.right_leg.hip.calibrate_torque_sensor = 1;
+        spi_handler.transaction(spi_cmd::calibrate_torque_sensor::id,(uint8_t)config_defs::joint_id::right_hip);
+        delay(delay_ms);
+        exo_data.right_leg.ankle.calibrate_torque_sensor = 1;
+        spi_handler.transaction(spi_cmd::calibrate_torque_sensor::id,(uint8_t)config_defs::joint_id::right_ankle);
+        delay(delay_ms);
+        
+        exo_data.left_leg.hip.controller.parameters[0]=3.14159;
+        exo_data.left_leg.hip.controller.parameters[1]=2;
+        exo_data.left_leg.hip.controller.parameters[2]=1;
+        exo_data.left_leg.hip.controller.parameters[3]=5;
+        spi_handler.transaction(spi_cmd::update_controller_params::id,(uint8_t)config_defs::joint_id::left_hip);
+        delay(delay_ms);
+        
+        exo_data.right_leg.hip.controller.parameters[0]=123;
+        exo_data.right_leg.hip.controller.parameters[1]=2.2;
+        exo_data.right_leg.hip.controller.parameters[2]=1.1;
+        exo_data.right_leg.hip.controller.parameters[3]=5.5;
+        spi_handler.transaction(spi_cmd::update_controller_params::id,(uint8_t)config_defs::joint_id::right_hip);
+        delay(delay_ms);
+                
+        exo_data.left_leg.ankle.controller.parameters[3]=3.14159;
+        exo_data.left_leg.ankle.controller.parameters[2]=2;
+        exo_data.left_leg.ankle.controller.parameters[1]=1;
+        exo_data.left_leg.ankle.controller.parameters[0]=5;
+        spi_handler.transaction(spi_cmd::update_controller_params::id,(uint8_t)config_defs::joint_id::left_ankle);
+        delay(delay_ms);
+                
+        exo_data.right_leg.ankle.controller.parameters[3]=123;
+        exo_data.right_leg.ankle.controller.parameters[2]=2.2;
+        exo_data.right_leg.ankle.controller.parameters[1]=1.1;
+        exo_data.right_leg.ankle.controller.parameters[0]=5.5;
+        spi_handler.transaction(spi_cmd::update_controller_params::id,(uint8_t)config_defs::joint_id::right_ankle);
+        delay(delay_ms);
+        
+        exo_data.left_leg.hip.controller.controller = 1;
+        exo_data.left_leg.ankle.controller.controller = 2;
+        exo_data.right_leg.hip.controller.controller = 1;
+        exo_data.right_leg.ankle.controller.controller = 2;
+        spi_handler.transaction(spi_cmd::update_controller::id,(uint8_t)config_defs::joint_id::left_hip);
+        delay(delay_ms);
+        spi_handler.transaction(spi_cmd::update_controller::id,(uint8_t)config_defs::joint_id::right_hip);
+        delay(delay_ms);
+        spi_handler.transaction(spi_cmd::update_controller::id,(uint8_t)config_defs::joint_id::left_ankle);
+        delay(delay_ms);
+        spi_handler.transaction(spi_cmd::update_controller::id,(uint8_t)config_defs::joint_id::right_ankle);
+        delay(delay_ms);
+        
+        
+        exo_data.left_leg.hip.motor.enabled = 1;
+        exo_data.left_leg.ankle.motor.enabled = 1;
+        exo_data.right_leg.hip.motor.enabled = 1;
+        exo_data.right_leg.ankle.motor.enabled = 1;
+        spi_handler.transaction(spi_cmd::motor_enable_disable::id);
+        delay(delay_ms);
+        
+        exo_data.left_leg.hip.motor.do_zero = 1;
+        exo_data.left_leg.ankle.motor.do_zero = 1;
+        exo_data.right_leg.hip.motor.do_zero = 1;
+        exo_data.right_leg.ankle.motor.do_zero = 1;
+        spi_handler.transaction(spi_cmd::motor_zero::id);
+        delay(delay_ms);
+        
         
     }
     
