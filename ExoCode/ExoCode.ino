@@ -38,6 +38,21 @@ uint8_t (config_to_send)[ini_config::number_of_keys];
 
 }
 
+// I don't like having this here but I was having an issue with the spi object and functions in the callback having the right scope.
+namespace spi_peripheral
+{
+    SPISlave_T4<&SPI, SPI_8_BITS> my_spi;
+    ExoData* data;// need to set this pointer after data object created with: spi_peripheral::data = &exo_data;
+    bool is_unread_message = false;
+    uint8_t debug_location;
+    
+    void spi_callback()
+    {
+        debug_location = static_spi_handler::peripheral_transaction(my_spi, config_info::config_to_send, data);
+        is_unread_message = true;
+    }
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -61,7 +76,6 @@ void setup()
         Serial.print("\n");
     #endif
     
-
     #ifdef MAKE_PLOTS
           Serial.print("Left_hip_trq_cmd, ");
           Serial.print("Left_hip_current, ");
@@ -124,7 +138,23 @@ void loop()
             Serial.print("\n");
         #endif
 
-       
+        spi_peripheral::data = &exo_data;
+        #ifdef MAIN_DEBUG
+            Serial.println("Superloop :: SPI Data pointer updated");
+        #endif
+
+        spi_peripheral::my_spi.begin();
+        #ifdef MAIN_DEBUG
+            Serial.println("Superloop :: SPI Begin");
+        #endif
+        
+        spi_peripheral::my_spi.onReceive(spi_peripheral::spi_callback);        
+        #ifdef MAIN_DEBUG
+            Serial.println("Superloop :: SPI callback set");
+        #endif
+
+            
+
         // Only make calls to used motors.
         if (exo_data.left_leg.hip.is_used)
         {
@@ -416,34 +446,32 @@ void loop()
 #include "src/ExoData.h"
 #include "src/ComsMCU.h"
 
-//namespace config_info
-//{
-//    uint8_t (config_to_send)[ini_config::number_of_keys];
-//}
-
 namespace config_info
 {
-    uint8_t (config_to_send)[ini_config::number_of_keys] = {
-      1,
-      2,
-      3,
-      1,
-      2,
-      1,
-      3,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-    };
+    uint8_t (config_to_send)[ini_config::number_of_keys];
 }
+
+//namespace config_info
+//{
+//    uint8_t (config_to_send)[ini_config::number_of_keys] = {
+//      1,
+//      2,
+//      3,
+//      1,
+//      2,
+//      1,
+//      3,
+//      1,
+//      1,
+//      1,
+//      1,
+//      1,
+//      1,
+//    };
+//}
 
 void setup()
 {
-    // TODO: ask for init data over spi
-    
     Serial.begin(115200);
     while (!Serial);
 }
@@ -451,11 +479,12 @@ void setup()
 void loop()
 {
     static ExoData* exo_data = new ExoData(config_info::config_to_send);
+    
     static ComsMCU* mcu = new ComsMCU(exo_data);
     mcu->handle_ble();
     mcu->local_sample();
     // TODO: Get New Data over SPI
-    
+    mcu->update_spi();
     mcu->update_gui();
 }
 

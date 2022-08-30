@@ -33,4 +33,9 @@
         const float _real_time_msg_delay = 40000; //microseconds (20000)
         const float _update_delay = 100000; //microseconds
     }
+    
+    namespace SPI_times
+    {
+        const float UPDATE_PERIOD= 100000; //microseconds
+    }
 #endif
