@@ -154,10 +154,11 @@ namespace spi_cmd
     {
         const uint8_t id = send_config::id+3;
         const uint8_t joint_id_idx = 0; //uint8
-        const uint8_t param_start_idx = 1;  //uint8
+        const uint8_t controller_idx = 1;
+        const uint8_t param_start_idx = 2;  //uint8
         const uint8_t param_stop_idx = param_start_idx + sizeof(SPI_DATA_TYPE) * controller_defs::max_parameters - 1;  // -1 is there because things are zero indexed, sanity check start_idx = 0, sizeof(float) is 4, and max_parameters = 1
         
-        const uint8_t param_len = 1 + param_stop_idx;  // joint id, controller
+        const uint8_t param_len = 2 + param_stop_idx;  // joint id, controller
     }
     
     namespace calibrate_torque_sensor

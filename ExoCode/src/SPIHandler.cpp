@@ -710,8 +710,10 @@ namespace spi_data_idx // read data that changes each loop
                     {
                         // left
                         case (uint8_t)config_defs::joint_id::left_hip:
+                            data->left_leg.hip.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
                             #ifdef SPI_DEBUG
-                                Serial.println("Left Hip : ");
+                                Serial.println("Left Hip : Controller");
+                                Serial.println(data->left_leg.hip.controller.controller);
                             #endif
                             for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
                             {
@@ -725,8 +727,10 @@ namespace spi_data_idx // read data that changes each loop
                             }
                             break;
                         case (uint8_t)config_defs::joint_id::left_knee:
+                            data->left_leg.knee.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
                             #ifdef SPI_DEBUG
-                                Serial.println("Left Knee : ");
+                                Serial.println("Left Knee : Controller");
+                                Serial.println(data->left_leg.knee.controller.controller);
                             #endif
                             for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
                             {
@@ -740,8 +744,10 @@ namespace spi_data_idx // read data that changes each loop
                             }
                             break;
                         case (uint8_t)config_defs::joint_id::left_ankle:
+                            data->left_leg.ankle.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
                             #ifdef SPI_DEBUG
-                                Serial.println("Left Ankle : ");
+                                Serial.println("Left Ankle : Controller");
+                                Serial.println(data->left_leg.ankle.controller.controller);
                             #endif
                             for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
                             {
@@ -756,8 +762,10 @@ namespace spi_data_idx // read data that changes each loop
                             break;
                         // right
                         case (uint8_t)config_defs::joint_id::right_hip:
+                            data->right_leg.hip.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
                             #ifdef SPI_DEBUG
-                                Serial.println("Right Hip : ");
+                                Serial.println("Right Hip : Controller");
+                                Serial.println(data->right_leg.hip.controller.controller);
                             #endif
                             for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
                             {
@@ -771,8 +779,10 @@ namespace spi_data_idx // read data that changes each loop
                             }
                             break;
                         case (uint8_t)config_defs::joint_id::right_knee:
+                            data->right_leg.knee.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
                             #ifdef SPI_DEBUG
-                                Serial.println("Right Knee : ");
+                                Serial.println("Right Knee : Controller");
+                                Serial.println(data->right_leg.knee.controller.controller);
                             #endif
                             for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
                             {
@@ -787,8 +797,10 @@ namespace spi_data_idx // read data that changes each loop
                             }
                             break;
                         case (uint8_t)config_defs::joint_id::right_ankle:
+                            data->right_leg.ankle.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
                             #ifdef SPI_DEBUG
-                                Serial.println("Right Ankle : ");
+                                Serial.print("Right Ankle : Controller");
+                                Serial.println(data->right_leg.ankle.controller.controller);
                             #endif
                             for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
                             {
