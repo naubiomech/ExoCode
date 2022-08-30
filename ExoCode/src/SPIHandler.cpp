@@ -1293,6 +1293,8 @@ namespace spi_data_idx // read data that changes each loop
     //: _config_to_send(config_to_send) // initalize the const pointer to config_to_send as the SPI was breaking it.
     {
         pinMode(coms_micro_pins::cs_pin, OUTPUT);
+        digitalWrite(coms_micro_pins::cs_pin, HIGH);
+        SPI.begin();
         //uintptr_t  temp_config_address = (uintptr_t)&config_to_send[0];
         // set the local variable
         _data = exo_data;
