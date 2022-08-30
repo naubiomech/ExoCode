@@ -12,16 +12,15 @@
 #define EXOBLE_H
 
 //#define EXOBLE_DEBUG
+#define MAX_PARSER_CHARACTERS       8
+#define NAME_PREAMBLE               "EXOBLE_"
+#define MAC_ADDRESS_TOTAL_LENGTH    17
+#define MAC_ADDRESS_NAME_LENGTH     6
 
 #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
     #include <SPI.h>
     #include "Adafruit_BLE.h"
     #include "Adafruit_BluefruitLE_SPI.h"
-
-    #define NAME_PREAMBLE               "EXOBLE_"
-    #define MAC_ADDRESS_TOTAL_LENGTH    17
-    #define MAC_ADDRESS_NAME_LENGTH     6
-    #define MAX_PARSER_CHARACTERS       8
 #elif defined(ARDUINO_ARDUINO_NANO33BLE)
     #include "ArduinoBLE.h"
 #endif

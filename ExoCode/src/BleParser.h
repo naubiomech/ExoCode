@@ -11,8 +11,8 @@
 #define BLEPARSER_H
 
 #include "Arduino.h"
-#include "BleMessage.h"
 #include "ble_commands.h"
+#include "BleMessage.h"
 #include "GattDb.h"
 #include <vector>
 

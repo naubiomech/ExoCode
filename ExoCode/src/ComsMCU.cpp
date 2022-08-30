@@ -2,8 +2,10 @@
 #include "StatusLed.h"
 #include "StatusDefs.h"
 #include "Time_Helper.h"
+
 #include <SPI.h>
 #include <algorithm> // needed for std::find
+#include "SPIMessageQueue.h"
 
 
 ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send)
@@ -41,14 +43,12 @@ ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send)
 
 void ComsMCU::handle_ble()
 {
-    bool got_new_message = _exo_ble->handle_updates();
-    if (got_new_message)
+    bool non_empty_ble_queue = _exo_ble->handle_updates();
+    if (non_empty_ble_queue && !spi_queue::size())
     {
-        BleMessage msg = pop_queue();
-        if (msg.is_complete) 
-        {
-            _process_complete_gui_command(&msg);
-        }
+        BleMessage msg = ble_queue::pop();
+        _process_complete_gui_command(&msg);
+        spi_queue::push(&msg);
     }
 }
 
@@ -65,7 +65,7 @@ void ComsMCU::local_sample()
         filtered_value = utils::ewma(raw_battery_value, filtered_value, _battery_ewma_alpha);
         _data->battery_value = filtered_value;
         del_t = 0;
-    }
+    }   
 }
 
 void ComsMCU::update_spi()

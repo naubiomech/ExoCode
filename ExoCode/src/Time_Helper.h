@@ -20,7 +20,7 @@
  * 
  * If 'tick()' is continuosly returning 0, you are passing an invalid context. 
  * 
- * TODO: Test!
+ *
  */
 
 typedef struct {
