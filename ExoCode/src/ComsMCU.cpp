@@ -2,8 +2,13 @@
 #include "StatusLed.h"
 #include "StatusDefs.h"
 #include "Time_Helper.h"
+#include <SPI.h>
+#include <algorithm> // needed for std::find
 
-ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
+
+ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send)
+:_data{data}
+:spi_handler(config_to_send, data)
 {
     switch (config_to_send[config_defs::battery_idx])
     {
@@ -21,6 +26,17 @@ ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
     _battery->init();
     _exo_ble = new ExoBLE(data);
     _exo_ble->setup();
+    
+    bool have_valid_config = false; 
+
+    // keep trying till we have a valid config, e.g. no zeros
+    int spi_delay_ms = 100;
+    while(!have_valid_config && (std::find(config_info::config_to_send, config_info::config_to_send + ini_config::number_of_keys, 0) != config_info::config_to_send + ini_config::number_of_keys))
+    {
+        spi_handler.transaction(spi_cmd::send_config::id);
+        delay(spi_delay_ms);
+        have_valid_config = true;
+    }
 }
 
 void ComsMCU::handle_ble()
@@ -50,6 +66,21 @@ void ComsMCU::local_sample()
         _data->battery_value = filtered_value;
         del_t = 0;
     }
+}
+
+void ComsMCU::update_spi()
+{
+    static Time_Helper* t_helper = Time_Helper::get_instance();
+    static const float spi_context = t_helper->generate_new_context();
+    static float del_t = 0;
+    del_t += t_helper->tick(spi_context);
+    
+    if (del_t > SPI_times::UPDATE_PERIOD)
+    {
+       spi_msg_pair_t spi_msg_pair = spi_queue::pop();
+       spi_handler.transaction(spi_msg_pair.msg_id, spi_msg_pair.joint_id);
+    }
+    
 }
 
 void ComsMCU::update_gui() 
