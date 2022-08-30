@@ -451,10 +451,10 @@ void setup()
 void loop()
 {
     static ExoData* exo_data = new ExoData(config_info::config_to_send);
-    static ComsMCU* mcu = new ComsMCU(exo_data);
+    static ComsMCU* mcu = new ComsMCU(exo_data, config_info::config_to_send);
     mcu->handle_ble();
     mcu->local_sample();
-    // TODO: Get New Data over SPI
+    // TODO: SPI Transaction
     
     mcu->update_gui();
 }

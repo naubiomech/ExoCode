@@ -196,7 +196,7 @@ bool ExoBLE::handle_updates()
         
         if (_connected == current_status) 
         {
-            return queue_size();
+            return ble_queue::size();
         }
 
         // The BLE connection status changed
@@ -219,7 +219,7 @@ bool ExoBLE::handle_updates()
         _connected = current_status;
             
     }
-    return queue_size();
+    return ble_queue::size();
 }
 
 
@@ -281,7 +281,7 @@ void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
         Serial.println();
         #endif
 
-        push_queue(msg);
+        ble_queue::push(msg);
     }
 }
 
@@ -308,7 +308,7 @@ void ble_rx::on_rx_recieved(char data[], uint16_t len)
         msg = parser->handle_raw_data(&working_char, 1);
         if (msg->is_complete)
         {
-            push_queue(msg);
+            ble_queue::push(msg);
             msg->clear();
         }
     }

@@ -215,6 +215,14 @@ namespace spi_cmd
         
         const uint8_t param_len = 6;  // individual sensor array
     }
+    // Update status value
+    namespace update_status
+    {
+        const uint8_t id = send_config::id+9;
+        const uint8_t status_low_idx = 0;
+        const uint8_t status_high_idx = 0;
+        const uint8_t param_len = 2;
+    }
     
     // check that this is the largest message len that will come in.
     const uint8_t max_param_len = update_controller_params::param_len;

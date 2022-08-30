@@ -7,8 +7,8 @@
  */
 
 #ifndef BLE_COMMANDS_H
-#define BLE_COMMADNS_H
-#include "Arduino.h"
+#define BLE_COMMANDS_H
+
 #include "ExoData.h"
 #include "ParseIni.h" // For config_defs
 #include "StatusDefs.h" // For ExoDataStatus_t
@@ -22,7 +22,7 @@
 typedef struct
 {
     char command;
-    int length;  
+    int length; 
 } ble_command_t;
 
 /**
@@ -53,6 +53,8 @@ namespace ble_names
     static const char send_step_count     = 's';
     static const char cal_fsr_finished    = 'n';
 };
+
+
 
 /**
  * @brief Associates the command and ammount of data that it expects to be sent/received
@@ -112,6 +114,8 @@ namespace ble_command_helpers
         }
         return length;
     }
+
+
 }
 
 /**
@@ -276,7 +280,7 @@ namespace ble_handlers
             cont_data->controller = controller_id;
         }
 
-        set_controller_params((uint8_t)joint_id, controller_id, set_num, data);
+        //set_controller_params((uint8_t)joint_id, controller_id, set_num, data);
     }
     inline static void new_fsr(ExoData* data, BleMessage* msg)
     {

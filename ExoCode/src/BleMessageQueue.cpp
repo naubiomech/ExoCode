@@ -7,20 +7,20 @@
 static rtos::Mutex queue_mutex;
 #endif
 
-static const int max_size = 10;
-static BleMessage queue[max_size];
-static int size = 0;
+static const int k_max_size = 10;
+static BleMessage queue[k_max_size];
+static int m_size = 0;
 static const BleMessage empty_message = BleMessage();
 
-BleMessage pop_queue()
+BleMessage ble_queue::pop()
 {
     #if defined(ARDUINO_ARDUINO_NANO33BLE)
     queue_mutex.lock();
     #endif
-    if(queue_size()) 
+    if(ble_queue::size()) 
     {
-        BleMessage msg = queue[size];
-        size--;
+        BleMessage msg = queue[m_size];
+        m_size--;
         return msg;
     }
     else
@@ -33,33 +33,33 @@ BleMessage pop_queue()
     #endif
 }
 
-void push_queue(BleMessage* msg)
+void ble_queue::push(BleMessage* msg)
 {
     #if defined(ARDUINO_ARDUINO_NANO33BLE)
     queue_mutex.lock();
     #endif
-    if (size == (max_size-1))
+    if (m_size == (k_max_size-1))
     {
         Serial.println("BleMessageQueue::push_queue->Queue Full!");
         return;
     }
 
-    size++;
-    queue[size].copy(msg);
+    m_size++;
+    queue[m_size].copy(msg);
     #if defined(ARDUINO_ARDUINO_NANO33BLE)
     queue_mutex.unlock();
     #endif
 }
 
-int queue_size()
+int ble_queue::size()
 {
-    return size;
+    return m_size;
 }
 
-int check_queue_for(BleMessage msg)
+int ble_queue::check_for(BleMessage msg)
 {
     int found = 0;
-    for (int i=0; i<size; i++)
+    for (int i=0; i<m_size; i++)
     {
         found += BleMessage::matching(queue[i], msg);
     }

@@ -1,4 +1,5 @@
 #include "BleParser.h"
+#include "ble_commands.h"
 #include "Utilities.h"
 #include "BleMessageQueue.h"
 #include <vector>

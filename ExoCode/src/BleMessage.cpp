@@ -3,7 +3,7 @@
 
 BleMessage::BleMessage() 
 { 
-    
+    this->clear();
 }
 
 void BleMessage::clear() 
