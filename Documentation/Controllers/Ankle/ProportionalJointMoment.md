@@ -9,7 +9,7 @@ G\. M\. Gasparri, J. Luque and Z. F. Lerner,
 in IEEE Transactions on Neural Systems and Rehabilitation Engineering, vol. 27, no. 4, pp. 751-759, April 2019, doi: 10.1109/TNSRE.2019.2905979.
 
 ## Parameters
-Parameter index order can be found in [ControllerData.h](/naubiomech/ExoCode/blob/nano_teensy_board/ExoCode/src/ControllerData.h).
+Parameter index order can be found in [ControllerData.h](/ExoCode/src/ControllerData.h).
 - max_torque - The peak torque in Nm.  When the normalized FSR torque is 1 this will be the torque at the ankle.
 - is_assitance - When this is 1(assistive) the system will apply the torque in the plantar flexion direction, when 0(resistive) will be in the dorsiflexion direction.
 - use_pid - This flag turns PID on(1) or off(0)
