@@ -5,7 +5,7 @@ Applies constant torque while extending, then a constant torque while flexing.
 Based on the Extension Angle Controller.
 
 ## Parameters
-Parameter index order can be found in [ControllerData.h](https://github.com/naubiomech/ExoCode/blob/nano_teensy_board/ExoCode/src/ControllerData.h).
+Parameter index order can be found in [ControllerData.h](/ExoCode/src/ControllerData.h).
 - flexion_setpoint - Parameters for maximum exo flexion torque(Nm).
 - extension_setpoint - Parameters for maximum exo extension torque(Nm).
 - target_flexion_percent_max - Parameter for fraction of peak flexion angle where mode will switch to extension angle.

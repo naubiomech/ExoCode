@@ -5,7 +5,7 @@ This controller attempts to control the joint to zero torque.
 This can be done with or without closed loop control.
 
 ## Parameters
-Parameter index order can be found in [ControllerData.h](https://github.com/naubiomech/ExoCode/blob/nano_teensy_board/ExoCode/src/ControllerData.h).
+Parameter index order can be found in [ControllerData.h](/ExoCode/src/ControllerData.h).
 - use_pid - This flag turns PID on(1) or off(0)
 - p_gain - Proportional gain for closed loop controls
 - i_gain - Integral gain for closed loop controls

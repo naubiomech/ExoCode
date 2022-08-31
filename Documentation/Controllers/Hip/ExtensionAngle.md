@@ -5,7 +5,7 @@ Applies torque based on the angle of the hip while extending, then a constant to
 We found the torque for extension was not as noticeable due to the scaling, so created the Bang Bang controller based on this one.
 Neither have been formally evaluated yet so it is not known if the torque not being obvious is less beneficial.
 ## Parameters
-Parameter index order can be found in [ControllerData.h](https://github.com/naubiomech/ExoCode/blob/nano_teensy_board/ExoCode/src/ControllerData.h).
+Parameter index order can be found in [ControllerData.h](/ExoCode/src/ControllerData.h).
 - flexion_setpoint - Parameters for maximum exo flexion torque(Nm).
 - extension_setpoint - Parameters for maximum exo extension torque(Nm).
 - target_flexion_percent_max - Parameter for fraction of peak flexion angle where mode will switch to extension angle.

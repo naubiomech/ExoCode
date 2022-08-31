@@ -8,7 +8,7 @@ Zhang, J., Fiers, P., Witte, K. A., Jackson, R. W., Poggensee, K. L., Atkeson, C
 Science, 356(6344), 1280-1284.
 
 ## Parameters
-Parameter index order can be found in [ControllerData.h](https://github.com/naubiomech/ExoCode/blob/nano_teensy_board/ExoCode/src/ControllerData.h).
+Parameter index order can be found in [ControllerData.h](/ExoCode/src/ControllerData.h).
 - mass - user mass kg
 - peak_normalized_torque_Nm_kg - peak torque divided by user mass 
 - t0 - ramp start percent gait

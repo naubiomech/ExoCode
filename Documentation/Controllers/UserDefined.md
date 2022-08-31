@@ -6,7 +6,7 @@ Values are normalized to user mass.
 Assumes table is evenly spaced across percent gait, 0 to 100 where f(0) = f(100)
 
 ## Parameters
-Parameter index order can be found in [ControllerData.h](https://github.com/naubiomech/ExoCode/blob/nano_teensy_board/ExoCode/src/ControllerData.h).
+Parameter index order can be found in [ControllerData.h](/ExoCode/src/ControllerData.h).
 - mass - User mass used to denormalize values
 - use_pid - This flag turns PID on(1) or off(0)
 - p_gain - Proportional gain for closed loop controls

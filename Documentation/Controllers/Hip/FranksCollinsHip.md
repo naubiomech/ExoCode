@@ -10,7 +10,7 @@ Franks, P. W., Bryan, G. M., Martin, R. M., Reyes, R., Lakmazaheri, A. C., & Col
 Wearable Technologies, 2.
 
 ## Parameters
-Parameter index order can be found in [ControllerData.h](https://github.com/naubiomech/ExoCode/blob/nano_teensy_board/ExoCode/src/ControllerData.h).
+Parameter index order can be found in [ControllerData.h](/ExoCode/src/ControllerData.h).
 - mass - User mass in kg used for denormalizing torque.
 - trough_normalized_torque_Nm_kg - Largest extension torque normalized to user mass (Nm/kg).
 - peak_normalized_torque_Nm_kg - largest flexion torquenormalized to user mass (Nm/kg).

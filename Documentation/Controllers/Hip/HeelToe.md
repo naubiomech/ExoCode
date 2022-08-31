@@ -10,7 +10,7 @@ S\. S\. Pour Aji Bishe, L. Liebelt, Y. Fang and Z. F. Lerner,
 2022 International Conference on Robotics and Automation (ICRA), 2022, pp. 5461-5466, doi: 10.1109/ICRA46639.2022.9812300.
 
 ## Parameters
-Parameter index order can be found in [ControllerData.h](https://github.com/naubiomech/ExoCode/blob/nano_teensy_board/ExoCode/src/ControllerData.h).
+Parameter index order can be found in [ControllerData.h](/ExoCode/src/ControllerData.h).
 - max_torque - Maximum torque to apply, i.e. hip flexion torque
 - min_torque - Minimum torque to apply, i.e. hip extension torque
 - use_pid - This flag turns PID on(1) or off(0)
