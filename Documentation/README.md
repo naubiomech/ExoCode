@@ -300,11 +300,16 @@ There are several variables in config.h that control the timing of data transmis
 
 ### Sending a Message
 If you would like to add a new message, see the "AddingNewBLEMessage" doc. The messages are all created in the ble_commands.h file. ble_commands.h also defines the functions that are called when a command is received. To send a new message you must package a BleMessage object with your desired command and data. The data must be packaged correctly, both in length and index. Currently there is no method to ensure the correct index is used for a specific command, but the length of the commands can be found in the ble namespace. Here is an example message (Sending messages must be done in the ComsMCU):
+    
     ```
     BleMessage batt_msg = BleMessage();
+    
     batt_msg.command = ble_names::send_batt;
+    
     batt_msg.expecting = ble_command_helpers::get_length_for_command(batt_msg.command);
+    
     batt_msg.data[0] = _data->battery_value;
+    
     _exo_ble->send_message(batt_msg);
     ```
 
