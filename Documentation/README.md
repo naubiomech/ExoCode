@@ -303,13 +303,9 @@ If you would like to add a new message, see the "AddingNewBLEMessage" doc. The m
     
     ```
     BleMessage batt_msg = BleMessage();
-    
     batt_msg.command = ble_names::send_batt;
-    
     batt_msg.expecting = ble_command_helpers::get_length_for_command(batt_msg.command);
-    
     batt_msg.data[0] = _data->battery_value;
-    
     _exo_ble->send_message(batt_msg);
     ```
 
