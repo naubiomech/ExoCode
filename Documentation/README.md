@@ -238,14 +238,14 @@ These parameter files are a temporary measure till the new app is running.
 ### SD Configuration  
 [config.ini](/SDCard/config.ini) is used to tell the code how they system is configured.
 The fields should all be less than 25 characters as that is limited by the size of the array that is parsing it. 
-The file is broken into sections denoted by being in \[\], e.g. \[Board\], containing information related to the board.  
+The file is broken into sections denoted by being in \[ \], e.g. \[Board\], containing information related to the board.  
 This separates information that is related into groups.
 Within the section you have keys, these contain the information, e.g. version = 0.1.
 The key names shouldn't be modified, version, as the parser is looking for the specific name but the value can be, 0.1.
 
 We have some premade exoskeleton configurations you can choose from by putting their name in the Exo section.
 Just check to make sure the settings in that section match your system.
-If we are using a bilateral hip system we would set ```\[Exo\] name = bilateralHip```, then go to the section \[bilateralHip\] and check it matches the system we are using.
+If we are using a bilateral hip system we would set ```[Exo] name = bilateralHip```, then go to the section \[bilateralHip\] and check it matches the system we are using.
 - sides - are you using the left, right, or both sides.
 - hip, knee, ankle - sets the type of motor the joint uses.
 - gear ratio - sets the transmission ratio for the joint torque to the motor output torque.  If the motor has a built in gearbox that should not appear here.
