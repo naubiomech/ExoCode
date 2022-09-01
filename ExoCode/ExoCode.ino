@@ -143,10 +143,10 @@ void loop()
             Serial.println("Superloop :: SPI Data pointer updated");
         #endif
 
-//        spi_peripheral::my_spi.begin();
-//        #ifdef MAIN_DEBUG
-//            Serial.println("Superloop :: SPI Begin");
-//        #endif
+        spi_peripheral::my_spi.begin();
+        #ifdef MAIN_DEBUG
+            Serial.println("Superloop :: SPI Begin");
+        #endif
         
         spi_peripheral::my_spi.onReceive(spi_peripheral::spi_callback);        
         #ifdef MAIN_DEBUG

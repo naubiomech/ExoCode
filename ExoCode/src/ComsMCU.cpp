@@ -36,6 +36,7 @@ ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send)
     int spi_delay_ms = 100;
     while(!have_valid_config && (std::find(config_to_send, config_to_send + ini_config::number_of_keys, 0) != config_to_send + ini_config::number_of_keys))
     {
+        Serial.println("ComsMCU::ComsMCU: waiting for config.");
         spi_handler.transaction(spi_cmd::send_config::id);
         delay(spi_delay_ms);
         have_valid_config = true;
@@ -78,8 +79,16 @@ void ComsMCU::update_spi()
     
     if (del_t > SPI_times::UPDATE_PERIOD)
     {
-       spi_joint_pair_t spi_msg_pair = spi_queue::pop();
-       spi_handler.transaction(spi_msg_pair.spi_id, spi_msg_pair.joint_id);
+        spi_joint_pair_t spi_msg_pair = spi_queue::pop();
+        if (0!=spi_msg_pair.spi_id)
+        {
+            spi_handler.transaction(spi_msg_pair.spi_id, spi_msg_pair.joint_id);
+        }
+        else
+        {
+            spi_handler.transaction(spi_cmd::send_data_exo::id);
+        }
+        del_t = 0;
     }
     
 }
@@ -122,7 +131,7 @@ void ComsMCU::update_gui()
         send_del_t = t_helper->tick(send_context);
         //_exo_ble->send_message(rt_data_msg);  
         send_del_t = t_helper->tick(send_context);
-        Serial.print("ComsMCU :: update_gui : Rt send time -> "); Serial.println(send_del_t);      
+        //Serial.print("ComsMCU :: update_gui : Rt send time -> "); Serial.println(send_del_t);      
 
         del_t = 0;
     }
