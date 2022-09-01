@@ -104,7 +104,7 @@ namespace ble_command_helpers
     {
         int length = -1;
         //Get the ammount of characters to wait for
-        for(int i=0; i < sizeof(ble::commands)/sizeof(ble::commands[0]); i++)
+        for(unsigned int i=0; i < sizeof(ble::commands)/sizeof(ble::commands[0]); i++)
         {
             if(command == ble::commands[i].command)
             {
@@ -216,6 +216,19 @@ namespace ble_handlers
         //         count++;
         //     }
         // );
+        
+        data->for_each_joint(
+            // This is a lamda or anonymous function, see https://www.learncpp.com/cpp-tutorial/introduction-to-lambdas-anonymous-functions/
+            [](JointData* j_data)
+            {
+                if (j_data->is_used)
+                {
+                    j_data->motor.enabled = 1;
+                }
+                return;
+            }
+        );
+        
     }
     inline static void motors_off(ExoData* data, BleMessage* msg)
     {
@@ -231,6 +244,18 @@ namespace ble_handlers
         //         j_data->controller.controller = (uint8_t)config_defs::ankle_controllers::stasis;
         //     }
         // );
+        
+        data->for_each_joint(
+            // This is a lamda or anonymous function, see https://www.learncpp.com/cpp-tutorial/introduction-to-lambdas-anonymous-functions/
+            [](JointData* j_data)
+            {
+                if (j_data->is_used)
+                {
+                    j_data->motor.enabled = 0;
+                }
+                return;
+            }
+        );
     }
     inline static void mark(ExoData* data, BleMessage* msg)
     {
@@ -278,6 +303,7 @@ namespace ble_handlers
         if (cont_data != NULL) 
         {
             cont_data->controller = controller_id;
+            cont_data->parameter_set = set_num;
         }
 
         //set_controller_params((uint8_t)joint_id, controller_id, set_num, data);

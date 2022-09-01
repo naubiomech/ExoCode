@@ -9,7 +9,7 @@
 
 #ifndef BLEPARSER_H
 #define BLEPARSER_H
-
+// #if defined(ARDUINO_ARDUINO_NANO33BLE)
 #include "Arduino.h"
 #include "ble_commands.h"
 #include "BleMessage.h"
@@ -62,5 +62,5 @@ class BleParser
         void _handle_command(char command);
 };
 
-
+// #endif
 #endif

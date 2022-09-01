@@ -3,6 +3,7 @@
 
 
 #include "I2CHandler.h"
+#if defined(ARDUINO_ARDUINO_NANO33BLE)
 
 class _Battery 
 {
@@ -32,5 +33,5 @@ class RCBattery: public _Battery
     private:
         float _voltage;
 };
-
+#endif
 #endif

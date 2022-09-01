@@ -22,6 +22,8 @@
  * @brief ComsMCU class. 
  * 
  */
+ 
+#if defined(ARDUINO_ARDUINO_NANO33BLE)
 class ComsMCU
 {
     public:
@@ -77,5 +79,5 @@ class ComsMCU
         // Alpha value for the exponentially weighted moving average on the battery data
         const float _battery_ewma_alpha = 0.1;
 };
-
+#endif
 #endif

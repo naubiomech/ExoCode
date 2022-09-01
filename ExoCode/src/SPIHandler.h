@@ -50,9 +50,9 @@ namespace spi_data_idx // read data that changes each loop
     // exo specific
     namespace exo
     {
-        const uint8_t idx_cnt = 2;//0; //used to increment so we don't have to keep fiddling with numbers
-        const uint16_t exo_status = 0;//idx_cnt++;
-        const uint16_t sync_led_state = 1; //idx_cnt++;
+        const uint8_t idx_cnt = 1*sizeof(uint16_t) + 1;//0; //used to increment so we don't have to keep fiddling with numbers
+        const uint16_t exo_status = 0;//idx_cnt++; uint16_t
+        const uint16_t sync_led_state = 1*sizeof(uint16_t); //idx_cnt++;
     }
     
     // leg specific
@@ -220,9 +220,31 @@ namespace spi_cmd
     namespace update_status
     {
         const uint8_t id = send_config::id+9;
-        const uint8_t status_low_idx = 0;
-        const uint8_t status_high_idx = 0;
-        const uint8_t param_len = 2;
+        const uint8_t status_idx = 0;
+        const uint8_t param_len = sizeof(uint16_t);
+    }
+    
+    namespace update_controller_params_workaround
+    {
+        const uint8_t id = send_config::id+10;
+        const uint8_t joint_id_idx = 0; //uint8
+        const uint8_t controller_idx = 1;
+        const uint8_t parameter_set_idx = 2;  //uint8
+        const uint8_t param_len = 3;  // joint id, controller
+    }
+    
+    namespace calibrate_fsr_workaround
+    {
+        const uint8_t id = send_config::id+11;
+        const uint8_t left_heel_cal_idx = 0;
+        const uint8_t left_toe_cal_idx = 1;
+        const uint8_t right_heel_cal_idx = 2;
+        const uint8_t right_toe_cal_idx = 3;
+        const uint8_t left_heel_refine_idx = 4;
+        const uint8_t left_toe_refine_idx = 5;
+        const uint8_t right_heel_refine_idx = 6;
+        const uint8_t right_toe_refine_idx = 7;
+        const uint8_t param_len = 8;  // joint id, controller
     }
     
     // check that this is the largest message len that will come in.
@@ -302,6 +324,22 @@ uint8_t get_data_len(uint8_t* config_to_send); // done
         void set_message_flag(bool* is_unread_message);
         void print_debug(uint16_t debug_location);
         
+        void unpack_null_cmd(uint8_t* controller_message, ExoData* data);
+        void unpack_send_config(uint8_t* controller_message, ExoData* data);
+        void unpack_send_data_exo(uint8_t* controller_message, ExoData* data);
+        void unpack_update_controller(uint8_t* controller_message, ExoData* data);
+        void unpack_update_controller_params(uint8_t* controller_message, ExoData* data);
+        void unpack_calibrate_torque_sensor(uint8_t* controller_message, ExoData* data);
+        void unpack_calibrate_fsr(uint8_t* controller_message, ExoData* data);
+        void unpack_refine_fsr(uint8_t* controller_message, ExoData* data);
+        void unpack_motor_enable_disable(uint8_t* controller_message, ExoData* data);
+        void unpack_motor_zero(uint8_t* controller_message, ExoData* data);
+        void unpack_update_status(uint8_t* controller_message, ExoData* data);
+        void unpack_update_controller_params_workaround(uint8_t* controller_message, ExoData* data);
+        void unpack_calibrate_fsr_workaround(uint8_t* controller_message, ExoData* data);
+        
+        
+        
         // debug locations
         const uint8_t debug_entry_bit = 0;
         const uint8_t debug_sent_length_bit = 1;
@@ -361,6 +399,20 @@ uint8_t get_data_len(uint8_t* config_to_send); // done
             void _pack_message(); // done
             void _send_message(); // done
             void _clear_message(); // done
+            
+            void _pack_null_cmd(); 
+            void _pack_send_config(); 
+            void _pack_send_data_exo(); 
+            void _pack_update_controller(); 
+            void _pack_update_controller_params(); 
+            void _pack_calibrate_torque_sensor(); 
+            void _pack_calibrate_fsr(); 
+            void _pack_refine_fsr(); 
+            void _pack_motor_enable_disable(); 
+            void _pack_motor_zero(); 
+            void _pack_update_status(); 
+            void _pack_update_controller_params_workaround(); 
+            void _pack_calibrate_fsr_workaround(); 
             
             ExoData* _data;  // pointer to ExoData that is getting updated by SPI so they share memory.
         

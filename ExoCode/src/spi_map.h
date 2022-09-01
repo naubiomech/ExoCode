@@ -24,6 +24,21 @@ namespace ble_spi_mappings
     {
         {ble_names::start, spi_cmd::update_status::id, 0},
         {ble_names::stop, spi_cmd::update_status::id, 0},
+        {ble_names::cal_trq, spi_cmd::calibrate_torque_sensor::id, 0},// TODO: update to send all flags
+        {ble_names::cal_fsr, spi_cmd::calibrate_fsr_workaround::id, 0},
+        {ble_names::new_trq, spi_cmd::update_controller_params_workaround::id, 1},
+        {ble_names::assist, spi_cmd::send_data_exo::id, 0},// not currently used
+        {ble_names::resist, spi_cmd::send_data_exo::id, 0},// not currently used
+        {ble_names::motors_on, spi_cmd::motor_enable_disable::id, 0},
+        {ble_names::motors_off, spi_cmd::motor_enable_disable::id, 0},
+        {ble_names::mark, spi_cmd::send_data_exo::id, 0},// not currently used.
+        {ble_names::send_real_time_data, spi_cmd::send_data_exo::id, 0},
+        {ble_names::send_batt, spi_cmd::send_data_exo::id, 0},// not currently used.
+        {ble_names::send_cal_done, spi_cmd::send_data_exo::id, 0},// data will have cal flags
+        {ble_names::send_error_count, spi_cmd::send_data_exo::id, 0},// not currently used.
+        {ble_names::send_trq_cal, spi_cmd::send_data_exo::id, 0},// data will have cal flags
+        {ble_names::send_step_count, spi_cmd::send_data_exo::id, 0},// not currently used.
+        {ble_names::cal_fsr_finished, spi_cmd::send_data_exo::id, 0},// data will have cal flags
 
 
     };

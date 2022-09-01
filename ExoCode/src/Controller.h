@@ -362,19 +362,19 @@ class FranksCollinsHip: public _Controller
  * 
  * see ControllerData.h for details on the parameters used.
  */
-class UserDefined: public _Controller
-{
-    public:
-        UserDefined(config_defs::joint_id id, ExoData* exo_data);
-        ~UserDefined(){};
+// class UserDefined: public _Controller
+// {
+    // public:
+        // UserDefined(config_defs::joint_id id, ExoData* exo_data);
+        // ~UserDefined(){};
         
-        float calc_motor_cmd();
-    private:
-        float _percent_x[controller_defs::user_defined::num_sample_points];
-        const float _step_size = 100/controller_defs::user_defined::num_sample_points;
+        // float calc_motor_cmd();
+    // private:
+        // float _percent_x[controller_defs::user_defined::num_sample_points];
+        // const float _step_size = 100/controller_defs::user_defined::num_sample_points;
         
         
-};
+// };
 
 /*
  * Sine Controller

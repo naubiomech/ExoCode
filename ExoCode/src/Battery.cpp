@@ -1,5 +1,6 @@
 #include "Battery.h"
 #include "Arduino.h"
+#if defined(ARDUINO_ARDUINO_NANO33BLE)
 
 void SmartBattery::init() {;}
 float SmartBattery::get_parameter()
@@ -24,3 +25,4 @@ float RCBattery::get_parameter()
     battery_percent = battery_percent - 10;
     return battery_percent;
 }
+#endif

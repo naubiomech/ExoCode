@@ -37,6 +37,7 @@ ControllerData::ControllerData(config_defs::joint_id id, uint8_t* config_to_send
     }
     
     setpoint = 0;
+    parameter_set = 0;
     for (int i=0; i < controller_defs::max_parameters; i++)
     {    
         parameters[i] = 0;

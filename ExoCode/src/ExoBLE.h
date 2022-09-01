@@ -33,6 +33,7 @@
 #include "BleMessageQueue.h"
 #include "Board.h"
 
+// #if defined(ARDUINO_ARDUINO_NANO33BLE)
 
 class ExoBLE 
 {
@@ -120,5 +121,5 @@ namespace connection_callbacks
         void disconnected(void);
     #endif
 }
-
+// #endif
 #endif

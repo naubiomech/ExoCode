@@ -365,6 +365,8 @@ namespace utils
          
         return;
     }
+    
+   
 
     /* Exponentially weighted moving average filter. Takes in a new value, the current filtered value, and 
      * a filter parameter (alpha). The filter weights the new input. See the link below for more

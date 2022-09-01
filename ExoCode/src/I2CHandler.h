@@ -7,6 +7,7 @@
 
 #ifndef I2CHANDLER_H
 #define I2CHANDLER_H
+#if defined(ARDUINO_ARDUINO_NANO33BLE)
 
 #include "Wire.h"
 
@@ -55,5 +56,5 @@ namespace i2c_cmds
         const uint8_t len = 2;
     }
 }
-
+#endif
 #endif

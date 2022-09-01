@@ -114,7 +114,6 @@ namespace utils
     void float_to_short_fixed_point_bytes(float num_to_convert, uint8_t *converted_bytes, uint8_t factor);
     void short_fixed_point_bytes_to_float(uint8_t *bytes_to_convert, float *converted_val, uint8_t factor);
     
-    
 
     float ewma(float new_value, float filter_value, float alpha);
     /*

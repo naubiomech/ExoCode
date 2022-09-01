@@ -273,7 +273,7 @@
       }
     #endif  
 #elif defined(ARDUINO_ARDUINO_NANO33BLE)
-  #include <SPI.h>
+  
   
 
   #ifdef SIMPLE_EXAMPLE

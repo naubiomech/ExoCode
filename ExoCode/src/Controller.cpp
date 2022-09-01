@@ -425,17 +425,17 @@ float BangBang::calc_motor_cmd()
     _min_angle = min(angle, _min_angle);
     
     
-    float normalized_angle = 0;
-    // calculate the normalized angle
-    if (angle >= 0)
-    {
-        normalized_angle = angle / _max_angle;
-    }
-    else
-    {
-        normalized_angle = angle / _min_angle;
+    // float normalized_angle = 0;
+    // // calculate the normalized angle
+    // if (angle >= 0)
+    // {
+        // normalized_angle = angle / _max_angle;
+    // }
+    // else
+    // {
+        // normalized_angle = angle / _min_angle;
         
-    }
+    // }
 
     // int print_time_ms = 100;
     // static int last_timestamp = millis();
@@ -1086,45 +1086,45 @@ float FranksCollinsHip::calc_motor_cmd()
  * Takes the joint id and a pointer to the exo_data
  * Only stores the id, exo_data pointer.
  */
-UserDefined::UserDefined(config_defs::joint_id id, ExoData* exo_data)
-: _Controller(id, exo_data)
-{
-    #ifdef CONTROLLER_DEBUG
-        Serial.println("UserDefined::Constructor");
-    #endif
+// UserDefined::UserDefined(config_defs::joint_id id, ExoData* exo_data)
+// : _Controller(id, exo_data)
+// {
+    // #ifdef CONTROLLER_DEBUG
+        // Serial.println("UserDefined::Constructor");
+    // #endif
     
     
     
-    for(int i = 0; i < controller_defs::user_defined::num_sample_points; i++) 
-    {
-        _percent_x[i] = i * _step_size;
-    } 
-};
+    // for(int i = 0; i < controller_defs::user_defined::num_sample_points; i++) 
+    // {
+        // _percent_x[i] = i * _step_size;
+    // } 
+// };
 
 /*
  *
  */
 
-float UserDefined::calc_motor_cmd()
-{
+// float UserDefined::calc_motor_cmd()
+// {
     
-    int lower_idx = _leg_data->percent_gait/_step_size; //rounds down  
-    float cmd_ff = 0;
-    //  yp = y0 + ((y1-y0)/(x1-x0)) * (xp - x0);
-    if(lower_idx < controller_defs::user_defined::num_sample_points - 1)
-    {
-        cmd_ff = _controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx] + ((_controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx+1]-_controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx])/(_percent_x[lower_idx+1]-_percent_x[lower_idx])) * (_leg_data->percent_gait - _percent_x[lower_idx]);
-    } 
-    else
-    {
-        cmd_ff = _controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx] + ((_controller_data->parameters[0]-_controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx])/(100-_percent_x[lower_idx])) * (_leg_data->percent_gait - _percent_x[lower_idx]);
-    }
-    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::user_defined::use_pid_idx] 
-                ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::user_defined::p_gain_idx], _controller_data->parameters[controller_defs::user_defined::i_gain_idx], _controller_data->parameters[controller_defs::user_defined::d_gain_idx]) 
-                : 0);
+    // int lower_idx = _leg_data->percent_gait/_step_size; //rounds down  
+    // float cmd_ff = 0;
+    // //  yp = y0 + ((y1-y0)/(x1-x0)) * (xp - x0);
+    // if(lower_idx < controller_defs::user_defined::num_sample_points - 1)
+    // {
+        // cmd_ff = _controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx] + ((_controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx+1]-_controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx])/(_percent_x[lower_idx+1]-_percent_x[lower_idx])) * (_leg_data->percent_gait - _percent_x[lower_idx]);
+    // } 
+    // else
+    // {
+        // cmd_ff = _controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx] + ((_controller_data->parameters[0]-_controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx])/(100-_percent_x[lower_idx])) * (_leg_data->percent_gait - _percent_x[lower_idx]);
+    // }
+    // float cmd = cmd_ff + (_controller_data->parameters[controller_defs::user_defined::use_pid_idx] 
+                // ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::user_defined::p_gain_idx], _controller_data->parameters[controller_defs::user_defined::i_gain_idx], _controller_data->parameters[controller_defs::user_defined::d_gain_idx]) 
+                // : 0);
     
-    return 0;
-};
+    // return 0;
+// };
 
 /*
  * Constructor for the controller

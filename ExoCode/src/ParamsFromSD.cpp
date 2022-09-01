@@ -12,7 +12,7 @@
     void print_param_error_message(uint8_t error_type)
     {
         Serial.print(utils::get_is_left(error_type)? "Left " : "Right ");
-        switch (error_type && ((uint8_t)config_defs::joint_id::hip || (uint8_t)config_defs::joint_id::knee || (uint8_t)config_defs::joint_id::ankle))
+        switch (error_type & ((uint8_t)config_defs::joint_id::hip | (uint8_t)config_defs::joint_id::knee | (uint8_t)config_defs::joint_id::ankle))
         {
             case (uint8_t)config_defs::joint_id::hip:
                 Serial.print("Hip ");    

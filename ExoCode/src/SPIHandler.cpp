@@ -465,6 +465,7 @@ namespace spi_data_idx // read data that changes each loop
             
             // send exo top level data  just uint8_t
             peripheral_message[running_idx_cnt + spi_data_idx::exo::exo_status] = ff_to_fe_check(data->status);
+            peripheral_message[running_idx_cnt + spi_data_idx::exo::exo_status+1] = ff_to_fe_check(data->status>>8);
             peripheral_message[running_idx_cnt + spi_data_idx::exo::sync_led_state] = ff_to_fe_check(data->sync_led_state);
             running_idx_cnt += spi_data_idx::exo::idx_cnt;
             
@@ -625,331 +626,47 @@ namespace spi_data_idx // read data that changes each loop
             #ifdef SPI_DEBUG
                 Serial.print("static_spi_handler::parse_message : ");
             #endif   
-
-            uint8_t joint;
+            
             switch (command)
             {
                 case spi_cmd::send_data_exo::id:
-                    // nothing to parse
-                    #ifdef SPI_DEBUG
-                        Serial.println("send_data_exo");
-                    #endif
+                    unpack_send_data_exo(controller_message, data);
                     break;
                 case spi_cmd::send_config::id:
-                    // nothing to parse
-                    #ifdef SPI_DEBUG
-                        Serial.println("send_config");
-                    #endif
+                    unpack_send_config(controller_message, data);
                     break;
                 case spi_cmd::null_cmd::id:
-                    // nothing to parse
-                    #ifdef SPI_DEBUG
-                        Serial.println("null_cmd");
-                    #endif
+                    unpack_null_cmd(controller_message, data);
                     break;
                 case spi_cmd::update_controller::id:
-                    
-                    #ifdef SPI_DEBUG
-                        Serial.print("update_controller : ");
-                    #endif
-                    joint = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::joint_id_idx]);
-                    switch (joint)
-                    {
-                        // left
-                        case (uint8_t)config_defs::joint_id::left_hip:
-                            data->left_leg.hip.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.print("Left Hip : ");
-                                Serial.println(data->left_leg.hip.controller.controller);
-                            #endif
-                            break;
-                        case (uint8_t)config_defs::joint_id::left_knee:
-                            data->left_leg.knee.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.print("Left Knee : ");
-                                Serial.println(data->left_leg.knee.controller.controller);
-                            #endif
-                            break;
-                        case (uint8_t)config_defs::joint_id::left_ankle:
-                            data->left_leg.ankle.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.print("Left Ankle : ");
-                                Serial.println(data->left_leg.ankle.controller.controller);
-                            #endif
-                            break;
-                        // right
-                        case (uint8_t)config_defs::joint_id::right_hip:
-                            data->right_leg.hip.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.print("Right Hip : ");
-                                Serial.println(data->right_leg.hip.controller.controller);
-                            #endif
-                            break;
-                        case (uint8_t)config_defs::joint_id::right_knee:
-                            data->right_leg.knee.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.print("Right Knee : ");
-                                Serial.println(data->right_leg.knee.controller.controller);
-                            #endif
-                            break;
-                        case (uint8_t)config_defs::joint_id::right_ankle:
-                            data->right_leg.ankle.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.print("Right Ankle : ");
-                                Serial.println(data->right_leg.ankle.controller.controller);
-                            #endif
-                            break;
-                    }
+                    unpack_update_controller(controller_message, data);
                     break;
                 case spi_cmd::update_controller_params::id:
-                    #ifdef SPI_DEBUG
-                        Serial.print("update_controller_params : ");
-                    #endif
-                    joint = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::joint_id_idx]);
-                    switch (joint)
-                    {
-                        // left
-                        case (uint8_t)config_defs::joint_id::left_hip:
-                            data->left_leg.hip.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.println("Left Hip : Controller");
-                                Serial.println(data->left_leg.hip.controller.controller);
-                            #endif
-                            for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
-                            {
-                                data->left_leg.hip.controller.parameters[parameter_idx] = unpack_float(controller_message, message_idx);
-                                #ifdef SPI_DEBUG
-                                    Serial.print("[");
-                                    Serial.print(parameter_idx);
-                                    Serial.print("] :\t");
-                                    Serial.println(data->left_leg.hip.controller.parameters[parameter_idx]);
-                                #endif
-                            }
-                            break;
-                        case (uint8_t)config_defs::joint_id::left_knee:
-                            data->left_leg.knee.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.println("Left Knee : Controller");
-                                Serial.println(data->left_leg.knee.controller.controller);
-                            #endif
-                            for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
-                            {
-                                data->left_leg.knee.controller.parameters[parameter_idx] = unpack_float(controller_message, message_idx);
-                                #ifdef SPI_DEBUG
-                                    Serial.print("[");
-                                    Serial.print(parameter_idx);
-                                    Serial.print("] :\t");
-                                    Serial.println(data->left_leg.knee.controller.parameters[parameter_idx]);
-                                #endif
-                            }
-                            break;
-                        case (uint8_t)config_defs::joint_id::left_ankle:
-                            data->left_leg.ankle.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.println("Left Ankle : Controller");
-                                Serial.println(data->left_leg.ankle.controller.controller);
-                            #endif
-                            for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
-                            {
-                                data->left_leg.ankle.controller.parameters[parameter_idx] = unpack_float(controller_message, message_idx);
-                                #ifdef SPI_DEBUG
-                                    Serial.print("[");
-                                    Serial.print(parameter_idx);
-                                    Serial.print("] :\t");
-                                    Serial.println(data->left_leg.ankle.controller.parameters[parameter_idx]);
-                                #endif
-                            }
-                            break;
-                        // right
-                        case (uint8_t)config_defs::joint_id::right_hip:
-                            data->right_leg.hip.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.println("Right Hip : Controller");
-                                Serial.println(data->right_leg.hip.controller.controller);
-                            #endif
-                            for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
-                            {
-                                data->right_leg.hip.controller.parameters[parameter_idx] = unpack_float(controller_message, message_idx);
-                                #ifdef SPI_DEBUG
-                                    Serial.print("[");
-                                    Serial.print(parameter_idx);
-                                    Serial.print("] :\t");
-                                    Serial.println(data->right_leg.hip.controller.parameters[parameter_idx]);
-                                #endif
-                            }
-                            break;
-                        case (uint8_t)config_defs::joint_id::right_knee:
-                            data->right_leg.knee.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.println("Right Knee : Controller");
-                                Serial.println(data->right_leg.knee.controller.controller);
-                            #endif
-                            for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
-                            {
-                                data->right_leg.knee.controller.parameters[parameter_idx] = unpack_float(controller_message, message_idx);
-                            
-                                #ifdef SPI_DEBUG
-                                    Serial.print("[");
-                                    Serial.print(parameter_idx);
-                                    Serial.print("] :\t");
-                                    Serial.println(data->right_leg.knee.controller.parameters[parameter_idx]);
-                                #endif
-                            }
-                            break;
-                        case (uint8_t)config_defs::joint_id::right_ankle:
-                            data->right_leg.ankle.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.print("Right Ankle : Controller");
-                                Serial.println(data->right_leg.ankle.controller.controller);
-                            #endif
-                            for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
-                            {
-                                data->right_leg.ankle.controller.parameters[parameter_idx] = unpack_float(controller_message, message_idx);
-                            
-                                #ifdef SPI_DEBUG
-                                    Serial.print("[");
-                                    Serial.print(parameter_idx);
-                                    Serial.print("] :\t");
-                                    Serial.println(data->right_leg.ankle.controller.parameters[parameter_idx]);
-                                #endif
-                            }
-                            break;
-                    }
+                    unpack_update_controller_params(controller_message, data);
                     break;
                 case spi_cmd::calibrate_torque_sensor::id:
-                    #ifdef SPI_DEBUG
-                        Serial.print("calibrate_torque_sensor : ");
-                    #endif
-                    
-                    joint = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::joint_id_idx]);
-                    switch (joint)
-                    {
-                        // left
-                        case (uint8_t)config_defs::joint_id::left_hip:
-                            data->left_leg.hip.calibrate_torque_sensor = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.print("Left Hip : ");
-                                Serial.println(data->left_leg.hip.calibrate_torque_sensor);
-                            #endif
-                            break;
-                        case (uint8_t)config_defs::joint_id::left_knee:
-                            data->left_leg.knee.calibrate_torque_sensor = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.print("Left Knee : ");
-                                Serial.println(data->left_leg.knee.calibrate_torque_sensor);
-                            #endif
-                            break;
-                        case (uint8_t)config_defs::joint_id::left_ankle:
-                            data->left_leg.ankle.calibrate_torque_sensor = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.print("Left Ankle : ");
-                                Serial.println(data->left_leg.ankle.calibrate_torque_sensor);
-                            #endif
-                            break;
-                        // right
-                        case (uint8_t)config_defs::joint_id::right_hip:
-                            data->right_leg.hip.calibrate_torque_sensor = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.print("Right Hip : ");
-                                Serial.println(data->right_leg.hip.calibrate_torque_sensor);
-                            #endif
-                            break;
-                        case (uint8_t)config_defs::joint_id::right_knee:
-                            data->right_leg.knee.calibrate_torque_sensor = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.print("Right Knee : ");
-                                Serial.println(data->right_leg.knee.calibrate_torque_sensor);
-                            #endif
-                            break;
-                        case (uint8_t)config_defs::joint_id::right_ankle:
-                            data->right_leg.ankle.calibrate_torque_sensor = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx]);
-                            #ifdef SPI_DEBUG
-                                Serial.print("Right Ankle : ");
-                                Serial.println(data->right_leg.ankle.calibrate_torque_sensor);
-                            #endif
-                            break;
-                    }
+                    unpack_calibrate_torque_sensor(controller_message, data);
                     break;
                 case spi_cmd::calibrate_fsr::id:
-                    data->left_leg.do_calibration_heel_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::left_heel_idx]);
-                    data->left_leg.do_calibration_toe_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::left_toe_idx]);
-                    data->right_leg.do_calibration_heel_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::right_heel_idx]);
-                    data->right_leg.do_calibration_toe_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::right_toe_idx]);
-                    #ifdef SPI_DEBUG
-                        Serial.println("calibrate_fsr");
-                        Serial.print("\t");
-                        Serial.print(data->left_leg.do_calibration_heel_fsr);
-                        Serial.print("\t");
-                        Serial.print(data->left_leg.do_calibration_toe_fsr);
-                        Serial.print("\t");
-                        Serial.print(data->right_leg.do_calibration_heel_fsr);
-                        Serial.print("\t");
-                        Serial.println(data->right_leg.do_calibration_toe_fsr);
-                    #endif
+                    unpack_calibrate_fsr(controller_message, data);
                     break;
                 case spi_cmd::refine_fsr::id:
-                    data->left_leg.do_calibration_refinement_heel_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::left_heel_idx]);
-                    data->left_leg.do_calibration_refinement_toe_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::left_toe_idx]);
-                    data->right_leg.do_calibration_refinement_heel_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::right_heel_idx]);
-                    data->right_leg.do_calibration_refinement_toe_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::right_toe_idx]);
-                    #ifdef SPI_DEBUG
-                        Serial.println("refine_fsr");
-                        Serial.print("\t");
-                        Serial.print(data->left_leg.do_calibration_refinement_heel_fsr);
-                        Serial.print("\t");
-                        Serial.print(data->left_leg.do_calibration_refinement_toe_fsr);
-                        Serial.print("\t");
-                        Serial.print(data->right_leg.do_calibration_refinement_heel_fsr);
-                        Serial.print("\t");
-                        Serial.println(data->right_leg.do_calibration_refinement_toe_fsr);
-                    #endif
+                    unpack_refine_fsr(controller_message, data);
                     break;
                 case spi_cmd::motor_enable_disable::id:
-                    data->left_leg.hip.motor.enabled = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_hip_idx]);
-                    data->left_leg.knee.motor.enabled = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_knee_idx]);
-                    data->left_leg.ankle.motor.enabled = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_ankle_idx]);
-                    data->right_leg.hip.motor.enabled = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_hip_idx]);
-                    data->right_leg.knee.motor.enabled = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_knee_idx]);
-                    data->right_leg.ankle.motor.enabled = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_ankle_idx]);
-                    #ifdef SPI_DEBUG
-                        Serial.println("motor_enable_disable");
-                        Serial.print("\t");
-                        Serial.print(data->left_leg.hip.motor.enabled);
-                        Serial.print("\t");
-                        Serial.print(data->left_leg.knee.motor.enabled);
-                        Serial.print("\t");
-                        Serial.print(data->left_leg.ankle.motor.enabled);
-                        Serial.print("\t");
-                        Serial.print(data->right_leg.hip.motor.enabled);
-                        Serial.print("\t");
-                        Serial.print(data->right_leg.knee.motor.enabled);
-                        Serial.print("\t");
-                        Serial.println(data->right_leg.ankle.motor.enabled);
-                    #endif
+                    unpack_motor_enable_disable(controller_message, data);
                     break;
                 case spi_cmd::motor_zero::id:
-                    data->left_leg.hip.motor.do_zero = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_hip_idx]);
-                    data->left_leg.knee.motor.do_zero = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_knee_idx]);
-                    data->left_leg.ankle.motor.do_zero = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_ankle_idx]);
-                    data->right_leg.hip.motor.do_zero = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_hip_idx]);
-                    data->right_leg.knee.motor.do_zero = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_knee_idx]);
-                    data->right_leg.ankle.motor.do_zero = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_ankle_idx]);
-                    #ifdef SPI_DEBUG
-                        Serial.println("motor_zero");
-                        Serial.print("\t");
-                        Serial.print(data->left_leg.hip.motor.do_zero);
-                        Serial.print("\t");
-                        Serial.print(data->left_leg.knee.motor.do_zero);
-                        Serial.print("\t");
-                        Serial.print(data->left_leg.ankle.motor.do_zero);
-                        Serial.print("\t");
-                        Serial.print(data->right_leg.hip.motor.do_zero);
-                        Serial.print("\t");
-                        Serial.print(data->right_leg.knee.motor.do_zero);
-                        Serial.print("\t");
-                        Serial.println(data->right_leg.ankle.motor.do_zero);
-                    #endif
-                    
+                    unpack_motor_zero(controller_message, data);
+                    break;
+                case spi_cmd::update_status::id:
+                    unpack_update_status(controller_message, data);
+                    break;   
+                case spi_cmd::update_controller_params_workaround::id:
+                    unpack_update_controller_params_workaround(controller_message, data);
+                    break;
+                case spi_cmd::calibrate_fsr_workaround::id:
+                    unpack_calibrate_fsr_workaround(controller_message, data);
                     break;
                 // case spi_cmd::::id:
                     
@@ -1292,6 +1009,457 @@ namespace spi_data_idx // read data that changes each loop
             }
         }
        
+        void unpack_null_cmd(uint8_t* controller_message, ExoData* data)
+        {
+            // nothing to parse
+            #ifdef SPI_DEBUG
+                Serial.println("null_cmd");
+            #endif
+        };
+        
+        void unpack_send_config(uint8_t* controller_message, ExoData* data)
+        {
+            // nothing to parse
+            #ifdef SPI_DEBUG
+                Serial.println("send_config");
+            #endif
+        };
+        
+        void unpack_send_data_exo(uint8_t* controller_message, ExoData* data)
+        {
+            // nothing to parse
+            #ifdef SPI_DEBUG
+                Serial.println("send_data_exo");
+            #endif
+        };
+        
+        void unpack_update_controller(uint8_t* controller_message, ExoData* data)
+        {  
+            #ifdef SPI_DEBUG
+                Serial.print("update_controller : ");
+            #endif
+            uint8_t joint = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::joint_id_idx]);
+            switch (joint)
+            {
+                // left
+                case (uint8_t)config_defs::joint_id::left_hip:
+                    data->left_leg.hip.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Left Hip : ");
+                        Serial.println(data->left_leg.hip.controller.controller);
+                    #endif
+                    break;
+                case (uint8_t)config_defs::joint_id::left_knee:
+                    data->left_leg.knee.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Left Knee : ");
+                        Serial.println(data->left_leg.knee.controller.controller);
+                    #endif
+                    break;
+                case (uint8_t)config_defs::joint_id::left_ankle:
+                    data->left_leg.ankle.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Left Ankle : ");
+                        Serial.println(data->left_leg.ankle.controller.controller);
+                    #endif
+                    break;
+                // right
+                case (uint8_t)config_defs::joint_id::right_hip:
+                    data->right_leg.hip.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Right Hip : ");
+                        Serial.println(data->right_leg.hip.controller.controller);
+                    #endif
+                    break;
+                case (uint8_t)config_defs::joint_id::right_knee:
+                    data->right_leg.knee.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Right Knee : ");
+                        Serial.println(data->right_leg.knee.controller.controller);
+                    #endif
+                    break;
+                case (uint8_t)config_defs::joint_id::right_ankle:
+                    data->right_leg.ankle.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Right Ankle : ");
+                        Serial.println(data->right_leg.ankle.controller.controller);
+                    #endif
+                    break;
+            }
+        };
+        
+        void unpack_update_controller_params(uint8_t* controller_message, ExoData* data)
+        {
+           #ifdef SPI_DEBUG
+                Serial.print("update_controller_params : ");
+            #endif
+            uint8_t joint = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::joint_id_idx]);
+            switch (joint)
+            {
+                // left
+                case (uint8_t)config_defs::joint_id::left_hip:
+                    data->left_leg.hip.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.println("Left Hip : Controller");
+                        Serial.println(data->left_leg.hip.controller.controller);
+                    #endif
+                    for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
+                    {
+                        data->left_leg.hip.controller.parameters[parameter_idx] = unpack_float(controller_message, message_idx);
+                        #ifdef SPI_DEBUG
+                            Serial.print("[");
+                            Serial.print(parameter_idx);
+                            Serial.print("] :\t");
+                            Serial.println(data->left_leg.hip.controller.parameters[parameter_idx]);
+                        #endif
+                    }
+                    break;
+                case (uint8_t)config_defs::joint_id::left_knee:
+                    data->left_leg.knee.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.println("Left Knee : Controller");
+                        Serial.println(data->left_leg.knee.controller.controller);
+                    #endif
+                    for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
+                    {
+                        data->left_leg.knee.controller.parameters[parameter_idx] = unpack_float(controller_message, message_idx);
+                        #ifdef SPI_DEBUG
+                            Serial.print("[");
+                            Serial.print(parameter_idx);
+                            Serial.print("] :\t");
+                            Serial.println(data->left_leg.knee.controller.parameters[parameter_idx]);
+                        #endif
+                    }
+                    break;
+                case (uint8_t)config_defs::joint_id::left_ankle:
+                    data->left_leg.ankle.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.println("Left Ankle : Controller");
+                        Serial.println(data->left_leg.ankle.controller.controller);
+                    #endif
+                    for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
+                    {
+                        data->left_leg.ankle.controller.parameters[parameter_idx] = unpack_float(controller_message, message_idx);
+                        #ifdef SPI_DEBUG
+                            Serial.print("[");
+                            Serial.print(parameter_idx);
+                            Serial.print("] :\t");
+                            Serial.println(data->left_leg.ankle.controller.parameters[parameter_idx]);
+                        #endif
+                    }
+                    break;
+                // right
+                case (uint8_t)config_defs::joint_id::right_hip:
+                    data->right_leg.hip.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.println("Right Hip : Controller");
+                        Serial.println(data->right_leg.hip.controller.controller);
+                    #endif
+                    for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
+                    {
+                        data->right_leg.hip.controller.parameters[parameter_idx] = unpack_float(controller_message, message_idx);
+                        #ifdef SPI_DEBUG
+                            Serial.print("[");
+                            Serial.print(parameter_idx);
+                            Serial.print("] :\t");
+                            Serial.println(data->right_leg.hip.controller.parameters[parameter_idx]);
+                        #endif
+                    }
+                    break;
+                case (uint8_t)config_defs::joint_id::right_knee:
+                    data->right_leg.knee.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.println("Right Knee : Controller");
+                        Serial.println(data->right_leg.knee.controller.controller);
+                    #endif
+                    for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
+                    {
+                        data->right_leg.knee.controller.parameters[parameter_idx] = unpack_float(controller_message, message_idx);
+                    
+                        #ifdef SPI_DEBUG
+                            Serial.print("[");
+                            Serial.print(parameter_idx);
+                            Serial.print("] :\t");
+                            Serial.println(data->right_leg.knee.controller.parameters[parameter_idx]);
+                        #endif
+                    }
+                    break;
+                case (uint8_t)config_defs::joint_id::right_ankle:
+                    data->right_leg.ankle.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::controller_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Right Ankle : Controller");
+                        Serial.println(data->right_leg.ankle.controller.controller);
+                    #endif
+                    for (int message_idx = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
+                    {
+                        data->right_leg.ankle.controller.parameters[parameter_idx] = unpack_float(controller_message, message_idx);
+                    
+                        #ifdef SPI_DEBUG
+                            Serial.print("[");
+                            Serial.print(parameter_idx);
+                            Serial.print("] :\t");
+                            Serial.println(data->right_leg.ankle.controller.parameters[parameter_idx]);
+                        #endif
+                    }
+                    break;
+            }
+        };
+        
+        void unpack_calibrate_torque_sensor(uint8_t* controller_message, ExoData* data)
+        {
+            #ifdef SPI_DEBUG
+                Serial.print("calibrate_torque_sensor : ");
+            #endif
+            
+            uint8_t joint = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::joint_id_idx]);
+            switch (joint)
+            {
+                // left
+                case (uint8_t)config_defs::joint_id::left_hip:
+                    data->left_leg.hip.calibrate_torque_sensor = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Left Hip : ");
+                        Serial.println(data->left_leg.hip.calibrate_torque_sensor);
+                    #endif
+                    break;
+                case (uint8_t)config_defs::joint_id::left_knee:
+                    data->left_leg.knee.calibrate_torque_sensor = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Left Knee : ");
+                        Serial.println(data->left_leg.knee.calibrate_torque_sensor);
+                    #endif
+                    break;
+                case (uint8_t)config_defs::joint_id::left_ankle:
+                    data->left_leg.ankle.calibrate_torque_sensor = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Left Ankle : ");
+                        Serial.println(data->left_leg.ankle.calibrate_torque_sensor);
+                    #endif
+                    break;
+                // right
+                case (uint8_t)config_defs::joint_id::right_hip:
+                    data->right_leg.hip.calibrate_torque_sensor = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Right Hip : ");
+                        Serial.println(data->right_leg.hip.calibrate_torque_sensor);
+                    #endif
+                    break;
+                case (uint8_t)config_defs::joint_id::right_knee:
+                    data->right_leg.knee.calibrate_torque_sensor = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Right Knee : ");
+                        Serial.println(data->right_leg.knee.calibrate_torque_sensor);
+                    #endif
+                    break;
+                case (uint8_t)config_defs::joint_id::right_ankle:
+                    data->right_leg.ankle.calibrate_torque_sensor = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Right Ankle : ");
+                        Serial.println(data->right_leg.ankle.calibrate_torque_sensor);
+                    #endif
+                    break;
+            }
+        };
+        
+        void unpack_calibrate_fsr(uint8_t* controller_message, ExoData* data)
+        {
+            data->left_leg.do_calibration_heel_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::left_heel_idx]);
+            data->left_leg.do_calibration_toe_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::left_toe_idx]);
+            data->right_leg.do_calibration_heel_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::right_heel_idx]);
+            data->right_leg.do_calibration_toe_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::right_toe_idx]);
+            #ifdef SPI_DEBUG
+                Serial.println("calibrate_fsr");
+                Serial.print("\t");
+                Serial.print(data->left_leg.do_calibration_heel_fsr);
+                Serial.print("\t");
+                Serial.print(data->left_leg.do_calibration_toe_fsr);
+                Serial.print("\t");
+                Serial.print(data->right_leg.do_calibration_heel_fsr);
+                Serial.print("\t");
+                Serial.println(data->right_leg.do_calibration_toe_fsr);
+            #endif
+           
+        };
+        
+        void unpack_refine_fsr(uint8_t* controller_message, ExoData* data)
+        {
+            data->left_leg.do_calibration_refinement_heel_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::left_heel_idx]);
+            data->left_leg.do_calibration_refinement_toe_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::left_toe_idx]);
+            data->right_leg.do_calibration_refinement_heel_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::right_heel_idx]);
+            data->right_leg.do_calibration_refinement_toe_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::right_toe_idx]);
+            #ifdef SPI_DEBUG
+                Serial.println("refine_fsr");
+                Serial.print("\t");
+                Serial.print(data->left_leg.do_calibration_refinement_heel_fsr);
+                Serial.print("\t");
+                Serial.print(data->left_leg.do_calibration_refinement_toe_fsr);
+                Serial.print("\t");
+                Serial.print(data->right_leg.do_calibration_refinement_heel_fsr);
+                Serial.print("\t");
+                Serial.println(data->right_leg.do_calibration_refinement_toe_fsr);
+            #endif
+        };
+        
+        void unpack_motor_enable_disable(uint8_t* controller_message, ExoData* data)
+        {
+            data->left_leg.hip.motor.enabled = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_hip_idx]);
+            data->left_leg.knee.motor.enabled = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_knee_idx]);
+            data->left_leg.ankle.motor.enabled = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_ankle_idx]);
+            data->right_leg.hip.motor.enabled = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_hip_idx]);
+            data->right_leg.knee.motor.enabled = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_knee_idx]);
+            data->right_leg.ankle.motor.enabled = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_ankle_idx]);
+            #ifdef SPI_DEBUG
+                Serial.println("motor_enable_disable");
+                Serial.print("\t");
+                Serial.print(data->left_leg.hip.motor.enabled);
+                Serial.print("\t");
+                Serial.print(data->left_leg.knee.motor.enabled);
+                Serial.print("\t");
+                Serial.print(data->left_leg.ankle.motor.enabled);
+                Serial.print("\t");
+                Serial.print(data->right_leg.hip.motor.enabled);
+                Serial.print("\t");
+                Serial.print(data->right_leg.knee.motor.enabled);
+                Serial.print("\t");
+                Serial.println(data->right_leg.ankle.motor.enabled);
+            #endif
+        };
+        
+        void unpack_motor_zero(uint8_t* controller_message, ExoData* data)
+        {
+            data->left_leg.hip.motor.do_zero = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_hip_idx]);
+            data->left_leg.knee.motor.do_zero = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_knee_idx]);
+            data->left_leg.ankle.motor.do_zero = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_ankle_idx]);
+            data->right_leg.hip.motor.do_zero = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_hip_idx]);
+            data->right_leg.knee.motor.do_zero = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_knee_idx]);
+            data->right_leg.ankle.motor.do_zero = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_ankle_idx]);
+            #ifdef SPI_DEBUG
+                Serial.println("motor_zero");
+                Serial.print("\t");
+                Serial.print(data->left_leg.hip.motor.do_zero);
+                Serial.print("\t");
+                Serial.print(data->left_leg.knee.motor.do_zero);
+                Serial.print("\t");
+                Serial.print(data->left_leg.ankle.motor.do_zero);
+                Serial.print("\t");
+                Serial.print(data->right_leg.hip.motor.do_zero);
+                Serial.print("\t");
+                Serial.print(data->right_leg.knee.motor.do_zero);
+                Serial.print("\t");
+                Serial.println(data->right_leg.ankle.motor.do_zero);
+            #endif
+        };
+        
+        void unpack_update_status(uint8_t* controller_message, ExoData* data)
+        {   
+            uint16_t low = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_status::status_idx]);
+            uint16_t high = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_status::status_idx + 1]);
+            uint16_t status = (low) | (high<<8);
+            data->status = status;
+            #ifdef SPI_DEBUG
+                Serial.print("update_status : ");
+                Serial.print(status);
+                Serial.print(" -> ");
+                Serial.println(data->status);
+            #endif
+        };
+        
+        void unpack_update_controller_params_workaround(uint8_t* controller_message, ExoData* data)
+        {
+            #ifdef SPI_DEBUG
+                Serial.print("update_controller_params_workaround : ");
+            #endif
+            uint8_t joint = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::joint_id_idx]);
+            switch (joint)
+            {
+                // left
+                case (uint8_t)config_defs::joint_id::left_hip:
+                    data->left_leg.hip.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::controller_idx]);
+                    data->left_leg.hip.controller.parameter_set = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::parameter_set_idx]);
+                    
+                    #ifdef SPI_DEBUG
+                        Serial.print("Left Hip : ");
+                        Serial.println(data->left_leg.hip.controller.controller);
+                    #endif
+                    break;
+                case (uint8_t)config_defs::joint_id::left_knee:
+                    data->left_leg.knee.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::controller_idx]);
+                    data->left_leg.knee.controller.parameter_set = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::parameter_set_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Left Knee : ");
+                        Serial.println(data->left_leg.knee.controller.controller);
+                    #endif
+                    break;
+                case (uint8_t)config_defs::joint_id::left_ankle:
+                    data->left_leg.ankle.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::controller_idx]);
+                    data->left_leg.ankle.controller.parameter_set = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::parameter_set_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Left Ankle : ");
+                        Serial.println(data->left_leg.ankle.controller.controller);
+                    #endif
+                    break;
+                // right
+                case (uint8_t)config_defs::joint_id::right_hip:
+                    data->right_leg.hip.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::controller_idx]);
+                    data->right_leg.hip.controller.parameter_set = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::parameter_set_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Right Hip : ");
+                        Serial.println(data->right_leg.hip.controller.controller);
+                    #endif
+                    break;
+                case (uint8_t)config_defs::joint_id::right_knee:
+                    data->right_leg.knee.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::controller_idx]);
+                    data->right_leg.knee.controller.parameter_set = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::parameter_set_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Right Knee : ");
+                        Serial.println(data->right_leg.knee.controller.controller);
+                    #endif
+                    break;
+                case (uint8_t)config_defs::joint_id::right_ankle:
+                    data->right_leg.ankle.controller.controller = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::controller_idx]);
+                    data->right_leg.ankle.controller.parameter_set = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::parameter_set_idx]);
+                    #ifdef SPI_DEBUG
+                        Serial.print("Right Ankle : ");
+                        Serial.println(data->right_leg.ankle.controller.controller);
+                    #endif
+                    break;
+            }
+        };
+        
+        void unpack_calibrate_fsr_workaround(uint8_t* controller_message, ExoData* data)
+        {
+            data->left_leg.do_calibration_heel_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::left_heel_cal_idx]);
+            data->left_leg.do_calibration_toe_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::left_toe_cal_idx]);
+            data->right_leg.do_calibration_heel_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::right_heel_cal_idx]);
+            data->right_leg.do_calibration_toe_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::right_toe_cal_idx]);
+            
+            data->left_leg.do_calibration_refinement_heel_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::left_heel_refine_idx]);
+            data->left_leg.do_calibration_refinement_toe_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::left_toe_refine_idx]);
+            data->right_leg.do_calibration_refinement_heel_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::right_heel_refine_idx]);
+            data->right_leg.do_calibration_refinement_toe_fsr = fe_to_ff_check(controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::right_toe_refine_idx]);
+            
+            #ifdef SPI_DEBUG
+                Serial.println("calibrate_fsr_workaround");
+                Serial.print("\t");
+                Serial.print(data->left_leg.do_calibration_heel_fsr);
+                Serial.print("\t");
+                Serial.print(data->left_leg.do_calibration_toe_fsr);
+                Serial.print("\t");
+                Serial.print(data->right_leg.do_calibration_heel_fsr);
+                Serial.print("\t");
+                Serial.println(data->right_leg.do_calibration_toe_fsr);
+                
+                Serial.print("\t");
+                Serial.print(data->left_leg.do_calibration_refinement_heel_fsr);
+                Serial.print("\t");
+                Serial.print(data->left_leg.do_calibration_refinement_toe_fsr);
+                Serial.print("\t");
+                Serial.print(data->right_leg.do_calibration_refinement_heel_fsr);
+                Serial.print("\t");
+                Serial.println(data->right_leg.do_calibration_refinement_toe_fsr);
+            #endif
+        };
+        
     }    
     
     
@@ -1605,7 +1773,9 @@ namespace spi_data_idx // read data that changes each loop
             Serial.println(_peripheral_message[running_idx_cnt + spi_data_idx::exo::sync_led_state]);
         #endif
         // send exo top level data
-        _data->status = fe_to_ff_check(_peripheral_message[running_idx_cnt + spi_data_idx::exo::exo_status]);
+        uint16_t low = fe_to_ff_check(_peripheral_message[running_idx_cnt + spi_data_idx::exo::exo_status]);
+        uint16_t high = fe_to_ff_check(_peripheral_message[running_idx_cnt + spi_data_idx::exo::exo_status + 1]);
+        _data->status = low | (high<<8);
         _data->sync_led_state = fe_to_ff_check(_peripheral_message[running_idx_cnt + spi_data_idx::exo::sync_led_state]);
         running_idx_cnt += spi_data_idx::exo::idx_cnt;
         #ifdef SPI_DEBUG
@@ -1910,251 +2080,44 @@ namespace spi_data_idx // read data that changes each loop
         switch (_command)
         {
             case spi_cmd::send_data_exo::id:
-                
-                for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
-                {
-                    _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
-                }
-                
-                // potential to optimize with fill
-                for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes; i<_msg_len; i++)
-                {
-                    _controller_message[i] = 0;
-                }
+                _pack_send_data_exo();
                 break;
             case spi_cmd::send_config::id:
-               
-                for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
-                {
-                    _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
-                }
-                
-                for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes; i<_msg_len; i++)
-                {
-                    _controller_message[i] = 0;
-                }
+               _pack_send_config();
                 break;
             case spi_cmd::null_cmd::id:
-                
-                for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
-                {
-                    _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
-                }
-                
-                for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes; i<_msg_len; i++)
-                {
-                    _controller_message[i] = 0;
-                }
+                _pack_null_cmd();
                 break;
             case spi_cmd::update_controller::id:
-                
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::joint_id_idx] = ff_to_fe_check(_joint_id);
-                
-                switch (_joint_id)
-                {
-                    
-                    // left
-                    case (uint8_t)config_defs::joint_id::left_hip:
-                        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx] = ff_to_fe_check(_data->left_leg.hip.controller.controller);
-                        break;
-                    case (uint8_t)config_defs::joint_id::left_knee:
-                        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx] = ff_to_fe_check(_data->left_leg.knee.controller.controller);
-                        break;
-                    case (uint8_t)config_defs::joint_id::left_ankle:
-                        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx] = ff_to_fe_check(_data->left_leg.ankle.controller.controller);
-                        break;
-                    // right
-                    case (uint8_t)config_defs::joint_id::right_hip:
-                        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx] = ff_to_fe_check(_data->right_leg.hip.controller.controller);
-                        break;
-                    case (uint8_t)config_defs::joint_id::right_knee:
-                        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx] = ff_to_fe_check(_data->right_leg.knee.controller.controller);
-                        break;
-                    case (uint8_t)config_defs::joint_id::right_ankle:
-                        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx] = ff_to_fe_check(_data->right_leg.ankle.controller.controller);
-                        break;
-                }
-                
-                for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
-                {
-                    _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
-                }
-                
-                // fill in the rest of the message with zeros.  If the _data_len is is shorter than the controller message i will equal param length and the loop will be skipped.
-                for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::param_len; i<_msg_len; i++)
-                {
-                    _controller_message[i] = 0;
-                }
+                _pack_update_controller();
                 break;
             case spi_cmd::update_controller_params::id:
-            
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::joint_id_idx] = ff_to_fe_check(_joint_id);
-                
-                switch (_joint_id)
-                {
-                    // left
-                    case (uint8_t)config_defs::joint_id::left_hip:
-                        for (int message_idx = spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
-                        {
-                            _pack_float(_controller_message, spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + message_idx, _data->left_leg.hip.controller.parameters[parameter_idx]);
-                        }
-                        break;
-                    case (uint8_t)config_defs::joint_id::left_knee:
-                        for (int message_idx = spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
-                        {
-                            _pack_float(_controller_message, spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + message_idx, _data->left_leg.knee.controller.parameters[parameter_idx]);
-                        }
-                        break;
-                    case (uint8_t)config_defs::joint_id::left_ankle:
-                        for (int message_idx = spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
-                        {
-                            _pack_float(_controller_message, spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + message_idx, _data->left_leg.ankle.controller.parameters[parameter_idx]);
-                        }
-                        break;
-                    // right
-                    case (uint8_t)config_defs::joint_id::right_hip:
-                        for (int message_idx = spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
-                        {
-                            _pack_float(_controller_message, spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + message_idx, _data->right_leg.hip.controller.parameters[parameter_idx]);
-                        }
-                        break;
-                    case (uint8_t)config_defs::joint_id::right_knee:
-                        for (int message_idx = spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
-                        {
-                            _pack_float(_controller_message, spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + message_idx, _data->right_leg.knee.controller.parameters[parameter_idx]);
-                        }
-                        break;
-                    case (uint8_t)config_defs::joint_id::right_ankle:
-                        for (int message_idx = spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
-                        {
-                            _pack_float(_controller_message, spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + message_idx, _data->right_leg.ankle.controller.parameters[parameter_idx]);
-                        }
-                        break;
-                }
-                
-                for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
-                {
-                    _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
-                }
-                
-                // fill in the rest of the message with zeros.  If the _data_len is is shorter than the controller message i will equal param length and the loop will be skipped.
-                for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_len; i<_msg_len; i++)
-                {
-                    _controller_message[i] = 0;
-                }
-                
+                _pack_update_controller_params();
                 break;
             case spi_cmd::calibrate_torque_sensor::id:
-                
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::joint_id_idx] = ff_to_fe_check(_joint_id);
-                
-                
-                switch (_joint_id)
-                {
-                    // left
-                    case (uint8_t)config_defs::joint_id::left_hip:
-                        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx] = ff_to_fe_check(_data->left_leg.hip.calibrate_torque_sensor);
-                        break;
-                    case (uint8_t)config_defs::joint_id::left_knee:
-                        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx] = ff_to_fe_check(_data->left_leg.knee.calibrate_torque_sensor);
-                        break;
-                    case (uint8_t)config_defs::joint_id::left_ankle:
-                        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx] = ff_to_fe_check(_data->left_leg.ankle.calibrate_torque_sensor);
-                        break;
-                    // right
-                    case (uint8_t)config_defs::joint_id::right_hip:
-                        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx] = ff_to_fe_check(_data->right_leg.hip.calibrate_torque_sensor);
-                        break;
-                    case (uint8_t)config_defs::joint_id::right_knee:
-                        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx] = ff_to_fe_check(_data->right_leg.knee.calibrate_torque_sensor);
-                        break;
-                    case (uint8_t)config_defs::joint_id::right_ankle:
-                        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx] = ff_to_fe_check(_data->right_leg.ankle.calibrate_torque_sensor);
-                        break;
-                }
-                
-                for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
-                {
-                    _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
-                }
-                
-                // fill in the rest of the message with zeros.  If the _data_len is is shorter than the controller message i will equal param length and the loop will be skipped.
-                for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::param_len; i<_msg_len; i++)
-                {
-                    _controller_message[i] = 0;
-                }
+                _pack_calibrate_torque_sensor();
                 break;
             case spi_cmd::calibrate_fsr::id:
-            
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::left_heel_idx] = ff_to_fe_check(_data->left_leg.do_calibration_heel_fsr);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::left_toe_idx] = ff_to_fe_check(_data->left_leg.do_calibration_toe_fsr);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::right_heel_idx] = ff_to_fe_check(_data->right_leg.do_calibration_heel_fsr);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::right_toe_idx] = ff_to_fe_check(_data->right_leg.do_calibration_toe_fsr);
-                
-                for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
-                {
-                    _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
-                }
-                
-                for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::param_len; i<_msg_len; i++)
-                {
-                    _controller_message[i] = 0;
-                }
+                _pack_calibrate_fsr();
                 break;
             case spi_cmd::refine_fsr::id:
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::refine_fsr::left_heel_idx] = ff_to_fe_check(_data->left_leg.do_calibration_refinement_heel_fsr);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::refine_fsr::left_toe_idx] = ff_to_fe_check(_data->left_leg.do_calibration_refinement_toe_fsr);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::refine_fsr::right_heel_idx] = ff_to_fe_check(_data->right_leg.do_calibration_refinement_heel_fsr);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::refine_fsr::right_toe_idx] = ff_to_fe_check(_data->right_leg.do_calibration_refinement_toe_fsr);
-                
-                for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
-                {
-                    _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
-                }
-                
-                for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::refine_fsr::param_len; i<_msg_len; i++)
-                {
-                    _controller_message[i] = 0;
-                }
+                _pack_refine_fsr();
                 break;
             case spi_cmd::motor_enable_disable::id:
-                
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_hip_idx] = ff_to_fe_check(_data->left_leg.hip.motor.enabled);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_knee_idx] = ff_to_fe_check(_data->left_leg.knee.motor.enabled);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_ankle_idx] = ff_to_fe_check(_data->left_leg.ankle.motor.enabled);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_hip_idx] = ff_to_fe_check(_data->right_leg.hip.motor.enabled);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_knee_idx] = ff_to_fe_check(_data->right_leg.knee.motor.enabled);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_ankle_idx] = ff_to_fe_check(_data->right_leg.ankle.motor.enabled);
-                
-                for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
-                {
-                    _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
-                }
-                
-                for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::param_len; i<_msg_len; i++)
-                {
-                    _controller_message[i] = 0;
-                }
+                _pack_motor_enable_disable();
                 break;
             case spi_cmd::motor_zero::id:
-                
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_hip_idx] = ff_to_fe_check(_data->left_leg.hip.motor.do_zero);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_knee_idx] = ff_to_fe_check(_data->left_leg.knee.motor.do_zero);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_ankle_idx] = ff_to_fe_check(_data->left_leg.ankle.motor.do_zero);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_hip_idx] = ff_to_fe_check(_data->right_leg.hip.motor.do_zero);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_knee_idx] = ff_to_fe_check(_data->right_leg.knee.motor.do_zero);
-                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_ankle_idx] = ff_to_fe_check(_data->right_leg.ankle.motor.do_zero);
-                
-                for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
-                {
-                    _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
-                }
-                
-                for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_zero::param_len; i<_msg_len; i++)
-                {
-                    _controller_message[i] = 0;
-                }
+                _pack_motor_zero();
                 break;
+            case spi_cmd::update_status::id:
+                _pack_update_status();
+                break;    
+            case spi_cmd::update_controller_params_workaround::id:
+                _pack_update_controller_params_workaround();
+                break;    
+            case spi_cmd::calibrate_fsr_workaround::id:
+                _pack_calibrate_fsr_workaround();
+                break;    
             // case spi_cmd::::id:
                 
                 // break;               
@@ -2233,7 +2196,348 @@ namespace spi_data_idx // read data that changes each loop
         
     };
     
+    void SPIHandler::_pack_null_cmd()
+    {
+        for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
+        {
+            _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
+        }
+        
+        for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes; i<_msg_len; i++)
+        {
+            _controller_message[i] = 0;
+        }
+    };
     
+    void SPIHandler::_pack_send_config()
+    {
+        for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
+        {
+            _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
+        }
+        
+        for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes; i<_msg_len; i++)
+        {
+            _controller_message[i] = 0;
+        }
+    };
     
+    void SPIHandler::_pack_send_data_exo()
+    {
+        
+        for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
+        {
+            _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
+        }
+        
+        // potential to optimize with fill
+        for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes; i<_msg_len; i++)
+        {
+            _controller_message[i] = 0;
+        }
+    };
+    
+    void SPIHandler::_pack_update_controller()
+    {
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::joint_id_idx] = ff_to_fe_check(_joint_id);
+                
+        switch (_joint_id)
+        {
+            
+            // left
+            case (uint8_t)config_defs::joint_id::left_hip:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx] = ff_to_fe_check(_data->left_leg.hip.controller.controller);
+                break;
+            case (uint8_t)config_defs::joint_id::left_knee:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx] = ff_to_fe_check(_data->left_leg.knee.controller.controller);
+                break;
+            case (uint8_t)config_defs::joint_id::left_ankle:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx] = ff_to_fe_check(_data->left_leg.ankle.controller.controller);
+                break;
+            // right
+            case (uint8_t)config_defs::joint_id::right_hip:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx] = ff_to_fe_check(_data->right_leg.hip.controller.controller);
+                break;
+            case (uint8_t)config_defs::joint_id::right_knee:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx] = ff_to_fe_check(_data->right_leg.knee.controller.controller);
+                break;
+            case (uint8_t)config_defs::joint_id::right_ankle:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::controller_idx] = ff_to_fe_check(_data->right_leg.ankle.controller.controller);
+                break;
+        }
+        
+        for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
+        {
+            _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
+        }
+        
+        // fill in the rest of the message with zeros.  If the _data_len is is shorter than the controller message i will equal param length and the loop will be skipped.
+        for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller::param_len; i<_msg_len; i++)
+        {
+            _controller_message[i] = 0;
+        }
+    };
+    
+    void SPIHandler::_pack_update_controller_params()
+    {
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::joint_id_idx] = ff_to_fe_check(_joint_id);
+                
+        switch (_joint_id)
+        {
+            // left
+            case (uint8_t)config_defs::joint_id::left_hip:
+                for (int message_idx = spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
+                {
+                    _pack_float(_controller_message, spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + message_idx, _data->left_leg.hip.controller.parameters[parameter_idx]);
+                }
+                break;
+            case (uint8_t)config_defs::joint_id::left_knee:
+                for (int message_idx = spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
+                {
+                    _pack_float(_controller_message, spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + message_idx, _data->left_leg.knee.controller.parameters[parameter_idx]);
+                }
+                break;
+            case (uint8_t)config_defs::joint_id::left_ankle:
+                for (int message_idx = spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
+                {
+                    _pack_float(_controller_message, spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + message_idx, _data->left_leg.ankle.controller.parameters[parameter_idx]);
+                }
+                break;
+            // right
+            case (uint8_t)config_defs::joint_id::right_hip:
+                for (int message_idx = spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
+                {
+                    _pack_float(_controller_message, spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + message_idx, _data->right_leg.hip.controller.parameters[parameter_idx]);
+                }
+                break;
+            case (uint8_t)config_defs::joint_id::right_knee:
+                for (int message_idx = spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
+                {
+                    _pack_float(_controller_message, spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + message_idx, _data->right_leg.knee.controller.parameters[parameter_idx]);
+                }
+                break;
+            case (uint8_t)config_defs::joint_id::right_ankle:
+                for (int message_idx = spi_cmd::update_controller_params::param_start_idx, parameter_idx = 0; message_idx <= spi_cmd::update_controller_params::param_stop_idx; message_idx += sizeof(SPI_DATA_TYPE), parameter_idx++)
+                {
+                    _pack_float(_controller_message, spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + message_idx, _data->right_leg.ankle.controller.parameters[parameter_idx]);
+                }
+                break;
+        }
+        
+        for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
+        {
+            _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
+        }
+        
+        // fill in the rest of the message with zeros.  If the _data_len is is shorter than the controller message i will equal param length and the loop will be skipped.
+        for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params::param_len; i<_msg_len; i++)
+        {
+            _controller_message[i] = 0;
+        }
+                
+    };
+    
+    void SPIHandler::_pack_calibrate_torque_sensor()
+    {
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::joint_id_idx] = ff_to_fe_check(_joint_id);
+                
+                
+        switch (_joint_id)
+        {
+            // left
+            case (uint8_t)config_defs::joint_id::left_hip:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx] = ff_to_fe_check(_data->left_leg.hip.calibrate_torque_sensor);
+                break;
+            case (uint8_t)config_defs::joint_id::left_knee:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx] = ff_to_fe_check(_data->left_leg.knee.calibrate_torque_sensor);
+                break;
+            case (uint8_t)config_defs::joint_id::left_ankle:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx] = ff_to_fe_check(_data->left_leg.ankle.calibrate_torque_sensor);
+                break;
+            // right
+            case (uint8_t)config_defs::joint_id::right_hip:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx] = ff_to_fe_check(_data->right_leg.hip.calibrate_torque_sensor);
+                break;
+            case (uint8_t)config_defs::joint_id::right_knee:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx] = ff_to_fe_check(_data->right_leg.knee.calibrate_torque_sensor);
+                break;
+            case (uint8_t)config_defs::joint_id::right_ankle:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::calibrate_torque_sensor_idx] = ff_to_fe_check(_data->right_leg.ankle.calibrate_torque_sensor);
+                break;
+        }
+        
+        for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
+        {
+            _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
+        }
+        
+        // fill in the rest of the message with zeros.  If the _data_len is is shorter than the controller message i will equal param length and the loop will be skipped.
+        for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_torque_sensor::param_len; i<_msg_len; i++)
+        {
+            _controller_message[i] = 0;
+        }
+    };
+    
+    void SPIHandler::_pack_calibrate_fsr()
+    {
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::left_heel_idx] = ff_to_fe_check(_data->left_leg.do_calibration_heel_fsr);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::left_toe_idx] = ff_to_fe_check(_data->left_leg.do_calibration_toe_fsr);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::right_heel_idx] = ff_to_fe_check(_data->right_leg.do_calibration_heel_fsr);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::right_toe_idx] = ff_to_fe_check(_data->right_leg.do_calibration_toe_fsr);
+        
+        for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
+        {
+            _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
+        }
+        
+        for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr::param_len; i<_msg_len; i++)
+        {
+            _controller_message[i] = 0;
+        }
+    };
+    
+    void SPIHandler::_pack_refine_fsr()
+    {
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::refine_fsr::left_heel_idx] = ff_to_fe_check(_data->left_leg.do_calibration_refinement_heel_fsr);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::refine_fsr::left_toe_idx] = ff_to_fe_check(_data->left_leg.do_calibration_refinement_toe_fsr);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::refine_fsr::right_heel_idx] = ff_to_fe_check(_data->right_leg.do_calibration_refinement_heel_fsr);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::refine_fsr::right_toe_idx] = ff_to_fe_check(_data->right_leg.do_calibration_refinement_toe_fsr);
+        
+        for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
+        {
+            _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
+        }
+        
+        for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::refine_fsr::param_len; i<_msg_len; i++)
+        {
+            _controller_message[i] = 0;
+        }
+    };
+    
+    void SPIHandler::_pack_motor_enable_disable()
+    {
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_hip_idx] = ff_to_fe_check(_data->left_leg.hip.motor.enabled);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_knee_idx] = ff_to_fe_check(_data->left_leg.knee.motor.enabled);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_ankle_idx] = ff_to_fe_check(_data->left_leg.ankle.motor.enabled);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_hip_idx] = ff_to_fe_check(_data->right_leg.hip.motor.enabled);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_knee_idx] = ff_to_fe_check(_data->right_leg.knee.motor.enabled);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_ankle_idx] = ff_to_fe_check(_data->right_leg.ankle.motor.enabled);
+        
+        for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
+        {
+            _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
+        }
+        
+        for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::param_len; i<_msg_len; i++)
+        {
+            _controller_message[i] = 0;
+        }
+    };
+    
+    void SPIHandler::_pack_motor_zero()
+    {
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_hip_idx] = ff_to_fe_check(_data->left_leg.hip.motor.do_zero);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_knee_idx] = ff_to_fe_check(_data->left_leg.knee.motor.do_zero);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::left_ankle_idx] = ff_to_fe_check(_data->left_leg.ankle.motor.do_zero);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_hip_idx] = ff_to_fe_check(_data->right_leg.hip.motor.do_zero);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_knee_idx] = ff_to_fe_check(_data->right_leg.knee.motor.do_zero);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_enable_disable::right_ankle_idx] = ff_to_fe_check(_data->right_leg.ankle.motor.do_zero);
+        
+        for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
+        {
+            _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
+        }
+        
+        for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::motor_zero::param_len; i<_msg_len; i++)
+        {
+            _controller_message[i] = 0;
+        }
+    };
+    
+    void SPIHandler::_pack_update_status()
+    {
+        uint16_t val = _data->status;
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_status::status_idx] = (uint8_t)val;
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_status::status_idx + 1] = (uint8_t)(val>>8);
+        for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
+        {
+            _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
+        }
+        
+        // fill in the rest of the message with zeros.  If the _data_len is is shorter than the controller message i will equal param length and the loop will be skipped.
+        for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_status::param_len; i<_msg_len; i++)
+        {
+            _controller_message[i] = 0;
+        }
+    };
+    
+    void SPIHandler::_pack_update_controller_params_workaround()
+    {
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::joint_id_idx] = ff_to_fe_check(_joint_id);
+                
+        switch (_joint_id)
+        {
+            // left
+            case (uint8_t)config_defs::joint_id::left_hip:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::controller_idx] = ff_to_fe_check(_data->left_leg.hip.controller.controller);
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::parameter_set_idx] = ff_to_fe_check(_data->left_leg.hip.controller.parameter_set);
+                break;
+            case (uint8_t)config_defs::joint_id::left_knee:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::controller_idx] = ff_to_fe_check(_data->left_leg.knee.controller.controller);
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::parameter_set_idx] = ff_to_fe_check(_data->left_leg.knee.controller.parameter_set);
+                break;
+            case (uint8_t)config_defs::joint_id::left_ankle:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::controller_idx] = ff_to_fe_check(_data->left_leg.ankle.controller.controller);
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::parameter_set_idx] = ff_to_fe_check(_data->left_leg.ankle.controller.parameter_set);
+                break;
+            // right
+            case (uint8_t)config_defs::joint_id::right_hip:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::controller_idx] = ff_to_fe_check(_data->right_leg.hip.controller.controller);
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::parameter_set_idx] = ff_to_fe_check(_data->right_leg.hip.controller.parameter_set);
+                break;
+            case (uint8_t)config_defs::joint_id::right_knee:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::controller_idx] = ff_to_fe_check(_data->right_leg.knee.controller.controller);
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::parameter_set_idx] = ff_to_fe_check(_data->right_leg.knee.controller.parameter_set);
+                break;
+            case (uint8_t)config_defs::joint_id::right_ankle:
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::controller_idx] = ff_to_fe_check(_data->right_leg.ankle.controller.controller);
+                _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::parameter_set_idx] = ff_to_fe_check(_data->right_leg.ankle.controller.parameter_set);
+                break;
+        }
+        
+        for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
+        {
+            _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
+        }
+        
+        // fill in the rest of the message with zeros.  If the _data_len is is shorter than the controller message i will equal param length and the loop will be skipped.
+        for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::update_controller_params_workaround::param_len; i<_msg_len; i++)
+        {
+            _controller_message[i] = 0;
+        }
+    };
+    
+    void SPIHandler::_pack_calibrate_fsr_workaround()
+    {
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::left_heel_cal_idx] = ff_to_fe_check(_data->left_leg.do_calibration_heel_fsr);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::left_toe_cal_idx] = ff_to_fe_check(_data->left_leg.do_calibration_toe_fsr);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::right_heel_cal_idx] = ff_to_fe_check(_data->right_leg.do_calibration_heel_fsr);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::right_toe_cal_idx] = ff_to_fe_check(_data->right_leg.do_calibration_toe_fsr);
+        
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::left_heel_refine_idx] = ff_to_fe_check(_data->left_leg.do_calibration_refinement_heel_fsr);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::left_toe_refine_idx] = ff_to_fe_check(_data->left_leg.do_calibration_refinement_toe_fsr);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::right_heel_refine_idx] = ff_to_fe_check(_data->right_leg.do_calibration_refinement_heel_fsr);
+        _controller_message[spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::right_toe_refine_idx] = ff_to_fe_check(_data->right_leg.do_calibration_refinement_toe_fsr);
+        
+        for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
+        {
+            _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
+        }
+        
+        for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::calibrate_fsr_workaround::param_len; i<_msg_len; i++)
+        {
+            _controller_message[i] = 0;
+        }
+    };
 
 #endif
