@@ -432,6 +432,10 @@
                     // check file exists
                     if (param_file)
                     {   
+                
+                        // set the parameters.
+                        uint8_t param_num = 0;
+                        float read_val = 0;
                         while(param_file.available())
                         {
                             // First value should be header size
@@ -484,9 +488,7 @@
                             #ifdef SD_PARAM_DEBUG
                                 Serial.println("set_controller_params : reset to line start");
                             #endif
-                            // set the parameters.
-                            uint8_t param_num = 0;
-                            float read_val = 0;
+                            
                             if(utils::get_is_left(joint_id))
                             {
                                 #ifdef SD_PARAM_DEBUG
