@@ -230,10 +230,41 @@ TODO: Update when the app portion is incorporated.
 
 ***
 ## SD Card  
+The files for the SD card can be found in the [SDCard](/SDCard/) folder in the main directory.
+The contents of this file should be copied to the root of the SD card, e.g. when you open the SD Card you should see config.ini.
+The file contains the configuration file and the parameter files for the controllers.
+These parameter files are a temporary measure till the new app is running.
 
 ### SD Configuration  
+[config.ini](/SDCard/config.ini) is used to tell the code how they system is configured.
+The fields should all be less than 25 characters as that is limited by the size of the array that is parsing it. 
+The file is broken into sections denoted by being in \[\], e.g. \[Board\], containing information related to the board.  
+This separates information that is related into groups.
+Within the section you have keys, these contain the information, e.g. version = 0.1.
+The key names shouldn't be modified, version, as the parser is looking for the specific name but the value can be, 0.1.
+
+We have some premade exoskeleton configurations you can choose from by putting their name in the Exo section.
+Just check to make sure the settings in that section match your system.
+If we are using a bilateral hip system we would set ```\[Exo\] name = bilateralHip```, then go to the section \[bilateralHip\] and check it matches the system we are using.
+- sides - are you using the left, right, or both sides.
+- hip, knee, ankle - sets the type of motor the joint uses.
+- gear ratio - sets the transmission ratio for the joint torque to the motor output torque.  If the motor has a built in gearbox that should not appear here.
+- default controller - is the controller the system starts with.
+- flip dir - is if the direction of the motor values should be flipped.  For example if we have two motors pointing in towards the hip and both rotate counter clockwise with a positive current one of them will need to be sent a negative current so they both rotate in the same direction on the body.  When a side is flipped the commands and angle measurements will be inverted automatically so sending a positive command to both motors will have them move the body in the same way.
 
 ### SD Controller Parameters 
+The parameters for each controller are stored in their corresponding joint folder.
+This way if both joints are using a zero torque controller but need different gains they can pull from different files.
+The files are comma separated value files, so there are commas between cells.
+The first cell in the *first* row contains the number of lines in the header, how many lines we need to get through to get to the parameters.
+The first cell in the *second* row contains the number of parameters to read.
+The rest of the header just contains useful info for the person, such as the parameter order.
+The first parameter row will be the default values, set 0.
+The nth parameter row is n-1 parameter set, e.g. parameter row 2 will be referenced as set 1.
+
+The order of the parameters should match how they appear in the parameter array which can be found in [ControllerData.h](/ExoCode/src/ControllerData.h). in the controller_defs namespace.
+
+These will be selected using  the update torque field in the app where you set the joint, controller, and parameter set.
 
 *** 
 ## Sensors
@@ -300,7 +331,6 @@ There are several variables in config.h that control the timing of data transmis
 
 ### Sending a Message
 If you would like to add a new message, see the "AddingNewBLEMessage" doc. The messages are all created in the ble_commands.h file. ble_commands.h also defines the functions that are called when a command is received. To send a new message you must package a BleMessage object with your desired command and data. The data must be packaged correctly, both in length and index. Currently there is no method to ensure the correct index is used for a specific command, but the length of the commands can be found in the ble namespace. Here is an example message (Sending messages must be done in the ComsMCU):
-    
 ```
 BleMessage batt_msg = BleMessage();
 batt_msg.command = ble_names::send_batt;
