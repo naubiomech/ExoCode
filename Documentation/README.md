@@ -30,7 +30,9 @@
     3. [Sending a Message](#sending-a-message)
 7. [Debugging](#debug) 
 8. [Resources](#resources)
-
+    1. [Lab Resources](#lab-resources)
+    1. [C++ Resources](#c-resources)
+    1. [Bluetooth Resources](#bluetooth-resources)
 ***
 ## Background 
 The code is written Arduino and C++.
@@ -269,10 +271,23 @@ These will be selected using  the update torque field in the app where you set t
 
 *** 
 ## Sensors
+Sensors do not have a shared interface(abstract class), although you could do this if you want.
+The sensors are designed to be stand alone so they do not need something like access to an ExoData object.
+With this they must be written so that they take in the information they need and return the info they need.
+
+For example the for the FSR to calibrate over a period of time they need to take in a command to calibrate but also to return when the calibration is finished.
 
 ### Sensor Structure 
+The main thing the sensors will need is a constructor to setup the interface.
+For most of the sensors they are just analog sensors so they will need the analog pin that is used.
+For some sensors though you may need to define a communication protocol like SPI or I<sup>2</sup>C.
+With these other interfaces you will need to make sure not to create conflicts with other systems using that interface.
 
 ### Adding New Sensors
+Details can be found in [Adding New Sensors](AddingNew/AddingNewSensors.md)
+Because the sensors don't have a common interface it is a bit more straight forward to add new ones.
+The main things you will need to decide is what part of the system makes the most sense for the part to live, e.g. exo, leg, joint.
+
 
 *** 
 ## Actuators
@@ -356,4 +371,12 @@ The reason we do it file by file rather than printing everything is because it a
 Even within this you may still want to comment out some of the prints within the file to really focus on the area you are using.
 
 ***
-## Resources 
+## Resources
+### Lab Resources
+[Arduino Instructions](https://docs.google.com/document/d/1ToLq6Zqv58Q4YEmf4SzqJDKCTp52LUaKgYg5vNmHdaI/edit?usp=sharing)
+
+### C++ Resources
+- [tutorialspoint](https://www.tutorialspoint.com/cplusplus/index.htm) 
+- [w3schools](https://www.w3schools.com/cpp/default.asp)
+
+### Bluetooth Resources
