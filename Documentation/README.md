@@ -28,7 +28,8 @@
     1. [Bluetooth Background](#bluetooth-background)
     2. [Bluetooth Structure](#bluetooth-structure)
     3. [Sending a Message](#sending-a-message)
-7. [Resources](#resources)
+7. [Debugging](#debug) 
+8. [Resources](#resources)
 
 ***
 ## Background 
@@ -338,6 +339,21 @@ batt_msg.expecting = ble_command_helpers::get_length_for_command(batt_msg.comman
 batt_msg.data[0] = _data->battery_value;
 _exo_ble->send_message(batt_msg);
 ```
+
+***
+## Debug
+In the top of many of the files you will see a define for debugging like ```#define EXO_DEBUG 1```.
+When this is present debug statements will print if they are in an ```#ifdef``` like:
+```
+#ifdef EXO_DEBUG
+    Serial.println("Exo :: Constructor : _data set");
+#endif
+```
+This is because serial printing is a pretty slow process, so you only want to do it if you are actively using it.
+So if you are adding a print statement you should wrap it in an ```#ifdef``` for that file.
+
+The reason we do it file by file rather than printing everything is because it allows you to focus in on the area you are working on.
+Even within this you may still want to comment out some of the prints within the file to really focus on the area you are using.
 
 ***
 ## Resources 
