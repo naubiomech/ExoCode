@@ -28,8 +28,11 @@
     1. [Bluetooth Background](#bluetooth-background)
     2. [Bluetooth Structure](#bluetooth-structure)
     3. [Sending a Message](#sending-a-message)
-7. [Resources](#resources)
-
+7. [Debugging](#debug) 
+8. [Resources](#resources)
+    1. [Lab Resources](#lab-resources)
+    1. [C++ Resources](#c-resources)
+    1. [Bluetooth Resources](#bluetooth-resources)
 ***
 ## Background 
 The code is written Arduino and C++.
@@ -162,6 +165,7 @@ First, you will need to connect the physical components.
 3. Similarly, sensors should be connected on the side used, and if associated with a motor next to that motor, e.g. if the right ankle has a torque sensor it should go below the right ankle communication connection, regardless of if another joint is used. 
 4. The control board may have multiple microcontrollers on it they should all be flashed with ExoCode.ino through the Arduino IDE.  The compiler will select the correct parts of the code to use if you select the correct microcontroller.    
     - Update /ExoCode/src/Config.h BOARD_VERSION with the version number found on the control board before compiling. 
+    - Update the libraries. Move the files/folders in the [Libraries Folder](/Libraries). To your local Folder C:\Users\[USER]\Documents\Arduino\libraries\ or system equivalent.  Details on the libraries that are used are used can be found in the main [README](/README.md#libraries)
     - [Arduino Instructions](https://docs.google.com/document/d/1ToLq6Zqv58Q4YEmf4SzqJDKCTp52LUaKgYg5vNmHdaI/edit?usp=sharing)
 5. Lastly, is the SD card.
     - Transfer the content of the SD Card folder to the micro SD card. 
@@ -268,28 +272,73 @@ These will be selected using  the update torque field in the app where you set t
 
 *** 
 ## Sensors
+Sensors do not have a shared interface(abstract class), although you could do this if you want.
+The sensors are designed to be stand alone so they do not need something like access to an ExoData object.
+With this they must be written so that they take in the information they need and return the info they need.
+
+For example the for the FSR to calibrate over a period of time they need to take in a command to calibrate but also to return when the calibration is finished.
 
 ### Sensor Structure 
+The main thing the sensors will need is a constructor to setup the interface.
+For most of the sensors they are just analog sensors so they will need the analog pin that is used.
+For some sensors though you may need to define a communication protocol like SPI or I<sup>2</sup>C.
+With these other interfaces you will need to make sure not to create conflicts with other systems using that interface.
 
 ### Adding New Sensors
+Details can be found in [Adding New Sensors](AddingNew/AddingNewSensors.md)
+
 
 *** 
 ## Actuators
+Actuators are setup so that the system can add multiple types of motors and select the correct one for the system at startup.
+The Joint instance will use a pointer to a motor instance.
+This motor instance will be set based on what is in the config.ini file on the SD card.
+To be able to call any type of motor we need to have a common interface which will be described next.
 
 ### Actuator Structure 
+As with most of the system there is a parallel data structure that follows the system structure.
+MotorData details can be found in [Data Structure](Structure/ExoDataStructure.md), but contains state and configuration information.  
+
+The motors should all inherit their interface from the abstract class _Motor  in [Motor.h](/ExoCode/src/Motor.h).
+This defines how other systems can call motors, that way the rest of the system doesn't need to know what specific motor you are using as they all have the same calls.
+Within this you can then define what that call does for the specific motor/type.
+With the CAN motors they have a separate class that this type of motor inherits since they all work in much the same way but have some parameters that are different.
+You can see this in the Motor.h file as 
+```
+class _CANMotor : public _Motor
+```
+and
+```
+class AK60 : public _CANMotor
+```
+
+Where _CANMotor inherits from _Motor and then the AK60 motor inherits from the _CANMotor class so it also gets the things that are in _Motor.
+More info on inheritance can be found on [tutorialspoint](https://www.tutorialspoint.com/cplusplus/cpp_inheritance.htm) or [w3schools](https://www.w3schools.com/cpp/cpp_inheritance.asp).
+
+We decided that the motors would always be used in torque control mode so transaction(torque) and send_data(torque), only take torque commands.
+If you need a position/velocity controller you will need to make this as a separate controller.
+This was done since most any motor will have access to torque controller, even if it is just driving current, but may not have other more advanced built in controllers.
+
 
 ### Adding New Actuators 
+Details can be found in [Adding New CAN Motor](AddingNew/AddingNewCanMotor.md).
+This is specifically for the TMotor CAN motors but can be adapted to new types of motors when we have them.
 
 ### T-motor Initialization 
+TMotor initialization information can be found in: [G:\Shared drives\Biomech_Lab\Manuals_Guides_Forms\TMotor AK Resources\Manuals](https://drive.google.com/drive/folders/1Zrfk-qxY8917pJ-qeVlzmoCAqcmfqqJG?usp=sharing)
 
 *** 
 ## Controllers 
 
+
 ### Controller Structure 
 
+
 ### Adding New Controllers
+Details can be found in [Adding New Controller](AddingNew/AddingNewController.md).
 
 ### Controller Parameters 
+ 
  
 #### Hip
 - [Stasis](Controllers/Stasis.md)
@@ -340,4 +389,27 @@ _exo_ble->send_message(batt_msg);
 ```
 
 ***
-## Resources 
+## Debug
+In the top of many of the files you will see a define for debugging like ```#define EXO_DEBUG 1```.
+When this is present debug statements will print if they are in an ```#ifdef``` like:
+```
+#ifdef EXO_DEBUG
+    Serial.println("Exo :: Constructor : _data set");
+#endif
+```
+This is because serial printing is a pretty slow process, so you only want to do it if you are actively using it.
+So if you are adding a print statement you should wrap it in an ```#ifdef``` for that file.
+
+The reason we do it file by file rather than printing everything is because it allows you to focus in on the area you are working on.
+Even within this you may still want to comment out some of the prints within the file to really focus on the area you are using.
+
+***
+## Resources
+### Lab Resources
+[Arduino Instructions](https://docs.google.com/document/d/1ToLq6Zqv58Q4YEmf4SzqJDKCTp52LUaKgYg5vNmHdaI/edit?usp=sharing)
+
+### C++ Resources
+- [tutorialspoint](https://www.tutorialspoint.com/cplusplus/index.htm) 
+- [w3schools](https://www.w3schools.com/cpp/default.asp)
+
+### Bluetooth Resources

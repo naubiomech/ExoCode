@@ -93,7 +93,7 @@ void BleParser::_handle_command(char command)
 {
     int length = -1;
     //Get the ammount of characters to wait for
-    for(int i=0; i < sizeof(ble::commands)/sizeof(ble::commands[0]); i++)
+    for(unsigned int i=0; i < sizeof(ble::commands)/sizeof(ble::commands[0]); i++)
     {
         if(command == ble::commands[i].command)
         {

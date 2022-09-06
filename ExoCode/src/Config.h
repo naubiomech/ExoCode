@@ -36,6 +36,6 @@
     
     namespace SPI_times
     {
-        const float UPDATE_PERIOD= 100000; //microseconds
+        const float UPDATE_PERIOD= 1000000;//10000; //microseconds
     }
 #endif
