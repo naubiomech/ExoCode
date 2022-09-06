@@ -79,6 +79,7 @@ void ComsMCU::update_spi()
     
     if (del_t > SPI_times::UPDATE_PERIOD)
     {
+        _data->right_leg.hip.motor.p_des++;
         spi_joint_pair_t spi_msg_pair = spi_queue::pop();
         if (0!=spi_msg_pair.spi_id)
         {
@@ -86,9 +87,11 @@ void ComsMCU::update_spi()
         }
         else
         {
-            spi_handler.transaction(spi_cmd::send_data_exo::id);
+            //spi_handler.transaction(spi_cmd::send_data_exo::id);
+            spi_handler.transaction(spi_cmd::test_cmd::id);
         }
         del_t = 0;
+        _data->print();
     }
     
 }

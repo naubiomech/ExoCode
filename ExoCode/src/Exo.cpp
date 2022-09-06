@@ -6,7 +6,7 @@
 #include "Exo.h"
 #include "Time_Helper.h"
 
-//#define EXO_DEBUG 1
+#define EXO_DEBUG 1
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
@@ -89,6 +89,8 @@ void Exo::run()
             // Serial.println(delta_t);
             // Serial.println(((float)1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
         #endif
+        // !!TESTING
+        data->right_leg.ankle.motor.p_des++;
         delta_t = 0;
         // send data over SPI
     }

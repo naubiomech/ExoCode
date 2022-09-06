@@ -41,6 +41,7 @@ class ExoData
         ExoData(uint8_t* config_to_send); // constructor
         void reconfigure(uint8_t* config_to_send);
         void for_each_joint(for_each_joint_function_t function);
+        void print();
         
         uint16_t status;
         bool sync_led_state;

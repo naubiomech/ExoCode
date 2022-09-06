@@ -108,6 +108,14 @@ namespace spi_cmd
         const uint8_t param_len = 0;  // need to decide if we want to separate by class type, e.g. read exo, read leg, read motor and just pull in the specific info, this could speed up unilateral system or systems where joints are not used.
         
     }
+    
+    namespace test_cmd
+    {
+        const uint8_t id = 0xFD;
+        const uint8_t val_idx = 0;
+        const uint8_t param_len = 1*sizeof(SPI_DATA_TYPE);  // need to decide if we want to separate by class type, e.g. read exo, read leg, read motor and just pull in the specific info, this could speed up unilateral system or systems where joints are not used.
+        
+    }
     // Request data 
     namespace send_config
     {
@@ -309,6 +317,8 @@ uint8_t get_data_len(uint8_t* config_to_send); // done
     namespace static_spi_handler
     {
         uint8_t peripheral_transaction(SPISlave_T4<&SPI, SPI_8_BITS> my_spi, uint8_t* config_to_send, ExoData* data); // done
+        uint8_t peripheral_transaction(SPISlave_T4<&SPI, SPI_8_BITS> my_spi, uint8_t* config_to_send, ExoData* data, uint8_t* cmd, uint8_t* controller_message, uint8_t msg_len, bool do_parse);
+        
         const uint8_t padding = spi_data_idx::base_idx_cnt + 1;//one extra for length, one for cmd, one for the end padding
         void pack_float(uint8_t* message, uint8_t start_idx, float val);  // done
         float unpack_float(uint8_t* message, uint8_t start_idx);  // done
@@ -325,6 +335,7 @@ uint8_t get_data_len(uint8_t* config_to_send); // done
         void print_debug(uint16_t debug_location);
         
         void unpack_null_cmd(uint8_t* controller_message, ExoData* data);
+        void unpack_test_cmd(uint8_t* controller_message, ExoData* data);
         void unpack_send_config(uint8_t* controller_message, ExoData* data);
         void unpack_send_data_exo(uint8_t* controller_message, ExoData* data);
         void unpack_update_controller(uint8_t* controller_message, ExoData* data);
@@ -401,6 +412,7 @@ uint8_t get_data_len(uint8_t* config_to_send); // done
             void _clear_message(); // done
             
             void _pack_null_cmd(); 
+            void _pack_test_cmd();
             void _pack_send_config(); 
             void _pack_send_data_exo(); 
             void _pack_update_controller(); 

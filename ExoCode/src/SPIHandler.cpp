@@ -7,9 +7,8 @@
 #include "Arduino.h"
 #include <vector>
 
-#define SPI_DEBUG
+// #define SPI_DEBUG
 //#define SPI_DEBUG_RAW 
-// TODO::update status to uint16_t
 
 
 /*
@@ -307,11 +306,23 @@ namespace spi_data_idx // read data that changes each loop
     // ===========================================================================================================  
     namespace static_spi_handler
     {   
+    
+        // used to keep the original call when creating one that does not parse.
         uint8_t peripheral_transaction(SPISlave_T4<&SPI, SPI_8_BITS> my_spi, uint8_t* config_to_send, ExoData* data)
         {
             uint8_t msg_len = padding + max(max(spi_cmd::max_param_len, get_data_len(config_to_send)), ini_config::number_of_keys) + spi_data_idx::is_ff::num_bytes;
-        
             uint8_t controller_message[msg_len];
+            uint8_t cmd = 0;
+            bool do_parse = true;
+            
+            
+            return static_spi_handler::peripheral_transaction(my_spi, config_to_send, data, &cmd, controller_message, msg_len, do_parse);
+            
+        }
+        
+        uint8_t peripheral_transaction(SPISlave_T4<&SPI, SPI_8_BITS> my_spi, uint8_t* config_to_send, ExoData* data, uint8_t* cmd, uint8_t* controller_message, uint8_t msg_len, bool do_parse)
+        {
+            
             uint8_t peripheral_message[msg_len];
             
             #ifdef SPI_DEBUG_RAW
@@ -326,9 +337,6 @@ namespace spi_data_idx // read data that changes each loop
             peripheral_message[spi_data_idx::recv_cmd_idx] = 0; //dummy value to be traded when controller sends cmd
             
             uint8_t debug_location = 0;
-            
-            uint8_t cmd = 0;
-            
             
             uint8_t i = 0;// send idx
             uint8_t j = 0;// recv idx
@@ -351,10 +359,10 @@ namespace spi_data_idx // read data that changes each loop
                     // this method can potentially introduce errors if the j is not aligned with i
                     if(spi_data_idx::send_cmd_idx==j)
                     {
-                        cmd = controller_message[j];
-                        if (cmd != spi_cmd::send_config::id)
+                        *cmd = controller_message[j];
+                        if (*cmd != spi_cmd::send_config::id)
                         {
-                            pack_data(peripheral_message, cmd, config_to_send, data, msg_len); 
+                            pack_data(peripheral_message, *cmd, config_to_send, data, msg_len); 
                             debug_location = utils::update_bit(debug_location, 1, debug_send_data_bit);
                         }
                         else
@@ -384,21 +392,24 @@ namespace spi_data_idx // read data that changes each loop
                 //is_unread_message = true;
                 }
             }
-        
-            parse_message(controller_message, cmd, data);
-            #ifdef SPI_DEBUG_RAW
-                Serial.println("\n\nstatic_spi_handler::peripheral_transaction : \n#######################\n[i]\t:\tcont\t:\tperip");
-                for( unsigned int i = 0; i<sizeof(peripheral_message); i++)
-                {
-                    Serial.print("[");
-                    Serial.print(i);
-                    Serial.print("]\t:\t");
-                    Serial.print(controller_message[i]);
-                    Serial.print("\t:\t");
-                    Serial.println(peripheral_message[i]);
-                }
+            if(do_parse)
+            {
+                parse_message(controller_message, *cmd, data);
                 
-            #endif
+                #ifdef SPI_DEBUG_RAW
+                    Serial.println("\n\nstatic_spi_handler::peripheral_transaction : \n#######################\n[i]\t:\tcont\t:\tperip");
+                    for( unsigned int i = 0; i<sizeof(peripheral_message); i++)
+                    {
+                        Serial.print("[");
+                        Serial.print(i);
+                        Serial.print("]\t:\t");
+                        Serial.print(controller_message[i]);
+                        Serial.print("\t:\t");
+                        Serial.println(peripheral_message[i]);
+                    }
+                    
+                #endif
+            }
             return debug_location;
         };
     
@@ -637,6 +648,9 @@ namespace spi_data_idx // read data that changes each loop
                     break;
                 case spi_cmd::null_cmd::id:
                     unpack_null_cmd(controller_message, data);
+                    break;
+                case spi_cmd::test_cmd::id:
+                    unpack_test_cmd(controller_message, data);
                     break;
                 case spi_cmd::update_controller::id:
                     unpack_update_controller(controller_message, data);
@@ -1014,6 +1028,16 @@ namespace spi_data_idx // read data that changes each loop
             // nothing to parse
             #ifdef SPI_DEBUG
                 Serial.println("null_cmd");
+            #endif
+        };
+        
+        void unpack_test_cmd(uint8_t* controller_message, ExoData* data)
+        {
+            data->right_leg.hip.motor.p_des = unpack_float(controller_message,spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::test_cmd::val_idx);
+            #ifdef SPI_DEBUG
+                Serial.println("test_cmd");
+                Serial.print("val : ");
+                Serial.println(data->right_leg.hip.motor.p_des);
             #endif
         };
         
@@ -1744,6 +1768,8 @@ namespace spi_data_idx // read data that changes each loop
         
         _data_len = get_data_len(_config_to_send);
         _msg_len = _padding + max(max(spi_cmd::max_param_len, _data_len), ini_config::number_of_keys) + spi_data_idx::is_ff::num_bytes;
+        _data->reconfigure(_config_to_send);
+        
     };
     
     void SPIHandler::_parse_data()
@@ -2088,6 +2114,9 @@ namespace spi_data_idx // read data that changes each loop
             case spi_cmd::null_cmd::id:
                 _pack_null_cmd();
                 break;
+            case spi_cmd::test_cmd::id:
+                _pack_test_cmd();
+                break;
             case spi_cmd::update_controller::id:
                 _pack_update_controller();
                 break;
@@ -2204,6 +2233,24 @@ namespace spi_data_idx // read data that changes each loop
         }
         
         for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes; i<_msg_len; i++)
+        {
+            _controller_message[i] = 0;
+        }
+    };
+    
+    void SPIHandler::_pack_test_cmd()
+    {
+        _data->right_leg.hip.motor.p_des++;
+        float val = _data->right_leg.hip.motor.p_des;
+        _pack_float(_controller_message, spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes + spi_cmd::test_cmd::val_idx, val);
+        
+        for(unsigned int i = 0; i<(spi_data_idx::is_ff::num_bytes); i++)
+        {
+            _controller_message[i+spi_data_idx::base_idx_cnt] = spi_data_idx::is_ff::is_ff[i];
+        }
+        
+        // potential to optimize with fill
+        for (int i = spi_data_idx::base_idx_cnt + spi_data_idx::is_ff::num_bytes+ spi_cmd::test_cmd::param_len; i<_msg_len; i++)
         {
             _controller_message[i] = 0;
         }

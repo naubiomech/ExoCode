@@ -46,11 +46,27 @@ namespace spi_peripheral
     ExoData* data;// need to set this pointer after data object created with: spi_peripheral::data = &exo_data;
     bool is_unread_message = false;
     uint8_t debug_location;
+
+    const uint8_t max_msg_len = static_spi_handler::padding + spi_cmd::max_data_len+spi_data_idx::is_ff::num_bytes;  // Should be largest of parameters, data, and config length.
+    uint8_t msg_len = max_msg_len;
+    uint8_t controller_message[max_msg_len] = {0};
+
+    uint8_t cmd = 0;
+    bool do_parse_in_callback = false;
     
     void spi_callback()
     {
-        debug_location = static_spi_handler::peripheral_transaction(my_spi, config_info::config_to_send, data);
+
+        msg_len = static_spi_handler::padding + max(max(spi_cmd::max_param_len, get_data_len(config_info::config_to_send)), ini_config::number_of_keys) + spi_data_idx::is_ff::num_bytes;
+//        data->left_leg.hip.motor.p_des--;
+        debug_location = static_spi_handler::peripheral_transaction(my_spi, config_info::config_to_send, data, &cmd, controller_message, msg_len, do_parse_in_callback);
         is_unread_message = true;
+        return;
+    }
+    void spi_handle_message()
+    {
+        static_spi_handler::parse_message(controller_message, cmd, data);
+      
     }
 }
 
@@ -95,9 +111,19 @@ void setup()
 
 void loop()
 {
+    #ifdef MAIN_DEBUG
+        static unsigned int loop_counter = 0;
+        Serial.print("Superloop :: loop counter = ");
+        Serial.println(loop_counter++);
+    #endif
+
+    
+    
     static bool first_run = true;
     // create the data and exo objects
     static ExoData exo_data(config_info::config_to_send);
+
+    
     #ifdef MAIN_DEBUG
         if (first_run)
         {
@@ -142,16 +168,16 @@ void loop()
         #ifdef MAIN_DEBUG
             Serial.println("Superloop :: SPI Data pointer updated");
         #endif
-
-        spi_peripheral::my_spi.begin();
-        #ifdef MAIN_DEBUG
-            Serial.println("Superloop :: SPI Begin");
-        #endif
-        
         spi_peripheral::my_spi.onReceive(spi_peripheral::spi_callback);        
         #ifdef MAIN_DEBUG
             Serial.println("Superloop :: SPI callback set");
         #endif
+        spi_peripheral::my_spi.begin();
+        #ifdef MAIN_DEBUG
+            Serial.println("Superloop :: SPI Begin");
+        #endif
+        exo_data.left_leg.hip.motor.p_des = 300;
+        
 
             
 
@@ -254,7 +280,7 @@ void loop()
           Serial.println("Superloop :: Motor Charging Delay - Please be patient");
         #endif 
         exo_data.status = status_defs::messages::motor_start_up; 
-        unsigned int motor_start_delay_ms = 60000;
+        unsigned int motor_start_delay_ms = 10;//60000;
         unsigned int motor_start_time = millis();
         unsigned int dot_print_ms = 1000;
         unsigned int last_dot_time = millis();
@@ -438,6 +464,15 @@ void loop()
     #endif                                                                                        
 
     exo.run();
+//    unsigned int data_print_ms = 5000;
+//    static unsigned int last_data_time = millis();
+//    if(millis() - last_data_time > data_print_ms)
+//    {
+//        Serial.println("\n\n\nSuperloop :: Timed print : ");
+//        exo_data.print();
+//        last_data_time = millis();
+//    }
+    
     #ifdef MAIN_DEBUG
         unsigned int dot_print_ms = 5000;
         static unsigned int last_dot_time = millis();
@@ -446,7 +481,25 @@ void loop()
           last_dot_time = millis();
           Serial.print(".");
         }
-    #endif
+
+       
+    #endif 
+    
+    if(spi_peripheral::is_unread_message)
+    {
+        // Not doing the parsing in the transaction so do it here.
+        if(!spi_peripheral::do_parse_in_callback)
+        {
+            spi_peripheral::spi_handle_message();
+        }
+        #ifdef MAIN_DEBUG
+            Serial.println("\n\n\nSuperloop :: New Message : ");
+            exo_data.print();
+            
+        #endif
+
+        spi_peripheral::is_unread_message = false;
+    }
 }
 
 
