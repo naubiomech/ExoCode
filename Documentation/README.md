@@ -41,6 +41,8 @@ More detailed information can be found on the internet, I like [tutorialspoint](
 
 ### Bits and Bytes
 
+#### Bit Shifting
+
 ### Addresses
 
 ### Variables
@@ -75,13 +77,16 @@ More detailed information can be found on the internet, I like [tutorialspoint](
 
 ### Functions
 
+#### Overloading
+
 ### Classes
 
 #### Inheritance
+More info on inheritance can be found on [tutorialspoint](https://www.tutorialspoint.com/cplusplus/cpp_inheritance.htm) or [w3schools](https://www.w3schools.com/cpp/cpp_inheritance.asp).
 
 #### Friend Classes
 
-#### Abstact Classes
+#### Abstract Classes
 
 #### Initializer List
 
@@ -165,7 +170,7 @@ First, you will need to connect the physical components.
 3. Similarly, sensors should be connected on the side used, and if associated with a motor next to that motor, e.g. if the right ankle has a torque sensor it should go below the right ankle communication connection, regardless of if another joint is used. 
 4. The control board may have multiple microcontrollers on it they should all be flashed with ExoCode.ino through the Arduino IDE.  The compiler will select the correct parts of the code to use if you select the correct microcontroller.    
     - Update /ExoCode/src/Config.h BOARD_VERSION with the version number found on the control board before compiling. 
-    - Update the libraries. Move the files/folders in the [Libraries Folder](/Libraries). To your local Folder C:\Users\[USER]\Documents\Arduino\libraries\ or system equivalent.  Details on the libraries that are used are used can be found in the main [README](/README.md#libraries)
+    - Update the libraries. Move the files/folders in the [Libraries Folder](/Libraries). To your local Folder C:\User\\\[USER]\Documents\Arduino\libraries\ or system equivalent.  Details on the libraries that are used are used can be found in the main [README](/README.md#libraries)
     - [Arduino Instructions](https://docs.google.com/document/d/1ToLq6Zqv58Q4YEmf4SzqJDKCTp52LUaKgYg5vNmHdaI/edit?usp=sharing)
 5. Lastly, is the SD card.
     - Transfer the content of the SD Card folder to the micro SD card. 
@@ -226,7 +231,7 @@ They are used as little as possible to minimize the amount of dependencies as th
 ### Guiding Principals 
 The guiding principals of the code is to make it adaptable and modular. 
 There are still some shortcomings with how we achieved this due to the nature of the dual microcontroller system but overall it should work well.
-To this end we have utilized abstract classes for things like the motors where we define an interface so if we need to add motors that work in a different way, e.g. CAN vs PWM, we don't have to change the rest of the code just add the underlying private member functions.
+To this end we have utilized [abstract classes](#abstract-classes) for things like the motors where we define an interface so if we need to add motors that work in a different way, e.g. CAN vs PWM, we don't have to change the rest of the code just add the underlying private member functions.
 Additionally sensors do not need access to the ExoData object, we considered doing this for all IO but decided it didn't make sense in all cases.
 
 ### Operation  
@@ -299,7 +304,7 @@ To be able to call any type of motor we need to have a common interface which wi
 As with most of the system there is a parallel data structure that follows the system structure.
 MotorData details can be found in [Data Structure](Structure/ExoDataStructure.md), but contains state and configuration information.  
 
-The motors should all inherit their interface from the abstract class _Motor  in [Motor.h](/ExoCode/src/Motor.h).
+The motors should all inherit their interface from the [abstract class](#abstract-classes) _Motor  in [Motor.h](/ExoCode/src/Motor.h).
 This defines how other systems can call motors, that way the rest of the system doesn't need to know what specific motor you are using as they all have the same calls.
 Within this you can then define what that call does for the specific motor/type.
 With the CAN motors they have a separate class that this type of motor inherits since they all work in much the same way but have some parameters that are different.
@@ -312,8 +317,7 @@ and
 class AK60 : public _CANMotor
 ```
 
-Where _CANMotor inherits from _Motor and then the AK60 motor inherits from the _CANMotor class so it also gets the things that are in _Motor.
-More info on inheritance can be found on [tutorialspoint](https://www.tutorialspoint.com/cplusplus/cpp_inheritance.htm) or [w3schools](https://www.w3schools.com/cpp/cpp_inheritance.asp).
+Where _CANMotor [inherits](#inheritance) from _Motor and then the AK60 motor inherits from the _CANMotor class so it also gets the things that are in _Motor.
 
 We decided that the motors would always be used in torque control mode so transaction(torque) and send_data(torque), only take torque commands.
 If you need a position/velocity controller you will need to make this as a separate controller.
@@ -329,16 +333,58 @@ TMotor initialization information can be found in: [G:\Shared drives\Biomech_Lab
 
 *** 
 ## Controllers 
+Much like the motor the controllers have a parallel ControllerData class to store data for the controller.
+ControllerData details can be found in [Data Structure](Structure/ExoDataStructure.md), but contains state and configuration information.  
 
+The Joint instance uses a [pointer](#pointers) to the controller that is currently being used.
+The main difference is that the Joint has an instance to all the possible controllers that will be used so we just need to point to the correct one.
+That is why the constructor to the a joint like the hip looks like:
+
+```
+HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
+: _Joint(id, exo_data)
+, _zero_torque(id, exo_data)
+, _heel_toe(id, exo_data)
+, _extension_angle(id, exo_data)
+, _bang_bang(id, exo_data)
+, _franks_collins_hip(id, exo_data)
+// , _user_defined(id, exo_data)
+, _sine(id, exo_data)
+, _stasis(id, exo_data)
+{
+```
+
+Where the constructor of each controller is called.
+
+The controllers also inherit their interface, like the motors, from the [abstract class](#abstract-classes) _Controller  in [Controller.h](/ExoCode/src/Controller.h).
+This defines how other systems can call controllers, that way the rest of the system doesn't need to know what specific controller you are using as they all have the same calls.
+Within this you can then define what that call does for the specific controller.
 
 ### Controller Structure 
+The controllers have a primary call of calc_motor_cmd() that will calculate the torque command that will be sent to the motor.
+```
+// Calculate the motor command
+_joint_data->controller.setpoint = _controller->calc_motor_cmd();
+_motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
+```
+Each controller can also have additionally private member functions that are called internally.
+
+The controllers will pull the parameters that they use from the ControllerData instance which can be accessed through the pointer in the controller using ```_controller_data->parameters```.
+This is shared between all controllers so it is important to change to the "stasis" controller prior to moving to a new controller.
+The order of operations are:
+1. Change to stasis controller, commands the motor to 0 current and uses no parameters so it is safe when making big changes to parameters.
+2. Change parameters so they are what you want for the new controller.
+3. Change the controller pointer to use the new controller.
+This way you don't change a parameter for one controller to something like user mass when the current controller is interpreting that parameter as max torque.
+This should be handled in software so the user doesn't need to think about it, but is good to be aware of.
+
 
 
 ### Adding New Controllers
 Details can be found in [Adding New Controller](AddingNew/AddingNewController.md).
 
 ### Controller Parameters 
- 
+The controller parameters are dependent on what controller is being used but a description of the parameters for each controller can be found below.
  
 #### Hip
 - [Stasis](Controllers/Stasis.md)
