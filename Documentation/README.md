@@ -42,57 +42,244 @@ More detailed information can be found on the internet, I like [tutorialspoint](
 ### Bits and Bytes
 
 #### Bit Shifting
+@Jack - I have added examples but please still add descriptions to what the topic is.
+
+**ex.** [Utilities.cpp](/ExoCode/src/Utilities.cpp)
+```
+uint8_t update_bit(uint8_t original, bool val, uint8_t loc)
+{
+    uint8_t keep_bit = ~(1<<loc);  //set a mask for the bits we aren't setting 
+    
+    return (original & keep_bit) | (val<<loc);
+};
+```
+1. This shifts a 1 into the loc position, so if loc is 2 it shifts the 1 two positions to the left 0b00000001<<2 becomes 0b00000100.
+2. Then the ~ inverts the bits to: 0b11111011
+3. Move the val to the current position val<<loc, for our 2 example this would put a 1 or 0 in the 2nd position with zeros for everything else.
+4. original & keep_bit, keep_bit is the value from step 1, when anded with the original it will return the original but with a 0 in the loc position
+5. Or the values from 3 and 4, which will return the original with the bit in the loc position set to whatever was in val.
 
 ### Addresses
 
+
 ### Variables
+
 
 ### Types
 
+
 #### Bool
 
+**ex.** [ExoCode.ino](/ExoCode/ExoCode.ino)
+```
+static bool first_run = true;
+```
+This variable stores if it is the first run of the loop().
+If it is we do some startup stuff, then change it to false.
+A bool is still stored in a byte so it doesn't save a ton of room unless you pack a bunch of them into another type.
+
 #### Char
+**ex.** [BleMessage.h](/ExoCode/src/BleMessage.h)
+```
+// GUI command
+char command = 0;
+```
 
 #### Int
+**ex.** [BleMessage.h](/ExoCode/src/BleMessage.h)
+```
+// Number of parameters to expect with the command
+int expecting = 0;
+```
 
 #### Float
+**ex.** [TorqueSensor.h]()
+```
+float _calibrated_reading;
+```
 
 #### Double
 
+**ex.** We don't really use doubles but it is here for completeness.
+
 #### Arrays
+**ex.** [ExoCode.ino](ExoCode/ExoCode.ino)
+```
+uint8_t (config_to_send)[ini_config::number_of_keys];
+```
 
 #### Void
+**ex.** [SyncLed.cpp](/ExoCode/src/SyncLed.cpp)
+```
+/*
+* Sets the flags to start or stop the blink sequence
+*/
+void SyncLed::trigger()
+{
+	_do_start_stop_sequence = _do_start_stop_sequence ^ true;  // xor with one to change boolean state
+	_do_blink = _do_blink ^ true;  // xor with one to change boolean state
+	_state_change_count = 0;  // reset the state change count.
+};
+```
+
+#### Typecasting
+**ex.** [\Utilities.h](/ExoCode/src/Utilities.h)
+```
+val.i = (short int) (num_to_convert * factor);
+```
 
 #### Modifiers
 
+
 ##### Signed vs Unsigned
+**ex.** [BleParser.cpp](/ExoCode/src/)
+```
+//Get the ammount of characters to wait for
+for(unsigned int i=0; i < sizeof(ble::commands)/sizeof(ble::commands[0]); i++)
+{
+```
 
 ##### Long and Short
+**ex.** [\Utilities.h](/ExoCode/src/Utilities.h)
+```
+val.i = (short int) (num_to_convert * factor);
+```
 
 ##### Static
+**ex.** [ExoCode.ino](/ExoCode/ExoCode.ino)
+```
+static bool first_run = true;
+```
 
 ##### Volatile
+**ex.** [SyncLed.h](/ExoCode/src/SyncLed.h)
+```
+volatile int _current_sync_period; // The current period to use.  Whenever syncLedHandler is called the interupt should have another begin call to make sure the period is correct.
+```
 
 ##### Extern
+**ex.** We don't really use extern but it is here for completeness.
 
 ### Functions
+**ex.** [Utilities.cpp](/ExoCode/src/Utilities.cpp)
+```
+bool get_is_left(uint8_t id)
+{
+    return (id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
+};
+```
 
 #### Overloading
+**ex.** [Utilities.cpp](/ExoCode/src/Utilities.cpp)
+```
+/*
+ * From the joint_id returns the bit for is_left.
+ */
+bool get_is_left(config_defs::joint_id id)
+{
+    return get_is_left((uint8_t) id);//((uint8_t)id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
+};
+bool get_is_left(uint8_t id)
+{
+    return (id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
+};
+```
 
 ### Classes
+**ex.** [Controller.h](/ExoCode/src/Controller.h)
+```
+class ProportionalJointMoment : public _Controller
+{
+    public:
+        ProportionalJointMoment(config_defs::joint_id id, ExoData* exo_data);
+        ~ProportionalJointMoment(){};
+        
+        
+        float calc_motor_cmd();
+};
+```
 
 #### Inheritance
 More info on inheritance can be found on [tutorialspoint](https://www.tutorialspoint.com/cplusplus/cpp_inheritance.htm) or [w3schools](https://www.w3schools.com/cpp/cpp_inheritance.asp).
+**ex.** [Controller.h](/ExoCode/src/Controller.h)
+```
+class ProportionalJointMoment : public _Controller
+{
+    public:
+        ProportionalJointMoment(config_defs::joint_id id, ExoData* exo_data);
+        ~ProportionalJointMoment(){};
+        
+        
+        float calc_motor_cmd();
+};
+```
 
 #### Friend Classes
+**ex.** We don't really use friend classes but it is here for completeness.
 
 #### Abstract Classes
+**ex.** [Controller.h](/ExoCode/src/Controller.h)
+```
+class _Controller
+{
+	public:
+        // Constructor not needed as there isn't anything to set.
+        _Controller(config_defs::joint_id id, ExoData* exo_data);
+		// Virtual destructor is needed to make sure the correct destructor is called when the derived class is deleted.
+        virtual ~_Controller(){};
+		//virtual void set_controller(int joint, int controller) = 0; // Changes the controller for an individual joint
+		virtual float calc_motor_cmd() = 0;
+        void reset_integral(); 
+        
+    protected:
+        ExoData* _data;
+        ControllerData* _controller_data;
+        LegData* _leg_data;
+        JointData* _joint_data;
+        
+        config_defs::joint_id _id; 
+        
+        Time_Helper* _t_helper;
+        float _t_helper_context;
+        float _t_helper_delta_t;
+        
+        float _integral_val;
+        float _prev_error;  
+        float _prev_de_dt;
+        
+        float _pid(float cmd, float measurement, float p_gain, float i_gain, float d_gain);
+        
+        
+}; 
+```
 
 #### Initializer List
+**ex.** [Controller.cpp](/ExoCode/src/Controller.cpp)
+```
+ZeroTorque::ZeroTorque(config_defs::joint_id id, ExoData* exo_data)
+: _Controller(id, exo_data)
+{
+    
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("ZeroTorque::Constructor");
+    #endif
+    
+};
+```
 
 ### Pointers
+**ex.** [Joint.h](/ExoCode/src/Joint.h)
+```
+_Motor* _motor; // using pointer to the base class so we can use any motor type.
+JointData* _joint_data;
+```
 
 #### Function Pointers
+**ex.** [ExoData.h](/ExoCode/src/ExoData.h)
+```
+// Type used for the for each joint method, the function should take JointData as input and return void
+typedef void (*for_each_joint_function_t) (JointData*);
+```
 
 ### .h vs .cpp files
 You may notice two files with the same name but different extensions, one .h and one .cpp.
