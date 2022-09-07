@@ -4,8 +4,9 @@
 1.  [Background](#background)
 1.  [Introduction](#introduction)
     1. [Code location](#code-location)
-    2. [How to Deploy](#how-to-deploy)
-    3. [Style Guide](#style-guide)
+    2. [Style Guide](#style-guide)
+    3. [System Structure](#system-structure)
+    4. [How to Deploy](#how-to-deploy)
 2.  [High level functionality](#high-level-functionality)
     1. [Code Structure](#code-structure)
     2. [Guiding Principles](#guiding-principals)
@@ -332,6 +333,7 @@ So when we call reconfigure for the ExoData objects we call the reconfigure memb
 ## Introduction   
 This guide is designed to provide background information on the new (at time of writing) code used to control the NAU Biomechatronics Lab's exo.
 This system is designed to be flexible, where the system can be easily adapted to the user's needs, changing the motors used, number of joints, etc. 
+
  
 ### Code Location  
 If you are reading this you have found the location, but for completeness it can be found at: https://github.com/naubiomech/ExoCode/tree/nano_teensy_board.
@@ -342,13 +344,15 @@ Detailed instructions on setting up git can be found [here](https://docs.google.
 
 ### Style Guide  
 The detailed style guide can be found [here](StyleGuide.md).
+ 
+### System Structure
+![Diagram](Figures/CodeDiagram.svg)
+
+Details of the components can be found in [20220914_Pridham_NewCodeBase.pptx](/Presentations/20220914_Pridham_NewCodeBase.pptx)
+
 
 ### How to Deploy 
-The system consists of several components:
-1. Actuators
-2. Sensors 
-3. Control Board
-4. SD Card
+
 
 First, you will need to connect the physical components.
 1. Mount the motors on the system as appropriate.  
