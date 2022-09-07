@@ -70,6 +70,7 @@ The libraries should be moved to C:\Users\\\[USER\]\Documents\Arduino\libraries\
 - SPI direct memory access. Should change SPI time from 20 &mu;s per byte to the time to write the memory.
 - BLEparser change from char representation to num bytes, expect 3 to 6x speed up.
 - CAN direct memory access, should cut about 250 &mu;s per motor.
+- CAN bus per leg after DMA, roughly cut CAN time in half. Main control may be limiting time at this point at about 600&mu;s. Write at top, do controls, read at bottom.
 
 ## MORE DETAILS TO COME
 Probably need to create a consistent/shared SPI interface
