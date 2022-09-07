@@ -93,7 +93,7 @@ int expecting = 0;
 ```
 
 #### Float
-**ex.** [TorqueSensor.h]()
+**ex.** [TorqueSensor.h](/ExoCode/src/TorqueSensor.h)
 ```
 float _calibrated_reading;
 ```
@@ -103,7 +103,7 @@ float _calibrated_reading;
 **ex.** We don't really use doubles but it is here for completeness.
 
 #### Arrays
-**ex.** [ExoCode.ino](ExoCode/ExoCode.ino)
+**ex.** [ExoCode.ino](/ExoCode/ExoCode.ino)
 ```
 uint8_t (config_to_send)[ini_config::number_of_keys];
 ```
@@ -123,7 +123,7 @@ void SyncLed::trigger()
 ```
 
 #### Typecasting
-**ex.** [\Utilities.h](/ExoCode/src/Utilities.h)
+**ex.** [Utilities.h](/ExoCode/src/Utilities.h)
 ```
 val.i = (short int) (num_to_convert * factor);
 ```
@@ -132,7 +132,7 @@ val.i = (short int) (num_to_convert * factor);
 
 
 ##### Signed vs Unsigned
-**ex.** [BleParser.cpp](/ExoCode/src/)
+**ex.** [BleParser.cpp](/ExoCode/src/BleParser.cpp)
 ```
 //Get the ammount of characters to wait for
 for(unsigned int i=0; i < sizeof(ble::commands)/sizeof(ble::commands[0]); i++)
@@ -140,7 +140,7 @@ for(unsigned int i=0; i < sizeof(ble::commands)/sizeof(ble::commands[0]); i++)
 ```
 
 ##### Long and Short
-**ex.** [\Utilities.h](/ExoCode/src/Utilities.h)
+**ex.** [Utilities.h](/ExoCode/src/Utilities.h)
 ```
 val.i = (short int) (num_to_convert * factor);
 ```
@@ -201,6 +201,7 @@ class ProportionalJointMoment : public _Controller
 
 #### Inheritance
 More info on inheritance can be found on [tutorialspoint](https://www.tutorialspoint.com/cplusplus/cpp_inheritance.htm) or [w3schools](https://www.w3schools.com/cpp/cpp_inheritance.asp).
+
 **ex.** [Controller.h](/ExoCode/src/Controller.h)
 ```
 class ProportionalJointMoment : public _Controller
