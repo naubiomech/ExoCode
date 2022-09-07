@@ -14,7 +14,7 @@ controllers.
 ### Classes
 Chance I am going to let you handle most of this but I am going to provide some structure, feel free to change.  You can find the pins in the TMotor_Exo_PCB, WithTeensy branch.
 - [X] Bluetooth handler
-- [ ] spi handler (Teensy Communication)
+- [ ] SPI/UART Handler (Teensy Communication)
 - [X] i2c handler (Battery Voltage)
 - [ ] Use the modified torque command to set the controller from the sd card
 
@@ -23,7 +23,7 @@ Chance I am going to let you handle most of this but I am going to provide some 
 We can tag which one of us is working on what when we get there.
 - [X] Sync LED (Paul)
 - [X] Status LED (Paul)
-- [ ] SPI Handler (Chance [not started]) I added this to Chance since it seems tied to the Nano SPI, so it will be easier for an individual to debug.
+- [ ] SPI/UART Handler
 - [X] Exo (Paul)
 - [X] Leg (Paul)
 - [X] Joint (Paul)
@@ -32,7 +32,7 @@ We can tag which one of us is working on what when we get there.
 - [X] Motor (Chance [working on CAN]) I am giving you this one as you have more experience with CAN
 - [X] TorqueSensor (Paul)
 
-![Diagram](CodeDiagram.svg)
+![Diagram](/Documentation/Figures/CodeDiagram.svg)
 
 ## Libraries
 The libraries should be moved to C:\Users\\\[USER\]\Documents\Arduino\libraries\ or system equivalent
