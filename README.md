@@ -1,6 +1,9 @@
 # Nano Teensy Board
 
-This code is for the CAN based motors on boards where the nano handles low frequency sampling (eg. battery voltage), and Bluetooth communication; and the teensy handles high frequeny sampling and controls.  The two boards communicate through SPI.
+This code is for the CAN based motors on boards where the nano handles low frequency sampling (eg. battery voltage), and Bluetooth communication; and the teensy handles high frequency sampling and controls.  
+The two boards communicate through SPI/UART (still figuring it out).
+Check out the [Documentation Folder](/Documentation) for details.
+
 
 ## Common Code (Mixed [in progress])
 - [x] Configuration reading (Paul)
@@ -35,37 +38,9 @@ We can tag which one of us is working on what when we get there.
 ![Diagram](/Documentation/Figures/CodeDiagram.svg)
 
 ## Libraries
-The libraries should be moved to C:\Users\\\[USER\]\Documents\Arduino\libraries\ or system equivalent
-### SPISlave_T4
-- Git: https://github.com/tonton81/SPISlave_T4
-- Commit: 28d8c1fd6082335d597483d45121d9db4c9cfc5c
-- Modifications: 
-    - SPISlave_T4.tpp 
-        - line 18 changed to 
+The libraries should be moved to C:\Users\\\[USER\]\Documents\Arduino\libraries\ or system equivalent.
+Details on the libraries can be found in the [Libraries Folder](/Libraries).
 
-            ```static void lpspi4_slave_isr() {``` 
-
-            to avoid multiple definition error.
-### TSPISlave
-- Git: https://github.com/tonton81/TSPISlave
-- Commit: 492100f7f41a6d9d3888ed68b1e326a58f11f47a
-- Modifications: None
-
-### IniFile
-- Git: https://github.com/stevemarple/IniFile
-- Commit: 880edeac620f262b804fce500bfbbb1227c5cba9
-- Modifications: None
-
-### Adafruit_BluefruitLE_nRF51
-- Git: https://github.com/adafruit/Adafruit_BluefruitLE_nRF51
-- Commit: 16412c28c5d25eb2577c0d5bbac85f3c7dc7baae
-- Modifications: 
-    - Adafruit_BluefruitLE_SPI.cpp 
-        - line 45 changed to:  
-        
-            ```SPISettings bluefruitSPI(1000000, MSBFIRST, SPI_MODE0);```  
-            
-            Due to teensy speed issue
 ## Optimizations
 - SPI direct memory access. Should change SPI time from 20 &mu;s per byte to the time to write the memory.
 - BLEparser change from char representation to num bytes, expect 3 to 6x speed up.

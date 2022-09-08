@@ -348,7 +348,7 @@ The detailed style guide can be found [here](StyleGuide.md).
 ### System Structure
 ![Diagram](Figures/CodeDiagram.svg)
 
-Details of the components can be found in [20220914_Pridham_NewCodeBase.pptx](/Presentations/20220914_Pridham_NewCodeBase.pptx)
+Details of the components can be found in [/Presentations/20220914_Pridham_NewCodeBase.pptx](/Presentations/)
 
 
 ### How to Deploy 
@@ -362,7 +362,7 @@ First, you will need to connect the physical components.
 3. Similarly, sensors should be connected on the side used, and if associated with a motor next to that motor, e.g. if the right ankle has a torque sensor it should go below the right ankle communication connection, regardless of if another joint is used. 
 4. The control board may have multiple microcontrollers on it they should all be flashed with ExoCode.ino through the Arduino IDE.  The compiler will select the correct parts of the code to use if you select the correct microcontroller.    
     - Update /ExoCode/src/Config.h BOARD_VERSION with the version number found on the control board before compiling. 
-    - Update the libraries. Move the files/folders in the [Libraries Folder](/Libraries). To your local Folder C:\User\\\[USER]\Documents\Arduino\libraries\ or system equivalent.  Details on the libraries that are used are used can be found in the main [README](/README.md#libraries)
+    - Update the libraries. Move the files/folders in the [Libraries Folder](/Libraries). To your local Folder C:\User\\\[USER]\Documents\Arduino\libraries\ or system equivalent.  Details on the libraries that are used are used can be found in [Libraries Folder](/Libraries/README.md).
     - [Arduino Instructions](https://docs.google.com/document/d/1ToLq6Zqv58Q4YEmf4SzqJDKCTp52LUaKgYg5vNmHdaI/edit?usp=sharing)
 5. Lastly, is the SD card.
     - Transfer the content of the SD Card folder to the micro SD card. 
