@@ -17,6 +17,9 @@
 3.  [Sensors](#sensors)
     1. [Sensor Structure](#sensor-structure)
     2. [Adding New Sensors](#adding-new-sensors)
+3.  [Displays](#displays)
+    1. [Status LED](#status-led)
+    2. [Sync LED](#sync-led)
 4.  [Actuators](#actuators)
     1. [Actuator Structure](#actuator-structure)
     2. [Adding New Actuators](#adding-new-actuators)
@@ -483,6 +486,36 @@ With these other interfaces you will need to make sure not to create conflicts w
 
 ### Adding New Sensors
 Details can be found in [Adding New Sensors](AddingNew/AddingNewSensors.md)
+
+
+*** 
+## Displays
+There are currently two different displays, the status LED and the sync LED, used to display information to people or other systems.
+ 
+### Status LED
+The status LED is simply and RGB LED that displays different light patterns to let you know what is happening with the system.
+Details on what the different patterns mean can be found in [StatusLed.h](/ExoCode/src/StatusLed.h) in the status_led_defs namespace.
+There is an instance of StatusLed in Exo which should be updated every run of exo using:
+```
+// update status LED
+status_led.update(data->status);
+```
+Where the status value is defined in the status_defs::messages namespace in [StatusDefs.h](/ExoCode/src/StatusDefs.h), and is set in other areas of the code depending on what the current state is.
+
+### Sync LED
+The sync LED is used to synchronize the data recorded by the exoskeleton and other systems, primarily infrared based optical motion capture systems.
+This the state of this LED must be included in the recorded data for this to work.
+
+Essentially, the LEDs nominal state is off.  
+When triggered it gives a long pulse, then gives short pulses till triggered again when it gives a long pulse again.
+![SyncPattern](Figures/SyncPattern.svg)
+
+By aligning the long pulses in the data from the exo and the external system the time point of the data will match up.
+This can be done by identifying the long pulses, by finding the time between rising and falling edges, and the long pulses should be the only ones with the larger duration.
+Once identified the start pulse could be matched up, then the time can be scaled to make the end pulse match up.
+This way even if the sampling rates are different or the clocks are at different rates you can still match up the data.
+A tool for aligning can be found at [G:\Shared drives\Biomech_Lab\Experimental Data\Template Data Processing\align_data.m](https://drive.google.com/file/d/1vgxFCoCukO2us4WSrcil_TI3fLCNSLNX/view?usp=sharing).
+
 
 
 *** 
