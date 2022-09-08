@@ -26,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.98994949"
-     inkscape:cx="495.55801"
-     inkscape:cy="-172.80618"
+     inkscape:zoom="0.7"
+     inkscape:cx="158.20699"
+     inkscape:cy="41.592842"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -95,34 +95,34 @@
        sodipodi:nodetypes="cccccccccccccc" />
     <path
        style="fill:none;stroke:#ffa600;stroke-width:0.982383;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.96476, 0.982383;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 18.465843,225.89777 v 24.52096"
+       d="m 18.520832,225.5103 v 24.52096"
        id="path879"
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#ffa600;stroke-width:0.982383;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.96476, 0.982383;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 148.16665,225.89777 v 24.52096 0"
+       d="m 148.16667,225.89777 v 24.52096 0"
        id="path879-9"
        sodipodi:nodetypes="ccc" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.4623px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.980837"
-       x="18.465839"
-       y="225.89772"
+       x="18.520828"
+       y="225.51025"
        id="text903"><tspan
          sodipodi:role="line"
          id="tspan901"
-         x="18.465839"
-         y="225.89772"
+         x="18.520828"
+         y="225.51025"
          style="font-size:10.4623px;stroke-width:0.980837">Trigger</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.4623px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.980837"
-       x="148.16667"
+       x="148.16669"
        y="225.89778"
        id="text903-9"><tspan
          sodipodi:role="line"
          id="tspan901-4"
-         x="148.16667"
+         x="148.16669"
          y="225.89778"
          style="font-size:10.4623px;stroke-width:0.980837">Trigger</tspan></text>
   </g>

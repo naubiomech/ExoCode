@@ -506,7 +506,7 @@ Where the status value is defined in the status_defs::messages namespace in [Sta
 The sync LED is used to synchronize the data recorded by the exoskeleton and other systems, primarily infrared based optical motion capture systems.
 This the state of this LED must be included in the recorded data for this to work.
 
-Essentially, the LEDs nominal state is off.  
+Essentially, the LEDs nominal state is either on or off, selectable using the sync default pin on the PCB.  
 When triggered it gives a long pulse, then gives short pulses till triggered again when it gives a long pulse again.
 ![SyncPattern](Figures/SyncPattern.svg)
 
