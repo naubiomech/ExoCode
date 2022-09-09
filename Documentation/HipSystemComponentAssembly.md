@@ -9,13 +9,13 @@
 ## Electrical Box
 - [x] Populate PCB following Eagle files https://github.com/ChanceCuddeback/TMotor_Exo_PCB/tree/WithTeensy
 - [x] Print box : Found in Eiger under Paul/Electrical Box
-- [x] Populate Panel with Switches and LEDs
-- [x] Place threaded inserts in printed components
-- [x] Make and mount cable for battery connection to PCB
-- [x] Mount PCB with the thin base behind it to protect against shorts
+- [ ] Populate Panel with Switches and LEDs
+- [ ] Place threaded inserts in printed components
+- [ ] Make and mount cable for battery connection to PCB
+- [ ] Mount PCB with the thin base behind it to protect against shorts
 - [x] Make cable to connect power from PCB to motors XT30 plug on one side and receptical on the other.
 - [x] Make cable to connect CAN from PCB to motor, 2 pin Molex Pico-Clasp on one side, CJT 2 or 4 pin connector on other depending on motor connector.
-- [x] Make FSR Cable
+- [ ] Make FSR Cable
 
 ## Actuation
 Components found in G:\Shared drives\Biomech_Lab\Exoskeleton_Design\Active Designs\Hip_Ankle_Exo\V1\Hip
