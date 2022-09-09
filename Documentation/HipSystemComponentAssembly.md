@@ -18,7 +18,7 @@
 - [ ] Make FSR Cable
 
 ## Actuation
-Components found in G:\Shared drives\Biomech_Lab\Exoskeleton_Design\Active Designs\Hip_Ankle_Exo\V1\Hip
+Components found in [G:\Shared drives\Biomech_Lab\Exoskeleton_Design\Active Designs\Hip_Ankle_Exo\V1\Hip](https://drive.google.com/drive/u/1/folders/18ZjU5vfyqgjROW7zR3UMSPiWVc_CKC2L)
 - [ ] Machine ad/abduction joint, use protolabs
 - [ ] Make Hip adapter rings, motor bracket spacer, and motor to torque sensor carbon fiber components
 - [ ] Make upright
