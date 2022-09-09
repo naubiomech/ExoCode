@@ -1,7 +1,10 @@
-/*
+/**
+ * @file ControllerData.h
+ *
+ * @brief Declares a class used to store data for controllers to access 
  * 
- * 
- * P. Stegall Jan. 2022
+ * @author P. Stegall 
+ * @date Jan. 2022
 */
 
 
@@ -18,7 +21,8 @@
 // forward declaration
 class ExoData;
 
-namespace controller_defs
+
+namespace controller_defs /**< stores the parameter indexes for different controllers */
 {
     namespace zero_torque
     {
@@ -175,19 +179,28 @@ namespace controller_defs
     const uint8_t max_parameters = franks_collins_hip::num_parameter;//user_defined::num_parameter;  // this should be the largest of all the num_parameters
 }
 
-
+/**
+ * @brief class to store information related to controllers.
+ * 
+ */
 class ControllerData {
 	public:
         ControllerData(config_defs::joint_id id, uint8_t* config_to_send);
+        
+        /**
+         * @brief reconfigures the the controller data if the configuration changes after constructor called.
+         * 
+         * @param configuration array
+         */
         void reconfigure(uint8_t* config_to_send);
         
         
-        uint8_t controller;
-        config_defs::JointType joint; 
+        uint8_t controller; /**< id of the current controller */
+        config_defs::JointType joint; /**< id of the current joint */
         // These were made floats to dummy proof the math for people but will double the data needed to be sent over SPI, we double the speed of the SPI if we move to fixed point.
-        float setpoint;  //  controller setpoint, basically the motor command.
-        float parameters[controller_defs::max_parameters];  // Parameter list for the controller see the controller_defs namespace for the specific controller.  
-        uint8_t parameter_set; // temporary value used to store the parameter set while we are pulling  from the sd card.
+        float setpoint;  /**< controller setpoint, basically the motor command. */
+        float parameters[controller_defs::max_parameters];  /**< Parameter list for the controller see the controller_defs namespace for the specific controller.   */
+        uint8_t parameter_set; /**< temporary value used to store the parameter set while we are pulling  from the sd card. */
 };
 
 

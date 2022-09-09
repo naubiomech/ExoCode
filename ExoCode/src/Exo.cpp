@@ -40,6 +40,7 @@ Exo::Exo(ExoData* exo_data)
  */
 void Exo::run()
 {
+    // Check if we are within the system frequency we want.
     static Time_Helper* t_helper = Time_Helper::get_instance();
     static float context = t_helper->generate_new_context();
     static float delta_t = 0;
@@ -90,10 +91,11 @@ void Exo::run()
             // Serial.println(((float)1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
         #endif
         // !!TESTING
-        data->right_leg.ankle.motor.p_des++;
+        // data->right_leg.ankle.motor.p_des++;
         delta_t = 0;
-        // send data over SPI
+        
     }
+    // we didn't hit the time requirements
     else if (delta_t > ((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)))
     {
         //data->status = status_defs::messages::error;

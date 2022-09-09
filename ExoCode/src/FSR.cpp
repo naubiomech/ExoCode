@@ -1,7 +1,3 @@
-/*
- * 
- * P. Stegall Jan. 2022
-*/
 
 #include "FSR.h"
 //#define FSR_DEBUG 1
@@ -39,11 +35,7 @@ FSR::FSR(int pin)
     #endif
 }
 
-/*
- * This gets a rough estimate of the calibrated values.
- * These values will be used for tracking the number of transitions for the calibration refinement. 
- *
- */
+
 bool FSR::calibrate(bool do_calibrate)
 {
     // check for rising edge of do_calibrate and start the timer
@@ -78,9 +70,6 @@ bool FSR::calibrate(bool do_calibrate)
     return do_calibrate;
 };
 
-/*
- * Refines the calibration, by finding the max and min over a set number of low to high transitions
- */
 bool FSR::refine_calibration(bool do_refinement)
 {
     if (do_refinement)
@@ -158,11 +147,7 @@ bool FSR::refine_calibration(bool do_refinement)
     return do_refinement;
 };
 
-/*
- * Reads the sensor and applies the calibration.  
- * If the refinement isn't done returns the regular calibration, 
- * if the regular calibration isn't done returns the raw value.
- */
+
 float FSR::read()
 {
     _raw_reading = analogRead(_pin);
@@ -188,9 +173,6 @@ float FSR::read()
 
 };
 
-/*
- * Uses a schmitt trigger to determine if the sensor is in contact with the ground (foot/shoe)
- */
 bool FSR::_calc_ground_contact()
 {
     // only do this if the refinement is done.
@@ -202,9 +184,6 @@ bool FSR::_calc_ground_contact()
 };
 
 
-/*
- * Simple get for the ground contact state.
- */
 bool FSR::get_ground_contact()
 {
     return _ground_contact;

@@ -27,15 +27,15 @@
 
 /**
  * @brief This class defines the interface for controllers.  
- * All controllers must have a float calc_motor_cmd() that returns a torque cmd in Nm.  
- * Torques towards the posterior are positive.
- *
+ * All controllers must have a:
+ * float calc_motor_cmd() that returns a torque cmd in Nm.  
+ * 
  */
 class _Controller
 {
 	public:
         /**
-         * @brief Constructor not needed as there isn't anything to set.
+         * @brief Constructor 
          * 
          * @param id of the joint being used
          * @param pointer to the full ExoData instance
