@@ -5,9 +5,9 @@
 */
 #if defined(ARDUINO_TEENSY36) | defined(ARDUINO_TEENSY41)
 
-#define INCLUDE_FLEXCAN_DEBUG
-//#define MAKE_PLOTS
-#define MAIN_DEBUG
+#define INCLUDE_FLEXCAN_DEBUG  // used to print CAN Debugging messages for the motors.
+//#define MAKE_PLOTS  // Do prints for plotting when uncommented.
+#define MAIN_DEBUG   // Print Arduino debugging statements when uncommented.
 //#define HEADLESS // used when there is no app access.
 
 // Standard Libraries
@@ -23,9 +23,11 @@
 #include "src\StatusDefs.h"
 #include "src\ComsMCU.h"
 
-// Specific Librarys
+// Specific Libraries
 #include "src\ParseIni.h"
 #include "src\ParamsFromSD.h"
+
+// can remove these if we don't end up using SPI
 #if defined(ARDUINO_TEENSY36)
   #include <TSPISlave.h>
 #elif defined(ARDUINO_TEENSY41)
@@ -33,36 +35,40 @@
 #endif
 //#include "src\Motor.h"
 
+// Array used to store config information
 namespace config_info
 {
-uint8_t (config_to_send)[ini_config::number_of_keys];
-
+    uint8_t (config_to_send)[ini_config::number_of_keys];
 }
 
 // I don't like having this here but I was having an issue with the spi object and functions in the callback having the right scope.
+// setup components needed for SPI, can be removed if we don't end up using SPI
 namespace spi_peripheral
 {
     SPISlave_T4<&SPI, SPI_8_BITS> my_spi;
     ExoData* data;// need to set this pointer after data object created with: spi_peripheral::data = &exo_data;
-    bool is_unread_message = false;
-    uint8_t debug_location;
+    bool is_unread_message = false; // flag used so the main loop knows if there is a message to parse.
+    uint8_t debug_location; // used to track location the code went without using print statements.
 
     const uint8_t max_msg_len = static_spi_handler::padding + spi_cmd::max_data_len+spi_data_idx::is_ff::num_bytes;  // Should be largest of parameters, data, and config length.
     uint8_t msg_len = max_msg_len;
-    uint8_t controller_message[max_msg_len] = {0};
+    uint8_t controller_message[max_msg_len] = {0}; // stores the message from the controller
 
-    uint8_t cmd = 0;
-    bool do_parse_in_callback = false;
+    uint8_t cmd = 0; // command sent from the controller.
+    bool do_parse_in_callback = false;  // Flag for parsing the message in the callback or main loop.
     
+    // Function called when the SPI used.
     void spi_callback()
     {
-
+        
         msg_len = static_spi_handler::padding + max(max(spi_cmd::max_param_len, get_data_len(config_info::config_to_send)), ini_config::number_of_keys) + spi_data_idx::is_ff::num_bytes;
 //        data->left_leg.hip.motor.p_des--;
         debug_location = static_spi_handler::peripheral_transaction(my_spi, config_info::config_to_send, data, &cmd, controller_message, msg_len, do_parse_in_callback);
         is_unread_message = true;
         return;
     }
+    
+    // function used to parse the message if done outside of callback.
     void spi_handle_message()
     {
         static_spi_handler::parse_message(controller_message, cmd, data);
@@ -78,9 +84,10 @@ void setup()
      ; // wait for serial port to connect. Needed for native USB
     }
 
+    // get the config information from the SD card.
     ini_parser(config_info::config_to_send);
     
-  
+    // Print to confirm config came through correctly.  Should not contain zeros.
     #ifdef MAIN_DEBUG
         for (int i = 0; i < ini_config::number_of_keys; i++)
         {
@@ -93,6 +100,7 @@ void setup()
         Serial.print("\n");
     #endif
     
+    // labels for the signals if plotting.
     #ifdef MAKE_PLOTS
           Serial.print("Left_hip_trq_cmd, ");
           Serial.print("Left_hip_current, ");
@@ -111,6 +119,7 @@ void setup()
 
 void loop()
 {
+    // check if the main loop is still running.
     #ifdef MAIN_DEBUG
         static unsigned int loop_counter = 0;
         Serial.print("Superloop :: loop counter = ");
@@ -120,10 +129,10 @@ void loop()
     
     
     static bool first_run = true;
+    
     // create the data and exo objects
     static ExoData exo_data(config_info::config_to_send);
 
-    
     #ifdef MAIN_DEBUG
         if (first_run)
         {
@@ -164,28 +173,32 @@ void loop()
             Serial.print("\n");
         #endif
 
+        // point the callback to exo_data
         spi_peripheral::data = &exo_data;
         #ifdef MAIN_DEBUG
             Serial.println("Superloop :: SPI Data pointer updated");
         #endif
+        // connect the callback
         spi_peripheral::my_spi.onReceive(spi_peripheral::spi_callback);        
         #ifdef MAIN_DEBUG
             Serial.println("Superloop :: SPI callback set");
         #endif
+        // start the SPI listening
         spi_peripheral::my_spi.begin();
         #ifdef MAIN_DEBUG
             Serial.println("Superloop :: SPI Begin");
         #endif
+        
+        // debug to check the message is coming through
         exo_data.left_leg.hip.motor.p_des = 300;
         
-
-            
-
         // Only make calls to used motors.
         if (exo_data.left_leg.hip.is_used)
         {
+            // turn motor on
             exo_data.left_leg.hip.motor.is_on = true;
             exo.left_leg._hip._motor->on_off();
+            // make sure gains are 0 so there is no funny business.
             exo_data.left_leg.hip.motor.kp = 0;
             exo_data.left_leg.hip.motor.kd = 0;
             #ifdef HEADLESS
@@ -276,6 +289,8 @@ void loop()
                 exo.right_leg._ankle.set_controller(exo_data.right_leg.ankle.controller.controller);
             #endif
         }
+        
+        // give the motors time to wake up.  Can eventually be removed when using non damaged motors.
         #ifdef MAIN_DEBUG
           Serial.println("Superloop :: Motor Charging Delay - Please be patient");
         #endif 
@@ -300,6 +315,7 @@ void loop()
           Serial.println();
         #endif
 
+        // Configure the system if you can't set it with the app
         #ifdef HEADLESS
             bool enable_overide = true;
             if(exo_data.left_leg.hip.is_used)
@@ -329,14 +345,7 @@ void loop()
                 exo.right_leg._ankle._motor->enable(enable_overide);
             }
         #endif
-        // wait for all motors to enable
-//        while ((exo_data.left_leg.hip.is_used ? exo.left_leg._hip._motor->enable(exo.left_leg._hip._motor->_motor_data->enabled): 1) 
-//                && (exo_data.right_leg.hip.is_used ? exo.right_leg._hip._motor->enable(exo.right_leg._hip._motor->_motor_data->enabled) : 1)
-//                && (exo_data.left_leg.ankle.is_used ? exo.left_leg._ankle._motor->enable(exo.left_leg._ankle._motor->_motor_data->enabled): 1) 
-//                && (exo_data.right_leg.ankle.is_used ? exo.right_leg._ankle._motor->enable(exo.right_leg._ankle._motor->_motor_data->enabled) : 1) )
-//        {
-//          
-//        }
+ 
         #ifdef MAIN_DEBUG
             #ifdef HEADLESS
                 Serial.println("Superloop :: Motors Enabled");
@@ -346,6 +355,7 @@ void loop()
         #endif
     }
 
+    // run the calibrations we need to do if not set through the app.
     #ifdef HEADLESS
         static bool static_calibration_done = false;
         unsigned int pause_after_static_calibration_ms = 10000;
@@ -354,6 +364,7 @@ void loop()
         static bool dynamic_calibration_done = false;
     
         
+        // do data plotting
         static float old_time = micros();
         float new_time = micros();
         if(new_time - old_time > 500000 && dynamic_calibration_done)
@@ -381,7 +392,7 @@ void loop()
         }
     
         
-        
+        // do torque sensor calibration
         if ((!static_calibration_done) && (!exo_data.left_leg.ankle.calibrate_torque_sensor && !exo_data.right_leg.ankle.calibrate_torque_sensor))
         {
             #ifdef MAIN_DEBUG
@@ -392,6 +403,7 @@ void loop()
             exo_data.status = status_defs::messages::test;
         }
     
+        // pause between static and dynamic calibration so we have time to start walking
         if (!pause_between_calibration_done && (static_calibration_done && ((time_dynamic_calibration_finished +  pause_after_static_calibration_ms) < millis() ))) 
         {
             #ifdef MAIN_DEBUG
@@ -415,7 +427,7 @@ void loop()
             pause_between_calibration_done = true;
         }
             
-        
+        // do the dynamic calibrations
         if ((!dynamic_calibration_done) && (pause_between_calibration_done) && (!exo_data.left_leg.do_calibration_toe_fsr && !exo_data.left_leg.do_calibration_refinement_toe_fsr && !exo_data.left_leg.do_calibration_heel_fsr && !exo_data.left_leg.do_calibration_refinement_heel_fsr))
         {
             #ifdef MAIN_DEBUG
@@ -463,7 +475,11 @@ void loop()
         }
     #endif                                                                                        
 
+    // do exo calculations
+    
     exo.run();
+    
+    // print the exo_data at a fixed period.
 //    unsigned int data_print_ms = 5000;
 //    static unsigned int last_data_time = millis();
 //    if(millis() - last_data_time > data_print_ms)
@@ -473,6 +489,7 @@ void loop()
 //        last_data_time = millis();
 //    }
     
+    // Print some dots so we know it is doing something
     #ifdef MAIN_DEBUG
         unsigned int dot_print_ms = 5000;
         static unsigned int last_dot_time = millis();
@@ -485,6 +502,7 @@ void loop()
        
     #endif 
     
+    // When there is a new message process it.
     if(spi_peripheral::is_unread_message)
     {
         // Not doing the parsing in the transaction so do it here.
@@ -509,11 +527,13 @@ void loop()
 #include "src/ExoData.h"
 #include "src/ComsMCU.h"
 
+// create array to store config.
 namespace config_info
 {
     uint8_t (config_to_send)[ini_config::number_of_keys];
 }
 
+// dummy config to use when not getting it from the teensy
 //namespace config_info
 //{
 //    uint8_t (config_to_send)[ini_config::number_of_keys] = {
@@ -549,7 +569,7 @@ void loop()
     mcu->update_gui();
 }
 
-#else
+#else // code to use when microcontroller is not recognized.
 void setup()
 {
   Serial.begin(115200);

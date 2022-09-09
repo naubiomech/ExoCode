@@ -1,6 +1,6 @@
 #ifndef BOARD_SETTINGS_HEADER
     #define BOARD_SETTINGS_HEADER
-    
+    // include config so we know what board is being used.
     #include "Config.h"
 
     #if BOARD_VERSION == AK_Board_V0_1
@@ -111,6 +111,7 @@
                 const unsigned int sync_led_pin = 15;
                 const unsigned int sync_default_pin = 5;
             #endif
+            // Arduino compiles all files not just the ones that are used so this is not under teensy to prevent errors
             const unsigned int sync_led_on_state = LOW;//HIGH;
             const unsigned int sync_led_off_state = HIGH;//LOW;
 
@@ -211,6 +212,7 @@
                 const unsigned int sync_led_pin = 15;
                 const unsigned int sync_default_pin = 5;
             #endif
+            // Arduino compiles all files not just the ones that are used so this is not under teensy to prevent errors
             const unsigned int sync_led_on_state = LOW;//HIGH;
             const unsigned int sync_led_off_state = HIGH;//LOW;
 
