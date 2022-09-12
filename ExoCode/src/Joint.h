@@ -111,6 +111,7 @@ class HipJoint : public _Joint
         HeelToe _heel_toe;
         ExtensionAngle _extension_angle;
         BangBang _bang_bang;
+        LateStance _late_stance;
         FranksCollinsHip _franks_collins_hip;
         // UserDefined _user_defined;
         Sine _sine;

@@ -115,16 +115,17 @@ namespace config_defs
     };
         
     enum class  hip_controllers : uint8_t
-    { 
-        disabled = 1, 
-        zero_torque = 2, 
-        heel_toe =  3,
+    {
+        disabled = 1,
+        zero_torque = 2,
+        heel_toe = 3,
         extension_angle = 4,
         franks_collins_hip = 5,
         bang_bang = 6,
         user_defined = 7,
         sine = 8,
         stasis = 9,
+        late_stance = 10,
     };
     
     enum class knee_controllers : uint8_t
@@ -285,6 +286,7 @@ namespace config_defs
             {"userDefined", (uint8_t)config_defs::hip_controllers::user_defined},
             {"sine", (uint8_t)config_defs::hip_controllers::sine},
             {"stasis", (uint8_t)config_defs::hip_controllers::stasis},
+            {"latestance", (uint8_t)config_defs::hip_controllers::late_stance},
         };
         
         const IniKeyCode knee_controllers 

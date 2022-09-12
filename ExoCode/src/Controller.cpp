@@ -527,6 +527,90 @@ void BangBang::_update_state(float angle)
 }
 
 
+LateStance::LateStance(config_defs::joint_id id, ExoData* exo_data)
+    : _Controller(id, exo_data)
+{
+#ifdef CONTROLLER_DEBUG
+    Serial.println("LateStance::Constructor");
+#endif
+    _state = 0; // extension mode originally 
+
+    _reset_angles();
+
+};
+
+float LateStance::calc_motor_cmd()
+{
+    // check if the angle range should be reset
+    if (_controller_data->parameters[controller_defs::LateStance::clear_angle_idx])
+    {
+        _reset_angles();
+    }
+
+    float angle = _leg_data->hip.position;
+    // check the angle range
+    _max_angle = max(angle, _max_angle);
+    _min_angle = min(angle, _min_angle);
+
+    _update_state(angle);
+
+    float cmd_ff = 0;
+    // calculate torque based on state
+    switch (_state)
+    {
+    case 0:  // extension
+        cmd_ff = 0;
+        break;
+    case 1:  // flexion
+        cmd_ff = _controller_data->parameters[controller_defs::LateStance::resistance_setpoint_idx];
+        break;
+    }
+
+
+    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::LateStance::use_pid_idx]
+        ? _pid(cmd_ff, _joint_data->torque_reading, _controller_data->parameters[controller_defs::LateStance::p_gain_idx], _controller_data->parameters[controller_defs::LateStance::i_gain_idx], _controller_data->parameters[controller_defs::LateStance::d_gain_idx])
+        : 0);
+
+    return cmd;
+};
+
+/*
+ * Used to reset the range of motion to the starting values.
+ * There is no reset for the flag so the user must turn this off manually.
+ */
+void LateStance::_reset_angles()
+{
+    _max_angle = _initial_max_angle;
+    _min_angle = _initial_min_angle;
+};
+
+
+/*
+ *
+ */
+void LateStance::_update_state(float angle)
+{
+    switch (_state)
+    {
+    case 0:  // No Torque 
+        if (angle <= _controller_data->parameters[controller_defs::LateStance::angle_on_off])
+        {
+            _state = 1;
+        }
+        break;
+    case 1:  // Torque
+
+        if ((angle > (_controller_data->parameters[controller_defs::LateStance::angle_on_off] * _max_angle / 100))
+        {
+            _state = 0;
+        }
+        break;
+
+
+    }
+}
+
+
 /*
  * Constructor for the controller
  * Takes the joint id and a pointer to the exo_data

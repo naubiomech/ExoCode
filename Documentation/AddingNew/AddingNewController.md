@@ -1,7 +1,7 @@
 # Adding a new controller
 ## parseIni.h
 1. Go to the config_defs namespace and the joint(s) you are creating a controller for and add it to the enum class so we can reference it.
-2. Go to the config_map namespace and add for the joint(s) you are creating a controller for and add the name that will be used in the ini file.
+2. Go to the config_map namespace and add for the joint(s) you are creating a controller for and add the name that will be used in the config.ini file.
 
 ## ControllerData.h
 1. Go to the controller_defs namespace and add a namespace for your controller following the template from the other controllers
