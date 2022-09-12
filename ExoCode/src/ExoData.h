@@ -1,7 +1,10 @@
-/*
+/**
+ * @file ExoData.h
+ *
+ * @brief Declares a class used to store data for the Exo to access 
  * 
- * 
- * P. Stegall Jan. 2022
+ * @author P. Stegall 
+ * @date Jan. 2022
 */
 
 
@@ -22,33 +25,45 @@
  * Just thought you might be wondering about the weirdness.
  */
 
-//TODO: Add an output data that creates an array that can be used to send to the other board.
-// moved status values to StatusLed.h
-/* enum class ExoStatus : uint8_t 
-{
-	not_enabled = 0,
-	enabled = 1,
-	running = 2,
-	error = 3,
-}; */
+// moved status values to StatusDefs.h
 
 // Type used for the for each joint method, the function should take JointData as input and return void
-typedef void (*for_each_joint_function_t) (JointData*);
+typedef void (*for_each_joint_function_t) (JointData*); 
 
+
+/**
+ * @brief Class to store all the data related to the exo
+ */
 class ExoData 
 {
 	public:
         ExoData(uint8_t* config_to_send); // constructor
+        
+        /**
+         * @brief reconfigures the the exo data if the configuration changes after constructor called.
+         * 
+         * @param configuration array
+         */
         void reconfigure(uint8_t* config_to_send);
+        
+        /**
+         * @brief performs a function for each joint
+         * 
+         * @param pointer to the function that should be done for each used joint
+         */
         void for_each_joint(for_each_joint_function_t function);
+        
+        /**
+         * @brief Prints all the exo data
+         */
         void print();
         
-        uint16_t status;
-        bool sync_led_state;
-        bool estop;
-        float battery_value; // Could be Voltage or SOC, depending on the battery type
-        LegData left_leg;
-        LegData right_leg;
+        uint16_t status; /**< status of the system*/
+        bool sync_led_state; /**< state of the sync led */
+        bool estop;/**< state of the estop */
+        float battery_value; /**<Could be Voltage or SOC, depending on the battery type*/
+        LegData left_leg;/**< data for the left leg */
+        LegData right_leg;/**< data for the right leg */
 };
 
 #endif

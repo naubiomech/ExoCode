@@ -5,16 +5,9 @@
 #if defined(ARDUINO_TEENSY36) | defined(ARDUINO_TEENSY41)
   // general headers for using the system
   #include "src\Board.h"
-  #include "src\Utilities.h"
-  #include "src\ParseIni.h"
   
   // header for the component we are checking.
   #include "src\SyncLed.h"
-  
-  namespace config_info
-  {
-    uint8_t (config_to_send)[ini_config::number_of_keys];
-  }
   
   void setup()
   {
@@ -44,7 +37,7 @@
   
   void loop()
   {
-    static SyncLed sync_led(logic_micro_pins::sync_led_pin, SYNC_START_STOP_HALF_PERIOD_US, SYNC_HALF_PERIOD_US, logic_micro_pins::sync_led_on_state, logic_micro_pins::sync_default_pin);  // Create a sync LED object, the first and last arguments (pin) are found in Board.h, and the rest are in Sync_Led.h.  If you do not have a digital input for the default state you can remove SYNC_DEFAULT_STATE_PIN.  
+    static SyncLed sync_led(logic_micro_pins::sync_led_pin, sync_time::SYNC_START_STOP_HALF_PERIOD_US, sync_time::SYNC_HALF_PERIOD_US, logic_micro_pins::sync_led_on_state, logic_micro_pins::sync_default_pin);  // Create a sync LED object, the first and last arguments (pin) are found in Board.h, and the rest are in Sync_Led.h.  If you do not have a digital input for the default state you can remove SYNC_DEFAULT_STATE_PIN.  
      
     int state_period_ms = 10000;
     static int last_transition_time = millis();

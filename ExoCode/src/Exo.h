@@ -1,7 +1,10 @@
-/*
+/**
+ * @file Exo.h
+ *
+ * @brief Declares for the different exo class that all the other components will live in. 
  * 
- * 
- * P. Stegall Jan. 2022
+ * @author P. Stegall 
+ * @date Jan. 2022
 */
 
 
@@ -28,18 +31,21 @@ class Exo
     public:
 		Exo(ExoData* exo_data); // constructor: uses initializer list for the Leg objects.
 		
-        void run(); // reads motor data from each motor used in the leg and stores the values
+        /**
+         * @brief reads motor data from each motor used in the leg and stores the values
+         */
+        void run();  
 		
-        ExoData *data;  // pointer to ExoData that is getting updated by SPI so they share memory.
-        Leg right_leg;
-        Leg left_leg;
+        ExoData *data;  /**< pointer to ExoData that is getting updated by the coms mcu so they share format.*/
+        Leg right_leg; /**< right leg object that contains all the joints and sensors for that leg */
+        Leg left_leg; /**< right leg object that contains all the joints and sensors for that leg */
         
         #ifdef USE_SPEED_CHECK
-            utils::SpeedCheck speed_check;
+            utils::SpeedCheck speed_check; /**< Used to check the speed of the loop without needing prints */
         #endif
         
-        SyncLed sync_led;
-        StatusLed status_led;
+        SyncLed sync_led; /**< used to syncronize data with a motion capture system */
+        StatusLed status_led; /**< used to display the system status */
 			
 	private:
 		

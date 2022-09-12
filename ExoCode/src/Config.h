@@ -23,8 +23,8 @@
     
     namespace torque_calibration
     {
-        const float AI_CNT_TO_V = 3.3 / 4096; 
-        const float TRQ_V_TO_NM = 42.500;
+        const float AI_CNT_TO_V = 3.3 / 4096; // conversion from count to voltage
+        const float TRQ_V_TO_NM = 42.500; // conversion from voltage to Nm
     }
 
     namespace BLE_times
@@ -36,6 +36,6 @@
     
     namespace SPI_times
     {
-        const float UPDATE_PERIOD= 10000000;//10000; //microseconds
+        const float UPDATE_PERIOD= 10000000;//10000; //microseconds, time between updating data over spi
     }
 #endif

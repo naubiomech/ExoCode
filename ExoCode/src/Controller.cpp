@@ -9,12 +9,7 @@
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
 #include <math.h>
-//****************************************************
-/*
- * Constructor for the controller
- * Takes the joint id and a pointer to the exo_data
- * Only stores the id, exo_data pointer.
- */
+
 _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
 {
     _id = id;
@@ -127,7 +122,7 @@ float _Controller::_pid(float cmd, float measurement, float p_gain, float i_gain
       
     _prev_error = error_val;
     float p = p_gain * error_val;  
-    //float i = i_gain * _integral_val;
+    //float i = i_gain * _integral_val;  // resetting _integral_val was crashing the system 
     float d = d_gain * de_dt; 
     
     return p + d;
@@ -147,11 +142,7 @@ void _Controller::reset_integral()
 };
 
 //****************************************************
-/*
- * Constructor for the controller
- * Takes the joint id and a pointer to the exo_data
- * Only stores the id, exo_data pointer.
- */
+
 ZeroTorque::ZeroTorque(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
@@ -166,6 +157,7 @@ float ZeroTorque::calc_motor_cmd()
 {
     float cmd_ff = 0;
     
+    // add the PID contribution to the feed forward command
     float cmd = cmd_ff + (_controller_data->parameters[controller_defs::zero_torque::use_pid_idx] 
                 ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::zero_torque::p_gain_idx], _controller_data->parameters[controller_defs::zero_torque::i_gain_idx], _controller_data->parameters[controller_defs::zero_torque::d_gain_idx]) 
                 : 0);
@@ -174,11 +166,7 @@ float ZeroTorque::calc_motor_cmd()
 };
 
 //****************************************************
-/*
- * Constructor for the controller
- * Takes the joint id and a pointer to the exo_data
- * Only stores the id, exo_data pointer.
- */
+
 Stasis::Stasis(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
@@ -197,18 +185,13 @@ float Stasis::calc_motor_cmd()
 
 
 //****************************************************
-/*
- * Constructor for the controller
- * Takes the joint id and a pointer to the exo_data
- * Only stores the id, exo_data pointer.
- */
+
 ProportionalJointMoment::ProportionalJointMoment(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
     #ifdef CONTROLLER_DEBUG
         Serial.println("ProportionalJointMoment::Constructor");
     #endif
-    
     
 };
 
@@ -217,12 +200,15 @@ float ProportionalJointMoment::calc_motor_cmd()
     float cmd_ff = 0;
     //Serial.print("ProportionalJointMoment::calc_motor_cmd : Entered");
     //Serial.print("\n");
+    
+    // don't calculate command when fsr is calibrating.
     if (!_leg_data->do_calibration_toe_fsr)
     {
         cmd_ff = _leg_data->toe_fsr * _controller_data->parameters[controller_defs::proportional_joint_moment::max_torque_idx];
         cmd_ff = (_controller_data->parameters[controller_defs::proportional_joint_moment::is_assitance_idx] ? -1 : 1) * min(max(0, cmd_ff), _controller_data->parameters[controller_defs::proportional_joint_moment::max_torque_idx]);  // if the fsr is negative use zero torque so it doesn't dorsiflex.  Saturate at max
     }
     
+    // add the PID contribution to the feed forward command
     float cmd = cmd_ff + (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx] 
                 ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]) 
                 : 0);
@@ -234,11 +220,7 @@ float ProportionalJointMoment::calc_motor_cmd()
 };
 
 
-/*
- * Constructor for the controller
- * Takes the joint id and a pointer to the exo_data
- * Only stores the id, exo_data pointer.
- */
+
 HeelToe::HeelToe(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
@@ -254,6 +236,7 @@ float HeelToe::calc_motor_cmd()
     // this code is just temporary while we are under construction.
     float cmd_ff = 0;
     
+    // add the PID contribution to the feed forward command
     float cmd = cmd_ff + (_controller_data->parameters[controller_defs::heel_toe::use_pid_idx] 
                 ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::heel_toe::p_gain_idx], _controller_data->parameters[controller_defs::heel_toe::i_gain_idx], _controller_data->parameters[controller_defs::heel_toe::d_gain_idx]) 
                 : 0); 
@@ -262,11 +245,6 @@ float HeelToe::calc_motor_cmd()
 };
 
 
-/*
- * Constructor for the controller
- * Takes the joint id and a pointer to the exo_data
- * Only stores the id, exo_data pointer.
- */
 ExtensionAngle::ExtensionAngle(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
@@ -339,6 +317,7 @@ float ExtensionAngle::calc_motor_cmd()
             break;
     }
     
+    // add the PID contribution to the feed forward command
     float cmd = cmd_ff + (_controller_data->parameters[controller_defs::extension_angle::use_pid_idx] 
                 ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::extension_angle::p_gain_idx], _controller_data->parameters[controller_defs::extension_angle::i_gain_idx], _controller_data->parameters[controller_defs::extension_angle::d_gain_idx]) 
                 : 0);
@@ -346,10 +325,7 @@ float ExtensionAngle::calc_motor_cmd()
     return cmd;
 };
 
-/*
- * Used to reset the range of motion to the starting values.
- * There is no reset for the flag so the user must turn this off manually.
- */
+
 void ExtensionAngle::_reset_angles()
 {
     _max_angle = _initial_max_angle;
@@ -357,9 +333,6 @@ void ExtensionAngle::_reset_angles()
 };
 
 
-/*
- *
- */
 void ExtensionAngle::_update_state(float angle)
 {
     switch (_state)
@@ -394,11 +367,7 @@ void ExtensionAngle::_update_state(float angle)
     // }
 }
 
-/*
- * Constructor for the controller
- * Takes the joint id and a pointer to the exo_data
- * Only stores the id, exo_data pointer.
- */
+
 BangBang::BangBang(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
@@ -471,6 +440,7 @@ float BangBang::calc_motor_cmd()
     }
     
     
+    // add the PID contribution to the feed forward command
     float cmd = cmd_ff + (_controller_data->parameters[controller_defs::bang_bang::use_pid_idx] 
                 ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::bang_bang::p_gain_idx], _controller_data->parameters[controller_defs::bang_bang::i_gain_idx], _controller_data->parameters[controller_defs::bang_bang::d_gain_idx]) 
                 : 0);
@@ -478,10 +448,7 @@ float BangBang::calc_motor_cmd()
     return cmd;
 };
 
-/*
- * Used to reset the range of motion to the starting values.
- * There is no reset for the flag so the user must turn this off manually.
- */
+
 void BangBang::_reset_angles()
 {
     _max_angle = _initial_max_angle;
@@ -489,9 +456,7 @@ void BangBang::_reset_angles()
 };
 
 
-/*
- *
- */
+
 void BangBang::_update_state(float angle)
 {
     switch (_state)
@@ -646,17 +611,10 @@ ZhangCollins::ZhangCollins(config_defs::joint_id id, ExoData* exo_data)
     _d2 = -1;
 };
 
-/*
- * Used to update the parameters of the spline equations
- * when the parameters that define the splines change.
- * 
- * Takes in the parameters that define the curve shape.
- */
+/
 void ZhangCollins::_update_spline_parameters(int mass, float peak_normalized_torque_Nm_kg, float ramp_start_percent_gait, float onset_percent_gait, float peak_percent_gait, float stop_percent_gait)
 {
-    // TODO: add config file read;
-    // 1 cout << "\n exoBoot :: initCollinsProfile : Doing the init." << endl;
-
+    
     _mass = mass; // kg
     _t0 = ramp_start_percent_gait;
     _t1 = onset_percent_gait;
@@ -669,35 +627,25 @@ void ZhangCollins::_update_spline_parameters(int mass, float peak_normalized_tor
     float t2 = peak_percent_gait;
     float t3 = stop_percent_gait;
     
-    
-    
-    
-
     _peak_normalized_torque_Nm_kg = peak_normalized_torque_Nm_kg; // 0.76; // Using a smaller value due to Dephy Exo Limit.
     
-
+    // unnormalize the peak torque
     _tp_Nm = _mass * (float)peak_normalized_torque_Nm_kg;
     _ts_Nm = 2;
 
+    // calculate the spline parameters
     _a1 = (2 *(_tp_Nm - _ts_Nm))/pow((t1 - t2),3);
     _b1 = -((3 *(t1 + t2) *(_tp_Nm - _ts_Nm)) / pow((t1 - t2),3));
     _c1 = (6* t1 * t2 * (_tp_Nm - _ts_Nm))/pow((t1 - t2),3);
     _d1 = -((-pow(t1, 3) * _tp_Nm + 3 * pow(t1, 2) * t2 * _tp_Nm - 3 * t1 * pow(t2,2) * _ts_Nm +
             pow(t2,3) * _ts_Nm)/pow((t1 - t2),3));
 
-    // 1 cout << "exoBoot :: initCollinsProfile : \na1 = " << a1 << "\nb1 = " << b1 << "\nc1 = " << c1 << "\nd1 = " << d1 << endl;
-
+    
     _a2 = -((_tp_Nm - _ts_Nm)/(2* pow((t2 - t3),3)));
     _b2 = (3 *t3 *(_tp_Nm - _ts_Nm))/(2 *pow((t2 - t3),3));
     _c2 = (3 *(pow(t2,2) - 2 *t2 *t3) * (_tp_Nm - _ts_Nm))/(2* pow((t2 - t3),3));
     _d2 = -((3 * pow(t2,2) * t3 * _tp_Nm - 6 * t2 * pow(t3, 2) * _tp_Nm + 2 * pow(t3,3) * _tp_Nm -
               2 * pow(t2,3) * _ts_Nm + 3 * pow(t2, 2) * t3 * _ts_Nm)/(2 * pow((t2 - t3), 3)));
-
-    // 1 cout << "exoBoot :: initCollinsProfile : \na2 = " << a2 << "\nb2 = " << b2 << "\nc2 = " << c2 << "\nd2 = " << d2 << endl;
-
-
-    // 1 cout << "\n\nexoBoot :: initCollinsProfile : \ntorque rising = " << a1 << " t^3 + " << b1 << " t^2 + " << c1 << " t + " << d1 << endl;
-    // 1 cout << "exoBoot :: initCollinsProfile : \ntorque falling = " << a2 << " t^3 + " << b2 << " t^2 + " << c2 << " t + " << d2 << endl;
 
 
     return;
@@ -784,6 +732,7 @@ float ZhangCollins::calc_motor_cmd()
         }
     }  
     
+    // add the PID contribution to the feed forward command
     float cmd = torque_cmd + (_controller_data->parameters[controller_defs::zhang_collins::use_pid_idx] 
                 ? _pid(torque_cmd, _joint_data->torque_reading,_controller_data->parameters[controller_defs::zhang_collins::p_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::i_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::d_gain_idx]) 
                 : 0); 
@@ -855,21 +804,12 @@ FranksCollinsHip::FranksCollinsHip(config_defs::joint_id id, ExoData* exo_data)
 };
 
 
-/*
- * Used to update the parameters of the spline equations
- * when the parameters that define the splines change.
- *
- * Takes in the parameters that define the curve shape.
- */
-
 void FranksCollinsHip::_update_spline_parameters(int mass,
 float trough_normalized_torque_Nm_kg, float peak_normalized_torque_Nm_kg,
 float start_percent_gait, float trough_onset_percent_gait, float trough_percent_gait,
 float mid_percent_gait, float mid_duration_gait,
 float peak_percent_gait, float peak_offset_percent_gait)
 {
-    // TODO: add config file read;
-    // 1 cout << "\n exoBoot :: initCollinsProfile : Doing the init." << endl;
     // Serial.print("Franks::_update_spline_parameters : mass = ");
     // Serial.print(mass);
     // Serial.print("\n");
@@ -908,7 +848,7 @@ float peak_percent_gait, float peak_offset_percent_gait)
     _trough_normalized_torque_Nm_kg = trough_normalized_torque_Nm_kg; // 0.76; // Using a smaller value due to Dephy Exo Limit.
     _peak_normalized_torque_Nm_kg = peak_normalized_torque_Nm_kg; // 0.76; // Using a smaller value due to Dephy Exo Limit.
    
-
+    // unnormalize torque
     _tt_Nm = _mass * _trough_normalized_torque_Nm_kg;
     _tp_Nm = _mass * _peak_normalized_torque_Nm_kg;
     _tts_Nm = 0; // Negative
@@ -942,10 +882,6 @@ float peak_percent_gait, float peak_offset_percent_gait)
     return;
 };
 
-
-/*
- *
- */
 
 float FranksCollinsHip::calc_motor_cmd()
 {
@@ -1157,6 +1093,7 @@ float FranksCollinsHip::calc_motor_cmd()
     // Serial.print(torque_cmd);
     // Serial.print("\n\n");  
     
+    // add the PID contribution to the feed forward command
     float cmd = torque_cmd + (_controller_data->parameters[controller_defs::franks_collins_hip::use_pid_idx] 
                 ? _pid(torque_cmd, _joint_data->torque_reading,_controller_data->parameters[controller_defs::franks_collins_hip::p_gain_idx], _controller_data->parameters[controller_defs::franks_collins_hip::i_gain_idx], _controller_data->parameters[controller_defs::franks_collins_hip::d_gain_idx]) 
                 : 0);  
@@ -1165,11 +1102,6 @@ float FranksCollinsHip::calc_motor_cmd()
 };
 
 
-/*
- * Constructor for the controller
- * Takes the joint id and a pointer to the exo_data
- * Only stores the id, exo_data pointer.
- */
 // UserDefined::UserDefined(config_defs::joint_id id, ExoData* exo_data)
 // : _Controller(id, exo_data)
 // {
@@ -1185,10 +1117,6 @@ float FranksCollinsHip::calc_motor_cmd()
     // } 
 // };
 
-/*
- *
- */
-
 // float UserDefined::calc_motor_cmd()
 // {
     
@@ -1203,6 +1131,7 @@ float FranksCollinsHip::calc_motor_cmd()
     // {
         // cmd_ff = _controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx] + ((_controller_data->parameters[0]-_controller_data->parameters[controller_defs::user_defined::curve_start_idx+lower_idx])/(100-_percent_x[lower_idx])) * (_leg_data->percent_gait - _percent_x[lower_idx]);
     // }
+    // // add the PID contribution to the feed forward command
     // float cmd = cmd_ff + (_controller_data->parameters[controller_defs::user_defined::use_pid_idx] 
                 // ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::user_defined::p_gain_idx], _controller_data->parameters[controller_defs::user_defined::i_gain_idx], _controller_data->parameters[controller_defs::user_defined::d_gain_idx]) 
                 // : 0);
@@ -1210,11 +1139,6 @@ float FranksCollinsHip::calc_motor_cmd()
     // return 0;
 // };
 
-/*
- * Constructor for the controller
- * Takes the joint id and a pointer to the exo_data
- * Only stores the id, exo_data pointer.
- */
 Sine::Sine(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
@@ -1223,16 +1147,12 @@ Sine::Sine(config_defs::joint_id id, ExoData* exo_data)
     #endif
 };
 
-/*
- * returns amp * sine (frac_of_period * 2 * pi + phase_shift)
- * where frac_of_period is (time % period)/period
- */
-
 float Sine::calc_motor_cmd()
 {
     //  converts period to int so % will work, but is only a float for convenience  
     float cmd_ff = _controller_data->parameters[controller_defs::sine::amplitude_idx] * sin( (millis() % (int)_controller_data->parameters[controller_defs::sine::period_idx]) / _controller_data->parameters[controller_defs::sine::period_idx] * 2 * M_PI + _controller_data->parameters[controller_defs::sine::phase_shift_idx]  );
     
+    // add the PID contribution to the feed forward command
     float cmd = cmd_ff + (_controller_data->parameters[controller_defs::sine::use_pid_idx] 
                 ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::sine::p_gain_idx], _controller_data->parameters[controller_defs::sine::i_gain_idx], _controller_data->parameters[controller_defs::sine::d_gain_idx]) 
                 : 0); 

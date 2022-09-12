@@ -1,8 +1,3 @@
-/*
- * 
- * P. Stegall Jan. 2022
-*/
-
 #include "Joint.h"
 //#define JOINT_DEBUG
 
@@ -97,9 +92,6 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
     // }
 };  
 
-/*
- * reads data for sensors for the joint, torque and motor.
- */
 void _Joint::read_data()  
 {
     // Read the torque sensor, and change sign based on side.
@@ -109,10 +101,7 @@ void _Joint::read_data()
     _joint_data->velocity = _joint_data->motor.v / _joint_data->motor.gearing;
 };
 
-/*
- * Checks if we need to do the calibration for the motor and sensors
- * and runs the calibration.
- */
+
 void _Joint::check_calibration()  
 {
     // Serial.print("id: ");
@@ -132,11 +121,6 @@ void _Joint::check_calibration()
     
 };
 
-/*
- * Takes in the joint id and exo data, and checks if the current joint is used.
- * If it is used it pulls the next open torque sensor pin for the side, and increments the counter.
- * If the joint is not used, or we have used up all the available torque sensor pins for the side, it sets the pin to a pin that is not connected.
- */
 unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* exo_data)
 {
     // First check which joint we are looking at.  
@@ -242,11 +226,6 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
     }
 };
 
-/*
- * Takes in the joint id and exo data, and checks if the current joint is used.
- * If it is used it pulls the next open torque sensor pin for the side, and increments the counter.
- * If the joint is not used, or we have used up all the available torque sensor pins for the side, it sets the pin to a pin that is not connected.
- */
 unsigned int _Joint::get_motor_enable_pin(config_defs::joint_id id, ExoData* exo_data)
 {
     // First check which joint we are looking at.  
@@ -353,10 +332,6 @@ unsigned int _Joint::get_motor_enable_pin(config_defs::joint_id id, ExoData* exo
 };
 
 
-/*
- * A method to set the _motor to point to the new motor.  
- * Not fully needed since we are only setting motors at the beginning but used for consistent formatting.
- */
 void _Joint::set_motor(_Motor* new_motor)
 {
     _motor = new_motor;
@@ -448,9 +423,6 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
     }
 };
 
-/*
- * Calculates and sends motor commands, all data should be read prior to runing this.
- */
 void HipJoint::run_joint()
 {
     // enable or disable the motor.

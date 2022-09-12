@@ -1,8 +1,3 @@
-/*
- * 
- * P. Stegall Jan. 2022
-*/
-
 #include "ExoData.h"
 
 

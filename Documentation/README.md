@@ -4,8 +4,9 @@
 1.  [Background](#background)
 1.  [Introduction](#introduction)
     1. [Code location](#code-location)
-    2. [How to Deploy](#how-to-deploy)
-    3. [Style Guide](#style-guide)
+    2. [Style Guide](#style-guide)
+    3. [System Structure](#system-structure)
+    4. [How to Deploy](#how-to-deploy)
 2.  [High level functionality](#high-level-functionality)
     1. [Code Structure](#code-structure)
     2. [Guiding Principles](#guiding-principals)
@@ -16,6 +17,9 @@
 3.  [Sensors](#sensors)
     1. [Sensor Structure](#sensor-structure)
     2. [Adding New Sensors](#adding-new-sensors)
+3.  [Displays](#displays)
+    1. [Status LED](#status-led)
+    2. [Sync LED](#sync-led)
 4.  [Actuators](#actuators)
     1. [Actuator Structure](#actuator-structure)
     2. [Adding New Actuators](#adding-new-actuators)
@@ -716,6 +720,7 @@ So when we call reconfigure for the ExoData objects we call the reconfigure memb
 ## Introduction   
 This guide is designed to provide background information on the new (at time of writing) code used to control the NAU Biomechatronics Lab's exo.
 This system is designed to be flexible, where the system can be easily adapted to the user's needs, changing the motors used, number of joints, etc. 
+
  
 ### Code Location  
 If you are reading this you have found the location, but for completeness it can be found at: https://github.com/naubiomech/ExoCode/tree/nano_teensy_board.
@@ -726,13 +731,15 @@ Detailed instructions on setting up git can be found [here](https://docs.google.
 
 ### Style Guide  
 The detailed style guide can be found [here](StyleGuide.md).
+ 
+### System Structure
+![Diagram](Figures/CodeDiagram.svg)
+
+Details of the components can be found in [/Presentations/20220914_Pridham_NewCodeBase.pptx](/Presentations/)
+
 
 ### How to Deploy 
-The system consists of several components:
-1. Actuators
-2. Sensors 
-3. Control Board
-4. SD Card
+
 
 First, you will need to connect the physical components.
 1. Mount the motors on the system as appropriate.  
@@ -742,7 +749,7 @@ First, you will need to connect the physical components.
 3. Similarly, sensors should be connected on the side used, and if associated with a motor next to that motor, e.g. if the right ankle has a torque sensor it should go below the right ankle communication connection, regardless of if another joint is used. 
 4. The control board may have multiple microcontrollers on it they should all be flashed with ExoCode.ino through the Arduino IDE.  The compiler will select the correct parts of the code to use if you select the correct microcontroller.    
     - Update /ExoCode/src/Config.h BOARD_VERSION with the version number found on the control board before compiling. 
-    - Update the libraries. Move the files/folders in the [Libraries Folder](/Libraries). To your local Folder C:\User\\\[USER]\Documents\Arduino\libraries\ or system equivalent.  Details on the libraries that are used are used can be found in the main [README](/README.md#libraries)
+    - Update the libraries. Move the files/folders in the [Libraries Folder](/Libraries). To your local Folder C:\User\\\[USER]\Documents\Arduino\libraries\ or system equivalent.  Details on the libraries that are used are used can be found in [Libraries Folder](/Libraries/README.md).
     - [Arduino Instructions](https://docs.google.com/document/d/1ToLq6Zqv58Q4YEmf4SzqJDKCTp52LUaKgYg5vNmHdaI/edit?usp=sharing)
 5. Lastly, is the SD card.
     - Transfer the content of the SD Card folder to the micro SD card. 
@@ -863,6 +870,36 @@ With these other interfaces you will need to make sure not to create conflicts w
 
 ### Adding New Sensors
 Details can be found in [Adding New Sensors](AddingNew/AddingNewSensors.md)
+
+
+*** 
+## Displays
+There are currently two different displays, the status LED and the sync LED, used to display information to people or other systems.
+ 
+### Status LED
+The status LED is simply and RGB LED that displays different light patterns to let you know what is happening with the system.
+Details on what the different patterns mean can be found in [StatusLed.h](/ExoCode/src/StatusLed.h) in the status_led_defs namespace.
+There is an instance of StatusLed in Exo which should be updated every run of exo using:
+```
+// update status LED
+status_led.update(data->status);
+```
+Where the status value is defined in the status_defs::messages namespace in [StatusDefs.h](/ExoCode/src/StatusDefs.h), and is set in other areas of the code depending on what the current state is.
+
+### Sync LED
+The sync LED is used to synchronize the data recorded by the exoskeleton and other systems, primarily infrared based optical motion capture systems.
+This the state of this LED must be included in the recorded data for this to work.
+
+Essentially, the LEDs nominal state is either on or off, selectable using the sync default pin on the PCB.  
+When triggered it gives a long pulse, then gives short pulses till triggered again when it gives a long pulse again.
+![SyncPattern](Figures/SyncPattern.svg)
+
+By aligning the long pulses in the data from the exo and the external system the time point of the data will match up.
+This can be done by identifying the long pulses, by finding the time between rising and falling edges, and the long pulses should be the only ones with the larger duration.
+Once identified the start pulse could be matched up, then the time can be scaled to make the end pulse match up.
+This way even if the sampling rates are different or the clocks are at different rates you can still match up the data.
+A tool for aligning can be found at [G:\Shared drives\Biomech_Lab\Experimental Data\Template Data Processing\align_data.m](https://drive.google.com/file/d/1vgxFCoCukO2us4WSrcil_TI3fLCNSLNX/view?usp=sharing).
+
 
 
 *** 
