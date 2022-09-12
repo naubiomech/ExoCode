@@ -40,12 +40,19 @@
 ***
 ## To Do
 Paul, can you add 'how to add new PCB board, board.h' and why...
+
 Add maxon? 
+
 Add information on which development environment (notepad ++, visual studio) is recommended and information on how to download. 
+
 Add blurb in controller section about assistance/resistance flag and about naming controllers more generaically
+
 Add is_assistance flag for each controller (particularly hip bang bang)
+
 Add information on private variables within the controller sections (e.g., controller.h)
+
 Add comments to controller.cpp
+
 Add comment what/where initializer list is in joint.cpp
 
 ## Background
@@ -56,10 +63,11 @@ More detailed information can be found on the internet, I like [tutorialspoint](
 ### Bits and Bytes
 A bit is the smallest unit of information that a computer can work with and store. It is represented by one of two states, either a 0 or a 1.
 
-Bytes are composed of 8 bits and are typically the units used on a computer as a single bit is usually too small. One byte is usually capable of holding information for one character (e.g., "D", "o", "g", "!") where as 4 or 8 bytes are usually used to store intergers (e.g., 1, 4, 6, 8).
+Bytes are composed of 8 bits and are typically the units used on a computer as a single bit is usually too small. One byte is usually capable of holding information for one character (e.g., 'D', 'o', 'g', '!') whereas 4 or 8 bytes are usually used to store intergers (e.g., 1, 4, 6, 8).
 
 #### Bitwise Operators
 & - bitwise AND; takes two bytes and performs AND on every bit. Will result in a 1 only if both bits are 1.
+
 | - bitwise OR; takes two bytes and performs OR on every bit. Will result in a 1 if either of the two bits is a 1. 
 
 **ex.** Simple Example
@@ -92,15 +100,16 @@ uint8_t update_bit(uint8_t original, bool val, uint8_t loc)
 5. Or the values from 3 and 4, which will return the original with the bit in the loc position set to whatever was in val.
 
 ### Addresses
-Data on the microcontroller is stored in a loctaion. The address represents the location that said data is stored. An example of what an address looks like would be: 0x7ffcccc2f420
+Data on the microcontroller are stored in a loctaion. The address represents the location that said data is stored. An example of what an address looks like would be: 0x7ffcccc2f420
 
 ### Variables
-Variables are used as a mean to store data/information. Variables have a name that pertains to its identity and helps distinguish it from other pieces of data/information.
+Variables are used as a means to store data/information. Variables have a name that pertains to its identity and helps distinguish it from other pieces of data/information.
 When creating a variable you must declare (specify) its type. Information on types can be found in the section below.
 
-Syntax: type variable_name = value;
+**Syntax:** type variable_name = value;
 
-** ex. ** [BleMessage.h](/ExoCode/src/BleMessage.h)
+
+**ex.** [BleMessage.h](/ExoCode/src/BleMessage.h)
 
 ```
 // Number of parameters to expect with the command
@@ -123,7 +132,9 @@ A bool is still stored in a byte so it doesn't save a ton of room unless you pac
 
 ##### Logical Operators
 && - Logical AND; Returns "true" if both statements are true.
+
 || - Logical OR; Returns "true" if at least one statement is true.
+
 !  - Logical NOT; Changes the result to its opposite (e.g., would display false if the result was true)
 
 **ex.** Simple Example
@@ -175,7 +186,7 @@ A double also stores numbers that have a decimal place but has double the precis
 Arrays are used to store several values witin one variable. Similar to other variables, arrays need a data type (e.g., int, bool, float...). 
 Each value in the array is called an element which has its own index (place within the array). It should be noted that the indexing starts at 0 rather than 1. So to access the first element in the array you would use index 0.
 
-Syntax: type name[number_of_elements] = {element1, element2, ....};
+**Syntax:** type name[number_of_elements] = {element1, element2, ....};
 
 **ex.** Simple Example
 
@@ -193,7 +204,7 @@ uint8_t (config_to_send)[ini_config::number_of_keys];
 
 #### Void
 Void means that there is no type, thus variables cannot be defined with "void".
-The primary utilization of Void is for functions that return no values (more on those later).
+The primary utilization of void is for functions that return no values (more on those later).
 
 **ex.** [SyncLed.cpp](/ExoCode/src/SyncLed.cpp)
 ```
@@ -240,7 +251,7 @@ val.i = (short int) (num_to_convert * factor);
 
 #### Modifiers
 Modifiers are used to alter the meaning of varilabe types (e.g., int, double, char) in order to better match the requirements of different circumstances.
-There are 4 type modifiers in C++: Signed, Unsigned, Long, Short. It should be noted that you can use combination of modifyers (e.g., Unsigned long int)
+There are 4 type modifiers in C++: Signed, Unsigned, Long, Short. It should be noted that you can use combination of modifyers (e.g., unsigned long int)
 
 ##### Signed vs Unsigned
 Signed and unsigned modifiers can only be used with int and char data types.
@@ -263,7 +274,7 @@ The long modifier modifies the maximum value that a data type can hold. Long can
 
 The short modifier modifies the minimum value that a data type can hold. Short can be used for int.
 
-The primary value of using these modifiers is for memory usage purposes. A short int will use less bytes than an int where as a long int will use more bytes than an int. 
+The primary value of using these modifiers is for memory usage purposes. A short int will use less bytes than an int whereas a long int will use more bytes than an int. 
 
 **ex.** [Utilities.h](/ExoCode/src/Utilities.h)
 ```
@@ -272,8 +283,11 @@ val.i = (short int) (num_to_convert * factor);
 
 ##### Static
 A static variable means that the variable is created at the start of the program and destroyed at the end of the program. This allows the variable to maintain its value even after going beyond its scope.
+
 Scope helps determine where the variable can be accessed within the code. There are generally two types: Local and Global. 
+
 Local Scope: variables can only be accessed within the block of code that they are declared. 
+
 Global Scope: variables can be access from the time of declaration within the code until the end of the code. 
 
 **ex.** [ExoCode.ino](/ExoCode/ExoCode.ino)
@@ -313,14 +327,18 @@ Functions, sometimes refered to as methods or procdures, are a reusable block of
 Functions allow for code to be split into smaller, modular pieces and are particularly useful when sets of code need to be used several times. 
 
 There are typically two parts to creating a function:
+
 Declaration - tells the code's compiler what the functions name, return type, and parameters are
+
 Definintion - the main body of the function, the instructions for what the function does
 
-Syntax:
+**Syntax:**
+```
 return_type function_name(parameters) //Declaration
 {
 	//Definition
 }
+```
 
 If the function has a return, the return will be the last line of code within the block that executes, even if there are lines after it. 
 
@@ -347,8 +365,8 @@ bool get_is_left(uint8_t id)
 ```
 
 #### Overloading
-Function overloading is when there are multiple functions of the same name but with different parameters. These differences in parameters could manisfest as type differences, number of parameters in the function, or as both.
-This is useful when you have multiple functions that do the same thing. 
+Function overloading is when there are multiple functions of the same name but with different parameters. These differences in parameters could manifest as type differences, number of parameters in the function, or as both.
+Overloading is useful when you have multiple functions that do the same thing. 
 
 **ex.** Simple Example
 ```
@@ -372,6 +390,7 @@ int main()
 	cout << multiply(2,3) << "\n"; 		//Outputs a value of 6
 	cout << multiply(2.5,3.2) << "\n"; 	//Outputs a value of 8.0
 	cout << multiply(2,3,4) << "\n";	//Outputs a value of 24
+}
 ```
 
 **ex.** [Utilities.cpp](/ExoCode/src/Utilities.cpp)
@@ -394,15 +413,21 @@ Classes are user defined data types. Objects are instanaces of the class.
 Classes are the template/blueprint for the object, where as the object gets its characteristics and behaviors from the class. 
 A class can contain both attributes (variables) and methods (functions). Both of these are usually referred to as members of the class. 
 
-Syntax:
+**Syntax:**
+```
 class Class_Name
 {
 	//Specifiers_Attributes_and_Methods
 };
+```
 
-**Note:** After the final bracket of a class, you must place a ";'
+**Note:** After the final bracket of a class, you must place a ';'
 
-Simlar to functions, classes need to be declared and defined. These are usually done separately with the declaration occuring in a header file (.h, more on that later) and the definition occuring within a .cpp file.
+Similar to functions, classes need to be declared and defined. These are usually done separately with the declaration occuring in a header file (.h, more on that later) and the definition occuring within a .cpp file.
+
+To create an object of a class you need to use the following synatx: class_name object_name;
+
+To assign attributes to an object or utilize a method for an object, use the following syntax: object_name.attribute_or_method_name; 
 
 **ex.** Simple Example
 ```
@@ -422,18 +447,66 @@ class Dogs
 int main()
 {
 	Dogs dog1; 							//Creates an object of Dogs
-	dog1.name = "Mr.Pebbles";
-	dog1.breed = "Golden Retriever";
-	dog1.age = 4;
+	dog1.name = "Mr.Pebbles";			//Assigns a value to the name attribute 
+	dog1.breed = "Golden Retriever";	//Assigns a value to the breed attribute
+	dog1.age = 4;						//Assigns a value to the age attribute 
 	
-	dog1.dog_information();				//Outputs "Mr. Pebbles is a 4 year old Golden Retriever"
+	dog1.dog_information();		//Utilizes the class's method to output "Mr. Pebbles is a 4 year old Golden Retriever"
 }	
 ```
 You may have noticed the word "public" in the above example. This is an instance of a classes' access specifier. Specifiers determine how attributes and methods of a class can be accessed.
 Generally, there are three types:
+
 Public - attributes and methods accessible outside of the class.
-Private - attributes and methods are not accessible outside of the class. (Private is the defult specification for members of a class)
+
+Private - attributes and methods are not accessible outside of the class. (private is the defult specification for members of a class).
+
 Protected - attributes and methods are not accessible outside of the class but can be accessed via inherited classes (more on those later).
+
+While some functions are definied within the class itself, such as above, there is also a way to define a funciton for a class outside of the class itself.
+To do so, you need to utilize the scope resolution operator: "::". It should be noted while the function can be defined outside of the class it still must be declared within it. 
+
+**Syntax**
+```
+class class_name
+{
+	//Attributes
+	type function_name(parameters); //You still must declare the function within the class
+};
+
+type function_name(parameters)
+{
+	//Block of Code
+}
+```
+
+**ex.** Simple Example
+```
+class Dogs
+{
+	public:
+	string name; 	//The Dog's Name
+	string breed; 	//The Dog's Breed
+	int age;		//The Dog's Age
+	
+	void dog_information(); //Method Declaration
+};
+
+void Dog::dog_information()
+	{
+		cout << name << " is a " << age << " year old " << breed << "\n";
+	}
+
+int main()
+{
+	Dogs dog1; 							//Creates an object of Dogs
+	dog1.name = "Mr.Pebbles";			//Assigns a value to the name attribute 
+	dog1.breed = "Golden Retriever";	//Assigns a value to the breed attribute
+	dog1.age = 4;						//Assigns a value to the age attribute 
+	
+	dog1.dog_information();		//Utilizes the class's method to output "Mr. Pebbles is a 4 year old Golden Retriever"
+}	
+```
 
 **ex.** [Controller.h](/ExoCode/src/Controller.h)
 ```
@@ -449,9 +522,10 @@ class ProportionalJointMoment : public _Controller
 ```
 
 #### Constructor
-Method within a class that is automatically called upon creation of an object. 
+Constructors are a method within a class that is automatically called upon creation of an object. 
 The primary purpose of a constructor is to initialize members of the object with data. It makes sure that an object is created with specific attributes. 
 Constructors construct the values of the objects (hence it's name). These methods have no return value (thus they do not have a return type).
+
 Note: Constructors must have the same name as the class and all members within a constructor are public. 
 
 **ex.** [Controller.h](/ExoCode/src/Controller.h)
@@ -473,16 +547,18 @@ Typically this new class then extends upon the inherited members of the parent c
 This can be used in a modular sense to considerablly reduce the amount of potentially redundent code within a program.
 It is possible to inherit from a class which itself inherited from another class. This can allow us to start with a very general class that then becomes progressivly more specific with each instance of inheritance.
 
-Syntax:
+**Syntax:**
+```
 Class Child: Class Parent
 {
 	//Code_Block
 };
+```
 
 **ex.** Simple Example
 
 ```
-Class Person						//Parent Class
+Class Person				//Parent Class
 {
 	public:
 	string name;
@@ -521,8 +597,7 @@ More info on inheritance can be found on [tutorialspoint](https://www.tutorialsp
 #### Friend Classes
 Friend classes can access private/protected memebers of other classes. 
 
-Syntax:
-friend class name_of_class_you_want_to_befriend;
+**Syntax:** friend class name_of_class_you_want_to_befriend;
 
 **ex.** We don't really use friend classes but it is here for completeness.
 
@@ -568,10 +643,10 @@ class _Controller
 #### Initializer List
 Initializer lists are used to initializing members of classes with data. 
 
-Syntax:
+**Syntax:**
 constructor(parameters): initializaiton
 
-**ex** Simple Example
+**ex.** Simple Example
 ```
 Class Example
 {
@@ -600,7 +675,7 @@ ZeroTorque::ZeroTorque(config_defs::joint_id id, ExoData* exo_data)
 Pointers are variables that contain the memory address as a value.
 These variables point to a data type of the same type. 
 
-Synatx: type* variable_name or type *variable_name   
+**Synatx:** type* variable_name or type *variable_name   
 
 **ex.** [Joint.h](/ExoCode/src/Joint.h)
 ```
@@ -621,7 +696,7 @@ cout << pointer; //outputs the address stored in the pointer
 
 You can also do the opposite and get the value of a variable from it's memory address through a technique called dereferencing. 
 
-Syntax: *pointer
+**Syntax:** *pointer
 
 **ex.** Simple Example
 ```
@@ -638,9 +713,9 @@ cout << "\n" << *pointer; 	//Outputs the value of the variable at the location g
 Function pointers are similar to regular pointers except that they store the address to functions rather than variables. 
 These can be used to call a function indirectly. 
 
-Syntax: type (*function_pointer)(arguement);
+**Syntax:** type (*function_pointer)(argument);
 
-These can also be initialized via the following synatx: type (*function_pointer)(arguement){&function};
+These can also be initialized via the following synatx: type (*function_pointer)(argument){&function};
 
 **ex.** Simple Example
 ```
@@ -651,11 +726,11 @@ int multiply(int x, int y)
 
 int main()
 {
-	int (*Function_Pointer)(int,int);   	//Declares function pointer
-	Function_Pointer = multiply;			//Points to the function
-	int result = Function_Pointer(4,3);		//Uses the function pointer to call a function indirectly
-	int result2 = (*Function_Pointer)(4,3); //Another way to use the function pointer to call a function indirectly (will output the same result as above)
-	cout << result;							//Outputs the result
+	int (*Function_Pointer)(int,int);   		//Declares function pointer
+	Function_Pointer = multiply;				//Points to the function
+	int result = Function_Pointer(4,3);			//Uses the function pointer to call a function indirectly
+	int result2 = (*Function_Pointer)(4,3); 	//Another way to use the function pointer to call a function indirectly (will output the same result as above)
+	cout << result;								//Outputs the result
 }
 ```
 
