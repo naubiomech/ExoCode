@@ -162,7 +162,10 @@ volatile int _current_sync_period; // The current period to use.  Whenever syncL
 ```
 
 ##### Extern
-**ex.** We don't really use extern but it is here for completeness.
+**ex.** [SPIHandler.h](/ExoCode/src/SPIHandler.h)
+```
+extern uint8_t is_ff[num_bytes];
+```
 
 ### Functions
 **ex.** [Utilities.cpp](/ExoCode/src/Utilities.cpp)
