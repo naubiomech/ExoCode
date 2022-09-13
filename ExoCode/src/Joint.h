@@ -155,10 +155,12 @@ class HipJoint : public _Joint
         void set_controller(uint8_t);  
     protected:
         // Objects for joint specific controllers
+
         ZeroTorque _zero_torque; /**< zero torque controller */
         HeelToe _heel_toe; /**< heel toe controller, not currently configured */
         ExtensionAngle _extension_angle; /**< extension angle controller */
         BangBang _bang_bang; /**< bang bang controller */
+        LateStance _late_stance; /**<late stance controller */
         FranksCollinsHip _franks_collins_hip; /**< Franks Collins Hip controller */
         // UserDefined _user_defined; /**< user defined controller*/
         Sine _sine; /**< sine wave controller */

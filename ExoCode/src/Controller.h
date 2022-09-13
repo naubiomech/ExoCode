@@ -260,6 +260,38 @@ class BangBang: public _Controller
       
 };
 
+/*
+ * LateStance Controller
+ * This controller is for the hip joint
+ * Applies const torque during late stance
+ *
+ * see ControllerData.h for details on the parameters used.
+ */
+class LateStance : public _Controller
+{
+public:
+    LateStance(config_defs::joint_id id, ExoData* exo_data);
+    ~LateStance) {};
+
+    float calc_motor_cmd();
+private:
+    void _update_max_angle(float angle);
+    void _update_state(float angle);
+    void _reset_angles();
+
+    // the initial angles used for tracking the extent of the range of motions 
+    const float _initial_max_angle = utils::degrees_to_radians(20);
+    const float _initial_min_angle = utils::degrees_to_radians(-5);
+
+    // Used to track the range of motion, angles are in rad.
+    float _max_angle;
+    float _min_angle;
+
+    // Used to track the state 0 is extension mode, 1 is flexion mode.
+    uint8_t _state;
+
+};
+
 /**
  * @brief Zhang Collins Controller
  * This controller is for the ankle joint 

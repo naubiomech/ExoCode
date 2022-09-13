@@ -38,15 +38,51 @@
     1. [C++ Resources](#c-resources)
     1. [Bluetooth Resources](#bluetooth-resources)
 ***
-## Background 
-The code is written Arduino and C++.
+## To Do
+Paul, can you add 'how to add new PCB board, board.h' and why...
+
+Add maxon? 
+
+Add information on which development environment (notepad ++, visual studio) is recommended and information on how to download. 
+
+Add blurb in controller section about assistance/resistance flag and about naming controllers more generaically
+
+Add is_assistance flag for each controller (particularly hip bang bang)
+
+Add information on private variables within the controller sections (e.g., controller.h)
+
+Add comments to controller.cpp
+
+Add comment what/where initializer list is in joint.cpp
+
+## Background
+The code is written in Arduino and C++.
 This background section is intended to give you and understanding about the different things you may see in the code and how to interpret them.
 More detailed information can be found on the internet, I like [tutorialspoint](https://www.tutorialspoint.com/cplusplus/index.htm) and [w3schools](https://www.w3schools.com/cpp/default.asp) but there are other resources that are good.
 
 ### Bits and Bytes
+A bit is the smallest unit of information that a computer can work with and store. It is represented by one of two states, either a 0 or a 1.
+
+Bytes are composed of 8 bits and are typically the units used on a computer as a single bit is usually too small. One byte is usually capable of holding information for one character (e.g., 'D', 'o', 'g', '!') whereas 4 or 8 bytes are usually used to store intergers (e.g., 1, 4, 6, 8).
+
+#### Bitwise Operators
+& - bitwise AND; takes two bytes and performs AND on every bit. Will result in a 1 only if both bits are 1.
+
+| - bitwise OR; takes two bytes and performs OR on every bit. Will result in a 1 if either of the two bits is a 1. 
+
+**ex.** Simple Example
+```
+V0: 	0b10101010
+V1: 	0b11110000
+-------------------
+V0 & V1:0b10100000
+V0 | V1:0b11111010
+```
 
 #### Bit Shifting
-@Jack - I have added examples but please still add descriptions to what the topic is.
+Bit Shifting, as its name implies, moves the binary value of the bit of interest some determined number of places to the left or right. 
+This is traditionally used for data storage purposes. For example, if you have a boolien (see section below) that will either have a 0 or a 1 it would be inefficient to store only that in a single byte. 
+Thus, we can use bit shifting to store multiple booliens (e.g., 8) into a single byte, which is much more efficient. 
 
 **ex.** [Utilities.cpp](/ExoCode/src/Utilities.cpp)
 ```
@@ -60,19 +96,31 @@ uint8_t update_bit(uint8_t original, bool val, uint8_t loc)
 1. This shifts a 1 into the loc position, so if loc is 2 it shifts the 1 two positions to the left 0b00000001<<2 becomes 0b00000100.
 2. Then the ~ inverts the bits to: 0b11111011
 3. Move the val to the current position val<<loc, for our 2 example this would put a 1 or 0 in the 2nd position with zeros for everything else.
-4. original & keep_bit, keep_bit is the value from step 1, when anded with the original it will return the original but with a 0 in the loc position
+4. original & keep_bit, keep_bit is the value from step 1, when added with the original it will return the original but with a 0 in the loc position
 5. Or the values from 3 and 4, which will return the original with the bit in the loc position set to whatever was in val.
 
 ### Addresses
-
+Data on the microcontroller are stored in a loctaion. The address represents the location that said data is stored. An example of what an address looks like would be: 0x7ffcccc2f420
 
 ### Variables
+Variables are used as a means to store data/information. Variables have a name that pertains to its identity and helps distinguish it from other pieces of data/information.
+When creating a variable you must declare (specify) its type. Information on types can be found in the section below.
 
+**Syntax:** type variable_name = value;
+
+
+**ex.** [BleMessage.h](/ExoCode/src/BleMessage.h)
+
+```
+// Number of parameters to expect with the command
+int expecting = 0;
+``` 
 
 ### Types
-
+Data types specify the type of information that can be stored as well as the size of the information that can be stored. The types encountered in our code are as follows:
 
 #### Bool
+The Bool (Boolean) type can store true (1) or false (0) values.
 
 **ex.** [ExoCode.ino](/ExoCode/ExoCode.ino)
 ```
@@ -82,7 +130,30 @@ This variable stores if it is the first run of the loop().
 If it is we do some startup stuff, then change it to false.
 A bool is still stored in a byte so it doesn't save a ton of room unless you pack a bunch of them into another type.
 
+##### Logical Operators
+&& - Logical AND; Returns "true" if both statements are true.
+
+|| - Logical OR; Returns "true" if at least one statement is true.
+
+!  - Logical NOT; Changes the result to its opposite (e.g., would display false if the result was true)
+
+**ex.** Simple Example
+```
+bool dogs_are_cute = true;
+bool cats_are_nice = false;
+bool dogs_bark = true;
+
+cout << dogs_are_cute && dogs_bark;  		//Would output true
+cout << dogs_are_cute && cats_are_nice; 	//Would output false
+
+cout << dogs_are_cute || cats_are_nice;		//Would output true
+
+cout << !(dogs_are_cute && cats_are_nice);	//Would output true
+```
+
 #### Char
+The Char type can store a one character. The character should be surrounded by single quotes (e.g., 'P','u','p','p','y').
+
 **ex.** [BleMessage.h](/ExoCode/src/BleMessage.h)
 ```
 // GUI command
@@ -90,6 +161,8 @@ char command = 0;
 ```
 
 #### Int
+The int type is used when storing numbers without a decimal. 
+
 **ex.** [BleMessage.h](/ExoCode/src/BleMessage.h)
 ```
 // Number of parameters to expect with the command
@@ -97,22 +170,42 @@ int expecting = 0;
 ```
 
 #### Float
+The float type is used when storing numbers that have a decimal. It is capable of occupying 32 bits which is approximately 7 decimal places.
+
 **ex.** [TorqueSensor.h](/ExoCode/src/TorqueSensor.h)
 ```
 float _calibrated_reading;
 ```
 
 #### Double
+A double also stores numbers that have a decimal place but has double the precision of the float (hence the name). That is, it can occupy 64 bits which is approximately 15 decimal places. 
 
 **ex.** We don't really use doubles but it is here for completeness.
 
 #### Arrays
+Arrays are used to store several values witin one variable. Similar to other variables, arrays need a data type (e.g., int, bool, float...). 
+Each value in the array is called an element which has its own index (place within the array). It should be noted that the indexing starts at 0 rather than 1. So to access the first element in the array you would use index 0.
+
+**Syntax:** type name[number_of_elements] = {element1, element2, ....};
+
+**ex.** Simple Example
+
+```
+int numbers [6] = {10, 20, 30, 40, 50, 60};
+
+cout << numbers[0];	//Would output 10
+cout << numbers[1];	//Would output 20
+```
+
 **ex.** [ExoCode.ino](/ExoCode/ExoCode.ino)
 ```
 uint8_t (config_to_send)[ini_config::number_of_keys];
 ```
 
 #### Void
+Void means that there is no type, thus variables cannot be defined with "void".
+The primary utilization of void is for functions that return no values (more on those later).
+
 **ex.** [SyncLed.cpp](/ExoCode/src/SyncLed.cpp)
 ```
 /*
@@ -127,15 +220,48 @@ void SyncLed::trigger()
 ```
 
 #### Typecasting
+Typecasting converts a variable of one type into a different type. There are two types of typecasting: Implicit and Explicit.
+
+Implicit typecasting occurs when the compiler automatically converts one data type to another without explicit programmer intervention.
+
+**ex.** Implicit Typecasting - Simple Example
+```
+int value = 40;
+char letter = 'd';
+
+int result = value + letter;
+
+cout << result; //Prints out the value of result, which is 140
+```
+
+Explicit typecasting occurs when the programmer manually changes a variable from one data type to another. Format: (new type) variable;
+
+**ex.** Explicit Typecasting - Simple Example
+```
+int value;
+value = (int)12.2333;
+
+cout << value; //Prints out the value, which is 12
+```
+
 **ex.** [Utilities.h](/ExoCode/src/Utilities.h)
 ```
 val.i = (short int) (num_to_convert * factor);
 ```
 
 #### Modifiers
-
+Modifiers are used to alter the meaning of varilabe types (e.g., int, double, char) in order to better match the requirements of different circumstances.
+There are 4 type modifiers in C++: Signed, Unsigned, Long, Short. It should be noted that you can use combination of modifyers (e.g., unsigned long int)
 
 ##### Signed vs Unsigned
+Signed and unsigned modifiers can only be used with int and char data types.
+
+Signed variables are capable of storing postitive and negative values as well as zero. The type int by defult is signed. (Signed Int Value Range: -2,147,483,648 to 2,147,483,647)
+
+Unsigned variables are only capable of storing postive values and zero. These can never be negative. (Unsigned Int Value Range: 0 to 4,294,967,295)
+
+Signed variables use one extra bit to account for the sign of the value (compared to unsigned), hence unsigned can be used to save extra space. 
+
 **ex.** [BleParser.cpp](/ExoCode/src/BleParser.cpp)
 ```
 //Get the ammount of characters to wait for
@@ -144,30 +270,98 @@ for(unsigned int i=0; i < sizeof(ble::commands)/sizeof(ble::commands[0]); i++)
 ```
 
 ##### Long and Short
+The long modifier modifies the maximum value that a data type can hold. Long can be used for int and double data types. Long modifiers can be used twice (int only) to create larger numbers (e.g., long long int). 
+
+The short modifier modifies the minimum value that a data type can hold. Short can be used for int.
+
+The primary value of using these modifiers is for memory usage purposes. A short int will use less bytes than an int whereas a long int will use more bytes than an int. 
+
 **ex.** [Utilities.h](/ExoCode/src/Utilities.h)
 ```
 val.i = (short int) (num_to_convert * factor);
 ```
 
 ##### Static
+A static variable means that the variable is created at the start of the program and destroyed at the end of the program. This allows the variable to maintain its value even after going beyond its scope.
+
+Scope helps determine where the variable can be accessed within the code. There are generally two types: Local and Global. 
+
+Local Scope: variables can only be accessed within the block of code that they are declared. 
+
+Global Scope: variables can be access from the time of declaration within the code until the end of the code. 
+
 **ex.** [ExoCode.ino](/ExoCode/ExoCode.ino)
 ```
 static bool first_run = true;
 ```
 
 ##### Volatile
+A volatile variable means that the value may change between accesses to the variable, even if said variable appears unmodified. The use of volatile guarantees that the varilabe will be read again before any usage. 
+This may be useful in a situation when a controller may try to use a previous copy of the variable value (that it assumes are unchanged) rather than reading and writing using the current value. 
+This is common in situations when the variable value can change due to something outside of the code (e.g., hardware that changes the value).
+
 **ex.** [SyncLed.h](/ExoCode/src/SyncLed.h)
 ```
 volatile int _current_sync_period; // The current period to use.  Whenever syncLedHandler is called the interupt should have another begin call to make sure the period is correct.
 ```
 
 ##### Extern
+
+Extern is useful when using multiple modules. You can define a variable in one .cpp file and then use that variable in another .cpp file without defining it.
+
+**ex.** Simple Example
+
+FileOne.cpp
+
+```
+int variable = 20;
+```
+
+FileTwo.cpp
+```
+extern int variable;
+cout << variable; //This would output 20
+```
+
 **ex.** [SPIHandler.h](/ExoCode/src/SPIHandler.h)
 ```
 extern uint8_t is_ff[num_bytes];
 ```
 
 ### Functions
+Functions, sometimes refered to as methods or procdures, are a reusable block of code designed to do a particular task. 
+Functions allow for code to be split into smaller, modular pieces and are particularly useful when sets of code need to be used several times. 
+
+There are typically two parts to creating a function:
+
+Declaration - tells the code's compiler what the functions name, return type, and parameters are
+
+Definintion - the main body of the function, the instructions for what the function does
+
+**Syntax:**
+```
+return_type function_name(parameters) //Declaration
+{
+	//Definition
+}
+```
+
+If the function has a return, the return will be the last line of code within the block that executes, even if there are lines after it. 
+
+**ex.** Simple Example
+```
+int square(int x)
+{
+	return x*x;
+}
+
+int main()
+{
+	int result = square(2);
+	cout << result; 			//Will output 4
+}
+```
+
 **ex.** [Utilities.cpp](/ExoCode/src/Utilities.cpp)
 ```
 bool get_is_left(uint8_t id)
@@ -177,6 +371,34 @@ bool get_is_left(uint8_t id)
 ```
 
 #### Overloading
+Function overloading is when there are multiple functions of the same name but with different parameters. These differences in parameters could manifest as type differences, number of parameters in the function, or as both.
+Overloading is useful when you have multiple functions that do the same thing. 
+
+**ex.** Simple Example
+```
+int multiply(int x, int y)
+{
+	return x*y;
+}
+
+double multiply(double x, double y)
+{
+	return x*y;
+}
+
+int multiply (int x, int y, int z)
+{
+	return x*y*z;
+}
+
+int main()
+{
+	cout << multiply(2,3) << "\n"; 		//Outputs a value of 6
+	cout << multiply(2.5,3.2) << "\n"; 	//Outputs a value of 8.0
+	cout << multiply(2,3,4) << "\n";	//Outputs a value of 24
+}
+```
+
 **ex.** [Utilities.cpp](/ExoCode/src/Utilities.cpp)
 ```
 /*
@@ -193,12 +415,131 @@ bool get_is_left(uint8_t id)
 ```
 
 ### Classes
+Classes are user defined data types. Objects are instanaces of the class.
+Classes are the template/blueprint for the object, where as the object gets its characteristics and behaviors from the class. 
+A class can contain both attributes (variables) and methods (functions). Both of these are usually referred to as members of the class. 
+
+**Syntax:**
+```
+class Class_Name
+{
+	//Specifiers_Attributes_and_Methods
+};
+```
+
+**Note:** After the final bracket of a class, you must place a ';'
+
+Similar to functions, classes need to be declared and defined. These are usually done separately with the declaration occuring in a header file (.h, more on that later) and the definition occuring within a .cpp file.
+
+To create an object of a class you need to use the following synatx: class_name object_name;
+
+To assign attributes to an object or utilize a method for an object, use the following syntax: object_name.attribute_or_method_name; 
+
+**ex.** Simple Example
+```
+class Dogs
+{
+	public:
+	string name; 	//The Dog's Name
+	string breed; 	//The Dog's Breed
+	int age;		//The Dog's Age
+	
+	void dog_information()
+	{
+		cout << name << " is a " << age << " year old " << breed << "\n";
+	}
+};
+
+int main()
+{
+	Dogs dog1; 							//Creates an object of Dogs
+	dog1.name = "Mr.Pebbles";			//Assigns a value to the name attribute 
+	dog1.breed = "Golden Retriever";	//Assigns a value to the breed attribute
+	dog1.age = 4;						//Assigns a value to the age attribute 
+	
+	dog1.dog_information();		//Utilizes the class's method to output "Mr. Pebbles is a 4 year old Golden Retriever"
+}	
+```
+You may have noticed the word "public" in the above example. This is an instance of a classes' access specifier. Specifiers determine how attributes and methods of a class can be accessed.
+Generally, there are three types:
+
+Public - attributes and methods accessible outside of the class.
+
+Private - attributes and methods are not accessible outside of the class. (private is the defult specification for members of a class).
+
+Protected - attributes and methods are not accessible outside of the class but can be accessed via inherited classes (more on those later).
+
+While some functions are definied within the class itself, such as above, there is also a way to define a funciton for a class outside of the class itself.
+To do so, you need to utilize the scope resolution operator: "::". It should be noted while the function can be defined outside of the class it still must be declared within it. 
+
+**Syntax**
+```
+class class_name
+{
+	//Attributes
+	type function_name(parameters); //You still must declare the function within the class
+};
+
+type function_name(parameters)
+{
+	//Block of Code
+}
+```
+
+**ex.** Simple Example
+```
+class Dogs
+{
+	public:
+	string name; 	//The Dog's Name
+	string breed; 	//The Dog's Breed
+	int age;		//The Dog's Age
+	
+	void dog_information(); //Method Declaration
+};
+
+void Dog::dog_information()
+	{
+		cout << name << " is a " << age << " year old " << breed << "\n";
+	}
+
+int main()
+{
+	Dogs dog1; 							//Creates an object of Dogs
+	dog1.name = "Mr.Pebbles";			//Assigns a value to the name attribute 
+	dog1.breed = "Golden Retriever";	//Assigns a value to the breed attribute
+	dog1.age = 4;						//Assigns a value to the age attribute 
+	
+	dog1.dog_information();		//Utilizes the class's method to output "Mr. Pebbles is a 4 year old Golden Retriever"
+}	
+```
+
 **ex.** [Controller.h](/ExoCode/src/Controller.h)
 ```
 class ProportionalJointMoment : public _Controller
 {
     public:
         ProportionalJointMoment(config_defs::joint_id id, ExoData* exo_data);
+        ~ProportionalJointMoment(){};
+        
+        
+        float calc_motor_cmd();
+};
+```
+
+#### Constructor
+Constructors are a method within a class that is automatically called upon creation of an object. 
+The primary purpose of a constructor is to initialize members of the object with data. It makes sure that an object is created with specific attributes. 
+Constructors construct the values of the objects (hence it's name). These methods have no return value (thus they do not have a return type).
+
+Note: Constructors must have the same name as the class and all members within a constructor are public. 
+
+**ex.** [Controller.h](/ExoCode/src/Controller.h)
+```
+class ProportionalJointMoment : public _Controller
+{
+    public:
+        ProportionalJointMoment(config_defs::joint_id id, ExoData* exo_data); //This is the constructor
         ~ProportionalJointMoment(){};
         
         
@@ -207,7 +548,40 @@ class ProportionalJointMoment : public _Controller
 ```
 
 #### Inheritance
-More info on inheritance can be found on [tutorialspoint](https://www.tutorialspoint.com/cplusplus/cpp_inheritance.htm) or [w3schools](https://www.w3schools.com/cpp/cpp_inheritance.asp).
+Inheritance is when a class (called a child, derived, or sub class) takes (inherits, hence the name) attributes and methods from another class (called a partent, base, or super class).
+Typically this new class then extends upon the inherited members of the parent class through new attributes and/or methods.
+This can be used in a modular sense to considerablly reduce the amount of potentially redundent code within a program.
+It is possible to inherit from a class which itself inherited from another class. This can allow us to start with a very general class that then becomes progressivly more specific with each instance of inheritance.
+
+**Syntax:**
+```
+Class Child: Class Parent
+{
+	//Code_Block
+};
+```
+
+**ex.** Simple Example
+
+```
+Class Person				//Parent Class
+{
+	public:
+	string name;
+	int age;
+	int height;
+	int weight;
+};
+
+Class Football_Player : Person		//Child Class inheriting from Parent Class
+{
+	public:
+	int pass_yards;
+	int rushing_yards;
+	int sacks;
+	int interceptions;
+};
+```
 
 **ex.** [Controller.h](/ExoCode/src/Controller.h)
 ```
@@ -222,10 +596,21 @@ class ProportionalJointMoment : public _Controller
 };
 ```
 
+In the above example we have a specific controller class (ProportionalJointMoment) inherit members from a more generic controller class (_Controller).
+
+More info on inheritance can be found on [tutorialspoint](https://www.tutorialspoint.com/cplusplus/cpp_inheritance.htm) or [w3schools](https://www.w3schools.com/cpp/cpp_inheritance.asp).
+
 #### Friend Classes
+Friend classes can access private/protected memebers of other classes. 
+
+**Syntax:** friend class name_of_class_you_want_to_befriend;
+
 **ex.** We don't really use friend classes but it is here for completeness.
 
 #### Abstract Classes
+Abstact classess (also called interfaces) provide a base class from which other classes can inherit. These classes can not be used to create objects, they only serve as an interface.
+A class is made abstract when at least one of its functions is made to be a pure virtual function (syntax: virtual type function_name(parameters) = 0;). 
+
 **ex.** [Controller.h](/ExoCode/src/Controller.h)
 ```
 class _Controller
@@ -262,6 +647,23 @@ class _Controller
 ```
 
 #### Initializer List
+Initializer lists are used to initializing members of classes with data. 
+
+**Syntax:**
+constructor(parameters): initializaiton
+
+**ex.** Simple Example
+```
+Class Example
+{
+	private:
+		int number;
+	public:
+		Example(int number):number(5) {}
+};
+		
+```
+
 **ex.** [Controller.cpp](/ExoCode/src/Controller.cpp)
 ```
 ZeroTorque::ZeroTorque(config_defs::joint_id id, ExoData* exo_data)
@@ -276,18 +678,75 @@ ZeroTorque::ZeroTorque(config_defs::joint_id id, ExoData* exo_data)
 ```
 
 ### Pointers
+Pointers are variables that contain the memory address as a value.
+These variables point to a data type of the same type. 
+
+**Synatx:** type* variable_name or type *variable_name   
+
 **ex.** [Joint.h](/ExoCode/src/Joint.h)
 ```
 _Motor* _motor; // using pointer to the base class so we can use any motor type.
 JointData* _joint_data;
 ```
 
+To get the address of a varilable, you can use "&" in front of the variable. 
+
+**ex.** Simple Example
+```
+int age = 34;
+
+int* pointer = &age;
+
+cout << pointer; //outputs the address stored in the pointer 
+```
+
+You can also do the opposite and get the value of a variable from it's memory address through a technique called dereferencing. 
+
+**Syntax:** *pointer
+
+**ex.** Simple Example
+```
+int age = 34;
+
+int* pointer = &age;
+
+cout << pointer; 			//Outputs the address stored in the pointer 
+
+cout << "\n" << *pointer; 	//Outputs the value of the variable at the location given by the pointer (aka age)
+```
+
 #### Function Pointers
+Function pointers are similar to regular pointers except that they store the address to functions rather than variables. 
+These can be used to call a function indirectly. 
+
+**Syntax:** type (*function_pointer)(argument);
+
+These can also be initialized via the following synatx: type (*function_pointer)(argument){&function};
+
+**ex.** Simple Example
+```
+int multiply(int x, int y)
+{
+	return x*y;
+}
+
+int main()
+{
+	int (*Function_Pointer)(int,int);   		//Declares function pointer
+	Function_Pointer = multiply;				//Points to the function
+	int result = Function_Pointer(4,3);			//Uses the function pointer to call a function indirectly
+	int result2 = (*Function_Pointer)(4,3); 	//Another way to use the function pointer to call a function indirectly (will output the same result as above)
+	cout << result;								//Outputs the result
+}
+```
+
 **ex.** [ExoData.h](/ExoCode/src/ExoData.h)
 ```
 // Type used for the for each joint method, the function should take JointData as input and return void
 typedef void (*for_each_joint_function_t) (JointData*);
 ```
+
+One other useful feature of function pointers is that they can be used as an argument to another function. 
 
 ### .h vs .cpp files
 You may notice two files with the same name but different extensions, one .h and one .cpp.
@@ -305,6 +764,8 @@ Within this class there is a member function ```void reconfigure(uint8_t* config
 What happens when we call it?
 The compiler doesn't care at this point, it just wants to know that we can use it.
 Similarly there are some variables inside that we can also call, ```bool estop;``` is a Boolean that lets us know the status of the emergency stop button, but we can also store objects for other classes like ```LegData left_leg;```.
+
+**ExoData.h**
 ```
 class ExoData 
 {
@@ -325,6 +786,8 @@ class ExoData
 So when we want to actually say what values the variables have or what happens when we call the function we need to "define" them.
 This is where the .cpp file comes in.
 If we want to define what happens when we call reconfigure for an ExoData object we code it out 
+
+**ExoData.cpp**
 ```
 void ExoData::reconfigure(uint8_t* config_to_send) 
 {
@@ -333,7 +796,6 @@ void ExoData::reconfigure(uint8_t* config_to_send)
 };
 ```
 So when we call reconfigure for the ExoData objects we call the reconfigure member functions for the left_leg and right_leg objects the class contains.
-
 
 ***
 ## Introduction   
@@ -644,7 +1106,7 @@ The controller parameters are dependent on what controller is being used but a d
 The system uses Bluetooth Low Energy (BLE) to communicate with a graphical user interface (GUI). For an introduction to BLE, [see](https://learn.adafruit.com/introduction-to-bluetooth-low-energy).
 
 ### Bluetooth Background
-The Exosekeleton uses Norduc's UART Service (NUS) to communicate with the GUI. This service has RX and TX characteristics mimicking UART. In order for the app to connect with the Exoskeleton it's name must beging with "EXOBLE_" and advertise the NUS. When the Exoskeleton connects with the GUI, it will begin sending battery data. When a trial is started the device will begin transmitting a subset of the ExoData struct. 
+The Exosekeleton uses Norduc's UART Service (NUS) to communicate with the GUI. This service has RX and TX characteristics mimicking UART. In order for the app to connect with the Exoskeleton it's name must begin with "EXOBLE_" and advertise the NUS. When the Exoskeleton connects with the GUI, it will begin sending battery data. When a trial is started the device will begin transmitting a subset of the ExoData struct. 
 
 ### Bluetooth Structure
 The CommsMCU class is the highest class in the Communications firmware heirarchy. It contains the battery object, and the ExoBLE object. This class manages the bluetooth connection and data. The class also performs battery sampling. 
