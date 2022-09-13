@@ -1,8 +1,3 @@
-/*
- * 
- * P. Stegall Jan. 2022
-*/
-
 #include "LegData.h"
 
 /*
@@ -22,9 +17,9 @@ LegData::LegData(bool is_left, uint8_t* config_to_send)
     this->expected_step_duration = -1; 
     this->heel_fsr = -1; // set to -1 since should always be positive once set.
     this->toe_fsr = -1;
-    this->do_calibration_toe_fsr = false; //bit 0 is calibrate fsr, bit 1 is refine calibration.
+    this->do_calibration_toe_fsr = false; 
     this->do_calibration_refinement_toe_fsr = false; 
-    this->do_calibration_heel_fsr = false; //bit 0 is calibrate fsr, bit 1 is refine calibration.
+    this->do_calibration_heel_fsr = false; 
     this->do_calibration_refinement_heel_fsr = false; 
     this->ground_strike = false; 
     
@@ -60,6 +55,7 @@ void LegData::reconfigure(uint8_t* config_to_send)
         this->is_used = false;
     }
     
+    // reconfigure the joints
     hip.reconfigure(config_to_send);
     knee.reconfigure(config_to_send);
     ankle.reconfigure(config_to_send);

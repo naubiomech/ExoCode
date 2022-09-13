@@ -1,7 +1,10 @@
-/*
+/**
+ * @file LegData.h
+ *
+ * @brief Declares a class used to store data for leg to access 
  * 
- * 
- * P. Stegall Jan. 2022
+ * @author P. Stegall 
+ * @date Jan. 2022
 */
 
 
@@ -19,38 +22,44 @@
 // forward declaration
 class ExoData;
 
-
+/**
+ * @brief class to store information related to the leg.
+ * 
+ */
 class LegData{
 	   
     public:
         LegData(bool is_left, uint8_t* config_to_send);
         
+        /**
+         * @brief reconfigures the the leg data if the configuration changes after constructor called.
+         * 
+         * @param configuration array
+         */
         void reconfigure(uint8_t* config_to_send);
         
-        JointData hip;
-        JointData knee;
-        JointData ankle; 
+        JointData hip; /**< data for the hip joint */
+        JointData knee; /**< data for the knee joint */
+        JointData ankle; /**< data for the ankle joint */
         
         
-        float percent_gait; // likely want to do fixed point 
-        float expected_step_duration;
-        // Calibrated FSR readings
-        float heel_fsr;
-        float toe_fsr;
+        float percent_gait;  /**< Estimate of the percent gait based on heel strike */
+        float expected_step_duration;  /**< Estimate of how long the next step will take based on the most recent step times */
         
-        // Trigger when we go from swing to one FSR making contact.
-        bool ground_strike;
+        float heel_fsr;  /**< Calibrated FSR reading for the heel */
+        float toe_fsr;  /**< Calibrated FSR reading for the toe */
         
-        bool is_left;
-        bool is_used;
-        bool do_calibration_toe_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
-        bool do_calibration_refinement_toe_fsr; 
-        bool do_calibration_heel_fsr; //bit 0 is calibrate fsr, bit 1 is refine calibration.
-        bool do_calibration_refinement_heel_fsr; 
+        bool ground_strike;  /**< Trigger when we go from swing to one FSR making contact. */
         
-        // Sets the window to determine if a ground strike is considered a new step.
-        float expected_duration_window_upper_coeff;
-        float expected_duration_window_lower_coeff;
+        bool is_left; /**< 1 if the leg is on the left, 0 otherwise */
+        bool is_used; /**< 1 if the leg is used, 0 otherwise */
+        bool do_calibration_toe_fsr;  /**< flag for if the toe calibration should be done */
+        bool do_calibration_refinement_toe_fsr;  /**< flag for if the toe calibration refinement should be done */
+        bool do_calibration_heel_fsr;  /**< flag for if the heel calibration should be done */
+        bool do_calibration_refinement_heel_fsr;  /**< flag for if the heel calibration refinement should be done */
+        
+        float expected_duration_window_upper_coeff; /**< factor to multiply by the expected duration to get the upper limit of the window to determine if a ground strike is considered a new step. */
+        float expected_duration_window_lower_coeff; /**< factor to multiply by the expected duration to get the lower limit of the window to determine if a ground strike is considered a new step. */
 };
 
 #endif

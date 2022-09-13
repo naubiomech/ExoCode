@@ -66,7 +66,7 @@ _Motor::_Motor(config_defs::joint_id id, ExoData* exo_data, int enable_pin)
     
 };
 
-bool _Motor::get_is_left() // constructor: type is the motor type
+bool _Motor::get_is_left() 
 {
     return _is_left;
 };

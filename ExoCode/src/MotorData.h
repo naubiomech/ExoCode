@@ -1,7 +1,10 @@
-/*
+/**
+ * @file MotorData.h
+ *
+ * @brief Declares a class used to store data for motors to access 
  * 
- * 
- * P. Stegall Jan. 2022
+ * @author P. Stegall 
+ * @date Jan. 2022
 */
 
 
@@ -22,26 +25,32 @@ class MotorData
 {
 	public:
         MotorData(config_defs::joint_id id, uint8_t* config_to_send);
+        
+        /**
+         * @brief reconfigures the the motor data if the configuration changes after constructor called.
+         * 
+         * @param configuration array
+         */
         void reconfigure(uint8_t* config_to_send);
         
-        config_defs::joint_id id;
-        uint8_t motor_type;
-        float p; // read position
-        float v; // read velocity
-        float i; // read current
-        float p_des = 0;  
-        float v_des = 0;
-        float kp = 0;
-        float kd = 0;
-        float t_ff = 0;
+        config_defs::joint_id id; /**< motor id, should be the same as the joint id. */ 
+        uint8_t motor_type; /**< Type of motor being used. */
+        float p;  /**< Read position. */ 
+        float v;  /**< Read velocity. */
+        float i;  /**< Read current. */
+        float p_des = 0;   /**< Desired position, not currently used but available for position control */
+        float v_des = 0; /**< Desired velocity, not currently used but available for velocity control */
+        float kp = 0; /**< Proportional gain */
+        float kd = 0; /**< Derivative gain */
+        float t_ff = 0; /**< Torque command */
         
         // add do_zero_flag and check in run.
-        bool do_zero;
-        bool enabled;
-        bool is_on;
-        bool is_left;
-        bool flip_direction;
-        float gearing;
+        bool do_zero; /**< Flag to zero the position of the motor */
+        bool enabled; /**< Motor enable state*/
+        bool is_on; /**< Motor power state */
+        bool is_left; /**< Motor side information 1 if on the left, 0 otherwise */
+        bool flip_direction; /**< Should the motor direction be flipped, if true torque commands and position/velocity information will be inverted */
+        float gearing; /**< Motor gearing used to convert motor position, velocity, and torque between the motor and joint frames. */
 };
 
 

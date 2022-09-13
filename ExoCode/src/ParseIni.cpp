@@ -1,21 +1,8 @@
-/*
- * 
- * P. Stegall Jan. 2022
-*/
-
 #include "ParseIni.h"
 
 // We only need to parse the INI file if we have access to the SD card.
 // The nano will get the info through SPI so doesn't need these functions.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
-    /*
-     * ini_print_error_message(uint8_t e, bool eol = true)
-     * 
-     * Prints the error messages of IniFile object.
-     * e is the error message, and eol true means a println will be used at the end.
-     * 
-     * Requires that Serial is defined.
-     */
     void ini_print_error_message(uint8_t e, bool eol = true)
     {
         if(Serial)
@@ -58,12 +45,6 @@
     }
 
 
-    /*
-     * configData ini_parser(*uint8_t config_to_send)
-     * 
-     * Parses the config.ini file in the root folder of the SD card and puts the parsed data to config_to_send
-     * 
-     */
     void ini_parser(uint8_t* config_to_send)
     {
          
@@ -72,12 +53,6 @@
     }
 
 
-    /*
-     * configData ini_parse(*char filename, *uint8_t config_to_send)
-     * 
-     * Parses the specified filename from the SD card and puts the parsed data to config_to_send
-     * 
-     */
     void ini_parser(char* filename, uint8_t* config_to_send)
     {
         ConfigData data;  // creates object to hold the key values

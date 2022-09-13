@@ -1,9 +1,3 @@
-/*
- * 
- * 
- * P. Stegall July 2022
-*/
-
 #include "ParamsFromSD.h"
 #define SD_PARAM_DEBUG 1
 
@@ -40,10 +34,10 @@
         // SD inherits from stream which has a lot more useful methods that we will use.
         File param_file;
         std::string filename;
-        uint8_t header_size;
-        uint8_t param_num_in_file;
-        uint8_t line_to_read;
-        uint8_t error_type = 0;
+        uint8_t header_size;  // number of lines to skip before the parameters
+        uint8_t param_num_in_file; // number of parameters to pull in
+        uint8_t line_to_read; // line to read the parameters from
+        uint8_t error_type = 0; // error message holder
        
         switch(utils::get_joint_type(joint_id))
         {

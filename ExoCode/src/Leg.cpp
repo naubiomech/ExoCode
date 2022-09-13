@@ -1,8 +1,3 @@
-/*
- * 
- * P. Stegall Jan. 2022
-*/
-
 #include "Leg.h"
 //#define LEG_DEBUG 1
 
@@ -47,9 +42,6 @@ Leg::Leg(bool is_left, ExoData* exo_data)
     #endif
 };
 
-/*
- * read FSR,  calc percent gait, read joint data, send joint commands
- */
 void Leg::run_leg()
 {
     #ifdef LEG_DEBUG
@@ -74,10 +66,6 @@ void Leg::run_leg()
         
 }; 
 
-/*
- * Reads the FSR, detects ground strike, and calculates percent gait.
- * Sets the values to the corresponding place in data class.
- */
 void Leg::read_data()
 {
     // Check the FSRs
@@ -105,9 +93,6 @@ void Leg::read_data()
     }
 };
 
-/*
- * Checks if we need to do the calibration and runs the calibration if we do.
- */
 void Leg::check_calibration()
 {
     if (_leg_data->is_used)
@@ -153,9 +138,6 @@ void Leg::check_calibration()
     }        
 };
 
-/*
- * Simple check for a rising edge of either FSR during swing and returns 1 if they have.
- */
 bool Leg::_check_ground_strike()
 {
     bool heel_contact_state = _heel_fsr.get_ground_contact();
@@ -186,10 +168,6 @@ bool Leg::_check_ground_strike()
     return ground_strike;
 };
 
-/*
- * Uses the expected duration of the step to calculate the percent gait and returns the value
- * Saturates at 100%
- */
 float Leg::_calc_percent_gait()
 {
     int timestamp = millis();
@@ -206,11 +184,6 @@ float Leg::_calc_percent_gait()
     return percent_gait;
 };
 
-/*
- * Calculates the expected duration of a step by averaging the time the last N steps took.
- * Should only be called when a ground strike has occurred.
- * 
- */
 float Leg::_update_expected_duration()
 {
     unsigned int step_time = _ground_strike_timestamp - _prev_ground_strike_timestamp;
@@ -271,9 +244,6 @@ float Leg::_update_expected_duration()
     return expected_step_duration;
 };
 
-/*
- * Reset the step times in case the value gets off and can't recover.
- */
 void Leg::clear_step_time_estimate()
 {
     for (int i = 0; i<_num_steps_avg; i++)
@@ -282,9 +252,6 @@ void Leg::clear_step_time_estimate()
     }
 };
 
-/*
- * sends new command to the motors
- */
 void Leg::update_motor_cmds()
 {
     // Check the joint sensors if the joint is used.

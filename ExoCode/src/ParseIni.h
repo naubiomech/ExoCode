@@ -1,7 +1,10 @@
-/*
+/**
+ * @file ParseIni.h
+ *
+ * @brief Declares the functions needed and defines mapping between the INI keys and the exo components 
  * 
- * 
- * P. Stegall Jan. 2022
+ * @author P. Stegall 
+ * @date Jan. 2022
 */
 
 
@@ -11,24 +14,26 @@
 // used for uint8_t
 #include <stdint.h>
 
-// define the constants to use for the various arrays.
+/**
+ * @brief define the constants to use for the various arrays.
+ */
 namespace ini_config
 {
-    const int buffer_length = 500;
-    const int key_length = 25;
-    const int section_length = 10;
-    const int number_of_keys = 17;
+    const int buffer_length = 500;  /**< length of the buffer for reading the file. */
+    const int key_length = 25; /**< Max length of the key name */
+    const int section_length = 10; /**< Max length of the section name */
+    const int number_of_keys = 17; /**< Number of keys to be parsed. */
     //const char *config_filename = "/config.ini";  // this line creates an "Error compiling for board Teensy 3.6." so I am just hard coding it.
 }
 
 // Includes for reading the ini file from the SD card.
 // 1 is the lowest value to confirm that data is present for sending over SPI
 
-// TODO: Add battery parsing
-// TODO: Add gearing ration for motor
 // TODO: Add Bluetooth name.
 
-
+/**
+ * @brief Namespace that defines numeric coding for different keys values. These are used throughout the code.
+ */
 namespace config_defs
 {
     enum class board_name : uint8_t
@@ -202,18 +207,55 @@ namespace config_defs
 
 
 
-
+    /**
+     * @brief Parses the config.ini file in the root folder of the SD card and puts the parsed data to the provided array
+     * 
+     * @param pointer to the uint8_t array to be updated with the encoded parameter info.  Array should be ini_config::number_of_keys in length
+     */
     void ini_parser(uint8_t* config_to_send); // uses default filename
+    
+    /**
+     * @brief Parses the specified filename from the SD card and puts the parsed data to the array provided
+     * 
+     * @param pointer to the character array that contains a nonstandard filename to parse.
+     * @param pointer to the uint8_t array to be updated with the encoded parameter info.  Array should be ini_config::number_of_keys in length
+     */
     void ini_parser(char* filename, uint8_t* config_to_send); //uses sent filename
     // TODO: create non-verbose version of get section keys.
-    void get_section_key(IniFile ini, const char* section, const char* key, char* buffer, size_t buffer_len);  //retrieve the key values and get the print the output
+    
+    /**
+     * @brief retrieve the key values and get the print the output
+     *
+     * @param pointer to char array that contains the section containing the key
+     * @param pointer to char array that contains the key name
+     * @param pointer to char array to store the key value
+     * @param length of the buffer for the key value
+     */
+    void get_section_key(IniFile ini, const char* section, const char* key, char* buffer, size_t buffer_len);  
+    
+    /*
+     * ini_print_error_message(uint8_t e, bool eol = true)
+     * 
+     * Prints the error messages of IniFile object.
+     * e is the error message, and eol true means a println will be used at the end.
+     * 
+     * Requires that Serial is defined.
+     */
+    /**
+     * @brief Prints the error messages of IniFile object.
+     * e is the error message, and eol true means a println will be used at the end.
+     * Requires that Serial is defined.
+     * 
+     * @param error id
+     * @param if true will print and end of line character
+     */
     void ini_print_error_message(uint8_t e, bool eol = true); 
 
 
-    /*
-    Mappings of config names to uint8_t that will be sent to the nano
-    "0" is mapped to one to help with debug as we should never send all zeros in the bytes.
-    If you see a uint8_t that is zero it indicates the field didn't exist.
+    /**
+     * @brief Mappings of config names to uint8_t that will be sent to the nano
+     * "0" is mapped to one to help with debug as we should never send all zeros in the bytes.
+     * If you see a uint8_t that is zero it indicates the field didn't exist.
     */
     namespace config_map
     {  
@@ -320,8 +362,8 @@ namespace config_defs
 
 
 
-    /*
-     * Holds the raw key value strings from the ini file
+    /**
+     * @brief Holds the raw key value strings from the ini file
      */
     struct ConfigData{
         

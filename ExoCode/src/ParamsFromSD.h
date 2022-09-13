@@ -1,7 +1,10 @@
-/*
+/**
+ * @file ParamsFromSD.h
+ *
+ * @brief Declares the functions to pull controller parameters from the SD card and defines the mapping to the parameter files.
  * 
- * 
- * P. Stegall July 2022
+ * @author P. Stegall 
+ * @date Jan. 2022
 */
 
 
@@ -25,13 +28,19 @@
     #endif
     
     typedef std::map<uint8_t, std::string> ParamFilenameKey;
+    /**
+     * @brief types of errors when reading the SD card
+     */
     namespace param_error
     {
-        const uint8_t num_joint_ids = 3;
-        const uint8_t SD_not_found_idx = num_joint_ids;
-        const uint8_t file_not_found_idx = SD_not_found_idx + 1;
+        const uint8_t num_joint_ids = 3; /**< Number of bits the joint type ids need */
+        const uint8_t SD_not_found_idx = num_joint_ids; /**< Error when SD card isn't present */
+        const uint8_t file_not_found_idx = SD_not_found_idx + 1; /**< Error when file is not found on the SD card */
     }
     
+    /**
+     * @brief Namespace with map to between controller and file location
+     */
     namespace controller_parameter_filenames
     {
         const ParamFilenameKey hip
@@ -69,18 +78,23 @@
         };
     };
     
+    /**
+     * @brief prints name of error message
+     *
+     * @param error identifier
+     */
     void print_param_error_message(uint8_t error_type);
     
-    /*
-     * Reads files from SD card and sets them to the appropriate controller parameters in the exo_data object
+    /**
+     * @brief Reads files from SD card and sets them to the appropriate controller parameters in the exo_data object
      * see ParseIni for details on inputs
      * 
-     * joint_id : the joint id 
-     * controller_id : the controller id 
-     * set_num : parameter set to read from the SD card
-     * exo_data : location to put the data 
+     * @param joint_id : the joint id 
+     * @param controller_id : the controller id 
+     * @param set_num : parameter set to read from the SD card
+     * @param exo_data : location to put the data 
      * 
-     * Return : Error int.
+     * @return : Error int.
      */
     uint8_t set_controller_params(uint8_t joint_id, uint8_t controller_id, uint8_t set_num, ExoData* exo_data);
 

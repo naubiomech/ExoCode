@@ -1,7 +1,10 @@
-/*
+/**
+ * @file Leg.h
+ *
+ * @brief Declares a class used to operate a leg 
  * 
- * 
- * P. Stegall Jan. 2022
+ * @author P. Stegall 
+ * @date Jan. 2022
 */
 
 
@@ -24,92 +27,100 @@
 #include <stdint.h>
 #include <algorithm>
 
+/**
+ * @brief class to operate a leg.
+ * 
+ */
 class Leg
 {
     public:
 		//Leg();
         Leg(bool is_left, ExoData* exo_data); // constructor: 
         
-        /*
-         * read FSR,  calc percent gait, read joint data, send joint commands
+        /**
+         * @brief read FSR,  calc percent gait, read joint data, send joint commands
          */
         void run_leg(); 
 		
-        /*
-         * Checks if calibration flags are set, and runs calibration if they are.
+        /**
+         * @brief Checks if calibration flags are set, and runs calibration if they are.
          */
         void check_calibration();  
 		
-        /*
-         * Reads motor data from each motor used in the leg and stores the values
+        /**
+         * @brief Reads motor data from each motor used in the leg and stores the values
+         * Reads the FSR, detects ground strike, and calculates percent gait.
+         * Sets the values to the corresponding place in data class.
          */
         void read_data(); 
 		
-        /*
-         * sends new control command to the motors used in the leg, based on the defined controllers
+        /**
+         * @brief sends new control command to the motors used in the leg, based on the defined controllers
          */
         void update_motor_cmds();   
 		
-        /*
-         * Changes the controller for an individual joint
+        /**
+         * @brief Changes the controller for an individual joint
          */
         void set_controller(int joint, int controller);  
 		
-        /*
-         * Simply clears the step time estimate for when it gets off by more than can be adjusted for.
+        /**
+         * @brief Simply clears the step time estimate for when it gets off by more than can be adjusted for.
          */
         void clear_step_time_estimate();
         
-        // TEMP move to test FSRs and control, move back to private when done
-        FSR _heel_fsr;
-		FSR _toe_fsr;
-        // The order these are listed are important as it will determine the order their constructors are called in the initalizer list.
-        HipJoint _hip;
-        KneeJoint _knee;
-        AnkleJoint _ankle;
-        
 	private:
 		
-        /*
-         * Calculates the percent of gait based on the ground contact reading
+        /**
+         * @brief Calculates the percent of gait based on the ground contact reading
          * and an estimate of the step time based on the average time of the last few steps.
-         * returns the percent gait
+         * returns the percent gait which saturates at 100%
+         * 
+         * @return percent gait from heel strike
          */
         float _calc_percent_gait();
         
-        /*
-         * Creates an average step time based on the last few steps
+        /**
+         * @brief Calculates the expected duration of a step by averaging the time the last N steps took.
+         * Should only be called when a ground strike has occurred.
+         *
+         * @return expected stance duration in ms 
          */
         float _update_expected_duration();
         
-        /*
-         * Checks for state changes in the FSRs to find the point when ground contact is made
+        /**
+         * @brief Checks for state changes in the FSRs to find the point when ground contact is made
+         * Simple check for a rising edge of either FSR during swing and returns 1 if they have.
          * The returned value should just be high for a single cycle.
+         *
+         * @return 1 if the foot has gone from non-contact to ground contact. 0 Otherwise
          */
         bool _check_ground_strike();
 		
         // data that can be accessed
-        ExoData* _data;
-        LegData* _leg_data;// breaks out the specific leg we are using so we don't have to keep checking if it is left.
+        ExoData* _data;/**< Pointer to the overall exo data */
+        LegData* _leg_data; /**< Pointer to the specific leg we are using.*/
         
         // joint objects for the leg.
+        // The order these are listed are important as it will determine the order their constructors are called in the initializer list.
+        HipJoint _hip; /**< instance of a hip joint */
+        KneeJoint _knee; /**< instance of a knee joint */
+        AnkleJoint _ankle; /**< instance of a ankle joint */
         
+        FSR _heel_fsr; /**< heel force sensitive resistor */
+		FSR _toe_fsr; /**< toe force sensitive resistor */
         
+        bool _is_left; /**< stores which side the leg is on */
         
-		// stores which side the leg is on.
-        bool _is_left;
+        bool _prev_heel_contact_state; /**< Prev heel contact state used for ground strike detection */
+        bool _prev_toe_contact_state; /**< Prev toe contact state used for ground strike detection */
         
-        // used for ground strike detection
-        bool _prev_heel_contact_state;
-        bool _prev_toe_contact_state;
+        static const uint8_t _num_steps_avg = 3;  /**< the number of prior steps used to estimate the expected duration, used for percent gait calculation */
+        unsigned int _step_times[_num_steps_avg];  /**< stores the duration of the last N steps, used for percent gait calculation */// 
         
-        // used for percent gait calculation
-        static const uint8_t _num_steps_avg = 3; // the number of prior steps used to estimate the expected duration
-        unsigned int _step_times[_num_steps_avg]; // stores the duration of the last N steps
-        
-        unsigned int _ground_strike_timestamp;  // Records the time of the ground strike to determine if the next strike is within the expected window.
-        unsigned int _prev_ground_strike_timestamp;  // Stores the last value to determine the difference in strike times.
-        unsigned int _expected_step_duration;  // The expected step duration to calculate the percent gait.
+        unsigned int _ground_strike_timestamp;   /**< Records the time of the ground strike to determine if the next strike is within the expected window. */ 
+        unsigned int _prev_ground_strike_timestamp;   /**< Stores the last value to determine the difference in strike times. */ 
+        unsigned int _expected_step_duration;   /**< The expected step duration to calculate the percent gait.*/
         
 };
 #endif
