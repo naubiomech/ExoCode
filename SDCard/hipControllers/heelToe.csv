@@ -1,5 +1,6 @@
-4,"header Size, the first N rows will be ignored, except for this first cells in the first two rows",,,,,,
-6,"parameter number, the number of parameters to read per line",,,,,,
-,Parameter list for the HeelToe controller,,,,,,
-,Parameter order:,Max Torque (Nm),Min Torque(Nm),use_pid,p_gain,i_gain,d_gain
-2,-4,0,0,0,0,,
+5,"header Size, the first N rows will be ignored, except for this first cells in the first two rows",,,,
+6,"parameter number, the number of parameters to read per line",,,,
+,Parameter list for the HeelToe controller,,,,
+,Parameter order:,,,,
+Max Torque (Nm),Min Torque(Nm),use_pid,p_gain,i_gain,d_gain
+2,-4,0,0,0,0

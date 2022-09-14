@@ -39,6 +39,7 @@
     1. [Bluetooth Resources](#bluetooth-resources)
 ***
 ## To Do
+**Code Review 08/09**
 Paul, can you add 'how to add new PCB board, board.h' and why...
 
 Add maxon? 
@@ -54,6 +55,20 @@ Add information on private variables within the controller sections (e.g., contr
 Add comments to controller.cpp
 
 Add comment what/where initializer list is in joint.cpp
+
+**Lab Meeting 08/14**
+
+Update image in Paul's powerpoint and in documentation to convey that Nano gets config.ini upon start up and change spi to UART
+
+Update gear ratio comments in config.ini (gear reductions of mechanical system outside of motor), add additional comments to config.ini 
+
+Mark for SyncLed realated to its usage with motion capture.
+
+Insert a flag/ create a enabling/disabliing button for motors(for visualizing that we are getting the correct torque profiles)
+
+Create a check sensors fucntion that will throw a flag if no torque sensor is available
+
+Where and how to do filtering for sensors that need to be filtered
 
 ## Background
 The code is written in Arduino and C++.
