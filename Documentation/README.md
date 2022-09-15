@@ -44,16 +44,20 @@
 ***
 ## To Do
 **Code Review 08/09**
+
 [x] Paul, can you add 'how to add new PCB board, board.h' and why...
 
-[x] Add maxon? 
+[x] Add maxon?
+- Added how to add a new motor type file 
 
 [ ] Add information on which development environment (notepad ++, visual studio) is recommended and information on how to download. 
+
 **Chance/Jack** I am leaving this to you as it is more what you want to use going forward.
 
 [x] Add blurb in controller section about assistance/resistance flag and about naming controllers more generically
 
 [ ] Add is_assistance flag for each controller (particularly hip bang bang) 
+
 **Jack**, I am leaving this for you since you have worked with the parameter files.
 - In the controllerData.h in controller_defs add is_assitance_idx to each controller if not already there.
 - Add the parameter to each parameter file on the SD card.
@@ -77,18 +81,22 @@
 [x] Update gear ratio comments in config.ini (gear reductions of mechanical system outside of motor), add additional comments to config.ini 
 
 [ ] Mark for SyncLed related to its usage with motion capture. 
+
 **Chance**, I am leaving this for you since this involves app integration
 - For this the trigger would be called when the mark is sent.
 
 [ ] Insert a flag/ create a enabling/disabling button for motors(for visualizing that we are getting the correct torque profiles)
+
 **Chance**, I am leaving this for you since this involves some design choices and the app
 - create flag in joint about passing through controller commands
 - when not passing through either use zero torque with PID or just send 0 command.  This is why I would recommend doing it at the joint rather than the motor so you can potentially use in a transparent 0 torque mode.
 
 [ ] Create a check sensors function that will throw a flag if no torque sensor is available
+
 **Chance**, I am leaving this for you since this involves more in depth development
 
 [ ] Where and how to do filtering for sensors that need to be filtered
+
 **Chance**, I am leaving this for you since this involves more in depth development
 
 ## Background
@@ -1184,11 +1192,17 @@ This section links to how to add new elements not covered by other sections
 ### Adding New Board
 Details can be found in [Adding New Board](AddingNew/AddingNewBoard.md).
 
+This would be done if you are creating a new PCB which may have moved what pins are connected where, or uses new sensors or motor types
+
 ### Adding New Microcontroller
 Details can be found in [Adding New microcontroller](AddingNew/AddingNewMicroontroller.md).
 
+This would be done if you are changing the type of microcontroller is being used.
+
 ### Adding New Item To Config 
 Details can be found in [Adding New Controller](AddingNew/AddingNewItemToConfig.md).
+
+This would be done if new features need to be configured.
 
 
 
