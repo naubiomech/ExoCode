@@ -29,7 +29,7 @@
 #define UART_BAUD 230400
 
 #define MAX_RX_LEN 64 // bytes
-#define RX_TIMEOUT_US 3000
+#define RX_TIMEOUT_US 1000
 
 /* SLIP special character codes
 */
@@ -45,7 +45,6 @@
 #else 
 #error No Serial Object Found
 #endif
-
 
 /**
  * @brief Singleton Class to handle the UART Work. 
@@ -69,9 +68,16 @@ class UARTHandler
          * @param joint_id Joint ID associated with data
          * @param buffer Payload
          */
-        void uart_msg(uint8_t msg_id, uint8_t len, uint8_t joint_id, float *buffer);
+        void UART_msg(uint8_t msg_id, uint8_t len, uint8_t joint_id, float *buffer);
+        void UART_msg(UART_msg_t msg);
 
-        UART_msg_t poll();
+        /**
+         * @brief Check for incoming data. If there is data read the message, timing out if it takes too long.
+         * 
+         * @param timeout_us 
+         * @return UART_msg_t 
+         */
+        UART_msg_t poll(float timeout_us = RX_TIMEOUT_US);
 
         /**
          * @brief See if data is available in the UART buffer
@@ -106,6 +112,8 @@ class UARTHandler
 
         /* Data */
         //circular_buffer<uint8_t, 64> _rx_raw;
+
+        float _timeout_us = RX_TIMEOUT_US;
         
         uint8_t _partial_packet[MAX_RX_LEN];
         uint8_t _partial_packet_len = 0;

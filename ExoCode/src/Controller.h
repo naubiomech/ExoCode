@@ -271,7 +271,6 @@ class LateStance : public _Controller
 {
 public:
     LateStance(config_defs::joint_id id, ExoData* exo_data);
-    ~LateStance) {};
 
     float calc_motor_cmd();
 private:

@@ -34,6 +34,38 @@ void ExoData::for_each_joint(for_each_joint_function_t function)
     function(&right_leg.ankle);
 };
 
+JointData* ExoData::get_joint_with(uint8_t id)
+{
+    JointData* j_data = NULL;
+    switch (id)
+    {
+    case (uint8_t)config_defs::joint_id::left_hip:
+        j_data = &left_leg.hip;
+        break;
+    case (uint8_t)config_defs::joint_id::left_knee:
+        j_data = &left_leg.knee;
+        break;
+    case (uint8_t)config_defs::joint_id::left_ankle:
+        j_data = &left_leg.ankle;
+        break;
+    case (uint8_t)config_defs::joint_id::right_hip:
+        j_data = &right_leg.hip;
+        break;
+    case (uint8_t)config_defs::joint_id::right_knee:
+        j_data = &right_leg.knee;
+        break;
+    case (uint8_t)config_defs::joint_id::right_ankle:
+        j_data = &right_leg.ankle;
+        break; 
+    default:
+        Serial.print("ExoData::get_joint_with->No joint with ");
+        Serial.print(id);
+        Serial.println(" was found.");
+        break;
+    }
+    return j_data;
+};
+
 void ExoData::print()
 {
     Serial.print("\t Status : ");

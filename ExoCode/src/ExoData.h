@@ -52,6 +52,14 @@ class ExoData
          * @param pointer to the function that should be done for each used joint
          */
         void for_each_joint(for_each_joint_function_t function);
+
+        /**
+         * @brief Get the joint pointer for a joint id. 
+         * 
+         * @param id Joint id
+         * @return JointData* Pointer to JointData class for joint with id
+         */
+        JointData* get_joint_with(uint8_t id);
         
         /**
          * @brief Prints all the exo data

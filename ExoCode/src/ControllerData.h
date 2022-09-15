@@ -211,6 +211,13 @@ class ControllerData {
          * @param configuration array
          */
         void reconfigure(uint8_t* config_to_send);
+
+        /**
+         * @brief Get the parameter length for the current controller
+         * 
+         * @return uint8_t parameter length 
+         */
+        uint8_t get_parameter_length();
         
         
         uint8_t controller; /**< id of the current controller */

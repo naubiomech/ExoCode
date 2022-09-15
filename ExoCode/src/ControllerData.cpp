@@ -73,3 +73,10 @@ void ControllerData::reconfigure(uint8_t* config_to_send)
     }
 };
 
+
+uint8_t ControllerData::get_parameter_length()
+{
+    uint8_t length = 0;
+    return length;
+    //TODO: Implement
+}

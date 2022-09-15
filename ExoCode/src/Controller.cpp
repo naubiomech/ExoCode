@@ -507,7 +507,7 @@ LateStance::LateStance(config_defs::joint_id id, ExoData* exo_data)
 float LateStance::calc_motor_cmd()
 {
     // check if the angle range should be reset
-    if (_controller_data->parameters[controller_defs::LateStance::clear_angle_idx])
+    if (_controller_data->parameters[controller_defs::late_stance::clear_angle_idx])
     {
         _reset_angles();
     }
@@ -527,13 +527,13 @@ float LateStance::calc_motor_cmd()
         cmd_ff = 0;
         break;
     case 1:  // flexion
-        cmd_ff = _controller_data->parameters[controller_defs::LateStance::resistance_setpoint_idx];
+        cmd_ff = _controller_data->parameters[controller_defs::late_stance::resistance_setpoint_idx];
         break;
     }
 
 
-    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::LateStance::use_pid_idx]
-        ? _pid(cmd_ff, _joint_data->torque_reading, _controller_data->parameters[controller_defs::LateStance::p_gain_idx], _controller_data->parameters[controller_defs::LateStance::i_gain_idx], _controller_data->parameters[controller_defs::LateStance::d_gain_idx])
+    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::late_stance::use_pid_idx]
+        ? _pid(cmd_ff, _joint_data->torque_reading, _controller_data->parameters[controller_defs::late_stance::p_gain_idx], _controller_data->parameters[controller_defs::late_stance::i_gain_idx], _controller_data->parameters[controller_defs::late_stance::d_gain_idx])
         : 0);
 
     return cmd;
@@ -558,14 +558,14 @@ void LateStance::_update_state(float angle)
     switch (_state)
     {
     case 0:  // No Torque 
-        if (angle <= _controller_data->parameters[controller_defs::LateStance::angle_on_off])
+        if (angle <= _controller_data->parameters[controller_defs::late_stance::angle_on_off])
         {
             _state = 1;
         }
         break;
     case 1:  // Torque
 
-        if ((angle > (_controller_data->parameters[controller_defs::LateStance::angle_on_off] * _max_angle / 100))
+        if ((angle > (_controller_data->parameters[controller_defs::late_stance::angle_on_off] * _max_angle / 100)))
         {
             _state = 0;
         }
@@ -611,7 +611,7 @@ ZhangCollins::ZhangCollins(config_defs::joint_id id, ExoData* exo_data)
     _d2 = -1;
 };
 
-/
+
 void ZhangCollins::_update_spline_parameters(int mass, float peak_normalized_torque_Nm_kg, float ramp_start_percent_gait, float onset_percent_gait, float peak_percent_gait, float stop_percent_gait)
 {
     

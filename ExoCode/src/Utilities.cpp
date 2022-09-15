@@ -202,7 +202,7 @@ namespace utils
         val.f = num_to_convert;
         int idx;
         // Serial.println(val.f);
-        for(uint i = 0; i<sizeof(float); i++)
+        for(uint8_t i = 0; i<sizeof(float); i++)
         {
             if (is_little_endian())
             {
@@ -227,7 +227,7 @@ namespace utils
         // Serial.println(bytes_to_convert[0],HEX);
         
         // flip the idx if not little endian
-        for(uint i = 0; i<sizeof(float); i++)
+        for(uint8_t i = 0; i<sizeof(float); i++)
         {
             if (is_little_endian())
             {
@@ -255,7 +255,7 @@ namespace utils
         val.i = (short int) (num_to_convert * factor);
         int idx;
         // Serial.println(val.f);
-        for(uint i = 0; i<sizeof(short int); i++)
+        for(uint8_t i = 0; i<sizeof(short int); i++)
         {
             if (is_little_endian())
             {
@@ -280,7 +280,7 @@ namespace utils
         // Serial.println(bytes_to_convert[0],HEX);
         
         // flip the idx if not little endian
-        for(uint i = 0; i<sizeof(short int); i++)
+        for(uint8_t i = 0; i<sizeof(short int); i++)
         {
             if (is_little_endian())
             {
