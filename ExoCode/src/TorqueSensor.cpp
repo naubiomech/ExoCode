@@ -1,8 +1,3 @@
-/*
- * 
- * P. Stegall Jan. 2022
-*/
-
 #include "TorqueSensor.h"
 //#define TORQUE_DEBUG 1
 
@@ -43,10 +38,6 @@ TorqueSensor::TorqueSensor(unsigned int pin)
     #endif
 };
 
-/*
-* This gets the average of the readings during quite standing.
-* returns zero for do_calibrate when done.
-*/
 bool TorqueSensor::calibrate(bool do_calibrate)
 {
     // Serial.print("TorqueSensor::calibrate : do_calibrate = ");
@@ -96,9 +87,6 @@ bool TorqueSensor::calibrate(bool do_calibrate)
     return do_calibrate;
 };
 
-/*
- * Reads the sensor and returns the calibrated value.
- */
 float TorqueSensor::read()
 {
     _raw_reading = analogRead(_pin);

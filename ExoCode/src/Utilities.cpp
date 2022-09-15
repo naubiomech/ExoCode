@@ -6,22 +6,17 @@
  
 namespace utils
 {
-    /*
-     * From the joint_id returns the bit for is_left.
-     */
     bool get_is_left(config_defs::joint_id id)
     {
         return get_is_left((uint8_t) id);//((uint8_t)id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
     };
+     
+    
     bool get_is_left(uint8_t id)
     {
         return (id & (uint8_t)config_defs::joint_id::left) == (uint8_t)config_defs::joint_id::left;
     };
 
-    /*
-     * Takes in the joint id and returns the id with the left/right bits masked out.
-     * Returning uint8_t rather than joint_id type since we have to typecast to do logical stuff anyways.
-     */
     uint8_t get_joint_type(config_defs::joint_id id)
     {
         return get_joint_type((uint8_t) id);//(uint8_t)id & (~(uint8_t)config_defs::joint_id::left & ~(uint8_t)config_defs::joint_id::right);  // return the joint id with the left/right indicators masked out.  
@@ -32,15 +27,6 @@ namespace utils
         return id & (~(uint8_t)config_defs::joint_id::left & ~(uint8_t)config_defs::joint_id::right);  // return the joint id with the left/right indicators masked out.  
     };
     
-    /*
-     * A schmitt trigger is a way of tracking if a noisy signal is high or low 
-     * When it is low it must go above the upper threshold before it is high
-     * When it is high it must go below the lower threshold before it is low.
-     * This way if the signal crosses one threshold multiple times it won't register as changing multiple times.
-     * 
-     * Takes in the value, current state, the lower threshold, and upper threshold
-     * Returns the updated state
-     */
     bool schmitt_trigger(float value, bool is_high, float lower_threshold, float upper_threshold)
     {
         bool trigger = 0;
@@ -56,12 +42,8 @@ namespace utils
     }
     
     
-    /*
-     * The rate limiter is to reduce how quickly a value can change.
-     * This is helpful when turning on a controller so the parameter doesn't rapidly change.
-     * 
-     */
-     // Add template so works with ints, floats, whatever.
+    
+     // TODO: Add template so works with ints, floats, whatever.
      int rate_limit(int setpoint, int last_value, int* last_time, int rate_per_ms)
      {
         int time = millis();
@@ -74,16 +56,13 @@ namespace utils
         
      };
      
-    /*
-     * sets/clears the specified bit in a unit8_t.
-     * Takes in the original uint8_t the bit value you would like to use and the location you are placing that bit.
-     */
     uint8_t update_bit(uint8_t original, bool val, uint8_t loc)
     {
         uint8_t keep_bit = ~(1<<loc);  //set a mask for the bits we aren't setting 
         
         return (original & keep_bit) | (val<<loc);
     };
+    
     uint16_t update_bit(uint16_t original, bool val, uint8_t loc)
     {
         uint16_t keep_bit = ~(1<<loc);  //set a mask for the bits we aren't setting 
@@ -91,15 +70,13 @@ namespace utils
         return (original & keep_bit) | (val<<loc);
     };
     
-    /*
-     * Returns the bit in a specific location in a uint8_t
-     */
     bool get_bit(uint8_t original, uint8_t loc)
     {
         uint8_t bit_to_check = (1<<loc);  //set a mask for the bits we are checking
         
         return (original & bit_to_check) == bit_to_check;
     };
+    
     bool get_bit(uint16_t original, uint8_t loc)
     {
         uint8_t bit_to_check = (1<<loc);  //set a mask for the bits we are checking
@@ -107,25 +84,16 @@ namespace utils
         return (original & bit_to_check) == bit_to_check;
     };
     
-    /*
-     * converts from degrees to radians
-     */
     float degrees_to_radians(float angle_deg)
     {
         return angle_deg * 2 * PI / 180;
     };
     
-    /*
-     * converts from radians to degrees
-     */
     float radians_to_degrees(float angle_rad)
     {
         return angle_rad * 180 / (2 * PI);
     };
 
-    /*
-     * Searches str for 'rmv' characters and deletes them all, returns new string
-     */
     String remove_all_chars(String str, char rmv)
     {
         bool found = false;
@@ -176,11 +144,6 @@ namespace utils
         return len;
     };
    
-    /*
-     * Used to check the loop speed without a print.
-     * 
-     * after initialized, toggle will need to be called each loop
-     */
     SpeedCheck::SpeedCheck(int pin)
     {
         _pin = pin;
@@ -190,9 +153,6 @@ namespace utils
         digitalWrite(_pin, _state);
     };
     
-    /*
-     * Toggle the pin when called.
-     */ 
     void SpeedCheck::toggle()
     {
         _state = _state ^ 1;
@@ -217,10 +177,6 @@ namespace utils
         uint8_t b[sizeof(short int)];
     };
     
-    /*
-     * Returns 1 if system uses little endian floating points.  This confirms that the floating points match if not the byte order needs to be flipped.
-     * Not tested with big endian or 64 bit systems
-     */
     bool is_little_endian()
     {
         FloatByteUnion val;
@@ -240,11 +196,6 @@ namespace utils
         
     }
     
-    /*
-     * Takes in a float and a byte array reference
-     * Puts the bytes of the float into the array in little endian 
-     * Not tested with big endian or 64 bit systems
-     */
     void float_to_uint8(float num_to_convert, uint8_t *converted_bytes)
     {
         FloatByteUnion val;
@@ -269,11 +220,6 @@ namespace utils
         return;
     }
     
-    /*
-     * Takes in a byte array address in little endian form containing a broken up float
-     * Returns a reconstituted float from the bytes in the form (endianess) the system uses.
-     * Not tested with big endian or 64 bit systems
-     */
     void uint8_to_float(uint8_t *bytes_to_convert, float *converted_float)
     {
         FloatByteUnion val;
@@ -303,11 +249,6 @@ namespace utils
         return;
     }
     
-    /*
-     * Takes in a float and a byte array reference
-     * Puts the bytes of the float into the array in little endian 
-     * Not tested with big endian or 64 bit systems
-     */
     void float_to_short_fixed_point_bytes(float num_to_convert, uint8_t *converted_bytes, uint8_t factor)
     {
         ShortIntByteUnion val;
@@ -332,11 +273,6 @@ namespace utils
         return;
     }
     
-    /*
-     * Takes in a byte array address in little endian form containing a broken up float
-     * Returns a reconstituted float from the bytes in the form (endianess) the system uses.
-     * Not tested with big endian or 64 bit systems
-     */
     void short_fixed_point_bytes_to_float(uint8_t *bytes_to_convert, float *converted_val, uint8_t factor)
     {
         ShortIntByteUnion val;

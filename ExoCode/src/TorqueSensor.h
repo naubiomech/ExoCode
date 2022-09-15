@@ -1,7 +1,11 @@
-/*
+/**
+ * @file TorqueSensor.h
+ * 
+ * @brief Declares the class that is used to interface with a torque sensor.
  * 
  * 
- * P. Stegall Jan. 2022
+ * @author P. Stegall 
+ * @date Jan. 2022
 */
 
 
@@ -14,34 +18,45 @@
 #include "Board.h"
 #include "Arduino.h"
 
+/**
+ * @brief Class used to interface with a torque sensor
+ */
 class TorqueSensor
 {
 	public:
 		TorqueSensor(unsigned int pin);
         
-        /*
-         * Does the calibration, while do_calibration is true, and returns 0 when the calibration has finished.
+        /**
+         * @brief Does the calibration, while do_calibration is true, and returns 0 when the calibration has finished.
+         *  This gets the average of the readings during quite standing.
+         * 
+         * @param should the calibration be done
+         *
+         * @return 0 if the calibration is finished.
          */
         bool calibrate(bool do_calibration); 
 		
-        /*
-         * reads the pins and updates the data object.
+        /**
+         * @brief reads the pin and returns the calibrated value.
+         * 
+         * @return the calibrated torque reading
          */
         float read();
 				
-		int _pin;
+		
 	private:
-		bool _is_used;
+		int _pin; /**< Pin to read for the sensor */
+        bool _is_used; /**< Flag indicating if the sensor is used */
         
-        int _calibration;  // Stores the value used for calibration.
-        int _raw_reading;
-		float _calibrated_reading;
+        int _calibration;   /**< Stores the value used for calibration. This is a zero torque offset*/
+        int _raw_reading; /**< Raw pin reading */
+		float _calibrated_reading; /**< Torque value with offset applied */
         
-        const uint16_t _cal_time = 1000; // this is time to do the initial calibration
-        uint16_t _start_time;  // time the calibration starts.
-        bool _last_do_calibrate; //need to remember to delete this when the calibration ends.
-        int _zero_sum; // sum of values over the calibration period used for averaging.
-        uint16_t _num_calibration_samples;  // number of samples collected during calibration, denominator for averaging.
+        const uint16_t _cal_time = 1000; /**< The time to do the initial calibration in ms*/  
+        uint16_t _start_time; /**< time the calibration starts. */   
+        bool _last_do_calibrate; /**< this when the calibration ends. */ //need to remember to reset this when cal finishes 
+        int _zero_sum; /**< sum of values over the calibration period used for averaging. */  
+        uint16_t _num_calibration_samples; /**< number of samples collected during calibration, denominator for averaging. */   
         
 };
 #endif

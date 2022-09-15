@@ -1,16 +1,4 @@
-/*
- * Class to set an RGB LED to different colors based on the state of the system
- * 
- * Constructor: StatusLed(int r_pin, int g_pin, int b_pin) or (int r_pin, int g_pin, int b_pin, int brightness)
- *   The pins are the RGB LED pins ideally they are PWM but can also handle simple digital pins.
- *      In the header set NO_PWM to true or false depending on if you have PWM or simple digital pins.
- *   Brightness sets the brightness from 255 to 0, this is ignored for simple digital pins
- *   
- * updateLed(int message) method sets the color of the LED, these messages can be found in the preprocessor part of the header.
- * setBrightness(int brightness) method is used to change the brightness after initialization.
- * 
- * P. Stegall Dec. 2021
-*/
+
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
@@ -70,9 +58,6 @@ StatusLed::StatusLed(int r_pin, int g_pin, int b_pin, int brightness)
 Public
 */
 
-/*
-* Change the message and LED state
-*/
 void StatusLed::update(uint16_t message)
 {
     if (message != _current_message)
@@ -115,9 +100,6 @@ void StatusLed::update(uint16_t message)
 
 
 
-/*
- * Change the brightness.  Only used when logic_micro_pins::status_has_pwm is true.
- */
 void StatusLed::set_brightness(int brightness)
 {
   _brightness = brightness;
@@ -127,9 +109,6 @@ void StatusLed::set_brightness(int brightness)
 Protected
 */
 
-/*
- * Set LED state based on color values
- */
 void StatusLed::_set_color(int r_color, int g_color, int b_color)
 {
     
@@ -159,18 +138,12 @@ void StatusLed::_set_color(int r_color, int g_color, int b_color)
   }
 };
 
-/*
- * Displays whatever the current _message_colors values are continuously
- */
 void StatusLed::_solid()
 {
     _set_color(_message_colors[_msg_idx][0],_message_colors[_msg_idx][1],_message_colors[_msg_idx][2]);   // Set the LED state
     return;
 };
 
-/*
- * Dims and brightens the LED
- */
 void StatusLed::_pulse()
 {
     if (status_led_defs::has_pwm)
@@ -199,9 +172,6 @@ void StatusLed::_pulse()
     return;
 };
 
-/*
- * Blinks the LED with equal amounts.
- */
 void StatusLed::_blink()
 {
     int timestamp = millis();
@@ -215,9 +185,6 @@ void StatusLed::_blink()
     return;
 };
 
-/*
- * Brightens and dims each color as a sin wave where each color is phase shifted.
- */
 void StatusLed::_rainbow_sin()
 {
     // reset the pattern if we have gone past the period.
@@ -245,9 +212,6 @@ void StatusLed::_rainbow_sin()
     return;
 };
 
-/*
- * Brightens and dims each color as a trapezoidal wave where each color is phase shifted.
- */
 void StatusLed::_rainbow_hsv()
 {
     int timestamp = millis();

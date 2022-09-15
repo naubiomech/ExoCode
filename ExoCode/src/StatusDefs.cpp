@@ -1,18 +1,3 @@
-/*
- * Class to set an RGB LED to different colors based on the state of the system
- * 
- * Constructor: StatusLed(int r_pin, int g_pin, int b_pin) or (int r_pin, int g_pin, int b_pin, int brightness)
- *   The pins are the RGB LED pins ideally they are PWM but can also handle simple digital pins.
- *      In the header set NO_PWM to true or false depending on if you have PWM or simple digital pins.
- *   Brightness sets the brightness from 255 to 0, this is ignored for simple digital pins
- *   
- * updateLed(int message) method sets the color of the LED, these messages can be found in the preprocessor part of the header.
- * setBrightness(int brightness) method is used to change the brightness after initialization.
- * 
- * P. Stegall Dec. 2021
-*/
-
-
 #include "StatusDefs.h"
 
 

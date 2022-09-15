@@ -11,27 +11,23 @@
 //#define SPI_DEBUG_RAW 
 
 
-/*
- * Takes in the in a byte and if it is 0xFF changes to 0xFE
- * Takes in a byte array that records if the FE's are really FF(1) or FE(0)
- * Takes in the current bit for is_ff and increments if we have written is_ff
- * Takes in the current byte for is_ff and increments if we have written is_ff
- *      if current bit reaches 7 rolls over to 0 since we can only go as high as F0xFE
- */
 void ff_to_fe(uint8_t* val, uint8_t* is_ff, uint8_t* current_byte, uint8_t* current_bit)
 {
+    // check if the val is 0xFF if it is change it to 0xFE and record the value was 0xFF
     if(0xFF==*val)
     {
         *val = 0xFE;
         is_ff[*current_byte] = utils::update_bit(is_ff[*current_byte], 1, *current_bit);
         *current_bit++;
     }
+    // if it is 0xFE record that this value was actually 0xFE
     else if(0xFE==*val)
     {
         is_ff[*current_byte] = utils::update_bit(is_ff[*current_byte], 0, *current_bit);
         *current_bit++;
     }
     
+    // if we have reached the end of the Byte move to the next one
     if (*current_bit>=7)
     {
         *current_bit=0;
@@ -41,19 +37,18 @@ void ff_to_fe(uint8_t* val, uint8_t* is_ff, uint8_t* current_byte, uint8_t* curr
     return;
 }
 
-/*
- * Takes in the in a byte and if it is 0xFE and is supposed to be 0xFF changes to 0xFF
- * Takes in a byte that records if the FE's are really FF(1) or FE(0)
- * Takes in the current bit for is_ff and increments if the value was 0xFE
- */
 void fe_to_ff(uint8_t* val, uint8_t* is_ff, uint8_t* current_byte, uint8_t* current_bit)
 {
+    // if the Value is 0xFE decode it appropriately
     if(0xFE==*val)
     {
+        // if the is_ff bit is set convert to 0xFF otherwise leave it is 0xFE
         if (utils::get_bit(is_ff[*current_byte], *current_bit)) 
         {
             *val = 0xFF;
         }
+        
+        // Move to the next bit
         *current_bit++;
         if (*current_bit>=7)
         {
@@ -63,23 +58,26 @@ void fe_to_ff(uint8_t* val, uint8_t* is_ff, uint8_t* current_byte, uint8_t* curr
     }
     return;
 }
+
 uint8_t ff_to_fe_check(uint8_t val)
 {
     //updating val doesn't change it in the source location
     //utils::ff_to_fe(&val,spi_data_idx::is_ff::is_ff,&(spi_data_idx::is_ff::current_byte),&(spi_data_idx::is_ff::current_bit));
-    
+    // if the value is 0xFF change to 0xFE and record it
     if(0xFF==val)
     {
         val = 0xFE;
         spi_data_idx::is_ff::is_ff[spi_data_idx::is_ff::current_byte] = utils::update_bit(spi_data_idx::is_ff::is_ff[spi_data_idx::is_ff::current_byte], 1, spi_data_idx::is_ff::current_bit);
         spi_data_idx::is_ff::current_bit++;
     }
+    // if it is 0xFE record that this one is unchanged
     else if(0xFE==val)
     {
         spi_data_idx::is_ff::is_ff[spi_data_idx::is_ff::current_byte] = utils::update_bit(spi_data_idx::is_ff::is_ff[spi_data_idx::is_ff::current_byte], 0, spi_data_idx::is_ff::current_bit);
         spi_data_idx::is_ff::current_bit++;
     }
     
+    // if the byte is full move to the next one.
     if (spi_data_idx::is_ff::current_bit>=7)
     {
         spi_data_idx::is_ff::current_bit=0;
@@ -95,8 +93,10 @@ uint8_t fe_to_ff_check(uint8_t val)
     #ifdef SPI_DEBUG
         //Serial.println("fe_to_ff_check : ");
     #endif
+    // if the val is 0xFE check if it needs to be changed
     if(0xFE==val)
     {
+        // update if the byte should be 0xFF otherwise leave it alone
         if (utils::get_bit(spi_data_idx::is_ff::is_ff[spi_data_idx::is_ff::current_byte], spi_data_idx::is_ff::current_bit)) 
         {
             val = 0xFF;
@@ -110,6 +110,8 @@ uint8_t fe_to_ff_check(uint8_t val)
                 // Serial.println("\tVal is FE");
             #endif
         }
+        
+        //move to the next bit
         spi_data_idx::is_ff::current_bit++;
         if (spi_data_idx::is_ff::current_bit>=7)
         {

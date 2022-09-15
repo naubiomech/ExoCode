@@ -1,24 +1,3 @@
-/*
- * Class to blink and LED in a specific pattern to syncronize the data from the microcontroler with optical tracking systems
- * There will be  _num_start_stop_blinks high pulses at the begining and end of the sequence with each pulse lasting _sync_start_stop_half_period_us.
- * In in between the start and stop it will blink with each high or low lasting _sync_half_period_us.
- * The sequence is started and stopped using trigger().
- * 
- * This implementation after initializing the object, you call trigger() to start or stop the pattern.
- * handler() should be called every loop to turn the LED on or off as appropriate and to record if the LED is on
- * get_should_stream() can be called to determine if the rest of the data should be streaming.
- *
- * 
- * Then in the main loop or when you are recording data:
- *  int _led_state = syncLed.update_led();  // actually change the led state, and record the state in the data
- *  
- * The static state (not flashing) can be set to either HIGH or LOW
- * 
- * If you need the pin low to be LED on (like with a P channel mosfet) you can change that in the header file defines.
- * 
- * P. Stegall Sept. 2021
-*/
-
 #include "Arduino.h"
 #include "SyncLed.h"
 //#include <IntervalTimer.h>
@@ -26,10 +5,6 @@
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
 
-
-/*
-Constructors
-*/
 
 SyncLed::SyncLed(int pin, int sync_start_stop_half_period_us, int sync_half_period_us)
 {
@@ -126,9 +101,6 @@ Public
 */
 
 
-/*
-* Sets the flags to start or stop the blink sequence
-*/
 void SyncLed::trigger()
 {
 	_do_start_stop_sequence = _do_start_stop_sequence ^ true;  // xor with one to change boolean state
@@ -137,9 +109,6 @@ void SyncLed::trigger()
 };
 
 
-/*
- * Put the LED in the appropriate state and returns that state for recording
- */
 void SyncLed::update_led()
 {
 	int temp_led_state = _led_state;  // quickly record the state to minimize time without interrupts
@@ -150,18 +119,12 @@ void SyncLed::update_led()
 	//return led_is_on;
 };
 
-/*
- * changes the periods values that are stored.
- */
 void SyncLed::update_periods(int sync_start_stop_half_period_us, int sync_half_period_us)
 {
 	_sync_start_stop_half_period_us = sync_start_stop_half_period_us;
 	_sync_half_period_us = sync_half_period_us;
 };
 
-/*
- * Calls the appropriate methods for setting the LED state based on flags
- */
 bool SyncLed::handler()  
 {
     int timestamp_us = micros();
@@ -202,9 +165,6 @@ void SyncLed::set_default_state(int new_default)
 Protected
 */
 
-/*
- * Set values based on start stop sequence. This is a separate section to allow for use with interrupts.
- */
 void SyncLed::_blink_start_stop(void)
 {
   // Serial.print("blinkStartStop: State Change Count : ");
@@ -243,9 +203,6 @@ void SyncLed::_blink_start_stop(void)
   //digitalWrite(syncLEDPin, _led_state);
 };
 
-/*
- * does the main blink sequence. This is a separate section to allow for use with interrupts.
- */
 void SyncLed::_blink(void)
 {
   // Serial.print("blinkLED: State Change Count : ");
@@ -272,25 +229,16 @@ void SyncLed::_blink(void)
 };
 
 
-/*
- * set the LED to the default value.
- */
 void SyncLed::_default_state()
 {
 	_led_state = _default_led_state;
 };
 
-/*
- * returns if the led is on or off.
- */
 bool SyncLed::get_led_is_on()
 {
     return _led_is_on;
 }; 
 
-/*
- * returns if the led is on or off.
- */
 bool SyncLed::get_is_blinking()
 {
     return _is_blinking;
