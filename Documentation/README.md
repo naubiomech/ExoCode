@@ -49,30 +49,47 @@
 [x] Add maxon? 
 
 [ ] Add information on which development environment (notepad ++, visual studio) is recommended and information on how to download. 
+**Chance/Jack** I am leaving this to you as it is more what you want to use going forward.
 
-[ ] Add blurb in controller section about assistance/resistance flag and about naming controllers more generaically
+[x] Add blurb in controller section about assistance/resistance flag and about naming controllers more generically
 
-[ ] Add is_assistance flag for each controller (particularly hip bang bang)
+[ ] Add is_assistance flag for each controller (particularly hip bang bang) 
+**Jack**, I am leaving this for you since you have worked with the parameter files.
+- In the controllerData.h in controller_defs add is_assitance_idx to each controller if not already there.
+- Add the parameter to each parameter file on the SD card.
+    - increase the number of parameters by one if not currently there.
+    - add the name to the parameter list comment in the position from controller_defs
+    - add the value in the parameter list in the position from controller_defs
+- In Controller.cpp for each controller in calc_motor_cmd() invert the signal if not assistive
+    - ```return (_controller_data->parameters[controller_defs::CHANGE_CONTROLLER_NAME::is_assitance_idx] ? 1 : -1) * cmd;```
+
 
 [x] Add information on private variables within the controller sections (e.g., controller.h)
 
 [x] Add comments to controller.cpp
 
-[ ] Add comment what/where initializer list is in joint.cpp
+[x] Add comment what/where initializer list is in joint.cpp
 
 **Lab Meeting 08/14**
 
-[ ] Update image in Paul's powerpoint and in documentation to convey that Nano gets config.ini upon start up and change spi to UART
+[x] Update image in Paul's powerpoint and in documentation to convey that Nano gets config.ini upon start up and change spi to UART
 
-[ ] Update gear ratio comments in config.ini (gear reductions of mechanical system outside of motor), add additional comments to config.ini 
+[x] Update gear ratio comments in config.ini (gear reductions of mechanical system outside of motor), add additional comments to config.ini 
 
-[ ] Mark for SyncLed related to its usage with motion capture.
+[ ] Mark for SyncLed related to its usage with motion capture. 
+**Chance**, I am leaving this for you since this involves app integration
+- For this the trigger would be called when the mark is sent.
 
 [ ] Insert a flag/ create a enabling/disabling button for motors(for visualizing that we are getting the correct torque profiles)
+**Chance**, I am leaving this for you since this involves some design choices and the app
+- create flag in joint about passing through controller commands
+- when not passing through either use zero torque with PID or just send 0 command.  This is why I would recommend doing it at the joint rather than the motor so you can potentially use in a transparent 0 torque mode.
 
 [ ] Create a check sensors function that will throw a flag if no torque sensor is available
+**Chance**, I am leaving this for you since this involves more in depth development
 
 [ ] Where and how to do filtering for sensors that need to be filtered
+**Chance**, I am leaving this for you since this involves more in depth development
 
 ## Background
 The code is written in Arduino and C++.
@@ -1000,8 +1017,6 @@ Once identified the start pulse could be matched up, then the time can be scaled
 This way even if the sampling rates are different or the clocks are at different rates you can still match up the data.
 A tool for aligning can be found at [G:\Shared drives\Biomech_Lab\Experimental Data\Template Data Processing\align_data.m](https://drive.google.com/file/d/1vgxFCoCukO2us4WSrcil_TI3fLCNSLNX/view?usp=sharing).
 
-
-
 *** 
 ## Actuators
 Actuators are setup so that the system can add multiple types of motors and select the correct one for the system at startup.
@@ -1095,7 +1110,10 @@ Details can be found in [Adding New Controller](AddingNew/AddingNewController.md
 
 ### Controller Parameters 
 The controller parameters are dependent on what controller is being used but a description of the parameters for each controller can be found below.
- 
+Each controller should have parameters for if PID should be used, PID gains, and if it is assistive or resistive.
+If the assistive flag is true it should help the person perform the task.  
+If it is false it should resist the person, this manifestation can be as simple as flipping the sign on the torque.
+
 #### Hip
 - [Stasis](Controllers/Stasis.md)
 - [Zero Torque](Controllers/ZeroTorque.md)
