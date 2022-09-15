@@ -18,7 +18,7 @@ uint8_t _Joint::right_motor_used_count = 0;
  * Only stores these objects, the id, exo_data pointer, and if it is left (for easy access)
  */
 _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
-: _torque_sensor(_Joint::get_torque_sensor_pin(id, exo_data))
+: _torque_sensor(_Joint::get_torque_sensor_pin(id, exo_data)) // <-- Initializer list
 //, _controller(id, exo_data)
 {
     #ifdef JOINT_DEBUG
@@ -340,7 +340,7 @@ void _Joint::set_motor(_Motor* new_motor)
 
 //*********************************************
 HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
-: _Joint(id, exo_data)
+: _Joint(id, exo_data)  // <-- Initializer list
 , _zero_torque(id, exo_data)
 , _heel_toe(id, exo_data)
 , _extension_angle(id, exo_data)
@@ -512,7 +512,7 @@ void HipJoint::set_controller(uint8_t controller_id)
 //================================================================
 
 KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
-: _Joint(id, exo_data)
+: _Joint(id, exo_data) // <-- Initializer list
 , _zero_torque(id, exo_data)
 // , _user_defined(id, exo_data)
 , _sine(id, exo_data)
@@ -662,7 +662,7 @@ void KneeJoint::set_controller(uint8_t controller_id)  // changes the high level
 
 //=================================================================
 AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
-: _Joint(id, exo_data)
+: _Joint(id, exo_data) // <-- Initializer list
 , _zero_torque(id, exo_data)
 , _proportional_joint_moment(id, exo_data)
 , _zhang_collins(id, exo_data)
