@@ -32,7 +32,11 @@
     1. [Bluetooth Background](#bluetooth-background)
     2. [Bluetooth Structure](#bluetooth-structure)
     3. [Sending a Message](#sending-a-message)
-7. [Debugging](#debug) 
+7. [Debugging](#debug)
+8. [Adding New](#adding-new)
+    1. [Adding New Board](#adding-new-board)
+    2. [Adding New Microcontroller](#adding-new-microcontroller)
+    3. [Adding New Item To Config](#adding-new-item-to-config)
 8. [Resources](#resources)
     1. [Lab Resources](#lab-resources)
     1. [C++ Resources](#c-resources)
@@ -40,35 +44,35 @@
 ***
 ## To Do
 **Code Review 08/09**
-Paul, can you add 'how to add new PCB board, board.h' and why...
+[x] Paul, can you add 'how to add new PCB board, board.h' and why...
 
-Add maxon? 
+[x] Add maxon? 
 
-Add information on which development environment (notepad ++, visual studio) is recommended and information on how to download. 
+[ ] Add information on which development environment (notepad ++, visual studio) is recommended and information on how to download. 
 
-Add blurb in controller section about assistance/resistance flag and about naming controllers more generaically
+[ ] Add blurb in controller section about assistance/resistance flag and about naming controllers more generaically
 
-Add is_assistance flag for each controller (particularly hip bang bang)
+[ ] Add is_assistance flag for each controller (particularly hip bang bang)
 
-Add information on private variables within the controller sections (e.g., controller.h)
+[x] Add information on private variables within the controller sections (e.g., controller.h)
 
-Add comments to controller.cpp
+[x] Add comments to controller.cpp
 
-Add comment what/where initializer list is in joint.cpp
+[ ] Add comment what/where initializer list is in joint.cpp
 
 **Lab Meeting 08/14**
 
-Update image in Paul's powerpoint and in documentation to convey that Nano gets config.ini upon start up and change spi to UART
+[ ] Update image in Paul's powerpoint and in documentation to convey that Nano gets config.ini upon start up and change spi to UART
 
-Update gear ratio comments in config.ini (gear reductions of mechanical system outside of motor), add additional comments to config.ini 
+[ ] Update gear ratio comments in config.ini (gear reductions of mechanical system outside of motor), add additional comments to config.ini 
 
-Mark for SyncLed realated to its usage with motion capture.
+[ ] Mark for SyncLed related to its usage with motion capture.
 
-Insert a flag/ create a enabling/disabliing button for motors(for visualizing that we are getting the correct torque profiles)
+[ ] Insert a flag/ create a enabling/disabling button for motors(for visualizing that we are getting the correct torque profiles)
 
-Create a check sensors fucntion that will throw a flag if no torque sensor is available
+[ ] Create a check sensors function that will throw a flag if no torque sensor is available
 
-Where and how to do filtering for sensors that need to be filtered
+[ ] Where and how to do filtering for sensors that need to be filtered
 
 ## Background
 The code is written in Arduino and C++.
@@ -1030,7 +1034,8 @@ This was done since most any motor will have access to torque controller, even i
 
 
 ### Adding New Actuators 
-Details can be found in [Adding New CAN Motor](AddingNew/AddingNewCanMotor.md).
+Details to adding a new motor type can be found in [Adding New Motor Type](AddingNew/AddingNewMotorType.md).
+Details on adding a new CAN motor can be found in [Adding New CAN Motor](AddingNew/AddingNewCanMotor.md).
 This is specifically for the TMotor CAN motors but can be adapted to new types of motors when we have them.
 
 ### T-motor Initialization 
@@ -1153,6 +1158,21 @@ So if you are adding a print statement you should wrap it in an ```#ifdef``` for
 
 The reason we do it file by file rather than printing everything is because it allows you to focus in on the area you are working on.
 Even within this you may still want to comment out some of the prints within the file to really focus on the area you are using.
+
+***
+## Adding New
+This section links to how to add new elements not covered by other sections
+
+### Adding New Board
+Details can be found in [Adding New Board](AddingNew/AddingNewBoard.md).
+
+### Adding New Microcontroller
+Details can be found in [Adding New microcontroller](AddingNew/AddingNewMicroontroller.md).
+
+### Adding New Item To Config 
+Details can be found in [Adding New Controller](AddingNew/AddingNewItemToConfig.md).
+
+
 
 ***
 ## Resources
