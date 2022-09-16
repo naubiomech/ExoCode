@@ -15,6 +15,10 @@
 #include "BleMessage.h"
 #include "ParamsFromSD.h"
 
+#include "UARTHandler.h"
+#include "uart_commands.h"
+#include "UART_msg_t.h"
+
 /**
  * @brief Type to associate a command with an ammount of data
  * 
@@ -156,6 +160,15 @@ namespace ble_handlers
 
         // Set the data status to running
         data->status = status_defs::messages::trial_on;
+
+        // Send status update
+        UARTHandler* uart_handler = UARTHandler::get_instance();
+        UART_msg_t tx_msg;
+        tx_msg.command = UART_command_names::update_status;
+        tx_msg.joint_id = 0;
+        tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = data->status;
+        tx_msg.len = (uint8_t)UART_command_enums::status::LENGTH;
+        uart_handler->UART_msg(tx_msg);
     }
     inline static void stop(ExoData* data, BleMessage* msg)
     {
@@ -175,25 +188,50 @@ namespace ble_handlers
 
         // Set the data status to off
         data->status = status_defs::messages::trial_off;
+
+        // Send status update
+        UARTHandler* uart_handler = UARTHandler::get_instance();
+        UART_msg_t tx_msg;
+        tx_msg.command = UART_command_names::update_status;
+        tx_msg.joint_id = 0;
+        tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = data->status;
+        tx_msg.len = (uint8_t)UART_command_enums::status::LENGTH;
+        uart_handler->UART_msg(tx_msg);
     }
     inline static void cal_trq(ExoData* data, BleMessage* msg)
     {   
-        Serial.println("Calibrating Torque!");
         // Raise cal_trq flag for all joints being used, (Out of context: Should send calibration info upon cal completion)
-        data->for_each_joint([](JointData* j_data) {j_data->calibrate_torque_sensor = j_data->is_used;});
+        //data->for_each_joint([](JointData* j_data) {j_data->calibrate_torque_sensor = j_data->is_used;});
+
+        // Send cal_trq
+        UARTHandler* uart_handler = UARTHandler::get_instance();
+        UART_msg_t tx_msg;
+        tx_msg.command = UART_command_names::update_cal_trq_sensor;
+        tx_msg.joint_id = 0;
+        tx_msg.data[(uint8_t)UART_command_enums::cal_trq_sensor::CAL_TRQ_SENSOR] = 1;
+        tx_msg.len = (uint8_t)UART_command_enums::cal_trq_sensor::LENGTH;
+        uart_handler->UART_msg(tx_msg);
     }
     inline static void cal_fsr(ExoData* data, BleMessage* msg)
     {
         // Raise cal_fsr flag, send fsr finished flag when done
-        data->right_leg.do_calibration_toe_fsr = 1;
-        data->right_leg.do_calibration_refinement_toe_fsr = 1;
-        data->right_leg.do_calibration_heel_fsr = 1;
-        data->right_leg.do_calibration_refinement_heel_fsr = 1;
+        // data->right_leg.do_calibration_toe_fsr = 1;
+        // data->right_leg.do_calibration_refinement_toe_fsr = 1;
+        // data->right_leg.do_calibration_heel_fsr = 1;
+        // data->right_leg.do_calibration_refinement_heel_fsr = 1;
 
-        data->left_leg.do_calibration_toe_fsr = 1;
-        data->left_leg.do_calibration_refinement_toe_fsr = 1;
-        data->left_leg.do_calibration_heel_fsr = 1;
-        data->left_leg.do_calibration_refinement_heel_fsr = 1;
+        // data->left_leg.do_calibration_toe_fsr = 1;
+        // data->left_leg.do_calibration_refinement_toe_fsr = 1;
+        // data->left_leg.do_calibration_heel_fsr = 1;
+        // data->left_leg.do_calibration_refinement_heel_fsr = 1;
+
+        UARTHandler* uart_handler = UARTHandler::get_instance();
+        UART_msg_t tx_msg;
+        tx_msg.command = UART_command_names::update_cal_fsr;
+        tx_msg.joint_id = 0;
+        tx_msg.data[(uint8_t)UART_command_enums::cal_fsr::CAL_FSR] = 1;
+        tx_msg.len = (uint8_t)UART_command_enums::cal_fsr::LENGTH;
+        uart_handler->UART_msg(tx_msg);
     }
     inline static void assist(ExoData* data, BleMessage* msg)
     {
@@ -228,6 +266,8 @@ namespace ble_handlers
                 return;
             }
         );
+
+
         
     }
     inline static void motors_off(ExoData* data, BleMessage* msg)
@@ -256,6 +296,8 @@ namespace ble_handlers
                 return;
             }
         );
+
+
     }
     inline static void mark(ExoData* data, BleMessage* msg)
     {
@@ -300,13 +342,21 @@ namespace ble_handlers
         if (cont_data == NULL) {
             Serial.println("cont_data is NULL!");
         }
-        if (cont_data != NULL) 
-        {
+        if (cont_data != NULL) {
             cont_data->controller = controller_id;
             cont_data->parameter_set = set_num;
         }
 
         //set_controller_params((uint8_t)joint_id, controller_id, set_num, data);
+        UARTHandler* uart_handler = UARTHandler::get_instance();
+        UART_msg_t tx_msg;
+        tx_msg.command = UART_command_names::update_controller_params;
+        tx_msg.joint_id = (uint8_t) joint_id;
+        tx_msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID] = controller_id;
+        tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_LENGTH] = 1;
+        tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START] = set_num;
+        tx_msg.len = 3;
+        uart_handler->UART_msg(tx_msg);
     }
     inline static void new_fsr(ExoData* data, BleMessage* msg)
     {

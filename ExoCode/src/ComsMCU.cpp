@@ -2,16 +2,14 @@
 #include "StatusLed.h"
 #include "StatusDefs.h"
 #include "Time_Helper.h"
+#include "UARTHandler.h"
+#include "UART_commands.h"
+#include "UART_msg_t.h"
+#include "Config.h"
 
 #if defined(ARDUINO_ARDUINO_NANO33BLE)
-#include <SPI.h>
-#include <algorithm> // needed for std::find
-#include "SPIMessageQueue.h"
 
-
-ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send)
-:spi_handler(config_to_send, data)
-,_data{data}
+ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
 {
     switch (config_to_send[config_defs::battery_idx])
     {
@@ -29,28 +27,15 @@ ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send)
     _battery->init();
     _exo_ble = new ExoBLE(data);
     _exo_ble->setup();
-    
-    bool have_valid_config = false; 
-
-    // keep trying till we have a valid config, e.g. no zeros
-    int spi_delay_ms = 100;
-    while(!have_valid_config && (std::find(config_to_send, config_to_send + ini_config::number_of_keys, 0) != config_to_send + ini_config::number_of_keys))
-    {
-        Serial.println("ComsMCU::ComsMCU: waiting for config.");
-        spi_handler.transaction(spi_cmd::send_config::id);
-        delay(spi_delay_ms);
-        have_valid_config = true;
-    }
 }
 
 void ComsMCU::handle_ble()
 {
     bool non_empty_ble_queue = _exo_ble->handle_updates();
-    if (non_empty_ble_queue && !spi_queue::size())
+    if (non_empty_ble_queue)
     {
         BleMessage msg = ble_queue::pop();
         _process_complete_gui_command(&msg);
-        spi_queue::push(&msg);
     }
 }
 
@@ -64,34 +49,28 @@ void ComsMCU::local_sample()
     {
         static float filtered_value = _battery->get_parameter();
         float raw_battery_value = _battery->get_parameter();
-        filtered_value = utils::ewma(raw_battery_value, filtered_value, _battery_ewma_alpha);
+        filtered_value = utils::ewma(raw_battery_value, filtered_value, k_battery_ewma_alpha);
         _data->battery_value = filtered_value;
         del_t = 0;
-    }   
+    }
 }
 
-void ComsMCU::update_spi()
+void ComsMCU::update_UART()
 {
     static Time_Helper* t_helper = Time_Helper::get_instance();
-    static const float spi_context = t_helper->generate_new_context();
+    static const float _context = t_helper->generate_new_context();
     static float del_t = 0;
-    del_t += t_helper->tick(spi_context);
+    del_t += t_helper->tick(_context);
     
-    if (del_t > SPI_times::UPDATE_PERIOD)
+    if (del_t > UART_times::UPDATE_PERIOD)
     {
-        _data->right_leg.hip.motor.p_des++;
-        spi_joint_pair_t spi_msg_pair = spi_queue::pop();
-        if (0!=spi_msg_pair.spi_id)
+        UARTHandler* handler = UARTHandler::get_instance();
+        UART_msg_t msg = handler->poll(UART_times::COMS_MCU_TIMEOUT);
+        if (msg.command) 
         {
-            spi_handler.transaction(spi_msg_pair.spi_id, spi_msg_pair.joint_id);
-        }
-        else
-        {
-            //spi_handler.transaction(spi_cmd::send_data_exo::id);
-            spi_handler.transaction(spi_cmd::test_cmd::id);
+            UART_command_utils::handle_msg(handler, _data, msg);
         }
         del_t = 0;
-        _data->print();
     }
     
 }
@@ -125,8 +104,8 @@ void ComsMCU::update_gui()
         //TODO: Implement Mark Feature
         rt_data_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
         rt_data_msg.data[5] = _data->left_leg.ankle.controller.setpoint;
-        rt_data_msg.data[6] = 0;//_data->right_leg.toe_fsr;
-        rt_data_msg.data[7] = 0;//_data->left_leg.toe_fsr;
+        rt_data_msg.data[6] = _data->right_leg.toe_fsr;
+        rt_data_msg.data[7] = _data->left_leg.toe_fsr;
         rt_data_msg.data[8] = time_since_last_message/1000.0;
 
         static const float send_context = t_helper->generate_new_context();

@@ -1,5 +1,5 @@
 /*
-   Code used to run the exo from the teensy.  This communicates with the nano over SPI.
+   Code used to run the exo from the teensy.  This communicates with the nano over UART.
 
    P. Stegall Jan 2022
 */
@@ -7,8 +7,8 @@
 
 #define INCLUDE_FLEXCAN_DEBUG  // used to print CAN Debugging messages for the motors.
 //#define MAKE_PLOTS  // Do prints for plotting when uncommented.
-//#define MAIN_DEBUG   // Print Arduino debugging statements when uncommented.
-#define HEADLESS // used when there is no app access.
+//#define MAIN_DEBUG  // Print Arduino debugging statements when uncommented.
+//#define HEADLESS // used when there is no app access.
 
 // Standard Libraries
 #include <stdint.h>
@@ -21,18 +21,17 @@
 #include "src\Exo.h"
 #include "src\Utilities.h"
 #include "src\StatusDefs.h"
-#include "src\ComsMCU.h"
 
 // Specific Libraries
 #include "src\ParseIni.h"
 #include "src\ParamsFromSD.h"
 
-// can remove these if we don't end up using SPI
-#if defined(ARDUINO_TEENSY36)
-  #include <TSPISlave.h>
-#elif defined(ARDUINO_TEENSY41)
-  #include "SPISlave_T4.h"
-#endif
+// Board to board coms
+#include "src\UARTHandler.h"
+#include "src\uart_commands.h"
+#include "src\UART_msg_t.h"
+
+
 //#include "src\Motor.h"
 
 // Array used to store config information
@@ -40,41 +39,6 @@ namespace config_info
 {
     uint8_t (config_to_send)[ini_config::number_of_keys];
 }
-
-// I don't like having this here but I was having an issue with the spi object and functions in the callback having the right scope.
-// setup components needed for SPI, can be removed if we don't end up using SPI
-//namespace spi_peripheral
-//{
-//    SPISlave_T4<&SPI, SPI_8_BITS> my_spi;
-//    ExoData* data;// need to set this pointer after data object created with: spi_peripheral::data = &exo_data;
-//    bool is_unread_message = false; // flag used so the main loop knows if there is a message to parse.
-//    uint8_t debug_location; // used to track location the code went without using print statements.
-//
-//    const uint8_t max_msg_len = static_spi_handler::padding + spi_cmd::max_data_len+spi_data_idx::is_ff::num_bytes;  // Should be largest of parameters, data, and config length.
-//    uint8_t msg_len = max_msg_len;
-//    uint8_t controller_message[max_msg_len] = {0}; // stores the message from the controller
-//
-//    uint8_t cmd = 0; // command sent from the controller.
-//    bool do_parse_in_callback = false;  // Flag for parsing the message in the callback or main loop.
-//    
-//    // Function called when the SPI used.
-//    void spi_callback()
-//    {
-//        
-//        msg_len = static_spi_handler::padding + max(max(spi_cmd::max_param_len, get_data_len(config_info::config_to_send)), ini_config::number_of_keys) + spi_data_idx::is_ff::num_bytes;
-////        data->left_leg.hip.motor.p_des--;
-//        debug_location = static_spi_handler::peripheral_transaction(my_spi, config_info::config_to_send, data, &cmd, controller_message, msg_len, do_parse_in_callback);
-//        is_unread_message = true;
-//        return;
-//    }
-//    
-//    // function used to parse the message if done outside of callback.
-//    void spi_handle_message()
-//    {
-//        static_spi_handler::parse_message(controller_message, cmd, data);
-//      
-//    }
-//}
 
 void setup()
 {
@@ -147,10 +111,15 @@ void loop()
             Serial.println("Superloop :: exo created");
         }
     #endif
+
+    UARTHandler* uart_handler = UARTHandler::get_instance();
     
     if (first_run)
     {
         first_run = false; 
+        
+        UART_command_utils::wait_for_get_config(uart_handler, config_info::config_to_send);
+        
         #ifdef MAIN_DEBUG
             Serial.println("Superloop :: Start First Run Conditional");
             Serial.print("Superloop :: exo_data.left_leg.hip.is_used = ");
@@ -173,37 +142,21 @@ void loop()
             Serial.print("\n");
             Serial.print("\n");
         #endif
-
-        // point the callback to exo_data
-        //spi_peripheral::data = &exo_data;
-//        #ifdef MAIN_DEBUG
-//            Serial.println("Superloop :: SPI Data pointer updated");
-//        #endif
-//        // connect the callback
-//        spi_peripheral::my_spi.onReceive(spi_peripheral::spi_callback);        
-//        #ifdef MAIN_DEBUG
-//            Serial.println("Superloop :: SPI callback set");
-//        #endif
-//        // start the SPI listening
-//        spi_peripheral::my_spi.begin();
-//        #ifdef MAIN_DEBUG
-//            Serial.println("Superloop :: SPI Begin");
-//        #endif
         
         // debug to check the message is coming through
-        exo_data.left_leg.hip.motor.p_des = 300;
+        //exo_data.left_leg.hip.motor.p_des = 300;
         
         // Only make calls to used motors.
         if (exo_data.left_leg.hip.is_used)
         {
             // turn motor on
             exo_data.left_leg.hip.motor.is_on = true;
-            exo.left_leg._hip._motor->on_off();
+            //exo.left_leg._hip._motor->on_off();
             // make sure gains are 0 so there is no funny business.
             exo_data.left_leg.hip.motor.kp = 0;
             exo_data.left_leg.hip.motor.kd = 0;
             #ifdef HEADLESS
-                exo.left_leg._hip._motor->zero();
+                //exo.left_leg._hip._motor->zero();
                 #ifdef MAIN_DEBUG
                   Serial.println("Superloop :: Left Hip Zeroed");
                 #endif
@@ -222,11 +175,11 @@ void loop()
         if (exo_data.right_leg.hip.is_used)
         {
             exo_data.right_leg.hip.motor.is_on = true;
-            exo.right_leg._hip._motor->on_off();
+            //exo.right_leg._hip._motor->on_off();
             exo_data.right_leg.hip.motor.kp = 0;
             exo_data.right_leg.hip.motor.kd = 0;
             #ifdef HEADLESS
-                exo.right_leg._hip._motor->zero();
+                //exo.right_leg._hip._motor->zero();
                 #ifdef MAIN_DEBUG
                   Serial.println("Superloop :: Right Hip Zeroed");
                 #endif
@@ -248,11 +201,11 @@ void loop()
               Serial.println("Superloop :: Left Ankle Used");
             #endif
             exo_data.left_leg.ankle.motor.is_on = true;
-            exo.left_leg._ankle._motor->on_off();
+            //exo.left_leg._ankle._motor->on_off();
             exo_data.left_leg.ankle.motor.kp = 0;
             exo_data.left_leg.ankle.motor.kd = 0;
             #ifdef HEADLESS
-                exo.left_leg._ankle._motor->zero();
+                //exo.left_leg._ankle._motor->zero();
                 #ifdef MAIN_DEBUG
                   Serial.println("Superloop :: Left Ankle Zeroed");
                 #endif
@@ -271,11 +224,11 @@ void loop()
         if (exo_data.right_leg.ankle.is_used)
         {
             exo_data.right_leg.ankle.motor.is_on = true;
-            exo.right_leg._ankle._motor->on_off();
+            //exo.right_leg._ankle._motor->on_off();
             exo_data.right_leg.ankle.motor.kp = 0;
             exo_data.right_leg.ankle.motor.kd = 0;
             #ifdef HEADLESS
-                exo.right_leg._ankle._motor->zero();
+                //exo.right_leg._ankle._motor->zero();
                 #ifdef MAIN_DEBUG
                   Serial.println("Superloop :: Right Ankle Zeroed");
                 #endif
@@ -323,27 +276,27 @@ void loop()
             {
                 exo_data.left_leg.hip.calibrate_torque_sensor = true; 
                 exo_data.left_leg.hip.motor.enabled = true;
-                exo.left_leg._hip._motor->enable(enable_overide);
+                //exo.left_leg._hip._motor->enable(enable_overide);
             }
            
             if(exo_data.right_leg.hip.is_used)
             {
                 exo_data.right_leg.hip.calibrate_torque_sensor = true; 
                 exo_data.right_leg.hip.motor.enabled = true;
-                exo.right_leg._hip._motor->enable(enable_overide);
+                //exo.right_leg._hip._motor->enable(enable_overide);
             }
             if(exo_data.left_leg.ankle.is_used)
             {
                 exo_data.left_leg.ankle.calibrate_torque_sensor = true; 
                 exo_data.left_leg.ankle.motor.enabled = true;
-                exo.left_leg._ankle._motor->enable(enable_overide);
+                //exo.left_leg._ankle._motor->enable(enable_overide);
             }
            
             if(exo_data.right_leg.ankle.is_used)
             {
                 exo_data.right_leg.ankle.calibrate_torque_sensor = true;  
                 exo_data.right_leg.ankle.motor.enabled = true;
-                exo.right_leg._ankle._motor->enable(enable_overide);
+                //exo.right_leg._ankle._motor->enable(enable_overide);
             }
         #endif
  
@@ -505,23 +458,6 @@ void loop()
 
        
     #endif 
-    
-    // When there is a new message process it.
-//    if(spi_peripheral::is_unread_message)
-//    {
-//        // Not doing the parsing in the transaction so do it here.
-//        if(!spi_peripheral::do_parse_in_callback)
-//        {
-//            spi_peripheral::spi_handle_message();
-//        }
-//        #ifdef MAIN_DEBUG
-//            Serial.println("\n\n\nSuperloop :: New Message : ");
-//            exo_data.print();
-//            
-//        #endif
-//
-//        spi_peripheral::is_unread_message = false;
-//    }
 }
 
 
@@ -531,36 +467,28 @@ void loop()
 #include "src/ExoData.h"
 #include "src/ComsMCU.h"
 
+// Board to board coms
+#include "src\UARTHandler.h"
+#include "src\uart_commands.h"
+#include "src\UART_msg_t.h"
+
 // create array to store config.
 namespace config_info
 {
     uint8_t (config_to_send)[ini_config::number_of_keys];
 }
 
-// dummy config to use when not getting it from the teensy
-//namespace config_info
-//{
-//    uint8_t (config_to_send)[ini_config::number_of_keys] = {
-//      1,
-//      2,
-//      3,
-//      1,
-//      2,
-//      1,
-//      3,
-//      1,
-//      1,
-//      1,
-//      1,
-//      1,
-//      1,
-//    };
-//}
 
 void setup()
 {
     Serial.begin(115200);
     while (!Serial);
+
+    Serial.println("Setup->Getting config");
+    // get the sd card config from the teensy, this is blocking
+    UARTHandler* handler = UARTHandler::get_instance();
+    UART_command_utils::get_config(handler, config_info::config_to_send);
+    Serial.println("Setup->End Setup");
 }
 
 void loop()
@@ -569,7 +497,7 @@ void loop()
     static ComsMCU* mcu = new ComsMCU(exo_data, config_info::config_to_send);
     mcu->handle_ble();
     mcu->local_sample();
-    mcu->update_spi();
+    mcu->update_UART();
     mcu->update_gui();
 }
 
