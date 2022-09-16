@@ -56,7 +56,7 @@
 
 [x] Add blurb in controller section about assistance/resistance flag and about naming controllers more generically
 
-[ ] Add is_assistance flag for each controller (particularly hip bang bang) 
+[x] Add is_assistance flag for each controller (particularly hip bang bang) 
 
 **Jack**, I am leaving this for you since you have worked with the parameter files.
 - In the controllerData.h in controller_defs add is_assitance_idx to each controller if not already there.
@@ -67,6 +67,7 @@
 - In Controller.cpp for each controller in calc_motor_cmd() invert the signal if not assistive
     - ```return (_controller_data->parameters[controller_defs::CHANGE_CONTROLLER_NAME::is_assitance_idx] ? 1 : -1) * cmd;```
 
+- BangBang controller has been updated to include assistance/resistance flag (-Jack)
 
 [x] Add information on private variables within the controller sections (e.g., controller.h)
 

@@ -445,7 +445,7 @@ float BangBang::calc_motor_cmd()
                 ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::bang_bang::p_gain_idx], _controller_data->parameters[controller_defs::bang_bang::i_gain_idx], _controller_data->parameters[controller_defs::bang_bang::d_gain_idx]) 
                 : 0);
     
-    return cmd;
+    return (_controller_data->parameters[controller_defs::bang_bang::is_assitance_idx] ? 1:-1) * cmd;
 };
 
 
