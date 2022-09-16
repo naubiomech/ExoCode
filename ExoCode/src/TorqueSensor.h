@@ -42,14 +42,15 @@ class TorqueSensor
          * @return the calibrated torque reading
          */
         float read();
-				
+	    //MOVE BACK TO PRIVATE WHEN USING APP
+        int _raw_reading; /**< Raw pin reading */
 		
 	private:
 		int _pin; /**< Pin to read for the sensor */
         bool _is_used; /**< Flag indicating if the sensor is used */
         
         int _calibration;   /**< Stores the value used for calibration. This is a zero torque offset*/
-        int _raw_reading; /**< Raw pin reading */
+        //int _raw_reading; /**< Raw pin reading */
 		float _calibrated_reading; /**< Torque value with offset applied */
         
         const uint16_t _cal_time = 1000; /**< The time to do the initial calibration in ms*/  

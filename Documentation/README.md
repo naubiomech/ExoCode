@@ -98,7 +98,7 @@
 
 [ ] Where and how to do filtering for sensors that need to be filtered
 
-**Chance**, I am leaving this for you since this involves more in depth development
+**Chance**, I am leaving this for you since this involves more in depth development. Particular importance is torque sensor filtering for derivative gain use.
 
 ## Background
 The code is written in Arduino and C++.

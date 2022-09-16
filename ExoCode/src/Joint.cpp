@@ -1,5 +1,5 @@
 #include "Joint.h"
-//#define JOINT_DEBUG
+#define JOINT_DEBUG
 
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
@@ -21,6 +21,8 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
 : _torque_sensor(_Joint::get_torque_sensor_pin(id, exo_data)) // <-- Initializer list
 //, _controller(id, exo_data)
 {
+    //Serial.print("_Joint::right_torque_sensor_used_count : ");
+   // Serial.println(_Joint::right_torque_sensor_used_count);
     #ifdef JOINT_DEBUG
         Serial.println("_Joint :: Constructor : entered");
         
@@ -95,7 +97,7 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
 void _Joint::read_data()  
 {
     // Read the torque sensor, and change sign based on side.
-    _joint_data->torque_reading = (_joint_data->flip_direction ? -1 : 1) * _torque_sensor.read();
+    _joint_data->torque_reading = (_joint_data->flip_direction ? -1.0 : 1.0) * _torque_sensor.read();
     
     _joint_data->position = _joint_data->motor.p / _joint_data->motor.gearing;
     _joint_data->velocity = _joint_data->motor.v / _joint_data->motor.gearing;
@@ -123,6 +125,10 @@ void _Joint::check_calibration()
 
 unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* exo_data)
 {
+    //Serial.print("utils::get_joint_type(id) : ");
+    //Serial.println(utils::get_joint_type(id));
+    //Serial.print("utils::get_is_left(id) : ");
+    //Serial.println(utils::get_is_left(id));
     // First check which joint we are looking at.  
     // Then go through and if it is the left or right and if it is used.  
     // If it is set return the appropriate pin and increment the counter.
@@ -130,7 +136,7 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
     {
         case (uint8_t)config_defs::joint_id::hip:
         {
-            if (utils::get_is_left(id) & exo_data->left_leg.hip.is_used)  // check if the left leg is used
+            if (utils::get_is_left(id) && exo_data->left_leg.hip.is_used)  // check if the left leg is used
             {
                 if (_Joint::left_torque_sensor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
@@ -141,7 +147,7 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
                     return logic_micro_pins::not_connected_pin;
                 }
             }
-            else if (exo_data->right_leg.hip.is_used)  // check if the right leg is used
+            else if (!(utils::get_is_left(id)) && exo_data->right_leg.hip.is_used)  // check if the right leg is used
             {
                 if (_Joint::right_torque_sensor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
@@ -160,7 +166,7 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
         }
         case (uint8_t)config_defs::joint_id::knee:
         {
-            if (utils::get_is_left(id) & exo_data->left_leg.knee.is_used)  // check if the left leg is used
+            if (utils::get_is_left(id) && exo_data->left_leg.knee.is_used)  // check if the left leg is used
             {
                 if (_Joint::left_torque_sensor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
@@ -171,7 +177,7 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
                     return logic_micro_pins::not_connected_pin;
                 }
             }
-            else if (exo_data->right_leg.knee.is_used)  // check if the right leg is used
+            else if (!(utils::get_is_left(id)) && exo_data->right_leg.knee.is_used)  // check if the right leg is used
             {
                 if (_Joint::right_torque_sensor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
@@ -190,7 +196,7 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
         }
         case (uint8_t)config_defs::joint_id::ankle:
         {
-            if (utils::get_is_left(id) & exo_data->left_leg.ankle.is_used)  // check if the left leg is used
+            if (utils::get_is_left(id) && exo_data->left_leg.ankle.is_used)  // check if the left leg is used
             {
                 if (_Joint::left_torque_sensor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
@@ -201,10 +207,12 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
                     return logic_micro_pins::not_connected_pin;
                 }
             }
-            else if (exo_data->right_leg.ankle.is_used)  // check if the right leg is used
+            else if (!(utils::get_is_left(id)) && exo_data->right_leg.ankle.is_used)  // check if the right leg is used
             {
                 if (_Joint::right_torque_sensor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
+ /*                   Serial.print("_Joint::right_torque_sensor_used_count : ");
+                    Serial.println(_Joint::right_torque_sensor_used_count);*/
                     return logic_micro_pins::torque_sensor_right[_Joint::right_torque_sensor_used_count++];
                 }
                 else
@@ -246,7 +254,7 @@ unsigned int _Joint::get_motor_enable_pin(config_defs::joint_id id, ExoData* exo
                     return logic_micro_pins::not_connected_pin;
                 }
             }
-            else if (exo_data->right_leg.hip.is_used)  // check if the right leg is used
+            else if (!(utils::get_is_left(id)) && exo_data->right_leg.hip.is_used)  // check if the right leg is used
             {
                 if (_Joint::right_motor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
@@ -276,7 +284,7 @@ unsigned int _Joint::get_motor_enable_pin(config_defs::joint_id id, ExoData* exo
                     return logic_micro_pins::not_connected_pin;
                 }
             }
-            else if (exo_data->right_leg.knee.is_used)  // check if the right leg is used
+            else if (!(utils::get_is_left(id)) && exo_data->right_leg.knee.is_used)  // check if the right leg is used
             {
                 if (_Joint::right_motor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
@@ -306,7 +314,7 @@ unsigned int _Joint::get_motor_enable_pin(config_defs::joint_id id, ExoData* exo
                     return logic_micro_pins::not_connected_pin;
                 }
             }
-            else if (exo_data->right_leg.ankle.is_used)  // check if the right leg is used
+            else if (!(utils::get_is_left(id)) && exo_data->right_leg.ankle.is_used)  // check if the right leg is used
             {
                 if (_Joint::right_motor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
@@ -727,8 +735,15 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
                 AnkleJoint::set_motor(new NullMotor(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
         }
+#ifdef JOINT_DEBUG
+        Serial.println("Before Delay");
+#endif
         delay(5);
+#ifdef JOINT_DEBUG
+        Serial.println("After Delay");
+#endif
         #ifdef JOINT_DEBUG
+            Serial.println("_is_left section");
             Serial.print(_is_left ? "Left " : "Right ");
             Serial.println("Ankle : Setting Controller");
         #endif

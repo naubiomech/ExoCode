@@ -6,7 +6,7 @@
 #include "StatusLed.h"
 #include <math.h>
 
-#define STATUS_LED_DEBUG
+//#define STATUS_LED_DEBUG
 
 /*
 Constructors

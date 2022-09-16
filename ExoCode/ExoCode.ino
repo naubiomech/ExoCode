@@ -7,8 +7,8 @@
 
 #define INCLUDE_FLEXCAN_DEBUG  // used to print CAN Debugging messages for the motors.
 //#define MAKE_PLOTS  // Do prints for plotting when uncommented.
-#define MAIN_DEBUG   // Print Arduino debugging statements when uncommented.
-//#define HEADLESS // used when there is no app access.
+//#define MAIN_DEBUG   // Print Arduino debugging statements when uncommented.
+#define HEADLESS // used when there is no app access.
 
 // Standard Libraries
 #include <stdint.h>
@@ -43,46 +43,46 @@ namespace config_info
 
 // I don't like having this here but I was having an issue with the spi object and functions in the callback having the right scope.
 // setup components needed for SPI, can be removed if we don't end up using SPI
-namespace spi_peripheral
-{
-    SPISlave_T4<&SPI, SPI_8_BITS> my_spi;
-    ExoData* data;// need to set this pointer after data object created with: spi_peripheral::data = &exo_data;
-    bool is_unread_message = false; // flag used so the main loop knows if there is a message to parse.
-    uint8_t debug_location; // used to track location the code went without using print statements.
-
-    const uint8_t max_msg_len = static_spi_handler::padding + spi_cmd::max_data_len+spi_data_idx::is_ff::num_bytes;  // Should be largest of parameters, data, and config length.
-    uint8_t msg_len = max_msg_len;
-    uint8_t controller_message[max_msg_len] = {0}; // stores the message from the controller
-
-    uint8_t cmd = 0; // command sent from the controller.
-    bool do_parse_in_callback = false;  // Flag for parsing the message in the callback or main loop.
-    
-    // Function called when the SPI used.
-    void spi_callback()
-    {
-        
-        msg_len = static_spi_handler::padding + max(max(spi_cmd::max_param_len, get_data_len(config_info::config_to_send)), ini_config::number_of_keys) + spi_data_idx::is_ff::num_bytes;
-//        data->left_leg.hip.motor.p_des--;
-        debug_location = static_spi_handler::peripheral_transaction(my_spi, config_info::config_to_send, data, &cmd, controller_message, msg_len, do_parse_in_callback);
-        is_unread_message = true;
-        return;
-    }
-    
-    // function used to parse the message if done outside of callback.
-    void spi_handle_message()
-    {
-        static_spi_handler::parse_message(controller_message, cmd, data);
-      
-    }
-}
+//namespace spi_peripheral
+//{
+//    SPISlave_T4<&SPI, SPI_8_BITS> my_spi;
+//    ExoData* data;// need to set this pointer after data object created with: spi_peripheral::data = &exo_data;
+//    bool is_unread_message = false; // flag used so the main loop knows if there is a message to parse.
+//    uint8_t debug_location; // used to track location the code went without using print statements.
+//
+//    const uint8_t max_msg_len = static_spi_handler::padding + spi_cmd::max_data_len+spi_data_idx::is_ff::num_bytes;  // Should be largest of parameters, data, and config length.
+//    uint8_t msg_len = max_msg_len;
+//    uint8_t controller_message[max_msg_len] = {0}; // stores the message from the controller
+//
+//    uint8_t cmd = 0; // command sent from the controller.
+//    bool do_parse_in_callback = false;  // Flag for parsing the message in the callback or main loop.
+//    
+//    // Function called when the SPI used.
+//    void spi_callback()
+//    {
+//        
+//        msg_len = static_spi_handler::padding + max(max(spi_cmd::max_param_len, get_data_len(config_info::config_to_send)), ini_config::number_of_keys) + spi_data_idx::is_ff::num_bytes;
+////        data->left_leg.hip.motor.p_des--;
+//        debug_location = static_spi_handler::peripheral_transaction(my_spi, config_info::config_to_send, data, &cmd, controller_message, msg_len, do_parse_in_callback);
+//        is_unread_message = true;
+//        return;
+//    }
+//    
+//    // function used to parse the message if done outside of callback.
+//    void spi_handle_message()
+//    {
+//        static_spi_handler::parse_message(controller_message, cmd, data);
+//      
+//    }
+//}
 
 void setup()
 {
   Serial.begin(115200);
 //  TODO: Remove serial while for deployed version as this would hang
-    while (!Serial) {
-     ; // wait for serial port to connect. Needed for native USB
-    }
+//    while (!Serial) {
+//     ; // wait for serial port to connect. Needed for native USB
+//    }
 
     // get the config information from the SD card.
     ini_parser(config_info::config_to_send);
@@ -110,6 +110,7 @@ void setup()
           Serial.print("Left_ankle_current, ");
           Serial.print("Right_ankle_trq_cmd, ");
           Serial.print("Right_ankle_current, ");
+          Serial.print("Left_ankle_torque_measure, ");
           Serial.print("\n");
       #endif
   
@@ -121,9 +122,9 @@ void loop()
 {
     // check if the main loop is still running.
     #ifdef MAIN_DEBUG
-        static unsigned int loop_counter = 0;
-        Serial.print("Superloop :: loop counter = ");
-        Serial.println(loop_counter++);
+//        static unsigned int loop_counter = 0;
+//        Serial.print("Superloop :: loop counter = ");
+//        Serial.println(loop_counter++);
     #endif
 
     
@@ -174,20 +175,20 @@ void loop()
         #endif
 
         // point the callback to exo_data
-        spi_peripheral::data = &exo_data;
-        #ifdef MAIN_DEBUG
-            Serial.println("Superloop :: SPI Data pointer updated");
-        #endif
-        // connect the callback
-        spi_peripheral::my_spi.onReceive(spi_peripheral::spi_callback);        
-        #ifdef MAIN_DEBUG
-            Serial.println("Superloop :: SPI callback set");
-        #endif
-        // start the SPI listening
-        spi_peripheral::my_spi.begin();
-        #ifdef MAIN_DEBUG
-            Serial.println("Superloop :: SPI Begin");
-        #endif
+        //spi_peripheral::data = &exo_data;
+//        #ifdef MAIN_DEBUG
+//            Serial.println("Superloop :: SPI Data pointer updated");
+//        #endif
+//        // connect the callback
+//        spi_peripheral::my_spi.onReceive(spi_peripheral::spi_callback);        
+//        #ifdef MAIN_DEBUG
+//            Serial.println("Superloop :: SPI callback set");
+//        #endif
+//        // start the SPI listening
+//        spi_peripheral::my_spi.begin();
+//        #ifdef MAIN_DEBUG
+//            Serial.println("Superloop :: SPI Begin");
+//        #endif
         
         // debug to check the message is coming through
         exo_data.left_leg.hip.motor.p_des = 300;
@@ -367,27 +368,30 @@ void loop()
         // do data plotting
         static float old_time = micros();
         float new_time = micros();
-        if(new_time - old_time > 500000 && dynamic_calibration_done)
+        if(new_time - old_time > 10000 && dynamic_calibration_done)
         {
             #ifdef MAKE_PLOTS
-                Serial.print(exo_data.left_leg.hip.motor.t_ff);
-                Serial.print(", ");
-                Serial.print(exo_data.left_leg.hip.motor.i);
-                Serial.print(", ");
-                Serial.print(exo_data.right_leg.hip.motor.t_ff);
-                Serial.print(", ");
-                Serial.print(exo_data.right_leg.hip.motor.i);
-                Serial.print(", ");
-                Serial.print(exo_data.left_leg.ankle.motor.t_ff);
-                Serial.print(", ");
-                Serial.print(exo_data.left_leg.ankle.motor.i);
-                Serial.print(", ");
-                Serial.print(exo_data.right_leg.ankle.motor.t_ff);
+//                Serial.print(exo_data.left_leg.hip.motor.t_ff);
+//                Serial.print(", ");
+//                Serial.print(exo_data.left_leg.hip.motor.i);
+//                Serial.print(", ");
+//                Serial.print(exo_data.right_leg.hip.motor.t_ff);
+//                Serial.print(", ");
+//                Serial.print(exo_data.right_leg.hip.motor.i);
+//                Serial.print(", ");
+//                Serial.print(exo_data.left_leg.ankle.motor.t_ff);
                 Serial.print(", ");
                 Serial.print(exo_data.right_leg.ankle.motor.i);
+//                Serial.print(", ");
+//                Serial.print(exo_data.right_leg.ankle.motor.t_ff);
+//                Serial.print(", ");
+//                Serial.print(exo_data.right_leg.ankle.motor.i);
+                Serial.print(", ");
+                Serial.print(exo_data.right_leg.ankle.torque_reading);
                 Serial.print("\n");
             #endif
-    
+
+            old_time = new_time;
             
         }
     
@@ -503,21 +507,21 @@ void loop()
     #endif 
     
     // When there is a new message process it.
-    if(spi_peripheral::is_unread_message)
-    {
-        // Not doing the parsing in the transaction so do it here.
-        if(!spi_peripheral::do_parse_in_callback)
-        {
-            spi_peripheral::spi_handle_message();
-        }
-        #ifdef MAIN_DEBUG
-            Serial.println("\n\n\nSuperloop :: New Message : ");
-            exo_data.print();
-            
-        #endif
-
-        spi_peripheral::is_unread_message = false;
-    }
+//    if(spi_peripheral::is_unread_message)
+//    {
+//        // Not doing the parsing in the transaction so do it here.
+//        if(!spi_peripheral::do_parse_in_callback)
+//        {
+//            spi_peripheral::spi_handle_message();
+//        }
+//        #ifdef MAIN_DEBUG
+//            Serial.println("\n\n\nSuperloop :: New Message : ");
+//            exo_data.print();
+//            
+//        #endif
+//
+//        spi_peripheral::is_unread_message = false;
+//    }
 }
 
 

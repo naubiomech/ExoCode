@@ -7,6 +7,7 @@
 
 #include "Motor.h"
 #include "CAN.h"
+//#define MOTOR_DEBUG
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
@@ -21,9 +22,12 @@ _Motor::_Motor(config_defs::joint_id id, ExoData* exo_data, int enable_pin)
     _prev_motor_enabled = false; 
     _prev_on_state = false;
     
-    // Serial.print("_Motor::_Motor : _enable_pin = ");
-    // Serial.print(_enable_pin);
-    // Serial.print("\n");
+    #ifdef MOTOR_DEBUG
+        Serial.print("_Motor::_Motor : _enable_pin = ");
+        Serial.print(_enable_pin);
+        Serial.print("\n");
+    #endif
+
     
     pinMode(_enable_pin, OUTPUT);
     
@@ -63,7 +67,9 @@ _Motor::_Motor(config_defs::joint_id id, ExoData* exo_data, int enable_pin)
             }
             break;
     }
-    
+#ifdef MOTOR_DEBUG
+    Serial.println("_Motor::_Motor : Leaving Constructor");
+#endif
 };
 
 bool _Motor::get_is_left() 
@@ -92,6 +98,10 @@ _CANMotor::_CANMotor(config_defs::joint_id id, ExoData* exo_data, int enable_pin
     _P_MAX = 12.5f;
     
     _enable_response = false;
+
+#ifdef MOTOR_DEBUG
+    Serial.println("_CANMotor::_CANMotor : Leaving Constructor");
+#endif
 };
 
 void _CANMotor::transaction(float torque)
@@ -126,9 +136,11 @@ void _CANMotor::read_data()
                 _motor_data->v = direction_modifier * _uint_to_float(v_int, -_V_MAX, _V_MAX, 12);
                 _motor_data->i = direction_modifier * _uint_to_float(i_int, -_T_MAX, _T_MAX, 12);
 
-                // Serial.print("_CANMotor::read_data() : Got data - ");
-                // Serial.print(uint32_t(_motor_data->id));
-                // Serial.print("\n");
+                #ifdef MOTOR_DEBUG
+                    Serial.print("_CANMotor::read_data() : Got data - ");
+                    Serial.print(uint32_t(_motor_data->id));
+                    Serial.print("\n");
+                #endif
                 // reset timout_count because we got a valid message
                 this->_timeout_count = 0;
                 return;
@@ -143,9 +155,11 @@ void _CANMotor::read_data()
 
 void _CANMotor::send_data(float torque)
 {
-    // Serial.print("Sending data: ");
-    // Serial.print(uint32_t(_motor_data->id));
-    // Serial.print("\n");
+    #ifdef MOTOR_DEBUG
+        Serial.print("Sending data: ");
+        Serial.print(uint32_t(_motor_data->id));
+        Serial.print("\n");
+    #endif
     int direction_modifier = _motor_data->flip_direction ? -1 : 1;
     _motor_data->t_ff = torque;
     // read data from ExoData object, constraint it, and package it
@@ -216,12 +230,14 @@ bool _CANMotor::enable()
 
 bool _CANMotor::enable(bool overide)
 { 
-    // Serial.print(_prev_motor_enabled);
-    // Serial.print("\t");
-    // Serial.print(_motor_data->enabled);
-    // Serial.print("\t");
-    // Serial.print(is_on);
-    // Serial.print("\n");
+    #ifdef MOTOR_DEBUG
+     Serial.print(_prev_motor_enabled);
+     Serial.print("\t");
+     Serial.print(_motor_data->enabled);
+     Serial.print("\t");
+     Serial.print(_motor_data->is_on);
+     Serial.print("\n");
+    #endif
     
     // only change the state and send messages if the enabled state has changed.
     if ( _motor_data->is_on && (_prev_motor_enabled != _motor_data->enabled || overide || !_enable_response))
@@ -296,9 +312,11 @@ void _CANMotor::_handle_read_failure()
     {
         // TODO: handle excessive timout errors
         this->_timeout_count = 0;
-        // Serial.print("_CANMotor::_handle_read_failure() : Timeout: ");
-        // Serial.print(uint32_t(this->_motor_data->id));
-        // Serial.print("\n");
+#ifdef MOTOR_DEBUG
+         Serial.print("_CANMotor::_handle_read_failure() : Timeout: ");
+         Serial.print(uint32_t(this->_motor_data->id));
+         Serial.print("\n");
+#endif
     }
 };
 
@@ -340,6 +358,10 @@ _CANMotor(id, exo_data, enable_pin)
 {
     _T_MAX = 9.0f;
     _V_MAX = 41.87f;
+
+#ifdef MOTOR_DEBUG
+    Serial.println("AK60::AK60 : Leaving Constructor");
+#endif
 };
 
 /*
@@ -352,6 +374,10 @@ _CANMotor(id, exo_data, enable_pin)
 {
     _T_MAX = 9.0f;
     _V_MAX = 23.04f;
+
+#ifdef MOTOR_DEBUG
+    Serial.println("AK60_v1_1::AK60_v1_1 : Leaving Constructor");
+#endif
 };
 
 /*
@@ -364,6 +390,10 @@ _CANMotor(id, exo_data, enable_pin)
 {
     _T_MAX = 18.0f;
     _V_MAX = 25.65f;
+
+#ifdef MOTOR_DEBUG
+    Serial.println("AK80::AK80 : Leaving Constructor");
+#endif
 };
 
 

@@ -37,8 +37,8 @@ class Exo
         void run();  
 		
         ExoData *data;  /**< pointer to ExoData that is getting updated by the coms mcu so they share format.*/
-        Leg right_leg; /**< right leg object that contains all the joints and sensors for that leg */
         Leg left_leg; /**< right leg object that contains all the joints and sensors for that leg */
+        Leg right_leg; /**< right leg object that contains all the joints and sensors for that leg */
         
         #ifdef USE_SPEED_CHECK
             utils::SpeedCheck speed_check; /**< Used to check the speed of the loop without needing prints */

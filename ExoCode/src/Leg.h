@@ -68,6 +68,10 @@ class Leg
          * @brief Simply clears the step time estimate for when it gets off by more than can be adjusted for.
          */
         void clear_step_time_estimate();
+
+        /** Move these back down to private when things are working*/
+        HipJoint _hip; /**< instance of a hip joint */
+        AnkleJoint _ankle; /**< instance of a ankle joint */
         
 	private:
 		
@@ -103,9 +107,9 @@ class Leg
         
         // joint objects for the leg.
         // The order these are listed are important as it will determine the order their constructors are called in the initializer list.
-        HipJoint _hip; /**< instance of a hip joint */
+        //HipJoint _hip; /**< instance of a hip joint */
         KneeJoint _knee; /**< instance of a knee joint */
-        AnkleJoint _ankle; /**< instance of a ankle joint */
+        //AnkleJoint _ankle; /**< instance of a ankle joint */
         
         FSR _heel_fsr; /**< heel force sensitive resistor */
 		FSR _toe_fsr; /**< toe force sensitive resistor */

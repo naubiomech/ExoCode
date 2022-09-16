@@ -115,6 +115,12 @@ class _Joint
          * @return next pin to assign
          */
         static unsigned int get_motor_enable_pin(config_defs::joint_id, ExoData*);
+
+        /** MOVE THESE BACK TO PROTECTED WHEN APP IS READY*/
+        _Motor* _motor; /**< pointer to the base _Motor class so we can use any motor type.*/
+        TorqueSensor _torque_sensor; /**< Torque sensor for the joint*/
+        _Controller* _controller; /**< Pointer to the current controller.  Using pointer so we just need to change the object we are pointing to when the controller changes.*/
+
         
     protected:
         // give access to the larger data object and the joint specific data 
@@ -122,9 +128,9 @@ class _Joint
         JointData* _joint_data;/**< pointer to this joints data */
         
         // IO objects for the joint
-        _Motor* _motor; /**< pointer to the base _Motor class so we can use any motor type.*/
-		TorqueSensor _torque_sensor; /**< Torque sensor for the joint*/
-		_Controller* _controller; /**< Pointer to the current controller.  Using pointer so we just need to change the object we are pointing to when the controller changes.*/
+        //_Motor* _motor; /**< pointer to the base _Motor class so we can use any motor type.*/
+		//TorqueSensor _torque_sensor; /**< Torque sensor for the joint*/
+		//_Controller* _controller; /**< Pointer to the current controller.  Using pointer so we just need to change the object we are pointing to when the controller changes.*/
         
         // joint info
         config_defs::joint_id _id; /**< joint id */

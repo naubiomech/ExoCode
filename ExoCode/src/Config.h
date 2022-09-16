@@ -24,7 +24,7 @@
     namespace torque_calibration
     {
         const float AI_CNT_TO_V = 3.3 / 4096; // conversion from count to voltage
-        const float TRQ_V_TO_NM = 42.500; // conversion from voltage to Nm
+        const float TRQ_V_TO_NM = -42.500; // conversion from voltage to Nm (Negative do to mismatch in torque sensor and motor torque directions)
     }
 
     namespace BLE_times
