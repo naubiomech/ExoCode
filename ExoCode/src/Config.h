@@ -7,7 +7,7 @@
     #define AK_Board_V0_4 3
 
     // TODO : Incorporate into parse INI
-    #define BOARD_VERSION AK_Board_V0_4  
+    #define BOARD_VERSION AK_Board_V0_3  
     
     #define LOOP_FREQ_HZ 500
     #define LOOP_TIME_TOLERANCE 0.1 
@@ -34,8 +34,10 @@
         const float _update_delay = 100000; //microseconds
     }
     
-    namespace SPI_times
+    namespace UART_times
     {
-        const float UPDATE_PERIOD= 10000000;//10000; //microseconds, time between updating data over spi
+        const float UPDATE_PERIOD = 10000; //microseconds, time between updating data over spi
+        const float COMS_MCU_TIMEOUT = 2500; //microseconds
+        const float CONT_MCU_TIMEOUT = 1000;
     }
 #endif

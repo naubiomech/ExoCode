@@ -16,7 +16,6 @@
 #include "ParseIni.h"
 #include "ExoData.h"
 #include "BleMessageQueue.h"
-#include "SPIHandler.h"
 
 /**
  * @brief ComsMCU class. 
@@ -48,9 +47,9 @@ class ComsMCU
         void local_sample();
         
         /**
-         * @brief Send SPI msg and update data or config based on response
+         * @brief Send UART msg and update data or config based on response
          */
-        void update_spi();
+        void update_UART();
 
         /**
          * @brief Sends data to the GUI. If a trial is active, the real time data will be sent
@@ -74,10 +73,9 @@ class ComsMCU
         ExoData* _data;
         //Battery
         _Battery* _battery;
-        //SPI handler
-        SPIHandler spi_handler;
+
         // Alpha value for the exponentially weighted moving average on the battery data
-        const float _battery_ewma_alpha = 0.1;
+        const float k_battery_ewma_alpha = 0.1;
 };
 #endif
 #endif

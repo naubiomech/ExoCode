@@ -189,7 +189,8 @@ namespace UART_command_handlers
     }
     inline static void update_cal_trq_sensor(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-
+        Serial.println("UART_command_handlers::update_cal_trq_sensor->Got Cal trq sensor");
+        exo_data->for_each_joint([](JointData* j_data) {j_data->calibrate_torque_sensor = j_data->is_used;});
     }
 
     inline static void get_cal_fsr(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
@@ -198,7 +199,11 @@ namespace UART_command_handlers
     }
     inline static void update_cal_fsr(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-
+        Serial.println("UART_command_handlers::update_cal_fsr->Got msg");
+        exo_data->right_leg.do_calibration_toe_fsr = 1;    
+        exo_data->right_leg.do_calibration_heel_fsr = 1;
+        exo_data->left_leg.do_calibration_toe_fsr = 1;
+        exo_data->left_leg.do_calibration_heel_fsr = 1;
     }
 
     inline static void get_refine_fsr(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
@@ -207,7 +212,11 @@ namespace UART_command_handlers
     }
     inline static void update_refine_fsr(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-
+        Serial.println("UART_command_handlers::update_refine_fsr->Got msg");
+        exo_data->right_leg.do_calibration_refinement_toe_fsr = 1;
+        exo_data->right_leg.do_calibration_refinement_heel_fsr = 1;
+        exo_data->left_leg.do_calibration_refinement_toe_fsr = 1;
+        exo_data->left_leg.do_calibration_refinement_heel_fsr = 1;
     }
 
     inline static void get_motor_enable_disable(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
@@ -230,11 +239,30 @@ namespace UART_command_handlers
 
     inline static void get_real_time_data(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
+        UART_msg_t rx_msg;
+        rx_msg.command = UART_command_names::update_real_time_data;
+        rx_msg.joint_id = 0;
+        rx_msg.len = 8;
+        rx_msg.data[0] = exo_data->right_leg.ankle.torque_reading;
+        rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
+        rx_msg.data[2] = exo_data->right_leg.ankle.controller.setpoint;
+        rx_msg.data[3] = exo_data->left_leg.ankle.torque_reading;
+        //TODO: Implement Mark Feature
+        rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
+        rx_msg.data[5] = exo_data->left_leg.ankle.controller.setpoint;
+        rx_msg.data[6] = exo_data->right_leg.toe_fsr;
+        rx_msg.data[7] = exo_data->left_leg.toe_fsr;
 
+        handler->UART_msg(rx_msg);
     }
     inline static void update_real_time_data(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-        // TODO: Pipe data through BLE
+        // Serial.println("UART_command_handlers::update_real_time_data->got message: ");
+        // UART_msg_t_utils::print_msg(msg);
+        exo_data->right_leg.ankle.torque_reading = msg.data[0];
+        exo_data->right_leg.ankle.controller.setpoint = msg.data[2];
+        exo_data->left_leg.ankle.controller.setpoint = msg.data[5];
+
     }
 };
 
@@ -244,20 +272,18 @@ namespace UART_command_utils
 
     static UART_msg_t call_and_response(UARTHandler* handler, UART_msg_t msg)
     {
-        //TODO: Pack message given command
-
         UART_msg_t rx_msg;
         uint8_t searching = 1;
-        Serial.println("UART_command_utils::call_and_response->searching for message");
+        // Serial.println("UART_command_utils::call_and_response->searching for message");
         while (searching)
         {
             handler->UART_msg(msg);
-            Serial.println("UART_command_utils::call_and_response->sent msg");
+            // Serial.println("UART_command_utils::call_and_response->sent msg");
             delay(100);
             rx_msg = handler->poll(100000);
             searching = (rx_msg.command != (msg.command+1));
         }
-        Serial.println("UART_command_utils::call_and_response->found message:");
+        // Serial.println("UART_command_utils::call_and_response->found message:");
         UART_msg_t_utils::print_msg(rx_msg);
         return rx_msg;
     }
@@ -273,7 +299,7 @@ namespace UART_command_utils
             // the length of the message needs to be equal to the config length
             if (msg.len != ini_config::number_of_keys)
             {
-                Serial.println("UART_command_utils::get_config->msg.len != number_of_keys");
+                // Serial.println("UART_command_utils::get_config->msg.len != number_of_keys");
                 // keep trying to get config
                 continue;
             }
@@ -282,13 +308,13 @@ namespace UART_command_utils
                 // a valid config will not contain a zero
                 if (!msg.data[i]) 
                 {
-                    Serial.print("UART_command_utils::get_config->Config contained a zero at index ");
-                    Serial.println(i);
+                    // Serial.print("UART_command_utils::get_config->Config contained a zero at index ");
+                    // Serial.println(i);
                     // keep trying to get config
                     continue;
                 }
             }
-            Serial.println("UART_command_utils::get_config->got good config");
+            // Serial.println("UART_command_utils::get_config->got good config");
             break;
         }
 
@@ -304,11 +330,11 @@ namespace UART_command_utils
         UART_msg_t rx_msg;
         while (true)
         {
-            Serial.println("UART_command_utils::wait_for_config->Polling for config");
+            // Serial.println("UART_command_utils::wait_for_config->Polling for config");
             rx_msg = handler->poll(100000);
             if (rx_msg.command == UART_command_names::get_config)
             {
-                Serial.println("UART_command_utils::wait_for_config->Got config request");
+                // Serial.println("UART_command_utils::wait_for_config->Got config request");
 
                 UART_msg_t tx_msg;
                 tx_msg.command = UART_command_names::update_config;
@@ -338,7 +364,7 @@ namespace UART_command_utils
             }
             delayMicroseconds(500);
         }
-        Serial.println("UART_command_utils::wait_for_config->Sent config");
+        // Serial.println("UART_command_utils::wait_for_config->Sent config");
     }
 
 

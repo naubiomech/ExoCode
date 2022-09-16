@@ -212,8 +212,8 @@ float ProportionalJointMoment::calc_motor_cmd()
     float cmd = cmd_ff + (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx] 
                 ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]) 
                 : 0);
-   
-       
+    
+    
     //Serial.print("ProportionalJointMoment::calc_motor_cmd : Exiting");
     //Serial.print("\n");
     return cmd;

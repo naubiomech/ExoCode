@@ -5,6 +5,9 @@
 
 #include "Exo.h"
 #include "Time_Helper.h"
+#include "UARTHandler.h"
+#include "UART_msg_t.h"
+#include "uart_commands.h"
 
 #define EXO_DEBUG 1
 
@@ -41,9 +44,12 @@ Exo::Exo(ExoData* exo_data)
 void Exo::run()
 {
     // Check if we are within the system frequency we want.
+    static UARTHandler* handler = UARTHandler::get_instance();
     static Time_Helper* t_helper = Time_Helper::get_instance();
     static float context = t_helper->generate_new_context();
+    static float uart_context = t_helper->generate_new_context();
     static float delta_t = 0;
+    static float uart_delta_t = 0;
     delta_t += t_helper->tick(context);
     
     if (((delta_t <= ((float) 1/LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE))) && (delta_t >= ((float)1 / LOOP_FREQ_HZ * 1000000 * (1 - LOOP_TIME_TOLERANCE)))))
@@ -92,13 +98,34 @@ void Exo::run()
         #endif
         // !!TESTING
         // data->right_leg.ankle.motor.p_des++;
-        delta_t = 0;
+
         
+
+        // check for incoming uart messages
+        UART_msg_t msg = handler->poll(UART_times::CONT_MCU_TIMEOUT);
+        if (msg.command) {
+            // Serial.println("Exo::run->Got message:");
+            // UART_msg_t_utils::print_msg(msg);
+            UART_command_utils::handle_msg(handler, data, msg);
+        }
+
+        // send the coms mcu the real time data every _real_time_msg_delay microseconds
+        uart_delta_t += t_helper->tick(uart_context);
+        if (uart_delta_t > BLE_times::_real_time_msg_delay) 
+        {
+            UART_msg_t msg;
+            UART_command_handlers::get_real_time_data(handler, data, msg);
+            uart_delta_t = 0;
+        }
+
+
+        delta_t = 0;
     }
     // we didn't hit the time requirements
     else if (delta_t > ((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)))
     {
-        //data->status = status_defs::messages::error;
+        //data->status = status_defs::messages::error;'
+        Serial.println("Exo::Run:Timeoverflow");
         #ifdef EXO_DEBUG
             if (delta_t >= 4000) {
                 Serial.println("Exo::Run:Timeoverflow");
