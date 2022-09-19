@@ -75,6 +75,8 @@ void ComsMCU::update_UART()
     
 }
 
+
+
 void ComsMCU::update_gui() 
 {
     // Get real time data from ExoData and send to GUI
@@ -92,11 +94,15 @@ void ComsMCU::update_gui()
         static const float msg_context = t_helper->generate_new_context();
         static float time_since_last_message;
         time_since_last_message = t_helper->tick(msg_context);
+        if (time_since_last_message > k_time_threshold)
+        {
+            time_since_last_message = 0;
+        }
         
         BleMessage rt_data_msg = BleMessage();
         rt_data_msg.command = ble_names::send_real_time_data;
         rt_data_msg.expecting = ble_command_helpers::get_length_for_command(rt_data_msg.command);
-        // TODO: populate rt_data_msg and send
+
         rt_data_msg.data[0] = _data->right_leg.ankle.torque_reading;
         rt_data_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
         rt_data_msg.data[2] = _data->right_leg.ankle.controller.setpoint;
@@ -108,11 +114,11 @@ void ComsMCU::update_gui()
         rt_data_msg.data[7] = _data->left_leg.toe_fsr;
         rt_data_msg.data[8] = time_since_last_message/1000.0;
 
-        static const float send_context = t_helper->generate_new_context();
-        static float send_del_t = 0;
-        send_del_t = t_helper->tick(send_context);
-        //_exo_ble->send_message(rt_data_msg);  
-        send_del_t = t_helper->tick(send_context);
+        // static const float send_context = t_helper->generate_new_context();
+        // static float send_del_t = 0;
+        // send_del_t = t_helper->tick(send_context);
+        _exo_ble->send_message(rt_data_msg);  
+        // send_del_t = t_helper->tick(send_context);
         //Serial.print("ComsMCU :: update_gui : Rt send time -> "); Serial.println(send_del_t);      
 
         del_t = 0;

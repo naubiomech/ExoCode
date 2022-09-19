@@ -109,18 +109,22 @@ void Exo::run()
             UART_command_utils::handle_msg(handler, data, msg);
         }
 
+
         // send the coms mcu the real time data every _real_time_msg_delay microseconds
         uart_delta_t += t_helper->tick(uart_context);
-        if (uart_delta_t > BLE_times::_real_time_msg_delay) 
+        if ((data->status == status_defs::messages::trial_on) || 
+        (data->status == status_defs::messages::fsr_calibration) ||
+        (data->status == status_defs::messages::fsr_refinement) && 
+        (uart_delta_t > BLE_times::_real_time_msg_delay)) 
         {
             UART_msg_t msg;
             UART_command_handlers::get_real_time_data(handler, data, msg);
             uart_delta_t = 0;
         }
 
-
         delta_t = 0;
     }
+
     // we didn't hit the time requirements
     else if (delta_t > ((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)))
     {
@@ -136,5 +140,7 @@ void Exo::run()
         delta_t = 0;
     }
 };
+
+
 
 #endif

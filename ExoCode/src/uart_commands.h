@@ -235,6 +235,7 @@ namespace UART_command_handlers
     inline static void update_motor_zero(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
 
+
     }
 
     inline static void get_real_time_data(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
@@ -257,13 +258,17 @@ namespace UART_command_handlers
     }
     inline static void update_real_time_data(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-        // Serial.println("UART_command_handlers::update_real_time_data->got message: ");
-        // UART_msg_t_utils::print_msg(msg);
+        Serial.println("UART_command_handlers::update_real_time_data->got message: ");
+        UART_msg_t_utils::print_msg(msg);
         exo_data->right_leg.ankle.torque_reading = msg.data[0];
         exo_data->right_leg.ankle.controller.setpoint = msg.data[2];
+        exo_data->left_leg.ankle.torque_reading = msg.data[3];
         exo_data->left_leg.ankle.controller.setpoint = msg.data[5];
+        exo_data->right_leg.toe_fsr = msg.data[6];
+        exo_data->left_leg.toe_fsr = msg.data[7];
 
     }
+
 };
 
 
@@ -367,6 +372,7 @@ namespace UART_command_utils
         // Serial.println("UART_command_utils::wait_for_config->Sent config");
     }
 
+    
 
     static void handle_msg(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {

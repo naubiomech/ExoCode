@@ -76,6 +76,7 @@ class ComsMCU
 
         // Alpha value for the exponentially weighted moving average on the battery data
         const float k_battery_ewma_alpha = 0.1;
+        const float k_time_threshold = 5000; //microseconds
 };
 #endif
 #endif

@@ -37,7 +37,7 @@
     namespace UART_times
     {
         const float UPDATE_PERIOD = 10000; //microseconds, time between updating data over spi
-        const float COMS_MCU_TIMEOUT = 2500; //microseconds
+        const float COMS_MCU_TIMEOUT = 3000; //microseconds
         const float CONT_MCU_TIMEOUT = 1000;
     }
 #endif

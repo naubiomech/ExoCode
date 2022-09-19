@@ -111,6 +111,8 @@ void _CANMotor::transaction(float torque)
     read_data();
 };
 
+
+
 void _CANMotor::read_data()
 {
     // read date from motor
@@ -152,6 +154,8 @@ void _CANMotor::read_data()
     }
     return;
 };
+
+
 
 void _CANMotor::send_data(float torque)
 {

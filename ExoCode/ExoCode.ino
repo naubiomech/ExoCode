@@ -482,7 +482,7 @@ namespace config_info
 void setup()
 {
     Serial.begin(115200);
-    while (!Serial);
+    //while (!Serial);
 
     Serial.println("Setup->Getting config");
     // get the sd card config from the teensy, this is blocking

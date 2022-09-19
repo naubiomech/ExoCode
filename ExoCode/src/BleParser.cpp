@@ -55,7 +55,7 @@ BleMessage* BleParser::handle_raw_data(char* buffer, int length)
 int BleParser::package_raw_data(byte* buffer, BleMessage &msg)
 {
     //6 max characters can transmit -XXXXX, or XXXXXX
-    int maxChars = 8;
+    static int maxChars = 12;
     //Size must be declared at initialization because of itoa()
     char cBuffer[maxChars];
     int buffer_index = 0;
