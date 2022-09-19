@@ -373,6 +373,209 @@ cout << variable; //This would output 20
 extern uint8_t is_ff[num_bytes];
 ```
 
+### Conditions
+Expressions within the code that will be either true or false. 
+Typically the outcome of these conditions will determine how/if certain sections of code are run.
+
+#### If-Else Statments
+If statmenets specify a section of code that will run if the condition is evaluated as true.
+Else statments specify a section of code that will run if the condition is evalauted as fasle. Else statments are not required (that is, you do not need to have a section of code that runs if the condition is evaluated as false).
+It is possible to have multiple conditions, in which case we can use else if as part of the evaluation. 
+
+**Syntax:**
+```
+if (condition_one)
+{
+	//Code to run if true
+}
+else if (condition_two)
+{
+	//Code to run if true
+}
+else
+{
+	//Code to run 
+}
+```
+
+**ex.** Simple Example
+```
+int x = 20;
+int y = 42;
+
+if (x < y)
+{
+	cout << "The dog is good.";
+}
+else if (x > y)
+{
+	cout << "The dog is really good."
+}
+else
+{
+	cout << "The dog is really really good."
+}
+```
+
+There is an alternative way to formulate if-else statments within the code that signficantly reduces the amount of space used by these statments. Note that this only works if there is one condition to be evaluated (does not work for elseif).
+This formulation is commonly used throughout our code. 
+
+**Syntax:** variable = (condition) ? if_true : if_false;
+
+**ex.** Simple Example
+```
+int x = 20;
+int y =42;
+
+string result = (x < y) ? "The dog is good." : "The dog is really good."
+cout << result;
+```
+
+**ex.** [Controller.cpp](/ExoCode/src/Controller.cpp)
+```
+float ZeroTorque::calc_motor_cmd()
+{
+    float cmd_ff = 0;
+    
+    // add the PID contribution to the feed forward command
+    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::zero_torque::use_pid_idx] 
+                ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::zero_torque::p_gain_idx], _controller_data->parameters[controller_defs::zero_torque::i_gain_idx], _controller_data->parameters[controller_defs::zero_torque::d_gain_idx]) 
+                : 0);
+   
+    return cmd;
+};
+```
+
+In the above example, the condition being evaluated is whether or not we are using PID controll and if it is true then it augments the feed forward command appropriatly. 
+
+#### Switch Statements
+Switch statments are valuable when there are several different blocks of code that could be run depending on if an expression is true.
+
+**Syntax:**
+```
+switch(expression)
+{
+	case x:
+		//Code to be run
+	   break;
+	case y:
+		//Code to be run
+	   break;
+	case z:
+		//Code to be run
+	   break;
+	default:
+		//Code to be run
+}
+```
+
+If the expression matches the case value (x, y, z) in the above syntax, then the block of code for that case runs. 
+The code will run until it reaches the break keyword, this is useful as this will cause the code to skip the rest of the switch blocks which can save considerable time. 
+In some instances it is useful to have a section of code that runs if none the expression does not match any of the cases. This is where the default keyword comes into use. 
+Importantly, this default must be the last statment used (and no break is required). Also note that the expression used in these statments must be of type int or enum.
+
+**ex.** Simple Example
+```
+int month = 5;
+
+switch (month)
+{
+	case 1:
+		cout << "January";
+	   break;
+	case 2:
+		cout << "February";
+	   break;
+	case 3:
+		cout << "March";
+	   break;
+	case 4:
+		cout << "April";
+	   break;
+	case 5:
+		cout << "May";
+	   break;
+	case 6:
+		cout << "June";
+	   break;
+	case 7:
+		cout << "July";
+	   break;
+	case 8:
+		cout << "August";
+	   break;
+	case 9:
+		cout << "September";
+	   break;
+	case 10:
+		cout << "October";
+	   break;
+	case 11:
+		cout << "November";
+	   break;
+	case 12:
+		cout << "December";
+	   break;
+	default:
+		cout << "This is not a month.";
+}
+
+```
+
+**ex.** [Controller.cpp](/ExoCode/src/Controller.cpp)
+```
+switch (utils::get_joint_type(_id))
+    {
+        case (uint8_t)config_defs::joint_id::hip:
+            #ifdef CONTROLLER_DEBUG
+                Serial.print("HIP ");
+            #endif
+            if (is_left)
+            {
+                _controller_data = &(exo_data->left_leg.hip.controller);
+                _joint_data = &(exo_data->left_leg.hip);
+            }
+            else
+            {
+                _controller_data = &(exo_data->right_leg.hip.controller);
+                _joint_data = &(exo_data->right_leg.hip);
+            }
+            break;
+            
+        case (uint8_t)config_defs::joint_id::knee:
+            #ifdef CONTROLLER_DEBUG
+                Serial.print("KNEE ");
+            #endif
+            if (is_left)
+            {
+                _controller_data = &(exo_data->left_leg.knee.controller);
+                _joint_data = &(exo_data->left_leg.knee);
+            }
+            else
+            {
+                _controller_data = &(exo_data->right_leg.knee.controller);
+                _joint_data = &(exo_data->right_leg.knee);
+            }
+            break;
+        
+        case (uint8_t)config_defs::joint_id::ankle:
+            #ifdef CONTROLLER_DEBUG
+                Serial.print("ANKLE ");
+            #endif
+            if (is_left)
+            {
+                _controller_data = &(exo_data->left_leg.ankle.controller);
+                _joint_data = &(exo_data->left_leg.ankle);
+            }
+            else
+            {
+                _controller_data = &(exo_data->right_leg.ankle.controller);
+                _joint_data = &(exo_data->right_leg.ankle);
+            }
+            break;
+    }
+```
+
 ### Functions
 Functions, sometimes refered to as methods or procdures, are a reusable block of code designed to do a particular task. 
 Functions allow for code to be split into smaller, modular pieces and are particularly useful when sets of code need to be used several times. 
@@ -758,6 +961,20 @@ int* pointer = &age;
 cout << pointer; 			//Outputs the address stored in the pointer 
 
 cout << "\n" << *pointer; 	//Outputs the value of the variable at the location given by the pointer (aka age)
+```
+
+Within the code you may run into "->". This is used with pointers and is equivalent to using "object.attribute" within classes. 
+
+**ex.** [Controller.cpp](/ExoCode/src/Controller.cpp)
+```
+    if (is_left)
+    {
+        _leg_data = &(exo_data->left_leg);
+    }
+    else
+    {
+        _leg_data = &(exo_data->right_leg);
+    } 
 ```
 
 #### Function Pointers
