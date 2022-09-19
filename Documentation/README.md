@@ -378,9 +378,9 @@ Expressions within the code that will be either true or false.
 Typically the outcome of these conditions will determine how/if certain sections of code are run.
 
 #### If-Else Statments
-If statmenets specify a section of code that will run if the condition is evaluated as true.
-Else statments specify a section of code that will run if the condition is evalauted as fasle. Else statments are not required (that is, you do not need to have a section of code that runs if the condition is evaluated as false).
-It is possible to have multiple conditions, in which case we can use else if as part of the evaluation. 
+If statements specify a section of code that will run if the condition is evaluated as true.
+Else statments specify a section of code that will run if the condition is evaluated as false. Else statments are not required (that is, you do not need to have a section of code that runs if the condition is evaluated as false).
+It is possible to have multiple conditions, in which case we can use "else if" statements as part of the evaluation. 
 
 **Syntax:**
 ```
@@ -417,7 +417,8 @@ else
 }
 ```
 
-There is an alternative way to formulate if-else statments within the code that signficantly reduces the amount of space used by these statments. Note that this only works if there is one condition to be evaluated (does not work for elseif).
+There is an alternative way to formulate if-else statments within the code that signficantly reduces the amount of space used by these statments.
+Note that this only works if there is one condition to be evaluated (does not work for "else if").
 This formulation is commonly used throughout our code. 
 
 **Syntax:** variable = (condition) ? if_true : if_false;
@@ -425,7 +426,7 @@ This formulation is commonly used throughout our code.
 **ex.** Simple Example
 ```
 int x = 20;
-int y =42;
+int y = 42;
 
 string result = (x < y) ? "The dog is good." : "The dog is really good."
 cout << result;
@@ -446,10 +447,10 @@ float ZeroTorque::calc_motor_cmd()
 };
 ```
 
-In the above example, the condition being evaluated is whether or not we are using PID controll and if it is true then it augments the feed forward command appropriatly. 
+In the above example, the condition being evaluated is whether or not we are using PID controll and if it is true then it augments the feed forward command appropriately. 
 
 #### Switch Statements
-Switch statments are valuable when there are several different blocks of code that could be run depending on if an expression is true.
+Switch statements are valuable when there are several different blocks of code that could be run depending on if an expression is true.
 
 **Syntax:**
 ```
@@ -469,10 +470,10 @@ switch(expression)
 }
 ```
 
-If the expression matches the case value (x, y, z) in the above syntax, then the block of code for that case runs. 
-The code will run until it reaches the break keyword, this is useful as this will cause the code to skip the rest of the switch blocks which can save considerable time. 
-In some instances it is useful to have a section of code that runs if none the expression does not match any of the cases. This is where the default keyword comes into use. 
-Importantly, this default must be the last statment used (and no break is required). Also note that the expression used in these statments must be of type int or enum.
+If the expression matches the case value (x, y, z in the above syntax), then the block of code for that case runs. 
+The code will run until it reaches the "break" keyword, this is useful as this will cause the code to skip the rest of the switch blocks which can save considerable time. 
+In some instances it is useful to have a section of code that runs if the expression does not match any of the cases. This is where the "default" keyword comes into use. 
+Importantly, this default must be the last statment used (no break is required). Also note that the expression used in these statments must be of type int or enum.
 
 **ex.** Simple Example
 ```
