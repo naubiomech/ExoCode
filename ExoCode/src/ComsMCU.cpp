@@ -68,6 +68,7 @@ void ComsMCU::update_UART()
         UART_msg_t msg = handler->poll(UART_times::COMS_MCU_TIMEOUT);
         if (msg.command) 
         {
+            UART_msg_t_utils::print_msg(msg);
             UART_command_utils::handle_msg(handler, _data, msg);
         }
         del_t = 0;
@@ -112,7 +113,7 @@ void ComsMCU::update_gui()
         rt_data_msg.data[5] = _data->left_leg.ankle.controller.setpoint;
         rt_data_msg.data[6] = _data->right_leg.toe_fsr;
         rt_data_msg.data[7] = _data->left_leg.toe_fsr;
-        rt_data_msg.data[8] = time_since_last_message/1000.0;
+        rt_data_msg.data[8] = 0;//time_since_last_message/1000.0;
 
         // static const float send_context = t_helper->generate_new_context();
         // static float send_del_t = 0;

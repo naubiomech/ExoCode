@@ -1,5 +1,5 @@
 #include "Joint.h"
-#define JOINT_DEBUG
+//#define JOINT_DEBUG
 
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
@@ -761,7 +761,7 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 void AnkleJoint::run_joint()
 {
     // enable or disable the motor.
-    _motor->on_off(); 
+    _motor->on_off();
     _motor->enable();
     
     // Calculate the motor command

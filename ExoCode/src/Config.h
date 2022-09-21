@@ -12,7 +12,7 @@
     #define LOOP_FREQ_HZ 500
     #define LOOP_TIME_TOLERANCE 0.1 
     
-    #define USE_SPEED_CHECK 1 
+    //#define USE_SPEED_CHECK 1 
     
     namespace sync_time
     {
@@ -30,7 +30,7 @@
     namespace BLE_times
     {
         const float _status_msg_delay = 1000000; //microseconds
-        const float _real_time_msg_delay = 40000; //microseconds (20000)
+        const float _real_time_msg_delay = 40000; //microseconds
         const float _update_delay = 100000; //microseconds
     }
     

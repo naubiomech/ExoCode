@@ -47,6 +47,8 @@ void UARTHandler::UART_msg(uint8_t msg_id, uint8_t len, uint8_t joint_id, float 
 
 void UARTHandler::UART_msg(UART_msg_t msg)
 {
+    // Serial.print("UARTHandler::UART_msg->Sending Message");
+    // UART_msg_t_utils::print_msg(msg);
     UART_msg(msg.command, msg.len, msg.joint_id, msg.data);
 }
 
@@ -56,7 +58,7 @@ UART_msg_t UARTHandler::poll(float timeout_us)
     _timeout_us = timeout_us;
     
     uint32_t _available_bytes = check_for_data();
-   //Serial.print("UARTHandler::poll->Bytes Available: "); Serial.println(_available_bytes);
+    //Serial.print("UARTHandler::poll->Bytes Available: "); Serial.println(_available_bytes);
     if (!_available_bytes) {return empty_msg;}
     
 //    char _buffer[_available_bytes];
@@ -110,7 +112,8 @@ UART_msg_t UARTHandler::poll(float timeout_us)
      }
 
       UART_msg_t msg = _unpack(_msg_buffer, _recv_len + _partial_packet_len);
-      
+      // Serial.print("UARTHandler::poll->Got Message: ");
+      // UART_msg_t_utils::print_msg(msg);
       //TODO: Implement MSG queue architecture
 
       return msg;

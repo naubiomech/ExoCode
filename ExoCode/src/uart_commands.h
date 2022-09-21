@@ -190,7 +190,7 @@ namespace UART_command_handlers
     inline static void update_cal_trq_sensor(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
         Serial.println("UART_command_handlers::update_cal_trq_sensor->Got Cal trq sensor");
-        exo_data->for_each_joint([](JointData* j_data) {j_data->calibrate_torque_sensor = j_data->is_used;});
+        exo_data->for_each_joint([](JointData* j_data, float* args) {j_data->calibrate_torque_sensor = j_data->is_used;});
     }
 
     inline static void get_cal_fsr(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
@@ -222,10 +222,12 @@ namespace UART_command_handlers
     inline static void get_motor_enable_disable(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
 
+
     }
     inline static void update_motor_enable_disable(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-
+        Serial.println("UART_command_handlers::update_motor_enable_disable->Got msg");
+        exo_data->for_each_joint([](JointData* j_data, float* args) {if (j_data->is_used) j_data->motor.enabled = args[0];}, msg.data);
     }
 
     inline static void get_motor_zero(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
@@ -255,6 +257,7 @@ namespace UART_command_handlers
         rx_msg.data[7] = exo_data->left_leg.toe_fsr;
 
         handler->UART_msg(rx_msg);
+        Serial.println("UART_command_handlers::get_real_time_data->sent real time data");
     }
     inline static void update_real_time_data(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
@@ -266,9 +269,7 @@ namespace UART_command_handlers
         exo_data->left_leg.ankle.controller.setpoint = msg.data[5];
         exo_data->right_leg.toe_fsr = msg.data[6];
         exo_data->left_leg.toe_fsr = msg.data[7];
-
     }
-
 };
 
 
@@ -439,6 +440,7 @@ namespace UART_command_utils
             break;
         
         default:
+            Serial.println("UART_command_utils::handle_message->Unknown Message!");
             break;
         }
     }

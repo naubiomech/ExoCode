@@ -24,14 +24,24 @@ void ExoData::reconfigure(uint8_t* config_to_send)
     right_leg.reconfigure(config_to_send);
 };
 
+void ExoData::for_each_joint(for_each_joint_function_t function, float* args)
+{
+    function(&left_leg.hip, args);
+    function(&left_leg.knee, args);
+    function(&left_leg.ankle, args);
+    function(&right_leg.hip, args);
+    function(&right_leg.knee, args);
+    function(&right_leg.ankle, args);
+};
+
 void ExoData::for_each_joint(for_each_joint_function_t function)
 {
-    function(&left_leg.hip);
-    function(&left_leg.knee);
-    function(&left_leg.ankle);
-    function(&right_leg.hip);
-    function(&right_leg.knee);
-    function(&right_leg.ankle);
+    function(&left_leg.hip, NULL);
+    function(&left_leg.knee, NULL);
+    function(&left_leg.ankle, NULL);
+    function(&right_leg.hip, NULL);
+    function(&right_leg.knee, NULL);
+    function(&right_leg.ankle, NULL);
 };
 
 JointData* ExoData::get_joint_with(uint8_t id)

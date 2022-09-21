@@ -148,7 +148,7 @@ namespace ble_handlers
         // if the joint is used; enable the motor, and set the controller to zero torque
         data->for_each_joint(
             // This is a lamda or anonymous function, see https://www.learncpp.com/cpp-tutorial/introduction-to-lambdas-anonymous-functions/
-            [](JointData* j_data)
+            [](JointData* j_data, float* args)
             {
                 if (j_data->is_used)
                 {
@@ -169,6 +169,14 @@ namespace ble_handlers
         tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = data->status;
         tx_msg.len = (uint8_t)UART_command_enums::status::LENGTH;
         uart_handler->UART_msg(tx_msg);
+
+        delayMicroseconds(100);
+        // Send motor enable update
+        tx_msg.command = UART_command_names::update_motor_enable_disable;
+        tx_msg.joint_id = 0;
+        tx_msg.data[(uint8_t)UART_command_enums::motor_enable_disable::ENABLE_DISABLE] = 1;
+        tx_msg.len = (uint8_t)UART_command_enums::motor_enable_disable::LENGTH;
+        uart_handler->UART_msg(tx_msg);
     }
     inline static void stop(ExoData* data, BleMessage* msg)
     {
@@ -176,7 +184,7 @@ namespace ble_handlers
         // Send trial summary data (step information)
         data->for_each_joint(
             // This is a lamda or anonymous function, see https://www.learncpp.com/cpp-tutorial/introduction-to-lambdas-anonymous-functions/
-            [](JointData* j_data)
+            [](JointData* j_data, float* args)
             {
                 if (j_data->is_used)
                 {
@@ -197,11 +205,18 @@ namespace ble_handlers
         tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = data->status;
         tx_msg.len = (uint8_t)UART_command_enums::status::LENGTH;
         uart_handler->UART_msg(tx_msg);
+
+        delayMicroseconds(100);
+        tx_msg.command = UART_command_names::update_motor_enable_disable;
+        tx_msg.joint_id = 0;
+        tx_msg.data[(uint8_t)UART_command_enums::motor_enable_disable::ENABLE_DISABLE] = 0;
+        tx_msg.len = (uint8_t)UART_command_enums::motor_enable_disable::LENGTH;
+        uart_handler->UART_msg(tx_msg);
     }
     inline static void cal_trq(ExoData* data, BleMessage* msg)
     {   
         // Raise cal_trq flag for all joints being used, (Out of context: Should send calibration info upon cal completion)
-        //data->for_each_joint([](JointData* j_data) {j_data->calibrate_torque_sensor = j_data->is_used;});
+        data->for_each_joint([](JointData* j_data, float* args) {j_data->calibrate_torque_sensor = j_data->is_used;});
 
         // Send cal_trq
         UARTHandler* uart_handler = UARTHandler::get_instance();
@@ -257,7 +272,7 @@ namespace ble_handlers
         
         data->for_each_joint(
             // This is a lamda or anonymous function, see https://www.learncpp.com/cpp-tutorial/introduction-to-lambdas-anonymous-functions/
-            [](JointData* j_data)
+            [](JointData* j_data, float* args)
             {
                 if (j_data->is_used)
                 {
@@ -267,7 +282,13 @@ namespace ble_handlers
             }
         );
 
-
+        UARTHandler* uart_handler = UARTHandler::get_instance();
+        UART_msg_t tx_msg;
+        tx_msg.command = UART_command_names::update_motor_enable_disable;
+        tx_msg.joint_id = 0;
+        tx_msg.data[(uint8_t)UART_command_enums::motor_enable_disable::ENABLE_DISABLE] = 1;
+        tx_msg.len = (uint8_t)UART_command_enums::motor_enable_disable::LENGTH;
+        uart_handler->UART_msg(tx_msg);
         
     }
     inline static void motors_off(ExoData* data, BleMessage* msg)
@@ -287,7 +308,7 @@ namespace ble_handlers
         
         data->for_each_joint(
             // This is a lamda or anonymous function, see https://www.learncpp.com/cpp-tutorial/introduction-to-lambdas-anonymous-functions/
-            [](JointData* j_data)
+            [](JointData* j_data, float* args)
             {
                 if (j_data->is_used)
                 {
@@ -297,6 +318,13 @@ namespace ble_handlers
             }
         );
 
+        UARTHandler* uart_handler = UARTHandler::get_instance();
+        UART_msg_t tx_msg;
+        tx_msg.command = UART_command_names::update_motor_enable_disable;
+        tx_msg.joint_id = 0;
+        tx_msg.data[(uint8_t)UART_command_enums::motor_enable_disable::ENABLE_DISABLE] = 0;
+        tx_msg.len = (uint8_t)UART_command_enums::motor_enable_disable::LENGTH;
+        uart_handler->UART_msg(tx_msg);
 
     }
     inline static void mark(ExoData* data, BleMessage* msg)

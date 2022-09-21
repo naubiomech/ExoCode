@@ -28,7 +28,7 @@
 // moved status values to StatusDefs.h
 
 // Type used for the for each joint method, the function should take JointData as input and return void
-typedef void (*for_each_joint_function_t) (JointData*); 
+typedef void (*for_each_joint_function_t) (JointData*, float*); 
 
 
 /**
@@ -52,6 +52,7 @@ class ExoData
          * @param pointer to the function that should be done for each used joint
          */
         void for_each_joint(for_each_joint_function_t function);
+        void for_each_joint(for_each_joint_function_t function, float* args);
 
         /**
          * @brief Get the joint pointer for a joint id. 

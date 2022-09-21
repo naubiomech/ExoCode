@@ -4,7 +4,7 @@
 */
 
 #include "Controller.h"
-//#define CONTROLLER_DEBUG 1
+//#define CONTROLLER_DEBUG
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
@@ -214,8 +214,8 @@ float ProportionalJointMoment::calc_motor_cmd()
                 : 0);
     
     
-    //Serial.print("ProportionalJointMoment::calc_motor_cmd : Exiting");
-    //Serial.print("\n");
+    // Serial.print("ProportionalJointMoment::calc_motor_cmd : Exiting");
+    // Serial.print("\n");
     return cmd;
 };
 

@@ -16,7 +16,7 @@ namespace UART_msg_t_utils
 {
     static void print_msg(UART_msg_t msg)
     {
-        Serial.println("UART_command_utils::pritn_msg->Msg: ");
+        Serial.println("UART_command_utils::print_msg->Msg: ");
         Serial.print(msg.command); Serial.print("\t");
         Serial.print(msg.joint_id); Serial.print("\t");
         Serial.print(msg.len); Serial.println();
