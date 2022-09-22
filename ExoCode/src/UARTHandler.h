@@ -26,7 +26,7 @@
 // if type is changes you will need to comment/uncomment lines in pack_float and unpack_float
 #define UART_DATA_TYPE short int
 #define FIXED_POINT_FACTOR 100
-#define UART_BAUD 230400
+#define UART_BAUD 460800
 
 #define MAX_RX_LEN 64 // bytes
 #define RX_TIMEOUT_US 1000
@@ -40,7 +40,7 @@
 
 #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
 #define MY_SERIAL Serial8
-#elif defined(ARDUINO_ARDUINO_NANO33BLE)
+#elif defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 #define MY_SERIAL Serial1
 #else 
 #error No Serial Object Found

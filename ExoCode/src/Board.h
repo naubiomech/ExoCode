@@ -72,7 +72,7 @@
             const unsigned int motor_enable_off_state = LOW;
         };
         
-        #if defined(ARDUINO_ARDUINO_NANO33BLE)
+        #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
             namespace coms_micro_pins  //nano
             {
                 const unsigned int ble_signal_pin = 24;
@@ -164,7 +164,7 @@
             const unsigned int motor_enable_off_state = LOW;
         };
         
-        #if defined(ARDUINO_ARDUINO_NANO33BLE)
+        #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
         namespace coms_micro_pins  //nano
         {
             const unsigned int ble_signal_pin = 24;
@@ -265,7 +265,7 @@
             const unsigned int motor_enable_off_state = LOW;
         };
         
-        #if defined(ARDUINO_ARDUINO_NANO33BLE)
+        #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
         namespace coms_micro_pins  //nano
         {
             const unsigned int ble_signal_pin = 24;

@@ -58,66 +58,60 @@ UART_msg_t UARTHandler::poll(float timeout_us)
     _timeout_us = timeout_us;
     
     uint32_t _available_bytes = check_for_data();
-    //Serial.print("UARTHandler::poll->Bytes Available: "); Serial.println(_available_bytes);
+    // Serial.print("UARTHandler::poll->Bytes Available: "); Serial.println(_available_bytes);
     if (!_available_bytes) {return empty_msg;}
-    
-//    char _buffer[_available_bytes];
-//    MY_SERIAL.readBytes(_buffer, _available_bytes);
-//
-//    // first pack raw data buffer so that the serializer doesn't timeout too early
-//    Serial.println("UARTHandler::poll->Filling _rx_raw with:");
-//    for (int i=0; i<_available_bytes; i++)
-//    {
-//        _rx_raw.put(_buffer[i]);
-//        Serial.print(_buffer[i], HEX); Serial.print(", ");
-//    }
-//    Serial.println();
 
     uint8_t _msg_buffer[MAX_RX_LEN];
     uint8_t _recv_len = _recv_packet(_msg_buffer, MAX_RX_LEN);
-    if (_recv_len)
+    if (_recv_len > 0)
     {
-    //  Serial.println("UARTHandler::poll->Got Packet");
-     // valid message
-    //  Serial.println("UARTHandler::poll->_msg_buffer: ");
-    //  for (int i=0; i<_recv_len; i++)
-    //  {
-    //    Serial.print(_msg_buffer[i], HEX); Serial.print(", ");
-    //  }
-    //  Serial.println();
-        
-     if (_partial_packet_len) 
-     {
+      if (_partial_packet_len) 
+      {
       //  Serial.println("UARTHandler::poll->Packet requires shifting");
-       // this only occurs if there was a timeout during _recv_packet
-       // shift _msg_buffer _partial_packet_len bytes to fit the previous partial packet
-       memmove(_msg_buffer + (_partial_packet_len-1), _msg_buffer, _recv_len);
+        // this occurs if there was a timeout during _recv_packet and we have a new partial packet
+        // shift _msg_buffer _partial_packet_len bytes to fit the previous partial packet using memmove
+        memmove(_msg_buffer + _partial_packet_len, _msg_buffer, _recv_len);
+        memcpy(_msg_buffer, _partial_packet, _partial_packet_len);
+        _recv_len += _partial_packet_len;
 
-      //  Serial.println("UARTHandler::poll->_msg_buffer after shifting: ");
-       for (int i=0; i<(_recv_len + _partial_packet_len); i++)
-       {
-         Serial.print(_msg_buffer[i], HEX); Serial.print(", ");
-       }
-       Serial.println();
-       // append the _partial packet to the full message
-       memcpy(_msg_buffer, _partial_packet, _partial_packet_len);
+      //  memmove(_msg_buffer + (_partial_packet_len-1), _msg_buffer, _recv_len);
+
+      //  // append the _partial packet to the full message
+      //  memcpy(_msg_buffer, _partial_packet, _partial_packet_len);
        
-      //  Serial.println("UARTHandler::poll->_msg_buffer after copyting _packed_data: ");
-       for (int i=0; i<(_recv_len + _partial_packet_len); i++)
-       {
-         Serial.print(_msg_buffer[i], HEX); Serial.print(", ");
-       }
-       Serial.println();
        _partial_packet_len = 0;
      }
 
-      UART_msg_t msg = _unpack(_msg_buffer, _recv_len + _partial_packet_len);
+      UART_msg_t msg = _unpack(_msg_buffer, _recv_len);
       // Serial.print("UARTHandler::poll->Got Message: ");
       // UART_msg_t_utils::print_msg(msg);
       //TODO: Implement MSG queue architecture
 
       return msg;
     }
+
+    if (_recv_len < 0) 
+    {
+      //  Serial.println("UARTHandler::poll->Packet requires shifting");
+       // this only occurs if there was a timeout during the previous _recv_packet and an end flag before any new data
+
+      //  Serial.println("UARTHandler::poll->_msg_buffer after shifting: ");
+      //  for (int i=0; i<(_recv_len + _partial_packet_len); i++)
+      //  {
+      //    Serial.print(_msg_buffer[i], HEX); Serial.print(", ");
+      //  }
+      //  Serial.println();
+       // append the _partial packet to the full message
+       memcpy(_msg_buffer, _partial_packet, _partial_packet_len);
+       
+      //  Serial.println("UARTHandler::poll->_msg_buffer after copyting _packed_data: ");
+      //  for (int i=0; i<(_recv_len + _partial_packet_len); i++)
+      //  {
+      //    Serial.print(_msg_buffer[i], HEX); Serial.print(", ");
+      //  }
+      //  Serial.println();
+       _partial_packet_len = 0;
+     }
     return empty_msg;
 }
 
@@ -142,12 +136,6 @@ void UARTHandler::_pack(uint8_t msg_id, uint8_t len, uint8_t joint_id, float *da
         uint8_t _offset = (DATA_START) + _num_bytes*i;
         memcpy((data_to_pack + _offset), buf, _num_bytes);
     }
-//    Serial.println("UARTHandler::_pack->final data_to_pack: ");
-//    for (int i=0; i<14; i++)
-//    {
-//      Serial.print(data_to_pack[i], BIN); Serial.print(", ");
-//    }
-//    Serial.println();
 }
 
 UART_msg_t UARTHandler::_unpack(uint8_t* data, uint8_t len)
@@ -192,19 +180,7 @@ void UARTHandler::_send_char(uint8_t val)
 }
 
 uint8_t UARTHandler::_recv_char(void)
-{
-  // pull from software rx buffer first
-//  if (!_rx_raw.empty())
-//  {
-////    Serial.print("UARTHandler::_recv_char->From _rx_raw: 0x");
-////    Serial.println(_rx_raw.front(), HEX);
-//    float start = micros();
-//    
-//    char _val = _rx_raw.get();
-//    Serial.print("Queue time: "); Serial.println(micros() - start);
-//    return _val;
-//  }
-  
+{  
   uint8_t _data = MY_SERIAL.read();
   // Serial.print("UARTHandler::_recv_char->Read: "); Serial.println(_data, HEX);
 
@@ -290,12 +266,17 @@ int UARTHandler::_recv_packet(uint8_t *p, uint8_t len)
 
       // if it's an END character then we're done with the packet
       case END:
-//        Serial.println("UARTHandler::_recv_packet->END CASE");
+        // Serial.println("UARTHandler::_recv_packet->END CASE");
         if (received)
         {
-//            Serial.print("UARTHandler::_recv_packet->Returning: ");
-//            Serial.println(received);
+            // Serial.print("UARTHandler::_recv_packet->Returning: ");
+            // Serial.println(received);
             return received;
+        }
+        else if (_partial_packet_len)
+        {
+            //Serial.print("UARTHandler::_recv_packet->Returning because of _partial_packet: ");
+            return -1;
         }
         else
         {

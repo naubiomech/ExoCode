@@ -7,7 +7,7 @@
 #include "UART_msg_t.h"
 #include "Config.h"
 
-#if defined(ARDUINO_ARDUINO_NANO33BLE)
+#if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 
 ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
 {
@@ -27,6 +27,26 @@ ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
     _battery->init();
     _exo_ble = new ExoBLE(data);
     _exo_ble->setup();
+
+
+    uint8_t rt_data_len = 0;
+    switch (config_to_send[config_defs::exo_name_idx])
+    {
+        case (uint8_t)config_defs::exo_name::bilateral_ankle:
+            rt_data_len = UART_rt_data::BILATERAL_ANKLE_RT_LEN;
+            break;
+        case (uint8_t)config_defs::exo_name::bilateral_hip:
+            rt_data_len = UART_rt_data::BILATERAL_HIP_RT_LEN;
+            break;
+        case (uint8_t)config_defs::exo_name::bilateral_hip_ankle:
+            rt_data_len = UART_rt_data::BILATERAL_HIP_ANKLE_RT_LEN;
+            break;
+        default:
+            rt_data_len = 8;
+            break;
+    }
+    UART_rt_data::msg_len = rt_data_len;
+    Serial.print("ComsMCU::ComsMCU->rt_data_len: "); Serial.println(rt_data_len);
 }
 
 void ComsMCU::handle_ble()
@@ -62,18 +82,17 @@ void ComsMCU::update_UART()
     static float del_t = 0;
     del_t += t_helper->tick(_context);
     
-    if (del_t > UART_times::UPDATE_PERIOD)
+    if (true)//(del_t > UART_times::UPDATE_PERIOD)
     {
         UARTHandler* handler = UARTHandler::get_instance();
         UART_msg_t msg = handler->poll(UART_times::COMS_MCU_TIMEOUT);
         if (msg.command) 
         {
-            UART_msg_t_utils::print_msg(msg);
+            // UART_msg_t_utils::print_msg(msg);
             UART_command_utils::handle_msg(handler, _data, msg);
         }
         del_t = 0;
     }
-    
 }
 
 
@@ -91,37 +110,28 @@ void ComsMCU::update_gui()
     (_data->status == status_defs::messages::fsr_refinement) && 
     (del_t > BLE_times::_real_time_msg_delay))
     {
-        //Serial.println("Sending rt data");
-        static const float msg_context = t_helper->generate_new_context();
-        static float time_since_last_message;
-        time_since_last_message = t_helper->tick(msg_context);
-        if (time_since_last_message > k_time_threshold)
-        {
-            time_since_last_message = 0;
-        }
+        // static const float msg_context = t_helper->generate_new_context();
+        // static float time_since_last_message;
+        // time_since_last_message = t_helper->tick(msg_context);
+        // if (time_since_last_message > k_time_threshold)
+        // {
+        //     time_since_last_message = 0;
+        // }
         
         BleMessage rt_data_msg = BleMessage();
         rt_data_msg.command = ble_names::send_real_time_data;
-        rt_data_msg.expecting = ble_command_helpers::get_length_for_command(rt_data_msg.command);
+        if (UART_rt_data::msg.len == UART_rt_data::msg_len) 
+        {
+            rt_data_msg.expecting = UART_rt_data::msg.len;
+            for (int i = 0; i < UART_rt_data::msg.len; i++)
+            {
+                rt_data_msg.data[i] = UART_rt_data::msg.data[i];
+            }
+            rt_data_msg.data[rt_data_msg.expecting++] = 0;//time_since_last_message/1000.0;
+            BleMessage::print(rt_data_msg);
 
-        rt_data_msg.data[0] = _data->right_leg.ankle.torque_reading;
-        rt_data_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
-        rt_data_msg.data[2] = _data->right_leg.ankle.controller.setpoint;
-        rt_data_msg.data[3] = _data->left_leg.ankle.torque_reading;
-        //TODO: Implement Mark Feature
-        rt_data_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
-        rt_data_msg.data[5] = _data->left_leg.ankle.controller.setpoint;
-        rt_data_msg.data[6] = _data->right_leg.toe_fsr;
-        rt_data_msg.data[7] = _data->left_leg.toe_fsr;
-        rt_data_msg.data[8] = 0;//time_since_last_message/1000.0;
-
-        // static const float send_context = t_helper->generate_new_context();
-        // static float send_del_t = 0;
-        // send_del_t = t_helper->tick(send_context);
-        _exo_ble->send_message(rt_data_msg);  
-        // send_del_t = t_helper->tick(send_context);
-        //Serial.print("ComsMCU :: update_gui : Rt send time -> "); Serial.println(send_del_t);      
-
+            _exo_ble->send_message(rt_data_msg);
+        }
         del_t = 0;
     }
 

@@ -1,6 +1,6 @@
 #include "Battery.h"
 #include "Arduino.h"
-#if defined(ARDUINO_ARDUINO_NANO33BLE)
+#if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 
 void SmartBattery::init() {;}
 float SmartBattery::get_parameter()

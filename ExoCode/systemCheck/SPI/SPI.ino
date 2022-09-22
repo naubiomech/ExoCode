@@ -272,7 +272,7 @@
             
       }
     #endif  
-#elif defined(ARDUINO_ARDUINO_NANO33BLE)
+#elif defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
   
   
 

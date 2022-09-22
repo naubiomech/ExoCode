@@ -84,6 +84,16 @@ namespace UART_command_enums
     };
 };
 
+namespace UART_rt_data 
+{
+    static UART_msg_t msg;
+    static uint8_t msg_len;
+
+    static const uint8_t BILATERAL_HIP_RT_LEN = 8;
+    static const uint8_t BILATERAL_HIP_ANKLE_RT_LEN = 8;
+    static const uint8_t BILATERAL_ANKLE_RT_LEN = 8;
+};
+
 
 namespace UART_map
 {
@@ -240,35 +250,93 @@ namespace UART_command_handlers
 
     }
 
-    inline static void get_real_time_data(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
+    inline static void get_real_time_data(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg, uint8_t *config)
     {
         UART_msg_t rx_msg;
         rx_msg.command = UART_command_names::update_real_time_data;
         rx_msg.joint_id = 0;
-        rx_msg.len = 8;
-        rx_msg.data[0] = exo_data->right_leg.ankle.torque_reading;
-        rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
-        rx_msg.data[2] = exo_data->right_leg.ankle.controller.setpoint;
-        rx_msg.data[3] = exo_data->left_leg.ankle.torque_reading;
-        //TODO: Implement Mark Feature
-        rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
-        rx_msg.data[5] = exo_data->left_leg.ankle.controller.setpoint;
-        rx_msg.data[6] = exo_data->right_leg.toe_fsr;
-        rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+        rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN + 1;
+
+        switch (config[config_defs::exo_name_idx])
+        {
+        case (uint8_t)config_defs::exo_name::bilateral_ankle:
+            rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
+            rx_msg.data[0] = exo_data->right_leg.ankle.torque_reading;
+            rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
+            rx_msg.data[2] = exo_data->right_leg.ankle.controller.setpoint;
+            rx_msg.data[3] = exo_data->left_leg.ankle.torque_reading;
+            //TODO: Implement Mark Feature
+            rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
+            rx_msg.data[5] = exo_data->left_leg.ankle.controller.setpoint;
+            rx_msg.data[6] = exo_data->right_leg.toe_fsr;
+            rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+            break;
+
+        case (uint8_t)config_defs::exo_name::bilateral_hip:
+            rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_HIP_RT_LEN;
+            rx_msg.data[0] = exo_data->right_leg.hip.position;
+            rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
+            rx_msg.data[2] = exo_data->right_leg.hip.controller.setpoint;
+            rx_msg.data[3] = exo_data->left_leg.hip.position;
+            rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
+            rx_msg.data[5] = exo_data->left_leg.hip.controller.setpoint;
+            rx_msg.data[6] = exo_data->right_leg.toe_fsr;
+            rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+            break;
+
+        case (uint8_t)config_defs::exo_name::bilateral_hip_ankle:
+            rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_HIP_ANKLE_RT_LEN;
+            rx_msg.data[0] = exo_data->right_leg.hip.position;
+            rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
+            rx_msg.data[2] = exo_data->right_leg.hip.controller.setpoint;
+            rx_msg.data[3] = exo_data->left_leg.hip.position;
+            rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
+            rx_msg.data[5] = exo_data->left_leg.hip.controller.setpoint;
+            rx_msg.data[6] = exo_data->right_leg.toe_fsr;
+            rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+            break;
+        
+        default:
+            rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
+            rx_msg.data[0] = exo_data->right_leg.ankle.torque_reading;
+            rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
+            rx_msg.data[2] = exo_data->right_leg.ankle.controller.setpoint;
+            rx_msg.data[3] = exo_data->left_leg.ankle.torque_reading;
+            //TODO: Implement Mark Feature
+            rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
+            rx_msg.data[5] = exo_data->left_leg.ankle.controller.setpoint;
+            rx_msg.data[6] = exo_data->right_leg.toe_fsr;
+            rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+            break;
+        }
 
         handler->UART_msg(rx_msg);
-        Serial.println("UART_command_handlers::get_real_time_data->sent real time data");
+        //Serial.println("UART_command_handlers::get_real_time_data->sent real time data");
     }
+
+    // Overload for no config
+    inline static void get_real_time_data(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
+    {
+        uint8_t empty_config[ini_config::number_of_keys] = {0};
+        get_real_time_data(handler, exo_data, msg, empty_config);
+    }
+
+
     inline static void update_real_time_data(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
         Serial.println("UART_command_handlers::update_real_time_data->got message: ");
         UART_msg_t_utils::print_msg(msg);
-        exo_data->right_leg.ankle.torque_reading = msg.data[0];
-        exo_data->right_leg.ankle.controller.setpoint = msg.data[2];
-        exo_data->left_leg.ankle.torque_reading = msg.data[3];
-        exo_data->left_leg.ankle.controller.setpoint = msg.data[5];
-        exo_data->right_leg.toe_fsr = msg.data[6];
-        exo_data->left_leg.toe_fsr = msg.data[7];
+        UART_rt_data::msg.len = msg.len;
+        for (int i = 0; i < msg.len; i++)
+        {
+            UART_rt_data::msg.data[i] = msg.data[i];
+        }
+        // exo_data->right_leg.ankle.torque_reading = msg.data[0];
+        // exo_data->right_leg.ankle.controller.setpoint = msg.data[2];
+        // exo_data->left_leg.ankle.torque_reading = msg.data[3];
+        // exo_data->left_leg.ankle.controller.setpoint = msg.data[5];
+        // exo_data->right_leg.toe_fsr = msg.data[6];
+        // exo_data->left_leg.toe_fsr = msg.data[7];
     }
 };
 

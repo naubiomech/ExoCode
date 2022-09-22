@@ -7,7 +7,7 @@
 
 #ifndef I2CHANDLER_H
 #define I2CHANDLER_H
-#if defined(ARDUINO_ARDUINO_NANO33BLE)
+#if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 
 #include "Wire.h"
 

@@ -4,7 +4,7 @@
 #include "src\UART_msg_t.h"
 #include "src\ParseIni.h"
 
-#if defined(ARDUINO_ARDUINO_NANO33BLE)
+#if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 static const float k_timeout_us = 2500;
 namespace config_info
 {
@@ -51,7 +51,7 @@ void loop() {
   if (first_run) {
     first_run = 0;
     /* Nano needs the config data */
-    #if defined(ARDUINO_ARDUINO_NANO33BLE)
+    #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
     Serial.println("Loop->Getting config");
     UART_command_utils::get_config(inst, config_info::config_to_send);
     Serial.println("Loop->Got config: ");
@@ -73,36 +73,40 @@ void loop() {
   if (msg.command) {
     UART_command_utils::handle_msg(inst, &exo_data, msg);
   }
-
-  /* How to send a UART command */
-  #if defined(ARDUINO_ARDUINO_NANO33BLE)
-  static float p_gain = 300;
-  // pack the message that you would like to send
-  UART_msg_t tx_msg;
-  tx_msg.command = UART_command_names::update_controller_params;
-  tx_msg.joint_id = (uint8_t)config_defs::joint_id::left_hip;
-  tx_msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID] = (float)config_defs::hip_controllers::zero_torque;
-  tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_LENGTH] = (float)controller_defs::zero_torque::num_parameter;
-  tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START + (uint8_t)controller_defs::zero_torque::use_pid_idx] = 1;
-  tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START + (uint8_t)controller_defs::zero_torque::p_gain_idx] = p_gain++;
-  tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START + (uint8_t)controller_defs::zero_torque::i_gain_idx] = 0;
-  tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START + (uint8_t)controller_defs::zero_torque::d_gain_idx] = 6;
-  tx_msg.len = (uint8_t)UART_command_enums::controller_params::PARAM_START + (uint8_t)controller_defs::zero_torque::num_parameter;
-  // Send the message
-  inst->UART_msg(tx_msg);
-
-  Serial.println("Loop->Updated controller params");
-  #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-  UART_msg_t tx_msg;
-  tx_msg.command = UART_command_names::update_status;
-  tx_msg.joint_id = 0;
-  tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = exo_data.status++;
-  tx_msg.len = (uint8_t)UART_command_enums::status::LENGTH;
-  inst->UART_msg(tx_msg);
-  Serial.println("Loop->Updated status");
-  #endif
-
-
-  Serial.println("===============================================================================================");
-  delay(1000);
+  
+  static float old_time = micros();
+  float now = micros();
+  float delta = now-old_time;
+  if (delta > 20)
+  {
+    /* How to send a UART command */
+    #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
+    static float p_gain = 300;
+    // pack the message that you would like to send
+    UART_msg_t tx_msg;
+    tx_msg.command = UART_command_names::update_controller_params;
+    tx_msg.joint_id = (uint8_t)config_defs::joint_id::left_hip;
+    tx_msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID] = (float)config_defs::hip_controllers::zero_torque;
+    tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_LENGTH] = (float)controller_defs::zero_torque::num_parameter;
+    tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START + (uint8_t)controller_defs::zero_torque::use_pid_idx] = 1;
+    tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START + (uint8_t)controller_defs::zero_torque::p_gain_idx] = p_gain++;
+    tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START + (uint8_t)controller_defs::zero_torque::i_gain_idx] = 0;
+    tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START + (uint8_t)controller_defs::zero_torque::d_gain_idx] = 6;
+    tx_msg.len = (uint8_t)UART_command_enums::controller_params::PARAM_START + (uint8_t)controller_defs::zero_torque::num_parameter;
+    // Send the message
+    inst->UART_msg(tx_msg);
+  
+    Serial.println("Loop->Updated controller params");
+    #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
+    UART_msg_t tx_msg;
+    tx_msg.command = UART_command_names::update_status;
+    tx_msg.joint_id = 0;
+    tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = exo_data.status++;
+    tx_msg.len = (uint8_t)UART_command_enums::status::LENGTH;
+    inst->UART_msg(tx_msg);
+    Serial.println("Loop->Updated status");
+    #endif
+    Serial.println("===============================================================================================");
+    old_time = now;
+  }
 }
