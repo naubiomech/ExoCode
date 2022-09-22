@@ -257,7 +257,7 @@ namespace UART_command_handlers
         rx_msg.data[7] = exo_data->left_leg.toe_fsr;
 
         handler->UART_msg(rx_msg);
-        Serial.println("UART_command_handlers::get_real_time_data->sent real time data");
+        //Serial.println("UART_command_handlers::get_real_time_data->sent real time data");
     }
     inline static void update_real_time_data(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
