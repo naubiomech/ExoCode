@@ -31,13 +31,14 @@
     {
         const float _status_msg_delay = 1000000; //microseconds
         const float _real_time_msg_delay = 40000; //microseconds
-        const float _update_delay = 100000; //microseconds
+        const float _update_delay = 1000; //microseconds
+        const float _poll_timeout = 4; //milliseconds
     }
     
     namespace UART_times
     {
-        const float UPDATE_PERIOD = 10000; //microseconds, time between updating data over spi
-        const float COMS_MCU_TIMEOUT = 3000; //microseconds
+        const float UPDATE_PERIOD = 1000; //microseconds, time between updating data over uart
+        const float COMS_MCU_TIMEOUT = 5000; //microseconds
         const float CONT_MCU_TIMEOUT = 1000;
     }
 #endif

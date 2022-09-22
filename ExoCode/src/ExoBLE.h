@@ -21,7 +21,7 @@
     #include <SPI.h>
     #include "Adafruit_BLE.h"
     #include "Adafruit_BluefruitLE_SPI.h"
-#elif defined(ARDUINO_ARDUINO_NANO33BLE)
+#elif defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
     #include "ArduinoBLE.h"
 #endif
 
@@ -33,7 +33,7 @@
 #include "BleMessageQueue.h"
 #include "Board.h"
 
-// #if defined(ARDUINO_ARDUINO_NANO33BLE)
+// #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 
 class ExoBLE 
 {
@@ -83,7 +83,7 @@ class ExoBLE
         ExoData* _data;
         
 
-        #if defined(ARDUINO_ARDUINO_NANO33BLE)
+        #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
             // The Gatt database which defines the services and characteristics
             GattDb _gatt_db = GattDb();
         
@@ -102,7 +102,7 @@ class ExoBLE
  */
 namespace ble_rx
 {
-    #if defined(ARDUINO_ARDUINO_NANO33BLE)
+    #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
         void on_rx_recieved(BLEDevice central, BLECharacteristic characteristic);
     #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
         void on_rx_recieved(char data[], uint16_t len);

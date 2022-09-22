@@ -461,7 +461,7 @@ void loop()
 }
 
 
-#elif defined(ARDUINO_ARDUINO_NANO33BLE)  // board name is ARDUINO_[build.board] property in the board.txt file here found at C:\Users\[USERNAME]\AppData\Local\Arduino15\packages\arduino\hardware\mbed_nano\2.6.1  They just already prepended it with ARDUINO so you have to do it twice.
+#elif defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)  // board name is ARDUINO_[build.board] property in the board.txt file here found at C:\Users\[USERNAME]\AppData\Local\Arduino15\packages\arduino\hardware\mbed_nano\2.6.1  They just already prepended it with ARDUINO so you have to do it twice.
 #include <stdint.h>
 #include "src/ParseIni.h"
 #include "src/ExoData.h"
@@ -499,6 +499,11 @@ void loop()
     mcu->local_sample();
     mcu->update_UART();
     mcu->update_gui();
+}
+
+void serialEvent1()
+{
+  Serial.println("==================================================================");
 }
 
 #else // code to use when microcontroller is not recognized.

@@ -9,7 +9,7 @@
 
 #ifndef BLEPARSER_H
 #define BLEPARSER_H
-// #if defined(ARDUINO_ARDUINO_NANO33BLE)
+// #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 #include "Arduino.h"
 #include "ble_commands.h"
 #include "BleMessage.h"

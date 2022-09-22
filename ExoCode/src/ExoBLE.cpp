@@ -13,7 +13,7 @@ ExoBLE::ExoBLE(ExoData* data) : _data{data}
     , _ble{logic_micro_pins::cs_pin, logic_micro_pins::irq_pin, logic_micro_pins::rst_pin}
 #endif
 {
-    #if defined(ARDUINO_ARDUINO_NANO33BLE)
+    #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
         pinMode(coms_micro_pins::ble_signal_pin, OUTPUT);
         digitalWrite(coms_micro_pins::ble_signal_pin, !coms_micro_pins::ble_signal_active);
         
@@ -22,7 +22,7 @@ ExoBLE::ExoBLE(ExoData* data) : _data{data}
 
 bool ExoBLE::setup() 
 {
-    #if defined(ARDUINO_ARDUINO_NANO33BLE)
+    #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
         if (BLE.begin())
         {
             //Setup name
@@ -123,7 +123,7 @@ void ExoBLE::advertising_onoff(bool onoff)
     {
         // Start Advertising
         Serial.println("Start Advertising");
-        #if defined(ARDUINO_ARDUINO_NANO33BLE)
+        #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
             BLE.advertise();
             digitalWrite(coms_micro_pins::ble_signal_pin, !coms_micro_pins::ble_signal_active);
         #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
@@ -134,7 +134,7 @@ void ExoBLE::advertising_onoff(bool onoff)
     {
         // Stop Advertising
         Serial.println("Stop Advertising");
-        #if defined(ARDUINO_ARDUINO_NANO33BLE)
+        #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
             BLE.stopAdvertise();
             digitalWrite(coms_micro_pins::ble_signal_pin, coms_micro_pins::ble_signal_active);
         #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
@@ -161,8 +161,8 @@ bool ExoBLE::handle_updates()
         #endif
 
         // Poll for updates and check connection status
-        #if defined(ARDUINO_ARDUINO_NANO33BLE)
-            BLE.poll();
+        #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
+            BLE.poll(BLE_times::_poll_timeout);
             int32_t current_status = BLE.connected();
         #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
             #ifdef EXOBLE_DEBUG
@@ -245,7 +245,7 @@ void ExoBLE::send_message(BleMessage &msg)
     #endif
 }
 
-#if defined(ARDUINO_ARDUINO_NANO33BLE)
+#if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
 {
     static BleParser* parser = new BleParser();
