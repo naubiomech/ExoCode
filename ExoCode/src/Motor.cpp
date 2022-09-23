@@ -225,6 +225,9 @@ void _CANMotor::on_off()
         } 
     }
     _prev_on_state = _motor_data->is_on;
+
+    delay(2000);    //Two second delay between motor's turning on and enabeling, we've run into some issues with enabling while in headless mode if this delay is not present. 
+
 };
 
 bool _CANMotor::enable()

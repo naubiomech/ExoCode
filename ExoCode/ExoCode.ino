@@ -333,15 +333,15 @@ void loop()
 //                Serial.print(exo_data.right_leg.hip.motor.i);
 //                Serial.print(", ");
 //                Serial.print(exo_data.left_leg.ankle.motor.t_ff);
-                Serial.print(", ");
-                Serial.print(exo_data.right_leg.ankle.motor.i);
+                //Serial.print(", ");
+                //Serial.print(exo_data.right_leg.hip.motor.i);
 //                Serial.print(", ");
 //                Serial.print(exo_data.right_leg.ankle.motor.t_ff);
 //                Serial.print(", ");
 //                Serial.print(exo_data.right_leg.ankle.motor.i);
-                Serial.print(", ");
-                Serial.print(exo_data.right_leg.ankle.torque_reading);
-                Serial.print("\n");
+                //Serial.print(", ");
+                //Serial.print(exo_data.right_leg.hip.torque_reading);
+                //Serial.print("\n");
             #endif
 
             old_time = new_time;
