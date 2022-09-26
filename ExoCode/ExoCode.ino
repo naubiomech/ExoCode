@@ -161,14 +161,14 @@ void loop()
                   Serial.println("Superloop :: Left Hip Zeroed");
                 #endif
                 
-                set_controller_params((uint8_t) exo_data.left_leg.hip.id, config_info::config_to_send[config_defs::exo_hip_default_controller_idx], 0, &exo_data);
+                set_controller_params((uint8_t) exo_data.left_leg.hip.id, config_info::config_to_send[config_defs::exo_hip_default_controller_idx], 0, &exo_data); //This function is found in ParamsFromSD
                 #ifdef MAIN_DEBUG
                   Serial.println("Superloop :: Left Hip Parameters Set");
                 #endif
                 
                 //wait till calibration is done to set actual controller
                 exo_data.left_leg.hip.controller.controller = (uint8_t)config_defs::hip_controllers::zero_torque; // start in zero torque
-                exo.left_leg._hip.set_controller(exo_data.left_leg.hip.controller.controller);
+                exo.left_leg._hip.set_controller(exo_data.left_leg.hip.controller.controller); //set_controller is found in Joint
             #endif
         }
         
@@ -281,8 +281,8 @@ void loop()
            
             if(exo_data.right_leg.hip.is_used)
             {
-                exo_data.right_leg.hip.calibrate_torque_sensor = true; 
-                exo_data.right_leg.hip.motor.enabled = true;
+                exo_data.right_leg.hip.calibrate_torque_sensor = true; //Flag in JointData
+                exo_data.right_leg.hip.motor.enabled = true; //Flag in MotorData
                 //exo.right_leg._hip._motor->enable(enable_overide);
             }
             if(exo_data.left_leg.ankle.is_used)
@@ -368,10 +368,10 @@ void loop()
             #endif
             if(exo_data.left_leg.is_used)
             {
-                exo_data.left_leg.do_calibration_toe_fsr = true;
-                exo_data.left_leg.do_calibration_refinement_toe_fsr = true;
-                exo_data.left_leg.do_calibration_heel_fsr = true;
-                exo_data.left_leg.do_calibration_refinement_heel_fsr = true;
+                exo_data.left_leg.do_calibration_toe_fsr = true;              //Flag in LegData
+                exo_data.left_leg.do_calibration_refinement_toe_fsr = true;   //Flag in LegData
+                exo_data.left_leg.do_calibration_heel_fsr = true;             //Flag in LegData
+                exo_data.left_leg.do_calibration_refinement_heel_fsr = true;  //Flag in LegData
             }
            
             if(exo_data.right_leg.is_used)

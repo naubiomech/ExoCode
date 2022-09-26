@@ -270,6 +270,7 @@
         {
             const unsigned int ble_signal_pin = 24;
             const unsigned int ble_signal_active = 0;
+            const unsigned int config_success_pin = 23;
             
             // SPI Conroller Pins
             const unsigned int miso_pin = 11;
