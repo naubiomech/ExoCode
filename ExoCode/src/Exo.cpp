@@ -119,7 +119,7 @@ void Exo::run()
         
 
         // check for incoming uart messages
-        UART_msg_t msg = handler->poll(UART_times::CONT_MCU_TIMEOUT);
+        UART_msg_t msg = handler->poll(UART_times::CONT_MCU_TIMEOUT);       //UART_times::CONT_MCU_TIMEOUT is in Config.h
         if (msg.command) {
             // Serial.println("Exo::run->Got message:");
             // UART_msg_t_utils::print_msg(msg);
@@ -131,7 +131,7 @@ void Exo::run()
         //Serial.print("Exo::run->Checking if we have to send the message:");
         rt_delta_t += t_helper->tick(rt_context);
         // Serial.print("Exo::run->real_time_del_t: ");Serial.println(rt_delta_t);
-        if (rt_delta_t > BLE_times::_real_time_msg_delay)
+        if (rt_delta_t > BLE_times::_real_time_msg_delay)           //_real_time_msg_delay is in Config.h
         {
             // Serial.println("Exo::run->Sending Real Time Message");
             UART_msg_t msg;
