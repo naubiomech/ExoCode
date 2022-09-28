@@ -15,6 +15,9 @@ ExoData::ExoData(uint8_t* config_to_send)
     this->status = status_defs::messages::trial_off;
     this->sync_led_state = false;
     this->estop = false;
+
+    this->config = config_to_send;
+    this->config_len = ini_config::number_of_keys;
     
 };
 

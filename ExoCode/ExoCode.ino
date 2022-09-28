@@ -481,6 +481,7 @@ namespace config_info
 
 void setup()
 {
+    //delay(1500); // Wait for the Teensy to read the SD card
     Serial.begin(115200);
     //while (!Serial);
 

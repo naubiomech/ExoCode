@@ -222,11 +222,13 @@ void _CANMotor::on_off()
             Serial.print("_CANMotor::on_off(bool is_on) : Power off- ");
             Serial.print(uint32_t(_motor_data->id));
             Serial.print("\n");
-        } 
+        }
     }
     _prev_on_state = _motor_data->is_on;
 
+    #ifdef HEADLESS
     delay(2000);    //Two second delay between motor's turning on and enabeling, we've run into some issues with enabling while in headless mode if this delay is not present. 
+    #endif
 
 };
 

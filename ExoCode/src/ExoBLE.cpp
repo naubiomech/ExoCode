@@ -126,6 +126,7 @@ void ExoBLE::advertising_onoff(bool onoff)
         #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
             BLE.advertise();
             digitalWrite(coms_micro_pins::ble_signal_pin, !coms_micro_pins::ble_signal_active);
+            digitalWrite(coms_micro_pins::config_success_pin, coms_micro_pins::ble_signal_active);
         #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
             _ble.sendCommandCheckOK("AT+GAPSTARTADV");
         #endif
@@ -137,6 +138,7 @@ void ExoBLE::advertising_onoff(bool onoff)
         #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
             BLE.stopAdvertise();
             digitalWrite(coms_micro_pins::ble_signal_pin, coms_micro_pins::ble_signal_active);
+            digitalWrite(coms_micro_pins::config_success_pin, !coms_micro_pins::ble_signal_active);
         #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
             _ble.sendCommandCheckOK("AT+GAPSTOPADV");
         #endif

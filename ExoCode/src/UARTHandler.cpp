@@ -131,7 +131,7 @@ void UARTHandler::_pack(uint8_t msg_id, uint8_t len, uint8_t joint_id, float *da
     uint8_t buf[_num_bytes];
     for (int i=0; i<len; i++)
     {
-        //TODO: Check that the value isn't too large (328, -329), if it is warn the user
+        //TODO: Check that the value isn't too large (328, -329), if it is warn the caller
         utils::float_to_short_fixed_point_bytes(data[i], buf, FIXED_POINT_FACTOR);
         uint8_t _offset = (DATA_START) + _num_bytes*i;
         memcpy((data_to_pack + _offset), buf, _num_bytes);
@@ -140,7 +140,7 @@ void UARTHandler::_pack(uint8_t msg_id, uint8_t len, uint8_t joint_id, float *da
 
 UART_msg_t UARTHandler::_unpack(uint8_t* data, uint8_t len)
 {
-    //TODO: Check that len is even
+    //TODO: Check that len (argument) is even
     UART_msg_t msg;
     msg.command = data[COMMAND];
     msg.joint_id = data[JOINT_ID];

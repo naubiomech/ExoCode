@@ -140,7 +140,7 @@ namespace UART_command_handlers
         msg.command = UART_command_names::update_controller_params;
 
         uint8_t param_length = j_data->controller.get_parameter_length();
-        msg.len = param_length + (uint8_t)UART_command_enums::controller_params::LENGTH - 1; // subtract one because LENGTH is zero indexed
+        msg.len = param_length + (uint8_t)UART_command_enums::controller_params::LENGTH; 
         msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID] = j_data->controller.controller;
         msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_LENGTH] = param_length;
         for (int i=0; i<param_length; i++)
@@ -191,6 +191,56 @@ namespace UART_command_handlers
         Serial.println("UART_command_handlers::update_status->got message: ");
         UART_msg_t_utils::print_msg(msg);
         exo_data->status = msg.data[(uint8_t)UART_command_enums::status::STATUS];
+    }
+
+    inline static void get_config(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
+    {
+        UART_msg_t tx_msg;
+        tx_msg.command = UART_command_names::update_config;
+        tx_msg.joint_id = 0;
+        tx_msg.len = ini_config::number_of_keys;
+        tx_msg.data[config_defs::board_name_idx] = exo_data->config[config_defs::board_name_idx];
+        tx_msg.data[config_defs::battery_idx] = exo_data->config[config_defs::battery_idx];
+        tx_msg.data[config_defs::board_version_idx] = exo_data->config[config_defs::board_version_idx];
+        tx_msg.data[config_defs::exo_name_idx] = exo_data->config[config_defs::exo_name_idx];
+        tx_msg.data[config_defs::exo_side_idx] = exo_data->config[config_defs::exo_side_idx];
+        tx_msg.data[config_defs::hip_idx] = exo_data->config[config_defs::hip_idx];
+        tx_msg.data[config_defs::knee_idx] = exo_data->config[config_defs::knee_idx];
+        tx_msg.data[config_defs::ankle_idx] = exo_data->config[config_defs::ankle_idx];
+        tx_msg.data[config_defs::hip_gear_idx] = exo_data->config[config_defs::hip_gear_idx];
+        tx_msg.data[config_defs::knee_gear_idx] = exo_data->config[config_defs::knee_gear_idx];
+        tx_msg.data[config_defs::ankle_gear_idx] = exo_data->config[config_defs::ankle_gear_idx];
+        tx_msg.data[config_defs::exo_hip_default_controller_idx] = exo_data->config[config_defs::exo_hip_default_controller_idx];
+        tx_msg.data[config_defs::exo_knee_default_controller_idx] = exo_data->config[config_defs::exo_knee_default_controller_idx];
+        tx_msg.data[config_defs::exo_ankle_default_controller_idx] = exo_data->config[config_defs::exo_ankle_default_controller_idx];
+        tx_msg.data[config_defs::hip_flip_dir_idx] = exo_data->config[config_defs::hip_flip_dir_idx];
+        tx_msg.data[config_defs::knee_flip_dir_idx] = exo_data->config[config_defs::knee_flip_dir_idx];
+        tx_msg.data[config_defs::ankle_flip_dir_idx] = exo_data->config[config_defs::ankle_flip_dir_idx];
+
+        handler->UART_msg(tx_msg);
+        Serial.println("UART_command_handlers::get_config->sent updated config");
+    }
+    inline static void update_config(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
+    {
+        Serial.println("UART_command_handlers::update_config->got message: ");
+        UART_msg_t_utils::print_msg(msg);
+        exo_data->config[config_defs::board_name_idx] = msg.data[config_defs::board_name_idx];
+        exo_data->config[config_defs::battery_idx] = msg.data[config_defs::battery_idx];
+        exo_data->config[config_defs::board_version_idx] = msg.data[config_defs::board_version_idx];
+        exo_data->config[config_defs::exo_name_idx] = msg.data[config_defs::exo_name_idx];
+        exo_data->config[config_defs::exo_side_idx] = msg.data[config_defs::exo_side_idx];
+        exo_data->config[config_defs::hip_idx] = msg.data[config_defs::hip_idx];
+        exo_data->config[config_defs::knee_idx] = msg.data[config_defs::knee_idx];
+        exo_data->config[config_defs::ankle_idx] = msg.data[config_defs::ankle_idx];
+        exo_data->config[config_defs::hip_gear_idx] = msg.data[config_defs::hip_gear_idx];
+        exo_data->config[config_defs::knee_gear_idx] = msg.data[config_defs::knee_gear_idx];
+        exo_data->config[config_defs::ankle_gear_idx] = msg.data[config_defs::ankle_gear_idx];
+        exo_data->config[config_defs::exo_hip_default_controller_idx] = msg.data[config_defs::exo_hip_default_controller_idx];
+        exo_data->config[config_defs::exo_knee_default_controller_idx] = msg.data[config_defs::exo_knee_default_controller_idx];
+        exo_data->config[config_defs::exo_ankle_default_controller_idx] = msg.data[config_defs::exo_ankle_default_controller_idx];
+        exo_data->config[config_defs::hip_flip_dir_idx] = msg.data[config_defs::hip_flip_dir_idx];
+        exo_data->config[config_defs::knee_flip_dir_idx] = msg.data[config_defs::knee_flip_dir_idx];
+        exo_data->config[config_defs::ankle_flip_dir_idx] = msg.data[config_defs::ankle_flip_dir_idx];
     }
 
     inline static void get_cal_trq_sensor(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
@@ -324,7 +374,7 @@ namespace UART_command_handlers
 
     inline static void update_real_time_data(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-        Serial.println("UART_command_handlers::update_real_time_data->got message: ");
+        // Serial.println("UART_command_handlers::update_real_time_data->got message: ");
         UART_msg_t_utils::print_msg(msg);
         UART_rt_data::msg.len = msg.len;
         for (int i = 0; i < msg.len; i++)
@@ -348,16 +398,16 @@ namespace UART_command_utils
     {
         UART_msg_t rx_msg;
         uint8_t searching = 1;
-        // Serial.println("UART_command_utils::call_and_response->searching for message");
+        Serial.println("UART_command_utils::call_and_response->searching for message");
         while (searching)
         {
             handler->UART_msg(msg);
-            // Serial.println("UART_command_utils::call_and_response->sent msg");
-            delay(100);
-            rx_msg = handler->poll(100000);
+            Serial.println("UART_command_utils::call_and_response->sent msg");
+            delay(1000);
+            rx_msg = handler->poll(200000);
             searching = (rx_msg.command != (msg.command+1));
         }
-        // Serial.println("UART_command_utils::call_and_response->found message:");
+        Serial.println("UART_command_utils::call_and_response->found message:");
         UART_msg_t_utils::print_msg(rx_msg);
         return rx_msg;
     }
@@ -373,7 +423,7 @@ namespace UART_command_utils
             // the length of the message needs to be equal to the config length
             if (msg.len != ini_config::number_of_keys)
             {
-                // Serial.println("UART_command_utils::get_config->msg.len != number_of_keys");
+                Serial.println("UART_command_utils::get_config->msg.len != number_of_keys");
                 // keep trying to get config
                 continue;
             }
@@ -382,13 +432,13 @@ namespace UART_command_utils
                 // a valid config will not contain a zero
                 if (!msg.data[i]) 
                 {
-                    // Serial.print("UART_command_utils::get_config->Config contained a zero at index ");
-                    // Serial.println(i);
+                    Serial.print("UART_command_utils::get_config->Config contained a zero at index ");
+                    Serial.println(i);
                     // keep trying to get config
                     continue;
                 }
             }
-            // Serial.println("UART_command_utils::get_config->got good config");
+            Serial.println("UART_command_utils::get_config->got good config");
             break;
         }
 
@@ -404,41 +454,18 @@ namespace UART_command_utils
         UART_msg_t rx_msg;
         while (true)
         {
-            // Serial.println("UART_command_utils::wait_for_config->Polling for config");
+            Serial.println("UART_command_utils::wait_for_config->Polling for config");
             rx_msg = handler->poll(100000);
             if (rx_msg.command == UART_command_names::get_config)
             {
-                // Serial.println("UART_command_utils::wait_for_config->Got config request");
-
-                UART_msg_t tx_msg;
-                tx_msg.command = UART_command_names::update_config;
-                tx_msg.joint_id = 0;
-                tx_msg.len = ini_config::number_of_keys;
-                tx_msg.data[config_defs::board_name_idx] = config[config_defs::board_name_idx];
-                tx_msg.data[config_defs::battery_idx] = config[config_defs::battery_idx];
-                tx_msg.data[config_defs::board_version_idx] = config[config_defs::board_version_idx];
-                tx_msg.data[config_defs::exo_name_idx] = config[config_defs::exo_name_idx];
-                tx_msg.data[config_defs::exo_side_idx] = config[config_defs::exo_side_idx];
-                tx_msg.data[config_defs::hip_idx] = config[config_defs::hip_idx];
-                tx_msg.data[config_defs::knee_idx] = config[config_defs::knee_idx];
-                tx_msg.data[config_defs::ankle_idx] = config[config_defs::ankle_idx];
-                tx_msg.data[config_defs::hip_gear_idx] = config[config_defs::hip_gear_idx];
-                tx_msg.data[config_defs::knee_gear_idx] = config[config_defs::knee_gear_idx];
-                tx_msg.data[config_defs::ankle_gear_idx] = config[config_defs::ankle_gear_idx];
-                tx_msg.data[config_defs::exo_hip_default_controller_idx] = config[config_defs::exo_hip_default_controller_idx];
-                tx_msg.data[config_defs::exo_knee_default_controller_idx] = config[config_defs::exo_knee_default_controller_idx];
-                tx_msg.data[config_defs::exo_ankle_default_controller_idx] = config[config_defs::exo_ankle_default_controller_idx];
-                tx_msg.data[config_defs::hip_flip_dir_idx] = config[config_defs::hip_flip_dir_idx];
-                tx_msg.data[config_defs::knee_flip_dir_idx] = config[config_defs::knee_flip_dir_idx];
-                tx_msg.data[config_defs::ankle_flip_dir_idx] = config[config_defs::ankle_flip_dir_idx];
-
-                handler->UART_msg(tx_msg);
+                Serial.println("UART_command_utils::wait_for_config->Got config request");
+                
 
                 break;
             }
             delayMicroseconds(500);
         }
-        // Serial.println("UART_command_utils::wait_for_config->Sent config");
+        Serial.println("UART_command_utils::wait_for_config->Sent config");
     }
 
     
@@ -463,6 +490,13 @@ namespace UART_command_utils
             break;
         case UART_command_names::update_status:
             UART_command_handlers::update_status(handler, exo_data, msg);
+            break;
+
+        case UART_command_names::get_config:
+            UART_command_handlers::get_config(handler, exo_data, msg);
+            break;
+        case UART_command_names::update_config:
+            UART_command_handlers::update_config(handler, exo_data, msg);
             break;
         
         case UART_command_names::get_cal_trq_sensor:
@@ -509,6 +543,7 @@ namespace UART_command_utils
         
         default:
             Serial.println("UART_command_utils::handle_message->Unknown Message!");
+            UART_msg_t_utils::print_msg(msg);
             break;
         }
     }

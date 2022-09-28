@@ -73,6 +73,9 @@ class ExoData
         float battery_value; /**<Could be Voltage or SOC, depending on the battery type*/
         LegData left_leg;/**< data for the left leg */
         LegData right_leg;/**< data for the right leg */
+
+        uint8_t* config; /**< pointer to the configuration array */
+        uint8_t config_len; /**< len of the configuration array */
 };
 
 #endif

@@ -54,6 +54,8 @@ void Exo::run()
     // Check if the real time data is ready to be sent.
     static float rt_context = t_helper->generate_new_context();
     static float rt_delta_t = 0;
+
+    static uint8_t should_plot = 0;
     
     if (((delta_t <= ((float) 1/LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE))) && (delta_t >= ((float)1 / LOOP_FREQ_HZ * 1000000 * (1 - LOOP_TIME_TOLERANCE)))))
     {
@@ -63,18 +65,18 @@ void Exo::run()
         #endif
 
         // check if trial went from off to on
-        // if (data->status != prev_status) {
+        // if (data->status != prev_status && (data->status == status_defs::messages::trial_on || data->status == status_defs::messages::trial_off)) {
         //     if (prev_status == status_defs::messages::trial_on && data->status == status_defs::messages::trial_off) 
         //     {
         //         // from on to off
-        //         Serial.println("Exo :: run : Trial ended");
-        //         sync_led.trigger();
+        //         Serial.println("Exo::run: Trial Off");
+        //         should_plot = 0;
         //     }
         //     else if (prev_status == status_defs::messages::trial_off && data->status == status_defs::messages::trial_on) 
         //     {
         //         // from off to on
-        //         Serial.println("Exo :: run : Trial started");
-        //         sync_led.trigger();
+        //         Serial.println("Exo::run: Trial On");
+        //         should_plot = 1;
         //     }
         //     prev_status = data->status;
         // }
@@ -89,18 +91,18 @@ void Exo::run()
         // Serial.print("Exo::run: is error : ");
         // Serial.print(((data->status & status_defs::messages::error) == status_defs::messages::error));
         // Serial.print("\n");
-        if (trial_running && ((data->status != status_defs::messages::error) && (data->status != status_defs::messages::test)))
-        {
-            data->status = status_defs::messages::trial_on;
-        }
-        else if ((!trial_running) && ((data->status != status_defs::messages::error) && (data->status != status_defs::messages::test)))
-        {
-            data->status = status_defs::messages::trial_off;
-        }
-        else
-        {
-            // Serial.print("Exo::run:Error or Test\n");
-        }
+        // if (trial_running && ((data->status != status_defs::messages::error) && (data->status != status_defs::messages::test)))
+        // {
+        //     data->status = status_defs::messages::trial_on;
+        // }
+        // else if ((!trial_running) && ((data->status != status_defs::messages::error) && (data->status != status_defs::messages::test)))
+        // {
+        //     data->status = status_defs::messages::trial_off;
+        // }
+        // else
+        // {
+        //     // Serial.print("Exo::run:Error or Test\n");
+        // }
 
         // Record the leg data and send new commands to the motors.
         left_leg.run_leg();
@@ -119,8 +121,14 @@ void Exo::run()
         
 
         // check for incoming uart messages
+<<<<<<< Updated upstream
         UART_msg_t msg = handler->poll(UART_times::CONT_MCU_TIMEOUT);       //UART_times::CONT_MCU_TIMEOUT is in Config.h
         if (msg.command) {
+=======
+        UART_msg_t msg = handler->poll(UART_times::CONT_MCU_TIMEOUT);
+        if (msg.command) 
+        {
+>>>>>>> Stashed changes
             // Serial.println("Exo::run->Got message:");
             // UART_msg_t_utils::print_msg(msg);
             UART_command_utils::handle_msg(handler, data, msg);
@@ -131,7 +139,13 @@ void Exo::run()
         //Serial.print("Exo::run->Checking if we have to send the message:");
         rt_delta_t += t_helper->tick(rt_context);
         // Serial.print("Exo::run->real_time_del_t: ");Serial.println(rt_delta_t);
+<<<<<<< Updated upstream
         if (rt_delta_t > BLE_times::_real_time_msg_delay)           //_real_time_msg_delay is in Config.h
+=======
+        if ((rt_delta_t > BLE_times::_real_time_msg_delay) && (data->status == status_defs::messages::trial_on) || 
+        (data->status == status_defs::messages::fsr_calibration) ||
+        (data->status == status_defs::messages::fsr_refinement))
+>>>>>>> Stashed changes
         {
             // Serial.println("Exo::run->Sending Real Time Message");
             UART_msg_t msg;
