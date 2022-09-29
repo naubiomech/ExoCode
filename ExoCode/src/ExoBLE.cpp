@@ -1,6 +1,7 @@
 #include "ExoBLE.h"
 #include "Utilities.h"
 #include "Time_Helper.h"
+#include "ComsLed.h"
 
 #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
 #define FACTORYRESET_ENABLE         1
@@ -13,11 +14,7 @@ ExoBLE::ExoBLE(ExoData* data) : _data{data}
     , _ble{logic_micro_pins::cs_pin, logic_micro_pins::irq_pin, logic_micro_pins::rst_pin}
 #endif
 {
-    #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
-        pinMode(coms_micro_pins::ble_signal_pin, OUTPUT);
-        digitalWrite(coms_micro_pins::ble_signal_pin, !coms_micro_pins::ble_signal_active);
-        
-    #endif
+   ;
 }
 
 bool ExoBLE::setup() 
@@ -125,8 +122,11 @@ void ExoBLE::advertising_onoff(bool onoff)
         Serial.println("Start Advertising");
         #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
             BLE.advertise();
-            digitalWrite(coms_micro_pins::ble_signal_pin, !coms_micro_pins::ble_signal_active);
-            digitalWrite(coms_micro_pins::config_success_pin, coms_micro_pins::ble_signal_active);
+            // turn the blue led off
+            ComsLed* led = ComsLed::get_instance();
+            uint8_t r, g, b;
+            led->get_color(&r, &g, &b);
+            led->set_color(r, g, 0);
         #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
             _ble.sendCommandCheckOK("AT+GAPSTARTADV");
         #endif
@@ -137,8 +137,11 @@ void ExoBLE::advertising_onoff(bool onoff)
         Serial.println("Stop Advertising");
         #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
             BLE.stopAdvertise();
-            digitalWrite(coms_micro_pins::ble_signal_pin, coms_micro_pins::ble_signal_active);
-            digitalWrite(coms_micro_pins::config_success_pin, !coms_micro_pins::ble_signal_active);
+            // turn the blue led on
+            ComsLed* led = ComsLed::get_instance();
+            uint8_t r, g, b;
+            led->get_color(&r, &g, &b);
+            led->set_color(r, g, 255);
         #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
             _ble.sendCommandCheckOK("AT+GAPSTOPADV");
         #endif

@@ -309,59 +309,60 @@ namespace UART_command_handlers
 
         switch (config[config_defs::exo_name_idx])
         {
-        case (uint8_t)config_defs::exo_name::bilateral_ankle:
-            rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
-            rx_msg.data[0] = exo_data->right_leg.ankle.torque_reading;
-            rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
-            rx_msg.data[2] = exo_data->right_leg.ankle.controller.setpoint;
-            rx_msg.data[3] = exo_data->left_leg.ankle.torque_reading;
-            //TODO: Implement Mark Feature
-            rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
-            rx_msg.data[5] = exo_data->left_leg.ankle.controller.setpoint;
-            rx_msg.data[6] = exo_data->right_leg.toe_fsr;
-            rx_msg.data[7] = exo_data->left_leg.toe_fsr;
-            break;
+            case (uint8_t)config_defs::exo_name::bilateral_ankle:
+                rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
+                rx_msg.data[0] = exo_data->right_leg.ankle.torque_reading;
+                rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
+                rx_msg.data[2] = exo_data->right_leg.ankle.controller.setpoint;
+                rx_msg.data[3] = exo_data->left_leg.ankle.torque_reading;
+                //TODO: Implement Mark Feature
+                rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
+                rx_msg.data[5] = exo_data->left_leg.ankle.controller.setpoint;
+                rx_msg.data[6] = exo_data->right_leg.toe_fsr;
+                rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+                break;
 
-        case (uint8_t)config_defs::exo_name::bilateral_hip:
-            rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_HIP_RT_LEN;
-            rx_msg.data[0] = exo_data->right_leg.hip.position;
-            rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
-            rx_msg.data[2] = exo_data->right_leg.hip.controller.setpoint;
-            rx_msg.data[3] = exo_data->left_leg.hip.position;
-            rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
-            rx_msg.data[5] = exo_data->left_leg.hip.controller.setpoint;
-            rx_msg.data[6] = exo_data->right_leg.toe_fsr;
-            rx_msg.data[7] = exo_data->left_leg.toe_fsr;
-            break;
+            case (uint8_t)config_defs::exo_name::bilateral_hip:
+                rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_HIP_RT_LEN;
+                rx_msg.data[0] = exo_data->right_leg.hip.position;
+                rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
+                rx_msg.data[2] = exo_data->right_leg.hip.controller.setpoint;
+                rx_msg.data[3] = exo_data->left_leg.hip.position;
+                rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
+                rx_msg.data[5] = exo_data->left_leg.hip.controller.setpoint;
+                rx_msg.data[6] = exo_data->right_leg.toe_fsr;
+                rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+                break;
 
-        case (uint8_t)config_defs::exo_name::bilateral_hip_ankle:
-            rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_HIP_ANKLE_RT_LEN;
-            rx_msg.data[0] = exo_data->right_leg.hip.position;
-            rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
-            rx_msg.data[2] = exo_data->right_leg.hip.controller.setpoint;
-            rx_msg.data[3] = exo_data->left_leg.hip.position;
-            rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
-            rx_msg.data[5] = exo_data->left_leg.hip.controller.setpoint;
-            rx_msg.data[6] = exo_data->right_leg.toe_fsr;
-            rx_msg.data[7] = exo_data->left_leg.toe_fsr;
-            break;
-        
-        default:
-            rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
-            rx_msg.data[0] = exo_data->right_leg.ankle.torque_reading;
-            rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
-            rx_msg.data[2] = exo_data->right_leg.ankle.controller.setpoint;
-            rx_msg.data[3] = exo_data->left_leg.ankle.torque_reading;
-            //TODO: Implement Mark Feature
-            rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
-            rx_msg.data[5] = exo_data->left_leg.ankle.controller.setpoint;
-            rx_msg.data[6] = exo_data->right_leg.toe_fsr;
-            rx_msg.data[7] = exo_data->left_leg.toe_fsr;
-            break;
+            case (uint8_t)config_defs::exo_name::bilateral_hip_ankle:
+                rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_HIP_ANKLE_RT_LEN;
+                rx_msg.data[0] = exo_data->right_leg.hip.position;
+                rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
+                rx_msg.data[2] = exo_data->right_leg.hip.controller.setpoint;
+                rx_msg.data[3] = exo_data->left_leg.hip.position;
+                rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
+                rx_msg.data[5] = exo_data->left_leg.hip.controller.setpoint;
+                rx_msg.data[6] = exo_data->right_leg.toe_fsr;
+                rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+                break;
+            
+            default:
+                rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
+                rx_msg.data[0] = exo_data->right_leg.ankle.torque_reading;
+                rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
+                rx_msg.data[2] = exo_data->right_leg.ankle.controller.setpoint;
+                rx_msg.data[3] = exo_data->left_leg.ankle.torque_reading;
+                //TODO: Implement Mark Feature
+                rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
+                rx_msg.data[5] = exo_data->left_leg.ankle.controller.setpoint;
+                rx_msg.data[6] = exo_data->right_leg.toe_fsr;
+                rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+                break;
         }
 
         handler->UART_msg(rx_msg);
-        //Serial.println("UART_command_handlers::get_real_time_data->sent real time data");
+        // Serial.println("UART_command_handlers::get_real_time_data->sent real time data");
+        // UART_msg_t_utils::print_msg(rx_msg);
     }
 
     // Overload for no config
@@ -394,9 +395,9 @@ namespace UART_command_handlers
 namespace UART_command_utils
 {
 
-    static UART_msg_t call_and_response(UARTHandler* handler, UART_msg_t msg)
+    static UART_msg_t call_and_response(UARTHandler* handler, UART_msg_t msg, float timeout)
     {
-        UART_msg_t rx_msg;
+        UART_msg_t rx_msg = {0, 0, 0, 0};
         uint8_t searching = 1;
         Serial.println("UART_command_utils::call_and_response->searching for message");
         while (searching)
@@ -412,14 +413,22 @@ namespace UART_command_utils
         return rx_msg;
     }
 
-    static void get_config(UARTHandler* handler, uint8_t* config)
+    static uint8_t get_config(UARTHandler* handler, uint8_t* config, float timeout)
     {
         UART_msg_t msg;
-        while (true)
+        float start_time = millis();
+        while (1)
         {
             msg.command = UART_command_names::get_config;
             msg.len = 0;
-            msg = call_and_response(handler, msg);
+            msg = call_and_response(handler, msg, timeout);
+
+            if ((millis() - start_time) > timeout)
+            {
+                Serial.println("UART_command_utils::get_config->timed out");
+                return 1;
+            }
+
             // the length of the message needs to be equal to the config length
             if (msg.len != ini_config::number_of_keys)
             {
@@ -434,6 +443,7 @@ namespace UART_command_utils
                 {
                     Serial.print("UART_command_utils::get_config->Config contained a zero at index ");
                     Serial.println(i);
+
                     // keep trying to get config
                     continue;
                 }
@@ -447,11 +457,13 @@ namespace UART_command_utils
         {
             config[i] = msg.data[i];
         }
+        return 0;
     }
 
-    static void wait_for_get_config(UARTHandler* handler, uint8_t* config)
+    static void wait_for_get_config(UARTHandler* handler, ExoData* data, float timeout)
     {
         UART_msg_t rx_msg;
+        float start_time = millis();
         while (true)
         {
             Serial.println("UART_command_utils::wait_for_config->Polling for config");
@@ -459,11 +471,16 @@ namespace UART_command_utils
             if (rx_msg.command == UART_command_names::get_config)
             {
                 Serial.println("UART_command_utils::wait_for_config->Got config request");
-                
-
+                UART_command_handlers::get_config(handler, data, rx_msg);
                 break;
             }
             delayMicroseconds(500);
+
+            if ((millis() - start_time) > timeout)
+            {
+                Serial.println("UART_command_utils::wait_for_config->Timed out");
+                return;
+            }
         }
         Serial.println("UART_command_utils::wait_for_config->Sent config");
     }

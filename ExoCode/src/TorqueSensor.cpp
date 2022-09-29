@@ -40,12 +40,16 @@ TorqueSensor::TorqueSensor(unsigned int pin)
 
 bool TorqueSensor::calibrate(bool do_calibrate)
 {
-    // Serial.print("TorqueSensor::calibrate : do_calibrate = ");
-    // Serial.print(do_calibrate);
-    // Serial.print("\n");
+    #ifdef TORQUE_DEBUG
+        Serial.print("TorqueSensor::calibrate : do_calibrate = ");
+        Serial.print(do_calibrate);
+        Serial.print("\n");
+    #endif
     if (_is_used)
     {
-        // Serial.print("TorqueSensor::calibrate : _is_used\n");
+        #ifdef TORQUE_DEBUG
+        Serial.print("TorqueSensor::calibrate : _is_used\n");
+        #endif
         // check for rising edge of do_calibrate, and reset the values
         if (do_calibrate > _last_do_calibrate)
         {
@@ -68,7 +72,9 @@ bool TorqueSensor::calibrate(bool do_calibrate)
             {
                 _calibration = _zero_sum/_num_calibration_samples;
             }
-            //Serial.print("TorqueSensor::calibrate : Torque Cal Done\n");
+            #ifdef TORQUE_DEBUG
+            Serial.print("TorqueSensor::calibrate : Torque Cal Done\n");
+            #endif
             do_calibrate = false;
         }
         
@@ -81,7 +87,9 @@ bool TorqueSensor::calibrate(bool do_calibrate)
     }
     else
     {
+        #ifdef TORQUE_DEBUG
         Serial.print("TorqueSensor::calibrate : Not _is_used\n");
+        #endif
         do_calibrate = false;
     }
     return do_calibrate;
