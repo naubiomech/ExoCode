@@ -50,6 +50,9 @@ void setup()
 
     // get the config information from the SD card.
     ini_parser(config_info::config_to_send);
+
+    // wait for the nano to get started
+    //delay(500);
     
     // Print to confirm config came through correctly.  Should not contain zeros.
     #ifdef MAIN_DEBUG

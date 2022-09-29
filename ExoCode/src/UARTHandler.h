@@ -26,7 +26,7 @@
 // if type is changes you will need to comment/uncomment lines in pack_float and unpack_float
 #define UART_DATA_TYPE short int
 #define FIXED_POINT_FACTOR 100
-#define UART_BAUD 460800
+#define UART_BAUD 256000
 
 #define MAX_RX_LEN 64 // bytes
 #define RX_TIMEOUT_US 1000
