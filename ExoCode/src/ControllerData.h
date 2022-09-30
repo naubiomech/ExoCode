@@ -40,13 +40,14 @@ namespace controller_defs /**< stores the parameter indexes for different contro
     
     namespace proportional_joint_moment
     {
-        const uint8_t max_torque_idx = 0;  // parameter for peak exo torque
-        const uint8_t is_assitance_idx = 1;
-        const uint8_t use_pid_idx = 2;
-        const uint8_t p_gain_idx = 3;
-        const uint8_t i_gain_idx = 4;
-        const uint8_t d_gain_idx = 5;
-        const uint8_t num_parameter = 6;
+        const uint8_t stance_max_idx = 0;  // parameter for peak exo torque during stance
+        const uint8_t swing_max_idx = 1;  // parameter for peak exo torque during swing
+        const uint8_t is_assitance_idx = 2;
+        const uint8_t use_pid_idx = 3;
+        const uint8_t p_gain_idx = 4;
+        const uint8_t i_gain_idx = 5;
+        const uint8_t d_gain_idx = 6;
+        const uint8_t num_parameter = 7;
     }
     
     namespace heel_toe

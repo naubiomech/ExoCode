@@ -75,6 +75,10 @@ bool TorqueSensor::calibrate(bool do_calibrate)
             #ifdef TORQUE_DEBUG
             Serial.print("TorqueSensor::calibrate : Torque Cal Done\n");
             #endif
+            // Serial.print("TorqueSensor::calibrate : Torque Cal Done with cal - ");
+            // Serial.print(_pin);
+            // Serial.print("\t");
+            // Serial.println(_calibration);
             do_calibrate = false;
         }
         

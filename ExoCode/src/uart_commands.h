@@ -8,6 +8,7 @@
 #include "ParseIni.h" // for config info
 #include "ExoData.h"
 #include "JointData.h"
+#include "ParamsFromSD.h"
 
 /**
  * @brief Type to associate a command with an ammount of data
@@ -163,15 +164,18 @@ namespace UART_command_handlers
             return;
         }
 
-        j_data->controller.controller = msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID];
-        for (uint8_t i=0; i<msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_LENGTH]; i++)
-        {
-            Serial.print("UART_command_handlers::update_controller_params->packing ");
-            Serial.print(msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START + i]);
-            Serial.print(" at index ");
-            Serial.println(i);
-            j_data->controller.parameters[i] = msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START + i];
-        }
+        // j_data->controller.controller = msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID];
+        // for (uint8_t i=0; i<msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_LENGTH]; i++)
+        // {
+        //     Serial.print("UART_command_handlers::update_controller_params->packing ");
+        //     Serial.print(msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START + i]);
+        //     Serial.print(" at index ");
+        //     Serial.println(i);
+        //     j_data->controller.parameters[i] = msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START + i];
+        // }
+        #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
+        set_controller_params(msg.joint_id, (uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID], (uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START], exo_data);
+        #endif
     }
 
     inline static void get_status(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
@@ -272,6 +276,7 @@ namespace UART_command_handlers
     }
     inline static void update_refine_fsr(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
+        // TODO: only calibrate if the fsr is used
         Serial.println("UART_command_handlers::update_refine_fsr->Got msg");
         exo_data->right_leg.do_calibration_refinement_toe_fsr = 1;
         exo_data->right_leg.do_calibration_refinement_heel_fsr = 1;
@@ -312,11 +317,11 @@ namespace UART_command_handlers
             case (uint8_t)config_defs::exo_name::bilateral_ankle:
                 rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
                 rx_msg.data[0] = exo_data->right_leg.ankle.torque_reading;
-                rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
+                rx_msg.data[1] = exo_data->right_leg.toe_stance;
                 rx_msg.data[2] = exo_data->right_leg.ankle.controller.setpoint;
                 rx_msg.data[3] = exo_data->left_leg.ankle.torque_reading;
                 //TODO: Implement Mark Feature
-                rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
+                rx_msg.data[4] = exo_data->left_leg.toe_stance; 
                 rx_msg.data[5] = exo_data->left_leg.ankle.controller.setpoint;
                 rx_msg.data[6] = exo_data->right_leg.toe_fsr;
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;
@@ -325,10 +330,10 @@ namespace UART_command_handlers
             case (uint8_t)config_defs::exo_name::bilateral_hip:
                 rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_HIP_RT_LEN;
                 rx_msg.data[0] = exo_data->right_leg.hip.position;
-                rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
+                rx_msg.data[1] = exo_data->right_leg.heel_stance;
                 rx_msg.data[2] = exo_data->right_leg.hip.controller.setpoint;
                 rx_msg.data[3] = exo_data->left_leg.hip.position;
-                rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
+                rx_msg.data[4] = exo_data->left_leg.heel_stance;  
                 rx_msg.data[5] = exo_data->left_leg.hip.controller.setpoint;
                 rx_msg.data[6] = exo_data->right_leg.toe_fsr;
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;
@@ -337,10 +342,10 @@ namespace UART_command_handlers
             case (uint8_t)config_defs::exo_name::bilateral_hip_ankle:
                 rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_HIP_ANKLE_RT_LEN;
                 rx_msg.data[0] = exo_data->right_leg.hip.position;
-                rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
+                rx_msg.data[1] = exo_data->right_leg.heel_stance;
                 rx_msg.data[2] = exo_data->right_leg.hip.controller.setpoint;
                 rx_msg.data[3] = exo_data->left_leg.hip.position;
-                rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
+                rx_msg.data[4] = exo_data->left_leg.heel_stance;  
                 rx_msg.data[5] = exo_data->left_leg.hip.controller.setpoint;
                 rx_msg.data[6] = exo_data->right_leg.toe_fsr;
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;
@@ -349,11 +354,11 @@ namespace UART_command_handlers
             default:
                 rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
                 rx_msg.data[0] = exo_data->right_leg.ankle.torque_reading;
-                rx_msg.data[1] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC
+                rx_msg.data[1] = exo_data->right_leg.toe_stance;
                 rx_msg.data[2] = exo_data->right_leg.ankle.controller.setpoint;
                 rx_msg.data[3] = exo_data->left_leg.ankle.torque_reading;
                 //TODO: Implement Mark Feature
-                rx_msg.data[4] = 0.5;//_data->right_leg.ankle.controller.get_state(); TODO: Implement PJMC 
+                rx_msg.data[4] = exo_data->left_leg.toe_stance;  
                 rx_msg.data[5] = exo_data->left_leg.ankle.controller.setpoint;
                 rx_msg.data[6] = exo_data->right_leg.toe_fsr;
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;

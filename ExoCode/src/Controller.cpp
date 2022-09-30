@@ -204,20 +204,31 @@ float ProportionalJointMoment::calc_motor_cmd()
     // don't calculate command when fsr is calibrating.
     if (!_leg_data->do_calibration_toe_fsr)
     {
-        cmd_ff = _leg_data->toe_fsr * _controller_data->parameters[controller_defs::proportional_joint_moment::max_torque_idx];
-        cmd_ff = (_controller_data->parameters[controller_defs::proportional_joint_moment::is_assitance_idx] ? -1 : 1) * min(max(0, cmd_ff), _controller_data->parameters[controller_defs::proportional_joint_moment::max_torque_idx]);  // if the fsr is negative use zero torque so it doesn't dorsiflex.  Saturate at max
+        // calculate the feed forward command
+        if (_leg_data->toe_stance) 
+        {
+            cmd_ff = _leg_data->toe_fsr * _controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx];
+            cmd_ff = (_controller_data->parameters[controller_defs::proportional_joint_moment::is_assitance_idx] ? -1 : 1) * min(max(0, cmd_ff), _controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx]);  // if the fsr is negative use zero torque so it doesn't dorsiflex.  Saturate at max
+        }
+        else
+        {
+            cmd_ff = _controller_data->parameters[controller_defs::proportional_joint_moment::swing_max_idx];
+        }
     }
+    // TODO: Add auto kf  to feed forward command
     
     // add the PID contribution to the feed forward command
     float cmd = cmd_ff + (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx] 
                 ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]) 
                 : 0);
     
-    
+    // Serial.print("ProportionalJointMoment::calc_motor_cmd : cmd = ");
+    // Serial.println(cmd);
     // Serial.print("ProportionalJointMoment::calc_motor_cmd : Exiting");
     // Serial.print("\n");
     return cmd;
 };
+
 
 
 

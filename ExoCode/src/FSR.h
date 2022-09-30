@@ -52,7 +52,7 @@ class FSR
          * if the regular calibration isn't done returns the raw value.
          * @return the sensor reading
          */
-        float read(); // reads the pins and updates the data object.
+        float read(); // reads the pins and updates the data object.f
 		
         /**
          * @brief Uses a schmitt trigger to determine if the sensor is in contact with the ground (foot/shoe)

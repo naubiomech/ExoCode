@@ -170,12 +170,18 @@ namespace ble_handlers
         tx_msg.len = (uint8_t)UART_command_enums::status::LENGTH;
         uart_handler->UART_msg(tx_msg);
 
-        delayMicroseconds(100);
+        delayMicroseconds(10);
         // Send motor enable update
         tx_msg.command = UART_command_names::update_motor_enable_disable;
         tx_msg.joint_id = 0;
         tx_msg.data[(uint8_t)UART_command_enums::motor_enable_disable::ENABLE_DISABLE] = 1;
         tx_msg.len = (uint8_t)UART_command_enums::motor_enable_disable::LENGTH;
+        uart_handler->UART_msg(tx_msg);
+
+        delayMicroseconds(10);
+        // Send FSR Calibration and Refinement
+        tx_msg.command = UART_command_names::update_cal_fsr;
+        tx_msg.len = 0;
         uart_handler->UART_msg(tx_msg);
     }
     inline static void stop(ExoData* data, BleMessage* msg)
@@ -207,6 +213,7 @@ namespace ble_handlers
         uart_handler->UART_msg(tx_msg);
 
         delayMicroseconds(100);
+        // Send motor enable update
         tx_msg.command = UART_command_names::update_motor_enable_disable;
         tx_msg.joint_id = 0;
         tx_msg.data[(uint8_t)UART_command_enums::motor_enable_disable::ENABLE_DISABLE] = 0;
@@ -229,23 +236,15 @@ namespace ble_handlers
     }
     inline static void cal_fsr(ExoData* data, BleMessage* msg)
     {
-        // Raise cal_fsr flag, send fsr finished flag when done
-        // data->right_leg.do_calibration_toe_fsr = 1;
-        // data->right_leg.do_calibration_refinement_toe_fsr = 1;
-        // data->right_leg.do_calibration_heel_fsr = 1;
-        // data->right_leg.do_calibration_refinement_heel_fsr = 1;
-
-        // data->left_leg.do_calibration_toe_fsr = 1;
-        // data->left_leg.do_calibration_refinement_toe_fsr = 1;
-        // data->left_leg.do_calibration_heel_fsr = 1;
-        // data->left_leg.do_calibration_refinement_heel_fsr = 1;
-
         UARTHandler* uart_handler = UARTHandler::get_instance();
         UART_msg_t tx_msg;
         tx_msg.command = UART_command_names::update_cal_fsr;
         tx_msg.joint_id = 0;
         tx_msg.data[(uint8_t)UART_command_enums::cal_fsr::CAL_FSR] = 1;
         tx_msg.len = (uint8_t)UART_command_enums::cal_fsr::LENGTH;
+        uart_handler->UART_msg(tx_msg);
+        tx_msg.command = UART_command_names::update_refine_fsr;
+        tx_msg.len = 0;
         uart_handler->UART_msg(tx_msg);
     }
     inline static void assist(ExoData* data, BleMessage* msg)
@@ -355,12 +354,14 @@ namespace ble_handlers
         joint_id = (joint_id==(config_defs::joint_id)6)?(data->right_leg.ankle.id):(joint_id);
 
         if (joint_id == data->left_leg.ankle.id) {
+            Serial.println("ble_handlers::new_trq() - Left Ankle");
             cont_data = &data->left_leg.ankle.controller;
         } else if (joint_id == data->left_leg.knee.id) {
             cont_data = &data->left_leg.knee.controller;
         } else if (joint_id == data->left_leg.hip.id) {
             cont_data = &data->left_leg.hip.controller;
         } else if (joint_id == data->right_leg.ankle.id) {
+            Serial.println("ble_handlers::new_trq() - Right Ankle");
             cont_data = &data->right_leg.ankle.controller;
         } else if (joint_id == data->right_leg.knee.id) {
             cont_data = &data->right_leg.knee.controller;
@@ -385,6 +386,8 @@ namespace ble_handlers
         tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START] = set_num;
         tx_msg.len = 3;
         uart_handler->UART_msg(tx_msg);
+        Serial.println("ble_handlers::new_trq() - Sent UART message");
+        UART_msg_t_utils::print_msg(tx_msg);
     }
     inline static void new_fsr(ExoData* data, BleMessage* msg)
     {
