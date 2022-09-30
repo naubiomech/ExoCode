@@ -133,11 +133,11 @@ void Exo::run()
         //Serial.print("Exo::run->Checking if we have to send the message:");
         rt_delta_t += t_helper->tick(rt_context);
         // Serial.print("Exo::run->real_time_del_t: ");Serial.println(rt_delta_t);
-        if ((rt_delta_t > BLE_times::_real_time_msg_delay) && (data->status == status_defs::messages::trial_on) || 
-        (data->status == status_defs::messages::fsr_calibration) ||
-        (data->status == status_defs::messages::fsr_refinement))
+        bool correct_status = (data->status == status_defs::messages::trial_on) || (data->status == status_defs::messages::fsr_calibration) || (data->status == status_defs::messages::fsr_refinement);
+        if ((rt_delta_t >= BLE_times::_real_time_msg_delay) && (correct_status))
         {
-            // Serial.println("Exo::run->Sending Real Time Message");
+            // Serial.print("Exo::run->Sending Real Time Message: ");
+            // Serial.println(rt_delta_t);
             UART_msg_t msg;
             UART_command_handlers::get_real_time_data(handler, data, msg);
             rt_delta_t = 0;

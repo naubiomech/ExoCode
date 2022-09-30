@@ -29,7 +29,15 @@ float Time_Helper::peek(float context)
 
 float Time_Helper::tick(float context)
 {
-    float new_time = ((_k_use_micros) ? (micros()):(millis()));
+    float new_time;
+    if (_k_use_micros) 
+    {
+        new_time = micros();
+    }
+    else
+    {
+        new_time = millis();
+    }
     
     ticker_t* ticker = _ticker_from_context(context);
     // The context does not exist or this is the tickers first tick

@@ -129,7 +129,8 @@ void ComsMCU::update_gui()
                 rt_data_msg.data[i] = UART_rt_data::msg.data[i];
             }
             rt_data_msg.data[rt_data_msg.expecting++] = 0;//time_since_last_message/1000.0;
-            BleMessage::print(rt_data_msg);
+            // Serial.println("ComsMCU::update_gui->rt_data_msg:");
+            // BleMessage::print(rt_data_msg);
 
             _exo_ble->send_message(rt_data_msg);
         }

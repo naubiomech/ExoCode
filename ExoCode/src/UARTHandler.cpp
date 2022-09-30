@@ -58,8 +58,8 @@ UART_msg_t UARTHandler::poll(float timeout_us)
     _timeout_us = timeout_us;
     
     uint32_t _available_bytes = check_for_data();
-    // Serial.print("UARTHandler::poll->Bytes Available: "); Serial.println(_available_bytes);
     if (!_available_bytes) {return empty_msg;}
+    //Serial.print("UARTHandler::poll->Bytes Available: "); Serial.println(_available_bytes);
 
     uint8_t _msg_buffer[MAX_RX_LEN];
     uint8_t _recv_len = _recv_packet(_msg_buffer, MAX_RX_LEN);

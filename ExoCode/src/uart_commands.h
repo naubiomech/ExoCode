@@ -376,7 +376,7 @@ namespace UART_command_handlers
     inline static void update_real_time_data(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
         // Serial.println("UART_command_handlers::update_real_time_data->got message: ");
-        UART_msg_t_utils::print_msg(msg);
+        // UART_msg_t_utils::print_msg(msg);
         UART_rt_data::msg.len = msg.len;
         for (int i = 0; i < msg.len; i++)
         {
