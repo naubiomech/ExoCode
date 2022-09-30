@@ -119,9 +119,9 @@ void loop()
     
     if (first_run)
     {
-        first_run = false; 
+        first_run = false;
         
-        UART_command_utils::wait_for_get_config(uart_handler, config_info::config_to_send);
+        UART_command_utils::wait_for_get_config(uart_handler, &exo_data, UART_times::CONFIG_TIMEOUT);
         
         #ifdef MAIN_DEBUG
             Serial.println("Superloop :: Start First Run Conditional");
@@ -469,16 +469,36 @@ void loop()
 #include "src/ParseIni.h"
 #include "src/ExoData.h"
 #include "src/ComsMCU.h"
+#include "src/Config.h"
 
 // Board to board coms
-#include "src\UARTHandler.h"
-#include "src\uart_commands.h"
-#include "src\UART_msg_t.h"
+#include "src/UARTHandler.h"
+#include "src/uart_commands.h"
+#include "src/UART_msg_t.h"
+#include "src/ComsLed.h"
 
 // create array to store config.
 namespace config_info
 {
-    uint8_t (config_to_send)[ini_config::number_of_keys];
+     uint8_t config_to_send[ini_config::number_of_keys] = {
+            1,  // board name
+            3,  // board version
+            2,  // battery
+            1,  // exo name
+            1,  // exo side
+            2,  // hip
+            1,  // knee
+            3,  // ankle
+            1,  // hip gear
+            1,  // knee gear
+            1,  // ankle gear
+            1,  // hip default controller
+            1,  // knee default controller
+            1,  // ankle default controller
+            3,  // hip flip dir
+            3,  // knee flip dir
+            3,  // ankle flip dir
+          };
 }
 
 
@@ -489,9 +509,22 @@ void setup()
     //while (!Serial);
 
     Serial.println("Setup->Getting config");
-    // get the sd card config from the teensy, this is blocking
+    // get the sd card config from the teensy, this has a timeout
     UARTHandler* handler = UARTHandler::get_instance();
-    UART_command_utils::get_config(handler, config_info::config_to_send);
+    bool timed_out = UART_command_utils::get_config(handler, config_info::config_to_send, (float)UART_times::CONFIG_TIMEOUT);
+
+    ComsLed* led = ComsLed::get_instance();
+    if (timed_out)
+    {
+        // yellow
+        Serial.println("Setup->Timed Out Getting Config");
+        led->set_color(255, 255, 0);
+    }
+    else
+    {
+        // green
+        led->set_color(0, 255, 0);
+    }
     Serial.println("Setup->End Setup");
 }
 

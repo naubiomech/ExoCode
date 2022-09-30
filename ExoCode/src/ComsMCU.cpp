@@ -46,9 +46,8 @@ ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
             break;
     }
     UART_rt_data::msg_len = rt_data_len;
-    Serial.print("ComsMCU::ComsMCU->rt_data_len: "); Serial.println(rt_data_len);
-    pinMode(coms_micro_pins::config_success_pin, OUTPUT);
-    digitalWrite(coms_micro_pins::config_success_pin, coms_micro_pins::ble_signal_active);
+    // Serial.print("ComsMCU::ComsMCU->rt_data_len: "); Serial.println(rt_data_len);
+    
 }
 
 void ComsMCU::handle_ble()

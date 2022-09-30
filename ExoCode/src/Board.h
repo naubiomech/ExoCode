@@ -75,8 +75,10 @@
         #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
             namespace coms_micro_pins  //nano
             {
-                const unsigned int ble_signal_pin = 24;
-                const unsigned int ble_signal_active = 0;
+                const unsigned int blue = 24;
+                const unsigned int green = 23;
+                const unsigned int red = 22;
+                const unsigned int led_active_low = 1;
             };
         #endif    
     #elif BOARD_VERSION == AK_Board_V0_3 
@@ -167,9 +169,10 @@
         #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
         namespace coms_micro_pins  //nano
         {
-            const unsigned int ble_signal_pin = 24;
-            const unsigned int ble_signal_active = 0;
-            const unsigned int config_success_pin = 23;
+            const unsigned int blue = 24;
+            const unsigned int green = 23;
+            const unsigned int red = 22;
+            const unsigned int led_active_low = 1;
             
             // SPI Conroller Pins
             const unsigned int miso_pin = 11;
@@ -269,9 +272,10 @@
         #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
         namespace coms_micro_pins  //nano
         {
-            const unsigned int ble_signal_pin = 24;
-            const unsigned int ble_signal_active = 0;
-            const unsigned int config_success_pin = 23;
+            const unsigned int blue = 24;
+            const unsigned int green = 23;
+            const unsigned int red = 22;
+            const unsigned int led_active_low = 1;
             
             // SPI Conroller Pins
             const unsigned int miso_pin = 11;
