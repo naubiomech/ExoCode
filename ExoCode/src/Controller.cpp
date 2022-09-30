@@ -338,16 +338,16 @@ void ExtensionAngle::_update_state(float angle)
     switch (_state)
     {
         case 0 :  // extension assistance
-            if (angle <= _controller_data->parameters[controller_defs::extension_angle::angle_threshold_idx])
+            if (angle <= _controller_data->parameters[controller_defs::extension_angle::angle_threshold_idx])           //If the angle of the hip is less than 5 degrees (currently what angle_threshold is set to), then switch to flexion assistance
             {
                 _state = 1;
             }
             break;
         case 1 :  // flexion assistance 
             
-            if ((angle > (_controller_data->parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] * _max_angle / 100)) 
-                || ((angle > _controller_data->parameters[controller_defs::extension_angle::angle_threshold_idx]+utils::degrees_to_radians(5)) 
-                    && (_leg_data->hip.velocity <= _controller_data->parameters[controller_defs::extension_angle::velocity_threshold_idx])))
+            if ((angle > (_controller_data->parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] * _max_angle / 100))           //If the angle exceeds 80% (currently what flexion_percent_max is set to) of the max angle, switch to extension angle
+                || ((angle > _controller_data->parameters[controller_defs::extension_angle::angle_threshold_idx]+utils::degrees_to_radians(5))          //Or if the angle is greater than 10 degrees (angle_threshold currently set to 5 degrees), switch to extension 
+                    && (_leg_data->hip.velocity <= _controller_data->parameters[controller_defs::extension_angle::velocity_threshold_idx])))            //or if the angular velocity is less than or equal to -0.175rad/s (currenlty what velocity_threshold is set to), switch to extension 
             {
                 _state = 0;
             }
@@ -1149,7 +1149,7 @@ Sine::Sine(config_defs::joint_id id, ExoData* exo_data)
 
 float Sine::calc_motor_cmd()
 {
-    //  converts period to int so % will work, but is only a float for convenience  
+    //  converts period to int so % will work, but is only a float for convenience
     float cmd_ff = _controller_data->parameters[controller_defs::sine::amplitude_idx] * sin( (millis() % (int)_controller_data->parameters[controller_defs::sine::period_idx]) / _controller_data->parameters[controller_defs::sine::period_idx] * 2 * M_PI + _controller_data->parameters[controller_defs::sine::phase_shift_idx]  );
     
     // add the PID contribution to the feed forward command

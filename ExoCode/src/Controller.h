@@ -200,7 +200,7 @@ class ExtensionAngle: public _Controller
         void _reset_angles();
         
         // the initial angles used for tracking the extent of the range of motions 
-        const float _initial_max_angle = utils::degrees_to_radians(20); /**< Initial value to set the max angle to, should be a physiologically feasible value that a person is likely to exceed but won't cause the controller to act strange. */
+        const float _initial_max_angle = utils::degrees_to_radians(10); /**< Initial value to set the max angle to, should be a physiologically feasible value that a person is likely to exceed but won't cause the controller to act strange. */
         const float _initial_min_angle = utils::degrees_to_radians(-5); /**< Initial value to set the min angle to, should be a physiologically feasible value that a person is likely to exceed but won't cause the controller to act strange. */
         
         // Used to track the range of motion, angles are in rad.
