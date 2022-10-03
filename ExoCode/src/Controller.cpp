@@ -161,7 +161,7 @@ float ZeroTorque::calc_motor_cmd()
     float cmd = cmd_ff + (_controller_data->parameters[controller_defs::zero_torque::use_pid_idx] 
                 ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::zero_torque::p_gain_idx], _controller_data->parameters[controller_defs::zero_torque::i_gain_idx], _controller_data->parameters[controller_defs::zero_torque::d_gain_idx]) 
                 : 0);
-   
+    _controller_data->ff_setpoint = cmd;
     return cmd;
 };
 
@@ -198,8 +198,21 @@ ProportionalJointMoment::ProportionalJointMoment(config_defs::joint_id id, ExoDa
 float ProportionalJointMoment::calc_motor_cmd()
 {
     float cmd_ff = 0;
-    //Serial.print("ProportionalJointMoment::calc_motor_cmd : Entered");
-    //Serial.print("\n");
+    static uint32_t run_count = 0;
+    run_count++;
+    bool print = false;
+    if (run_count > 1000)
+    {
+        run_count = 0;
+        print = _leg_data->is_left;
+    }
+
+
+    if (print)
+    {
+        Serial.print("ProportionalJointMoment::calc_motor_cmd : Entered");
+        Serial.print("\n");
+    }
     
     // don't calculate command when fsr is calibrating.
     if (!_leg_data->do_calibration_toe_fsr)
@@ -207,25 +220,65 @@ float ProportionalJointMoment::calc_motor_cmd()
         // calculate the feed forward command
         if (_leg_data->toe_stance) 
         {
-            cmd_ff = _leg_data->toe_fsr * _controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx];
-            cmd_ff = (_controller_data->parameters[controller_defs::proportional_joint_moment::is_assitance_idx] ? -1 : 1) * min(max(0, cmd_ff), _controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx]);  // if the fsr is negative use zero torque so it doesn't dorsiflex.  Saturate at max
+            // scale the fsr values so the controller outputs zero feed forward when the FSR value is at the threshold
+            float threshold = _leg_data->toe_fsr_lower_threshold;
+            float scaling = threshold/(1-threshold);
+            float correction = scaling-(scaling*_leg_data->toe_fsr);
+
+            // calculate the feed forward command
+            cmd_ff = (_leg_data->toe_fsr-correction) * _controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx];
+            
+            // saturate and account for assistance
+            cmd_ff = (_controller_data->parameters[controller_defs::proportional_joint_moment::is_assitance_idx] ? 1 : -1) * min(max(0, cmd_ff), _controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx]);
+            if (print)
+            {
+                Serial.print("ProportionalJointMoment::calc_motor_cmd : toe_stance");
+                Serial.print(" fsr data: ");
+                Serial.print(_leg_data->toe_fsr);
+                Serial.print(" max stance: ");
+                Serial.print(_controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx]);
+                Serial.print(" = ");
+                Serial.println(cmd_ff);
+            }
         }
         else
         {
-            cmd_ff = _controller_data->parameters[controller_defs::proportional_joint_moment::swing_max_idx];
+            cmd_ff = -_controller_data->parameters[controller_defs::proportional_joint_moment::swing_max_idx];
         }
     }
-    // TODO: Add auto kf  to feed forward command
+    _controller_data->ff_setpoint = cmd_ff;
+
+    // TODO: Add auto kf to feed forward command
     
     // add the PID contribution to the feed forward command
-    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx] 
+    float cmd;
+    if (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx])
+    {
+        cmd = cmd_ff + (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx] 
                 ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]) 
                 : 0);
+    }
+    else
+    {
+        cmd = cmd_ff;
+    }
     
-    // Serial.print("ProportionalJointMoment::calc_motor_cmd : cmd = ");
-    // Serial.println(cmd);
-    // Serial.print("ProportionalJointMoment::calc_motor_cmd : Exiting");
-    // Serial.print("\n");
+    if (print)
+    {
+        Serial.print("ProportionalJointMoment::calc_motor_cmd : torque reading = ");
+        Serial.println(_joint_data->torque_reading);
+        // Print PID gains
+        Serial.print("ProportionalJointMoment::calc_motor_cmd : P = ");
+        Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx]);
+        Serial.print("ProportionalJointMoment::calc_motor_cmd : I = ");
+        Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx]);
+        Serial.print("ProportionalJointMoment::calc_motor_cmd : D = ");
+        Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);
+        Serial.print("ProportionalJointMoment::calc_motor_cmd : cmd = ");
+        Serial.println(cmd);
+        Serial.print("ProportionalJointMoment::calc_motor_cmd : Exiting");
+        Serial.print("\n");
+    }
     return cmd;
 };
 

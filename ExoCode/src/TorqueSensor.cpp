@@ -99,6 +99,8 @@ bool TorqueSensor::calibrate(bool do_calibrate)
     return do_calibrate;
 };
 
+// TODO: Implement Calibration check, ie if read doesnt return a zero value directly after calibration, recalibrate
+
 float TorqueSensor::read()
 {
     _raw_reading = analogRead(_pin);

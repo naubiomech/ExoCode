@@ -40,6 +40,9 @@ Leg::Leg(bool is_left, ExoData* exo_data)
         Serial.print(_is_left ? "Left " : "Right ");
         Serial.println("Leg :: Constructor : Exit");
     #endif
+
+    _heel_fsr.get_contact_thresholds(_leg_data->heel_fsr_lower_threshold, _leg_data->heel_fsr_upper_threshold);
+    _toe_fsr.get_contact_thresholds(_leg_data->toe_fsr_lower_threshold, _leg_data->toe_fsr_upper_threshold);
 };
 
 void Leg::run_leg()
@@ -77,6 +80,9 @@ void Leg::read_data()
         _leg_data->expected_step_duration = _update_expected_duration();
     }
     _leg_data->percent_gait = _calc_percent_gait();
+
+    _heel_fsr.get_contact_thresholds(_leg_data->heel_fsr_lower_threshold, _leg_data->heel_fsr_upper_threshold);
+    _toe_fsr.get_contact_thresholds(_leg_data->toe_fsr_lower_threshold, _leg_data->toe_fsr_upper_threshold);
     
     // Check the joint sensors if the joint is used.
     if (_leg_data->hip.is_used)

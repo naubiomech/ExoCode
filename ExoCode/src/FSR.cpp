@@ -199,4 +199,16 @@ bool FSR::get_ground_contact()
     // Serial.println(_ground_contact);
     return _ground_contact;
 };
+
+void FSR::get_contact_thresholds(float &lower_threshold_percent_ground_contact, float &upper_threshold_percent_ground_contact)
+{
+    lower_threshold_percent_ground_contact = _lower_threshold_percent_ground_contact;
+    upper_threshold_percent_ground_contact = _upper_threshold_percent_ground_contact;
+};
+
+void FSR::set_contact_thresholds(float lower_threshold_percent_ground_contact, float upper_threshold_percent_ground_contact)
+{
+    _lower_threshold_percent_ground_contact = lower_threshold_percent_ground_contact;
+    _upper_threshold_percent_ground_contact = upper_threshold_percent_ground_contact;
+};
 #endif

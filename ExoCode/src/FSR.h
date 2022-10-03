@@ -59,7 +59,22 @@ class FSR
          * @return if the FSR is in contact with the ground
          */
         bool get_ground_contact();
+
+        /**
+         * @brief Get the thresholds for the schmitt trigger
+         * 
+         * @param lower_threshold_percent_ground_contact lower threshold for the schmitt trigger
+         * @param upper_threshold_percent_ground_contact upper threshold for the schmitt trigger
+         */
+        void get_contact_thresholds(float &lower_threshold_percent_ground_contact, float &upper_threshold_percent_ground_contact);
 		
+        /**
+         * @brief Set the thresholds for the schmitt trigger
+         * 
+         * @param lower_threshold_percent_ground_contact lower threshold
+         * @param upper_threshold_percent_ground_contact uppder threshold
+         */
+        void set_contact_thresholds(float lower_threshold_percent_ground_contact, float upper_threshold_percent_ground_contact);
 	private:
 		/**
          * @brief Calculates if the fsr is in contact with the ground based on a schmitt trigger
@@ -98,8 +113,8 @@ class FSR
         
         // used for ground_contact()
         bool _ground_contact;  /**< is the FSR in contact with the ground */
-        const float _lower_threshold_percent_ground_contact = .15;  /**< Lower threshold for the schmitt trigger.  This should be relatively low as we want to detect as close to ground contact as possible. */
-        const float _upper_threshold_percent_ground_contact = .25;  /**< Should be slightly higher than the lower threshold but by as little as you can get by with as the sensor must go above this value to register contact.  */
+        float _lower_threshold_percent_ground_contact = .15;  /**< Lower threshold for the schmitt trigger.  This should be relatively low as we want to detect as close to ground contact as possible. */
+        float _upper_threshold_percent_ground_contact = .25;  /**< Should be slightly higher than the lower threshold but by as little as you can get by with as the sensor must go above this value to register contact.  */
         
 };
 #endif

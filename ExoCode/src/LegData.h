@@ -47,7 +47,12 @@ class LegData{
         float expected_step_duration;  /**< Estimate of how long the next step will take based on the most recent step times */
         
         float heel_fsr;  /**< Calibrated FSR reading for the heel */
+        float heel_fsr_upper_threshold;
+        float heel_fsr_lower_threshold;
         float toe_fsr;  /**< Calibrated FSR reading for the toe */
+        float toe_fsr_upper_threshold;
+        float toe_fsr_lower_threshold;
+
         
         bool ground_strike;  /**< Trigger when we go from swing to one FSR making contact. */
         bool heel_stance;  /**< High when the heel FSR is in ground contact */

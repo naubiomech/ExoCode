@@ -227,6 +227,7 @@ class ControllerData {
         config_defs::JointType joint; /**< id of the current joint */
         // These were made floats to dummy proof the math for people but will double the data needed to be sent over SPI, we double the speed of the SPI if we move to fixed point.
         float setpoint;  /**< controller setpoint, basically the motor command. */
+        float ff_setpoint; /**< feed forwared setpoint, only updated in closed loop controllers */
         float parameters[controller_defs::max_parameters];  /**< Parameter list for the controller see the controller_defs namespace for the specific controller.   */
         uint8_t parameter_set; /**< temporary value used to store the parameter set while we are pulling  from the sd card. */
 };

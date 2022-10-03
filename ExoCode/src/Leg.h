@@ -112,7 +112,9 @@ class Leg
         AnkleJoint _ankle; /**< instance of a ankle joint */
         
         FSR _heel_fsr; /**< heel force sensitive resistor */
+
 		FSR _toe_fsr; /**< toe force sensitive resistor */
+
         
         bool _is_left; /**< stores which side the leg is on */
         
