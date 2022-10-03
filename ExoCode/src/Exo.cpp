@@ -139,7 +139,7 @@ void Exo::run()
             // Serial.print("Exo::run->Sending Real Time Message: ");
             // Serial.println(rt_delta_t);
             UART_msg_t msg;
-            UART_command_handlers::get_real_time_data(handler, data, msg);
+            UART_command_handlers::get_real_time_data(handler, data, msg, data->config);
             rt_delta_t = 0;
         }
 

@@ -312,6 +312,9 @@ namespace UART_command_handlers
         rx_msg.joint_id = 0;
         rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN + 1;
 
+        //Serial.println("config[config_defs::exo_name_idx] :: "); //Uncomment if you want to check that system is receiving correct config info
+        //Serial.println(config[config_defs::exo_name_idx]);
+
         switch (config[config_defs::exo_name_idx])
         {
             case (uint8_t)config_defs::exo_name::bilateral_ankle:
@@ -358,7 +361,7 @@ namespace UART_command_handlers
                 rx_msg.data[2] = exo_data->right_leg.ankle.controller.setpoint;
                 rx_msg.data[3] = exo_data->left_leg.ankle.torque_reading;
                 //TODO: Implement Mark Feature
-                rx_msg.data[4] = exo_data->left_leg.toe_stance;  
+                rx_msg.data[4] = exo_data->left_leg.toe_stance;
                 rx_msg.data[5] = exo_data->left_leg.ankle.controller.setpoint;
                 rx_msg.data[6] = exo_data->right_leg.toe_fsr;
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;
@@ -366,8 +369,8 @@ namespace UART_command_handlers
         }
 
         handler->UART_msg(rx_msg);
-        // Serial.println("UART_command_handlers::get_real_time_data->sent real time data");
-        // UART_msg_t_utils::print_msg(rx_msg);
+        //Serial.println("UART_command_handlers::get_real_time_data->sent real time data");   Uncomment if you want to test to see what data is being sent
+        //UART_msg_t_utils::print_msg(rx_msg);
     }
 
     // Overload for no config
