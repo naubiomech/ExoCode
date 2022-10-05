@@ -32,11 +32,11 @@ namespace utils
         bool trigger = 0;
         if (is_high)
         {
-            trigger = value > lower_threshold;
+            trigger = value > lower_threshold;  //One if true, Zero if false
         }
         else
         {
-            trigger = value > upper_threshold;
+            trigger = value > upper_threshold;  //One if true, Zero if false
         }    
         return trigger;
     }

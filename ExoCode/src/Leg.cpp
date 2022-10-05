@@ -160,10 +160,10 @@ bool Leg::_check_ground_strike()
     // Serial.print(_prev_toe_contact_state);
     // Serial.print("\n");
     // only check if in swing
-    if(!_prev_heel_contact_state & !_prev_toe_contact_state)
+    if(!_prev_heel_contact_state & !_prev_toe_contact_state) //If we were previously in swing
     {
         //check for rising edge on heel and toe, toe is to account for flat foot landings
-        if ((heel_contact_state > _prev_heel_contact_state) | (toe_contact_state > _prev_toe_contact_state))
+        if ((heel_contact_state > _prev_heel_contact_state) | (toe_contact_state > _prev_toe_contact_state))    //If either the heel or toe FSR is on the ground and it previously wasn't on the ground
         {
             ground_strike = true;
             _prev_ground_strike_timestamp = _ground_strike_timestamp;
@@ -184,7 +184,7 @@ float Leg::_calc_percent_gait()
     if (_leg_data->expected_step_duration>0)
     {
         percent_gait = 100 * ((float)timestamp - _ground_strike_timestamp) / _leg_data->expected_step_duration;
-        percent_gait = min(percent_gait, 1000); // set saturation.
+        percent_gait = min(percent_gait, 100); // set saturation.
         // Serial.print("Leg::_calc_percent_gait : percent_gait_x10 = ");
         // Serial.print(percent_gait_x10);
         // Serial.print("\n");

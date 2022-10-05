@@ -268,13 +268,16 @@ float ProportionalJointMoment::calc_motor_cmd()
     {
         Serial.print("ProportionalJointMoment::calc_motor_cmd : torque reading = ");
         Serial.println(_joint_data->torque_reading);
-        // Print PID gains
-        Serial.print("ProportionalJointMoment::calc_motor_cmd : P = ");
-        Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx]);
-        Serial.print("ProportionalJointMoment::calc_motor_cmd : I = ");
-        Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx]);
-        Serial.print("ProportionalJointMoment::calc_motor_cmd : D = ");
-        Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);
+        // Print PID gains if PID is used
+        if (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx])
+        {
+            Serial.print("ProportionalJointMoment::calc_motor_cmd : P = ");
+            Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx]);
+            Serial.print("ProportionalJointMoment::calc_motor_cmd : I = ");
+            Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx]);
+            Serial.print("ProportionalJointMoment::calc_motor_cmd : D = ");
+            Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);
+        }
         Serial.print("ProportionalJointMoment::calc_motor_cmd : cmd = ");
         Serial.println(cmd);
         Serial.print("ProportionalJointMoment::calc_motor_cmd : Exiting");
