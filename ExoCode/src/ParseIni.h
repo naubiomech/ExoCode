@@ -131,6 +131,7 @@ namespace config_defs
         sine = 8,
         stasis = 9,
         late_stance = 10,
+        gait_phase = 11,
     };
     
     enum class knee_controllers : uint8_t
@@ -329,6 +330,7 @@ namespace config_defs
             {"sine", (uint8_t)config_defs::hip_controllers::sine},
             {"stasis", (uint8_t)config_defs::hip_controllers::stasis},
             {"latestance", (uint8_t)config_defs::hip_controllers::late_stance},
+            {"gaitPhase", (uint8_t)config_defs::hip_controllers::gait_phase},
         };
         
         const IniKeyCode knee_controllers 

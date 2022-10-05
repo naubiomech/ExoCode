@@ -122,7 +122,25 @@ namespace controller_defs /**< stores the parameter indexes for different contro
         const uint8_t d_gain_idx = 7;
         const uint8_t num_parameter = 8;
     }
-    
+
+    namespace gait_phase
+    {
+        // parameters for gait phase torque.
+        const uint8_t flexion_setpoint_idx = 0;
+        const uint8_t extension_setpoint_idx = 1;
+        // Parameter for fraction of peak flexion angle where mode will switch to extension angle.
+        const uint8_t flexion_start_percentage_idx = 2;
+        const uint8_t flexion_end_percentage_idx = 3;
+        const uint8_t extension_start_percentage_idx = 4;
+        const uint8_t extension_end_percentage_idx = 5;
+        //Flag for PID contorl and associated gains
+        const uint8_t use_pid_idx = 6;
+        const uint8_t p_gain_idx = 7;
+        const uint8_t i_gain_idx = 8;
+        const uint8_t d_gain_idx = 9;
+        const uint8_t num_parameter = 10;
+    }
+
     namespace zhang_collins
     {
         // user mass kg
@@ -228,8 +246,8 @@ class ControllerData {
         // These were made floats to dummy proof the math for people but will double the data needed to be sent over SPI, we double the speed of the SPI if we move to fixed point.
         float setpoint;  /**< controller setpoint, basically the motor command. */
         float ff_setpoint; /**< feed forwared setpoint, only updated in closed loop controllers */
-        float parameters[controller_defs::max_parameters];  /**< Parameter list for the controller see the controller_defs namespace for the specific controller.   */
-        uint8_t parameter_set; /**< temporary value used to store the parameter set while we are pulling  from the sd card. */
+        float parameters[controller_defs::max_parameters];  /**< Parameter list for the controller see the controller_defs namespace for the specific controller. */
+        uint8_t parameter_set; /**< temporary value used to store the parameter set while we are pulling from the sd card. */
 };
 
 

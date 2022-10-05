@@ -1,0 +1,6 @@
+5,"header Size, the first N rows will be ignored, except for this first cells in the first two rows",,,,,,,,
+10,"parameter number, the number of parameters to read per line",,,,,,,,
+,Parameter list for the BangBang controller,,,,,,,,
+,Parameter order:,,,,,,,,
+Flexion Setpoint (Nm),Extension Setpoint (Nm),Flexion Start % (% Gait Cycle),Flexion End % (% Gait Cycle),Extension Start % (% Gait Cycle),Extension End % (% Gait Cycle),use_pid,p_gain,i_gain,d_gain
+0,0,0,0,0,0,0,0,0,0

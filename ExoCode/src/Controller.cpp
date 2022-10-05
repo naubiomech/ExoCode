@@ -186,6 +186,7 @@ float Stasis::calc_motor_cmd()
 
 //****************************************************
 
+
 ProportionalJointMoment::ProportionalJointMoment(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
@@ -283,6 +284,7 @@ float ProportionalJointMoment::calc_motor_cmd()
 };
 
 
+//****************************************************
 
 
 HeelToe::HeelToe(config_defs::joint_id id, ExoData* exo_data)
@@ -307,6 +309,9 @@ float HeelToe::calc_motor_cmd()
                          
     return cmd;
 };
+
+
+//****************************************************
 
 
 ExtensionAngle::ExtensionAngle(config_defs::joint_id id, ExoData* exo_data)
@@ -430,6 +435,9 @@ void ExtensionAngle::_update_state(float angle)
         // Serial.print("\n");
     // }
 }
+
+
+//****************************************************
 
 
 BangBang::BangBang(config_defs::joint_id id, ExoData* exo_data)
@@ -556,6 +564,9 @@ void BangBang::_update_state(float angle)
 }
 
 
+//****************************************************
+
+
 LateStance::LateStance(config_defs::joint_id id, ExoData* exo_data)
     : _Controller(id, exo_data)
 {
@@ -638,6 +649,35 @@ void LateStance::_update_state(float angle)
 
     }
 }
+
+
+//****************************************************
+
+
+GaitPhase::GaitPhase(config_defs::joint_id id, ExoData* exo_data)
+    : _Controller(id, exo_data)
+{
+#ifdef CONTROLLER_DEBUG
+    Serial.println("GaitPhase::Constructor");
+#endif
+    _state = 0; // extension mode originally 
+};
+
+float GaitPhase::calc_motor_cmd()
+{
+    // Initializes torque
+    float cmd_ff = 0;
+
+    // Incorporates PID control if flag is present
+    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::late_stance::use_pid_idx]
+        ? _pid(cmd_ff, _joint_data->torque_reading, _controller_data->parameters[controller_defs::late_stance::p_gain_idx], _controller_data->parameters[controller_defs::late_stance::i_gain_idx], _controller_data->parameters[controller_defs::late_stance::d_gain_idx])
+        : 0);
+
+    return cmd;
+};
+
+
+//****************************************************
 
 
 /*
@@ -804,6 +844,8 @@ float ZhangCollins::calc_motor_cmd()
     return cmd;
 };
 
+
+//****************************************************
 
 
 FranksCollinsHip::FranksCollinsHip(config_defs::joint_id id, ExoData* exo_data)
@@ -1166,6 +1208,9 @@ float FranksCollinsHip::calc_motor_cmd()
 };
 
 
+//****************************************************
+// 
+// 
 // UserDefined::UserDefined(config_defs::joint_id id, ExoData* exo_data)
 // : _Controller(id, exo_data)
 // {
@@ -1202,6 +1247,10 @@ float FranksCollinsHip::calc_motor_cmd()
     
     // return 0;
 // };
+
+
+//****************************************************
+
 
 Sine::Sine(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)

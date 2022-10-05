@@ -291,6 +291,28 @@ private:
 
 };
 
+/*
+ * GaitPhase Controller
+ * This controller is for the hip joint
+ * Applies flexion or extension torque as a function of the gait phase (needs heel and toe FSRs)
+ *
+ * see ControllerData.h for details on the parameters used.
+ * 
+ * This controller is still in development, this is just meant to be a framework for the controller that will be filled out with time
+ */
+class GaitPhase : public _Controller
+{
+public:
+    GaitPhase(config_defs::joint_id id, ExoData* exo_data);
+
+    float calc_motor_cmd();
+private:
+
+    // Used to track the state 0 is extension mode, 1 is flexion mode.
+    uint8_t _state;
+
+};
+
 /**
  * @brief Zhang Collins Controller
  * This controller is for the ankle joint 

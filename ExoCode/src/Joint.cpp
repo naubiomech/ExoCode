@@ -354,6 +354,7 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 , _extension_angle(id, exo_data)
 , _bang_bang(id, exo_data)
 , _late_stance(id, exo_data)
+, _gait_phase(id, exo_data)
 , _franks_collins_hip(id, exo_data)
 // , _user_defined(id, exo_data)
 , _sine(id, exo_data)
@@ -496,6 +497,9 @@ void HipJoint::set_controller(uint8_t controller_id)
             break;
         case (uint8_t)config_defs::hip_controllers::late_stance:
             _controller = &_late_stance;
+            break;
+        case (uint8_t)config_defs::hip_controllers::gait_phase:
+            _controller = &_gait_phase;
             break;
         case (uint8_t)config_defs::hip_controllers::franks_collins_hip :
             _controller = &_franks_collins_hip;

@@ -167,6 +167,7 @@ class HipJoint : public _Joint
         ExtensionAngle _extension_angle; /**< extension angle controller */
         BangBang _bang_bang; /**< bang bang controller */
         LateStance _late_stance; /**<late stance controller */
+        GaitPhase _gait_phase; /**<gait phase controller */
         FranksCollinsHip _franks_collins_hip; /**< Franks Collins Hip controller */
         // UserDefined _user_defined; /**< user defined controller*/
         Sine _sine; /**< sine wave controller */
