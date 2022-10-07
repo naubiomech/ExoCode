@@ -175,6 +175,10 @@ namespace UART_command_handlers
         // }
         #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
         set_controller_params(msg.joint_id, (uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID], (uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START], exo_data);
+        
+        // get joint_data  from id
+        j_data->controller.controller = (uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID];
+
         #endif
     }
 

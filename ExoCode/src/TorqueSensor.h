@@ -49,15 +49,15 @@ class TorqueSensor
 		int _pin; /**< Pin to read for the sensor */
         bool _is_used; /**< Flag indicating if the sensor is used */
         
-        int _calibration;   /**< Stores the value used for calibration. This is a zero torque offset*/
+        float _calibration;   /**< Stores the value used for calibration. This is a zero torque offset*/
         //int _raw_reading; /**< Raw pin reading */
 		float _calibrated_reading; /**< Torque value with offset applied */
         
         const uint16_t _cal_time = 1000; /**< The time to do the initial calibration in ms*/  
         uint16_t _start_time; /**< time the calibration starts. */   
         bool _last_do_calibrate; /**< this when the calibration ends. */ //need to remember to reset this when cal finishes 
-        int _zero_sum; /**< sum of values over the calibration period used for averaging. */  
-        uint16_t _num_calibration_samples; /**< number of samples collected during calibration, denominator for averaging. */   
+        float _zero_sum; /**< sum of values over the calibration period used for averaging. */  
+        uint32_t _num_calibration_samples; /**< number of samples collected during calibration, denominator for averaging. */   
         
 };
 #endif

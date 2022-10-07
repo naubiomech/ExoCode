@@ -1,5 +1,5 @@
 #include "ParamsFromSD.h"
-#define SD_PARAM_DEBUG 1
+//#define SD_PARAM_DEBUG 1
 
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
 
