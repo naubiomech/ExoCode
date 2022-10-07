@@ -164,6 +164,7 @@ void _CANMotor::send_data(float torque)
         Serial.print(uint32_t(_motor_data->id));
         Serial.print("\n");
     #endif
+
     int direction_modifier = _motor_data->flip_direction ? -1 : 1;
     _motor_data->t_ff = torque;
     // read data from ExoData object, constraint it, and package it

@@ -437,7 +437,9 @@ void HipJoint::run_joint()
     // enable or disable the motor.
     _motor->on_off(); 
     _motor->enable();
-    
+
+    // make sure the correct controller is running.
+    set_controller(_joint_data->controller.controller);
     
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
@@ -607,6 +609,9 @@ void KneeJoint::run_joint()
     // enable or disable the motor.
     _motor->on_off(); 
     _motor->enable();
+
+    // make sure the correct controller is running.
+    set_controller(_joint_data->controller.controller);
     
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
@@ -767,6 +772,9 @@ void AnkleJoint::run_joint()
     // enable or disable the motor.
     _motor->on_off();
     _motor->enable();
+
+    // make sure the correct controller is running.
+    set_controller(_joint_data->controller.controller);
     
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();

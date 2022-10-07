@@ -1,5 +1,5 @@
 #include "TorqueSensor.h"
-//#define TORQUE_DEBUG 1
+// #define TORQUE_DEBUG 1
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
@@ -41,14 +41,14 @@ TorqueSensor::TorqueSensor(unsigned int pin)
 bool TorqueSensor::calibrate(bool do_calibrate)
 {
     #ifdef TORQUE_DEBUG
-        Serial.print("TorqueSensor::calibrate : do_calibrate = ");
-        Serial.print(do_calibrate);
-        Serial.print("\n");
+        // Serial.print("TorqueSensor::calibrate : do_calibrate = ");
+        // Serial.print(do_calibrate);
+        // Serial.print("\n");
     #endif
     if (_is_used)
     {
         #ifdef TORQUE_DEBUG
-        Serial.print("TorqueSensor::calibrate : _is_used\n");
+        // Serial.print("TorqueSensor::calibrate : _is_used\n");
         #endif
         // check for rising edge of do_calibrate, and reset the values
         if (do_calibrate > _last_do_calibrate)
@@ -56,30 +56,55 @@ bool TorqueSensor::calibrate(bool do_calibrate)
             _start_time = millis();
             _zero_sum = 0;
             _num_calibration_samples = 0;
+
+            #ifdef TORQUE_DEBUG
+                Serial.print("TorqueSensor::calibrate : Starting Cal for pin - ");
+                Serial.println(_pin);
+                Serial.print("TorqueSensor::calibrate : _start_time = ");
+                Serial.println(_start_time);
+            #endif
         }
         // check if we are within the time window and need to do the calibration
-        if((_cal_time >= (millis()-_start_time)) & do_calibrate)
+        uint16_t delta = millis()-_start_time;
+        if((_cal_time >= (delta)) && do_calibrate)
         {
-            uint16_t current_reading = analogRead(_pin);
+            float current_reading = analogRead(_pin)*torque_calibration::AI_CNT_TO_V;
             _zero_sum = _zero_sum + current_reading;
             _num_calibration_samples++;
-            
+
+            #ifdef TORQUE_DEBUG
+                Serial.print("TorqueSensor::calibrate : Continuing Cal for pin - ");
+                Serial.println(_pin);
+                Serial.print("TorqueSensor::calibrate : current_reading - ");
+                Serial.println(current_reading);
+                Serial.print("TorqueSensor::calibrate : _zero_sum - ");
+                Serial.println(_zero_sum);
+                Serial.print("TorqueSensor::calibrate : _num_calibration_samples - ");
+                Serial.println(_num_calibration_samples);
+            #endif
         }
         // The time window ran out so we are done, and should average the values and set the _calibration value.
         else if (do_calibrate)
         {
             if (_num_calibration_samples>0)
             {
-                _calibration = _zero_sum/_num_calibration_samples;
+                _calibration = _zero_sum/(float)_num_calibration_samples;
             }
             #ifdef TORQUE_DEBUG
-            Serial.print("TorqueSensor::calibrate : Torque Cal Done\n");
+            Serial.print("TorqueSensor::calibrate : Torque Cal Done with Calibration = ");
+            Serial.println(_calibration);
             #endif
             // Serial.print("TorqueSensor::calibrate : Torque Cal Done with cal - ");
             // Serial.print(_pin);
             // Serial.print("\t");
             // Serial.println(_calibration);
             do_calibrate = false;
+        }
+        else 
+        {
+            #ifdef TORQUE_DEBUG
+            // Serial.print("TorqueSensor::calibrate : Torque Cal Not Done\n");
+            #endif
         }
         
         // find the min and max over the time interval
@@ -104,26 +129,26 @@ bool TorqueSensor::calibrate(bool do_calibrate)
 float TorqueSensor::read()
 {
     _raw_reading = analogRead(_pin);
-    _calibrated_reading = ((float)_raw_reading - _calibration) * torque_calibration::AI_CNT_TO_V * torque_calibration::TRQ_V_TO_NM;
+    _calibrated_reading = (((float)_raw_reading*torque_calibration::AI_CNT_TO_V) - _calibration) * torque_calibration::TRQ_V_TO_NM;
 
     #ifdef TORQUE_DEBUG
-        Serial.print("TorqueSensor :: Read : pin ");
-        Serial.print(_pin);
-        Serial.print(" : Calibrated Reading = ");
-        Serial.println(_calibrated_reading, 12);
+        // Serial.print("TorqueSensor :: Read : pin ");
+        // Serial.print(_pin);
+        // Serial.print(" : Calibrated Reading = ");
+        // Serial.println(_calibrated_reading, 12);
 
-        Serial.print("TorqueSensor :: Read : pin ");
-        Serial.print(_pin);
-        Serial.print(" : Raw Reading = ");
-        Serial.println(_raw_reading);
-        Serial.println(" ");
+        // Serial.print("TorqueSensor :: Read : pin ");
+        // Serial.print(_pin);
+        // Serial.print(" : Raw Reading = ");
+        // Serial.println(_raw_reading);
+        // Serial.println(" ");
 
-        Serial.print("_calibration : ");
-        Serial.println(_calibration);
-        Serial.print("torque_calibration::AI_CNT_TO_V : ");
-        Serial.println(torque_calibration::AI_CNT_TO_V, 12);
-        Serial.print("torque_calibration::TRQ_V_TO_NM : ");
-        Serial.println(torque_calibration::TRQ_V_TO_NM);
+        // Serial.print("_calibration : ");
+        // Serial.println(_calibration);
+        // Serial.print("torque_calibration::AI_CNT_TO_V : ");
+        // Serial.println(torque_calibration::AI_CNT_TO_V, 12);
+        // Serial.print("torque_calibration::TRQ_V_TO_NM : ");
+        // Serial.println(torque_calibration::TRQ_V_TO_NM);
     #endif
     
     return _calibrated_reading;

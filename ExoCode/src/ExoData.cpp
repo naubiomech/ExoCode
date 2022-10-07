@@ -5,7 +5,7 @@
  * Constructor for the exo data.
  * Takes the array from the INI parser.
  * Stores the exo status, and the sync LED state.
- * TODO: decide if we want to change the sync LED state to a pointer.  Or bring the whole sync LED object into the exo.
+ * TODO: decide if we want to change the sync LED state to a pointer. Or bring the whole sync LED object into the exo.
  * Uses an initializer list for the leg data. 
  */
 ExoData::ExoData(uint8_t* config_to_send) 

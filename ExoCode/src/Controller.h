@@ -72,10 +72,13 @@ class _Controller
         Time_Helper* _t_helper;  /**< instance of the time helper to track when things happen used to check if we have a set time for the PID */
         float _t_helper_context; /**< store the context for the timer helper */
         float _t_helper_delta_t; /**< time time since the last event */
-        
+
+        float _filtered_torque_reading; /**< filtered torque reading, used for filtering torque signal */
+        float _filtered_cmd; /**< filtered command, used for filtering motor commands */
+
         // Values for the PID controller
         float _integral_val; /**< sum of the error integral */
-        float _prev_error;   /**< prev error term for calculating derivative */
+        float _prev_input;   /**< prev error term for calculating derivative */
         float _prev_de_dt;   /**< prev error derivative used if the timestep is not good*/
         
         /**

@@ -36,6 +36,9 @@ Exo::Exo(ExoData* exo_data)
     #ifdef EXO_DEBUG
         Serial.println("Exo :: Constructor : motor_stop_pin Mode set");
     #endif
+
+    analogWriteResolution(12);
+    analogReadResolution(12);
 };
 
 /* 
@@ -130,7 +133,7 @@ void Exo::run()
 
 
         // send the coms mcu the real time data every _real_time_msg_delay microseconds
-        //Serial.print("Exo::run->Checking if we have to send the message:");
+        // Serial.print("Exo::run->Checking if we have to send the message:");
         rt_delta_t += t_helper->tick(rt_context);
         // Serial.print("Exo::run->real_time_del_t: ");Serial.println(rt_delta_t);
         bool correct_status = (data->status == status_defs::messages::trial_on) || (data->status == status_defs::messages::fsr_calibration) || (data->status == status_defs::messages::fsr_refinement);
@@ -158,6 +161,8 @@ void Exo::run()
                 Serial.println(((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
             }
         #endif
+        // TODO: Toggle error
+
         delta_t = 0;
     }
 };
