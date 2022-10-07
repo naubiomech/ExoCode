@@ -495,10 +495,10 @@ void HipJoint::set_controller(uint8_t controller_id)
         case (uint8_t)config_defs::hip_controllers::bang_bang :
             _controller = &_bang_bang;
             break;
-        case (uint8_t)config_defs::hip_controllers::late_stance:
+        case (uint8_t)config_defs::hip_controllers::late_stance :
             _controller = &_late_stance;
             break;
-        case (uint8_t)config_defs::hip_controllers::gait_phase:
+        case (uint8_t)config_defs::hip_controllers::gait_phase :
             _controller = &_gait_phase;
             break;
         case (uint8_t)config_defs::hip_controllers::franks_collins_hip :

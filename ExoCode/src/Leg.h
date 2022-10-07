@@ -71,6 +71,7 @@ class Leg
 
         /** Move these back down to private when things are working*/
         //HipJoint _hip; /**< instance of a hip joint */
+        //KneeJoint _knee; /**< instance of a knee joint */
         //AnkleJoint _ankle; /**< instance of a ankle joint */
         
 	private:

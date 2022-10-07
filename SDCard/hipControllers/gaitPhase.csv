@@ -3,4 +3,4 @@
 ,Parameter list for the BangBang controller,,,,,,,,
 ,Parameter order:,,,,,,,,
 Flexion Setpoint (Nm),Extension Setpoint (Nm),Flexion Start % (% Gait Cycle),Flexion End % (% Gait Cycle),Extension Start % (% Gait Cycle),Extension End % (% Gait Cycle),use_pid,p_gain,i_gain,d_gain
-0,0,0,0,0,0,0,0,0,0
+0,0,25,75,75,100,0,0,0,0

@@ -127,11 +127,11 @@ namespace config_defs
         extension_angle = 4,
         franks_collins_hip = 5,
         bang_bang = 6,
-        user_defined = 7,
-        sine = 8,
-        stasis = 9,
-        late_stance = 10,
-        gait_phase = 11,
+        late_stance = 7,
+        gait_phase = 8,
+        user_defined = 9,
+        sine = 10,
+        stasis = 11,
     };
     
     enum class knee_controllers : uint8_t
@@ -326,11 +326,11 @@ namespace config_defs
             {"extensionAngle", (uint8_t)config_defs::hip_controllers::extension_angle},
             {"franksCollinsHip", (uint8_t)config_defs::hip_controllers::franks_collins_hip},
             {"bangBang", (uint8_t)config_defs::hip_controllers::bang_bang},
+            {"lateStance", (uint8_t)config_defs::hip_controllers::late_stance},
+            {"gaitPhase", (uint8_t)config_defs::hip_controllers::gait_phase},
             {"userDefined", (uint8_t)config_defs::hip_controllers::user_defined},
             {"sine", (uint8_t)config_defs::hip_controllers::sine},
             {"stasis", (uint8_t)config_defs::hip_controllers::stasis},
-            {"latestance", (uint8_t)config_defs::hip_controllers::late_stance},
-            {"gaitPhase", (uint8_t)config_defs::hip_controllers::gait_phase},
         };
         
         const IniKeyCode knee_controllers 

@@ -271,6 +271,7 @@ class LateStance : public _Controller
 {
 public:
     LateStance(config_defs::joint_id id, ExoData* exo_data);
+    ~LateStance(){};
 
     float calc_motor_cmd();
 private:
@@ -302,14 +303,11 @@ private:
  */
 class GaitPhase : public _Controller
 {
-public:
-    GaitPhase(config_defs::joint_id id, ExoData* exo_data);
+    public:
+        GaitPhase(config_defs::joint_id id, ExoData* exo_data);
+        ~GaitPhase(){};
 
-    float calc_motor_cmd();
-private:
-
-    // Used to track the state 0 is extension mode, 1 is flexion mode.
-    uint8_t _state;
+        float calc_motor_cmd();
 
 };
 

@@ -53,7 +53,7 @@
             {(uint8_t)config_defs::hip_controllers::franks_collins_hip, "hipControllers/franksCollins.csv"},
             {(uint8_t)config_defs::hip_controllers::bang_bang, "hipControllers/bangBang.csv"},
             {(uint8_t)config_defs::hip_controllers::late_stance, "hipControllers/lateStance.csv"},
-            {(uint8_t)config_defs::hip_controllers::late_stance, "hipControllers/gaitPhase.csv"},
+            {(uint8_t)config_defs::hip_controllers::gait_phase, "hipControllers/gaitPhase.csv"},
             {(uint8_t)config_defs::hip_controllers::user_defined, "hipControllers/userDefined.csv"},
             {(uint8_t)config_defs::hip_controllers::sine, "hipControllers/sine.csv"},
             {(uint8_t)config_defs::hip_controllers::stasis, "hipControllers/stasis.csv"},

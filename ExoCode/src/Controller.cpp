@@ -536,23 +536,23 @@ void BangBang::_update_state(float angle)
 {
     switch (_state)
     {
-        case 0 :  // extension assistance
-            if (angle <= _controller_data->parameters[controller_defs::bang_bang::angle_threshold_idx])
-            {
-                _state = 1;
-            }
-            break;
-        case 1 :  // flexion assistance 
-            
-            if ((angle > (_controller_data->parameters[controller_defs::bang_bang::target_flexion_percent_max_idx] * _max_angle / 100)) 
-                || ((angle > _controller_data->parameters[controller_defs::bang_bang::angle_threshold_idx]+utils::degrees_to_radians(5)) 
-                    && (_leg_data->hip.velocity <= _controller_data->parameters[controller_defs::bang_bang::velocity_threshold_idx])))
-            {
-                _state = 0;
-            }
-            break;
-         
-        
+    case 0:  // extension assistance
+        if (angle <= _controller_data->parameters[controller_defs::bang_bang::angle_threshold_idx])
+        {
+            _state = 1;
+        }
+        break;
+    case 1:  // flexion assistance 
+
+        if ((angle > (_controller_data->parameters[controller_defs::bang_bang::target_flexion_percent_max_idx] * _max_angle / 100))
+            || ((angle > _controller_data->parameters[controller_defs::bang_bang::angle_threshold_idx] + utils::degrees_to_radians(5))
+                && (_leg_data->hip.velocity <= _controller_data->parameters[controller_defs::bang_bang::velocity_threshold_idx])))
+        {
+            _state = 0;
+        }
+        break;
+
+
     }
     // int print_time_ms = 100;
     // static int last_timestamp = millis();
@@ -564,7 +564,7 @@ void BangBang::_update_state(float angle)
         // Serial.print(_controller_data->parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] * _max_angle/100);
         // Serial.print("\n");
     // }
-}
+};
 
 
 //****************************************************
@@ -651,29 +651,88 @@ void LateStance::_update_state(float angle)
 
 
     }
-}
+};
 
 
 //****************************************************
 
 
 GaitPhase::GaitPhase(config_defs::joint_id id, ExoData* exo_data)
-    : _Controller(id, exo_data)
+: _Controller(id, exo_data)
 {
 #ifdef CONTROLLER_DEBUG
     Serial.println("GaitPhase::Constructor");
 #endif
-    _state = 0; // extension mode originally 
 };
 
 float GaitPhase::calc_motor_cmd()
 {
+
     // Initializes torque
     float cmd_ff = 0;
 
+    // Defines % Gait Variable (obtains from Leg.cpp & LegData.cpp)
+    float percent_gait = _leg_data->percent_gait;
+
+    //Print outs if you need to debug Controller parameter issue
+    // 
+    //Serial.print("GaitPhase::calc_motor_cmd : Flexion_Start_Percentage : ");
+    //Serial.print(_controller_data->parameters[controller_defs::gait_phase::flexion_start_percentage_idx]);
+    //Serial.print("\n");
+
+    //Serial.print("GaitPhase::calc_motor_cmd : Flexion_End_Percentage : ");
+    //Serial.print(_controller_data->parameters[controller_defs::gait_phase::flexion_end_percentage_idx]);
+    //Serial.print("\n");
+
+    //Serial.print("GaitPhase::calc_motor_cmd : Extension_Start_Percentage : ");
+    //Serial.print(_controller_data->parameters[controller_defs::gait_phase::extension_start_percentage_idx]);
+    //Serial.print("\n");
+
+    //Serial.print("GaitPhase::calc_motor_cmd : Extension_End_Percentage : ");
+    //Serial.print(_controller_data->parameters[controller_defs::gait_phase::extension_end_percentage_idx]);
+    //Serial.print("\n");
+
+    if (-1 != percent_gait) //Only runs if a valid calculation of percent gait is present
+    {
+        //If the percentage of gait is within the flexion start and end points, the motor supplies flexion assistance
+        if ((percent_gait >= _controller_data->parameters[controller_defs::gait_phase::flexion_start_percentage_idx]) && (percent_gait <= _controller_data->parameters[controller_defs::gait_phase::flexion_end_percentage_idx]))
+        {
+            cmd_ff = _controller_data->parameters[controller_defs::gait_phase::flexion_setpoint_idx];
+            //Serial.print("GaitPhase::calc_motor_cmd : Flexion : ");
+            //Serial.print(percent_gait);
+            //Serial.print("\n");
+
+        }
+        //If the percentage of gait is within the extension start and end points, the motor supplies extension assistance
+        else if ((percent_gait > _controller_data->parameters[controller_defs::gait_phase::extension_start_percentage_idx]) && (percent_gait <= 100))
+        {
+            cmd_ff = _controller_data->parameters[controller_defs::gait_phase::extension_setpoint_idx];
+            //Serial.print("GaitPhase::calc_motor_cmd : Extension - Late : ");
+            //Serial.print(percent_gait);
+            //Serial.print("\n");
+        }
+        //If the percentage is 0 or less than the flexion start point, the motor supplies extension assistance
+        else if (percent_gait == 0 || percent_gait < _controller_data->parameters[controller_defs::gait_phase::extension_end_percentage_idx])
+        {
+            cmd_ff = _controller_data->parameters[controller_defs::gait_phase::extension_setpoint_idx];
+            //Serial.print("GaitPhase::calc_motor_cmd : Extension - Early : ");
+            //Serial.print(percent_gait);
+            //Serial.print("\n");
+        }
+        //If none of these conditions are met, send a zero torque to the motor
+        else 
+        {
+            cmd_ff = 0;
+            //Serial.print("GaitPhase::calc_motor_cmd : Unknown Condition : ");
+            //Serial.print(percent_gait);
+            //Serial.print("\n");
+        }
+    }
+
+
     // Incorporates PID control if flag is present
-    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::late_stance::use_pid_idx]
-        ? _pid(cmd_ff, _joint_data->torque_reading, _controller_data->parameters[controller_defs::late_stance::p_gain_idx], _controller_data->parameters[controller_defs::late_stance::i_gain_idx], _controller_data->parameters[controller_defs::late_stance::d_gain_idx])
+    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::gait_phase::use_pid_idx]
+        ? _pid(cmd_ff, _joint_data->torque_reading, _controller_data->parameters[controller_defs::gait_phase::p_gain_idx], _controller_data->parameters[controller_defs::gait_phase::i_gain_idx], _controller_data->parameters[controller_defs::gait_phase::d_gain_idx])
         : 0);
 
     return cmd;
