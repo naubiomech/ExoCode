@@ -73,13 +73,13 @@ class _Controller
         float _t_helper_context; /**< store the context for the timer helper */
         float _t_helper_delta_t; /**< time time since the last event */
 
-        float _filtered_torque_reading; /**< filtered torque reading, used for filtering torque signal */
-        float _filtered_cmd; /**< filtered command, used for filtering motor commands */
+
 
         // Values for the PID controller
         float _integral_val; /**< sum of the error integral */
         float _prev_input;   /**< prev error term for calculating derivative */
         float _prev_de_dt;   /**< prev error derivative used if the timestep is not good*/
+        float _prev_pid_time; /**< prev time the PID was called */
         
         /**
          * @brief calculates the current PID contribution to the motor command. 

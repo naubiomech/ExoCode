@@ -106,8 +106,10 @@ float _Controller::_pid(float cmd, float measurement, float p_gain, float i_gain
     {
         time_good = false;
     }
+    float now = micros();
 
-    //TODO: Try dynamic time step
+    //TODO: Test dynamic time step
+    float dt = (now - _prev_pid_time)*1000000;
 
     float error_val = cmd - measurement;  
     //_integral_val += error_val / LOOP_FREQ_HZ;     
@@ -122,8 +124,10 @@ float _Controller::_pid(float cmd, float measurement, float p_gain, float i_gain
         //de_dt = _prev_de_dt;
         de_dt = 0;
     }
-      
+
+    _prev_pid_time = now;
     _prev_input = measurement;
+    
     float p = p_gain * error_val;  
     //float i = i_gain * _integral_val;  // resetting _integral_val was crashing the system 
     float d = d_gain * de_dt; 
@@ -218,16 +222,15 @@ ProportionalJointMoment::ProportionalJointMoment(config_defs::joint_id id, ExoDa
 
 float ProportionalJointMoment::calc_motor_cmd()
 {
-    static const float scaling_factor = 1;//2*18/4096;
     float cmd_ff = 0;
-    static uint32_t run_count = 0;
-    run_count++;
-    bool print = false;
-    if (run_count > 10)
-    {
-        run_count = 0;
-        print = _leg_data->is_left;
-    }
+    // static uint32_t run_count = 0;
+    // run_count++;
+    // bool print = false;
+    // if (run_count > 10)
+    // {
+    //     run_count = 0;
+    //     print = _leg_data->is_left;
+    // }
 
 
     // if (print)
@@ -280,8 +283,8 @@ float ProportionalJointMoment::calc_motor_cmd()
     }
     _controller_data->ff_setpoint = cmd_ff;
 
-    // low pass filter on torque_reading (note the negative signs)
-    _filtered_torque_reading = utils::ewma(_joint_data->torque_reading, _filtered_torque_reading, 0.8);
+    // low pass filter on torque_reading
+    _controller_data->filtered_torque_reading = utils::ewma(_joint_data->torque_reading, _controller_data->filtered_torque_reading, 0.8);
 
     // TODO: Add auto kf to feed forward
     
@@ -289,39 +292,37 @@ float ProportionalJointMoment::calc_motor_cmd()
     float cmd;
     if (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx])
     {
-
-        cmd = _pid(cmd_ff, _filtered_torque_reading, _controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);
-    
+        cmd = _pid(cmd_ff, _controller_data->filtered_torque_reading,_controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);
     }
     else
     {
         cmd = cmd_ff;
     }
-    
-    if (print)
-    {
-        Serial.print("ProportionalJointMoment::calc_motor_cmd : torque reading = ");
-        Serial.println(_joint_data->torque_reading);
-        // Print PID gains if PID is used
-        if (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx])
-        {
-            Serial.print("ProportionalJointMoment::calc_motor_cmd : P = ");
-            Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx]);
-            Serial.print("ProportionalJointMoment::calc_motor_cmd : I = ");
-            Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx]);
-            Serial.print("ProportionalJointMoment::calc_motor_cmd : D = ");
-            Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);
-        }
-        Serial.print("ProportionalJointMoment::calc_motor_cmd : cmd = ");
-        Serial.print(cmd);
-        Serial.print("\t");
-        Serial.print("ProportionalJointMoment::calc_motor_cmd : cmd_ff = ");
-        Serial.print(cmd_ff);
-        Serial.print("\t");
-        Serial.print("ProportionalJointMoment::calc_motor_cmd : filtered_torque_reading = ");
-        Serial.println(_filtered_torque_reading * scaling_factor);
-    }
 
+    // if (print)
+    // {
+    //     Serial.print("ProportionalJointMoment::calc_motor_cmd : torque reading = ");
+    //     Serial.println(_joint_data->torque_reading);
+    //     // Print PID gains if PID is used
+    //     if (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx])
+    //     {
+    //         Serial.print("ProportionalJointMoment::calc_motor_cmd : P = ");
+    //         Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx]);
+    //         Serial.print("ProportionalJointMoment::calc_motor_cmd : I = ");
+    //         Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx]);
+    //         Serial.print("ProportionalJointMoment::calc_motor_cmd : D = ");
+    //         Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);
+    //     }
+    //     Serial.print("ProportionalJointMoment::calc_motor_cmd : cmd = ");
+    //     Serial.print(cmd);
+    //     Serial.print("\t");
+    //     Serial.print("ProportionalJointMoment::calc_motor_cmd : cmd_ff = ");
+    //     Serial.print(cmd_ff);
+    //     Serial.print("\t");
+    //     Serial.print("ProportionalJointMoment::calc_motor_cmd : filtered_torque_reading = ");
+    //     Serial.println(_filtered_torque_reading*scaling_factor);
+    // }
+    
     // if (print)
     // {
     //     Serial.print("ProportionalJointMoment::calc_motor_cmd : torque reading = ");
@@ -339,8 +340,8 @@ float ProportionalJointMoment::calc_motor_cmd()
     //     Serial.print("\n");
     // }
 
-    _filtered_cmd = utils::ewma(cmd, _filtered_cmd, 0.8);
-    return _filtered_cmd * scaling_factor;
+    _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 0.8);
+    return _controller_data->filtered_cmd;
 };
 
 
