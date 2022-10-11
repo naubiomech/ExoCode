@@ -200,6 +200,10 @@ class StatusLed
      */
     void set_brightness(int brightness);  // Used if you need to change the brightness after initialization, brightness is used to scale the colors that are sent: color * brightness/255
     
+    /**
+     * @brief Toggle the status LED on or off
+     */
+    void toggle();
   private:
   
     /**

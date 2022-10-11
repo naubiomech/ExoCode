@@ -47,7 +47,8 @@ namespace controller_defs /**< stores the parameter indexes for different contro
         const uint8_t p_gain_idx = 4;
         const uint8_t i_gain_idx = 5;
         const uint8_t d_gain_idx = 6;
-        const uint8_t num_parameter = 7;
+        const uint8_t torque_alpha_idx = 7;
+        const uint8_t num_parameter = 8;
     }
     
     namespace heel_toe
