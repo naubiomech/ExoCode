@@ -1,6 +1,8 @@
 #ifndef ERRORMANAGER_H
 #define ERRORMANAGER_H
 
+#if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
+
 #include "error_types.h"
 
 /**
@@ -34,3 +36,5 @@ class ErrorManager
 };
 
 #endif
+
+#endif // defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)

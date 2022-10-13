@@ -1,6 +1,8 @@
 #ifndef ERROR_TYPES_H
 #define ERROR_TYPES_H
 
+#if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
+
 #include "ExoData.h"
 #include "Exo.h"
 
@@ -17,3 +19,5 @@ typedef enum error_levels_t
 } error_levels_t;
 
 #endif
+
+#endif // defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)

@@ -1,6 +1,8 @@
 #ifndef ERROR_TRIGGERS_H
 #define ERROR_TRIGGERS_H
 
+#if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
+
 #include "ExoData.h"
 #include "Exo.h"
 #include "error_types.h"
@@ -35,3 +37,5 @@ namespace error_triggers
 }
 
 #endif
+
+#endif // defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)

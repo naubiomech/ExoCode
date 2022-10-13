@@ -1,6 +1,8 @@
 #ifndef ERROR_HANDLERS_H
 #define ERROR_HANDLERS_H
 
+#if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
+
 #include "ExoData.h"
 #include "Exo.h"
 #include "error_types.h"
@@ -26,3 +28,5 @@ namespace error_handlers
 }
 
 #endif
+
+#endif // defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
