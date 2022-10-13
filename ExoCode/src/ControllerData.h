@@ -47,7 +47,8 @@ namespace controller_defs /**< stores the parameter indexes for different contro
         const uint8_t p_gain_idx = 4;
         const uint8_t i_gain_idx = 5;
         const uint8_t d_gain_idx = 6;
-        const uint8_t num_parameter = 7;
+        const uint8_t torque_alpha_idx = 7;
+        const uint8_t num_parameter = 8;
     }
     
     namespace heel_toe
@@ -248,6 +249,9 @@ class ControllerData {
         float ff_setpoint; /**< feed forwared setpoint, only updated in closed loop controllers */
         float parameters[controller_defs::max_parameters];  /**< Parameter list for the controller see the controller_defs namespace for the specific controller. */
         uint8_t parameter_set; /**< temporary value used to store the parameter set while we are pulling from the sd card. */
+
+        float filtered_torque_reading; /**< filtered torque reading, used for filtering torque signal */
+        float filtered_cmd; /**< filtered command, used for filtering motor commands */
 };
 
 

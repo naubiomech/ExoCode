@@ -42,6 +42,9 @@ ControllerData::ControllerData(config_defs::joint_id id, uint8_t* config_to_send
     {    
         parameters[i] = 0;
     }
+
+    filtered_cmd = 0;
+    filtered_torque_reading = 0;
 };
 
 void ControllerData::reconfigure(uint8_t* config_to_send) 

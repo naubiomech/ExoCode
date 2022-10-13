@@ -97,6 +97,28 @@ void StatusLed::update(uint16_t message)
     //_set_color(_message_colors[_current_message][0],_message_colors[_current_message][1],_message_colors[_current_message][2]);   // Set the LED state
 };
 
+/**
+ * @brief Toggle the status LED on or off
+ */
+void StatusLed::toggle()
+{
+    static bool led_on = false;
+    if (led_on)
+    {
+        digitalWrite(_r_pin, LOW);
+        digitalWrite(_g_pin, LOW);
+        digitalWrite(_b_pin, LOW);
+        led_on = false;
+    }
+    else
+    {
+        digitalWrite(_r_pin, HIGH);
+        digitalWrite(_g_pin, HIGH);
+        digitalWrite(_b_pin, HIGH);
+        led_on = true;
+    }
+}
+
 
 
 

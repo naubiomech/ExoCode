@@ -109,7 +109,7 @@ void ComsMCU::update_gui()
     if ((_data->status == status_defs::messages::trial_on) || 
     (_data->status == status_defs::messages::fsr_calibration) ||
     (_data->status == status_defs::messages::fsr_refinement) && 
-    (del_t > BLE_times::_real_time_msg_delay))
+    (del_t > (BLE_times::_real_time_msg_delay*2))
     {
         // static const float msg_context = t_helper->generate_new_context();
         // static float time_since_last_message;

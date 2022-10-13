@@ -152,6 +152,17 @@ void Exo::run()
     // we didn't hit the time requirements
     else if (delta_t > ((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)))
     {
+        
+        // toggle the synce LED every X times we miss the time requirements
+        // static uint8_t missed_time_count = 0;
+        // static const uint8_t missed_time_max = 100;
+        // missed_time_count++;
+        // if (missed_time_count >= missed_time_max)
+        // {
+        //     missed_time_count = 0;
+        //     status_led.toggle();
+        // }
+
         //data->status = status_defs::messages::error;'
         //Serial.println("Exo::Run:Timeoverflow");
         #ifdef EXO_DEBUG
