@@ -52,8 +52,8 @@ namespace controller_defs /**< stores the parameter indexes for different contro
     
     namespace heel_toe
     {
-        const uint8_t max_torque_idx = 0;
-        const uint8_t min_torque_idx = 1;
+        const uint8_t flexion_torque_setpoint_idx = 0;
+        const uint8_t extension_torque_setpoint_idx = 1;
         const uint8_t use_pid_idx = 2;
         const uint8_t p_gain_idx = 3;
         const uint8_t i_gain_idx = 4;

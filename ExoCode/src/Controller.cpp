@@ -353,23 +353,157 @@ HeelToe::HeelToe(config_defs::joint_id id, ExoData* exo_data)
     #ifdef CONTROLLER_DEBUG
         Serial.println("HeelToe::Constructor");
     #endif
-    
-    
+
+        for (int i = 0; i < _num_swing_avg; i++)    /**< Stores 0s in the _swing time array to initialize it. */
+        {
+            _swing_time[i] = 0;
+        }
+
+        _swing_start_timestamp = 0;                 /**< Initializes the starting timestamp for swing to 0. */
+        _heel_strike_timestamp = 0;                 /**< Initializes the starting timestamp for heelstrike to 0. */
+        _prev_swing_start_timestamp = 0;            /**< Initializes the previous swing's start timestamp to 0. */
+        
+        state_2_current = 0;                        /**< Initializes the time in "State 2" to 0. */
+        _prev_state_2 = 1;                          /**< Initializes the previous "State 2" time duration to 1, this is because it is used as a denominator of a calculation later that would throw a fit if it was 0. */
+
+        _fs_previous = 0;                           /**< Initializes the previous FS measurment to 0. */
+        _df_dt_previous = 0;                        /**< Initializes the previous derivative of FS to 0. */
+      
 };
 
 float HeelToe::calc_motor_cmd()
 {
-    // this code is just temporary while we are under construction.
-    float cmd_ff = 0;
-    
+    cmd_ff = 0;                                     /**< Sets the default motor command to 0. */
+
+    if (!_leg_data->do_calibration_toe_fsr && !_leg_data->do_calibration_heel_fsr)  /**< If the toe and heel FSRs are not being calibrated then keep motor torque 0. */
+    {
+
+        float percent_gait = _leg_data->percent_gait;           /**< Variable that stores the percent gait calulation from 'Leg.cpp'. */
+
+        float timing = millis();      /**< Records the current time in which this loop of the  controller is run. */ 
+
+        _update_swing_duration();       /**< Runs the "Update Swing Duration" function (see below), returns the average Swing duration. */
+
+        if (((timing - _swing_start_timestamp) <= 0.3 * average_swing_duration) && !_prev_state_2_status)       /**< If the time in swing is less than 30% of the avearge swing duration and we were not previously in "State 2". */
+        {
+            state_2_start = millis();   /**< Sets the start time of   */
+            _prev_state_2_status = 1;
+        }
+
+        if (((timing - _swing_start_timestamp) > 0.3 * average_swing_duration) && _prev_state_2_status)
+        {
+            state_2_end = millis();
+            _prev_state_2_status = 0;
+        }
+
+        //Determines the slope of the line for the third state
+        float m = (0.5 * _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx] - 0.6 * _controller_data->parameters[controller_defs::heel_toe::extension_torque_setpoint_idx]) / (0.7 * average_swing_duration);
+
+
+        fs = _leg_data->toe_fsr - 0.25 * _leg_data->heel_fsr;     //Estimation of ground reaction force based on Bishe 2021'
+
+        df_dt = (fs - _fs_previous) * LOOP_FREQ_HZ;       //Estimation of the derivative of fs
+
+        if (fs < 0 && df_dt < 0) //If FS is negative and it's derivative is also negative
+        {
+            cmd_ff = ((0.6 * _controller_data->parameters[controller_defs::heel_toe::extension_torque_setpoint_idx]) + (0.4 * _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx] * fs));
+        }
+        else if (fs < 0 && df_dt >= 0)  //If FS is negative and it's derivative is positive
+        {
+            cmd_ff = _controller_data->parameters[controller_defs::heel_toe::extension_torque_setpoint_idx] * fs;
+        }
+        else if (fs > 0 && df_dt >= 0)        //If FS is positive and it's derivative is positive
+        {
+            cmd_ff = _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx] * fs * 0.5;
+        }
+        else if (fs > 0 && df_dt < 0 && (timing - _swing_start_timestamp) <= 0.3 * average_swing_duration)   //If FS is positive, it's derivative is negative, and you are within 30% of the moving average of the swing phase duration
+        {
+            state_2_current = millis();
+            float t = state_2_current / _prev_state_2;
+            cmd_ff = (0.5 + (0.5 * ((alpha * ((t * t) - t)) / (t - beta)))) * _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx];
+        }
+        else if (((timing - _swing_start_timestamp) > 0.3 * average_swing_duration) && percent_gait <= 100);
+        {
+            cmd_ff = (timing - state_2_end) * m;
+        }
+
+        //If none of the above conditions are met, send zero torque
+
+        _fs_previous = fs;
+        _df_dt_previous = df_dt;
+        _prev_state_2 = state_2_end - state_2_start;
+    }
     // add the PID contribution to the feed forward command
     float cmd = cmd_ff + (_controller_data->parameters[controller_defs::heel_toe::use_pid_idx] 
                 ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::heel_toe::p_gain_idx], _controller_data->parameters[controller_defs::heel_toe::i_gain_idx], _controller_data->parameters[controller_defs::heel_toe::d_gain_idx]) 
                 : 0); 
                          
-    return cmd;
+    return cmd_ff;
 };
 
+float HeelToe::_update_swing_duration()
+{
+    if (_leg_data->prev_toe_stance > _leg_data->toe_stance && !_leg_data->prev_heel_stance)  //If swing just started (if the toe was previously in contact with the ground but now is not on the ground)
+    {
+        _swing_start_timestamp = millis();  //Records the time that swing started
+
+    }
+
+    if (!_leg_data->prev_heel_stance && !_leg_data->prev_toe_stance)      //If we were previously in swing
+    {
+
+        if ((_leg_data->heel_stance > _leg_data->prev_heel_stance) || (_leg_data->toe_stance > _leg_data->prev_toe_stance)) //If heel strike occurs (builds in possibility for flat foot landings via incorporation of toe)
+        {
+            _heel_strike_timestamp = millis();  //Records the time that heel strike occurs
+        }
+    }
+
+    unsigned int swing_time = _swing_start_timestamp - _heel_strike_timestamp;   //Calculates swing phase time
+    //float average_swing_duration; //Average duration of swing phase from previous N trials
+
+    if (0 == _prev_swing_start_timestamp)
+    {
+        return average_swing_duration;
+    }
+
+    uint8_t number_uninitialized = 0;
+
+    //Checks to see if any element in the array is not populated wtih data (if the element is 0, it adds 1 to number_uninitialized)
+    for (int i = 0; i < _num_swing_avg; i++)
+    {
+        number_uninitialized += (_swing_time[i] == 0);
+    }
+
+    unsigned int* max_value = std::max_element(_swing_time, _swing_time + _num_swing_avg);  //Find the maximum value of the array 
+    unsigned int* min_value = std::min_element(_swing_time, _swing_time + _num_swing_avg);  //Find the minimum value of the array 
+
+    //Stores swing_time into array to find moving average
+    if (number_uninitialized > 0)   //If not every element of the array is populated with data
+    {
+        for (int i = 1; i < _num_swing_avg; i++)
+        {
+            _swing_time[i] = _swing_time[i - 1];    //Shifts the element previoulsy in position 0 into position 1, shifts the element that was in position 1 into position 2, kicks out the previous position 2
+        }
+        _swing_time[0] = swing_time;                //Stores the current value in the 0 position
+    }
+    else if ((swing_time <= swing_duration_window_upper_coeff * *max_value) && (swing_time >= swing_duration_window_lower_coeff * *min_value))  //If the swing time falls within the expected window than add it to the array
+    {
+        int sum_swing_times = swing_time;           //Creates a variable to store the total sum of all the step times (to be used to find average), initializes it with the new swing_time value
+        for (int i = 1; i < _num_swing_avg; i++)
+        {
+            sum_swing_times += _swing_time[i - 1];  //Adds every value stored in the array to the total sum except the very last one which is being "kicked out" by the new value
+            _swing_time[i] = _swing_time[i - 1];    //Shifts the element previoulsy in position 0 into position 1, shifts the element that was in position 1 into position 2, kicks out the previous position 2
+        }
+        _swing_time[0] = swing_time;                //Stores the current swing_time into the first position within the array 
+
+        average_swing_duration = sum_swing_times / _num_swing_avg;      //Determines the average duration of the last few swing phases in ms
+
+    }
+
+    _prev_swing_start_timestamp = _swing_start_timestamp;   //Updates the previous swing_start_timestamp with the one from the current cycle
+
+    return average_swing_duration;
+};
 
 //****************************************************
 
@@ -732,22 +866,23 @@ float GaitPhase::calc_motor_cmd()
     float percent_gait = _leg_data->percent_gait;
 
     //Print outs if you need to debug Controller parameter issue
-    // 
-    //Serial.print("GaitPhase::calc_motor_cmd : Flexion_Start_Percentage : ");
-    //Serial.print(_controller_data->parameters[controller_defs::gait_phase::flexion_start_percentage_idx]);
-    //Serial.print("\n");
 
-    //Serial.print("GaitPhase::calc_motor_cmd : Flexion_End_Percentage : ");
-    //Serial.print(_controller_data->parameters[controller_defs::gait_phase::flexion_end_percentage_idx]);
-    //Serial.print("\n");
+        //Serial.print("GaitPhase::calc_motor_cmd : Flexion_Start_Percentage : ");
+        //Serial.print(_controller_data->parameters[controller_defs::gait_phase::flexion_start_percentage_idx]);
+        //Serial.print("\n");
 
-    //Serial.print("GaitPhase::calc_motor_cmd : Extension_Start_Percentage : ");
-    //Serial.print(_controller_data->parameters[controller_defs::gait_phase::extension_start_percentage_idx]);
-    //Serial.print("\n");
+        //Serial.print("GaitPhase::calc_motor_cmd : Flexion_End_Percentage : ");
+        //Serial.print(_controller_data->parameters[controller_defs::gait_phase::flexion_end_percentage_idx]);
+        //Serial.print("\n");
 
-    //Serial.print("GaitPhase::calc_motor_cmd : Extension_End_Percentage : ");
-    //Serial.print(_controller_data->parameters[controller_defs::gait_phase::extension_end_percentage_idx]);
-    //Serial.print("\n");
+        //Serial.print("GaitPhase::calc_motor_cmd : Extension_Start_Percentage : ");
+        //Serial.print(_controller_data->parameters[controller_defs::gait_phase::extension_start_percentage_idx]);
+        //Serial.print("\n");
+
+        //Serial.print("GaitPhase::calc_motor_cmd : Extension_End_Percentage : ");
+        //Serial.print(_controller_data->parameters[controller_defs::gait_phase::extension_end_percentage_idx]);
+        //Serial.print("\n");
+
 
     if (-1 != percent_gait) //Only runs if a valid calculation of percent gait is present
     {
@@ -760,7 +895,7 @@ float GaitPhase::calc_motor_cmd()
             //Serial.print("\n");
 
         }
-        //If the percentage of gait is within the extension start and end points, the motor supplies extension assistance
+        //If the percentage of gait is within the extension start point and the end of the gait cycle, the motor supplies extension assistance
         else if ((percent_gait > _controller_data->parameters[controller_defs::gait_phase::extension_start_percentage_idx]) && (percent_gait <= 100))
         {
             cmd_ff = _controller_data->parameters[controller_defs::gait_phase::extension_setpoint_idx];
@@ -788,9 +923,10 @@ float GaitPhase::calc_motor_cmd()
 
 
     // Incorporates PID control if flag is present
-    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::gait_phase::use_pid_idx]
-        ? _pid(cmd_ff, _joint_data->torque_reading, _controller_data->parameters[controller_defs::gait_phase::p_gain_idx], _controller_data->parameters[controller_defs::gait_phase::i_gain_idx], _controller_data->parameters[controller_defs::gait_phase::d_gain_idx])
-        : 0);
+    float cmd = cmd_ff;
+    //float cmd = cmd_ff + (_controller_data->parameters[controller_defs::gait_phase::use_pid_idx]
+    //    ? _pid(cmd_ff, _joint_data->torque_reading, _controller_data->parameters[controller_defs::gait_phase::p_gain_idx], _controller_data->parameters[controller_defs::gait_phase::i_gain_idx], _controller_data->parameters[controller_defs::gait_phase::d_gain_idx])
+    //    : 0);
 
     return cmd;
 };

@@ -57,6 +57,8 @@ class LegData{
         bool ground_strike;  /**< Trigger when we go from swing to one FSR making contact. */
         bool heel_stance;  /**< High when the heel FSR is in ground contact */
         bool toe_stance;  /**< High when the toe FSR is in ground contact */
+        bool prev_heel_stance;  /**< High when the heel FSR was in ground contact on the previous iteration */
+        bool prev_toe_stance;   /**< High when the toe FSR was in ground contact on the previous iteration */
         
         bool is_left; /**< 1 if the leg is on the left, 0 otherwise */
         bool is_used; /**< 1 if the leg is used, 0 otherwise */

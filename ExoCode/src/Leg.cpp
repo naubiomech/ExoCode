@@ -146,6 +146,9 @@ void Leg::check_calibration()
 
 bool Leg::_check_ground_strike()
 {
+    _leg_data->prev_heel_stance = _prev_heel_contact_state;  //This might not work, needs to be tested
+    _leg_data->prev_toe_stance = _prev_toe_contact_state;
+
     bool heel_contact_state = _heel_fsr.get_ground_contact();
     bool toe_contact_state = _toe_fsr.get_ground_contact();
     _leg_data->heel_stance = heel_contact_state;

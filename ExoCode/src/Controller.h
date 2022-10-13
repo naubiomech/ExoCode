@@ -24,6 +24,7 @@
 #include "Utilities.h"
 #include "config.h"
 #include "Time_Helper.h"
+#include <algorithm>
 
 /**
  * @brief This class defines the interface for controllers.  
@@ -163,6 +164,39 @@ class HeelToe: public _Controller
         ~HeelToe(){};
         
         float calc_motor_cmd();
+    
+    private:
+
+        float _update_swing_duration();                     /**< Function that updates the average of swing phase duration. */
+
+        static const uint8_t _num_swing_avg = 3;            /**< Number of prior swing phases used to estimate the moving average duration of swing phase. */
+        unsigned int _swing_time[_num_swing_avg];           /**< Stores the duration of the last N swing phases. */
+
+        float average_swing_duration;                       /**< Average duration of swing phase from previous N trials. */
+
+        unsigned int _swing_start_timestamp;                /**< Records the time that swing started. */
+        unsigned int _heel_strike_timestamp;                /**< Records the time that heel strike occurs. */
+        unsigned int _prev_swing_start_timestamp;           /**< Stores the prior time that swing started. */
+
+        float state_2_current;                              /**< Variable to store the current time within "State 2". */
+        float state_2_start;                                /**< Variable that stores the time at which "State 2" started. */
+        float state_2_end;                                  /**< Variable that stores the time at which "State 2" ended. */ 
+        float _prev_state_2;                                /**< Variable to store the previous time duration of "State 2". */
+        bool _prev_state_2_status;                          /**< Variable that stores whether or not the prior iteration was in "State 2" [0 = Not "State 2", 1 = "State 2"]. */
+
+        float _fs_previous;                                 /**< Variable that stores the previous fs value. */
+        float _df_dt_previous;                              /**< Variable that stores the previous df_dt. */
+
+        float alpha = 1;                                    /**< Shape Tuning Variable 1. */
+        float beta = 1;                                     /**< Shape Tuning Variable 2. */
+
+        float swing_duration_window_upper_coeff = 1.75;     /**< factor to multiply by the swing duration to get the upper limit of the window to determine if toe off is considered the start of a new phase of swing. */
+        float swing_duration_window_lower_coeff = 0.25;     /**< factor to multiply by the swing duration to get the lower limit of the window to determine if toe off is considered the start of a new phase of swing. */
+
+        float fs;                                           /**< Estimation of ground reaction force based on 'Bishe 2021' */
+        float df_dt;                                        /**< Derivative of FS. */
+
+        float cmd_ff;                                        /**< Feedfoward Motor Commnad. */
 };
 
 /**
