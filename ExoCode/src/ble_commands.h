@@ -354,14 +354,14 @@ namespace ble_handlers
         joint_id = (joint_id==(config_defs::joint_id)6)?(data->right_leg.ankle.id):(joint_id);
 
         if (joint_id == data->left_leg.ankle.id) {
-            Serial.println("ble_handlers::new_trq() - Left Ankle");
+            //Serial.println("ble_handlers::new_trq() - Left Ankle");
             cont_data = &data->left_leg.ankle.controller;
         } else if (joint_id == data->left_leg.knee.id) {
             cont_data = &data->left_leg.knee.controller;
         } else if (joint_id == data->left_leg.hip.id) {
             cont_data = &data->left_leg.hip.controller;
         } else if (joint_id == data->right_leg.ankle.id) {
-            Serial.println("ble_handlers::new_trq() - Right Ankle");
+            //Serial.println("ble_handlers::new_trq() - Right Ankle");
             cont_data = &data->right_leg.ankle.controller;
         } else if (joint_id == data->right_leg.knee.id) {
             cont_data = &data->right_leg.knee.controller;
@@ -369,7 +369,7 @@ namespace ble_handlers
             cont_data = &data->right_leg.hip.controller;
         }
         if (cont_data == NULL) {
-            Serial.println("cont_data is NULL!");
+            //Serial.println("cont_data is NULL!");
         }
         if (cont_data != NULL) {
             cont_data->controller = controller_id;
@@ -386,7 +386,7 @@ namespace ble_handlers
         tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START] = set_num;
         tx_msg.len = 3;
         uart_handler->UART_msg(tx_msg);
-        Serial.println("ble_handlers::new_trq() - Sent UART message");
+        //Serial.println("ble_handlers::new_trq() - Sent UART message");
         UART_msg_t_utils::print_msg(tx_msg);
     }
     inline static void new_fsr(ExoData* data, BleMessage* msg)

@@ -105,7 +105,7 @@ void BleParser::_handle_command(char command)
     {
         // Didnt find command in list
         _working_message.clear();
-        Serial.println("BleParser::_handle_command->Command is not in list");
+        //Serial.println("BleParser::_handle_command->Command is not in list");
     }
     else
     {

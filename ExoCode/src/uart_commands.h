@@ -128,13 +128,13 @@ namespace UART_command_handlers
 {
     inline static void get_controller_params(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-        Serial.println("UART_command_handlers::update_controller_params->Fetching params with msg: ");
+        //Serial.println("UART_command_handlers::update_controller_params->Fetching params with msg: ");
         UART_msg_t_utils::print_msg(msg);
 
         JointData* j_data = exo_data->get_joint_with(msg.joint_id);
         if (j_data == NULL)
         {
-            Serial.println("UART_command_handlers::update_controller_params->No joint with id =  "); Serial.print(msg.joint_id); Serial.println(" found");
+            //Serial.println("UART_command_handlers::update_controller_params->No joint with id =  "); Serial.print(msg.joint_id); Serial.println(" found");
             return;
         }
 
@@ -154,13 +154,13 @@ namespace UART_command_handlers
     inline static void update_controller_params(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
         //TODO: Error checking (valid controller for joint, and matching param length)
-        Serial.println("UART_command_handlers::update_controller_params->Got new params with msg: ");
+        //Serial.println("UART_command_handlers::update_controller_params->Got new params with msg: ");
         UART_msg_t_utils::print_msg(msg);
 
         JointData* j_data = exo_data->get_joint_with(msg.joint_id);
         if (j_data == NULL)
         {
-            Serial.println("UART_command_handlers::update_controller_params->No joint with id =  "); Serial.print(msg.joint_id); Serial.println(" found");
+            //Serial.println("UART_command_handlers::update_controller_params->No joint with id =  "); Serial.print(msg.joint_id); Serial.println(" found");
             return;
         }
 
@@ -192,11 +192,11 @@ namespace UART_command_handlers
         tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = exo_data->status;
 
         handler->UART_msg(tx_msg);
-        Serial.println("UART_command_handlers::get_status->sent updated status");
+        //Serial.println("UART_command_handlers::get_status->sent updated status");
     }
     inline static void update_status(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-        Serial.println("UART_command_handlers::update_status->got message: ");
+        //Serial.println("UART_command_handlers::update_status->got message: ");
         UART_msg_t_utils::print_msg(msg);
         exo_data->status = msg.data[(uint8_t)UART_command_enums::status::STATUS];
     }
@@ -226,11 +226,11 @@ namespace UART_command_handlers
         tx_msg.data[config_defs::ankle_flip_dir_idx] = exo_data->config[config_defs::ankle_flip_dir_idx];
 
         handler->UART_msg(tx_msg);
-        Serial.println("UART_command_handlers::get_config->sent updated config");
+        //Serial.println("UART_command_handlers::get_config->sent updated config");
     }
     inline static void update_config(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-        Serial.println("UART_command_handlers::update_config->got message: ");
+        //Serial.println("UART_command_handlers::update_config->got message: ");
         UART_msg_t_utils::print_msg(msg);
         exo_data->config[config_defs::board_name_idx] = msg.data[config_defs::board_name_idx];
         exo_data->config[config_defs::battery_idx] = msg.data[config_defs::battery_idx];
@@ -257,7 +257,7 @@ namespace UART_command_handlers
     }
     inline static void update_cal_trq_sensor(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-        Serial.println("UART_command_handlers::update_cal_trq_sensor->Got Cal trq sensor");
+        //Serial.println("UART_command_handlers::update_cal_trq_sensor->Got Cal trq sensor");
         exo_data->for_each_joint([](JointData* j_data, float* args) {j_data->calibrate_torque_sensor = j_data->is_used;});
     }
 
@@ -267,7 +267,7 @@ namespace UART_command_handlers
     }
     inline static void update_cal_fsr(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-        Serial.println("UART_command_handlers::update_cal_fsr->Got msg");
+        //Serial.println("UART_command_handlers::update_cal_fsr->Got msg");
         exo_data->right_leg.do_calibration_toe_fsr = 1;    
         exo_data->right_leg.do_calibration_heel_fsr = 1;
         exo_data->left_leg.do_calibration_toe_fsr = 1;
@@ -281,7 +281,7 @@ namespace UART_command_handlers
     inline static void update_refine_fsr(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
         // TODO: only calibrate if the fsr is used
-        Serial.println("UART_command_handlers::update_refine_fsr->Got msg");
+        //Serial.println("UART_command_handlers::update_refine_fsr->Got msg");
         exo_data->right_leg.do_calibration_refinement_toe_fsr = 1;
         exo_data->right_leg.do_calibration_refinement_heel_fsr = 1;
         exo_data->left_leg.do_calibration_refinement_toe_fsr = 1;
@@ -295,7 +295,7 @@ namespace UART_command_handlers
     }
     inline static void update_motor_enable_disable(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-        Serial.println("UART_command_handlers::update_motor_enable_disable->Got msg");
+        //Serial.println("UART_command_handlers::update_motor_enable_disable->Got msg");
         exo_data->for_each_joint([](JointData* j_data, float* args) {if (j_data->is_used) j_data->motor.enabled = args[0];}, msg.data);
     }
 
@@ -325,11 +325,11 @@ namespace UART_command_handlers
                 rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
                 rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading;
                 rx_msg.data[1] = exo_data->right_leg.toe_stance;
-                rx_msg.data[2] = exo_data->right_leg.ankle.controller.filtered_cmd;
+                rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint; 
                 rx_msg.data[3] = exo_data->left_leg.ankle. controller.filtered_torque_reading;
                 //TODO: Implement Mark Feature
                 rx_msg.data[4] = exo_data->left_leg.toe_stance; 
-                rx_msg.data[5] = exo_data->left_leg.ankle.controller.filtered_cmd;
+                rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;
                 rx_msg.data[6] = exo_data->right_leg.toe_fsr;
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;
                 break;
@@ -411,16 +411,16 @@ namespace UART_command_utils
     {
         UART_msg_t rx_msg = {0, 0, 0, 0};
         uint8_t searching = 1;
-        Serial.println("UART_command_utils::call_and_response->searching for message");
+        //Serial.println("UART_command_utils::call_and_response->searching for message");
         while (searching)
         {
             handler->UART_msg(msg);
-            Serial.println("UART_command_utils::call_and_response->sent msg");
+            //Serial.println("UART_command_utils::call_and_response->sent msg");
             delay(1000);
             rx_msg = handler->poll(200000);
             searching = (rx_msg.command != (msg.command+1));
         }
-        Serial.println("UART_command_utils::call_and_response->found message:");
+        //Serial.println("UART_command_utils::call_and_response->found message:");
         UART_msg_t_utils::print_msg(rx_msg);
         return rx_msg;
     }
@@ -437,14 +437,14 @@ namespace UART_command_utils
 
             if ((millis() - start_time) > timeout)
             {
-                Serial.println("UART_command_utils::get_config->timed out");
+                //Serial.println("UART_command_utils::get_config->timed out");
                 return 1;
             }
 
             // the length of the message needs to be equal to the config length
             if (msg.len != ini_config::number_of_keys)
             {
-                Serial.println("UART_command_utils::get_config->msg.len != number_of_keys");
+                //Serial.println("UART_command_utils::get_config->msg.len != number_of_keys");
                 // keep trying to get config
                 continue;
             }
@@ -453,14 +453,14 @@ namespace UART_command_utils
                 // a valid config will not contain a zero
                 if (!msg.data[i]) 
                 {
-                    Serial.print("UART_command_utils::get_config->Config contained a zero at index ");
-                    Serial.println(i);
+                    //Serial.print("UART_command_utils::get_config->Config contained a zero at index ");
+                    //Serial.println(i);
 
                     // keep trying to get config
                     continue;
                 }
             }
-            Serial.println("UART_command_utils::get_config->got good config");
+            //Serial.println("UART_command_utils::get_config->got good config");
             break;
         }
 
@@ -478,11 +478,11 @@ namespace UART_command_utils
         float start_time = millis();
         while (true)
         {
-            Serial.println("UART_command_utils::wait_for_config->Polling for config");
+            //Serial.println("UART_command_utils::wait_for_config->Polling for config");
             rx_msg = handler->poll(100000);
             if (rx_msg.command == UART_command_names::get_config)
             {
-                Serial.println("UART_command_utils::wait_for_config->Got config request");
+                //Serial.println("UART_command_utils::wait_for_config->Got config request");
                 UART_command_handlers::get_config(handler, data, rx_msg);
                 break;
             }
@@ -490,11 +490,11 @@ namespace UART_command_utils
 
             if ((millis() - start_time) > timeout)
             {
-                Serial.println("UART_command_utils::wait_for_config->Timed out");
+                //Serial.println("UART_command_utils::wait_for_config->Timed out");
                 return;
             }
         }
-        Serial.println("UART_command_utils::wait_for_config->Sent config");
+        //Serial.println("UART_command_utils::wait_for_config->Sent config");
     }
 
     
@@ -504,7 +504,7 @@ namespace UART_command_utils
         switch (msg.command)
         {
         case UART_command_names::empty_msg:
-            Serial.println("UART_command_utils::handle_message->Empty Message!");
+            //Serial.println("UART_command_utils::handle_message->Empty Message!");
             break;
         
         case UART_command_names::get_controller_params:
@@ -571,7 +571,7 @@ namespace UART_command_utils
             break;
         
         default:
-            Serial.println("UART_command_utils::handle_message->Unknown Message!");
+            //Serial.println("UART_command_utils::handle_message->Unknown Message!");
             UART_msg_t_utils::print_msg(msg);
             break;
         }

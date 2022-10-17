@@ -9,38 +9,40 @@
         {
             switch (e) {
             case IniFile::errorNoError:
-                Serial.print("no error");
+                //Serial.print("no error");
                 break;
             case IniFile::errorFileNotFound:
-                Serial.print("file not found");
+               // Serial.print("file not found");
                 break;
             case IniFile::errorFileNotOpen:
-                Serial.print("file not open");
+                //Serial.print("file not open");
                 break;
             case IniFile::errorBufferTooSmall:
-                Serial.print("buffer too small");
+                //Serial.print("buffer too small");
                 break;
             case IniFile::errorSeekError:
-                Serial.print("seek error");
+                //Serial.print("seek error");
                 break;
             case IniFile::errorSectionNotFound:
-                Serial.print("section not found");
+                //Serial.print("section not found");
                 break;
             case IniFile::errorKeyNotFound:
-                Serial.print("key not found");
+                //Serial.print("key not found");
                 break;
             case IniFile::errorEndOfFile:
-                Serial.print("end of file");
+                //Serial.print("end of file");
                 break;
             case IniFile::errorUnknownError:
-                Serial.print("unknown error");
+                //Serial.print("unknown error");
                 break;
             default:
-                Serial.print("unknown error value");
+                //Serial.print("unknown error value");
                 break;
             }
             if (eol)
-                Serial.print("\n");
+            {
+                //Serial.print("\n");
+            }
         }
     }
 
@@ -71,8 +73,8 @@
             while (1)
             if(Serial)
             {
-                Serial.print("SD.begin() failed");
-                Serial.print("\n");
+                //Serial.print("SD.begin() failed");
+                //Serial.print("\n");
             }
 
         // Check the for the ini file
@@ -80,10 +82,10 @@
         if (!ini.open()) {
             if(Serial)
             {
-                Serial.print("Ini file ");
-                Serial.print(filename);
-                Serial.print(" does not exist");
-                Serial.print("\n");
+                //Serial.print("Ini file ");
+                //Serial.print(filename);
+                //Serial.print(" does not exist");
+                //Serial.print("\n");
             }
         // Cannot do anything else
             while (1);
@@ -100,9 +102,9 @@
         if (!ini.validate(buffer, buffer_len)) {
             if(Serial)
             {
-                Serial.print("ini file ");
-                Serial.print(ini.getFilename());
-                Serial.print(" not valid: ");
+                //Serial.print("ini file ");
+                //Serial.print(ini.getFilename());
+                //Serial.print(" not valid: ");
                 ini_print_error_message(ini.getError());
             }
             // Cannot do anything else
@@ -281,11 +283,11 @@
         else {
             if(Serial)
             {
-                Serial.print("Could not read '");
-                Serial.print(key);
-                Serial.print("' from section '");
-                Serial.print(section);
-                Serial.print("' , error was ");
+                //Serial.print("Could not read '");
+                //Serial.print(key);
+                //Serial.print("' from section '");
+                //Serial.print(section);
+                //Serial.print("' , error was ");
                 ini_print_error_message(ini.getError());
             }
         }

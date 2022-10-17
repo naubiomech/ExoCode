@@ -112,9 +112,7 @@ void StatusLed::toggle()
     }
     else
     {
-        digitalWrite(_r_pin, HIGH);
-        digitalWrite(_g_pin, HIGH);
-        digitalWrite(_b_pin, HIGH);
+        _set_color(_message_colors[_current_message][0],_message_colors[_current_message][1],_message_colors[_current_message][2]);
         led_on = true;
     }
 }

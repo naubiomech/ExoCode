@@ -71,9 +71,9 @@ JointData* ExoData::get_joint_with(uint8_t id)
         j_data = &right_leg.ankle;
         break; 
     default:
-        Serial.print("ExoData::get_joint_with->No joint with ");
-        Serial.print(id);
-        Serial.println(" was found.");
+        // Serial.print("ExoData::get_joint_with->No joint with ");
+        // Serial.print(id);
+        // Serial.println(" was found.");
         break;
     }
     return j_data;

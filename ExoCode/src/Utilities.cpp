@@ -191,7 +191,8 @@ namespace utils
                 return val.b[0] == 0x01;
                 break;
             default:
-                Serial.println("Utilities :: is_little_endian() : System does not appear to be 32 or 64 bit");    
+                //Serial.println("Utilities :: is_little_endian() : System does not appear to be 32 or 64 bit");    
+                break;
         }
         
     }

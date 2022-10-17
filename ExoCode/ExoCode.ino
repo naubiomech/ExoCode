@@ -521,7 +521,7 @@ void setup()
     Serial.begin(115200);
     //while (!Serial);
 
-    Serial.println("Setup->Getting config");
+    //Serial.println("Setup->Getting config");
     // get the sd card config from the teensy, this has a timeout
     UARTHandler* handler = UARTHandler::get_instance();
     bool timed_out = UART_command_utils::get_config(handler, config_info::config_to_send, (float)UART_times::CONFIG_TIMEOUT);
@@ -530,7 +530,7 @@ void setup()
     if (timed_out)
     {
         // yellow
-        Serial.println("Setup->Timed Out Getting Config");
+        //Serial.println("Setup->Timed Out Getting Config");
         led->set_color(255, 255, 0);
     }
     else
@@ -538,7 +538,7 @@ void setup()
         // green
         led->set_color(0, 255, 0);
     }
-    Serial.println("Setup->End Setup");
+    //Serial.println("Setup->End Setup");
 }
 
 void loop()
@@ -549,11 +549,6 @@ void loop()
     mcu->local_sample();
     mcu->update_UART();
     mcu->update_gui();
-}
-
-void serialEvent1()
-{
-  Serial.println("==================================================================");
 }
 
 #else // code to use when microcontroller is not recognized.

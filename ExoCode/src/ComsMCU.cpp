@@ -20,7 +20,7 @@ ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
         _battery = new RCBattery();
         break;
     default:
-        Serial.println("ERROR: ComsMCU::ComsMCU->Unrecognized battery type!");
+        //Serial.println("ERROR: ComsMCU::ComsMCU->Unrecognized battery type!");
         _battery = new RCBattery();
         break;
     }
@@ -156,7 +156,7 @@ void ComsMCU::update_gui()
 
 void ComsMCU::_process_complete_gui_command(BleMessage* msg) 
 {
-    Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
+    //Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
     BleMessage::print(*msg);
 
     switch (msg->command)
@@ -195,7 +195,7 @@ void ComsMCU::_process_complete_gui_command(BleMessage* msg)
         ble_handlers::new_trq(_data, msg);
         break;
     default:
-        Serial.println("ComsMCU::_process_complete_gui_command->No case for command!");
+        //Serial.println("ComsMCU::_process_complete_gui_command->No case for command!");
         break;
     }
 }

@@ -224,14 +224,15 @@ float ProportionalJointMoment::calc_motor_cmd()
 {
 
     float cmd_ff = 0;
-    // static uint32_t run_count = 0;
-    // run_count++;
-    // bool print = false;
-    // if (run_count > 10)
-    // {
-    //     run_count = 0;
-    //     print = _leg_data->is_left;
-    // }
+    static uint32_t run_count = 0;
+    run_count++;
+    bool print = false;
+    if (run_count > 10)
+    {
+        run_count = 0;
+        //print = _leg_data->is_left;
+        print = false;
+    }
 
 
     // if (print)
@@ -239,6 +240,16 @@ float ProportionalJointMoment::calc_motor_cmd()
     //     Serial.print("ProportionalJointMoment::calc_motor_cmd : Entered");
     //     Serial.print("\n");
     // }
+
+    if (print)
+    {
+        // Print fsr reading and raw torque
+        Serial.print("fsr_reading = ");
+        Serial.print(_leg_data->toe_fsr);
+        Serial.print("\t");
+        Serial.print("torque_reading = ");
+        Serial.println(_joint_data->torque_reading);
+    }
     
     // don't calculate command when fsr is calibrating.
     if (!_leg_data->do_calibration_toe_fsr)

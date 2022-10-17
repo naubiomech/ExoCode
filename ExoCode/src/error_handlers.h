@@ -12,16 +12,19 @@ namespace error_handlers
 {
     void soft(Exo* exo, ExoData* exo_data)
     {
+        // TODO: Recalibrate/Warn user
         //Serial.println("Soft error");
         return;
     }
     void hard(Exo* exo, ExoData* exo_data)
     {
+        // TODO: Change all controllers to zero torque/statis
         //Serial.println("Hard error");
         return;
     }
-     void fatal(Exo* exo, ExoData* exo_data)
+    void fatal(Exo* exo, ExoData* exo_data)
     {
+        // TODO: Turn off all motors
         //Serial.println("Fatal error");
         return;
     }
