@@ -2,6 +2,8 @@
 #ifndef Config_h
 #define Config_h 
 
+#include "Arduino.h"
+
     #define AK_Board_V0_1 1
     #define AK_Board_V0_3 2
     #define AK_Board_V0_4 3
@@ -20,10 +22,16 @@
         const unsigned int SYNC_HALF_PERIOD_US = 125000;  // half blink period in micro seconds
         const unsigned int SYNC_START_STOP_HALF_PERIOD_US = 4 * SYNC_HALF_PERIOD_US; // Half blink period for the begining and end of the sequence.  This is usually longer so it is easy to identify.
     }
+
+    namespace analog
+    {
+        const float RESOLUTION = 12; // The resolution of the analog to digital converter
+        const float COUNTS = 4096; // The number of counts the ADC can have
+    }
     
     namespace torque_calibration
     {
-        const float AI_CNT_TO_V = 3.3 / 4096; // conversion from count to voltage
+        const float AI_CNT_TO_V = 3.3 / analog::COUNTS; // conversion from count to voltage
         const float TRQ_V_TO_NM = 42.500; // conversion from voltage to Nm (Negative do to mismatch in torque sensor and motor torque directions)
     }
 

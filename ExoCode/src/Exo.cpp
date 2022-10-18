@@ -37,8 +37,8 @@ Exo::Exo(ExoData* exo_data)
         Serial.println("Exo :: Constructor : motor_stop_pin Mode set");
     #endif
 
-    analogWriteResolution(12);
-    analogReadResolution(12);
+    analogWriteResolution(analog::RESOLUTION);
+    analogReadResolution(analog::RESOLUTION);
 };
 
 /* 

@@ -250,7 +250,7 @@ float ProportionalJointMoment::calc_motor_cmd()
         Serial.print("torque_reading = ");
         Serial.println(_joint_data->torque_reading);
     }
-    
+
     // don't calculate command when fsr is calibrating.
     if (!_leg_data->do_calibration_toe_fsr)
     {
@@ -269,7 +269,8 @@ float ProportionalJointMoment::calc_motor_cmd()
             cmd_ff = (fsr) * _controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx];          
             
             // saturate and account for assistance
-            cmd_ff = min(max(0, cmd_ff), _controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx]);
+            cmd_ff = max(0, cmd_ff);
+            //cmd_ff = min(max(0, cmd_ff), _controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx]);
             cmd_ff = cmd_ff * (_controller_data->parameters[controller_defs::proportional_joint_moment::is_assitance_idx] ? -1 : 1);
         }
         else
@@ -296,6 +297,19 @@ float ProportionalJointMoment::calc_motor_cmd()
         cmd = cmd_ff;
     }
 
+    // Saturate the PID output, dependent on state. Stance is positive
+    // if (_controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx] > 0)
+    // {
+    //     if (_leg_data->toe_stance)
+    //     {
+    //         cmd = min(0, cmd);
+    //     }
+    //     else
+    //     {
+    //         cmd = max(0, cmd);
+    //     }
+    // }
+    
     _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 0.99);
     return _controller_data->filtered_cmd;
 };
