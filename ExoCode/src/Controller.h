@@ -344,10 +344,6 @@ class GaitPhase : public _Controller
         GaitPhase(config_defs::joint_id id, ExoData* exo_data);
         ~GaitPhase(){};
 
-        int i;
-
-        float prev_cmd;
-
         float calc_motor_cmd();
 
 };

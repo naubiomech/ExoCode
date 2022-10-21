@@ -825,9 +825,6 @@ GaitPhase::GaitPhase(config_defs::joint_id id, ExoData* exo_data)
 #ifdef CONTROLLER_DEBUG
     Serial.println("GaitPhase::Constructor");
 #endif
-
-    i = 0;
-    prev_cmd = 0;
 };
 
 float GaitPhase::calc_motor_cmd()
@@ -1126,6 +1123,19 @@ float GaitPhase::calc_motor_cmd()
 
     }
 
+    if (cmd_ff > flexion_torque)
+    {
+        cmd_ff = flexion_torque;
+    }
+    else if (cmd_ff < extension_torque)
+    {
+        cmd_ff = extension_torque;
+    }
+    else
+    {
+        cmd_ff = cmd_ff;
+    }
+
 
     // Incorporates PID control if flag is present
     float cmd = cmd_ff;
@@ -1137,8 +1147,6 @@ float GaitPhase::calc_motor_cmd()
     {
         cmd = cmd_ff;
     }
-
-    prev_cmd = cmd_ff;
 
     return cmd;
 };
