@@ -31,10 +31,10 @@
 #include "src\uart_commands.h"
 #include "src\UART_msg_t.h"
 
-// Error Handling
-#include "src\error_handlers.h"
-#include "src\error_triggers.h"
-#include "src\ErrorManager.h"
+//// Error Handling
+//#include "src\error_handlers.h"
+//#include "src\error_triggers.h"
+//#include "src\ErrorManager.h"
 
 
 //#include "src\Motor.h"
@@ -120,7 +120,7 @@ void loop()
         }
     #endif
 
-    static ErrorManager error_manager(&exo, &exo_data);
+//    static ErrorManager error_manager(&exo, &exo_data);
 
     UARTHandler* uart_handler = UARTHandler::get_instance();
     
@@ -130,10 +130,10 @@ void loop()
         
         UART_command_utils::wait_for_get_config(uart_handler, &exo_data, UART_times::CONFIG_TIMEOUT);
 
-        // assign the error handlers and triggers
-        error_manager.assign_handlers(error_handlers::soft, error_handlers::hard, error_handlers::fatal);
-        error_manager.assign_triggers(error_triggers::soft, error_triggers::hard, error_triggers::fatal);
-        
+//        // assign the error handlers and triggers
+//        error_manager.assign_handlers(error_handlers::soft, error_handlers::hard, error_handlers::fatal);
+//        error_manager.assign_triggers(error_triggers::soft, error_triggers::hard, error_triggers::fatal);
+//        
         #ifdef MAIN_DEBUG
             Serial.println("Superloop :: Start First Run Conditional");
             Serial.print("Superloop :: exo_data.left_leg.hip.is_used = ");
@@ -448,9 +448,9 @@ void loop()
 
     // do exo calculations
     exo.run();
-
-    // conditionally calls error handlers
-    error_manager.check();
+//
+//    // conditionally calls error handlers
+//    error_manager.check();
     
     // print the exo_data at a fixed period.
 //    unsigned int data_print_ms = 5000;

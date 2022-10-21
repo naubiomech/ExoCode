@@ -109,7 +109,7 @@ void ComsMCU::update_gui()
     if ((_data->status == status_defs::messages::trial_on) || 
     (_data->status == status_defs::messages::fsr_calibration) ||
     (_data->status == status_defs::messages::fsr_refinement) && 
-    (del_t > (BLE_times::_real_time_msg_delay*2))
+    (del_t > (BLE_times::_real_time_msg_delay*2)))
     {
         // static const float msg_context = t_helper->generate_new_context();
         // static float time_since_last_message;
@@ -138,7 +138,7 @@ void ComsMCU::update_gui()
     }
 
     // Periodically send status information
-    static const float status_context = t_helper->generate_new_context();
+    static float status_context = t_helper->generate_new_context(); //Took out "const" after static and before float - Jack 
     static float del_t_status = 0;
     del_t_status += t_helper->tick(status_context);
     if (del_t_status > BLE_times::_status_msg_delay)

@@ -134,12 +134,14 @@ namespace controller_defs /**< stores the parameter indexes for different contro
         const uint8_t flexion_end_percentage_idx = 3;
         const uint8_t extension_start_percentage_idx = 4;
         const uint8_t extension_end_percentage_idx = 5;
+        //Parameter to set slope of line between each point (for "smoothing" purposes) 
+        const uint8_t slope_idx = 6;
         //Flag for PID contorl and associated gains
-        const uint8_t use_pid_idx = 6;
-        const uint8_t p_gain_idx = 7;
-        const uint8_t i_gain_idx = 8;
-        const uint8_t d_gain_idx = 9;
-        const uint8_t num_parameter = 10;
+        const uint8_t use_pid_idx = 7;
+        const uint8_t p_gain_idx = 8;
+        const uint8_t i_gain_idx = 9;
+        const uint8_t d_gain_idx = 10;
+        const uint8_t num_parameter = 11;
     }
 
     namespace zhang_collins

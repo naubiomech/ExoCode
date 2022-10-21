@@ -800,10 +800,25 @@ GaitPhase::GaitPhase(config_defs::joint_id id, ExoData* exo_data)
 #ifdef CONTROLLER_DEBUG
     Serial.println("GaitPhase::Constructor");
 #endif
+
+    i = 0;
+    prev_cmd = 0;
 };
 
 float GaitPhase::calc_motor_cmd()
 {
+
+    const int flexion_torque = _controller_data->parameters[controller_defs::gait_phase::flexion_setpoint_idx];            //Sets the magnitude of the flexion torque applied
+    const int extension_torque = _controller_data->parameters[controller_defs::gait_phase::extension_setpoint_idx];        //Sets the mangitude of the extnesion torque applied
+
+    float slope = _controller_data->parameters[controller_defs::gait_phase::slope_idx];                                        //Sets the slope of the line connnecting transition points from the config file
+    float width = (flexion_torque - extension_torque) / slope;                                                                  //Calculates the width of the region during which the transition in torque magnitudes occurs
+    float half_width = width / 2;                                                                                               //Calculates half the width of the region during which the transition in torque magnitudes occurs
+
+    const int flexion_start = _controller_data->parameters[controller_defs::gait_phase::flexion_start_percentage_idx];      //Sets the starting point of when flexion should be applied
+    const int flexion_end = _controller_data->parameters[controller_defs::gait_phase::flexion_end_percentage_idx];          //Sets the ending point of when flexion should be applied
+    const int extension_start = _controller_data->parameters[controller_defs::gait_phase::extension_start_percentage_idx];  //Sets the starting point of when extension should be applied     
+    const int extension_end = _controller_data->parameters[controller_defs::gait_phase::extension_end_percentage_idx];      //Sets the ending point of when flexion should be applied
 
     // Initializes torque
     float cmd_ff = 0;
@@ -832,47 +847,273 @@ float GaitPhase::calc_motor_cmd()
 
     if (-1 != percent_gait) //Only runs if a valid calculation of percent gait is present
     {
-        //If the percentage of gait is within the flexion start and end points, the motor supplies flexion assistance
-        if ((percent_gait >= _controller_data->parameters[controller_defs::gait_phase::flexion_start_percentage_idx]) && (percent_gait <= _controller_data->parameters[controller_defs::gait_phase::flexion_end_percentage_idx]))
+              
+
+        //If there is no zero torque range between the starting of flexion and extension
+        if (extension_end == flexion_start && flexion_end == extension_start)
         {
-            cmd_ff = _controller_data->parameters[controller_defs::gait_phase::flexion_setpoint_idx];
-            //Serial.print("GaitPhase::calc_motor_cmd : Flexion : ");
-            //Serial.print(percent_gait);
-            //Serial.print("\n");
+
+            if (percent_gait == 0 || percent_gait < extension_end)
+            {
+                cmd_ff = extension_torque;
+                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Early : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if (percent_gait > extension_end - half_width && percent_gait < flexion_start + half_width)
+            {
+                cmd_ff = extension_torque + slope * (percent_gait - extension_end + half_width);
+                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Extension to Flexion : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if (percent_gait >= flexion_start + half_width && percent_gait <= flexion_end - half_width)
+            {
+                cmd_ff = flexion_torque;
+                //Serial.print("GaitPhase::calc_motor_cmd : Flexion : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if (percent_gait > flexion_end - half_width && percent_gait < flexion_end + half_width)
+            {
+                cmd_ff = flexion_torque - slope * (percent_gait - flexion_end + half_width);
+                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Flexion to Extension : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if (percent_gait >= extension_start + half_width && percent_gait <= 100)
+            {
+                cmd_ff = extension_torque;
+                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Late : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else
+            {
+                cmd_ff = 0;
+                //Serial.print("GaitPhase::calc_motor_cmd : Unknown Condition : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
 
         }
-        //If the percentage of gait is within the extension start point and the end of the gait cycle, the motor supplies extension assistance
-        else if ((percent_gait > _controller_data->parameters[controller_defs::gait_phase::extension_start_percentage_idx]) && (percent_gait <= 100))
+        else if(extension_end != flexion_start && flexion_end != extension_start)
         {
-            cmd_ff = _controller_data->parameters[controller_defs::gait_phase::extension_setpoint_idx];
-            //Serial.print("GaitPhase::calc_motor_cmd : Extension - Late : ");
-            //Serial.print(percent_gait);
-            //Serial.print("\n");
+
+            if (percent_gait == 0 || percent_gait <= extension_end - half_width)
+            {
+                cmd_ff = extension_torque;
+                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Early : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait > extension_end - half_width && percent_gait < extension_end + half_width)
+            {
+                cmd_ff = extension_torque + (slope / 2) * (percent_gait - extension_end + half_width);
+                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Extension to Zero Torque : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait >= extension_end + half_width && percent_gait <= flexion_start - half_width)
+            {
+                cmd_ff = 0;
+                //Serial.print("GaitPhase::calc_motor_cmd : Zero Torque - Early : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait > flexion_start - half_width && percent_gait < flexion_start + half_width)
+            {
+                cmd_ff = 0 + (slope / 2) * (percent_gait - flexion_start + half_width);
+                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Zero Torque to Flexion : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait >= flexion_start + half_width && percent_gait <= flexion_end - half_width)
+            {
+                cmd_ff = flexion_torque;
+                //Serial.print("GaitPhase::calc_motor_cmd : Flexion : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait > flexion_end - half_width && percent_gait < flexion_end + half_width)
+            {
+                cmd_ff = flexion_torque - (slope / 2) * (percent_gait - flexion_end + half_width);
+                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Flexion to Zero Torque : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait >= flexion_end + half_width && percent_gait <= extension_start - half_width)
+            {
+                cmd_ff = 0;
+                //Serial.print("GaitPhase::calc_motor_cmd : Zero Torque - Late : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait > extension_start - half_width && percent_gait < extension_start + half_width)
+            {
+                cmd_ff = 0 - (slope / 2) * (percent_gait - extension_start + half_width);
+                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Zero Torque to Extension : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait >= extension_start + half_width && percent_gait <= 100)
+            {
+                cmd_ff = extension_torque;
+                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Late : ");
+                //Serial.print(percent_gait);
+                //Serail.print("\n");
+            }
+            else
+            {
+                cmd_ff = 0;
+                //Serial.print("GaitPhase::calc_motor_cmd : Unknown Condition : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+
         }
-        //If the percentage is 0 or less than the flexion start point, the motor supplies extension assistance
-        else if (percent_gait == 0 || percent_gait < _controller_data->parameters[controller_defs::gait_phase::extension_end_percentage_idx])
+        else if(extension_end != flexion_start && flexion_end == extension_start)
         {
-            cmd_ff = _controller_data->parameters[controller_defs::gait_phase::extension_setpoint_idx];
-            //Serial.print("GaitPhase::calc_motor_cmd : Extension - Early : ");
-            //Serial.print(percent_gait);
-            //Serial.print("\n");
+
+            if (percent_gait == 0 || percent_gait <= extension_end - half_width)
+            {
+                cmd_ff = extension_torque;
+                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Early : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait > extension_end - half_width && percent_gait < extension_end + half_width)
+            {
+                cmd_ff = extension_torque + (slope / 2) * (percent_gait - extension_end + half_width);
+                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Extension to Zero Torque : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait >= extension_end + half_width && percent_gait <= flexion_start - half_width)
+            {
+                cmd_ff = 0;
+                //Serial.print("GaitPhase::calc_motor_cmd : Zero Torque : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait > flexion_start - half_width && percent_gait < flexion_start + half_width)
+            {
+                cmd_ff = 0 + (slope / 2) * (percent_gait - flexion_start + half_width);
+                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Zero Torque to Flexion : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait >= flexion_start + half_width && percent_gait <= flexion_end - half_width)
+            {
+                cmd_ff = flexion_torque;
+                //Serial.print("GaitPhase::calc_motor_cmd : Flexion : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait > flexion_end - half_width && percent_gait < flexion_end + half_width)
+            {
+                cmd_ff = flexion_torque - slope * (percent_gait - flexion_end + half_width);
+                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Flexion to Extension : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait >= extension_start + half_width && percent_gait <= 100)
+            {
+                cmd_ff = extension_torque;
+                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Late : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else
+            {
+                cmd_ff = 0;
+                //Serial.print("GaitPhase::calc_motor_cmd : Unknown Condition : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+
         }
-        //If none of these conditions are met, send a zero torque to the motor
-        else 
+        else if(extension_end == flexion_start && flexion_end != extension_start)
+        {
+
+            if (percent_gait == 0 || percent_gait < extension_end)
+            {
+                cmd_ff = extension_torque;
+                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Early : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait > extension_end - half_width && percent_gait < flexion_start + half_width)
+            {
+                cmd_ff = extension_torque + slope * (percent_gait - extension_end + half_width);
+                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Extension to Flexion : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait >= flexion_start + half_width && percent_gait <= flexion_end - half_width)
+            {
+                cmd_ff = flexion_torque;
+                //Serial.print("GaitPhase::calc_motor_cmd : Flexion : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait > flexion_end - half_width && percent_gait < flexion_end + half_width)
+            {
+                cmd_ff = flexion_torque - (slope / 2) * (percent_gait - flexion_end + half_width);
+                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Flexion to Zero Torque : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait >= flexion_end + half_width && percent_gait <= extension_start - half_width)
+            {
+                cmd_ff = 0;
+                //Serial.print("GaitPhase::calc_motor_cmd : Zero Torque - Late : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait > extension_start - half_width && percent_gait < extension_start + half_width)
+            {
+                cmd_ff = 0 - (slope / 2) * (percent_gait - extension_start + half_width);
+                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Zero Torque to Extension : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+            else if(percent_gait >= extension_start + half_width && percent_gait <= 100)
+            {
+                cmd_ff = extension_torque;
+                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Late : ");
+                //Serial.print(percent_gait);
+                //Serail.print("\n");
+            }
+            else
+            {
+                cmd_ff = 0;
+                //Serial.print("GaitPhase::calc_motor_cmd : Unknown Condition : ");
+                //Serial.print(percent_gait);
+                //Serial.print("\n");
+            }
+
+        }
+        else
         {
             cmd_ff = 0;
-            //Serial.print("GaitPhase::calc_motor_cmd : Unknown Condition : ");
-            //Serial.print(percent_gait);
-            //Serial.print("\n");
         }
+
     }
 
 
     // Incorporates PID control if flag is present
     float cmd = cmd_ff;
-    //float cmd = cmd_ff + (_controller_data->parameters[controller_defs::gait_phase::use_pid_idx]
-    //    ? _pid(cmd_ff, _joint_data->torque_reading, _controller_data->parameters[controller_defs::gait_phase::p_gain_idx], _controller_data->parameters[controller_defs::gait_phase::i_gain_idx], _controller_data->parameters[controller_defs::gait_phase::d_gain_idx])
-    //    : 0);
+    if (_controller_data->parameters[controller_defs::gait_phase::use_pid_idx])
+    {
+        cmd = _pid(cmd_ff, _joint_data->torque_reading, _controller_data->parameters[controller_defs::gait_phase::p_gain_idx], _controller_data->parameters[controller_defs::gait_phase::i_gain_idx], _controller_data->parameters[controller_defs::gait_phase::d_gain_idx]);
+    }
+    else
+    {
+        cmd = cmd_ff;
+    }
+
+    prev_cmd = cmd_ff;
 
     return cmd;
 };
