@@ -5,28 +5,28 @@
 
     void print_param_error_message(uint8_t error_type)
     {
-        Serial.print(utils::get_is_left(error_type)? "Left " : "Right ");
+        //Serial.print(utils::get_is_left(error_type)? "Left " : "Right ");
         switch (error_type & ((uint8_t)config_defs::joint_id::hip | (uint8_t)config_defs::joint_id::knee | (uint8_t)config_defs::joint_id::ankle))
         {
             case (uint8_t)config_defs::joint_id::hip:
-                Serial.print("Hip ");    
+                //Serial.print("Hip ");    
                 break;
             case (uint8_t)config_defs::joint_id::knee:
-                Serial.print("Knee ");
+                //Serial.print("Knee ");
                 break;
             case (uint8_t)config_defs::joint_id::ankle:
-                Serial.print("Ankle ");
+                //Serial.print("Ankle ");
                 break;
         }
         if (utils::get_bit(error_type, param_error::SD_not_found_idx))
         {
-            Serial.print("SD Not Found, ");
+            //Serial.print("SD Not Found, ");
         }            
         if (utils::get_bit(error_type, param_error::SD_not_found_idx))
         {
-            Serial.print("File Not Found, ");
+            //Serial.print("File Not Found, ");
         } 
-        Serial.println("File Not Found, ");
+        //Serial.println("File Not Found, ");
     }
     
     uint8_t set_controller_params(uint8_t joint_id, uint8_t controller_id, uint8_t set_num, ExoData* exo_data)

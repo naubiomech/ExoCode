@@ -25,7 +25,7 @@ BleMessage ble_queue::pop()
     }
     else
     {
-        Serial.println("BleMessageQueue::pop_queue->No messages in Queue!");
+        //Serial.println("BleMessageQueue::pop_queue->No messages in Queue!");
         return empty_message;
     }
     #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
@@ -40,7 +40,7 @@ void ble_queue::push(BleMessage* msg)
     #endif
     if (m_size == (k_max_size-1))
     {
-        Serial.println("BleMessageQueue::push_queue->Queue Full!");
+        //Serial.println("BleMessageQueue::push_queue->Queue Full!");
         return;
     }
 

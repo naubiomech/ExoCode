@@ -321,7 +321,7 @@ int UARTHandler::_recv_packet(uint8_t *p, uint8_t len)
   }
 
 //  // there was a timeout before a full message was recieved, save the data to be reconstructed later
-  Serial.println("UARTHandler::_recv_packet->Timeout!");
+  //Serial.println("UARTHandler::_recv_packet->Timeout!");
  _partial_packet_len = received;
 //  Serial.print("UARTHandler::_recv_packet->Saved Bytes: "); Serial.println(_partial_packet_len);
  for (int i=0; i<_partial_packet_len; i++)

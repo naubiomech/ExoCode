@@ -20,7 +20,7 @@ ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
         _battery = new RCBattery();
         break;
     default:
-        Serial.println("ERROR: ComsMCU::ComsMCU->Unrecognized battery type!");
+        //Serial.println("ERROR: ComsMCU::ComsMCU->Unrecognized battery type!");
         _battery = new RCBattery();
         break;
     }
@@ -47,7 +47,6 @@ ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
     }
     UART_rt_data::msg_len = rt_data_len;
     // Serial.print("ComsMCU::ComsMCU->rt_data_len: "); Serial.println(rt_data_len);
-    
 }
 
 void ComsMCU::handle_ble()
@@ -100,25 +99,19 @@ void ComsMCU::update_UART()
 
 void ComsMCU::update_gui() 
 {
-    // Get real time data from ExoData and send to GUI
     static Time_Helper* t_helper = Time_Helper::get_instance();
-    static const float rt_context = t_helper->generate_new_context();
-    static float del_t = 0;
-    del_t += t_helper->tick(rt_context);
 
-    if ((_data->status == status_defs::messages::trial_on) || 
-    (_data->status == status_defs::messages::fsr_calibration) ||
-    (_data->status == status_defs::messages::fsr_refinement) && 
-    (del_t > (BLE_times::_real_time_msg_delay*2)))
+    // static float before = millis();
+    // Get real time data from ExoData and send to GUI
+    if (UART_rt_data::new_rt_msg)
     {
-        // static const float msg_context = t_helper->generate_new_context();
-        // static float time_since_last_message;
-        // time_since_last_message = t_helper->tick(msg_context);
-        // if (time_since_last_message > k_time_threshold)
-        // {
-        //     time_since_last_message = 0;
-        // }
-        
+        // float now = millis();
+        // float delta = now - before;
+        // Serial.print("ComsMCU::update_gui->delta: "); Serial.println(delta);
+        // before = now;
+
+        UART_rt_data::new_rt_msg = false;
+
         BleMessage rt_data_msg = BleMessage();
         rt_data_msg.command = ble_names::send_real_time_data;
         if (UART_rt_data::msg.len == UART_rt_data::msg_len) 
@@ -129,12 +122,9 @@ void ComsMCU::update_gui()
                 rt_data_msg.data[i] = UART_rt_data::msg.data[i];
             }
             rt_data_msg.data[rt_data_msg.expecting++] = 0;//time_since_last_message/1000.0;
-            // Serial.println("ComsMCU::update_gui->rt_data_msg:");
-            // BleMessage::print(rt_data_msg);
 
             _exo_ble->send_message(rt_data_msg);
         }
-        del_t = 0;
     }
 
     // Periodically send status information
@@ -156,7 +146,7 @@ void ComsMCU::update_gui()
 
 void ComsMCU::_process_complete_gui_command(BleMessage* msg) 
 {
-    Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
+    //Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
     BleMessage::print(*msg);
 
     switch (msg->command)
@@ -195,7 +185,7 @@ void ComsMCU::_process_complete_gui_command(BleMessage* msg)
         ble_handlers::new_trq(_data, msg);
         break;
     default:
-        Serial.println("ComsMCU::_process_complete_gui_command->No case for command!");
+        //Serial.println("ComsMCU::_process_complete_gui_command->No case for command!");
         break;
     }
 }

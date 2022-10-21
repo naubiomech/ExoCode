@@ -224,14 +224,15 @@ float ProportionalJointMoment::calc_motor_cmd()
 {
 
     float cmd_ff = 0;
-    // static uint32_t run_count = 0;
-    // run_count++;
-    // bool print = false;
-    // if (run_count > 10)
-    // {
-    //     run_count = 0;
-    //     print = _leg_data->is_left;
-    // }
+    static uint32_t run_count = 0;
+    run_count++;
+    bool print = false;
+    if (run_count > 10)
+    {
+        run_count = 0;
+        //print = _leg_data->is_left;
+        print = false;
+    }
 
 
     // if (print)
@@ -239,7 +240,17 @@ float ProportionalJointMoment::calc_motor_cmd()
     //     Serial.print("ProportionalJointMoment::calc_motor_cmd : Entered");
     //     Serial.print("\n");
     // }
-    
+
+    if (print)
+    {
+        // Print fsr reading and raw torque
+        Serial.print("fsr_reading = ");
+        Serial.print(_leg_data->toe_fsr);
+        Serial.print("\t");
+        Serial.print("torque_reading = ");
+        Serial.println(_joint_data->torque_reading);
+    }
+
     // don't calculate command when fsr is calibrating.
     if (!_leg_data->do_calibration_toe_fsr)
     {
@@ -258,7 +269,8 @@ float ProportionalJointMoment::calc_motor_cmd()
             cmd_ff = (fsr) * _controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx];          
             
             // saturate and account for assistance
-            cmd_ff = min(max(0, cmd_ff), _controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx]);
+            cmd_ff = max(0, cmd_ff);
+            //cmd_ff = min(max(0, cmd_ff), _controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx]);
             cmd_ff = cmd_ff * (_controller_data->parameters[controller_defs::proportional_joint_moment::is_assitance_idx] ? -1 : 1);
         }
         else
@@ -285,6 +297,19 @@ float ProportionalJointMoment::calc_motor_cmd()
         cmd = cmd_ff;
     }
 
+    // Saturate the PID output, dependent on state. Stance is positive
+    // if (_controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx] > 0)
+    // {
+    //     if (_leg_data->toe_stance)
+    //     {
+    //         cmd = min(0, cmd);
+    //     }
+    //     else
+    //     {
+    //         cmd = max(0, cmd);
+    //     }
+    // }
+    
     _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 0.99);
     return _controller_data->filtered_cmd;
 };

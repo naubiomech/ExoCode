@@ -69,9 +69,9 @@ class CAN
         {
             if(!Can0.write(msg)) 
             {
-                Serial.print("Error Sending");
-                Serial.print(msg.id);
-                Serial.print("\n");
+                // Serial.print("Error Sending");
+                // Serial.print(msg.id);
+                // Serial.print("\n");
             }
         }
 

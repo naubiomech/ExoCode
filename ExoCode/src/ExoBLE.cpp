@@ -44,30 +44,30 @@ bool ExoBLE::setup()
         }
         else
         {
-            Serial.println("ExoBLE::setup->Failed to start BLE!");
+            //Serial.println("ExoBLE::setup->Failed to start BLE!");
             return false;
         }
     #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
         if (!_ble.begin(0))
         {
-            Serial.println(F("Couldn't find Bluefruit, make sure it's in Command mode & check wiring?"));
+            //Serial.println(F("Couldn't find Bluefruit, make sure it's in Command mode & check wiring?"));
             return false;
         }
-        Serial.println( F("OK!") );
+        //Serial.println( F("OK!") );
         if (FACTORYRESET_ENABLE)
         {
             /* Perform a factory reset to make sure everything is in a known state */
-            Serial.println(F("Performing a factory reset: "));
+            //Serial.println(F("Performing a factory reset: "));
             if ( ! _ble.factoryReset() )
             {
-                Serial.println(F("Couldn't factory reset"));
+                //Serial.println(F("Couldn't factory reset"));
                 return false;
             }
         }
 
         if ( !_ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION) )
         {
-            Serial.println( F("Callback requires at least 0.7.0") );
+            //Serial.println( F("Callback requires at least 0.7.0") );
             while(true) {;}
         }
         
@@ -90,10 +90,10 @@ bool ExoBLE::setup()
         change_name_command.toCharArray(char_command, change_name_command.length()+1);
         const __FlashStringHelper* name_command = reinterpret_cast<__FlashStringHelper*>(char_command);
         /* Set the name on the module using the packaged string */
-        Serial.println(name_command);
+        //Serial.println(name_command);
         if (!_ble.sendCommandCheckOK(F(name_command))) 
         {
-            Serial.println(F("Could not set device name"));
+            //Serial.println(F("Could not set device name"));
             return false;
         }
 
@@ -109,7 +109,7 @@ bool ExoBLE::setup()
         /* Start Advertising */
         advertising_onoff(true);
         
-        Serial.println("Finished Setup and Started Advertising!");
+        //Serial.println("Finished Setup and Started Advertising!");
         return true;
     #endif
 }
@@ -119,7 +119,7 @@ void ExoBLE::advertising_onoff(bool onoff)
     if (onoff)
     {
         // Start Advertising
-        Serial.println("Start Advertising");
+        //Serial.println("Start Advertising");
         #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
             BLE.advertise();
             // turn the blue led off
@@ -134,7 +134,7 @@ void ExoBLE::advertising_onoff(bool onoff)
     else
     {
         // Stop Advertising
-        Serial.println("Stop Advertising");
+        //Serial.println("Stop Advertising");
         #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
             BLE.stopAdvertise();
             // turn the blue led on
@@ -175,7 +175,7 @@ bool ExoBLE::handle_updates()
             //Serial.println("ExoBLE :: handle_updates : running update");
             #endif
             
-            Serial.println("ExoBLE :: handle_updates : running update");
+            //Serial.println("ExoBLE :: handle_updates : running update");
             _ble.update(0);
 
             #ifdef EXOBLE_DEBUG
@@ -235,7 +235,7 @@ void ExoBLE::send_message(BleMessage &msg)
         return; /* Don't bother sending anything if no one is listening */
     }
     #ifdef EXOBLE_DEBUG
-    Serial.println("Exoble::send_message->Sending:");
+    //Serial.println("Exoble::send_message->Sending:");
     BleMessage::print(msg);
     #endif
     static const int k_preamble_length = 3;

@@ -1,6 +1,6 @@
 #include "ErrorManager.h"
 
-
+#if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
 
 ErrorManager::ErrorManager(Exo* exo, ExoData* exo_data)
 : _exo(exo), _data(exo_data)
@@ -47,3 +47,5 @@ void ErrorManager::assign_triggers(error_trigger_t soft, error_trigger_t hard, e
     _fatal_trigger = fatal;
     _set_triggers = true;
 }
+
+#endif

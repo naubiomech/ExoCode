@@ -1,5 +1,6 @@
 #include "TorqueSensor.h"
-// #define TORQUE_DEBUG 1
+//#define TORQUE_DEBUG 1
+
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
@@ -20,6 +21,7 @@ TorqueSensor::TorqueSensor(unsigned int pin)
     this->_last_do_calibrate = false; 
     this->_zero_sum = 0; 
     this->_num_calibration_samples = 0;  
+
         
     // Serial.print("TorqueSensor::TorqueSensor : pin = ");
     // Serial.print(pin);
@@ -68,7 +70,7 @@ bool TorqueSensor::calibrate(bool do_calibrate)
         uint16_t delta = millis()-_start_time;
         if((_cal_time >= (delta)) && do_calibrate)
         {
-            float current_reading = analogRead(_pin)*torque_calibration::AI_CNT_TO_V;
+            float current_reading =  analogRead(_pin)*torque_calibration::AI_CNT_TO_V;
             _zero_sum = _zero_sum + current_reading;
             _num_calibration_samples++;
 
@@ -132,23 +134,23 @@ float TorqueSensor::read()
     _calibrated_reading = (((float)_raw_reading*torque_calibration::AI_CNT_TO_V) - _calibration) * torque_calibration::TRQ_V_TO_NM;
 
     #ifdef TORQUE_DEBUG
-        // Serial.print("TorqueSensor :: Read : pin ");
-        // Serial.print(_pin);
-        // Serial.print(" : Calibrated Reading = ");
-        // Serial.println(_calibrated_reading, 12);
+        Serial.print("TorqueSensor :: Read : pin ");
+        Serial.print(_pin);
+        Serial.print(" : Calibrated Reading = ");
+        Serial.println(_calibrated_reading, 12);
 
-        // Serial.print("TorqueSensor :: Read : pin ");
-        // Serial.print(_pin);
-        // Serial.print(" : Raw Reading = ");
-        // Serial.println(_raw_reading);
-        // Serial.println(" ");
+        Serial.print("TorqueSensor :: Read : pin ");
+        Serial.print(_pin);
+        Serial.print(" : Raw Reading = ");
+        Serial.println(_raw_reading);
+        Serial.println(" ");
 
-        // Serial.print("_calibration : ");
-        // Serial.println(_calibration);
-        // Serial.print("torque_calibration::AI_CNT_TO_V : ");
-        // Serial.println(torque_calibration::AI_CNT_TO_V, 12);
-        // Serial.print("torque_calibration::TRQ_V_TO_NM : ");
-        // Serial.println(torque_calibration::TRQ_V_TO_NM);
+        Serial.print("_calibration : ");
+        Serial.println(_calibration);
+        Serial.print("torque_calibration::AI_CNT_TO_V : ");
+        Serial.println(torque_calibration::AI_CNT_TO_V, 12);
+        Serial.print("torque_calibration::TRQ_V_TO_NM : ");
+        Serial.println(torque_calibration::TRQ_V_TO_NM);
     #endif
     
     return _calibrated_reading;
