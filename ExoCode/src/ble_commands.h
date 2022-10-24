@@ -47,6 +47,7 @@ namespace ble_names
     static const char motors_on         = 'x';
     static const char motors_off        = 'w';
     static const char mark              = 'N';
+    static const char update_param     = 'f';
 
     // Sending Commands
     static const char send_real_time_data = '?';
@@ -56,6 +57,7 @@ namespace ble_names
     static const char send_trq_cal        = 'H';
     static const char send_step_count     = 's';
     static const char cal_fsr_finished    = 'n';
+
 };
 
 
@@ -80,6 +82,7 @@ namespace ble
         {ble_names::mark,               0},
         {ble_names::new_fsr,            2},
         {ble_names::new_trq,            4},
+        {ble_names::update_param,       4},
         
         // Sending Commands
         {ble_names::send_batt,              1},
@@ -394,6 +397,25 @@ namespace ble_handlers
         // Change PJMC fsr threshold parameters
         // Need to implement PJMC
 
+    }
+
+    inline static void update_param(ExoData* data, BleMessage* msg)
+    {
+        // Send UART message to update parameter
+        Serial.println("ble_handlers::update_param() - Got update param message");
+        Serial.print("ble_handlers::update_param() - Joint ID: "); Serial.println((uint8_t)msg->data[0]);
+        Serial.print("ble_handlers::update_param() - Controller ID: "); Serial.println((uint8_t)msg->data[1]);
+        Serial.print("ble_handlers::update_param() - Param Index: "); Serial.println((uint8_t)msg->data[2]);
+        Serial.print("ble_handlers::update_param() - Param Value: "); Serial.println((uint8_t)msg->data[3]);
+        UARTHandler* uart_handler = UARTHandler::get_instance();
+        UART_msg_t tx_msg;
+        tx_msg.command = UART_command_names::update_controller_param;
+        tx_msg.joint_id = (uint8_t) msg->data[0];
+        tx_msg.data[(uint8_t)UART_command_enums::controller_param::CONTROLLER_ID] = (uint8_t) msg->data[1];
+        tx_msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_INDEX] = (uint8_t) msg->data[2];
+        tx_msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_VALUE] = (uint8_t) msg->data[3];
+        tx_msg.len = 4;
+        uart_handler->UART_msg(tx_msg);
     }
 
 }

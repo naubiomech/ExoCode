@@ -116,7 +116,7 @@ float _Controller::_pid(float cmd, float measurement, float p_gain, float i_gain
     float de_dt = 0;
     if (time_good)
     {
-       de_dt = -(measurement - _prev_input) * LOOP_FREQ_HZ; 
+       de_dt = -(measurement - _prev_input) * (1000 / LOOP_FREQ_HZ);  // Convert to ms
        _prev_de_dt = de_dt;
     }
     else 
@@ -310,7 +310,7 @@ float ProportionalJointMoment::calc_motor_cmd()
     //     }
     // }
     
-    _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 0.99);
+    _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 1);
     return _controller_data->filtered_cmd;
 };
 

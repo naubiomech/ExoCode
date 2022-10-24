@@ -21,7 +21,7 @@ class SmartBattery: public _Battery
         float get_parameter();
     
     private:
-        uint8_t data[i2c_cmds::get_battery_voltage::len];
+        uint8_t data[i2c_cmds::smart::get_battery_voltage::len];
 };
 
 class RCBattery: public _Battery
@@ -31,7 +31,8 @@ class RCBattery: public _Battery
         float get_parameter();
 
     private:
-        float _voltage;
+        uint8_t data[i2c_cmds::rc::get_battery_voltage::len];
+        const int BusLSB = 4; 
 };
 #endif
 #endif

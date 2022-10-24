@@ -37,8 +37,8 @@ Exo::Exo(ExoData* exo_data)
         Serial.println("Exo :: Constructor : motor_stop_pin Mode set");
     #endif
 
-    analogWriteResolution(analog::RESOLUTION);
-    analogReadResolution(analog::RESOLUTION);
+    analogWriteResolution(12);
+    analogReadResolution(12);
 };
 
 /* 
@@ -154,14 +154,14 @@ void Exo::run()
     {
         
         // toggle the synce LED every X times we miss the time requirements
-        // static uint8_t missed_time_count = 0;
-        // static const uint8_t missed_time_max = 100;
-        // missed_time_count++;
-        // if (missed_time_count >= missed_time_max)
-        // {
-        //     missed_time_count = 0;
-        //     status_led.toggle();
-        // }
+        static uint8_t missed_time_count = 0;
+        static const uint8_t missed_time_max = 100;
+        missed_time_count++;
+        if (missed_time_count >= missed_time_max)
+        {
+            missed_time_count = 0;
+            status_led.toggle();
+        }
 
         //data->status = status_defs::messages::error;'
         //Serial.println("Exo::Run:Timeoverflow");

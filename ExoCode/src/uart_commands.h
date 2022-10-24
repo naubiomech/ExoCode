@@ -42,6 +42,8 @@ namespace UART_command_names
     static const uint8_t update_motor_zero = 0x10;
     static const uint8_t get_real_time_data = 0x11;
     static const uint8_t update_real_time_data = 0x12;
+    static const uint8_t get_controller_param = 0x13;
+    static const uint8_t update_controller_param = 0x14;
 };
 
 /**
@@ -78,6 +80,12 @@ namespace UART_command_enums
     };
     enum class motor_zero:uint8_t {
         ZERO = 0,
+        LENGTH
+    };
+    enum class controller_param:uint8_t {
+        CONTROLLER_ID = 0,
+        PARAM_INDEX = 1,
+        PARAM_VALUE = 2,
         LENGTH
     };
     enum class real_time_data:uint8_t {
@@ -327,11 +335,11 @@ namespace UART_command_handlers
                 rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
                 rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading;
                 rx_msg.data[1] = exo_data->right_leg.toe_stance;
-                rx_msg.data[2] = exo_data->right_leg.ankle.controller.filtered_cmd; 
-                rx_msg.data[3] = exo_data->left_leg.ankle. controller.filtered_torque_reading;
+                rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint; 
+                rx_msg.data[3] = exo_data->right_leg.ankle.motor.i; //exo_data->left_leg.ankle.controller.filtered_torque_reading;
                 //TODO: Implement Mark Feature
                 rx_msg.data[4] = exo_data->left_leg.toe_stance; 
-                rx_msg.data[5] = exo_data->left_leg.ankle.controller.filtered_cmd;
+                rx_msg.data[5] = exo_data->right_leg.ankle.motor.t_ff; //exo_data->left_leg.ankle.controller.ff_setpoint;
                 rx_msg.data[6] = exo_data->right_leg.toe_fsr;
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;
 
@@ -402,6 +410,21 @@ namespace UART_command_handlers
         // exo_data->left_leg.ankle.controller.setpoint = msg.data[5];
         // exo_data->right_leg.toe_fsr = msg.data[6];
         // exo_data->left_leg.toe_fsr = msg.data[7];
+    }
+
+    inline static void update_controller_param(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
+    {
+        // Get the joint
+        JointData* j_data = exo_data->get_joint_with(msg.joint_id);
+        if (j_data == NULL)
+        {
+            //Serial.println("UART_command_handlers::update_controller_params->No joint with id =  "); Serial.print(msg.joint_id); Serial.println(" found");
+            return;
+        }
+        // Set the controller
+        j_data->controller.controller = msg.data[(uint8_t)UART_command_enums::controller_param::CONTROLLER_ID];
+        // Set the parameter
+        j_data->controller.parameters[(uint8_t)msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_INDEX]] = msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_VALUE];
     }
 };
 
@@ -570,6 +593,10 @@ namespace UART_command_utils
             break;
         case UART_command_names::update_real_time_data:
             UART_command_handlers::update_real_time_data(handler, exo_data, msg);
+            break;
+
+        case UART_command_names::update_controller_param:
+            UART_command_handlers::update_controller_param(handler, exo_data, msg);
             break;
         
         default:

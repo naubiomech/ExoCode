@@ -147,7 +147,7 @@ void ComsMCU::update_gui()
 void ComsMCU::_process_complete_gui_command(BleMessage* msg) 
 {
     //Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
-    BleMessage::print(*msg);
+    //BleMessage::print(*msg);
 
     switch (msg->command)
     {

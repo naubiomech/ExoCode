@@ -6,7 +6,7 @@
 #include "StatusLed.h"
 #include <math.h>
 
-//#define STATUS_LED_DEBUG
+#define STATUS_LED_DEBUG
 
 /*
 Constructors
@@ -73,28 +73,32 @@ void StatusLed::update(uint16_t message)
         #endif
     }
     
-    // int red = _message_colors[_current_message][0];
-    // int green = _message_colors[_current_message][1];
-    // int blue = _message_colors[_current_message][2];
+    int red = _message_colors[_current_message][0];
+    int green = _message_colors[_current_message][1];
+    int blue = _message_colors[_current_message][2];
         
-    switch (_message_pattern[_msg_idx][0])
-    {
-        case status_led_defs::patterns::blink :
-            _blink();
-            break;    
-        case status_led_defs::patterns::pulse :
-            _pulse();
-            break;
-        case status_led_defs::patterns::rainbow :
-            _rainbow_hsv();
-            break;
-        default : // solid
-            _solid();
-            break;
-    }
+    // switch (_message_pattern[_msg_idx][0])
+    // {
+    //     case status_led_defs::patterns::blink :
+    //         Serial.println("Blink");
+    //         _blink();
+    //         break;    
+    //     case status_led_defs::patterns::pulse :
+    //         Serial.println("Pulse");
+    //         _pulse();
+    //         break;
+    //     case status_led_defs::patterns::rainbow :
+    //         Serial.println("Rainbow");
+    //         _rainbow_hsv();
+    //         break;
+    //     default : // solid
+    //         Serial.println("Solid");
+    //         _solid();
+    //         break;
+    // }
       
       
-    //_set_color(_message_colors[_current_message][0],_message_colors[_current_message][1],_message_colors[_current_message][2]);   // Set the LED state
+    _set_color(_message_colors[_current_message][0],_message_colors[_current_message][1],_message_colors[_current_message][2]);   // Set the LED state
 };
 
 /**
@@ -102,19 +106,20 @@ void StatusLed::update(uint16_t message)
  */
 void StatusLed::toggle()
 {
-    static bool led_on = false;
-    if (led_on)
-    {
-        digitalWrite(_r_pin, LOW);
-        digitalWrite(_g_pin, LOW);
-        digitalWrite(_b_pin, LOW);
-        led_on = false;
-    }
-    else
-    {
-        _set_color(_message_colors[_current_message][0],_message_colors[_current_message][1],_message_colors[_current_message][2]);
-        led_on = true;
-    }
+    // Serial.println("StatusLed::toggle");
+    // static bool led_on = false;
+    // if (led_on)
+    // {
+    //     digitalWrite(_r_pin, LOW);
+    //     digitalWrite(_g_pin, LOW);
+    //     digitalWrite(_b_pin, LOW);
+    //     led_on = false;
+    // }
+    // else
+    // {
+    //     _set_color(_message_colors[_current_message][0],_message_colors[_current_message][1],_message_colors[_current_message][2]);
+    //     led_on = true;
+    // }
 }
 
 
@@ -132,12 +137,12 @@ Protected
 void StatusLed::_set_color(int r_color, int g_color, int b_color)
 {
     
-  // Serial.print(r_color);
-  // Serial.print("\t");
-  // Serial.print(g_color);
-  // Serial.print("\t");
-  // Serial.print(b_color);
-  // Serial.print("\n");
+  Serial.print(r_color);
+  Serial.print("\t");
+  Serial.print(g_color);
+  Serial.print("\t");
+  Serial.print(b_color);
+  Serial.print("\n");
   
   if (status_led_defs::has_pwm)  // using simple digital pins
   {
@@ -178,8 +183,8 @@ void StatusLed::_pulse()
         
         float angle_deg = 360.0 * (timestamp - _pattern_start_timestamp) / _period_ms;
         _pattern_brightness_percent = 100 * sin (angle_deg * PI / 180);
-        //Serial.print(angle_deg);
-        //Serial.print("\n");
+        // Serial.print(angle_deg);
+        // Serial.print("\n");
         
         
         _set_color(_pattern_brightness_percent * _message_colors[_msg_idx][0] / 100, _pattern_brightness_percent * _message_colors[_msg_idx][1]/100, _pattern_brightness_percent * _message_colors[_msg_idx][2]/100);   // Set the LED state
