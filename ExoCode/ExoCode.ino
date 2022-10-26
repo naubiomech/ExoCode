@@ -47,6 +47,9 @@ namespace config_info
 
 void setup()
 { 
+  analogWriteResolution(12);
+  analogReadResolution(12);
+  
   Serial.begin(115200);
 //  TODO: Remove serial while for deployed version as this would hang
 //    while (!Serial) {
