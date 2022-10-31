@@ -1765,51 +1765,86 @@ Perturbation::Perturbation(config_defs::joint_id id, ExoData* exo_data)
 
 float Perturbation::calc_motor_cmd()
 {
-    float cmd == 0;
+    float cmd = 0;     //Creates the cmd variable and initializes it to 0;
 
-    if (_leg_data->do_calibration_toe_fsr || toe_fsr == 0)
+    //Serial.print("Perturbation::calc_motor_cmd : Pertrub_idx : ");
+    //Serial.print(_controller_data->parameters[controller_defs::perturbation::perturb_idx]);
+    //Serial.print("\n");
+
+    if (_controller_data->parameters[controller_defs::perturbation::perturb_idx] == 1)  //If the flag is raised (via the button press_
     {
-        cmd = 0;
+
+        if (_leg_data->do_calibration_toe_fsr || _leg_data->toe_fsr == 0)                      //If the FSRs are being calibrated or if the toe fsr is 0, send a command of zero
+        {
+            cmd = 0;
+            //Serial.print("Foot is off the floor");
+            //Serial.print("\n");
+        }
+        else
+        {
+
+            if (timer == 0)                                                         //If the timer was previously not in use, mark the timepoint that the perturbation started                                                
+            {
+                start_time = millis();
+                //Serial.print("Perturbation::calc_motor_cmd : Start Time : ");
+                //Serial.print(start_time);
+                //Serial.print("\n");
+            }
+
+            timer = millis();                                                       //Record the current time
+
+            //Serial.print("Perturbation::calc_motor_cmd : timer : ");
+            //Serial.print(timer);
+            //Serial.print("\n");
+
+            current_time = timer - start_time;                                      //Calcualtes the current time relative to the start of the controller 
+
+            //Serial.print("Perturbation::calc_motor_cmd : Current Time : ");
+            //Serial.print(current_time);
+            //Serial.print("\n");
+
+            if (current_time <= ((_controller_data->parameters[controller_defs::perturbation::duration_idx]) * 1000))       //If the current time is less than or equal to the duration of the perturbation defined by the user
+            {
+                cmd = _controller_data->parameters[controller_defs::perturbation::amplitude_idx];                           //Command being sent to the motor is equal to the setpoint defined by the user
+                //Serial.print("Perturbation::calc_motor_cmd : cmd : ");
+                //Serial.print(cmd);
+                //Serial.print("\n");
+            }
+            else
+            {
+                cmd = 0;                                                                                                    //If the current time is greater than the user defined duration than send a motor command of zero
+                //Serial.print("Perturbation::calc_motor_cmd : Exceeded Time Duration : Torque Set to Zero ");
+                //Serial.print("\n");
+            }
+
+            //Serial.print("Perturbation::calc_motor_cmd : Direction : ");
+            //Serial.print(_controller_data->parameters[controller_defs::perturbation::direction_idx]);
+            //Serial.print("\n");
+
+            if (_controller_data->parameters[controller_defs::perturbation::direction_idx] == 0)                            //If the user wants to send a PF/Flexion torque
+            {
+                cmd = 1 * cmd;
+            }
+            else if (_controller_data->parameters[controller_defs::perturbation::direction_idx] == 1)                       //If the user wants to send a DF/Extension torque
+            {
+                cmd = -1 * cmd;
+            }
+            else
+            {
+                cmd = cmd;                                                                                                  //If the direction flag is something other than 0 or 1, do nothing to the motor command
+            }
+
+            if (current_time > ((_controller_data->parameters[controller_defs::perturbation::duration_idx]) * 1000))        //If the current time exceeds the desired perturbation time, reset values to 0 and exit the controller
+            {
+                timer = 0;
+                current_time = 0;
+                _controller_data->parameters[controller_defs::perturbation::perturb_idx] = 0;
+            }
+        }
     }
     else
     {
-
-        if (timer == 0)
-        {
-            start_time = millis();
-        }
-
-        timer = millis();
-
-        current_time = timer - start_time;
-
-        if (current_time <= ((_controller_data->parameters[controller_defs::perturbation::duration_idx])*1000))
-        {
-            cmd = _controller_data->parameters[controller_defs::perturbation::amplitude_idx];
-        }
-        else
-        {
-            cmd = 0;
-        }
-
-        if (_controller_data->parameters[controller_defs::perturbation::direction_idx] == 0)
-        {
-            cmd = 1 * cmd;
-        }
-        else if (_controller_data->parameters[controller_defs::perturbation::direction_idx] == 1)
-        {
-            cmd = -1 * cmd;
-        }
-        else
-        {
-            cmd = cmd;
-        }
-
-        if (current_time > ((_controller_data->parameters[controller_defs::perturbation::duration_idx]) * 1000))
-        {
-            timer = 0;
-            current_time = 0;
-        }
+        cmd = 0;            //If the flag is set to 0 (the button hasn't been pushed) then send a 0 torque command to the motor
     }
 
     return cmd;

@@ -581,9 +581,9 @@ public:
 
     float calc_motor_cmd();
 
-    float timer;
-    float start_time;
-    float current_time;
+    float timer;            //Updates with the current time with each pass of the controller
+    float start_time;       //Records the time once the controller has been initiated via a button press in the app
+    float current_time;     //Calculates the current time relative to the start time
 };
 
 

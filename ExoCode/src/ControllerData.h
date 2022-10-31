@@ -214,9 +214,11 @@ namespace controller_defs /**< stores the parameter indexes for different contro
     namespace perturbation
     {
         const uint8_t amplitude_idx = 0;    // amplitude in Nm
-        const uint8_t duration_idx = 1;     // period in ms
+        const uint8_t duration_idx = 1;     // time that amplitude is applied in seconds
         const uint8_t direction_idx = 2;    // direction (0 = plantarflexion, 1 = dorsiflexion)
-        const uint8_t num_parameter = 3;
+        const uint8_t perturb_idx = 3;      //Flag indicating whether or not the perturbation should be sent (0 = no, 1 = yes)
+        const uint8_t num_parameter = 4;
+            ;
     }
     
     /*
