@@ -1746,4 +1746,74 @@ float Sine::calc_motor_cmd()
         : 0);
     return cmd;
 };
+
+
+//****************************************************
+
+
+Perturbation::Perturbation(config_defs::joint_id id, ExoData* exo_data)
+    : _Controller(id, exo_data)
+{
+    #ifdef CONTROLLER_DEBUG
+        Serial.println("Perturbation::Constructor");
+    #endif
+    
+    start_time = 0;
+    timer = 0;
+    current_time = 0;
+};
+
+float Perturbation::calc_motor_cmd()
+{
+    float cmd == 0;
+
+    if (_leg_data->do_calibration_toe_fsr || toe_fsr == 0)
+    {
+        cmd = 0;
+    }
+    else
+    {
+
+        if (timer == 0)
+        {
+            start_time = millis();
+        }
+
+        timer = millis();
+
+        current_time = timer - start_time;
+
+        if (current_time <= ((_controller_data->parameters[controller_defs::perturbation::duration_idx])*1000))
+        {
+            cmd = _controller_data->parameters[controller_defs::perturbation::amplitude_idx];
+        }
+        else
+        {
+            cmd = 0;
+        }
+
+        if (_controller_data->parameters[controller_defs::perturbation::direction_idx] == 0)
+        {
+            cmd = 1 * cmd;
+        }
+        else if (_controller_data->parameters[controller_defs::perturbation::direction_idx] == 1)
+        {
+            cmd = -1 * cmd;
+        }
+        else
+        {
+            cmd = cmd;
+        }
+
+        if (current_time > ((_controller_data->parameters[controller_defs::perturbation::duration_idx]) * 1000))
+        {
+            timer = 0;
+            current_time = 0;
+        }
+    }
+
+    return cmd;
+};
+
+
 #endif

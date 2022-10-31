@@ -563,6 +563,29 @@ class Sine: public _Controller
         
 };
 
+/**
+ * @brief Perturbation Controller
+ * This controller is meant to work with both the hip and ankle exoskeletons
+ * It can apply a torque with a defined amplitude for a user defined duration of time in a user defined direciton (PF/DF)
+ *
+ * 2022-11 : by J. Williams
+ *
+ * see ControllerData.h for details on the parameters used.
+ */
+
+class Perturbation : public _Controller
+{
+public:
+    Perturbation(config_defs::joint_id id, ExoData* exo_data);
+    ~Perturbation() {};
+
+    float calc_motor_cmd();
+
+    float timer;
+    float start_time;
+    float current_time;
+};
+
 
 #endif
 #endif

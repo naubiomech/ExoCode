@@ -172,6 +172,7 @@ class HipJoint : public _Joint
         // UserDefined _user_defined; /**< user defined controller*/
         Sine _sine; /**< sine wave controller */
         Stasis _stasis; /**< stasis controller */
+        Perturbation _perturbation;    /**< perturbation controller */
 };
 
 /**
@@ -202,6 +203,7 @@ class KneeJoint : public _Joint
         // UserDefined _user_defined; /**< user defined controller*/
         Sine _sine; /**< sine wave controller */
         Stasis _stasis; /**< stasis controller */
+        Perturbation _perturbation;    /**< perturbation controller */
 };
 
 /**
@@ -234,6 +236,7 @@ class AnkleJoint : public _Joint
         // UserDefined _user_defined; /**< user defined controller*/
         Sine _sine; /**< sine wave controller */
         Stasis _stasis; /**< stasis controller */
+        Perturbation _perturbation;    /**< perturbation controller */
 };
 
 #endif

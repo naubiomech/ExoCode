@@ -210,6 +210,14 @@ namespace controller_defs /**< stores the parameter indexes for different contro
         const uint8_t d_gain_idx = 6;
         const uint8_t num_parameter = 7;
     }
+
+    namespace perturbation
+    {
+        const uint8_t amplitude_idx = 0;    // amplitude in Nm
+        const uint8_t duration_idx = 1;     // period in ms
+        const uint8_t direction_idx = 2;    // direction (0 = plantarflexion, 1 = dorsiflexion)
+        const uint8_t num_parameter = 3;
+    }
     
     /*
      * Add phase delayed controller for hip
