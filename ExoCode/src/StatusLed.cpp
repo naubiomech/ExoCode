@@ -6,7 +6,7 @@
 #include "StatusLed.h"
 #include <math.h>
 
-#define STATUS_LED_DEBUG
+// #define STATUS_LED_DEBUG
 
 /*
 Constructors
@@ -137,12 +137,12 @@ Protected
 void StatusLed::_set_color(int r_color, int g_color, int b_color)
 {
     
-  Serial.print(r_color);
-  Serial.print("\t");
-  Serial.print(g_color);
-  Serial.print("\t");
-  Serial.print(b_color);
-  Serial.print("\n");
+//   Serial.print(r_color);
+//   Serial.print("\t");
+//   Serial.print(g_color);
+//   Serial.print("\t");
+//   Serial.print(b_color);
+//   Serial.print("\n");
   
   if (status_led_defs::has_pwm)  // using simple digital pins
   {

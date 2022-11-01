@@ -31,10 +31,10 @@
 #include "src\uart_commands.h"
 #include "src\UART_msg_t.h"
 
-//// Error Handling
-//#include "src\error_handlers.h"
-//#include "src\error_triggers.h"
-//#include "src\ErrorManager.h"
+// Error Handling
+#include "src\error_handlers.h"
+#include "src\error_triggers.h"
+#include "src\ErrorManager.h"
 
 
 //#include "src\Motor.h"
@@ -123,7 +123,7 @@ void loop()
         }
     #endif
 
-//    static ErrorManager error_manager(&exo, &exo_data);
+    static ErrorManager error_manager(&exo, &exo_data);
 
     UARTHandler* uart_handler = UARTHandler::get_instance();
     
@@ -452,8 +452,8 @@ void loop()
     // do exo calculations
     exo.run();
 //
-//    // conditionally calls error handlers
-//    error_manager.check();
+    // conditionally calls error handlers
+    error_manager.check();
     
     // print the exo_data at a fixed period.
 //    unsigned int data_print_ms = 5000;
@@ -486,12 +486,16 @@ void loop()
 #include "src/ExoData.h"
 #include "src/ComsMCU.h"
 #include "src/Config.h"
+#include "src/Utilities.h"
 
 // Board to board coms
 #include "src/UARTHandler.h"
 #include "src/uart_commands.h"
 #include "src/UART_msg_t.h"
 #include "src/ComsLed.h"
+
+#include "src/WaistBarometer.h"
+#include "src/InclineDetector.h"
 
 // create array to store config.
 namespace config_info
@@ -522,9 +526,8 @@ void setup()
 {
     //delay(1500); // Wait for the Teensy to read the SD card
     Serial.begin(115200);
-    //while (!Serial);
 
-    Serial.println("Setup->Getting config");
+    //Serial.println("Setup->Getting config");
     // get the sd card config from the teensy, this has a timeout
     UARTHandler* handler = UARTHandler::get_instance();
     bool timed_out = UART_command_utils::get_config(handler, config_info::config_to_send, (float)UART_times::CONFIG_TIMEOUT);
@@ -548,15 +551,20 @@ void loop()
 {
     static ExoData* exo_data = new ExoData(config_info::config_to_send);
     static ComsMCU* mcu = new ComsMCU(exo_data, config_info::config_to_send);
+    static WaistBarometer* waist_barometer = new WaistBarometer();
+    static InclineDetector* incline_detector = new InclineDetector();
     mcu->handle_ble();
     mcu->local_sample();
     mcu->update_UART();
     mcu->update_gui();
-}
 
-void serialEvent1()
-{
-  Serial.println("==================================================================");
+    static float then = millis();
+    float now = millis();
+    if ((now - then) > INCLINE_DELTA_MS)
+    {
+        then = now;
+        incline_state_t state = incline_detector->run(waist_barometer->getPressure());
+    }
 }
 
 #else // code to use when microcontroller is not recognized.
