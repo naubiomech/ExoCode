@@ -326,8 +326,8 @@ namespace UART_command_handlers
         rx_msg.joint_id = 0;
         rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN + 1;
 
-        //Serial.println("config[config_defs::exo_name_idx] :: "); //Uncomment if you want to check that system is receiving correct config info
-        //Serial.println(config[config_defs::exo_name_idx]);
+        // Serial.println("config[config_defs::exo_name_idx] :: "); //Uncomment if you want to check that system is receiving correct config info
+        // Serial.println(config[config_defs::exo_name_idx]);
 
         switch (config[config_defs::exo_name_idx])
         {
@@ -339,9 +339,10 @@ namespace UART_command_handlers
                 rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_torque_reading; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i; //
                 //TODO: Implement Mark Feature
                 rx_msg.data[4] = exo_data->left_leg.ankle.controller.ff_setpoint; //rx_msg.data[4] = exo_data->left_leg.toe_stance; 
-                rx_msg.data[5] = exo_data->right_leg.ankle.motor.t_ff; 
+                rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;
                 rx_msg.data[6] = exo_data->right_leg.toe_fsr;
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+                break;
 
             case (uint8_t)config_defs::exo_name::bilateral_hip:
                 rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_HIP_RT_LEN;
