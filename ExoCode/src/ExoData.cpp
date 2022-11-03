@@ -47,6 +47,25 @@ void ExoData::for_each_joint(for_each_joint_function_t function)
     function(&right_leg.ankle, NULL);
 };
 
+uint8_t ExoData::get_used_joints(uint8_t* used_joints)
+{
+    uint8_t len = 0;
+
+    used_joints[len] = ((left_leg.hip.is_used) ? (1) : (0));
+    len += left_leg.hip.is_used;
+    used_joints[len] = ((left_leg.knee.is_used) ? (1) : (0));
+    len += left_leg.knee.is_used;
+    used_joints[len] = ((left_leg.ankle.is_used) ? (1) : (0));
+    len += left_leg.ankle.is_used;
+    used_joints[len] = ((right_leg.hip.is_used) ? (1) : (0));
+    len += right_leg.hip.is_used;
+    used_joints[len] = ((right_leg.knee.is_used) ? (1) : (0));
+    len += right_leg.knee.is_used;
+    used_joints[len] = ((right_leg.ankle.is_used) ? (1) : (0));
+    len += right_leg.ankle.is_used;
+    return len;
+}
+
 JointData* ExoData::get_joint_with(uint8_t id)
 {
     JointData* j_data = NULL;

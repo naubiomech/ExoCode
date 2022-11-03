@@ -54,6 +54,9 @@ class ExoData
         void for_each_joint(for_each_joint_function_t function);
         void for_each_joint(for_each_joint_function_t function, float* args);
 
+        // Returns a list of all of the joint IDs that are currently being used
+        uint8_t get_used_joints(uint8_t* used_joints);
+
         /**
          * @brief Get the joint pointer for a joint id. 
          * 
