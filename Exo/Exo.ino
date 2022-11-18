@@ -3,7 +3,7 @@
 
 #define VERSION 314
 // Danny, change this to match your board version
-#define BOARD_VERSION TMOTOR_REV1
+#define BOARD_VERSION TMOTOR_REV2
 
 #define CONTROL_LOOP_HZ           500
 #define SAMPLE_LOOP_MULT          2
@@ -16,6 +16,9 @@ bool motors_on = false;
 // Danny put global here to update bluetooth data
 float l_torque = 0;
 float r_torque = 0;
+float Right_FSR_Push_Data;
+float Right_FSR_Pull_Data;
+int Exo_state = 0;
 
 #include <ArduinoBLE.h>
 #include <elapsedMillis.h>
@@ -92,6 +95,12 @@ void setup()
   digitalWrite(RED, HIGH);
   digitalWrite(BLUE, HIGH);
   digitalWrite(GREEN, HIGH);
+
+  // Set pin mode for elbow FSR analog signal
+  pinMode(Right_FSR_Push_Pin, INPUT);
+  pinMode(Right_FSR_Pull_Pin, INPUT);
+
+
   
   //Start Serial
   Serial.begin(500000);
@@ -106,8 +115,8 @@ void setup()
   //analogReference(AR_INTERNAL2V4);
 
   //initialize the leg objects
-  initialize_left_leg(left_leg);
-  initialize_right_leg(right_leg);
+  //initialize_left_leg(left_leg);
+  //initialize_right_leg(right_leg);
 
 
   // Initialize power monitor settings
@@ -290,19 +299,36 @@ void check_Balance_Baseline() {
 }
 
 
-//----------------------------------------------------------------------------------
+//================================================== Control Function =================================================================
 // Danny, change control law
 void rotate_elbow() {
+  
   // Read Sensors
+    Right_FSR_Push_Data = analogRead(Right_FSR_Push_Pin);
+    Right_FSR_Pull_Data = analogRead(Right_FSR_Pull_Pin);
   
   // Check state
-  
+
+    if ((Right_FSR_Push_Data > 50) && (Right_FSR_Push_Data > Right_FSR_Pull_Data)) {
+      Exo_state = 1; //Push Mode - Extension
+    }
+
+    if ((Right_FSR_Pull_Data > 50) && (Right_FSR_Pull_Data > Right_FSR_Push_Data)) {
+      Exo_state = 2; //Pull Mode - Contraction
+    }
+
+    else {
+      Exo_state = 0; //No Torque Mode - Mimic
+    }
+    
   // PID
+//      r_torque = 
   
   // Send Torque
   //akMotor.apply_torque(R_ID, r_torque);
   //akMotor.apply_torque(L_ID, l_torque);
 }
+//=====================================================================================================================================
 
 void rotate_motor() {
   // send the data message, adapt KF if required, apply the PID, apply the state machine,
