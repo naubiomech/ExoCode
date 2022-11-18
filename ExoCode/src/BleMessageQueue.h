@@ -44,6 +44,12 @@ int size();
  */
 int check_for(BleMessage msg);
 
+/**
+ * @brief Forcibly empty the queue.
+ * 
+ */
+void clear();
+
 };
 
 #endif

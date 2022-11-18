@@ -96,7 +96,6 @@ void ComsMCU::update_UART()
 }
 
 
-
 void ComsMCU::update_gui() 
 {
     static Time_Helper* t_helper = Time_Helper::get_instance();
@@ -146,8 +145,8 @@ void ComsMCU::update_gui()
 
 void ComsMCU::_process_complete_gui_command(BleMessage* msg) 
 {
-    //Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
-    //BleMessage::print(*msg);
+    // Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
+    // BleMessage::print(*msg);
 
     switch (msg->command)
     {
@@ -187,9 +186,14 @@ void ComsMCU::_process_complete_gui_command(BleMessage* msg)
     case ble_names::perturb:
         ble_handlers::perturb(_data, msg);
         break;
+    case ble_names::update_param:
+        ble_handlers::update_param(_data, msg);
+        break;
     default:
-        //Serial.println("ComsMCU::_process_complete_gui_command->No case for command!");
+        // Serial.println("ComsMCU::_process_complete_gui_command->No case for command!");
         break;
     }
+
+    //ble_queue::clear();
 }
 #endif

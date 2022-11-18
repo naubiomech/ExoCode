@@ -788,7 +788,8 @@ void AnkleJoint::run_joint()
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     // Send the new command to the motor.
-    // Serial.print(_joint_data->controller.setpoint);
+    // Serial.print("AnkleJoint::run_joint : ");
+    // Serial.println(_joint_data->controller.setpoint);
     // Serial.print("\t");
     // Use transaction because the motors are call and response
     // _motor->transaction(0 / _joint_data->motor.gearing);
