@@ -1,6 +1,9 @@
 #ifndef BOARD_SETTINGS_HEADER
 #define BOARD_SETTINGS_HEADER
 
+// Danny, define board version
+
+
 #define TMOTOR_REV1 5
 #define DUAL_BOARD_REV6 4
 #define DUAL_BOARD_REV6_1 3

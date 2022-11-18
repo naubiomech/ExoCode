@@ -118,6 +118,26 @@ class akxMotor {
       }
     }
 
+    /* Takes the voltage output of PID, maps it to a torque and sends it */
+    inline void apply_torque(canid_t id, float torque) {
+      motor_frame_t out_frame;
+      out_frame.id = id;
+      out_frame.pos = 0;
+      out_frame.vel = 0;
+      out_frame.kp = 0;
+      out_frame.kd = 0;
+
+      out_frame.tor = torque;
+      sendCAN(&out_frame);
+
+      if (id == L_ID) {
+        l_torque = torque;
+      }
+      else if (id == R_ID) {
+        r_torque = torque;
+      }
+    }
+
     /* This function will read data from the motors. It updates the motor frame with position velocity and current. */
     inline bool updateFrame(motor_frame_t* out_frame) {
       motor_frame_t temp_frame;
@@ -204,7 +224,8 @@ class akxMotor {
       out_frame.data[5] = 0xFF;
       out_frame.data[6] = 0xFF;
       if (enable) {
-        out_frame.data[7] = 0xFC;
+        out_frame.data[7] = 0xFD;
+        //out_frame.data[7] = 0xFC;
       } else {
         out_frame.data[7] = 0xFD;
       }

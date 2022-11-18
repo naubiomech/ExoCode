@@ -1,7 +1,7 @@
 #include "Msg_functions.h"
 #include "akxMotor.h"
 #include "ema_filter.h"
-
+// Danny, change variables to send over bluetooth
 //Real time data being sent to the GUI
 void send_data_message_wc() //with COP
 {

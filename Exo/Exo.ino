@@ -2,6 +2,7 @@
 //Ensure that the proper motor is defined in akxMotor.h!!!
 
 #define VERSION 314
+// Danny, change this to match your board version
 #define BOARD_VERSION TMOTOR_REV1
 
 #define CONTROL_LOOP_HZ           500
@@ -12,12 +13,13 @@
 const unsigned int zero = 2048;
 bool motors_on = false;
 
+// Danny put global here to update bluetooth data
 float l_torque = 0;
 float r_torque = 0;
 
 #include <ArduinoBLE.h>
 #include <elapsedMillis.h>
-#include <PID_v2.h>
+#include "PID_v2.h"
 #include <Wire.h>
 #include <SPI.h>
 #include <mbed.h>
@@ -52,34 +54,10 @@ motor_frame_t r_frame;
 void control_loop() {
   int count = 0;
   while (true) {
-    //start = micros();
-    //imuCounter++;
-    //resetMotorIfError();
-    calculate_averages();
-    count++;
+    
+    
+    rotate_elbow();
 
-//    if (motors_on) {
-////      detect_faults();
-////      if (amb_sm.last_state == Walking) {
-////          tracking_check(right_leg);
-////          tracking_check(left_leg);
-////          pid_check(right_leg);
-////          pid_check(left_leg);
-////      }
-//      if (stream && (imuCounter > imuTimerCount)) {
-//        //amb_sm.tick(stepper->steps);
-//        imuCounter = 0;
-//      }
-//    }
-
-    if (count == SAMPLE_LOOP_MULT)
-    {
-      count = 0;
-      //rotate_motor();
-    }
-    rotate_motor();
-    //time = micros()-start;
-    //Serial.println(time);
     rtos::ThisThread::sleep_for(1000 / (CONTROL_LOOP_HZ));
   }
 }
@@ -285,17 +263,19 @@ void calculate_averages() {
 //----------------------------------------------------------------------------------
 
 void check_FSR_calibration() {
-  if (FSR_CAL_FLAG) {
-    FSR_calibration();
-  }
-
-  // for the proportional control
-  if (right_leg->FSR_baseline_FLAG) {
-    take_baseline(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);
-  }
-  if (left_leg->FSR_baseline_FLAG) {
-    take_baseline(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
-  }
+  // Danny, Calibrate your FSRs
+  
+//  if (FSR_CAL_FLAG) {
+//    FSR_calibration();
+//  }
+//
+//  // for the proportional control
+//  if (right_leg->FSR_baseline_FLAG) {
+//    take_baseline(right_leg, right_leg->state, right_leg->state_old, right_leg->p_steps, right_leg->p_FSR_baseline_FLAG);
+//  }
+//  if (left_leg->FSR_baseline_FLAG) {
+//    take_baseline(left_leg, left_leg->state, left_leg->state_old, left_leg->p_steps, left_leg->p_FSR_baseline_FLAG);
+//  }
 }
 
 //----------------------------------------------------------------------------------
@@ -311,6 +291,18 @@ void check_Balance_Baseline() {
 
 
 //----------------------------------------------------------------------------------
+// Danny, change control law
+void rotate_elbow() {
+  // Read Sensors
+  
+  // Check state
+  
+  // PID
+  
+  // Send Torque
+  //akMotor.apply_torque(R_ID, r_torque);
+  //akMotor.apply_torque(L_ID, l_torque);
+}
 
 void rotate_motor() {
   // send the data message, adapt KF if required, apply the PID, apply the state machine,

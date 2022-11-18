@@ -9,6 +9,7 @@ void receive_and_transmit()
   switch (cmd_from_Gui)
   {
     case 'F':                                                 //MATLAB is only sending 1 value, a double, which is 8 bytes
+      // Danny, update your setpoints
       //Recieve torque commands
       left_leg->Previous_Setpoint_Ankle = left_leg->Setpoint_Ankle;
       left_leg->Previous_Dorsi_Setpoint_Ankle = left_leg->Dorsi_Setpoint_Ankle;
@@ -71,6 +72,7 @@ void receive_and_transmit()
       break;
 
     case 'E':
+      // Danny, Start the trial
       change_motor_state(&akMotor, true);                                      //The GUI user is ready to start the trial so Motor is enabled
       stream = 1;                                                     //and the torque data is allowed to be streamed
       streamTimerCount = 0;
@@ -83,6 +85,7 @@ void receive_and_transmit()
       break;
 
     case 'G':
+      // Danny, Stop the trial
       left_leg->p_steps->Setpoint = 0.0;
       left_leg->Setpoint_Ankle = 0;
       left_leg->Previous_Setpoint_Ankle = 0;
@@ -137,20 +140,12 @@ void receive_and_transmit()
       break;
 
     case 'H':
+    // Danny, Calibrate torque sensors
       //Calibrate torque sensors
       torque_calibration();
       break;
 
-    case 'K':
-      //Send PID gains
-      *(data_to_send_point) = left_leg->kp;
-      *(data_to_send_point + 1) = left_leg->kd;
-      *(data_to_send_point + 2) = left_leg->ki;
-      *(data_to_send_point + 3) = right_leg->kp;
-      *(data_to_send_point + 4) = right_leg->kd;
-      *(data_to_send_point + 5) = right_leg->ki;
-      send_command_message('K', data_to_send_point, 6);     //MATLAB is expecting to recieve the Torque Parameters
-      break;
+
 
     case 'k':
 //      CURRENT_CONTROL = !CURRENT_CONTROL; //GO 12/4/2019 - Enable/Disable open-loop current control based on GUI checkbox
@@ -217,8 +212,18 @@ void receive_and_transmit()
       break;
 
 
+// =================================================================================================================================================
 
-
+    case 'K':
+      //Send PID gains
+      *(data_to_send_point) = left_leg->kp;
+      *(data_to_send_point + 1) = left_leg->kd;
+      *(data_to_send_point + 2) = left_leg->ki;
+      *(data_to_send_point + 3) = right_leg->kp;
+      *(data_to_send_point + 4) = right_leg->kd;
+      *(data_to_send_point + 5) = right_leg->ki;
+      send_command_message('K', data_to_send_point, 6);     //MATLAB is expecting to recieve the Torque Parameters
+      break;
 
     // TN 6/13/19
     case 'M':                                                //MATLAB is sending 3 values, which are doubles, which have 8 bytes each
