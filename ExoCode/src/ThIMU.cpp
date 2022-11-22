@@ -1,5 +1,6 @@
 #include "ThIMU.h"
 
+#if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
 /*
 #if defineds(ARDUINO_TEENSY36)
 #define MY_WIRE Wire1
@@ -98,4 +99,6 @@ bool ThIMU::_handshake()
     }
     
 }
+
+#endif
 

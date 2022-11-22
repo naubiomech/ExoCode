@@ -23,6 +23,7 @@
 #include "Board.h"
 #include "Utilities.h"
 #include "StatusDefs.h"
+#include "ThIMU.h"
 
 #include <stdint.h>
 #include <algorithm>
@@ -115,6 +116,8 @@ class Leg
         FSR _heel_fsr; /**< heel force sensitive resistor */
 
 		FSR _toe_fsr; /**< toe force sensitive resistor */
+
+        ThIMU* _thimu; /**< thigh IMU */
 
         
         bool _is_left; /**< stores which side the leg is on */

@@ -26,6 +26,8 @@ LegData::LegData(bool is_left, uint8_t* config_to_send)
     this->expected_duration_window_upper_coeff = 1.75;
     this->expected_duration_window_lower_coeff = 0.25;
 
+    this->thigh_angle = 90;
+
     // check if the leg is used from the config.
     if ((static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_to_send[config_defs::exo_side_idx]) 
         || (((uint8_t)config_defs::exo_side::left == config_to_send[config_defs::exo_side_idx]) & this->is_left)
