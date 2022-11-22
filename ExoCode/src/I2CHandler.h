@@ -7,7 +7,6 @@
 
 #ifndef I2CHANDLER_H
 #define I2CHANDLER_H
-#if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 
 #include "Wire.h"
 
@@ -16,12 +15,19 @@ class I2C
     public:
         static I2C* get_instance()
         {
-            static I2C* instance = new I2C;
+            static I2C* instance = new I2C();
             return instance;
         }
 
         void read_i2c(uint8_t* ret, uint8_t addr, uint8_t reg, uint8_t len)
         {
+            Serial.print("Reading from I2C device: ");
+            Serial.print(addr);
+            Serial.print(" at register: ");
+            Serial.print(reg);
+            Serial.print(" with length: ");
+            Serial.println(len);
+
             Wire.beginTransmission(addr);
             Wire.write(reg);
             Wire.endTransmission();
@@ -82,6 +88,23 @@ namespace i2c_cmds
             const uint8_t len = 2;
         }
     }
+
+    namespace thigh_imu
+    {
+        const uint8_t left_addr = 0x01;
+        const uint8_t right_addr = 0x02;
+
+        namespace handshake
+        {
+            const uint8_t reg = 0x01;
+            const uint8_t len = 1;
+        }
+        namespace get_angle
+        {
+            const uint8_t reg = 0x02;
+            const uint8_t len = 1;
+        }
+    }
 }
 
 // int INA219_ADR = 0x40;        // Address of INA219 for writing defined in 7 bits. The 8th bit is automatically included by Wire.read() or Wire.write()
@@ -97,5 +120,4 @@ namespace i2c_cmds
 // int BusLSB = 4;               // mV. This is the multiplier for the bus (battery) voltage reading from the INA219.
 // int Cal = 0x5000;             // Calibration value in hex. Cal = 0.04096/(CurrentLSB*ShuntResistance). Shunt resistance on Rev3/4 is 2mOhm.
 
-#endif
 #endif

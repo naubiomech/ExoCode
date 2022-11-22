@@ -224,31 +224,27 @@ float ProportionalJointMoment::calc_motor_cmd()
 {
 
     float cmd_ff = 0;
-    // static uint32_t run_count = 0;
-    // run_count++;
+    static uint32_t run_count = 0;
+    run_count++;
     bool print = false;
-    // if (run_count > 50)
-    // {
-    //     run_count = 0;
-    //     // print = !_leg_data->is_left;
-    //     //print = false;
-    // }
+    if (run_count > 250)
+    {
+        run_count = 0;
+        print = _leg_data->is_left;
+        //print = false;
+    }
 
 
-    // if (print)
-    // {
-    //     Serial.print("ProportionalJointMoment::calc_motor_cmd : Entered");
-    //     Serial.print("\n");
-    // }
-
+    // print controller params
     if (print)
     {
-        // Print fsr reading and raw torque
-        // Serial.print("fsr_reading = ");
-        // Serial.print(_leg_data->toe_fsr);
-        // Serial.print("\t");
-        // Serial.print("torque_reading = ");
-        // Serial.println(_joint_data->torque_reading);
+        Serial.println("ProportionalJointMoment::calc_motor_cmd params:");
+        for (int i=0; i<controller_defs::proportional_joint_moment::num_parameter; i++)
+        {
+            Serial.print(_controller_data->parameters[i]);
+            Serial.print("\t");
+        }
+        Serial.println();
     }
 
     // don't calculate command when fsr is calibrating.
@@ -295,13 +291,6 @@ float ProportionalJointMoment::calc_motor_cmd()
     else
     {
         cmd = cmd_ff;
-    }
-
-    if (print)
-    {
-        // Print Cmd
-        // Serial.print("cmd = ");
-        // Serial.println(cmd);
     }
 
     // Saturate the PID output, dependent on state. Stance is positive

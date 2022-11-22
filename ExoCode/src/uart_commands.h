@@ -415,13 +415,16 @@ namespace UART_command_handlers
 
     inline static void update_controller_param(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
+        // Serial.println("UART_command_handlers::update_controller_param->got message: ");
+        // UART_msg_t_utils::print_msg(msg);
         // Get the joint
         JointData* j_data = exo_data->get_joint_with(msg.joint_id);
         if (j_data == NULL)
         {
-            //Serial.println("UART_command_handlers::update_controller_params->No joint with id =  "); Serial.print(msg.joint_id); Serial.println(" found");
+            Serial.println("UART_command_handlers::update_controller_params->No joint with id =  "); Serial.print(msg.joint_id); Serial.println(" found");
             return;
         }
+        // TODO: If the controller is different, set the default controller params. Maybe reset the joint? Should be done with a helper function 
         // Set the controller
         j_data->controller.controller = msg.data[(uint8_t)UART_command_enums::controller_param::CONTROLLER_ID];
         // Set the parameter
@@ -537,7 +540,7 @@ namespace UART_command_utils
         switch (msg.command)
         {
         case UART_command_names::empty_msg:
-            //Serial.println("UART_command_utils::handle_message->Empty Message!");
+            Serial.println("UART_command_utils::handle_message->Empty Message!");
             break;
         
         case UART_command_names::get_controller_params:
@@ -608,7 +611,7 @@ namespace UART_command_utils
             break;
         
         default:
-            //Serial.println("UART_command_utils::handle_message->Unknown Message!");
+            Serial.println("UART_command_utils::handle_message->Unknown Message!");
             UART_msg_t_utils::print_msg(msg);
             break;
         }

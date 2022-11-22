@@ -24,8 +24,11 @@ namespace error_handlers
     }
     void fatal(Exo* exo, ExoData* exo_data)
     {
-        // TODO: Turn off all motors
-        //Serial.println("Fatal error");
+        // TODO: Test
+        exo_data->for_each_joint([](JointData* joint_data) {
+            joint_data->motor.enabled = 0;
+        });
+        Serial.println("Fatal error");
         return;
     }
 }
