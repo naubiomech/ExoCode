@@ -8,7 +8,11 @@
 #ifndef I2CHANDLER_H
 #define I2CHANDLER_H
 
-#include "Wire.h"
+#include <Arduino.h>
+
+#if defined(ARDUINO_ARDUINO_NANO33BLE)
+
+#include <Wire.h>
 
 class I2C
 {
@@ -53,6 +57,8 @@ class I2C
           Wire.begin();
         }
 };
+
+#endif
 
 
 namespace i2c_cmds
