@@ -77,6 +77,8 @@ class ExoData
         LegData left_leg;/**< data for the left leg */
         LegData right_leg;/**< data for the right leg */
 
+        uint32_t mark; /**< used for timing, currently only used by the nano */
+
         uint8_t* config; /**< pointer to the configuration array */
         uint8_t config_len; /**< len of the configuration array */
 };

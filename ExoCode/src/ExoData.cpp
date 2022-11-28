@@ -18,7 +18,8 @@ ExoData::ExoData(uint8_t* config_to_send)
 
     this->config = config_to_send;
     this->config_len = ini_config::number_of_keys;
-    
+
+    this->mark = 10;  
 };
 
 void ExoData::reconfigure(uint8_t* config_to_send) 
