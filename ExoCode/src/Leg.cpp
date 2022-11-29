@@ -43,6 +43,10 @@ Leg::Leg(bool is_left, ExoData* exo_data)
 
     _heel_fsr.get_contact_thresholds(_leg_data->heel_fsr_lower_threshold, _leg_data->heel_fsr_upper_threshold);
     _toe_fsr.get_contact_thresholds(_leg_data->toe_fsr_lower_threshold, _leg_data->toe_fsr_upper_threshold);
+
+    _thimu = new ThIMU(_is_left);
+
+    _thimu->init(100);
 };
 
 void Leg::run_leg()
@@ -84,6 +88,15 @@ void Leg::read_data()
     _heel_fsr.get_contact_thresholds(_leg_data->heel_fsr_lower_threshold, _leg_data->heel_fsr_upper_threshold);
     _toe_fsr.get_contact_thresholds(_leg_data->toe_fsr_lower_threshold, _leg_data->toe_fsr_upper_threshold);
     
+    
+    // Check the thigh IMU at 100Hz
+    static float prev_time = millis();
+    if (millis() - prev_time > 10)
+    {
+        _leg_data->thigh_angle = _thimu->read_data();
+        prev_time = millis();
+    }
+
     // Check the joint sensors if the joint is used.
     if (_leg_data->hip.is_used)
     {

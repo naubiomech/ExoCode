@@ -225,6 +225,9 @@ namespace ble_handlers
         tx_msg.data[(uint8_t)UART_command_enums::motor_enable_disable::ENABLE_DISABLE] = 0;
         tx_msg.len = (uint8_t)UART_command_enums::motor_enable_disable::LENGTH;
         uart_handler->UART_msg(tx_msg);
+
+        //TODO: Reset ExoData and Exo
+        data->mark = 10;
     }
     inline static void cal_trq(ExoData* data, BleMessage* msg)
     {   
@@ -335,6 +338,7 @@ namespace ble_handlers
     inline static void mark(ExoData* data, BleMessage* msg)
     {
         // Increment mark variable (Done by sending different data on one of the real time signals, we should raise a flag or inc a var in exo_data)
+        data->mark++;
     }
     inline static void new_trq(ExoData* data, BleMessage* msg)
     {

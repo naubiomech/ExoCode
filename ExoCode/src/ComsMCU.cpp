@@ -96,10 +96,10 @@ void ComsMCU::update_UART()
 }
 
 
-
 void ComsMCU::update_gui() 
 {
     static Time_Helper* t_helper = Time_Helper::get_instance();
+    static float my_mark = _data->mark;
 
     // static float before = millis();
     // Get real time data from ExoData and send to GUI
@@ -122,6 +122,12 @@ void ComsMCU::update_gui()
                 rt_data_msg.data[i] = UART_rt_data::msg.data[i];
             }
             rt_data_msg.data[rt_data_msg.expecting++] = 0;//time_since_last_message/1000.0;
+
+            if (my_mark < _data->mark)
+            {
+                my_mark = _data->mark;
+                rt_data_msg.data[_mark_index] = my_mark;
+            }
 
             _exo_ble->send_message(rt_data_msg);
         }
@@ -146,8 +152,8 @@ void ComsMCU::update_gui()
 
 void ComsMCU::_process_complete_gui_command(BleMessage* msg) 
 {
-    //Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
-    //BleMessage::print(*msg);
+    // Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
+    // BleMessage::print(*msg);
 
     switch (msg->command)
     {
@@ -187,9 +193,14 @@ void ComsMCU::_process_complete_gui_command(BleMessage* msg)
     case ble_names::perturb:
         ble_handlers::perturb(_data, msg);
         break;
+    case ble_names::update_param:
+        ble_handlers::update_param(_data, msg);
+        break;
     default:
-        //Serial.println("ComsMCU::_process_complete_gui_command->No case for command!");
+        // Serial.println("ComsMCU::_process_complete_gui_command->No case for command!");
         break;
     }
+
+    //ble_queue::clear();
 }
 #endif

@@ -9,6 +9,8 @@
 #define AT_COMMAND_TIMEOUT          2000   //milliseconds
 #endif
 
+//#define EXOBLE_DEBUG
+
 ExoBLE::ExoBLE(ExoData* data) : _data{data}
 #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
     , _ble{logic_micro_pins::cs_pin, logic_micro_pins::irq_pin, logic_micro_pins::rst_pin}
@@ -253,8 +255,12 @@ void ExoBLE::send_message(BleMessage &msg)
 #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
 {
+    static BleMessage* empty_msg = new BleMessage();
     static BleParser* parser = new BleParser();
     static BleMessage* msg = new BleMessage();
+
+    // Must reset message to avoid duplicate data
+    (*msg) = *empty_msg;
 
     char data[32] = {0};
     int len = characteristic.valueLength();
@@ -274,7 +280,6 @@ void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
     msg = parser->handle_raw_data(data, len);
     if (msg->is_complete)
     {
-
         #ifdef EXOBLE_DEBUG
         Serial.print("on_rx_recieved->Command: ");
         Serial.println(msg->command);

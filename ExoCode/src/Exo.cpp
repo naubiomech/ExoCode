@@ -36,6 +36,8 @@ Exo::Exo(ExoData* exo_data)
     #ifdef EXO_DEBUG
         Serial.println("Exo :: Constructor : motor_stop_pin Mode set");
     #endif
+
+
 };
 
 /* 

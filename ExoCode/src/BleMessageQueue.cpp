@@ -65,3 +65,8 @@ int ble_queue::check_for(BleMessage msg)
     }
     return found;
 }
+
+void ble_queue::clear()
+{
+    m_size = 0;
+}
