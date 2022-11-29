@@ -346,6 +346,8 @@ class GaitPhase : public _Controller
 
         float calc_motor_cmd();
 
+        float slope;
+
 };
 
 /**

@@ -338,7 +338,7 @@ namespace UART_command_handlers
                 rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint; 
                 rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_torque_reading; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i; //
                 //TODO: Implement Mark Feature
-                rx_msg.data[4] = exo_data->left_leg.ankle.controller.ff_setpoint; //rx_msg.data[4] = exo_data->left_leg.toe_stance; 
+                rx_msg.data[4] = exo_data->left_leg.toe_stance; //rx_msg.data[4] = exo_data->left_leg.toe_stance; 
                 rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;
                 rx_msg.data[6] = exo_data->right_leg.toe_fsr;
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;
@@ -357,15 +357,17 @@ namespace UART_command_handlers
                 break;
 
             case (uint8_t)config_defs::exo_name::bilateral_hip_ankle:
-                rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_HIP_ANKLE_RT_LEN;
-                rx_msg.data[0] = exo_data->right_leg.hip.position;
-                rx_msg.data[1] = exo_data->right_leg.heel_stance;
-                rx_msg.data[2] = exo_data->right_leg.hip.controller.setpoint;
-                rx_msg.data[3] = exo_data->left_leg.hip.position;
-                rx_msg.data[4] = exo_data->left_leg.heel_stance;  
-                rx_msg.data[5] = exo_data->left_leg.hip.controller.setpoint;
+                rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
+                rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading;
+                rx_msg.data[1] = exo_data->right_leg.hip.controller.setpoint;
+                rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint;
+                rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_torque_reading; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i; //
+                //TODO: Implement Mark Feature
+                rx_msg.data[4] = exo_data->left_leg.hip.controller.setpoint; //rx_msg.data[4] = exo_data->left_leg.toe_stance; 
+                rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;
                 rx_msg.data[6] = exo_data->right_leg.toe_fsr;
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+                break;
                 break;
             
             default:
@@ -373,7 +375,7 @@ namespace UART_command_handlers
                 rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading;
                 rx_msg.data[1] = exo_data->right_leg.toe_stance;
                 rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint;
-                rx_msg.data[3] = exo_data->left_leg.ankle. controller.filtered_torque_reading;
+                rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_torque_reading;
                 //TODO: Implement Mark Feature
                 rx_msg.data[4] = exo_data->left_leg.toe_stance; 
                 rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;

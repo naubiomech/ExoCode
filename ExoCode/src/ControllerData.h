@@ -167,22 +167,21 @@ namespace controller_defs /**< stores the parameter indexes for different contro
 
     namespace franks_collins_hip
     {
-        //TODO: Add comments for parameters
-        const uint8_t mass_idx = 0;
-        const uint8_t trough_normalized_torque_Nm_kg_idx = 1;
-        const uint8_t peak_normalized_torque_Nm_kg_idx = 2;
-        const uint8_t start_percent_gait_idx = 3;
-        const uint8_t trough_onset_percent_gait_idx = 4;
-        const uint8_t trough_percent_gait_idx = 5;
-        const uint8_t mid_time_idx = 6;
-        const uint8_t mid_duration_idx = 7;
-        const uint8_t peak_percent_gait_idx = 8;
-        const uint8_t peak_offset_percent_gait_idx = 9;
-        const uint8_t use_pid_idx = 10;
-        const uint8_t p_gain_idx = 11;
-        const uint8_t i_gain_idx = 12;
-        const uint8_t d_gain_idx = 13;
-        const uint8_t num_parameter = 14;
+        const uint8_t mass_idx = 0;                             //Mass of the User in kg
+        const uint8_t trough_normalized_torque_Nm_kg_idx = 1;   //Extension Torque in Nm/kg
+        const uint8_t peak_normalized_torque_Nm_kg_idx = 2;     //Flexion Torque in Nm/kg
+        const uint8_t start_percent_gait_idx = 3;               //Percent of Gait Cycle where the curve starts (does not start at 0 so that there is no discontinuity)
+        const uint8_t trough_onset_percent_gait_idx = 4;        //Percent of Gait Cycle where curve for extesnion torque starts
+        const uint8_t trough_percent_gait_idx = 5;              //Percent of Gait Cycle where peak extension torque occurs
+        const uint8_t mid_time_idx = 6;                         //Time from when curve starts until midpoint of zero torque period between extension and flexion torques
+        const uint8_t mid_duration_idx = 7;                     //Time of zero torque period between extension and flexion torques
+        const uint8_t peak_percent_gait_idx = 8;                //Percent of Gait Cycle where peak flexion torque occurs
+        const uint8_t peak_offset_percent_gait_idx = 9;         //Percent of Gait Cycle where torque stops being applied
+        const uint8_t use_pid_idx = 10;                         //Flag to determine whether or not PID used
+        const uint8_t p_gain_idx = 11;                          //Value of P Gain for PID control
+        const uint8_t i_gain_idx = 12;                          //Value of I Gain for PID control
+        const uint8_t d_gain_idx = 13;                          //Value of D Gain for PID control 
+        const uint8_t num_parameter = 14;                   
     }
     
     // namespace user_defined

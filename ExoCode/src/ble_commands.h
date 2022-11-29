@@ -11,7 +11,6 @@
 
 #include "Arduino.h"
 #include "ExoData.h"
-//#include "ControllerData.h"       //The inclusion of this creates a loop of redefinitions which arduino REALLY does not like
 #include "ParseIni.h" // For config_defs
 #include "StatusDefs.h" // For ExoDataStatus_t
 #include "BleMessage.h"

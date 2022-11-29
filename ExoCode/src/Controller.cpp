@@ -172,18 +172,18 @@ float ZeroTorque::calc_motor_cmd()
     }
     _controller_data->ff_setpoint = cmd;
 
-    // if (_joint_data->is_left) 
-    // {
-    //     Serial.print("ZeroTorque::calc_motor_cmd : torque_reading = ");
-    //     Serial.print(_joint_data->torque_reading);
-    //     Serial.print("\t");
-    //     Serial.print("ZeroTorque::calc_motor_cmd : cmd = ");
-    //     Serial.println(cmd);
-    // }
+     //if (_joint_data->is_left) 
+     //{
+     //    Serial.print("ZeroTorque::calc_motor_cmd : torque_reading = ");
+     //    Serial.print(_joint_data->torque_reading);
+     //    Serial.print("\t");
+     //    Serial.print("ZeroTorque::calc_motor_cmd : cmd = ");
+     //    Serial.println(cmd);
+     //}
 
     // Print PD gains
-    // Serial.print("ZeroTorque::calc_motor_cmd : p_gain = ");
-    // Serial.println(_controller_data->parameters[controller_defs::zero_torque::p_gain_idx]);
+     Serial.print("ZeroTorque::calc_motor_cmd : p_gain = ");
+     Serial.println(_controller_data->parameters[controller_defs::zero_torque::p_gain_idx]);
     // Serial.print("ZeroTorque::calc_motor_cmd : d_gain = ");
     // Serial.println(_controller_data->parameters[controller_defs::zero_torque::d_gain_idx]);
     return cmd;
@@ -832,8 +832,19 @@ float GaitPhase::calc_motor_cmd()
 
     const int flexion_torque = _controller_data->parameters[controller_defs::gait_phase::flexion_setpoint_idx];            //Sets the magnitude of the flexion torque applied
     const int extension_torque = _controller_data->parameters[controller_defs::gait_phase::extension_setpoint_idx];        //Sets the mangitude of the extnesion torque applied
-
-    float slope = _controller_data->parameters[controller_defs::gait_phase::slope_idx];                                        //Sets the slope of the line connnecting transition points from the config file
+    
+    if (flexion_torque > 0 && extension_torque < 0)
+    {
+        slope = _controller_data->parameters[controller_defs::gait_phase::slope_idx];                                        //Sets the slope of the line connnecting transition points from the config file
+    }
+    else if(flexion_torque < 0 && extension_torque > 0)
+    {
+        slope = - 1 * _controller_data->parameters[controller_defs::gait_phase::slope_idx];
+    }
+    else
+    {
+        slope = _controller_data->parameters[controller_defs::gait_phase::slope_idx];
+    }
     float width = (flexion_torque - extension_torque) / slope;                                                                  //Calculates the width of the region during which the transition in torque magnitudes occurs
     float half_width = width / 2;                                                                                               //Calculates half the width of the region during which the transition in torque magnitudes occurs
 
@@ -1771,8 +1782,10 @@ float Perturbation::calc_motor_cmd()
     //Serial.print(_controller_data->parameters[controller_defs::perturbation::perturb_idx]);
     //Serial.print("\n");
 
-    if (_controller_data->parameters[controller_defs::perturbation::perturb_idx] == 1)  //If the flag is raised (via the button press_
+    if (_controller_data->parameters[controller_defs::perturbation::perturb_idx] == 1)  //If the flag is raised (via the button press)
     {
+        //Serial.print("Perturbation::calc_motor_cmd : Perturbation Sent ");
+        //Serial.print("\n");
 
         if (_leg_data->do_calibration_toe_fsr || _leg_data->toe_fsr == 0)                      //If the FSRs are being calibrated or if the toe fsr is 0, send a command of zero
         {
@@ -1806,7 +1819,7 @@ float Perturbation::calc_motor_cmd()
             if (current_time <= ((_controller_data->parameters[controller_defs::perturbation::duration_idx]) * 1000))       //If the current time is less than or equal to the duration of the perturbation defined by the user
             {
                 cmd = _controller_data->parameters[controller_defs::perturbation::amplitude_idx];                           //Command being sent to the motor is equal to the setpoint defined by the user
-                //Serial.print("Perturbation::calc_motor_cmd : cmd : ");
+                //Serial.print("Perturbation::calc_motor_cmd : cmd : on: ");
                 //Serial.print(cmd);
                 //Serial.print("\n");
             }
@@ -1839,6 +1852,9 @@ float Perturbation::calc_motor_cmd()
                 timer = 0;
                 current_time = 0;
                 _controller_data->parameters[controller_defs::perturbation::perturb_idx] = 0;
+
+                //Serial.print("Perturbation::calc_motor_cmd : Parameters Rest ");
+                //Serial.print("\n");
             }
         }
     }

@@ -64,7 +64,7 @@ uint8_t ExoData::get_used_joints(uint8_t* used_joints)
     used_joints[len] = ((right_leg.ankle.is_used) ? (1) : (0));
     len += right_leg.ankle.is_used;
     return len;
-}
+};
 
 JointData* ExoData::get_joint_with(uint8_t id)
 {
