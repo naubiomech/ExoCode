@@ -99,7 +99,7 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
 };
  
 float _Controller::_pid(float cmd, float measurement, float p_gain, float i_gain, float d_gain)
-{ 
+{
     //check if time is ok
     bool time_good = true;
     if (_t_helper->tick(_t_helper_context) > ((float) 1/LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)))
@@ -224,15 +224,16 @@ float ProportionalJointMoment::calc_motor_cmd()
 {
 
     float cmd_ff = 0;
-    static uint32_t run_count = 0;
-    run_count++;
-    bool print = false;
-    if (run_count > 250)
-    {
-        run_count = 0;
-        print = _leg_data->is_left;
-        //print = false;
-    }
+    static bool print = false;
+    // static uint32_t run_count = 0;
+    // run_count++;
+    // bool print = false;
+    // if (run_count > 250)
+    // {
+    //     // run_count = 0;
+    //     // print = _leg_data->is_left;
+    //     //print = false;
+    // }
 
 
     // print controller params
@@ -246,6 +247,22 @@ float ProportionalJointMoment::calc_motor_cmd()
         }
         Serial.println();
     }
+
+    // detect stance swing transitions
+    static bool _stance = _leg_data->toe_stance;
+    bool rising_edge = false;
+    bool falling_edge = false;
+    if (_stance < _leg_data->toe_stance)
+    {
+        rising_edge = true;
+        _stance = _leg_data->toe_stance;
+    } 
+    else if (_stance > _leg_data->toe_stance)
+    {
+        falling_edge = true;
+        _stance = _leg_data->toe_stance;
+    }
+
 
     // don't calculate command when fsr is calibrating.
     if (!_leg_data->do_calibration_toe_fsr)
@@ -281,6 +298,15 @@ float ProportionalJointMoment::calc_motor_cmd()
 
 
     // TODO: Add auto kf to feed forward
+    // find max measured and setpoint during stance
+    static float max_measured = 0;
+    static float max_setpoint = 0;
+    if (_leg_data->toe_stance) 
+    {
+        max_measured = max(max_measured, _controller_data->filtered_torque_reading);
+        max_setpoint = max(max_setpoint, cmd_ff);
+    }
+
     
     // add the PID contribution to the feed forward command
     float cmd;

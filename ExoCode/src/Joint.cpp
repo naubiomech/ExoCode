@@ -793,7 +793,8 @@ void AnkleJoint::run_joint()
     // Serial.print("\t");
     // Use transaction because the motors are call and response
     // _motor->transaction(0 / _joint_data->motor.gearing);
-    _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
+    _motor->send_data(_joint_data->controller.setpoint / _joint_data->motor.gearing);
+    //_motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
 };  
 
 /*

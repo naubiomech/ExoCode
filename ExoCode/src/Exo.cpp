@@ -59,9 +59,9 @@ void Exo::run()
 
     static uint8_t should_plot = 0;
     
-    if (((delta_t <= ((float) 1/LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE))) && (delta_t >= ((float)1 / LOOP_FREQ_HZ * 1000000 * (1 - LOOP_TIME_TOLERANCE)))))
+    if (delta_t >= ((float) 1/LOOP_FREQ_HZ * 1000000 * (1 - LOOP_TIME_TOLERANCE)))
     {
-
+        Serial.println(delta_t);
         #ifdef USE_SPEED_CHECK
             speed_check.toggle();
         #endif
@@ -151,7 +151,7 @@ void Exo::run()
     // we didn't hit the time requirements
     else if (delta_t > ((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)))
     {
-        
+        Serial.println("Exo::run:Time_Too_Slow");
         // toggle the synce LED every X times we miss the time requirements
         static uint8_t missed_time_count = 0;
         static const uint8_t missed_time_max = 100;
