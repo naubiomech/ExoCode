@@ -115,7 +115,7 @@ void _CANMotor::transaction(float torque)
 
 void _CANMotor::read_data()
 {
-    // read date from motor
+    // read data from motor
     bool searching = true;
     // uint8_t data[8];
     uint32_t start = micros();
@@ -234,7 +234,7 @@ void _CANMotor::on_off()
 };
 
 bool _CANMotor::enable()
-{ 
+{
     return enable(false);
 };
 
