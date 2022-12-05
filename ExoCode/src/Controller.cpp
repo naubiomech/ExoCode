@@ -881,6 +881,7 @@ float GaitPhase::calc_motor_cmd()
         //If there is no zero torque range between the starting of flexion and extension
         if (extension_end == flexion_start && flexion_end == extension_start)
         {
+            state = 0.5;
 
             if (percent_gait == 0 || percent_gait < extension_end)
             {
@@ -928,6 +929,7 @@ float GaitPhase::calc_motor_cmd()
         }
         else if(extension_end != flexion_start && flexion_end != extension_start)
         {
+            state = 1;
 
             if (percent_gait == 0 || percent_gait <= extension_end - half_width)
             {
@@ -1003,6 +1005,7 @@ float GaitPhase::calc_motor_cmd()
         }
         else if(extension_end != flexion_start && flexion_end == extension_start)
         {
+            state = 1.5;
 
             if (percent_gait == 0 || percent_gait <= extension_end - half_width)
             {
@@ -1064,6 +1067,7 @@ float GaitPhase::calc_motor_cmd()
         }
         else if(extension_end == flexion_start && flexion_end != extension_start)
         {
+            state = 2;
 
             if (percent_gait == 0 || percent_gait < extension_end)
             {
@@ -1112,7 +1116,7 @@ float GaitPhase::calc_motor_cmd()
                 cmd_ff = extension_torque;
                 //Serial.print("GaitPhase::calc_motor_cmd : Extension - Late : ");
                 //Serial.print(percent_gait);
-                //Serail.print("\n");
+                //Serial.print("\n");
             }
             else
             {
@@ -1125,6 +1129,7 @@ float GaitPhase::calc_motor_cmd()
         }
         else
         {
+            state = 0;
             cmd_ff = 0;
         }
 
@@ -1154,6 +1159,10 @@ float GaitPhase::calc_motor_cmd()
     {
         cmd = cmd_ff;
     }
+
+    Serial.print("GaitPhase::calc_motor_cmd : State : ");
+    Serial.print(state);
+    Serial.print("\n");
 
     return cmd;
 };
