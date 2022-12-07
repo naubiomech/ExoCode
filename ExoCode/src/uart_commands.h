@@ -340,10 +340,12 @@ namespace UART_command_handlers
                 //TODO: Implement Mark Feature
                 rx_msg.data[4] = exo_data->left_leg.toe_stance; //rx_msg.data[4] = exo_data->left_leg.toe_stance; 
                 rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;
-                rx_msg.data[6] = exo_data->right_leg.thigh_angle / 100;
-                rx_msg.data[7] = exo_data->left_leg.thigh_angle / 100;
-                //rx_msg.data[6] = exo_data->right_leg.toe_fsr;
-                //rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+                //rx_msg.data[6] = exo_data->right_leg.thigh_angle / 100;
+                //rx_msg.data[7] = exo_data->left_leg.thigh_angle / 100;
+                // rx_msg.data[6] = exo_data->right_leg.toe_fsr;
+                // rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+                rx_msg.data[6] = exo_data->right_leg.ankle.controller.kf;
+                rx_msg.data[7] = exo_data->left_leg.ankle.controller.kf;
                 break;
 
             case (uint8_t)config_defs::exo_name::bilateral_hip:

@@ -396,7 +396,7 @@ void loop()
                 exo_data.right_leg.do_calibration_toe_fsr = true;
                 exo_data.right_leg.do_calibration_refinement_toe_fsr = true;
                 exo_data.right_leg.do_calibration_heel_fsr = true;
-                exo_data.right_leg.do_calibration_refinement_heel_fsr = true;  
+                exo_data.right_leg.do_calibration_refinement_heel_fsr = true;
             }
             pause_between_calibration_done = true;
         }

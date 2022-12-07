@@ -223,45 +223,16 @@ ProportionalJointMoment::ProportionalJointMoment(config_defs::joint_id id, ExoDa
 float ProportionalJointMoment::calc_motor_cmd()
 {
 
+    // Handle debug printing
+    bool print = false;
+    static int count = 0;
+    count++;
+    if (count > 100)
+    {
+        print = _leg_data->is_left;
+        count = 0;
+    }
     float cmd_ff = 0;
-    static bool print = false;
-    // static uint32_t run_count = 0;
-    // run_count++;
-    // bool print = false;
-    // if (run_count > 250)
-    // {
-    //     // run_count = 0;
-    //     // print = _leg_data->is_left;
-    //     //print = false;
-    // }
-
-
-    // print controller params
-    if (print)
-    {
-        Serial.println("ProportionalJointMoment::calc_motor_cmd params:");
-        for (int i=0; i<controller_defs::proportional_joint_moment::num_parameter; i++)
-        {
-            Serial.print(_controller_data->parameters[i]);
-            Serial.print("\t");
-        }
-        Serial.println();
-    }
-
-    // detect stance swing transitions
-    static bool _stance = _leg_data->toe_stance;
-    bool rising_edge = false;
-    bool falling_edge = false;
-    if (_stance < _leg_data->toe_stance)
-    {
-        rising_edge = true;
-        _stance = _leg_data->toe_stance;
-    } 
-    else if (_stance > _leg_data->toe_stance)
-    {
-        falling_edge = true;
-        _stance = _leg_data->toe_stance;
-    }
 
 
     // don't calculate command when fsr is calibrating.
@@ -291,7 +262,6 @@ float ProportionalJointMoment::calc_motor_cmd()
             cmd_ff = _controller_data->parameters[controller_defs::proportional_joint_moment::swing_max_idx];
         }
     }
-    _controller_data->ff_setpoint = cmd_ff;
 
     // low pass filter on torque_reading
     _controller_data->filtered_torque_reading = utils::ewma(_joint_data->torque_reading, _controller_data->filtered_torque_reading, _controller_data->parameters[controller_defs::proportional_joint_moment::torque_alpha_idx]);
@@ -299,15 +269,51 @@ float ProportionalJointMoment::calc_motor_cmd()
 
     // TODO: Add auto kf to feed forward
     // find max measured and setpoint during stance
-    static float max_measured = 0;
-    static float max_setpoint = 0;
+
     if (_leg_data->toe_stance) 
     {
-        max_measured = max(max_measured, _controller_data->filtered_torque_reading);
-        max_setpoint = max(max_setpoint, cmd_ff);
+        _controller_data->max_measured = max(_controller_data->max_measured, _controller_data->filtered_torque_reading);
+        _controller_data->max_setpoint = max(_controller_data->max_setpoint, cmd_ff);
     }
 
-    
+    // Set previous max values on rising edge
+    if (_leg_data->ground_strike)
+    {
+        _controller_data->prev_max_measured = _controller_data->max_measured;
+        _controller_data->prev_max_setpoint = _controller_data->max_setpoint;
+        _controller_data->max_measured = 0;
+        _controller_data->max_setpoint = 0;
+
+        // Calculate this steps Kf
+        if ((_controller_data->prev_max_measured > 0) && (_controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx] != 0))
+        {
+            _controller_data->kf = _controller_data->prev_max_setpoint/_controller_data->prev_max_measured;
+            // Constrain kf
+            _controller_data->kf = min(2, _controller_data->kf);
+            _controller_data->kf = max(1, _controller_data->kf);
+        }
+        else 
+        {
+            _controller_data->kf = 1;
+        } 
+    }
+    else if (_leg_data->toe_off) 
+    {
+        // Print falling edge
+        // Serial.println("Falling edge");
+        _controller_data->kf = 1;
+    }
+
+    if (print)
+    {
+        // Serial.print("kf = ");
+        // Serial.println(kf);
+    }
+    cmd_ff = cmd_ff * _controller_data->kf;
+
+    _controller_data->filtered_setpoint = utils::ewma(cmd_ff, _controller_data->filtered_setpoint, 1);
+    _controller_data->ff_setpoint = _controller_data->filtered_setpoint;
+
     // add the PID contribution to the feed forward command
     float cmd;
     if (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx])
@@ -318,19 +324,6 @@ float ProportionalJointMoment::calc_motor_cmd()
     {
         cmd = cmd_ff;
     }
-
-    // Saturate the PID output, dependent on state. Stance is positive
-    // if (_controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx] > 0)
-    // {
-    //     if (_leg_data->toe_stance)
-    //     {
-    //         cmd = min(0, cmd);
-    //     }
-    //     else
-    //     {
-    //         cmd = max(0, cmd);
-    //     }
-    // }
     
     _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 1);
     return _controller_data->filtered_cmd;

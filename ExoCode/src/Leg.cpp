@@ -28,6 +28,7 @@ Leg::Leg(bool is_left, ExoData* exo_data)
     #endif
     _prev_heel_contact_state = true; // initialized to true so we don't get a strike the first time we read
     _prev_toe_contact_state = true;
+    _prev_toe_contact_state_toe_off = true;
     
     for (int i = 0; i<_num_steps_avg; i++)
     {
@@ -78,11 +79,14 @@ void Leg::read_data()
     // Check the FSRs
     _leg_data->heel_fsr = _heel_fsr.read();
     _leg_data->toe_fsr = _toe_fsr.read();
+
     _leg_data->ground_strike = _check_ground_strike();
     if (_leg_data->ground_strike)
     {
         _leg_data->expected_step_duration = _update_expected_duration();
     }
+
+    _leg_data->toe_off = _check_toe_off();
     _leg_data->percent_gait = _calc_percent_gait();
 
     _heel_fsr.get_contact_thresholds(_leg_data->heel_fsr_lower_threshold, _leg_data->heel_fsr_upper_threshold);
@@ -162,7 +166,8 @@ bool Leg::_check_ground_strike()
     _leg_data->prev_heel_stance = _prev_heel_contact_state;  //This might not work, needs to be tested
     _leg_data->prev_toe_stance = _prev_toe_contact_state;
 
-    bool heel_contact_state = _heel_fsr.get_ground_contact();
+    // TODO: Only use the heel fsr if it is connected. Maybe only if the hip is used?
+    bool heel_contact_state = false;//_heel_fsr.get_ground_contact();
     bool toe_contact_state = _toe_fsr.get_ground_contact();
     _leg_data->heel_stance = heel_contact_state;
     _leg_data->toe_stance = toe_contact_state;
@@ -191,6 +196,20 @@ bool Leg::_check_ground_strike()
     
     return ground_strike;
 };
+
+bool Leg::_check_toe_off()
+{
+    bool toe_off = false;
+    if(_prev_toe_contact_state_toe_off) //If we were previously in stance
+    {
+        //check for falling edge on toe
+        toe_off = (_leg_data->toe_stance < _prev_toe_contact_state_toe_off);
+    }
+
+    _prev_toe_contact_state_toe_off = _leg_data->toe_stance;
+
+    return toe_off;
+}
 
 float Leg::_calc_percent_gait()
 {
