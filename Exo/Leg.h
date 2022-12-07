@@ -73,12 +73,26 @@ struct Leg {
   double Curr_Combined;
 
   // FSR_Parameters.h
+  // =================================================================================
+  double FSR_Ext_Curr = 0;
+  double FSR_Ext_Max = 500;
+  double FSR_Ext_Min = 0;
+  double FSR_Ext_Ratio = 0;
+
+  double FSR_Flex_Max = 500;
+  double FSR_Flex_Min = 0;  
+  double FSR_Flex_Curr = 0;
+  double FSR_Flex_Ratio = 0;
+  // =================================================================================
+
   unsigned int fsr_sense_Heel;
   unsigned int fsr_sense_Toe;
+
 
   double fsr_Heel = 0;
   double fsr_Toe = 0;
   double fsr_Heel_peak_ref = 0;
+
   double fsr_Toe_peak_ref = 0;
   double fsr_Toe_trough_ref = 1000;
 

@@ -13,12 +13,13 @@
 const unsigned int zero = 2048;
 bool motors_on = false;
 
+// ====================================================================================================
 // Danny put global here to update bluetooth data
 float l_torque = 0;
 float r_torque = 0;
-float Right_FSR_Push_Data;
-float Right_FSR_Pull_Data;
 int Exo_state = 0;
+
+// ====================================================================================================
 
 #include <ArduinoBLE.h>
 #include <elapsedMillis.h>
@@ -54,6 +55,7 @@ uint32_t imuCounter = 0;
 motor_frame_t l_frame;
 motor_frame_t r_frame;
 
+// ======================================= Control Loop ===========================================
 void control_loop() {
   int count = 0;
   while (true) {
@@ -65,6 +67,7 @@ void control_loop() {
   }
 }
 
+// =================================================================================================
 
 void read_loop(void)
 {
@@ -97,8 +100,8 @@ void setup()
   digitalWrite(GREEN, HIGH);
 
   // Set pin mode for elbow FSR analog signal
-  pinMode(Right_FSR_Push_Pin, INPUT);
-  pinMode(Right_FSR_Pull_Pin, INPUT);
+  // pinMode(Right_FSR_Ext_Pin, INPUT);
+  // pinMode(Right_FSR_Flex_Pin, INPUT);
 
 
   
@@ -273,7 +276,20 @@ void calculate_averages() {
 
 void check_FSR_calibration() {
   // Danny, Calibrate your FSRs
-  
+
+  // Read Sensors
+    right_leg->FSR_Ext_Curr = analogRead(FSR_SENSE_LEFT_TOE_PIN);
+    right_leg->FSR_Flex_Curr = analogRead(FSR_SENSE_LEFT_TOE_PIN);
+
+  // Compute the non-dim relitive amount of force applied to the fsrs
+     right_leg->FSR_Ext_Ratio = (right_leg->FSR_Flex_Curr - right_leg->FSR_Flex_Min) / (right_leg->FSR_Flex_Max - right_leg->FSR_Flex_Min); 
+     right_leg->FSR_Flex_Ratio = (right_leg->FSR_Flex_Curr - right_leg->FSR_Flex_Min) / (right_leg->FSR_Flex_Max - right_leg->FSR_Flex_Min);       //negitive to switch direction?
+
+
+
+
+
+
 //  if (FSR_CAL_FLAG) {
 //    FSR_calibration();
 //  }
@@ -302,24 +318,26 @@ void check_Balance_Baseline() {
 //================================================== Control Function =================================================================
 // Danny, change control law
 void rotate_elbow() {
-  
-  // Read Sensors
-    Right_FSR_Push_Data = analogRead(Right_FSR_Push_Pin);
-    Right_FSR_Pull_Data = analogRead(Right_FSR_Pull_Pin);
-  
-  // Check state
-
-    if ((Right_FSR_Push_Data > 50) && (Right_FSR_Push_Data > Right_FSR_Pull_Data)) {
-      Exo_state = 1; //Push Mode - Extension
+    // Determine State - Flextion or Extension
+    if ((right_leg->FSR_Ext_Ratio > 0.10) && (right_leg->FSR_Ext_Ratio > right_leg->FSR_Flex_Ratio)) {
+      Exo_state = 1; //Ext Mode - Extension
+      r_torque = right_leg->FSR_Ext_Ratio * right_leg->Setpoint_Ankle; 
+      //akMotor.apply_torque(R_ID, r_torque);
     }
 
-    if ((Right_FSR_Pull_Data > 50) && (Right_FSR_Pull_Data > Right_FSR_Push_Data)) {
-      Exo_state = 2; //Pull Mode - Contraction
+    if ((right_leg->FSR_Flex_Ratio > 0.10) && (right_leg->FSR_Flex_Ratio > right_leg->FSR_Ext_Ratio)) {
+      Exo_state = 2; //Flex Mode - Flextion
+      r_torque = right_leg->FSR_Ext_Ratio * right_leg->Dorsi_Setpoint_Ankle; 
+     // akMotor.apply_torque(R_ID, r_torque);
     }
 
     else {
       Exo_state = 0; //No Torque Mode - Mimic
+      r_torque = 0;
+     // akMotor.apply_torque(R_ID, r_torque);
     }
+
+    Serial.print(r_torque);
     
   // PID
 //      r_torque = 

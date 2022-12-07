@@ -48,13 +48,48 @@ void FSR_calibration()
     right_leg->p_steps->count_plant_base = 0;
     right_leg->p_steps->flag_start_plant = false;
     left_leg->p_steps->flag_start_plant = false;
+
+// ==========================================================================
+// Variables
+  // float Right_FSR_Flex_Max = 500;
+  // float Right_FSR_Flex_Min = 0;
+  // float Right_FSR_Ext_Max = 500;
+  // float Right_FSR_Ext_Min = 0;
+
+// ============================================================================
   }
 
 
   if (millis() - startTime < 5000)
   {
-    left_leg->Curr_Toe = fsr(left_leg->fsr_sense_Toe);
-    right_leg->Curr_Toe = fsr(right_leg->fsr_sense_Toe);
+    // left_leg->Curr_Toe = fsr(left_leg->fsr_sense_Toe);
+    // right_leg->Curr_Toe = fsr(right_leg->fsr_sense_Toe);
+
+
+      // ================================================= Compute New Max and Min FSR Readings ================================================================   
+      //Adjust max and minimum FSR values to adjust the applied torque ||  Torque_setpoint = [(FSR_reading - FSR_Min)/(FSR_Max - FSR_Min)] * Torque Max   ||
+              if (right_leg->FSR_Ext_Curr > right_leg->FSR_Ext_Max){
+            
+                right_leg->FSR_Ext_Max = right_leg->FSR_Ext_Curr;
+              }
+            
+              if (right_leg->FSR_Flex_Curr > right_leg->FSR_Flex_Max){
+          
+              right_leg->FSR_Flex_Max = right_leg->FSR_Flex_Curr;
+              }
+              if (right_leg->FSR_Ext_Curr < right_leg->FSR_Ext_Min){
+            
+                right_leg->FSR_Ext_Min = right_leg->FSR_Ext_Curr;
+              }
+            
+              if (right_leg->FSR_Flex_Curr < right_leg->FSR_Flex_Min){
+          
+              right_leg->FSR_Flex_Min = right_leg->FSR_Flex_Curr;
+              }
+      // =======================================================================================================
+
+
+
 
     /*
     left_leg->Curr_Heel = fsr(left_leg->fsr_sense_Heel);
@@ -73,27 +108,30 @@ void FSR_calibration()
       right_leg->fsr_Combined_peak_ref = right_leg->Curr_Combined;
     }
     */
-    
+    // -------------------------------------------------------------------
     // Toe
-    if (left_leg->Curr_Toe > left_leg->fsr_Toe_peak_ref)
-    {
-      left_leg->fsr_Toe_peak_ref = left_leg->Curr_Toe;
-    }
+    // if (left_leg->Curr_Toe > left_leg->fsr_Toe_peak_ref)
+    // {
+    //   left_leg->fsr_Toe_peak_ref = left_leg->Curr_Toe;
+    // }
 
-    if (right_leg->Curr_Toe > right_leg->fsr_Toe_peak_ref)
-    {
-      right_leg->fsr_Toe_peak_ref = right_leg->Curr_Toe;
-    }
+    // if (right_leg->Curr_Toe > right_leg->fsr_Toe_peak_ref)
+    // {
+    //   right_leg->fsr_Toe_peak_ref = right_leg->Curr_Toe;
+    // }
 
-    if (left_leg->Curr_Toe < left_leg->fsr_Toe_trough_ref)
-    {
-      left_leg->fsr_Toe_trough_ref = left_leg->Curr_Toe;
-    }
+    // if (left_leg->Curr_Toe < left_leg->fsr_Toe_trough_ref)
+    // {
+    //   left_leg->fsr_Toe_trough_ref = left_leg->Curr_Toe;
+    // }
 
-    if (right_leg->Curr_Toe < right_leg->fsr_Toe_trough_ref)
-    {
-      right_leg->fsr_Toe_trough_ref = right_leg->Curr_Toe;
-    }
+    // if (right_leg->Curr_Toe < right_leg->fsr_Toe_trough_ref)
+    // {
+    //   right_leg->fsr_Toe_trough_ref = right_leg->Curr_Toe;
+    // }
+// -----------------------------------------------------------------------
+
+
 
     // Heel
     /*
