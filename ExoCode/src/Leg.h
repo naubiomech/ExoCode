@@ -70,10 +70,13 @@ class Leg
          */
         void clear_step_time_estimate();
 
-        /** Move these back down to private when things are working*/
-        //HipJoint _hip; /**< instance of a hip joint */
-        //KneeJoint _knee; /**< instance of a knee joint */
-        //AnkleJoint _ankle; /**< instance of a ankle joint */
+        /**
+         * @brief Disables all motors in the leg
+         * 
+         */
+        void disable_motors();
+
+        float get_Kt_for_joint(uint8_t id);
         
 	private:
 		

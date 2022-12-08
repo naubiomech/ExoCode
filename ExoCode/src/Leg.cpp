@@ -50,6 +50,14 @@ Leg::Leg(bool is_left, ExoData* exo_data)
     _thimu->init(100);
 };
 
+void Leg::disable_motors()
+{
+    _hip._motor->enable(true);
+    _knee._motor->enable(true);
+    _ankle._motor->enable(true);
+};
+
+
 void Leg::run_leg()
 {
     #ifdef LEG_DEBUG
@@ -311,4 +319,34 @@ void Leg::update_motor_cmds()
         _ankle.run_joint();
     }
 };
+
+
+float Leg::get_Kt_for_joint(uint8_t id)
+{
+    float Kt = 0;
+    switch (id)
+    {
+    case (uint8_t)config_defs::joint_id::left_hip:
+    case (uint8_t)config_defs::joint_id::right_hip:
+        Kt = _hip._motor->get_Kt();
+        break;
+    case (uint8_t)config_defs::joint_id::left_knee:
+    case (uint8_t)config_defs::joint_id::right_knee:
+        Kt = _knee._motor->get_Kt();
+        break;
+    case (uint8_t)config_defs::joint_id::left_ankle:
+    case (uint8_t)config_defs::joint_id::right_ankle:
+        Kt = _ankle._motor->get_Kt();
+        break;
+    default:
+        // Serial.print("ExoData::get_joint_with->No joint with ");
+        // Serial.print(id);
+        // Serial.println(" was found.");
+        break;
+    }
+    return Kt;
+}
+
+
+
 #endif

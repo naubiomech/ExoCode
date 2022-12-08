@@ -15,18 +15,21 @@ void ErrorManager::check()
     {
         return;
     }
-
-    if (_soft_trigger(_exo, _data))
+    uint16_t error_code = 0;
+    error_code = _soft_trigger(_exo, _data);
+    if (error_code)
     {
-        _soft_handler(_exo, _data);
+        _soft_handler(_exo, _data, error_code);
     }
-    else if (_hard_trigger(_exo, _data))
+    error_code = _hard_trigger(_exo, _data);
+    if (error_code)
     {
-        _hard_handler(_exo, _data);
+        _hard_handler(_exo, _data, error_code);
     }
-    else if (_fatal_trigger(_exo, _data))
+    error_code = _fatal_trigger(_exo, _data);
+    if (error_code)
     {
-        _fatal_handler(_exo, _data);
+        _fatal_handler(_exo, _data, error_code);
     }
 }
 

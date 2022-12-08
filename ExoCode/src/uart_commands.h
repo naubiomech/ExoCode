@@ -207,8 +207,10 @@ namespace UART_command_handlers
     inline static void update_status(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
         //Serial.println("UART_command_handlers::update_status->got message: ");
-        UART_msg_t_utils::print_msg(msg);
+        //UART_msg_t_utils::print_msg(msg);
         exo_data->status = msg.data[(uint8_t)UART_command_enums::status::STATUS];
+        // TODO: HANDLE STATUS CHANCE! WTF
+          
     }
 
     inline static void get_config(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)

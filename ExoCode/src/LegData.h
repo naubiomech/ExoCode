@@ -26,7 +26,7 @@ class ExoData;
  * @brief class to store information related to the leg.
  * 
  */
-class LegData{
+class LegData {
 	   
     public:
         LegData(bool is_left, uint8_t* config_to_send);

@@ -287,6 +287,7 @@ float ProportionalJointMoment::calc_motor_cmd()
         // Calculate this steps Kf
         if ((_controller_data->prev_max_measured > 0) && (_controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx] != 0))
         {
+            //leg->KF = leg->KF - (leg->Max_Measured_Torque - (leg->MaxPropSetpoint)) / (leg->MaxPropSetpoint)*0.6;
             _controller_data->kf = _controller_data->prev_max_setpoint/_controller_data->prev_max_measured;
             // Constrain kf
             _controller_data->kf = min(2, _controller_data->kf);
