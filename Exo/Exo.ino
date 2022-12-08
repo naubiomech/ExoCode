@@ -118,8 +118,8 @@ void setup()
   //analogReference(AR_INTERNAL2V4);
 
   //initialize the leg objects
-  //initialize_left_leg(left_leg);
-  //initialize_right_leg(right_leg);
+  initialize_left_leg(left_leg);
+  initialize_right_leg(right_leg);
 
 
   // Initialize power monitor settings
@@ -151,12 +151,15 @@ void setup()
   
   right_leg->Prev_Trq = get_torq(right_leg); //Initial conditions for EMA torque signal filter
   left_leg->Prev_Trq = get_torq(left_leg); 
+//===================================================================================================================
+  // For each leg, Set Kp Ki and Kd to a new value and run this function
+   right_leg->pid.SetTunings(right_leg->kp, right_leg->ki, right_leg->kd);
 
   //Starts the Control Loop thread
   callback_thread.start(control_loop);
   //read_thread.start(read_loop);
 }
-
+//====================================================================================================================
 
 //----------------------------------------------------------------------------------
 void loop()
@@ -274,19 +277,42 @@ void calculate_averages() {
 
 //----------------------------------------------------------------------------------
 
+// ===============================================================================================================================
 void check_FSR_calibration() {
   // Danny, Calibrate your FSRs
 
   // Read Sensors
     right_leg->FSR_Ext_Curr = analogRead(FSR_SENSE_LEFT_TOE_PIN);
-    right_leg->FSR_Flex_Curr = analogRead(FSR_SENSE_LEFT_TOE_PIN);
+    right_leg->FSR_Flex_Curr = analogRead(FSR_SENSE_LEFT_BO_PIN);
+
+  // Compute New Max and Min FSR Readings
+    if (right_leg->FSR_Ext_Curr > right_leg->FSR_Ext_Max){
+  
+      right_leg->FSR_Ext_Max = right_leg->FSR_Ext_Curr;
+    }
+  
+    if (right_leg->FSR_Flex_Curr > right_leg->FSR_Flex_Max){
+
+    right_leg->FSR_Flex_Max = right_leg->FSR_Flex_Curr;
+    }
+    if (right_leg->FSR_Ext_Curr < right_leg->FSR_Ext_Min){
+  
+      right_leg->FSR_Ext_Min = right_leg->FSR_Ext_Curr;
+    }
+  
+    if (right_leg->FSR_Flex_Curr < right_leg->FSR_Flex_Min){
+
+    right_leg->FSR_Flex_Min = right_leg->FSR_Flex_Curr;
+    }
+
+
 
   // Compute the non-dim relitive amount of force applied to the fsrs
-     right_leg->FSR_Ext_Ratio = (right_leg->FSR_Flex_Curr - right_leg->FSR_Flex_Min) / (right_leg->FSR_Flex_Max - right_leg->FSR_Flex_Min); 
+     right_leg->FSR_Ext_Ratio = (right_leg->FSR_Ext_Curr - right_leg->FSR_Ext_Min) / (right_leg->FSR_Ext_Max - right_leg->FSR_Ext_Min); 
      right_leg->FSR_Flex_Ratio = (right_leg->FSR_Flex_Curr - right_leg->FSR_Flex_Min) / (right_leg->FSR_Flex_Max - right_leg->FSR_Flex_Min);       //negitive to switch direction?
 
 
-
+// ===============================================================================================================================
 
 
 
@@ -319,27 +345,53 @@ void check_Balance_Baseline() {
 // Danny, change control law
 void rotate_elbow() {
     // Determine State - Flextion or Extension
+
     if ((right_leg->FSR_Ext_Ratio > 0.10) && (right_leg->FSR_Ext_Ratio > right_leg->FSR_Flex_Ratio)) {
-      Exo_state = 1; //Ext Mode - Extension
-      r_torque = right_leg->FSR_Ext_Ratio * right_leg->Setpoint_Ankle; 
+      right_leg->Exo_State = 1; //Ext Mode - Extension
+      right_leg->Desired_Torque = right_leg->FSR_Ext_Ratio * -right_leg->Setpoint_Ankle; 
+      right_leg->Dom_Ratio = -right_leg->FSR_Ext_Ratio;
+
+      // Serial.print("Extension Mode");
+      // Serial.print(", ");
+      // Serial.print(right_leg->FSR_Ext_Ratio);
+      // Serial.print(", ");
+      // Serial.println(right_leg->Desired_Torque);
       //akMotor.apply_torque(R_ID, r_torque);
     }
 
-    if ((right_leg->FSR_Flex_Ratio > 0.10) && (right_leg->FSR_Flex_Ratio > right_leg->FSR_Ext_Ratio)) {
-      Exo_state = 2; //Flex Mode - Flextion
-      r_torque = right_leg->FSR_Ext_Ratio * right_leg->Dorsi_Setpoint_Ankle; 
-     // akMotor.apply_torque(R_ID, r_torque);
+    else if ((right_leg->FSR_Flex_Ratio > 0.10) && (right_leg->FSR_Flex_Ratio > right_leg->FSR_Ext_Ratio)) {
+      right_leg->Exo_State = 2; //Flex Mode - Flextion
+      right_leg->Desired_Torque = right_leg->FSR_Flex_Ratio * right_leg->Dorsi_Setpoint_Ankle; 
+      right_leg->Dom_Ratio = right_leg->FSR_Flex_Ratio;
+
+      // Serial.print("Flex Mode");
+      // Serial.print(", ");
+      // Serial.print(right_leg->FSR_Flex_Ratio);
+      // Serial.print(", ");
+      // Serial.println(right_leg->Desired_Torque);
+      // akMotor.apply_torque(R_ID, r_torque);      
     }
 
     else {
-      Exo_state = 0; //No Torque Mode - Mimic
-      r_torque = 0;
+      right_leg->Exo_State = 0; //No Torque Mode - Mimic
+      right_leg->Desired_Torque = 0;
      // akMotor.apply_torque(R_ID, r_torque);
+      // Serial.print("Mimic Mode");
+      // Serial.print(", ");
+      // Serial.println(right_leg->Desired_Torque);
+
     }
 
-    Serial.print(r_torque);
-    
-  // PID
+
+  // PID, for each leg. double PID_Setpoint, Input, Output;
+      right_leg->PID_Setpoint = right_leg->Desired_Torque;
+      right_leg->Input = right_leg->Average_Trq;
+       right_leg->pid.Compute_KF(right_leg->KF);
+       right_leg->motor_command = right_leg->Output;
+
+      //  Serial.print(motor_command);
+      //  Serial.println();
+
 //      r_torque = 
   
   // Send Torque

@@ -73,7 +73,7 @@ struct Leg {
   double Curr_Combined;
 
   // FSR_Parameters.h
-  // =================================================================================
+  // ============================== Danny =============================================
   double FSR_Ext_Curr = 0;
   double FSR_Ext_Max = 500;
   double FSR_Ext_Min = 0;
@@ -83,6 +83,11 @@ struct Leg {
   double FSR_Flex_Min = 0;  
   double FSR_Flex_Curr = 0;
   double FSR_Flex_Ratio = 0;
+  double Dom_Ratio = 0;
+  
+  double Desired_Torque = 0;
+  double motor_command = 0;
+  int Exo_State = 0;
   // =================================================================================
 
   unsigned int fsr_sense_Heel;
@@ -119,13 +124,13 @@ struct Leg {
   int Vol;
 
 #ifdef ENABLE_PWM   //PID Gains are different for PWM control
-  double kp = 300;
+  double kp = 1.5;//300;
   double ki = 0;
-  double kd = 3;
+  double kd = 0; //3;
 #else
-  double kp = 700;
+  double kp = 1.5; //700;
   double ki = 0;
-  double kd = 3;
+  double kd = 0; //3;
 #endif
   double KF = 1;
 

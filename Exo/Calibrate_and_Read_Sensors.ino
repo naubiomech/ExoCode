@@ -68,24 +68,24 @@ void FSR_calibration()
 
       // ================================================= Compute New Max and Min FSR Readings ================================================================   
       //Adjust max and minimum FSR values to adjust the applied torque ||  Torque_setpoint = [(FSR_reading - FSR_Min)/(FSR_Max - FSR_Min)] * Torque Max   ||
-              if (right_leg->FSR_Ext_Curr > right_leg->FSR_Ext_Max){
+              // if (right_leg->FSR_Ext_Curr > right_leg->FSR_Ext_Max){
             
-                right_leg->FSR_Ext_Max = right_leg->FSR_Ext_Curr;
-              }
+              //   right_leg->FSR_Ext_Max = right_leg->FSR_Ext_Curr;
+              // }
             
-              if (right_leg->FSR_Flex_Curr > right_leg->FSR_Flex_Max){
+              // if (right_leg->FSR_Flex_Curr > right_leg->FSR_Flex_Max){
           
-              right_leg->FSR_Flex_Max = right_leg->FSR_Flex_Curr;
-              }
-              if (right_leg->FSR_Ext_Curr < right_leg->FSR_Ext_Min){
+              // right_leg->FSR_Flex_Max = right_leg->FSR_Flex_Curr;
+              // }
+              // if (right_leg->FSR_Ext_Curr < right_leg->FSR_Ext_Min){
             
-                right_leg->FSR_Ext_Min = right_leg->FSR_Ext_Curr;
-              }
+              //   right_leg->FSR_Ext_Min = right_leg->FSR_Ext_Curr;
+              // }
             
-              if (right_leg->FSR_Flex_Curr < right_leg->FSR_Flex_Min){
+              // if (right_leg->FSR_Flex_Curr < right_leg->FSR_Flex_Min){
           
-              right_leg->FSR_Flex_Min = right_leg->FSR_Flex_Curr;
-              }
+              // right_leg->FSR_Flex_Min = right_leg->FSR_Flex_Curr;
+              // }
       // =======================================================================================================
 
 
