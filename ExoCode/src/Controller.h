@@ -436,88 +436,12 @@ class FranksCollinsHip: public _Controller
         ~FranksCollinsHip(){};
        
         float calc_motor_cmd();
+
+        float _spline_generation(float node1, float node2, float node3, float torque_magnitude, float shifted_percent_gait);
+
+        float last_percent_gait;
+        float last_start_time;
        
-        /**
-         * @brief Recalculates the splines for the curve when the parameters change, and sets the member variables.
-         *
-         * @param mass of the user in kg
-         * @param peak extension torque normalized by user mass
-         * @param peak flexion torque normalized by user mass
-         * @param percent gait to start the curve. This way there isn't a discontinuity at 0 angle
-         * @param time from where the curve starts in percent gait to start the extension spline
-         * @param time from where the curve starts in percent gait where peak extension torque occurs
-         * @param time from where the curve starts in percent gait at the mid point of the zero torque period between the extension and flexion torques
-         * @param time in percent gait to remain at zero torque between the flexion and extension curves.
-         * @param time from where the curve starts in percent gait where peak flexion torque occurs
-         * @param time from where the curve starts in percent gait to stop applying torque
-         */
-        void _update_spline_parameters(int mass,
-            float trough_normalized_torque_Nm_kg, float peak_normalized_torque_Nm_kg,
-            float start_percent_gait, float trough_onset_percent_gait, float trough_percent_gait,
-            float mid_percent_gait, float mid_duration_gait,
-            float peak_percent_gait, float peak_offset_percent_gait);
-    private:
-        // store the parameters so we can check if they change.
-        int _mass; /**< User mass in kg */
-       
-        int _last_start_time; /**< records the time the start percent gait happened which can be used to calculate the other times key points from that instance */
-        float _last_percent_gait; /**< used to track if we have crossed the percent gait to start the curve */
-       
-        float _start_percent_gait; /**< Percent gait to start the curve at so we don't have a discontinuity at heel strike */
-       
-        float _mid_time; /**< time from where the curve starts in percent gait at the mid point of the zero torque period between the extension and flexion torques */
-        float _mid_duration; /**< time in percent gait to remain at zero torque between the flexion and extension curves. */
-       
-        float _trough_normalized_torque_Nm_kg; /**< peak extension torque normalized by user mass */
-        float _peak_normalized_torque_Nm_kg; /**< peak flexion torque normalized by user mass */
-       
-        float _trough_onset_percent_gait; /**< time from where the curve starts in percent gait to start the extension spline */
-        float _trough_percent_gait; /**< time from where the curve starts in percent gait where peak extension torque occurs */
-       
-        float _peak_percent_gait; /**< time from where the curve starts in percent gait where peak flexion torque occurs */
-        float _peak_offset_percent_gait; /**< time from where the curve starts in percent gait to stop applying torque */
-       
-        float _t0_trough; /**< curve start percent gait which will be shifted to start at start_percent_gait*/
-        float _t1_trough; /**< time point from start_percent_gait where the trough starts */
-        float _t2_trough; /**< time point from start_percent_gait of the deepest point */
-        float _t3_trough; /**< time point from start_percent_gait where the trough stops */
-       
-        float _t0_peak; /**< time point from start_percent_gait the 0 portion of the peak curve */
-        float _t1_peak; /**< time point from start_percent_gait to start the rise to peak starts */
-        float _t2_peak; /**< time point from start_percent_gait of peak torque*/
-        float _t3_peak; /**< time point from start_percent_gait to stop torque*/
-               
-        // peak torque
-        float _tt_Nm; /**< Unnormalized largest trough torque */
-        float _tp_Nm; /**< Unnormalied largest peak torque */
-       
-        // cable tension torque.  Not needed for our design, but used to match the paper.
-        float _tts_Nm; /**< cable tensioning torque for the trough */
-        float _tps_Nm; /**< cable tensioning torque for the peak */
-       
-        // parameters for falling spline
-        float _a1_trough; /**< parameters for falling spline for the trough */
-        float _b1_trough; /**< parameters for falling spline for the trough */
-        float _c1_trough; /**< parameters for falling spline for the trough */
-        float _d1_trough; /**< parameters for falling spline for the trough */
-       
-        // parameters for rising spline
-        float _a2_trough; /**< parameters for rising spline for the trough */
-        float _b2_trough; /**< parameters for rising spline for the trough */
-        float _c2_trough; /**< parameters for rising spline for the trough */
-        float _d2_trough; /**< parameters for rising spline for the trough */
-       
-        // parameters for rising spline
-        float _a1_peak; /**< parameters for rising spline for the peak*/
-        float _b1_peak; /**< parameters for rising spline for the peak*/
-        float _c1_peak; /**< parameters for rising spline for the peak*/
-        float _d1_peak; /**< parameters for rising spline for the peak*/
-       
-        // parameters for falling spline
-        float _a2_peak; /**< parameters for falling spline for the peak */
-        float _b2_peak; /**< parameters for falling spline for the peak */
-        float _c2_peak; /**< parameters for falling spline for the peak */
-        float _d2_peak; /**< parameters for falling spline for the peak */
 };
 
 /**

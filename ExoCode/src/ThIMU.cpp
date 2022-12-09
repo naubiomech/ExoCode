@@ -46,8 +46,8 @@ bool ThIMU::init(float timeout)
     while (!_handshake()) {
         float delta_time = millis() - start_time;
         
-        Serial.print("Handshake failed: ");
-        Serial.println(delta_time);
+        //Serial.print("Handshake failed: ");
+        //Serial.println(delta_time);
         if (delta_time > timeout) {
             return false;
         }
@@ -78,8 +78,8 @@ bool ThIMU::_handshake()
 {
     uint8_t addr = (_is_left) ? i2c_cmds::thigh_imu::left_addr : i2c_cmds::thigh_imu::right_addr;
 
-    Serial.print("Handshaking with IMU at address: ");
-    Serial.println(addr);
+    //Serial.print("Handshaking with IMU at address: ");
+    //Serial.println(addr);
 
     MY_WIRE.beginTransmission(addr);
     MY_WIRE.write(i2c_cmds::thigh_imu::handshake::reg);
@@ -89,8 +89,8 @@ bool ThIMU::_handshake()
     uint8_t val = MY_WIRE.read();
     MY_WIRE.endTransmission();
 
-    Serial.print("Handshake value: ");
-    Serial.println(val);
+    //Serial.print("Handshake value: ");
+    //Serial.println(val);
 
     if (val == 0x01) {
         return true;
