@@ -58,30 +58,16 @@ void Exo::run()
     static float rt_delta_t = 0;
 
     static uint8_t should_plot = 0;
-    
-    if (delta_t >= ((float) 1/LOOP_FREQ_HZ * 1000000 * (1 - LOOP_TIME_TOLERANCE)))
+
+    static const float lower_bound = (float) 1/LOOP_FREQ_HZ * 1000000 * (1 - LOOP_TIME_TOLERANCE);
+    if (delta_t >= (lower_bound))
     {
-        Serial.println(delta_t);
+        
         #ifdef USE_SPEED_CHECK
+        Serial.println(delta_t);
             speed_check.toggle();
         #endif
 
-        // check if trial went from off to on
-        // if (data->status != prev_status && (data->status == status_defs::messages::trial_on || data->status == status_defs::messages::trial_off)) {
-        //     if (prev_status == status_defs::messages::trial_on && data->status == status_defs::messages::trial_off) 
-        //     {
-        //         // from on to off
-        //         Serial.println("Exo::run: Trial Off");
-        //         should_plot = 0;
-        //     }
-        //     else if (prev_status == status_defs::messages::trial_off && data->status == status_defs::messages::trial_on) 
-        //     {
-        //         // from off to on
-        //         Serial.println("Exo::run: Trial On");
-        //         should_plot = 1;
-        //     }
-        //     prev_status = data->status;
-        // }
 
         // check if we should update the sync LED and record the LED on/off state.
         data->sync_led_state = sync_led.handler();
@@ -90,22 +76,6 @@ void Exo::run()
         // check the estop
         data->estop = digitalRead(logic_micro_pins::motor_stop_pin);
 
-        // Serial.print("Exo::run: is error : ");
-        // Serial.print(((data->status & status_defs::messages::error) == status_defs::messages::error));
-        // Serial.print("\n");
-        // if (trial_running && ((data->status != status_defs::messages::error) && (data->status != status_defs::messages::test)))
-        // {
-        //     data->status = status_defs::messages::trial_on;
-        // }
-        // else if ((!trial_running) && ((data->status != status_defs::messages::error) && (data->status != status_defs::messages::test)))
-        // {
-        //     data->status = status_defs::messages::trial_off;
-        // }
-        // else
-        // {
-        //     // Serial.print("Exo::run:Error or Test\n");
-        // }
-
         // Record the leg data and send new commands to the motors.
         left_leg.run_leg();
         right_leg.run_leg();
@@ -113,33 +83,34 @@ void Exo::run()
         // update status LED
         status_led.update(data->status);
         #ifdef EXO_DEBUG
-            // Serial.println("Exo::Run:Time_OK");
-            // Serial.println(delta_t);
-            // Serial.println(((float)1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
+            Serial.println("Exo::Run:Time_OK");
+            Serial.println(delta_t);
+            Serial.println(((float)1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
         #endif
-        // !!TESTING
-        // data->right_leg.ankle.motor.p_des++;
-
-        
 
         // check for incoming uart messages
         UART_msg_t msg = handler->poll(UART_times::CONT_MCU_TIMEOUT);       //UART_times::CONT_MCU_TIMEOUT is in Config.h
-        if (msg.command) {
-            // Serial.println("Exo::run->Got message:");
-            // UART_msg_t_utils::print_msg(msg);
+        if (msg.command) 
+        {
+            #ifdef EXO_DEBUG
+                Serial.println("Exo::run->Got message:");
+                UART_msg_t_utils::print_msg(msg);
+            #endif
+
             UART_command_utils::handle_msg(handler, data, msg);
         }
 
 
         // send the coms mcu the real time data every _real_time_msg_delay microseconds
-        // Serial.print("Exo::run->Checking if we have to send the message:");
         rt_delta_t += t_helper->tick(rt_context);
-        // Serial.print("Exo::run->real_time_del_t: ");Serial.println(rt_delta_t);
         bool correct_status = (data->status == status_defs::messages::trial_on) || (data->status == status_defs::messages::fsr_calibration) || (data->status == status_defs::messages::fsr_refinement);
         if ((rt_delta_t >= BLE_times::_real_time_msg_delay) && (correct_status))
         {
-            // Serial.print("Exo::run->Sending Real Time Message: ");
-            // Serial.println(rt_delta_t);
+            #ifdef EXO_DEBUG
+                Serial.print("Exo::run->Sending Real Time Message: ");
+                Serial.println(rt_delta_t);
+            #endif
+            
             UART_msg_t msg;
             UART_command_handlers::get_real_time_data(handler, data, msg, data->config);
             rt_delta_t = 0;
@@ -149,32 +120,32 @@ void Exo::run()
     }
 
     // we didn't hit the time requirements
-    else if (delta_t > ((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)))
-    {
-        Serial.println("Exo::run:Time_Too_Slow");
-        // toggle the synce LED every X times we miss the time requirements
-        static uint8_t missed_time_count = 0;
-        static const uint8_t missed_time_max = 100;
-        missed_time_count++;
-        if (missed_time_count >= missed_time_max)
-        {
-            missed_time_count = 0;
-            status_led.toggle();
-        }
+    // else if (delta_t > ((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)))
+    // {
+    //     Serial.println("Exo::run:Time_Too_Slow");
+    //     // toggle the synce LED every X times we miss the time requirements
+    //     static uint8_t missed_time_count = 0;
+    //     static const uint8_t missed_time_max = 100;
+    //     missed_time_count++;
+    //     if (missed_time_count >= missed_time_max)
+    //     {
+    //         missed_time_count = 0;
+    //         status_led.toggle();
+    //     }
 
-        //data->status = status_defs::messages::error;'
-        //Serial.println("Exo::Run:Timeoverflow");
-        #ifdef EXO_DEBUG
-            if (delta_t >= 4000) {
-                Serial.println("Exo::Run:Timeoverflow");
-                Serial.println(delta_t);
-                Serial.println(((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
-            }
-        #endif
-        // TODO: Toggle error
+    //     //data->status = status_defs::messages::error;'
+    //     //Serial.println("Exo::Run:Timeoverflow");
+    //     #ifdef EXO_DEBUG
+    //         if (delta_t >= 4000) {
+    //             Serial.println("Exo::Run:Timeoverflow");
+    //             Serial.println(delta_t);
+    //             Serial.println(((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
+    //         }
+    //     #endif
+    //     // TODO: Toggle error
 
-        delta_t = 0;
-    }
+    //     delta_t = 0;
+    // }
 };
 
 

@@ -26,7 +26,7 @@ class ExoData;
  * @brief class to store information related to the leg.
  * 
  */
-class LegData{
+class LegData {
 	   
     public:
         LegData(bool is_left, uint8_t* config_to_send);
@@ -55,6 +55,7 @@ class LegData{
 
         
         bool ground_strike;  /**< Trigger when we go from swing to one FSR making contact. */
+        bool toe_off; /**< Trigger when we go from one FSR making contact to swing. */
         bool heel_stance;  /**< High when the heel FSR is in ground contact */
         bool toe_stance;  /**< High when the toe FSR is in ground contact */
         bool prev_heel_stance;  /**< High when the heel FSR was in ground contact on the previous iteration */

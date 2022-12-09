@@ -1,5 +1,7 @@
 
 #include "FSR.h"
+
+#include "Board.h"
 //#define FSR_DEBUG 1
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
@@ -158,6 +160,7 @@ bool FSR::refine_calibration(bool do_refinement)
 float FSR::read()
 {
     _raw_reading = analogRead(_pin);
+
     // Return the value using the calibrated refinement if it is done.
     if (_calibration_refinement_max > 0)
     {
@@ -183,10 +186,50 @@ float FSR::read()
 bool FSR::_calc_ground_contact()
 {
     // only do this if the refinement is done.
+    bool current_state_estimate = false;
     if (_calibration_refinement_max > 0)
     {
-        _ground_contact = utils::schmitt_trigger(_calibrated_reading, _ground_contact, _lower_threshold_percent_ground_contact, _upper_threshold_percent_ground_contact); 
+        current_state_estimate = utils::schmitt_trigger(_calibrated_reading, _ground_contact, _lower_threshold_percent_ground_contact, _upper_threshold_percent_ground_contact); 
     }
+
+    _ground_contact = current_state_estimate;
+
+    // TODO: Debug. Make states latching, and store the current state so we can check for a change.
+    // static uint8_t ground_contact_count = 0;
+    // static uint8_t not_ground_contact_count = 0;
+    // if (current_state_estimate)
+    // {
+    //     ground_contact_count++;
+    //     not_ground_contact_count = 0;
+    // }
+    // else
+    // {
+    //     ground_contact_count = 0;
+    //     not_ground_contact_count++;
+    // }
+
+    // if (ground_contact_count > _ground_state_count_threshold)
+    // {
+    //     _ground_contact = true;
+    // } 
+    // else if (not_ground_contact_count > _ground_state_count_threshold)
+    // {
+    //     _ground_contact = false;
+    // }
+
+    // // Print counts and state
+
+    // Serial.print("_ground_contact:");
+    //     Serial.print(_ground_contact);
+    //     Serial.print("\n");
+    // Serial.print("\t");
+    // Serial.print("FSR::_calc_ground_contact : ground_contact_count - ");
+    // Serial.print(ground_contact_count);
+    // Serial.print("\t");
+    // Serial.print("FSR::_calc_ground_contact : not_ground_contact_count - ");
+    // Serial.print(not_ground_contact_count);
+    // Serial.print("\n");
+
     return _ground_contact;
 };
 

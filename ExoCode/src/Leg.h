@@ -70,10 +70,13 @@ class Leg
          */
         void clear_step_time_estimate();
 
-        /** Move these back down to private when things are working*/
-        //HipJoint _hip; /**< instance of a hip joint */
-        //KneeJoint _knee; /**< instance of a knee joint */
-        //AnkleJoint _ankle; /**< instance of a ankle joint */
+        /**
+         * @brief Disables all motors in the leg
+         * 
+         */
+        void disable_motors();
+
+        float get_Kt_for_joint(uint8_t id);
         
 	private:
 		
@@ -102,6 +105,15 @@ class Leg
          * @return 1 if the foot has gone from non-contact to ground contact. 0 Otherwise
          */
         bool _check_ground_strike();
+
+        /**
+         * @brief MUST BE CALLED AFTER _check_ground_strike()! Checks for state changes in the FSRs to find 
+         * the point when ground contact is lost. Simple check for a falling edge of either FSR during stance 
+         * and returns 1 if they have. The returned value should just be high for a single cycle. 
+         *
+         * @return 1 if the foot has gone from ground contact to non-contact. 0 Otherwise
+         */
+        bool _check_toe_off();
 		
         // data that can be accessed
         ExoData* _data;/**< Pointer to the overall exo data */
@@ -124,6 +136,8 @@ class Leg
         
         bool _prev_heel_contact_state; /**< Prev heel contact state used for ground strike detection */
         bool _prev_toe_contact_state; /**< Prev toe contact state used for ground strike detection */
+
+        bool _prev_toe_contact_state_toe_off; /**< Prev toe off state used for toe off detection */
         
         static const uint8_t _num_steps_avg = 3;  /**< the number of prior steps used to estimate the expected duration, used for percent gait calculation */
         unsigned int _step_times[_num_steps_avg];  /**< stores the duration of the last N steps, used for percent gait calculation */// 

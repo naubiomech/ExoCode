@@ -261,6 +261,8 @@ bool _CANMotor::enable(bool overide)
         msg.buf[4] = 0xFF;
         msg.buf[5] = 0xFF;
         msg.buf[6] = 0xFF;
+
+        // TODO: Dont reenable after after errror, or if estop is pulled
         
         if (_motor_data->enabled)
         {
@@ -315,6 +317,17 @@ void _CANMotor::zero()
     read_data();
 };
 
+float _CANMotor::get_Kt()
+{
+    return _Kt;
+}
+
+void _CANMotor::set_Kt(float Kt)
+{
+    _Kt = Kt;
+}
+
+
 void _CANMotor::_handle_read_failure()
 {
     this->_timeout_count++;
@@ -368,6 +381,7 @@ _CANMotor(id, exo_data, enable_pin)
 {
     _T_MAX = 9.0f;
     _V_MAX = 41.87f;
+    set_Kt(0.068 * 6);
 
 #ifdef MOTOR_DEBUG
     Serial.println("AK60::AK60 : Leaving Constructor");
@@ -384,6 +398,7 @@ _CANMotor(id, exo_data, enable_pin)
 {
     _T_MAX = 9.0f;
     _V_MAX = 23.04f;
+    set_Kt(0.113 * 6);
 
 #ifdef MOTOR_DEBUG
     Serial.println("AK60_v1_1::AK60_v1_1 : Leaving Constructor");
@@ -400,6 +415,7 @@ _CANMotor(id, exo_data, enable_pin)
 {
     _T_MAX = 18.0f;
     _V_MAX = 25.65f;
+    set_Kt(0.091 * 9);
 
 #ifdef MOTOR_DEBUG
     Serial.println("AK80::AK80 : Leaving Constructor");

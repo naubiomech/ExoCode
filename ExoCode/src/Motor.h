@@ -102,6 +102,8 @@ class _Motor
          * @return the motor id
          */
         virtual config_defs::joint_id get_id();
+
+        virtual float get_Kt() = 0; /**< Torque constant of the motor, at the motor output. [Nm/A] */
 		
 	protected:
         config_defs::joint_id _id; //motor id 
@@ -111,6 +113,7 @@ class _Motor
         int _enable_pin;
         bool _prev_motor_enabled; 
         bool _prev_on_state;
+        float _Kt; // Torque constant of the motor, at the motor output. [Nm/A]   
 };
 
 /**
@@ -127,6 +130,7 @@ class NullMotor : public _Motor
     bool enable() {return true;};
     bool enable(bool overide) {return true;};
     void zero() {};
+    float get_Kt() {return 0.0;};
 };
 
 
@@ -145,7 +149,11 @@ class _CANMotor : public _Motor
         bool enable();
         bool enable(bool overide);
         void zero();
+        float get_Kt();
+        
     protected:
+
+        void set_Kt(float Kt);
         
         /**
          * @brief Packs a float into the uint format needed to be sent to the motor.

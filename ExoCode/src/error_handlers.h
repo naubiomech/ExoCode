@@ -10,25 +10,36 @@
 // Handles errors
 namespace error_handlers
 {
-    void soft(Exo* exo, ExoData* exo_data)
+    // Helper to report the errors
+    void report(uint16_t error_code)
+    {
+        Serial.print("Error code: ");
+        Serial.println(error_code);
+    }
+    void soft(Exo* exo, ExoData* exo_data, uint16_t error_code)
     {
         // TODO: Recalibrate/Warn user
-        //Serial.println("Soft error");
+
+        report(error_code);
         return;
     }
-    void hard(Exo* exo, ExoData* exo_data)
+    void hard(Exo* exo, ExoData* exo_data, uint16_t error_code)
     {
         // TODO: Change all controllers to zero torque/statis
-        //Serial.println("Hard error");
+
+        report(error_code);
         return;
     }
-    void fatal(Exo* exo, ExoData* exo_data)
+    void fatal(Exo* exo, ExoData* exo_data, uint16_t error_code)
     {
-        // TODO: Test
-        exo_data->for_each_joint([](JointData* joint_data) {
-            joint_data->motor.enabled = 0;
-        });
-        Serial.println("Fatal error");
+        // TODO: Permanently disable motor(s)
+        // Ensure that the motors are not reenabled
+        exo_data->for_each_joint([](JointData* joint_data) {joint_data->motor.enabled = 0;});
+        // Disable the motors
+        exo->left_leg.disable_motors();
+        exo->right_leg.disable_motors();
+        
+        report(error_code);
         return;
     }
 }
