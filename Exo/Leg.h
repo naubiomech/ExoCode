@@ -78,15 +78,21 @@ struct Leg {
   double FSR_Ext_Max = 500;
   double FSR_Ext_Min = 0;
   double FSR_Ext_Ratio = 0;
+  double FSR_Ext_Ratio_S = 0;
 
   double FSR_Flex_Max = 500;
   double FSR_Flex_Min = 0;  
   double FSR_Flex_Curr = 0;
   double FSR_Flex_Ratio = 0;
+  double FSR_Flex_Ratio_S = 0;
+
+  double saturated_command_s = 0;
+  double w1 = 0.15;
+  double w2 = 0.2;
   double Dom_Ratio = 0;
-  
   double Desired_Torque = 0;
   double motor_command = 0;
+  double motor_command_S = 0;
   int Exo_State = 0;
   // =================================================================================
 

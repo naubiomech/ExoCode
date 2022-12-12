@@ -12,17 +12,17 @@ void send_data_message_wc() //with COP
   r_torque_filtered = ema_with_context(r_torque_filtered, -r_torque, 0.25);
   
   //Right Leg
-  data_to_send[0] = right_leg->motor_command; //(right_leg->sign * right_leg->Average_Trq);   //torrrrrque right
-  data_to_send[1] = right_leg->motor_command; //right_leg->state / 3;
+  data_to_send[0] = right_leg->saturated_command_s; //(right_leg->sign * right_leg->Average_Trq);   //torrrrrque right
+  data_to_send[1] = right_leg->saturated_command_s; //right_leg->state / 3;
   data_to_send[2] = right_leg->Desired_Torque; //(right_leg->sign * right_leg->PID_Setpoint);
   //data_to_send[2] = r_torque_filtered;
   //data_to_send[2] = right_leg->Output;
   //data_to_send[2] = akMotor.right_return.tor;
 
-Serial.print(right_leg->motor_command);
-Serial.print(", ");
-Serial.print(right_leg->Desired_Torque);
-Serial.println();
+// Serial.print(right_leg->motor_command);
+// Serial.print(", ");
+// Serial.print(right_leg->Desired_Torque);
+// Serial.println();
 
   //Left Leg
   data_to_send[3] = (left_leg->sign * left_leg->Average_Trq);

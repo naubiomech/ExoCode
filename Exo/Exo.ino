@@ -309,8 +309,10 @@ void check_FSR_calibration() {
 
   // Compute the non-dim relitive amount of force applied to the fsrs
      right_leg->FSR_Ext_Ratio = (right_leg->FSR_Ext_Curr - right_leg->FSR_Ext_Min) / (right_leg->FSR_Ext_Max - right_leg->FSR_Ext_Min); 
+     right_leg->FSR_Ext_Ratio_S = right_leg->w1 * right_leg->FSR_Ext_Ratio + ((1 - right_leg->w1) * right_leg->FSR_Ext_Ratio_S);                   //smoothes value using Exp Moving Ave (EMA)
+     
      right_leg->FSR_Flex_Ratio = (right_leg->FSR_Flex_Curr - right_leg->FSR_Flex_Min) / (right_leg->FSR_Flex_Max - right_leg->FSR_Flex_Min);       //negitive to switch direction?
-
+     right_leg->FSR_Flex_Ratio_S = right_leg->w1 * right_leg->FSR_Flex_Ratio + ((1 - right_leg->w1) * right_leg->FSR_Flex_Ratio_S);                //smoothes value using Exp Moving Ave (EMA)
 
 // ===============================================================================================================================
 
@@ -346,27 +348,27 @@ void check_Balance_Baseline() {
 void rotate_elbow() {
     // Determine State - Flextion or Extension
 
-    if ((right_leg->FSR_Ext_Ratio > 0.10) && (right_leg->FSR_Ext_Ratio > right_leg->FSR_Flex_Ratio)) {
+    if ((right_leg->FSR_Ext_Ratio_S > 0.10) && (right_leg->FSR_Ext_Ratio_S > right_leg->FSR_Flex_Ratio_S)) {
       right_leg->Exo_State = 1; //Ext Mode - Extension
-      right_leg->Desired_Torque = right_leg->FSR_Ext_Ratio * -right_leg->Setpoint_Ankle; 
-      right_leg->Dom_Ratio = -right_leg->FSR_Ext_Ratio;
+      right_leg->Desired_Torque = right_leg->FSR_Ext_Ratio_S * -right_leg->Setpoint_Ankle; 
+      right_leg->Dom_Ratio = -right_leg->FSR_Ext_Ratio_S;
 
       // Serial.print("Extension Mode");
       // Serial.print(", ");
-      // Serial.print(right_leg->FSR_Ext_Ratio);
+      // Serial.print(right_leg->FSR_Ext_Ratio_S);
       // Serial.print(", ");
       // Serial.println(right_leg->Desired_Torque);
       //akMotor.apply_torque(R_ID, r_torque);
     }
 
-    else if ((right_leg->FSR_Flex_Ratio > 0.10) && (right_leg->FSR_Flex_Ratio > right_leg->FSR_Ext_Ratio)) {
+    else if ((right_leg->FSR_Flex_Ratio_S > 0.10) && (right_leg->FSR_Flex_Ratio_S > right_leg->FSR_Ext_Ratio_S)) {
       right_leg->Exo_State = 2; //Flex Mode - Flextion
-      right_leg->Desired_Torque = right_leg->FSR_Flex_Ratio * right_leg->Dorsi_Setpoint_Ankle; 
-      right_leg->Dom_Ratio = right_leg->FSR_Flex_Ratio;
+      right_leg->Desired_Torque = right_leg->FSR_Flex_Ratio_S * right_leg->Dorsi_Setpoint_Ankle; 
+      right_leg->Dom_Ratio = right_leg->FSR_Flex_Ratio_S;
 
       // Serial.print("Flex Mode");
       // Serial.print(", ");
-      // Serial.print(right_leg->FSR_Flex_Ratio);
+      // Serial.print(right_leg->FSR_Flex_Ratio_S);
       // Serial.print(", ");
       // Serial.println(right_leg->Desired_Torque);
       // akMotor.apply_torque(R_ID, r_torque);      
@@ -387,16 +389,19 @@ void rotate_elbow() {
       right_leg->PID_Setpoint = right_leg->Desired_Torque;
       right_leg->Input = right_leg->Average_Trq;
        right_leg->pid.Compute_KF(right_leg->KF);
-       right_leg->motor_command = right_leg->Output;
 
+
+       right_leg->motor_command = right_leg->Output;
+       right_leg->motor_command_S = right_leg->w2 * right_leg->motor_command + ((1 - right_leg->w2) * right_leg->motor_command_S);
       //  Serial.print(motor_command);
       //  Serial.println();
 
-//      r_torque = 
+// Send Limited Command to Motor
+    right_leg->saturated_command_s = min(2, right_leg->motor_command_S);
   
-  // Send Torque
-  //akMotor.apply_torque(R_ID, r_torque);
-  //akMotor.apply_torque(L_ID, l_torque);
+    // Send Torque
+    akMotor.apply_torque(R_ID, right_leg->saturated_command_s);
+    //akMotor.apply_torque(L_ID, l_torque);
 }
 //=====================================================================================================================================
 

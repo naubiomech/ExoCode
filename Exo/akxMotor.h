@@ -224,8 +224,8 @@ class akxMotor {
       out_frame.data[5] = 0xFF;
       out_frame.data[6] = 0xFF;
       if (enable) {
-        out_frame.data[7] = 0xFD;
-        //out_frame.data[7] = 0xFC;
+        //out_frame.data[7] = 0xFD;
+        out_frame.data[7] = 0xFC;
       } else {
         out_frame.data[7] = 0xFD;
       }
