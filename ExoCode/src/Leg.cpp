@@ -175,7 +175,7 @@ bool Leg::_check_ground_strike()
     _leg_data->prev_toe_stance = _prev_toe_contact_state;
 
     // TODO: Only use the heel fsr if it is connected. Maybe only if the hip is used?
-    bool heel_contact_state = false;//_heel_fsr.get_ground_contact();
+    bool heel_contact_state = _heel_fsr.get_ground_contact();
     bool toe_contact_state = _toe_fsr.get_ground_contact();
     _leg_data->heel_stance = heel_contact_state;
     _leg_data->toe_stance = toe_contact_state;

@@ -165,12 +165,11 @@ class HeelToe: public _Controller
         
         float calc_motor_cmd();
     
-    private:
 
         float _update_swing_duration();                     /**< Function that updates the average of swing phase duration. */
 
         static const uint8_t _num_swing_avg = 3;            /**< Number of prior swing phases used to estimate the moving average duration of swing phase. */
-        unsigned int _swing_time[_num_swing_avg];           /**< Stores the duration of the last N swing phases. */
+        unsigned int _swing_times[_num_swing_avg];           /**< Stores the duration of the last N swing phases. */
 
         float average_swing_duration;                       /**< Average duration of swing phase from previous N trials. */
 
@@ -195,8 +194,14 @@ class HeelToe: public _Controller
 
         float fs;                                           /**< Estimation of ground reaction force based on 'Bishe 2021' */
         float df_dt;                                        /**< Derivative of FS. */
+        float df_dt_filtered;
 
         float cmd_ff;                                        /**< Feedfoward Motor Commnad. */
+
+        float state;
+        float timing;
+        float _prev_gait_state;
+        float current_swing_duration;
 };
 
 /**

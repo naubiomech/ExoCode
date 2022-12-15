@@ -343,7 +343,7 @@ HeelToe::HeelToe(config_defs::joint_id id, ExoData* exo_data)
 
         for (int i = 0; i < _num_swing_avg; i++)    /**< Stores 0s in the _swing time array to initialize it. */
         {
-            _swing_time[i] = 0;
+            _swing_times[i] = 0;
         }
 
         _swing_start_timestamp = 0;                 /**< Initializes the starting timestamp for swing to 0. */
@@ -354,83 +354,134 @@ HeelToe::HeelToe(config_defs::joint_id id, ExoData* exo_data)
         _prev_state_2 = 1;                          /**< Initializes the previous "State 2" time duration to 1, this is because it is used as a denominator of a calculation later that would throw a fit if it was 0. */
 
         _fs_previous = 0;                           /**< Initializes the previous FS measurment to 0. */
-        _df_dt_previous = 0;                        /**< Initializes the previous derivative of FS to 0. */
-      
+        _df_dt_previous = 0;                        /**< Initializes the previous derivative of FS to 0. */     
+
+        _prev_gait_state = 0;
 };
 
 float HeelToe::calc_motor_cmd()
 {
     cmd_ff = 0;                                     /**< Sets the default motor command to 0. */
 
-    if (!_leg_data->do_calibration_toe_fsr && !_leg_data->do_calibration_heel_fsr)  /**< If the toe and heel FSRs are not being calibrated then keep motor torque 0. */
+    if (!_leg_data->do_calibration_toe_fsr && !_leg_data->do_calibration_heel_fsr)  /**< If the toe and heel FSRs are being calibrated then keep motor torque 0. */
     {
 
-        float percent_gait = _leg_data->percent_gait;           /**< Variable that stores the percent gait calulation from 'Leg.cpp'. */
-
-        float timing = millis();      /**< Records the current time in which this loop of the  controller is run. */ 
+        if (_leg_data->heel_stance == 0 && _leg_data->toe_stance == 0)
+        {
+            timing = millis();      /**< Records the current time in which this loop of the controller is run. */
+        }
 
         _update_swing_duration();       /**< Runs the "Update Swing Duration" function (see below), returns the average Swing duration. */
 
-        if (((timing - _swing_start_timestamp) <= 0.3 * average_swing_duration) && !_prev_state_2_status)       /**< If the time in swing is less than 30% of the avearge swing duration and we were not previously in "State 2". */
+        if (_swing_start_timestamp != _prev_swing_start_timestamp)
         {
-            state_2_start = millis();   /**< Sets the start time of   */
-            _prev_state_2_status = 1;
+            current_swing_duration = timing - _swing_start_timestamp;
+        }
+        else
+        {
+            current_swing_duration = -1;
+        }
+        //Determines the slope of the line for the third state
+        float m = (0.6 * _controller_data->parameters[controller_defs::heel_toe::extension_torque_setpoint_idx] - 0.5 * _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx]) / (0.7 * average_swing_duration);
+
+        fs = _leg_data->toe_fsr - (4 * _leg_data->heel_fsr);     //Estimation of ground reaction force based on Bishe 2021'
+
+        df_dt = (fs - _fs_previous) * (1000/LOOP_FREQ_HZ);       //Estimation of the derivative of fs
+
+        //df_dt_filtered = utils::ewma(df_dt, df_dt_filtered, 1);
+
+        if (fs < 0 && df_dt < 0 && (_leg_data->heel_stance == 1 || _leg_data->toe_stance == 1)) //If FS is negative and it's derivative is also negative
+        {
+            state = 1;
+        }
+        else if (fs < 0 && df_dt >= 0 && (_leg_data->heel_stance == 1 || _leg_data->toe_stance == 1))  //If FS is negative and it's derivative is positive
+        {
+            state = 2;
+        }
+        else if (fs > 0 && df_dt >= 0 && (_leg_data->heel_stance == 1 || _leg_data->toe_stance == 1))        //If FS is positive and it's derivative is positive
+        {
+            state = 3;
+        }
+        else if (fs > 0 && df_dt < 0)   //If FS is positive and it's derivative is negative
+        {
+            state = 4;
+        }
+        else if (((current_swing_duration) > 0.3 * average_swing_duration) && (_leg_data->heel_stance == 0 && _leg_data->toe_stance == 0))
+        {
+            state = 5;
+        }
+        else
+        {
+            state = 0;
         }
 
-        if (((timing - _swing_start_timestamp) > 0.3 * average_swing_duration) && _prev_state_2_status)
+        if (state < _prev_gait_state)
+        {
+            if (_prev_gait_state - state < 4)
+            {
+                state = _prev_gait_state;
+            }
+        }
+
+        if (state == 4 && _prev_gait_state == 3)
+        {
+            state_2_start = millis();
+        }
+
+        if (state == 5 && _prev_gait_state == 4)
         {
             state_2_end = millis();
-            _prev_state_2_status = 0;
         }
 
-        //Determines the slope of the line for the third state
-        float m = (0.5 * _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx] - 0.6 * _controller_data->parameters[controller_defs::heel_toe::extension_torque_setpoint_idx]) / (0.7 * average_swing_duration);
-
-
-        fs = _leg_data->toe_fsr - 0.25 * _leg_data->heel_fsr;     //Estimation of ground reaction force based on Bishe 2021'
-
-        df_dt = (fs - _fs_previous) * LOOP_FREQ_HZ;       //Estimation of the derivative of fs
-
-        if (fs < 0 && df_dt < 0) //If FS is negative and it's derivative is also negative
+        if (state == 1)
         {
             cmd_ff = ((0.6 * _controller_data->parameters[controller_defs::heel_toe::extension_torque_setpoint_idx]) + (0.4 * _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx] * fs));
         }
-        else if (fs < 0 && df_dt >= 0)  //If FS is negative and it's derivative is positive
+        else if (state == 2)
         {
             cmd_ff = _controller_data->parameters[controller_defs::heel_toe::extension_torque_setpoint_idx] * fs;
         }
-        else if (fs > 0 && df_dt >= 0)        //If FS is positive and it's derivative is positive
+        else if (state == 3)
         {
             cmd_ff = _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx] * fs * 0.5;
         }
-        else if (fs > 0 && df_dt < 0 && (timing - _swing_start_timestamp) <= 0.3 * average_swing_duration)   //If FS is positive, it's derivative is negative, and you are within 30% of the moving average of the swing phase duration
+        else if (state == 4)
         {
             state_2_current = millis();
             float t = state_2_current / _prev_state_2;
             cmd_ff = (0.5 + (0.5 * ((alpha * ((t * t) - t)) / (t - beta)))) * _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx];
         }
-        else if (((timing - _swing_start_timestamp) > 0.3 * average_swing_duration) && percent_gait <= 100);
+        else if (state == 5)
         {
-            cmd_ff = (timing - state_2_end) * m;
+            cmd_ff = ((timing - state_2_end) * m) + (0.6 * _controller_data->parameters[controller_defs::heel_toe::extension_torque_setpoint_idx]);
+        }
+        else
+        {
+            //cmd_ff = 0;
         }
 
         //If none of the above conditions are met, send zero torque
 
+        _leg_data->PHJM_state = state;
+
         _fs_previous = fs;
         _df_dt_previous = df_dt;
         _prev_state_2 = state_2_end - state_2_start;
+        _prev_gait_state = state;
     }
-    // add the PID contribution to the feed forward command
-    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::heel_toe::use_pid_idx] 
-                ? _pid(cmd_ff, _joint_data->torque_reading,_controller_data->parameters[controller_defs::heel_toe::p_gain_idx], _controller_data->parameters[controller_defs::heel_toe::i_gain_idx], _controller_data->parameters[controller_defs::heel_toe::d_gain_idx]) 
-                : 0); 
+
+    float cmd = cmd_ff;
+
+    //Serial.print("PHJM::calc_motor_cmd : Swing_Duration : ");
+    //Serial.print(average_swing_duration);
+    //Serial.print("\n");
                          
-    return cmd_ff;
+    return cmd;
 };
 
 float HeelToe::_update_swing_duration()
 {
-    if (_leg_data->prev_toe_stance > _leg_data->toe_stance && !_leg_data->prev_heel_stance)  //If swing just started (if the toe was previously in contact with the ground but now is not on the ground)
+    if ((_leg_data->prev_toe_stance > _leg_data->toe_stance) && !_leg_data->prev_heel_stance)  //If swing just started (if the toe was previously in contact with the ground but now is not on the ground)
     {
         _swing_start_timestamp = millis();  //Records the time that swing started
 
@@ -442,53 +493,52 @@ float HeelToe::_update_swing_duration()
         if ((_leg_data->heel_stance > _leg_data->prev_heel_stance) || (_leg_data->toe_stance > _leg_data->prev_toe_stance)) //If heel strike occurs (builds in possibility for flat foot landings via incorporation of toe)
         {
             _heel_strike_timestamp = millis();  //Records the time that heel strike occurs
+            _prev_swing_start_timestamp = _swing_start_timestamp;
         }
     }
 
     unsigned int swing_time = _swing_start_timestamp - _heel_strike_timestamp;   //Calculates swing phase time
     //float average_swing_duration; //Average duration of swing phase from previous N trials
 
-    if (0 == _prev_swing_start_timestamp)
+    if (_prev_swing_start_timestamp == 0)   //If the previous time isn't set, set it and then just return
     {
+        //_prev_swing_start_timestamp = _swing_start_timestamp;
         return average_swing_duration;
     }
 
-    uint8_t number_uninitialized = 0;
+    int number_uninitialized = 0;
 
     //Checks to see if any element in the array is not populated wtih data (if the element is 0, it adds 1 to number_uninitialized)
     for (int i = 0; i < _num_swing_avg; i++)
     {
-        number_uninitialized += (_swing_time[i] == 0);
+        number_uninitialized += (_swing_times[i] == 0);
     }
 
-    unsigned int* max_value = std::max_element(_swing_time, _swing_time + _num_swing_avg);  //Find the maximum value of the array 
-    unsigned int* min_value = std::min_element(_swing_time, _swing_time + _num_swing_avg);  //Find the minimum value of the array 
+    //Get the maximum and minimum values of the array which is used to determine the window for the expected values of swing.
+    unsigned int* max_value = std::max_element(_swing_times, _swing_times + _num_swing_avg);  //Find the maximum value of the array 
+    unsigned int* min_value = std::min_element(_swing_times, _swing_times + _num_swing_avg);  //Find the minimum value of the array 
 
     //Stores swing_time into array to find moving average
     if (number_uninitialized > 0)   //If not every element of the array is populated with data
     {
         for (int i = 1; i < _num_swing_avg; i++)
         {
-            _swing_time[i] = _swing_time[i - 1];    //Shifts the element previoulsy in position 0 into position 1, shifts the element that was in position 1 into position 2, kicks out the previous position 2
+            _swing_times[i] = _swing_times[i - 1];    //Shifts the element previoulsy in position 0 into position 1, shifts the element that was in position 1 into position 2, kicks out the previous position 2
         }
-        _swing_time[0] = swing_time;                //Stores the current value in the 0 position
+        _swing_times[0] = swing_time;                //Stores the current value in the 0 position
     }
     else if ((swing_time <= swing_duration_window_upper_coeff * *max_value) && (swing_time >= swing_duration_window_lower_coeff * *min_value))  //If the swing time falls within the expected window than add it to the array
     {
         int sum_swing_times = swing_time;           //Creates a variable to store the total sum of all the step times (to be used to find average), initializes it with the new swing_time value
         for (int i = 1; i < _num_swing_avg; i++)
         {
-            sum_swing_times += _swing_time[i - 1];  //Adds every value stored in the array to the total sum except the very last one which is being "kicked out" by the new value
-            _swing_time[i] = _swing_time[i - 1];    //Shifts the element previoulsy in position 0 into position 1, shifts the element that was in position 1 into position 2, kicks out the previous position 2
+            sum_swing_times += _swing_times[i - 1];  //Adds every value stored in the array to the total sum except the very last one which is being "kicked out" by the new value
+            _swing_times[i] = _swing_times[i - 1];    //Shifts the element previoulsy in position 0 into position 1, shifts the element that was in position 1 into position 2, kicks out the previous position 2
         }
-        _swing_time[0] = swing_time;                //Stores the current swing_time into the first position within the array 
+        _swing_times[0] = swing_time;                //Stores the current swing_time into the first position within the array 
 
         average_swing_duration = sum_swing_times / _num_swing_avg;      //Determines the average duration of the last few swing phases in ms
-
     }
-
-    _prev_swing_start_timestamp = _swing_start_timestamp;   //Updates the previous swing_start_timestamp with the one from the current cycle
-
     return average_swing_duration;
 };
 
@@ -1619,9 +1669,10 @@ float Perturbation::calc_motor_cmd()
         //Serial.print("Perturbation::calc_motor_cmd : Perturbation Sent ");
         //Serial.print("\n");
 
-        if (_leg_data->do_calibration_toe_fsr || _leg_data->toe_fsr == 0)                      //If the FSRs are being calibrated or if the toe fsr is 0, send a command of zero
+        if (_leg_data->do_calibration_toe_fsr || _leg_data->toe_stance == 0)                      //If the FSRs are being calibrated or if the toe fsr is 0, send a command of zero
         {
             cmd = 0;
+            _controller_data->parameters[controller_defs::perturbation::perturb_idx] = 0;
             //Serial.print("Foot is off the floor");
             //Serial.print("\n");
         }

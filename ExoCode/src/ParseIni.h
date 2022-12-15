@@ -325,7 +325,7 @@ namespace config_defs
         { 
             {"0", (uint8_t)config_defs::hip_controllers::disabled}, 
             {"zeroTorque", (uint8_t)config_defs::hip_controllers::zero_torque}, 
-            {"4*toe-heel", (uint8_t)config_defs::hip_controllers::heel_toe},
+            {"heelToe", (uint8_t)config_defs::hip_controllers::heel_toe},
             {"extensionAngle", (uint8_t)config_defs::hip_controllers::extension_angle},
             {"franksCollinsHip", (uint8_t)config_defs::hip_controllers::franks_collins_hip},
             {"bangBang", (uint8_t)config_defs::hip_controllers::bang_bang},

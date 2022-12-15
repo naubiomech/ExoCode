@@ -72,6 +72,8 @@ class LegData {
         float expected_duration_window_lower_coeff; /**< factor to multiply by the expected duration to get the lower limit of the window to determine if a ground strike is considered a new step. */
 
         float thigh_angle; /**< angle of the thigh */
+
+        float PHJM_state;   /**< state for the PHJM controller, else should be set to 0 (here so it can be plotted) */
 };
 
 #endif
