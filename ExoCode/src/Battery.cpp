@@ -1,5 +1,6 @@
 #include "Battery.h"
 #include "Arduino.h"
+#include <Wire.h>
 #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 
 #define BATTERY_DEBUG 0
@@ -16,20 +17,34 @@ float SmartBattery::get_parameter()
 
 void RCBattery::init() 
 {
-    I2C* instance = I2C::get_instance();
-    instance->write_i2c(i2c_cmds::rc::calibrate::addr, i2c_cmds::rc::calibrate::reg, i2c_cmds::rc::calibrate::val);
+    Wire.begin();
+    Wire.beginTransmission(i2c_cmds::rc::calibrate::addr);
+    Wire.write(i2c_cmds::rc::calibrate::reg);
+    Wire.write(i2c_cmds::rc::calibrate::val); // Calibration value: Cal = 0.04096/(CurrentLSB*ShuntResistance) 
+    Wire.endTransmission();
+
+    // I2C* instance = I2C::get_instance();
+    // instance->write_i2c(i2c_cmds::rc::calibrate::addr, i2c_cmds::rc::calibrate::reg, i2c_cmds::rc::calibrate::val);
 }
 float RCBattery::get_parameter()
 {
     // Battery Voltage, could get shunt voltage and calculate current for funsies
-    I2C* instance = I2C::get_instance();
-    instance->read_i2c(data, i2c_cmds::rc::get_battery_voltage::addr, i2c_cmds::rc::get_battery_voltage::reg, i2c_cmds::rc::get_battery_voltage::len);
+    int data[i2c_cmds::rc::get_battery_voltage::len];
+    Wire.beginTransmission(i2c_cmds::rc::get_battery_voltage::addr);
+    Wire.write(i2c_cmds::rc::get_battery_voltage::reg);
+    Wire.endTransmission();
+    Wire.requestFrom(i2c_cmds::rc::get_battery_voltage::addr, i2c_cmds::rc::get_battery_voltage::len, true);
+    data[0] = Wire.read();
+    data[1] = Wire.read();
+    Wire.endTransmission();
+    // I2C* instance = I2C::get_instance();
+    // instance->read_i2c(data, i2c_cmds::rc::get_battery_voltage::addr, i2c_cmds::rc::get_battery_voltage::reg, i2c_cmds::rc::get_battery_voltage::len);
     
     #if BATTERY_DEBUG
     Serial.print("RCBattery::get_parameter->Raw Data: ");
-    Serial.print(data[0]);
+    Serial.print(data[0], HEX);
     Serial.print(" ");
-    Serial.println(data[1]);
+    Serial.println(data[1], HEX);
     #endif
 
     uint8_t voltage = (data[0] << 8) | data[1];

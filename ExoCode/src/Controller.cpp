@@ -234,6 +234,18 @@ float ProportionalJointMoment::calc_motor_cmd()
     }
     float cmd_ff = 0;
 
+    //print parameters
+    if (print) 
+    {
+        // Serial.println("PJMC Params:");
+        // for (int i=0; i<controller_defs::proportional_joint_moment::num_parameter; i++)
+        // {
+        //     Serial.print(_controller_data->parameters[i]);
+        //     Serial.print("\t");
+        // }
+        // Serial.println();
+    }
+
 
     // don't calculate command when fsr is calibrating.
     if (!_leg_data->do_calibration_toe_fsr)
@@ -264,7 +276,9 @@ float ProportionalJointMoment::calc_motor_cmd()
     }
 
     // low pass filter on torque_reading
-    _controller_data->filtered_torque_reading = utils::ewma(_joint_data->torque_reading, _controller_data->filtered_torque_reading, _controller_data->parameters[controller_defs::proportional_joint_moment::torque_alpha_idx]);
+    _controller_data->filtered_torque_reading = utils::ewma(_joint_data->torque_reading, 
+            _controller_data->filtered_torque_reading, 
+            (_controller_data->parameters[controller_defs::proportional_joint_moment::torque_alpha_idx] != 0) ? _controller_data->parameters[controller_defs::proportional_joint_moment::torque_alpha_idx] : 0.5);
 
 
     // TODO: Add auto kf to feed forward
@@ -272,8 +286,24 @@ float ProportionalJointMoment::calc_motor_cmd()
 
     if (_leg_data->toe_stance) 
     {
-        _controller_data->max_measured = max(_controller_data->max_measured, _controller_data->filtered_torque_reading);
-        _controller_data->max_setpoint = max(_controller_data->max_setpoint, cmd_ff);
+        const float new_torque = _controller_data->filtered_torque_reading < 0 ? _controller_data->filtered_torque_reading*(-1) : _controller_data->filtered_torque_reading;
+        const float new_ff = cmd_ff < 0 ? cmd_ff*(-1) : cmd_ff;
+
+        _controller_data->max_measured = (_controller_data->max_measured < new_torque) ? new_torque : _controller_data->max_measured;
+        //_controller_data->max_measured = max(abs(_controller_data->max_measured), abs(_controller_data->filtered_torque_reading));
+        _controller_data->max_setpoint = (_controller_data->max_setpoint < new_ff) ? new_ff : _controller_data->max_setpoint;
+        //_controller_data->max_setpoint = max(abs(_controller_data->max_setpoint), abs(cmd_ff));
+        // if (print)
+        // {
+        //     Serial.print("new_torque, max_torque = ");
+        //     Serial.print(new_torque);
+        //     Serial.print("\t");
+        //     Serial.println(_controller_data->max_measured);
+        //     Serial.print("new_ff, max_ff = ");
+        //     Serial.print(new_ff);
+        //     Serial.print("\t");
+        //     Serial.println(_controller_data->max_setpoint);
+        // }
     }
 
     // Set previous max values on rising edge
@@ -284,42 +314,42 @@ float ProportionalJointMoment::calc_motor_cmd()
         _controller_data->max_measured = 0;
         _controller_data->max_setpoint = 0;
 
+        // Serial.println("Rising edge");
+        // Serial.print("measured, set, max_set = ");
+        // Serial.print(_controller_data->prev_max_measured);
+        // Serial.print("\t");
+        // Serial.print(_controller_data->prev_max_setpoint);
+        // Serial.print("\t");
+        // Serial.println(_controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx]);
         // Calculate this steps Kf
-        if ((_controller_data->prev_max_measured > 0) && (_controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx] != 0))
+        if ((_controller_data->prev_max_measured > 0.0f) && (_controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx] != 0.0f))
         {
+            // Serial.println("Calculating Kf");
             //leg->KF = leg->KF - (leg->Max_Measured_Torque - (leg->MaxPropSetpoint)) / (leg->MaxPropSetpoint)*0.6;
-            _controller_data->kf = _controller_data->prev_max_setpoint/_controller_data->prev_max_measured;
+            _controller_data->kf = _controller_data->kf + (_controller_data->prev_max_setpoint/_controller_data->prev_max_measured - 1);
             // Constrain kf
             _controller_data->kf = min(2, _controller_data->kf);
-            _controller_data->kf = max(1, _controller_data->kf);
+            _controller_data->kf = max(0.5, _controller_data->kf);
         }
-        else 
-        {
-            _controller_data->kf = 1;
-        } 
-    }
-    else if (_leg_data->toe_off) 
-    {
-        // Print falling edge
-        // Serial.println("Falling edge");
-        _controller_data->kf = 1;
+        
+        Serial.println(_controller_data->kf);
     }
 
     if (print)
     {
-        // Serial.print("kf = ");
-        // Serial.println(kf);
+        // Serial.print("kf:");
+        // Serial.println(_controller_data->kf);
     }
-    cmd_ff = cmd_ff * _controller_data->kf;
 
-    _controller_data->filtered_setpoint = utils::ewma(cmd_ff, _controller_data->filtered_setpoint, 1);
+    _controller_data->filtered_setpoint = utils::ewma(cmd_ff, _controller_data->filtered_setpoint, 0.1);
     _controller_data->ff_setpoint = _controller_data->filtered_setpoint;
 
     // add the PID contribution to the feed forward command
     float cmd;
+    float kf_cmd = (_leg_data->toe_stance == true) ? (_controller_data->kf * cmd_ff) : cmd_ff;
     if (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx])
     {
-        cmd = _pid(cmd_ff, _controller_data->filtered_torque_reading, _controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);
+        cmd = _pid(kf_cmd, _controller_data->filtered_torque_reading, _controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);
     }
     else
     {

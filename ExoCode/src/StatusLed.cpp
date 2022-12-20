@@ -6,7 +6,7 @@
 #include "StatusLed.h"
 #include <math.h>
 
-// #define STATUS_LED_DEBUG
+//#define STATUS_LED_DEBUG
 
 /*
 Constructors
@@ -19,7 +19,7 @@ StatusLed::StatusLed(int r_pin, int g_pin, int b_pin)
   _g_pin = g_pin;
   _b_pin = b_pin;
   
-  _brightness = 125; // range 0 - 255, off to full on.
+  _brightness =  2048; // range 0 - 4095, off to full on.
   
   _current_message = status_defs::messages::trial_off;  // initalize message to trial off
   _msg_idx = status_led_defs::status_led_idx[_current_message];
@@ -146,9 +146,10 @@ void StatusLed::_set_color(int r_color, int g_color, int b_color)
   
   if (status_led_defs::has_pwm)  // using simple digital pins
   {
-    int r_color_scaled = floor(r_color * _brightness/255); // scale by brightness
-    int g_color_scaled = floor(g_color * _brightness/255); // scale by brightness
-    int b_color_scaled = floor(b_color * _brightness/255); // scale by brightness
+    //Serial.println("StatusLed::_set_color : Using PWM");
+    int r_color_scaled = floor(r_color * _brightness/4095); // scale by brightness
+    int g_color_scaled = floor(g_color * _brightness/4095); // scale by brightness
+    int b_color_scaled = floor(b_color * _brightness/4095); // scale by brightness
     
     analogWrite(_r_pin, abs(status_led_defs::off_state - r_color_scaled)); // if 0 is the off state will set r_colorScaled value, if 255 is off state will set 255 - r_colorScaled effectively inverting the PWM signal
     analogWrite(_g_pin, abs(status_led_defs::off_state - g_color_scaled)); // if 0 is the off state will set g_colorScaled value, if 255 is off state will set 255 - g_colorScaled effectively inverting the PWM signal
@@ -157,6 +158,7 @@ void StatusLed::_set_color(int r_color, int g_color, int b_color)
   }
   else
   {
+    //Serial.println("StatusLed::_set_color : Using digital pins");
     digitalWrite(_r_pin, (status_led_defs::off_state == 0) ? r_color >= 127 : r_color < 127);  // If the off state is low, LED turns on if color is >127 (1 on, 0 off), else the LED turns on if the >127 but the state is switched (0 on, 1 off)
     digitalWrite(_g_pin, (status_led_defs::off_state == 0) ? g_color >= 127 : g_color < 127);  // If the off state is low, LED turns on if color is >127 (1 on, 0 off), else the LED turns on if the >127 but the state is switched (0 on, 1 off)
     digitalWrite(_b_pin, (status_led_defs::off_state == 0) ? b_color >= 127 : b_color < 127);  // If the off state is low, LED turns on if color is >127 (1 on, 0 off), else the LED turns on if the >127 but the state is switched (0 on, 1 off)

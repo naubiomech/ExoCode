@@ -46,8 +46,8 @@ namespace config_info
 }
 
 void setup()
-{ 
-  analogWriteResolution(12);
+{
+  //analogWriteResolution(12);
   analogReadResolution(12);
   
   Serial.begin(115200);
@@ -102,8 +102,7 @@ void loop()
 //        Serial.println(loop_counter++);
     #endif
 
-    
-    
+       
     static bool first_run = true;
     
     // create the data and exo objects
@@ -451,7 +450,7 @@ void loop()
 
     // do exo calculations
     exo.run();
-//
+
     // conditionally calls error handlers
     error_manager.check();
     

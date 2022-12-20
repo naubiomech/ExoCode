@@ -209,7 +209,7 @@ namespace UART_command_handlers
         //Serial.println("UART_command_handlers::update_status->got message: ");
         //UART_msg_t_utils::print_msg(msg);
         exo_data->status = msg.data[(uint8_t)UART_command_enums::status::STATUS];
-        // TODO: HANDLE STATUS CHANCE! WTF
+        // TODO: HANDLE STATUS
           
     }
 
@@ -326,7 +326,7 @@ namespace UART_command_handlers
         UART_msg_t rx_msg;
         rx_msg.command = UART_command_names::update_real_time_data;
         rx_msg.joint_id = 0;
-        rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN + 1;
+        rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN; // TODO: Set based on config
 
         // Serial.println("config[config_defs::exo_name_idx] :: "); //Uncomment if you want to check that system is receiving correct config info
         // Serial.println(config[config_defs::exo_name_idx]);
@@ -335,23 +335,22 @@ namespace UART_command_handlers
         {
             case (uint8_t)config_defs::exo_name::bilateral_ankle:
                 rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
-                //rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading;
-                rx_msg.data[0] = exo_data->right_leg.toe_stance;
-                rx_msg.data[1] = exo_data->right_leg.toe_stance;
-                rx_msg.data[2] = exo_data->right_leg.ankle.controller.setpoint;
-                //rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint; 
-                //rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_torque_reading
-                rx_msg.data[3] = exo_data->left_leg.toe_stance; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i;
+                rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading;
+                rx_msg.data[1] = exo_data->right_leg.ankle.motor.i;//exo_data->right_leg.toe_stance;
+                rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint; 
+                rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_torque_reading; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i;
                 //TODO: Implement Mark Feature
-                rx_msg.data[4] = exo_data->left_leg.toe_stance; //rx_msg.data[4] = exo_data->left_leg.toe_stance; 
-                rx_msg.data[5] = exo_data->left_leg.ankle.controller.setpoint;
-                //rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;
+                rx_msg.data[4] = exo_data->left_leg.ankle.motor.i;//exo_data->left_leg.toe_stance; //rx_msg.data[4] = exo_data->left_leg.toe_stance; 
+                rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;
                 //rx_msg.data[6] = exo_data->right_leg.thigh_angle / 100;
                 //rx_msg.data[7] = exo_data->left_leg.thigh_angle / 100;
                 rx_msg.data[6] = exo_data->right_leg.toe_fsr;
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;
-                //rx_msg.data[6] = exo_data->right_leg.ankle.controller.kf;
-                //rx_msg.data[7] = exo_data->left_leg.ankle.controller.kf;
+                // rx_msg.data[6] = exo_data->right_leg.ankle.controller.kf;
+                // rx_msg.data[7] = exo_data->left_leg.ankle.controller.kf;
+                // rx_msg.data[8] = exo_data->right_leg.ankle.motor.i;
+                // rx_msg.data[9] = exo_data->left_leg.ankle.motor.i;
+
                 break;
 
             case (uint8_t)config_defs::exo_name::bilateral_hip:

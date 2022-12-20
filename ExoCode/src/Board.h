@@ -48,7 +48,7 @@
             const bool status_has_pwm = false;
             // For high to be on use 255 for the on state and 0 for the off, for low as on flip it.
             const uint8_t status_led_on_state = 0;//255;
-            const uint8_t status_led_off_state = 255;//0;
+            const uint8_t status_led_off_state = 4095;//0;
             
             // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
             #if defined(ARDUINO_TEENSY36)
@@ -119,7 +119,7 @@
 
              #if defined(ARDUINO_TEENSY41)
                 // Status LED Pins
-                const unsigned int status_led_r_pin= 14;
+                const unsigned int status_led_r_pin = 14;
                 const unsigned int status_led_g_pin = 25;
                 const unsigned int status_led_b_pin = 24;
             #endif
@@ -128,7 +128,7 @@
             const bool status_has_pwm = true;             
             // For high to be on use 255 for the on state and 0 for the off, for low as on flip it.
             const uint8_t status_led_on_state = 0;//255;
-            const uint8_t status_led_off_state = 255;//0;  
+            const uint8_t status_led_off_state = 4095;//0;  
                 
             #if defined(ARDUINO_TEENSY41)    
                 // SPI Follower Pins
@@ -231,7 +231,7 @@
             const bool status_has_pwm = true;             
             // For high to be on use 255 for the on state and 0 for the off, for low as on flip it.
             const uint8_t status_led_on_state = 0;//255;
-            const uint8_t status_led_off_state = 255;//0;  
+            const uint8_t status_led_off_state = 4095;//0;  
                 
             #if defined(ARDUINO_TEENSY41)    
                 // SPI Follower Pins

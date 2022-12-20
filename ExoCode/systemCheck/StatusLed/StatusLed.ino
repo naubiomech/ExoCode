@@ -19,26 +19,27 @@
   void setup()
   {
     Serial.begin(115200);
-//    #if BOARD_VERSION == AK_Board_V0_1
-//      Serial.println("Board : AK_Board_V0_1");
-//    #elif BOARD_VERSION == AK_Board_V0_3
-//      Serial.println("Board : AK_Board_V0_3");
-//    #endif
-//  
-//    #if defined(ARDUINO_TEENSY36)
-//      Serial.println("Teensy 3.6");
-//    #elif defined(ARDUINO_TEENSY41)
-//      Serial.println("Teensy 4.1");
-//    #endif
-//  
-//    
-//    
-//    Serial.print(logic_micro_pins::status_led_r_pin);
-//    Serial.print("\t");
-//    Serial.print(logic_micro_pins::status_led_g_pin);
-//    Serial.print("\t");
-//    Serial.print(logic_micro_pins::status_led_b_pin);
-//    Serial.print("\n");
+    while (!Serial);
+    #if BOARD_VERSION == AK_Board_V0_1
+      Serial.println("Board : AK_Board_V0_1");
+    #elif BOARD_VERSION == AK_Board_V0_3
+      Serial.println("Board : AK_Board_V0_3");
+    #endif
+  
+    #if defined(ARDUINO_TEENSY36)
+      Serial.println("Teensy 3.6");
+    #elif defined(ARDUINO_TEENSY41)
+      Serial.println("Teensy 4.1");
+    #endif
+  
+    
+    
+    Serial.print(logic_micro_pins::status_led_r_pin);
+    Serial.print("\t");
+    Serial.print(logic_micro_pins::status_led_g_pin);
+    Serial.print("\t");
+    Serial.print(logic_micro_pins::status_led_b_pin);
+    Serial.print("\n");
     
   }
   

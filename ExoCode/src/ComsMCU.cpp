@@ -121,7 +121,7 @@ void ComsMCU::update_gui()
             {
                 rt_data_msg.data[i] = UART_rt_data::msg.data[i];
             }
-            rt_data_msg.data[rt_data_msg.expecting++] = 0;//time_since_last_message/1000.0;
+            //rt_data_msg.data[rt_data_msg.expecting++] = 0;//time_since_last_message/1000.0;
 
             if (my_mark < _data->mark)
             {
