@@ -60,9 +60,24 @@ Details on the libraries can be found in the [Libraries Folder](/Libraries).
 - BLEparser change from char representation to num bytes, expect 3 to 6x speed up.
     - This should be pretty straight forward as it can pretty much follow how messages are packed for the SPI.
     - I am not sure what issues will arise on the app side.
+        - On the app you could just add a converter from num to char if you want to be lazy, but presumably you already have a char to num converter so I would recommend just cutting that out and fixing the stuff that breaks.
     
-- CAN direct memory access, should cut about 250 &mu;s per motor.
+- CAN direct memory access, should cut about 250 &mu;s per motor.  Will still need a loop period of at least 250 &mu;s for the motors to return data.
+    - https://www.pjrc.com/teensy/IMXRT1060RM_rev3.pdf 
+        - CH 44
+    - 6 mailboxes between TX and RX may have issues for a 4 motor setup without using a CAN bus per leg.  
+        - All the complication with the limited mailboxes can be simplified by just using separate CAN buses for each leg, see other optimization below.  I have included how you could do it by switching mailboxes below, but don't do that if you don't have to.
+            - Setup and Debug this with a bilateral uni-joint or unilateral multi-joint system so you can keep the motor count below 3 so you don't have to fiddle with all the mailbox shifting.  Then just setup the CAN2 below.
+        - Can potentially use an ISR to mitigate this with a bit of loss in performance but will still be a big jump from where we are.
+        - Can potentially switch mailbox type after emptied. Pair first TX (44.7.2) with first RX(44.7.4). When first TX is cleared becomes RX for next TX, or similar.  **DON'T WRITE A TX WITHOUT A CORESPONDING RX**.  You can write based on priority to help, highest priority first so you know it will return first.
+            - This doesn't have to be first TX becomes second RX but you can play around to see what works.  Could have two TX RX pairs and two unpaired TX then the first two TX are emptied, change them to the RX for the unpaired TX and fill the second set of TX for writing.
+        - 44.7.6 will also be useful.  In addition to the registers/memory map at the end.
+    
 - CAN bus per leg after DMA, roughly cut CAN time in half. Main control may be limiting time at this point at about 600&mu;s. Write at top, do controls, read at bottom.
+    - Basically just follow above but with CAN2.  
+    - Will need to update CAN code to make the CAN selectable 
+    - Will need to attach a CAN object to the Leg instance rather than the Exo instance.
+    
 
 ## MORE DETAILS TO COME
 Probably need to create a consistent/shared SPI interface
