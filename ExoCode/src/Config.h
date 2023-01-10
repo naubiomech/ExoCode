@@ -43,6 +43,13 @@
         const float _poll_timeout = 4; //milliseconds
     }
     
+    namespace exo_info
+    {
+        const String FirmwareVersion = "1.0.0"; // string to add to firmware char
+        const String PCBVersion = "1"; // string to add to pcb char
+        const String DeviceName = "Payton's exo"; // string to add to device char
+    }
+
     namespace UART_times
     {
         const float UPDATE_PERIOD = 1000; //microseconds, time between updating data over uart
