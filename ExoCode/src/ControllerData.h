@@ -144,6 +144,18 @@ namespace controller_defs /**< stores the parameter indexes for different contro
         const uint8_t num_parameter = 11;
     }
 
+    namespace parabolic
+    {
+        // parameters for gait phase torque.
+        const uint8_t flexion_setpoint_idx = 0;
+        const uint8_t extension_setpoint_idx = 1;
+        const uint8_t flexion_start_percentage_idx = 2;
+        const uint8_t flexion_end_percentage_idx = 3;
+        const uint8_t extension_start_percentage_idx = 4;
+        const uint8_t extension_end_percentage_idx = 5;
+        const uint8_t num_parameter = 6;
+    }
+
     namespace zhang_collins
     {
         // user mass kg

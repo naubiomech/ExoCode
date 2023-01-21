@@ -133,7 +133,7 @@ class ZeroTorque : public _Controller
 };
 
 /**
- * @brief Stasis Controller
+ * @brief Stasis Controller 
  * This controller is for the any joint
  * Simply applies zero torque cmd to motor
  * 
@@ -155,6 +155,8 @@ class Stasis : public _Controller
  *
  * 2022-02 : This controller is based on the work of Safoura Sadegh Pour
  * 
+ * 2023-01 : Updated version of the controller implamented by Jack Williams (jack.williams@nau.edu for questions)
+ * 
  * see ControllerData.h for details on the parameters used.
  */
 class HeelToe: public _Controller
@@ -164,44 +166,38 @@ class HeelToe: public _Controller
         ~HeelToe(){};
         
         float calc_motor_cmd();
-    
 
-        float _update_swing_duration();                     /**< Function that updates the average of swing phase duration. */
+        float cmd_ff;                           /**< Motor Command Calculated within Controller */
 
-        static const uint8_t _num_swing_avg = 3;            /**< Number of prior swing phases used to estimate the moving average duration of swing phase. */
-        unsigned int _swing_times[_num_swing_avg];           /**< Stores the duration of the last N swing phases. */
+        float percent_gait;                      /**< Records what percentage of the gait cycle we are currently in. Function to estimate this can be found in Leg.cpp */
 
-        float average_swing_duration;                       /**< Average duration of swing phase from previous N trials. */
+        float fs;                               /**< Estimation of ground reaction force based on 'Bishe 2021' */
+        float fs_previous;                      /**< Stores previous estimate of fs. Used to determine direciton of the slope of the derivative. */
 
-        unsigned int _swing_start_timestamp;                /**< Records the time that swing started. */
-        unsigned int _heel_strike_timestamp;                /**< Records the time that heel strike occurs. */
-        unsigned int _prev_swing_start_timestamp;           /**< Stores the prior time that swing started. */
+        int state;                              /**< Stores what state the contoller is in, motor command calculation differs by state. */
+        int prev_state;                         /**< Stores the previous state of the controller. */
 
-        float state_2_current;                              /**< Variable to store the current time within "State 2". */
-        float state_2_start;                                /**< Variable that stores the time at which "State 2" started. */
-        float state_2_end;                                  /**< Variable that stores the time at which "State 2" ended. */ 
-        float _prev_state_2;                                /**< Variable to store the previous time duration of "State 2". */
-        bool _prev_state_2_status;                          /**< Variable that stores whether or not the prior iteration was in "State 2" [0 = Not "State 2", 1 = "State 2"]. */
+        float state_4_start;                    /**< Stores the percent of the gait cycle where the 4th state begins. */
+        float state_4_end;                      /**< Stores the percent of gait cycle where the 4th state ends. */
+        float previous_state_4_duration;        /**< Stores the previous duration, in terms of percent gait, of state 4. */
 
-        float _fs_previous;                                 /**< Variable that stores the previous fs value. */
-        float _df_dt_previous;                              /**< Variable that stores the previous df_dt. */
+        float swing_start;                      /**< Stores the starting point of swing, in terms of percent gait. */
+        float swing_duration;                   /**< Stores the duration of swing, in terms of percent gait, which can be determined as soon as the starting point of swing occurs. */
 
-        float alpha = 1;                                    /**< Shape Tuning Variable 1. */
-        float beta = 1;                                     /**< Shape Tuning Variable 2. */
+        float m;                                /**< Slope of the line used in State 5. */
 
-        float swing_duration_window_upper_coeff = 1.75;     /**< factor to multiply by the swing duration to get the upper limit of the window to determine if toe off is considered the start of a new phase of swing. */
-        float swing_duration_window_lower_coeff = 0.25;     /**< factor to multiply by the swing duration to get the lower limit of the window to determine if toe off is considered the start of a new phase of swing. */
+        /**< Coordinates for Parabola used in State 4. */
+        float x1;
+        float y1;
+        float x2;
+        float y2;
+        float x3;
+        float y3;
 
-        float fs;                                           /**< Estimation of ground reaction force based on 'Bishe 2021' */
-        float df_dt;                                        /**< Derivative of FS. */
-        float df_dt_filtered;
-
-        float cmd_ff;                                        /**< Feedfoward Motor Commnad. */
-
-        float state;
-        float timing;
-        float _prev_gait_state;
-        float current_swing_duration;
+        /**< Constants for Parabola used in State 4. */
+        float A;
+        float B;
+        float C;
 };
 
 /**
@@ -354,6 +350,24 @@ class GaitPhase : public _Controller
         float slope;
         float state;
 
+};
+
+/*
+ * Parabolic Controller
+ * This controller is for the hip joint
+ * Applies flexion or extension torque as a function of the gait phase (needs heel and toe FSRs)
+ *
+ * see ControllerData.h for details on the parameters used.
+ *
+ * This controller is still in development, this is just meant to be a framework for the controller that will be filled out with time
+ */
+class Parabolic : public _Controller
+{
+public:
+    Parabolic(config_defs::joint_id id, ExoData* exo_data);
+    ~Parabolic() {};
+
+    float calc_motor_cmd();
 };
 
 /**

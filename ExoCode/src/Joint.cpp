@@ -360,6 +360,7 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 , _sine(id, exo_data)
 , _stasis(id, exo_data)
 , _perturbation(id, exo_data)
+, _parabolic(id, exo_data)
 {
 
     //Serial.print("HipJoint::HipJoint\n");
@@ -518,6 +519,9 @@ void HipJoint::set_controller(uint8_t controller_id)
             break;
         case (uint8_t)config_defs::hip_controllers::perturbation:
             _controller = &_perturbation;
+            break;
+        case (uint8_t)config_defs::hip_controllers::parabolic:
+            _controller = &_parabolic;
             break;
         default :
             _controller = nullptr;

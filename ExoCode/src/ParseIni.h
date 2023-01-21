@@ -133,6 +133,7 @@ namespace config_defs
         sine = 10,
         stasis = 11,
         perturbation = 12,
+        parabolic = 13,
     };
     
     enum class knee_controllers : uint8_t
@@ -335,6 +336,7 @@ namespace config_defs
             {"sine", (uint8_t)config_defs::hip_controllers::sine},
             {"stasis", (uint8_t)config_defs::hip_controllers::stasis},
             {"perturbation", (uint8_t)config_defs::hip_controllers::perturbation},
+            {"parabolic", (uint8_t)config_defs::hip_controllers::parabolic},
         };
         
         const IniKeyCode knee_controllers 
