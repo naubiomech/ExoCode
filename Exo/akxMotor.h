@@ -53,8 +53,8 @@ typedef struct {
   float kd;
 } motor_frame_t;
 
-constexpr canid_t L_ID = 68;
-constexpr canid_t R_ID = 65;
+constexpr canid_t L_ID = 68; //68 orignally
+constexpr canid_t R_ID = 65; //65
 constexpr canid_t L_HIP_ID = 33;
 constexpr canid_t R_HIP_ID = 36;
 
@@ -73,9 +73,27 @@ class akxMotor {
       
 
       mcp2515.init();
-      mcp2515.reset();
-      mcp2515.setBitrate(CAN_1000KBPS, MCP_8MHZ);
-      mcp2515.setNormalMode();
+      if (mcp2515.reset() != MCP2515::ERROR_OK) {
+        while (true) {
+          Serial.print("Error reseting CAN Module!");
+          delay(500);
+        }
+      }
+      
+      
+      if (mcp2515.setBitrate(CAN_1000KBPS, MCP_8MHZ) != MCP2515::ERROR_OK) {
+        while (true) {
+          Serial.print("Error setting CAN bitrate!");
+          delay(500);
+        }
+      }
+      
+      if (mcp2515.setNormalMode() != MCP2515::ERROR_OK) {
+        while (true) {
+          Serial.print("Error setting CAN to normal mode!");
+          delay(500);
+        }
+      }
 
       scaling_factor = 2*T_MAX / 4096;
 
@@ -95,10 +113,15 @@ class akxMotor {
 //      } else if(id == R_ID) {
 //        right_return.pos = update_frame.pos;
 //      }
+        Serial.println("send_and_read");
     }
 
     /* Takes the voltage output of PID, maps it to a torque and sends it */
     inline void map_and_apply(canid_t id, float vol, float sign) {
+      if (id != R_ID) {
+        return;
+      }
+      
       motor_frame_t out_frame;
       out_frame.id = id;
       out_frame.pos = 0;
@@ -116,10 +139,14 @@ class akxMotor {
       else if (id == R_ID) {
         r_torque = torque;
       }
+      Serial.println("map_and_apply");
     }
 
     /* Takes the voltage output of PID, maps it to a torque and sends it */
     inline void apply_torque(canid_t id, float torque) {
+      if (id != R_ID) {
+        return;
+      }
       motor_frame_t out_frame;
       out_frame.id = id;
       out_frame.pos = 0;
@@ -136,10 +163,14 @@ class akxMotor {
       else if (id == R_ID) {
         r_torque = torque;
       }
+      Serial.println("apply_torque");
     }
 
     /* This function will read data from the motors. It updates the motor frame with position velocity and current. */
     inline bool updateFrame(motor_frame_t* out_frame) {
+      if (out_frame->id != R_ID) {
+        return false;
+      }
       motor_frame_t temp_frame;
       temp_frame.id = 0;
       temp_frame.pos = 0;
@@ -157,10 +188,14 @@ class akxMotor {
       } else {
         return false;
       }
+      
     }
 
     /* This function will wait for timeout to execute, if timeout or error, return ID 0. Timout is in millis */
     inline bool updateFrame(motor_frame_t* out_frame, float timeout) {
+      if (out_frame->id != R_ID) {
+        return false;
+      }
       motor_frame_t temp_frame;
       temp_frame.id = 0;
       temp_frame.pos = 0;
@@ -192,6 +227,9 @@ class akxMotor {
     } //End function
 
     inline void setZero(canid_t id) {
+      if (id != R_ID) {
+        return;
+      }
       /* Sets the current zero of the motor position
          NEEDS TESTING */
       struct can_frame out_frame;
@@ -209,10 +247,15 @@ class akxMotor {
       if (mcp2515.sendMessage(&out_frame) != MCP2515::ERROR_OK) {
         Serial.println("Set Zero Error!");
       }
+      Serial.println("setZero");
     }
 
     inline void setMotorState(canid_t id, bool enable) {
+      if (id != R_ID) {
+        return;
+      }
       /* Turns the motor with id on or off */
+      Serial.print("Setting motor "); Serial.print(int(id)); Serial.print(" to "); Serial.println(enable);
       struct can_frame out_frame;
       out_frame.can_id = id;
       out_frame.can_dlc = 8; 
@@ -224,17 +267,23 @@ class akxMotor {
       out_frame.data[5] = 0xFF;
       out_frame.data[6] = 0xFF;
       if (enable) {
-        //out_frame.data[7] = 0xFD;
         out_frame.data[7] = 0xFC;
       } else {
         out_frame.data[7] = 0xFD;
       }
-      if (mcp2515.sendMessage(&out_frame) != MCP2515::ERROR_OK) {
-        Serial.println("Set State Error!");
+      
+      MCP2515::ERROR err = mcp2515.sendMessage(&out_frame);
+      if (err != MCP2515::ERROR_OK) {
+        Serial.print("Set State Error: ");
+        Serial.println(err);
       }
+      Serial.println(" inline setMotorState");
     }
     
     inline void sendCAN(motor_frame_t *frame) {
+      if (frame->id != R_ID) {
+        return;
+      }
       //Constrain inputs
       float p_sat = constrain(frame->pos, P_MIN, P_MAX);
       float v_sat = constrain(frame->vel, V_MIN, V_MAX);
@@ -266,9 +315,11 @@ class akxMotor {
       CAN_MUTEX.lock();
       mcp2515.sendMessage(&out_frame);
       CAN_MUTEX.unlock();
+      Serial.println("inline sendCAN");
     }
     
     inline MCP2515::ERROR readCAN(motor_frame_t* frame) {
+
       /* Reads a CAN message with ID, POS, VEL, and TOR being put into frame */
       struct can_frame in_frame;
       CAN_MUTEX.lock();

@@ -599,6 +599,7 @@ MCP2515::ERROR MCP2515::sendMessage(const TXBn txbn, const struct can_frame *fra
     modifyRegister(txbuf->CTRL, TXB_TXREQ, TXB_TXREQ);
 
     uint8_t ctrl = readRegister(txbuf->CTRL);
+    Serial.print("sendMessage->TXB_ABTF: "); Serial.print(TXB_ABTF, HEX); Serial.print(" TXB_MLOA: "); Serial.print(TXB_MLOA, HEX); Serial.print(" TXB_TXERR: "); Serial.println(TXB_TXERR, HEX);
     if ((ctrl & (TXB_ABTF | TXB_MLOA | TXB_TXERR)) != 0) {
         return ERROR_FAILTX;
     }

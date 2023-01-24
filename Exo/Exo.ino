@@ -60,8 +60,9 @@ void control_loop() {
   int count = 0;
   while (true) {
     
-    
-    rotate_elbow();
+    if (stream) {
+      rotate_elbow();
+    }
 
     rtos::ThisThread::sleep_for(1000 / (CONTROL_LOOP_HZ));
   }
@@ -106,7 +107,9 @@ void setup()
 
   
   //Start Serial
-  Serial.begin(500000);
+  Serial.begin(115200);
+  while (!Serial);
+    
   delay(100);
 
   //Nano's internal BLE module
@@ -137,12 +140,13 @@ void setup()
   send_command_message('~', batteryData, 1); //Communicate battery voltage to operating hardware
 
   torque_calibration(); //Sets a torque zero on startup  
+  delay(2000);
   //Initailize motor driver IC
   akMotor.init();
-  delay(100);
-  change_motor_stateless(&akMotor, 1);
-  delay(100);
-  change_motor_stateless(&akMotor, 0);
+//  delay(100);
+//  change_motor_stateless(&akMotor, 1);
+//  delay(100);
+//  change_motor_stateless(&akMotor, 0);
   
   //Initialize the standing/walking state detector and provide callback functions
   amb_sm.init();
