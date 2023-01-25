@@ -43,6 +43,7 @@
         const float _poll_timeout = 4; //milliseconds
     }
     
+    // Update this namespace for future exo updates to display correct information on app
     namespace exo_info
     {
         const String FirmwareVersion = "1.0.0"; // string to add to firmware char

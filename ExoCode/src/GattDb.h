@@ -22,11 +22,11 @@ class GattDb
             Payton 1/4/23
             defining new characteristics for the board info 
         */
-        // Service and Characteristics for device info
-        BLEService UARTServiceDeviceInfo{"e0271458-8c6a-11ed-a1eb-0242ac120002"};
-        BLECharacteristic PCBChar{"e0271459-8c6a-11ed-a1eb-0242ac120002", BLERead, BUFFER_SIZE, BUFFERS_FIXED_LENGTH};
-        BLECharacteristic FirmwareChar{"e0271460-8c6a-11ed-a1eb-0242ac120002", BLERead, BUFFER_SIZE, BUFFERS_FIXED_LENGTH};
-        BLECharacteristic DeviceChar{"e0271461-8c6a-11ed-a1eb-0242ac120002", BLERead, BUFFER_SIZE, BUFFERS_FIXED_LENGTH};
+        // Service and Characteristics for exo info
+        BLEService UARTServiceDeviceInfo{"e0271458-8c6a-11ed-a1eb-0242ac120002"}; // Serivce UUID for sending exo data
+        BLECharacteristic PCBChar{"e0271459-8c6a-11ed-a1eb-0242ac120002", BLERead, BUFFER_SIZE, BUFFERS_FIXED_LENGTH}; // Characteristic for pcb
+        BLECharacteristic FirmwareChar{"e0271460-8c6a-11ed-a1eb-0242ac120002", BLERead, BUFFER_SIZE, BUFFERS_FIXED_LENGTH}; // Characteristic for firmware
+        BLECharacteristic DeviceChar{"e0271461-8c6a-11ed-a1eb-0242ac120002", BLERead, BUFFER_SIZE, BUFFERS_FIXED_LENGTH}; // Characteristic for device
 };
 
 #endif

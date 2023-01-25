@@ -57,9 +57,9 @@ bool ExoBLE::setup()
             BLE.setDeviceName(k_name_pointer);
 
             // Write pointer to characteristic
-            _gatt_db.FirmwareChar.writeValue(firmware_pointer);
-            _gatt_db.PCBChar.writeValue(pcb_pointer);
-            _gatt_db.DeviceChar.writeValue(device_pointer);
+            _gatt_db.FirmwareChar.writeValue(firmware_char);
+            _gatt_db.PCBChar.writeValue(pcb_char);
+            _gatt_db.DeviceChar.writeValue(device_char);
 
             //Configure service and start advertising
             BLE.setAdvertisedService(_gatt_db.UARTService);
