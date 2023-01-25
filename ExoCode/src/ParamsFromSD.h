@@ -58,6 +58,7 @@
             {(uint8_t)config_defs::hip_controllers::sine, "hipControllers/sine.csv"},
             {(uint8_t)config_defs::hip_controllers::stasis, "hipControllers/stasis.csv"},
             {(uint8_t)config_defs::hip_controllers::perturbation, "hipControllers/perturbation.csv"},
+            {(uint8_t)config_defs::hip_controllers::parabolic, "hipControllers/parabolic.csv"},
         };
         
         const ParamFilenameKey knee

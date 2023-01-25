@@ -173,6 +173,7 @@ class HipJoint : public _Joint
         Sine _sine; /**< sine wave controller */
         Stasis _stasis; /**< stasis controller */
         Perturbation _perturbation;    /**< perturbation controller */
+        Parabolic _parabolic;    /**< parabolic controller */
 };
 
 /**

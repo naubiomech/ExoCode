@@ -371,205 +371,167 @@ HeelToe::HeelToe(config_defs::joint_id id, ExoData* exo_data)
         Serial.println("HeelToe::Constructor");
     #endif
 
-        for (int i = 0; i < _num_swing_avg; i++)    /**< Stores 0s in the _swing time array to initialize it. */
-        {
-            _swing_times[i] = 0;
-        }
-
-        _swing_start_timestamp = 0;                 /**< Initializes the starting timestamp for swing to 0. */
-        _heel_strike_timestamp = 0;                 /**< Initializes the starting timestamp for heelstrike to 0. */
-        _prev_swing_start_timestamp = 0;            /**< Initializes the previous swing's start timestamp to 0. */
-        
-        state_2_current = 0;                        /**< Initializes the time in "State 2" to 0. */
-        _prev_state_2 = 1;                          /**< Initializes the previous "State 2" time duration to 1, this is because it is used as a denominator of a calculation later that would throw a fit if it was 0. */
-
-        _fs_previous = 0;                           /**< Initializes the previous FS measurment to 0. */
-        _df_dt_previous = 0;                        /**< Initializes the previous derivative of FS to 0. */     
-
-        _prev_gait_state = 0;
+        /**< Initializes variables to 0 upon startup. */
+        fs_previous = 0;                
+        state = 0; 
+        prev_state = 0;
+        state_4_start = 0;              
+        previous_state_4_duration;      
+        swing_start = 0;                
+        swing_duration = 0;   
+        x1 = 0;
+        y1 = 0;
+        x2 = 0;
+        y2 = 0;
+        x3 = 0;
+        y3 = 0;
+        A = 0;
+        B = 0;
+        C = 0;
 };
 
 float HeelToe::calc_motor_cmd()
 {
     cmd_ff = 0;                                     /**< Sets the default motor command to 0. */
 
+    percent_gait = _leg_data->percent_gait;         /**< Records what percentage of the gait cycle we are currently in. Function to estimate this can be found in Leg.cpp */
+
+    float extension_torque = -1 * _controller_data->parameters[controller_defs::heel_toe::extension_torque_setpoint_idx]; /**< Extension Torque Setpoint, Multiplied by -1 to orient curve correctly. */
+    float flexion_torque = -1 * _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx];     /**< Flexion Torque Setpoint, Multiplied by -1 to orient the curve correctly. */
+
+    if (percent_gait < state_4_start)                               /**< If we are in a new gait cycle, reset state_4_start, state_4_end, and swing_start to zero. */
+    {
+        state_4_start = 0;
+        state_4_end = 0;
+        swing_start = 0;
+    }
+
+    if (_leg_data->heel_stance == 0 && _leg_data->toe_stance == 0 && (_leg_data->prev_heel_stance == 1 || _leg_data->prev_toe_stance == 1)) /**< If neither the foot or toe is on the ground but one of them was in the previous iteration, mark the start of swing phase in terms of percent gait.  */
+    {
+        swing_start = percent_gait;
+    }
+
+    if (swing_start != 0)                       /**< If swing has started, the length of swing is 100% of the gait cylce minus the percentage of gait where swing started. */
+    {
+        swing_duration = 100 - swing_start;
+    }
+
+    m = ((0.6 * extension_torque) + (0.5 * flexion_torque)) / (0.7 * swing_duration);
+
     if (!_leg_data->do_calibration_toe_fsr && !_leg_data->do_calibration_heel_fsr)  /**< If the toe and heel FSRs are being calibrated then keep motor torque 0. */
     {
 
-        if (_leg_data->heel_stance == 0 && _leg_data->toe_stance == 0)
-        {
-            timing = millis();      /**< Records the current time in which this loop of the controller is run. */
-        }
+        fs = _leg_data->heel_fsr - (_leg_data->toe_fsr * 0.25);     /**<  Estimate of ground reaction force based on 'Bishe 2021', Goal is to create a variable that fluctuates between -1 and 1 based on users FSR readiongs. */
 
-        _update_swing_duration();       /**< Runs the "Update Swing Duration" function (see below), returns the average Swing duration. */
-
-        if (_swing_start_timestamp != _prev_swing_start_timestamp)
-        {
-            current_swing_duration = timing - _swing_start_timestamp;
-        }
-        else
-        {
-            current_swing_duration = -1;
-        }
-        //Determines the slope of the line for the third state
-        float m = (0.6 * _controller_data->parameters[controller_defs::heel_toe::extension_torque_setpoint_idx] - 0.5 * _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx]) / (0.7 * average_swing_duration);
-
-        fs = _leg_data->toe_fsr - (4 * _leg_data->heel_fsr);     //Estimation of ground reaction force based on Bishe 2021'
-
-        df_dt = (fs - _fs_previous) * (1000/LOOP_FREQ_HZ);       //Estimation of the derivative of fs
-
-        //df_dt_filtered = utils::ewma(df_dt, df_dt_filtered, 1);
-
-        if (fs < 0 && df_dt < 0 && (_leg_data->heel_stance == 1 || _leg_data->toe_stance == 1)) //If FS is negative and it's derivative is also negative
+        /**< State Machine to determine which state, and thus which motor command, is appropriate. */
+        if (fs > 0 && fs > fs_previous)             /**< If fs is positive and its derivative is positive, we are in state 1. */
         {
             state = 1;
         }
-        else if (fs < 0 && df_dt >= 0 && (_leg_data->heel_stance == 1 || _leg_data->toe_stance == 1))  //If FS is negative and it's derivative is positive
+        else if (fs > 0 && fs < fs_previous)        /**< If fs is positive and its derivative is negative, we are in state 2. */
         {
             state = 2;
         }
-        else if (fs > 0 && df_dt >= 0 && (_leg_data->heel_stance == 1 || _leg_data->toe_stance == 1))        //If FS is positive and it's derivative is positive
+        else if (fs < 0 && fs < fs_previous)        /**< If fs is negative and its derivative is negative, we are in state 3. */
         {
             state = 3;
+
         }
-        else if (fs > 0 && df_dt < 0)   //If FS is positive and it's derivative is negative
+        else if (fs < 0 && fs > fs_previous || swing_start > 0 && (percent_gait - swing_start) < 0.3 * swing_duration) /**< If fs is negative and its derviative is postive or if we are in swing and less than 30% of the swing duration, we are in state 4. */
         {
             state = 4;
+
+            if (state_4_start == 0)                                     /**< If this is the first time in state 4, record the current percent_gait as the starting point.  */
+            {
+                state_4_start = percent_gait;
+            }
         }
-        else if (((current_swing_duration) > 0.3 * average_swing_duration) && (_leg_data->heel_stance == 0 && _leg_data->toe_stance == 0))
+        else if (percent_gait - swing_start >= 0.3 * swing_duration)    /**< If we are in swing and greater than 30% of the swing duration then we are in state 5. */
         {
             state = 5;
+            //m = ((0.6 * extension_torque) + (0.5 * flexion_torque)) / (0.7 * swing_duration);
+
+            if (state_4_end == 0)                                       /**< If this is the first time in state 5, record the previous percent_gait as the end of state 4 and calculate the duration of state 4. */
+            {
+                state_4_end = percent_gait - 1;
+                previous_state_4_duration = state_4_end - state_4_start;
+            }
         }
-        else
+        else                                                            /**< If none of the above conditions are met, then state is set to 0. */
         {
             state = 0;
         }
 
-        if (state < _prev_gait_state)
+        /**< Prevention of controller from going back down to a previous state unless the state is switching from state 5 to state 1. Essentially acts as a state-filter. */
+        if (state < prev_state)
         {
-            if (_prev_gait_state - state < 4)
+            if (prev_state - state < 4)
             {
-                state = _prev_gait_state;
+                state = prev_state;
             }
         }
 
-        if (state == 4 && _prev_gait_state == 3)
+        Serial.print("HeelToe::calc_motor_cmd : State : ");
+        Serial.print(state);
+        Serial.print("\n");
+
+        /**< Setup for Parabola used in State 4 */
+        if (state_4_start != 0 && previous_state_4_duration != 0)       /**< If state_4_start and previous_state_4_duration both have non-zero values, assign values to coordinates. */
         {
-            state_2_start = millis();
+            x1 = state_4_start;
+            y1 = - 0.5 * flexion_torque;
+
+            x2 = state_4_start + (previous_state_4_duration / 2);
+            y2 = - 1* flexion_torque;
+
+            x3 = state_4_start + previous_state_4_duration;
+            y3 = - 0.5 * flexion_torque;
         }
 
-        if (state == 5 && _prev_gait_state == 4)
-        {
-            state_2_end = millis();
-        }
+        /**< Takes coordinates of known points and calculates constants involved in parabolic equation. */
+        B = ((y2 - y3) * ((x2 * x2) - (x1 * x1)) - (y2 - y1) * ((x2 * x2) - (x3 * x3))) / (((x2 - x3) * ((x2 * x2) - (x1*x1))) - ((x2 - x1) * ((x2*x2) - (x3*x3))));
+        A = ((y2 - y1) - (B * (x2 - x1))) / ((x2*x2) - (x1*x1));
+        C = y1 - (A * (x1*x1)) - (B * x1);
 
+        /**< Caculates motor command based on current state. */
         if (state == 1)
         {
-            cmd_ff = ((0.6 * _controller_data->parameters[controller_defs::heel_toe::extension_torque_setpoint_idx]) + (0.4 * _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx] * fs));
+            cmd_ff = 0;
+            //cmd_ff = (0.6 + (fs * 0.4)) * extension_torque;
         }
         else if (state == 2)
         {
-            cmd_ff = _controller_data->parameters[controller_defs::heel_toe::extension_torque_setpoint_idx] * fs;
+            cmd_ff = 0;
+            //cmd_ff = fs * extension_torque;
         }
         else if (state == 3)
         {
-            cmd_ff = _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx] * fs * 0.5;
+            cmd_ff = 0;
+            //cmd_ff = flexion_torque * 4 * fs * 0.5;
         }
         else if (state == 4)
         {
-            state_2_current = millis();
-            float t = state_2_current / _prev_state_2;
-            cmd_ff = (0.5 + (0.5 * ((alpha * ((t * t) - t)) / (t - beta)))) * _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx];
+            cmd_ff = 0;
+            //cmd_ff = ((A * (percent_gait*percent_gait)) + (B * percent_gait) + C);            /**< Formula for a parabola using constants calculated above. Multiplied by -1 to flip into correct direction. */
         }
         else if (state == 5)
         {
-            cmd_ff = ((timing - state_2_end) * m) + (0.6 * _controller_data->parameters[controller_defs::heel_toe::extension_torque_setpoint_idx]);
+            //cmd_ff = 0;
+            cmd_ff = ((percent_gait - (state_4_start + previous_state_4_duration)) * m) - (0.5 * flexion_torque);
         }
         else
         {
-            //cmd_ff = 0;
+            cmd_ff = 0;
         }
-
-        //If none of the above conditions are met, send zero torque
-
-        _leg_data->PHJM_state = state;
-
-        _fs_previous = fs;
-        _df_dt_previous = df_dt;
-        _prev_state_2 = state_2_end - state_2_start;
-        _prev_gait_state = state;
+        
     }
 
-    float cmd = cmd_ff;
+    prev_state = state;
+    fs_previous = fs;
 
-    //Serial.print("PHJM::calc_motor_cmd : Swing_Duration : ");
-    //Serial.print(average_swing_duration);
-    //Serial.print("\n");
+    float cmd = cmd_ff; /**< Motor command in terminology used across controllers.  */
                          
     return cmd;
-};
-
-float HeelToe::_update_swing_duration()
-{
-    if ((_leg_data->prev_toe_stance > _leg_data->toe_stance) && !_leg_data->prev_heel_stance)  //If swing just started (if the toe was previously in contact with the ground but now is not on the ground)
-    {
-        _swing_start_timestamp = millis();  //Records the time that swing started
-
-    }
-
-    if (!_leg_data->prev_heel_stance && !_leg_data->prev_toe_stance)      //If we were previously in swing
-    {
-
-        if ((_leg_data->heel_stance > _leg_data->prev_heel_stance) || (_leg_data->toe_stance > _leg_data->prev_toe_stance)) //If heel strike occurs (builds in possibility for flat foot landings via incorporation of toe)
-        {
-            _heel_strike_timestamp = millis();  //Records the time that heel strike occurs
-            _prev_swing_start_timestamp = _swing_start_timestamp;
-        }
-    }
-
-    unsigned int swing_time = _swing_start_timestamp - _heel_strike_timestamp;   //Calculates swing phase time
-    //float average_swing_duration; //Average duration of swing phase from previous N trials
-
-    if (_prev_swing_start_timestamp == 0)   //If the previous time isn't set, set it and then just return
-    {
-        //_prev_swing_start_timestamp = _swing_start_timestamp;
-        return average_swing_duration;
-    }
-
-    int number_uninitialized = 0;
-
-    //Checks to see if any element in the array is not populated wtih data (if the element is 0, it adds 1 to number_uninitialized)
-    for (int i = 0; i < _num_swing_avg; i++)
-    {
-        number_uninitialized += (_swing_times[i] == 0);
-    }
-
-    //Get the maximum and minimum values of the array which is used to determine the window for the expected values of swing.
-    unsigned int* max_value = std::max_element(_swing_times, _swing_times + _num_swing_avg);  //Find the maximum value of the array 
-    unsigned int* min_value = std::min_element(_swing_times, _swing_times + _num_swing_avg);  //Find the minimum value of the array 
-
-    //Stores swing_time into array to find moving average
-    if (number_uninitialized > 0)   //If not every element of the array is populated with data
-    {
-        for (int i = 1; i < _num_swing_avg; i++)
-        {
-            _swing_times[i] = _swing_times[i - 1];    //Shifts the element previoulsy in position 0 into position 1, shifts the element that was in position 1 into position 2, kicks out the previous position 2
-        }
-        _swing_times[0] = swing_time;                //Stores the current value in the 0 position
-    }
-    else if ((swing_time <= swing_duration_window_upper_coeff * *max_value) && (swing_time >= swing_duration_window_lower_coeff * *min_value))  //If the swing time falls within the expected window than add it to the array
-    {
-        int sum_swing_times = swing_time;           //Creates a variable to store the total sum of all the step times (to be used to find average), initializes it with the new swing_time value
-        for (int i = 1; i < _num_swing_avg; i++)
-        {
-            sum_swing_times += _swing_times[i - 1];  //Adds every value stored in the array to the total sum except the very last one which is being "kicked out" by the new value
-            _swing_times[i] = _swing_times[i - 1];    //Shifts the element previoulsy in position 0 into position 1, shifts the element that was in position 1 into position 2, kicks out the previous position 2
-        }
-        _swing_times[0] = swing_time;                //Stores the current swing_time into the first position within the array 
-
-        average_swing_duration = sum_swing_times / _num_swing_avg;      //Determines the average duration of the last few swing phases in ms
-    }
-    return average_swing_duration;
 };
 
 //****************************************************
@@ -1267,6 +1229,107 @@ float GaitPhase::calc_motor_cmd()
     return cmd;
 };
 
+
+//****************************************************
+
+
+Parabolic::Parabolic(config_defs::joint_id id, ExoData* exo_data)
+    : _Controller(id, exo_data)
+{
+#ifdef CONTROLLER_DEBUG
+    Serial.println("Parabolic::Constructor");
+#endif
+};
+
+float Parabolic::calc_motor_cmd()
+{
+
+    const int flexion_torque = _controller_data->parameters[controller_defs::parabolic::flexion_setpoint_idx];            //Sets the magnitude of the flexion torque applied
+    const int extension_torque = _controller_data->parameters[controller_defs::parabolic::extension_setpoint_idx];        //Sets the mangitude of the extnesion torque applied
+
+    const int flexion_start = _controller_data->parameters[controller_defs::parabolic::flexion_start_percentage_idx];      //Sets the starting point of when flexion should be applied
+    const int flexion_end = _controller_data->parameters[controller_defs::parabolic::flexion_end_percentage_idx];          //Sets the ending point of when flexion should be applied
+    const int extension_start = _controller_data->parameters[controller_defs::parabolic::extension_start_percentage_idx];  //Sets the starting point of when extension should be applied     
+    const int extension_end = _controller_data->parameters[controller_defs::parabolic::extension_end_percentage_idx];      //Sets the ending point of when flexion should be applied
+
+    // Initializes torque
+    float cmd_ff = 0;
+
+    // Defines % Gait Variable (obtains from Leg.cpp & LegData.cpp)
+    float percent_gait = _leg_data->percent_gait;
+
+    //Print outs if you need to debug Controller parameter issue
+
+        //Serial.print("GaitPhase::calc_motor_cmd : Flexion_Start_Percentage : ");
+        //Serial.print(_controller_data->parameters[controller_defs::parabolic::flexion_start_percentage_idx]);
+        //Serial.print("\n");
+
+        //Serial.print("GaitPhase::calc_motor_cmd : Flexion_End_Percentage : ");
+        //Serial.print(_controller_data->parameters[controller_defs::parabolic::flexion_end_percentage_idx]);
+        //Serial.print("\n");
+
+        //Serial.print("GaitPhase::calc_motor_cmd : Extension_Start_Percentage : ");
+        //Serial.print(_controller_data->parameters[controller_defs::parabolic::extension_start_percentage_idx]);
+        //Serial.print("\n");
+
+        //Serial.print("GaitPhase::calc_motor_cmd : Extension_End_Percentage : ");
+        //Serial.print(_controller_data->parameters[controller_defs::parabolic::extension_end_percentage_idx]);
+        //Serial.print("\n");
+
+
+    if (-1 != percent_gait) //Only runs if a valid calculation of percent gait is present
+    {
+
+        //Coordinates for the extension curve
+        float x1 = extension_start;
+        float y1 = 0;
+
+        float x2 = extension_start + ((extension_end - extension_start)/2);
+        float y2 = extension_torque;
+
+        float x3 = extension_end;
+        float y3 = 0;
+
+        //Constants for the extension curve
+        float B_one = ((y2 - y3) * ((x2 * x2) - (x1 * x1)) - (y2 - y1) * ((x2 * x2) - (x3 * x3))) / (((x2 - x3) * ((x2 * x2) - (x1 * x1))) - ((x2 - x1) * ((x2 * x2) - (x3 * x3))));
+        float A1 = ((y2 - y1) - (B_one * (x2 - x1))) / ((x2 * x2) - (x1 * x1));
+        float C1 = y1 - (A1 * (x1 * x1)) - (B_one * x1);
+
+        //Coordinates for the flexion curve
+        float x4 = flexion_start;
+        float y4 = 0;
+
+        float x5 = flexion_start + ((flexion_end - flexion_start) / 2);
+        float y5 = flexion_torque;
+
+        float x6 = flexion_end;
+        float y6 = 0;
+
+        //Constants for the flexion curve
+        float B2 = ((y5 - y6) * ((x5 * x5) - (x4 * x4)) - (y5 - y4) * ((x5 * x5) - (x6 * x6))) / (((x5 - x6) * ((x5 * x5) - (x4 * x4))) - ((x5 - x4) * ((x5 * x5) - (x6 * x6))));
+        float A2 = ((y5 - y4) - (B2 * (x5 - x4))) / ((x5 * x5) - (x4 * x4));
+        float C2 = y1 - (A2 * (x4 * x4)) - (B2 * x4);
+
+
+        //Determination of torque
+        if (percent_gait >= extension_start && percent_gait <= extension_end)
+        {
+            cmd_ff = ((A1 * (percent_gait * percent_gait)) + (B_one * percent_gait) + C1);
+        }
+        else if (percent_gait >= flexion_start && percent_gait <= flexion_end)
+        {
+            cmd_ff = ((A2 * (percent_gait * percent_gait)) + (B2 * percent_gait) + C2);
+        }
+        else
+        {
+            cmd_ff = 0;
+        }
+    }
+
+    float cmd = cmd_ff;
+
+    return cmd;
+};
 
 //****************************************************
 
