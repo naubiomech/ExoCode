@@ -170,6 +170,7 @@ class HeelToe: public _Controller
         float cmd_ff;                           /**< Motor Command Calculated within Controller */
 
         float percent_gait;                      /**< Records what percentage of the gait cycle we are currently in. Function to estimate this can be found in Leg.cpp */
+        float prev_percent_gait;
 
         float fs;                               /**< Estimation of ground reaction force based on 'Bishe 2021' */
         float fs_previous;                      /**< Stores previous estimate of fs. Used to determine direciton of the slope of the derivative. */
@@ -180,6 +181,8 @@ class HeelToe: public _Controller
         float state_4_start;                    /**< Stores the percent of the gait cycle where the 4th state begins. */
         float state_4_end;                      /**< Stores the percent of gait cycle where the 4th state ends. */
         float previous_state_4_duration;        /**< Stores the previous duration, in terms of percent gait, of state 4. */
+        float prev_cmd;                         /**< Variable that stores last torque command */
+        float state_4_start_cmd;                /**< Stores the last command before the start of state 4. */
 
         float swing_start;                      /**< Stores the starting point of swing, in terms of percent gait. */
         float swing_duration;                   /**< Stores the duration of swing, in terms of percent gait, which can be determined as soon as the starting point of swing occurs. */

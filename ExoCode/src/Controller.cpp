@@ -379,6 +379,8 @@ HeelToe::HeelToe(config_defs::joint_id id, ExoData* exo_data)
         previous_state_4_duration;      
         swing_start = 0;                
         swing_duration = 0;   
+        state_4_start_cmd = -5;
+        prev_percent_gait = 0;
         x1 = 0;
         y1 = 0;
         x2 = 0;
@@ -399,7 +401,7 @@ float HeelToe::calc_motor_cmd()
     float extension_torque = -1 * _controller_data->parameters[controller_defs::heel_toe::extension_torque_setpoint_idx]; /**< Extension Torque Setpoint, Multiplied by -1 to orient curve correctly. */
     float flexion_torque = -1 * _controller_data->parameters[controller_defs::heel_toe::flexion_torque_setpoint_idx];     /**< Flexion Torque Setpoint, Multiplied by -1 to orient the curve correctly. */
 
-    if (percent_gait < state_4_start)                               /**< If we are in a new gait cycle, reset state_4_start, state_4_end, and swing_start to zero. */
+    if (percent_gait == 0 && prev_percent_gait == 100)                               /**< If we are in a new gait cycle, reset state_4_start, state_4_end, and swing_start to zero. */
     {
         state_4_start = 0;
         state_4_end = 0;
@@ -423,6 +425,22 @@ float HeelToe::calc_motor_cmd()
 
         fs = _leg_data->heel_fsr - (_leg_data->toe_fsr * 0.25);     /**<  Estimate of ground reaction force based on 'Bishe 2021', Goal is to create a variable that fluctuates between -1 and 1 based on users FSR readiongs. */
 
+        /**< Basic filtering to not allow for wonky fs data. */
+        if (fs > 1)
+        {
+            fs = 1;
+        }
+
+        if (fs < -1)
+        {
+            fs = -1;
+        }
+
+        //if (fs > 3 * fs_previous || fs < 0.25 * fs_previous)
+        //{
+        //    fs = fs_previous;
+        //}
+
         /**< State Machine to determine which state, and thus which motor command, is appropriate. */
         if (fs > 0 && fs > fs_previous)             /**< If fs is positive and its derivative is positive, we are in state 1. */
         {
@@ -441,9 +459,10 @@ float HeelToe::calc_motor_cmd()
         {
             state = 4;
 
-            if (state_4_start == 0)                                     /**< If this is the first time in state 4, record the current percent_gait as the starting point.  */
+            if (state_4_start == 0)                                     /**< If this is the first time in state 4, record the current percent_gait as the starting point and mark the starting torque command for the parabola as the last command. */
             {
                 state_4_start = percent_gait;
+                state_4_start_cmd = prev_cmd;
             }
         }
         else if (percent_gait - swing_start >= 0.3 * swing_duration)    /**< If we are in swing and greater than 30% of the swing duration then we are in state 5. */
@@ -479,7 +498,14 @@ float HeelToe::calc_motor_cmd()
         if (state_4_start != 0 && previous_state_4_duration != 0)       /**< If state_4_start and previous_state_4_duration both have non-zero values, assign values to coordinates. */
         {
             x1 = state_4_start;
-            y1 = - 0.5 * flexion_torque;
+            if (state_4_start_cmd == -5)
+            {
+                y1 = - 0.5 * flexion_torque;
+            }
+            else
+            {
+                y1 = state_4_start_cmd;
+            }
 
             x2 = state_4_start + (previous_state_4_duration / 2);
             y2 = - 1* flexion_torque;
@@ -496,23 +522,23 @@ float HeelToe::calc_motor_cmd()
         /**< Caculates motor command based on current state. */
         if (state == 1)
         {
-            cmd_ff = 0;
-            //cmd_ff = (0.6 + (fs * 0.4)) * extension_torque;
+            //cmd_ff = 0;
+            cmd_ff = (0.6 + (fs * 0.4)) * extension_torque;
         }
         else if (state == 2)
         {
-            cmd_ff = 0;
-            //cmd_ff = fs * extension_torque;
+            //cmd_ff = 0;
+            cmd_ff = fs * extension_torque;
         }
         else if (state == 3)
         {
-            cmd_ff = 0;
-            //cmd_ff = flexion_torque * 4 * fs * 0.5;
+            //cmd_ff = 0;
+            cmd_ff = flexion_torque * 4 * fs * 0.5;
         }
         else if (state == 4)
         {
-            cmd_ff = 0;
-            //cmd_ff = ((A * (percent_gait*percent_gait)) + (B * percent_gait) + C);            /**< Formula for a parabola using constants calculated above. Multiplied by -1 to flip into correct direction. */
+            //cmd_ff = 0;
+            cmd_ff = ((A * (percent_gait*percent_gait)) + (B * percent_gait) + C);            /**< Formula for a parabola using constants calculated above. Multiplied by -1 to flip into correct direction. */
         }
         else if (state == 5)
         {
@@ -526,12 +552,20 @@ float HeelToe::calc_motor_cmd()
         
     }
 
+    Serial.print("HeelToe::calc_motor_cmd : y1 : ");
+    Serial.print(y1);
+    Serial.print("\n");
+
     prev_state = state;
     fs_previous = fs;
+    prev_cmd = cmd_ff;
+    prev_percent_gait = percent_gait;
 
     float cmd = cmd_ff; /**< Motor command in terminology used across controllers.  */
+
+    _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 1);
                          
-    return cmd;
+    return y1;
 };
 
 //****************************************************
