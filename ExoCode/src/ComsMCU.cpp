@@ -3,7 +3,7 @@
 #include "StatusDefs.h"
 #include "Time_Helper.h"
 #include "UARTHandler.h"
-#include "UART_commands.h"
+#include "uart_commands.h"
 #include "UART_msg_t.h"
 #include "Config.h"
 

@@ -1,6 +1,7 @@
 /*
    Code used to run the exo from the teensy.  This communicates with the nano over UART.
-
+  
+  
    P. Stegall Jan 2022
 */
 #if defined(ARDUINO_TEENSY36) | defined(ARDUINO_TEENSY41)

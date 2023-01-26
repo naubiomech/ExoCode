@@ -2,6 +2,7 @@
 #include "Utilities.h"
 #include "Time_Helper.h"
 #include "ComsLed.h"
+#include "Config.h"
 
 #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
 #define FACTORYRESET_ENABLE         1
@@ -24,20 +25,51 @@ bool ExoBLE::setup()
     #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
         if (BLE.begin())
         {
-            //Setup name
+            //Setup name and initialize data
             String name = utils::remove_all_chars(BLE.address(), ':');
             name.remove(name.length() - MAC_ADDRESS_NAME_LENGTH);
             name = NAME_PREAMBLE + name;
+                // Using exo_info namespace defined in Config.h
+            String FirmwareVersion = exo_info::FirmwareVersion; // string to add to firmware char
+            String PCBVersion = exo_info::PCBVersion; // string to add to pcb char
+            String DeviceName = exo_info::DeviceName; // string to add to device char
+
+            // Initialize char arrays
             char name_char[name.length()];
+            char firmware_char[FirmwareVersion.length()];
+            char pcb_char[PCBVersion.length()];
+            char device_char[DeviceName.length()];            
+
+            // Add data to array
             name.toCharArray(name_char, name.length()+1);
+            FirmwareVersion.toCharArray(firmware_char, FirmwareVersion.length()+1);
+            PCBVersion.toCharArray(pcb_char, PCBVersion.length()+1);
+            DeviceName.toCharArray(device_char, DeviceName.length()+1);
+
+            // Create pointer that pointes to array
             const char* k_name_pointer = name_char;
+            const char* firmware_pointer = firmware_char;
+            const char* pcb_pointer = pcb_char;
+            const char* device_pointer = device_char;
+
+            // Set name for device
             BLE.setLocalName(k_name_pointer);
             BLE.setDeviceName(k_name_pointer);
+
+            // Write pointer to characteristic
+            _gatt_db.FirmwareChar.writeValue(firmware_char);
+            _gatt_db.PCBChar.writeValue(pcb_char);
+            _gatt_db.DeviceChar.writeValue(device_char);
+
             //Configure service and start advertising
             BLE.setAdvertisedService(_gatt_db.UARTService);
             _gatt_db.UARTService.addCharacteristic(_gatt_db.TXChar);
             _gatt_db.UARTService.addCharacteristic(_gatt_db.RXChar);
+            _gatt_db.UARTServiceDeviceInfo.addCharacteristic(_gatt_db.PCBChar);
+            _gatt_db.UARTServiceDeviceInfo.addCharacteristic(_gatt_db.FirmwareChar);
+            _gatt_db.UARTServiceDeviceInfo.addCharacteristic(_gatt_db.DeviceChar);
             BLE.addService(_gatt_db.UARTService);
+            BLE.addService(_gatt_db.UARTServiceDeviceInfo);
 
             _gatt_db.RXChar.setEventHandler(BLEWritten, ble_rx::on_rx_recieved);
             BLE.setConnectionInterval(6, 6);
