@@ -979,7 +979,7 @@ float GaitPhase::calc_motor_cmd()
         {
             state = 0.5;
 
-            if (percent_gait == 0 || percent_gait < extension_end)
+            if (percent_gait == 0 || percent_gait < extension_end - half_width)
             {
                 cmd_ff = extension_torque;
                 //Serial.print("GaitPhase::calc_motor_cmd : Extension - Early : ");
