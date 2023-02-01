@@ -408,12 +408,12 @@ namespace ble_handlers
 
     inline static void update_param(ExoData* data, BleMessage* msg)
     {
-        // Send UART message to update parameter
-        // Serial.println("ble_handlers::update_param() - Got update param message");
-        // Serial.print("ble_handlers::update_param() - Joint ID: "); Serial.println((uint8_t)msg->data[0]);
-        // Serial.print("ble_handlers::update_param() - Controller ID: "); Serial.println((uint8_t)msg->data[1]);
-        // Serial.print("ble_handlers::update_param() - Param Index: "); Serial.println((uint8_t)msg->data[2]);
-        // Serial.print("ble_handlers::update_param() - Param Value: "); Serial.println((uint8_t)msg->data[3]);
+         //Send UART message to update parameter
+         //Serial.println("ble_handlers::update_param() - Got update param message");
+         //Serial.print("ble_handlers::update_param() - Joint ID: "); Serial.println((uint8_t)msg->data[0]);
+         //Serial.print("ble_handlers::update_param() - Controller ID: "); Serial.println((uint8_t)msg->data[1]);
+         //Serial.print("ble_handlers::update_param() - Param Index: "); Serial.println((uint8_t)msg->data[2]);
+         //Serial.print("ble_handlers::update_param() - Param Value: "); Serial.println((uint8_t)msg->data[3]);
         UARTHandler* uart_handler = UARTHandler::get_instance();
         UART_msg_t tx_msg;
         tx_msg.command = UART_command_names::update_controller_param;

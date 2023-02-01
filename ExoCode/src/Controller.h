@@ -533,8 +533,18 @@ public:
     float timer;            //Updates with the current time with each pass of the controller
     float start_time;       //Records the time once the controller has been initiated via a button press in the app
     float current_time;     //Calculates the current time relative to the start time
+    int n;                  //Counter for Troubleshooting Purposes
 };
 
+class ConstantTorque : public _Controller
+{
+public:
+    ConstantTorque(config_defs::joint_id id, ExoData* exo_data);
+    ~ConstantTorque() {};
+
+    float calc_motor_cmd();
+
+};
 
 #endif
 #endif

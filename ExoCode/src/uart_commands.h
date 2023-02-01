@@ -367,15 +367,15 @@ namespace UART_command_handlers
 
             case (uint8_t)config_defs::exo_name::bilateral_hip_ankle:
                 rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
-                rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading;
-                rx_msg.data[1] = exo_data->right_leg.hip.controller.setpoint;
-                rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint;
-                rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_torque_reading; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i; //
+                rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading;      //Purple Torque
+                rx_msg.data[1] = exo_data->right_leg.hip.controller.setpoint;                       //Purple State
+                rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint;                  //Red Torque
+                rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_torque_reading; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i; //Purple Torque
                 //TODO: Implement Mark Feature
-                rx_msg.data[4] = exo_data->left_leg.hip.controller.setpoint; //rx_msg.data[4] = exo_data->left_leg.toe_stance; 
-                rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;
-                rx_msg.data[6] = exo_data->right_leg.toe_fsr;
-                rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+                rx_msg.data[4] = exo_data->left_leg.hip.controller.setpoint; //rx_msg.data[4] = exo_data->left_leg.toe_stance;  //Purple State
+                rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;                   //Red Torque
+                rx_msg.data[6] = exo_data->right_leg.toe_fsr;                                       //Red State
+                rx_msg.data[7] = exo_data->left_leg.toe_fsr;                                        //Red State
                 break;
                 break;
             
@@ -426,8 +426,8 @@ namespace UART_command_handlers
 
     inline static void update_controller_param(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-        // Serial.println("UART_command_handlers::update_controller_param->got message: ");
-        // UART_msg_t_utils::print_msg(msg);
+         //Serial.println("UART_command_handlers::update_controller_param->got message: ");
+         //UART_msg_t_utils::print_msg(msg);
         // Get the joint
         JointData* j_data = exo_data->get_joint_with(msg.joint_id);
         if (j_data == NULL)
@@ -438,8 +438,18 @@ namespace UART_command_handlers
         // TODO: If the controller is different, set the default controller params. Maybe reset the joint? Should be done with a helper function 
         // Set the controller
         j_data->controller.controller = msg.data[(uint8_t)UART_command_enums::controller_param::CONTROLLER_ID];
+
+        //Serial.print("UART_command_handlers::update_controller_param:: j_data->controller.controller:  ");
+        //Serial.print(j_data->controller.controller);
+        //Serial.print("\n");
+
         // Set the parameter
         j_data->controller.parameters[(uint8_t)msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_INDEX]] = msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_VALUE];
+
+        //Serial.print("UART_command_handlers::update_controller_param:: j_data->controller.parameters:  ");
+        //Serial.print((uint8_t)msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_INDEX]);
+        //Serial.print(" : ");
+        //Serial.print(j_data->controller.parameters[(uint8_t)msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_INDEX]]);
     }
 };
 

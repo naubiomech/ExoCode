@@ -59,6 +59,7 @@
             {(uint8_t)config_defs::hip_controllers::stasis, "hipControllers/stasis.csv"},
             {(uint8_t)config_defs::hip_controllers::perturbation, "hipControllers/perturbation.csv"},
             {(uint8_t)config_defs::hip_controllers::parabolic, "hipControllers/parabolic.csv"},
+            {(uint8_t)config_defs::hip_controllers::constant_torque, "hipControllers/constantTorque.csv"},
         };
         
         const ParamFilenameKey knee
@@ -69,6 +70,7 @@
             {(uint8_t)config_defs::knee_controllers::sine, "kneeControllers/sine.csv"},
             {(uint8_t)config_defs::knee_controllers::stasis, "kneeControllers/stasis.csv"},
             {(uint8_t)config_defs::knee_controllers::perturbation, "kneeControllers/perturbation.csv"},
+            {(uint8_t)config_defs::knee_controllers::constant_torque, "kneeControllers/constantTorque.csv"},
         };
         
         const ParamFilenameKey ankle
@@ -81,6 +83,7 @@
             {(uint8_t)config_defs::ankle_controllers::sine, "ankleControllers/sine.csv"},
             {(uint8_t)config_defs::ankle_controllers::stasis, "ankleControllers/stasis.csv"},
             {(uint8_t)config_defs::ankle_controllers::perturbation, "ankleControllers/perturbation.csv"},
+            {(uint8_t)config_defs::ankle_controllers::constant_torque, "ankleControllers/constantTorque.csv"},
         };
     };
     

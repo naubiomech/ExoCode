@@ -47,8 +47,8 @@ void UARTHandler::UART_msg(uint8_t msg_id, uint8_t len, uint8_t joint_id, float 
 
 void UARTHandler::UART_msg(UART_msg_t msg)
 {
-    // Serial.print("UARTHandler::UART_msg->Sending Message");
-    // UART_msg_t_utils::print_msg(msg);
+     //Serial.print("UARTHandler::UART_msg->Sending Message");
+     //UART_msg_t_utils::print_msg(msg);
     UART_msg(msg.command, msg.len, msg.joint_id, msg.data);
 }
 

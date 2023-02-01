@@ -361,6 +361,7 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 , _stasis(id, exo_data)
 , _perturbation(id, exo_data)
 , _parabolic(id, exo_data)
+, _constant_torque(id, exo_data)
 {
 
     //Serial.print("HipJoint::HipJoint\n");
@@ -451,6 +452,11 @@ void HipJoint::run_joint()
     // Use transaction because the motors are call and response
     // _motor->transaction(0 / _joint_data->motor.gearing);
     _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
+
+    //Serial.print("HipJoint::run_joint::Motor Command:: ");
+    //Serial.print(_controller->calc_motor_cmd());
+    //Serial.print("\n");
+
 };  
 
 /*
@@ -523,6 +529,9 @@ void HipJoint::set_controller(uint8_t controller_id)
         case (uint8_t)config_defs::hip_controllers::parabolic:
             _controller = &_parabolic;
             break;
+        case (uint8_t)config_defs::hip_controllers::constant_torque:
+            _controller = &_constant_torque;
+            break;
         default :
             _controller = nullptr;
             break;
@@ -540,6 +549,7 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
 , _sine(id, exo_data)
 , _stasis(id, exo_data)
 , _perturbation(id, exo_data)
+, _constant_torque(id, exo_data)
 {
     // Serial.print("KneeJoint::KneeJoint\n");
     // set _joint_data to point to the data specific to this joint.
@@ -681,6 +691,9 @@ void KneeJoint::set_controller(uint8_t controller_id)  // changes the high level
         case (uint8_t)config_defs::knee_controllers::perturbation:
             _controller = &_perturbation;
             break;
+        case (uint8_t)config_defs::knee_controllers::constant_torque:
+            _controller = &_constant_torque;
+            break;
         default :
             _controller = nullptr;
             break;
@@ -699,6 +712,7 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 , _sine(id, exo_data)
 , _stasis(id, exo_data)
 , _perturbation(id, exo_data)
+, _constant_torque(id, exo_data)
 {
     // Serial.print("AnkleJoint::AnkleJoint\n");
     // set _joint_data to point to the data specific to this joint.
@@ -854,6 +868,9 @@ void AnkleJoint::set_controller(uint8_t controller_id)  // changes the high leve
             break;
         case (uint8_t)config_defs::ankle_controllers::perturbation:
             _controller = &_perturbation;
+            break;
+        case (uint8_t)config_defs::ankle_controllers::constant_torque:
+            _controller = &_constant_torque;
             break;
         default :
             _controller = nullptr;

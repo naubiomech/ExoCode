@@ -174,6 +174,7 @@ class HipJoint : public _Joint
         Stasis _stasis; /**< stasis controller */
         Perturbation _perturbation;    /**< perturbation controller */
         Parabolic _parabolic;    /**< parabolic controller */
+        ConstantTorque _constant_torque; /**< constant torque controller*/
 };
 
 /**
@@ -205,6 +206,7 @@ class KneeJoint : public _Joint
         Sine _sine; /**< sine wave controller */
         Stasis _stasis; /**< stasis controller */
         Perturbation _perturbation;    /**< perturbation controller */
+        ConstantTorque _constant_torque; /**< constant torque controller*/
 };
 
 /**
@@ -238,6 +240,7 @@ class AnkleJoint : public _Joint
         Sine _sine; /**< sine wave controller */
         Stasis _stasis; /**< stasis controller */
         Perturbation _perturbation;    /**< perturbation controller */
+        ConstantTorque _constant_torque; /**< constant torque controller*/
 };
 
 #endif

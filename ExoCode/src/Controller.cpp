@@ -1256,10 +1256,6 @@ float GaitPhase::calc_motor_cmd()
         cmd = cmd_ff;
     }
 
-    Serial.print("GaitPhase::calc_motor_cmd : State : ");
-    Serial.print(state);
-    Serial.print("\n");
-
     return cmd;
 };
 
@@ -1625,9 +1621,9 @@ float FranksCollinsHip::calc_motor_cmd()
     float extension_node2 = extension_peak_percent_gait;
     float extension_node3 = extension_peak_percent_gait + extension_fall_percent_gait;
 
-    float flexion_node1 = flexion_peak_percent_gait - flexion_rise_percent_gait;
-    float flexion_node2 = flexion_peak_percent_gait;
-    float flexion_node3 = flexion_peak_percent_gait + (100 - flexion_fall_percent_gait - flexion_peak_percent_gait);
+    float flexion_node1 = flexion_peak_percent_gait - flexion_rise_percent_gait - (100 - start_percent_gait);
+    float flexion_node2 = flexion_peak_percent_gait - (100 - start_percent_gait);
+    float flexion_node3 = flexion_peak_percent_gait + flexion_fall_percent_gait - (100 - start_percent_gait); //(100 - flexion_fall_percent_gait - flexion_peak_percent_gait);
 
      //Serial.print("Franks::calc_motor_cmd : node1 = ");
      //Serial.print(flexion_node1);
@@ -1641,7 +1637,7 @@ float FranksCollinsHip::calc_motor_cmd()
      //Serial.print(flexion_node3);
      //Serial.print("\n");
 
-    torque_cmd = _spline_generation(extension_node1, extension_node2, extension_node3, extension_torque_magnitude_Nm, shifted_percent_gait) + _spline_generation(flexion_node1, flexion_node2, flexion_node3, flexion_torque_magnitude_Nm, shifted_percent_gait);
+    torque_cmd = _spline_generation(extension_node1, extension_node2, extension_node3, extension_torque_magnitude_Nm, shifted_percent_gait) + _spline_generation(flexion_node1, flexion_node2, flexion_node3, flexion_torque_magnitude_Nm, percent_gait);
 
     //if (shifted_percent_gait >= extension_node1 && shifted_percent_gait <= extension_node3)
     //{
@@ -1781,6 +1777,7 @@ Perturbation::Perturbation(config_defs::joint_id id, ExoData* exo_data)
     start_time = 0;
     timer = 0;
     current_time = 0;
+    n = 0;
 };
 
 float Perturbation::calc_motor_cmd()
@@ -1873,8 +1870,77 @@ float Perturbation::calc_motor_cmd()
         cmd = 0;            //If the flag is set to 0 (the button hasn't been pushed) then send a 0 torque command to the motor
     }
 
+
+    if (n == 0)
+    {
+        Serial.print("Perturbation::calc_motor_cmd : Amplitude : ");
+        Serial.print(_controller_data->parameters[controller_defs::perturbation::amplitude_idx]);
+        Serial.print("\n");
+
+        Serial.print("Perturbation::calc_motor_cmd : Duration : ");
+        Serial.print(_controller_data->parameters[controller_defs::perturbation::duration_idx]);
+        Serial.print("\n");
+
+        Serial.print("Perturbation::calc_motor_cmd : Direction : ");
+        Serial.print(_controller_data->parameters[controller_defs::perturbation::direction_idx]);
+        Serial.print("\n");
+
+        Serial.print("Perturbation::calc_motor_cmd : On-off Flag : ");
+        Serial.print(_controller_data->parameters[controller_defs::perturbation::perturb_idx]);
+        Serial.print("\n");
+    }
+
+    n = n + 1;
+
+    if (n >= 150)
+    {
+        n = 0;
+    }
+
     return cmd;
 };
 
+
+
+//****************************************************
+
+
+ConstantTorque::ConstantTorque(config_defs::joint_id id, ExoData* exo_data)
+    : _Controller(id, exo_data)
+{
+#ifdef CONTROLLER_DEBUG
+    Serial.println("ConstantTorque::Constructor");
+#endif
+
+};
+
+float ConstantTorque::calc_motor_cmd()
+{
+    float cmd = 0;     //Creates the cmd variable and initializes it to 0;
+
+        if (_leg_data->do_calibration_toe_fsr || _leg_data->toe_stance == 0)                      //If the FSRs are being calibrated or if the toe fsr is 0, send a command of zero
+        {
+            cmd = 0;    
+        }
+        else
+        {
+            cmd = _controller_data->parameters[controller_defs::constant_torque::amplitude_idx];
+
+            if (_controller_data->parameters[controller_defs::constant_torque::direction_idx] == 0)                            //If the user wants to send a PF/Flexion torque
+            {
+                cmd = 1 * cmd;
+            }
+            else if (_controller_data->parameters[controller_defs::constant_torque::direction_idx] == 1)                       //If the user wants to send a DF/Extension torque
+            {
+                cmd = -1 * cmd;
+            }
+            else
+            {
+                cmd = cmd;                                                                                                  //If the direction flag is something other than 0 or 1, do nothing to the motor command
+            }
+        }
+    
+    return cmd;
+};
 
 #endif

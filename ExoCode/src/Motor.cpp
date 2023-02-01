@@ -188,6 +188,10 @@ void _CANMotor::send_data(float torque)
     msg.buf[5] = kd_int >> 4;
     msg.buf[6] = ((kd_int & 0xF) << 4) | (t_int >> 8);
     msg.buf[7] = t_int & 0xFF;
+
+    //Serial.print("_CANMotor::send_data::t_sat:: ");
+    //Serial.print(t_sat);
+    //Serial.print("\n");
     
     // only send messages if enabled
     if (_motor_data->enabled)

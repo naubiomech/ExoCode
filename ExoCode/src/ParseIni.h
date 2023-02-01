@@ -134,16 +134,18 @@ namespace config_defs
         stasis = 11,
         perturbation = 12,
         parabolic = 13,
+        constant_torque = 14,
     };
     
     enum class knee_controllers : uint8_t
-    { 
-        disabled = 1, 
+    {
+        disabled = 1,
         zero_torque = 2,
         user_defined = 3,
         sine = 4,
         stasis = 5,
         perturbation = 6,
+        constant_torque = 7,
     };
         
     enum class ankle_controllers : uint8_t
@@ -155,7 +157,8 @@ namespace config_defs
         user_defined = 5,
         sine = 6,
         stasis = 7,
-        perturbation = 8
+        perturbation = 8,
+        constant_torque = 9,
     };
     
     enum class flip_dir : uint8_t
@@ -337,6 +340,7 @@ namespace config_defs
             {"stasis", (uint8_t)config_defs::hip_controllers::stasis},
             {"perturbation", (uint8_t)config_defs::hip_controllers::perturbation},
             {"parabolic", (uint8_t)config_defs::hip_controllers::parabolic},
+            {"constantTorque", (uint8_t)config_defs::hip_controllers::constant_torque},
         };
         
         const IniKeyCode knee_controllers 
@@ -347,6 +351,7 @@ namespace config_defs
             {"sine", (uint8_t)config_defs::knee_controllers::sine},
             {"stasis", (uint8_t)config_defs::knee_controllers::stasis},
             {"perturbation", (uint8_t)config_defs::knee_controllers::perturbation},
+            {"constantTorque", (uint8_t)config_defs::knee_controllers::constant_torque},
         };
         
         const IniKeyCode ankle_controllers 
@@ -359,6 +364,7 @@ namespace config_defs
             {"sine", (uint8_t)config_defs::ankle_controllers::sine},
             {"stasis", (uint8_t)config_defs::ankle_controllers::stasis},
             {"perturbation", (uint8_t)config_defs::ankle_controllers::perturbation},
+            {"constantTorque", (uint8_t)config_defs::ankle_controllers::constant_torque},
         };  
         
         const IniKeyCode flip_dir 
