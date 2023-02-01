@@ -1591,8 +1591,8 @@ float FranksCollinsHip::calc_motor_cmd()
     float extension_torque_peak = _controller_data->parameters[controller_defs::franks_collins_hip::trough_normalized_torque_Nm_kg_idx];
     float flexion_torque_peak = _controller_data->parameters[controller_defs::franks_collins_hip::peak_normalized_torque_Nm_kg_idx];
 
-    float extension_torque_magnitude_Nm = mass * extension_torque_peak;
-    float flexion_torque_magnitude_Nm = mass * flexion_torque_peak;
+    float extension_torque_magnitude_Nm = extension_torque_peak;
+    float flexion_torque_magnitude_Nm = flexion_torque_peak;
 
     float mid_time_percent_gait = _controller_data->parameters[controller_defs::franks_collins_hip::mid_time_idx];
     float mid_duration_percent_gait = _controller_data->parameters[controller_defs::franks_collins_hip::mid_duration_idx];
@@ -1788,7 +1788,7 @@ float Perturbation::calc_motor_cmd()
     //Serial.print(_controller_data->parameters[controller_defs::perturbation::perturb_idx]);
     //Serial.print("\n");
 
-    if (_controller_data->parameters[controller_defs::perturbation::perturb_idx] == 1)  //If the flag is raised (via the button press)
+    if (_controller_data->parameters[controller_defs::perturbation::perturb_idx] > 0)  //If the flag is raised (via the button press)
     {
         //Serial.print("Perturbation::calc_motor_cmd : Perturbation Sent ");
         //Serial.print("\n");
