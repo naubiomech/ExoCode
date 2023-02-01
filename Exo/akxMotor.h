@@ -53,8 +53,8 @@ typedef struct {
   float kd;
 } motor_frame_t;
 
-constexpr canid_t L_ID = 68; //68 orignally
-constexpr canid_t R_ID = 65; //65
+constexpr canid_t L_ID = 65; //68 orignally
+constexpr canid_t R_ID = 68; //65
 constexpr canid_t L_HIP_ID = 33;
 constexpr canid_t R_HIP_ID = 36;
 
