@@ -7,6 +7,8 @@
 
 #include "Motor.h"
 #include "CAN.h"
+#include "ErrorManager.h"
+#include "error_types.h"
 //#define MOTOR_DEBUG
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
@@ -150,6 +152,7 @@ void _CANMotor::read_data()
             searching = ((micros() - start) < _timeout);
         }
         while(searching);
+        // if we get here, we timed out
         _handle_read_failure();
     }
     return;
@@ -335,14 +338,14 @@ void _CANMotor::set_Kt(float Kt)
 void _CANMotor::_handle_read_failure()
 {
     this->_timeout_count++;
-    if (this->_timeout_count >= 1)
+    if (this->_timeout_count >= _timeout_count_max)
     {
-        // TODO: handle excessive timout errors
+        ErrorManager::set_system_error(MOTOR_TIMEOUT);
         this->_timeout_count = 0;
 #ifdef MOTOR_DEBUG
-         Serial.print("_CANMotor::_handle_read_failure() : Timeout: ");
-         Serial.print(uint32_t(this->_motor_data->id));
-         Serial.print("\n");
+        Serial.print("_CANMotor::_handle_read_failure() : Timeout: ");
+        Serial.print(uint32_t(this->_motor_data->id));
+        Serial.print("\n");
 #endif
     }
 };

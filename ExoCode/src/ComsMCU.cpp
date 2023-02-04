@@ -6,6 +6,7 @@
 #include "uart_commands.h"
 #include "UART_msg_t.h"
 #include "Config.h"
+#include "error_types.h"
 
 #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 
@@ -25,7 +26,7 @@ ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
         break;
     }
     _battery->init();
-    _exo_ble = new ExoBLE(data);
+    _exo_ble = new ExoBLE();
     _exo_ble->setup();
 
 
@@ -82,7 +83,7 @@ void ComsMCU::update_UART()
     static float del_t = 0;
     del_t += t_helper->tick(_context);
     
-    if (true)//(del_t > UART_times::UPDATE_PERIOD)
+    if (true)//(del_t > UART_times::UPDATE_PERIOD) TODO: Inspect this
     {
         UARTHandler* handler = UARTHandler::get_instance();
         UART_msg_t msg = handler->poll(UART_times::COMS_MCU_TIMEOUT);
@@ -147,6 +148,16 @@ void ComsMCU::update_gui()
         _exo_ble->send_message(batt_msg);
 
         del_t_status = 0;
+    }
+}
+
+void ComsMCU::handle_errors()
+{
+    static int error_code = NO_ERROR;
+    if (_data->error_code != error_code)
+    {
+        error_code = _data->error_code;
+        _exo_ble->send_error(error_code);
     }
 }
 

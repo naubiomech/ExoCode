@@ -262,6 +262,24 @@ namespace utils
      * todo: chance add comment
      */
     float ewma(float new_value, float filter_value, float alpha);
+
+    /**
+     * @brief Never returns from this function, used for critical errors
+     * 
+     * @param message 
+     */
+    void spin_on_error_with(String message);
+
+    /**
+     * @brief Checks if two floats are close to each other within a tolerance
+     * 
+     * @param val1 
+     * @param val2 
+     * @param tolerance 
+     * @return true 
+     * @return false 
+     */
+    bool is_close_to(float val1, float val2, float tolerance);
     
     
 }

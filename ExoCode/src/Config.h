@@ -9,7 +9,7 @@
     #define AK_Board_V0_4 3
 
     // TODO : Incorporate into parse INI
-    #define BOARD_VERSION AK_Board_V0_4  
+    #define BOARD_VERSION AK_Board_V0_3  
     
     #define LOOP_FREQ_HZ 500
     #define LOOP_TIME_TOLERANCE 0.1 
@@ -58,4 +58,5 @@
         const float CONT_MCU_TIMEOUT = 1000;
         const float CONFIG_TIMEOUT = 5000; // milliseconds
     }
+
 #endif

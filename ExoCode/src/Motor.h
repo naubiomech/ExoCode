@@ -196,6 +196,7 @@ class _CANMotor : public _Motor
         int _timeout_count = 0; /**< Current count of the number of timeouts */
         bool _enable_response; /**< True if the motor responded to an enable command */
         const uint32_t _timeout = 500;  /**< Time to wait for response from the motor in micro-seconds */
+        const uint32_t _timeout_count_max = 40; /**< Number of timeouts before the motor is disabled */
 };
 
 /**

@@ -14,11 +14,6 @@
  * @brief Type to associate a command with an ammount of data
  * 
  */
-typedef struct
-{
-    char command;
-    enum class enumerator; 
-} UART_map_t;
 
 namespace UART_command_names
 {
@@ -44,6 +39,8 @@ namespace UART_command_names
     static const uint8_t update_real_time_data = 0x12;
     static const uint8_t get_controller_param = 0x13;
     static const uint8_t update_controller_param = 0x14;
+    static const uint8_t get_error_code = 0x15;
+    static const uint8_t update_error_code = 0x16;
 };
 
 /**
@@ -103,28 +100,6 @@ namespace UART_rt_data
     static const uint8_t BILATERAL_ANKLE_RT_LEN = 8;
 
     static uint8_t new_rt_msg = 0; // Flag for new message
-};
-
-
-namespace UART_map
-{
-    /**
-     * @brief An array defining the maps from command to ENUM. Only the update_ commands need an enum
-     * class, because the get_ commands are data requests
-     */
-    // static const UART_map_t maps[] = 
-    // {
-    //     {UART_command_names::update_controller, UART_command_enums::controller},
-    //     {UART_command_names::update_controller_params, UART_command_enums::controller_params},
-    //     {UART_command_names::update_status, UART_command_enums::status},
-    //     {UART_command_names::update_config, UART_command_enums::config},
-    //     {UART_command_names::update_cal_trq_sensor, UART_command_enums::cal_trq_sensor},
-    //     {UART_command_names::update_cal_fsr, UART_command_enums::cal_fsr},
-    //     {UART_command_names::update_refine_fsr, UART_command_enums::refine_fsr},
-    //     {UART_command_names::update_motor_enable_disable, UART_command_enums::motor_enable_disable},
-    //     {UART_command_names::update_motor_zero, UART_command_enums::motor_zero},
-    //     {UART_command_names::update_real_time_data, UART_command_enums::real_time_data},
-    // };
 };
 
 
@@ -308,7 +283,7 @@ namespace UART_command_handlers
     inline static void update_motor_enable_disable(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
         //Serial.println("UART_command_handlers::update_motor_enable_disable->Got msg");
-        exo_data->for_each_joint([](JointData* j_data, float* args) {if (j_data->is_used) j_data->motor.enabled = args[0];}, msg.data);
+        exo_data->for_each_joint([](JointData* j_data, float* args) {if (j_data->is_used) j_data->motor.enabled = (bool)args[0];}, msg.data);
     }
 
     inline static void get_motor_zero(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
@@ -336,11 +311,11 @@ namespace UART_command_handlers
             case (uint8_t)config_defs::exo_name::bilateral_ankle:
                 rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
                 rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading;
-                rx_msg.data[1] = exo_data->right_leg.ankle.motor.i;//exo_data->right_leg.toe_stance;
+                rx_msg.data[1] = exo_data->right_leg.toe_stance;//exo_data->right_leg.ankle.motor.i;
                 rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint; 
                 rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_torque_reading; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i;
                 //TODO: Implement Mark Feature
-                rx_msg.data[4] = exo_data->left_leg.ankle.motor.i;//exo_data->left_leg.toe_stance; //rx_msg.data[4] = exo_data->left_leg.toe_stance; 
+                rx_msg.data[4] = exo_data->left_leg.toe_stance; //exo_data->left_leg.ankle.motor.i;
                 rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;
                 //rx_msg.data[6] = exo_data->right_leg.thigh_angle / 100;
                 //rx_msg.data[7] = exo_data->left_leg.thigh_angle / 100;
@@ -450,6 +425,26 @@ namespace UART_command_handlers
         //Serial.print((uint8_t)msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_INDEX]);
         //Serial.print(" : ");
         //Serial.print(j_data->controller.parameters[(uint8_t)msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_INDEX]]);
+    }
+
+    inline static void update_error_code(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
+    {
+        //Serial.println("UART_command_handlers::update_error_code->got message: ");
+        //UART_msg_t_utils::print_msg(msg);
+        
+        // Set the error code
+        exo_data->error_code = msg.data[0];
+    }
+
+    inline static void get_error_code(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg) 
+    {
+        UART_msg_t tx_msg;
+        tx_msg.command = UART_command_names::update_error_code;
+        tx_msg.joint_id = 0;
+        tx_msg.len = 1;
+        tx_msg.data[0] = exo_data->error_code;
+        handler->UART_msg(tx_msg);
+        // Serial.println("Sent error code");
     }
 };
 
@@ -630,6 +625,14 @@ namespace UART_command_utils
         case UART_command_names::update_controller_param:
             UART_command_handlers::update_controller_param(handler, exo_data, msg);
             break;
+
+        case UART_command_names::get_error_code:
+            UART_command_handlers::get_error_code(handler, exo_data, msg);
+            break;
+        case UART_command_names::update_error_code:
+            UART_command_handlers::update_error_code(handler, exo_data, msg);
+            break;
+
         
         default:
             Serial.println("UART_command_utils::handle_message->Unknown Message!");

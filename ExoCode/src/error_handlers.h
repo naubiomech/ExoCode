@@ -6,40 +6,28 @@
 #include "ExoData.h"
 #include "Exo.h"
 #include "error_types.h"
+#include "uart_commands.h"
 
 // Handles errors
 namespace error_handlers
 {
-    // Helper to report the errors
-    void report(uint16_t error_code)
-    {
-        Serial.print("Error code: ");
-        Serial.println(error_code);
-    }
-    void soft(Exo* exo, ExoData* exo_data, uint16_t error_code)
+
+    void soft(Exo* exo, ExoData* exo_data, int error_code)
     {
         // TODO: Recalibrate/Warn user
 
-        report(error_code);
         return;
     }
-    void hard(Exo* exo, ExoData* exo_data, uint16_t error_code)
+    void hard(Exo* exo, ExoData* exo_data, int error_code)
     {
         // TODO: Change all controllers to zero torque/statis
-
-        report(error_code);
+        //Serial.println("Hard Handler");
         return;
     }
-    void fatal(Exo* exo, ExoData* exo_data, uint16_t error_code)
+    void fatal(Exo* exo, ExoData* exo_data, int error_code)
     {
-        // TODO: Permanently disable motor(s)
         // Ensure that the motors are not reenabled
-        exo_data->for_each_joint([](JointData* joint_data) {joint_data->motor.enabled = 0;});
-        // Disable the motors
-        exo->left_leg.disable_motors();
-        exo->right_leg.disable_motors();
-        
-        report(error_code);
+        exo_data->for_each_joint([](JointData* joint_data, float* args) {if (joint_data->is_used) joint_data->motor.enabled = 0;});
         return;
     }
 }
