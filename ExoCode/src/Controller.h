@@ -544,6 +544,8 @@ public:
 
     float calc_motor_cmd();
 
+    float current_torque;
+    int counter;
 };
 
 #endif
