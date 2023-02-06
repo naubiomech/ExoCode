@@ -332,7 +332,7 @@ float ProportionalJointMoment::calc_motor_cmd()
             _controller_data->kf = max(0.5, _controller_data->kf);
         }
         
-        Serial.println(_controller_data->kf);
+        // Serial.println(_controller_data->kf);
     }
 
     if (print)

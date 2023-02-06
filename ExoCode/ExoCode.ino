@@ -48,14 +48,13 @@ namespace config_info
 
 void setup()
 {
-  //analogWriteResolution(12);
-  analogReadResolution(12);
+    analogReadResolution(12);
   
-  Serial.begin(115200);
+    Serial.begin(115200);
 //  TODO: Remove serial while for deployed version as this would hang
-//    while (!Serial) {
-//     ; // wait for serial port to connect. Needed for native USB
-//    }
+//   while (!Serial) {
+//    ; // wait for serial port to connect. Needed for native USB
+//   }
 
     // get the config information from the SD card.
     ini_parser(config_info::config_to_send);
@@ -63,7 +62,7 @@ void setup()
     // wait for the nano to get started
     //delay(500);
     
-    // Print to confirm config came through correctly.  Should not contain zeros.
+    // Print to confirm config came through correctly. Should not contain zeros.
     #ifdef MAIN_DEBUG
         for (int i = 0; i < ini_config::number_of_keys; i++)
         {
@@ -124,8 +123,9 @@ void loop()
     #endif
 
     static ErrorManager error_manager(&exo, &exo_data);
+    static UARTHandler* uart_handler = UARTHandler::get_instance();
 
-    UARTHandler* uart_handler = UARTHandler::get_instance();
+
     
     if (first_run)
     {
@@ -133,10 +133,10 @@ void loop()
         
         UART_command_utils::wait_for_get_config(uart_handler, &exo_data, UART_times::CONFIG_TIMEOUT);
 
-//        // assign the error handlers and triggers
-//        error_manager.assign_handlers(error_handlers::soft, error_handlers::hard, error_handlers::fatal);
-//        error_manager.assign_triggers(error_triggers::soft, error_triggers::hard, error_triggers::fatal);
-//        
+        // assign the error handlers and triggers
+        error_manager.assign_handlers(error_handlers::soft, error_handlers::hard, error_handlers::fatal);
+        error_manager.assign_triggers(error_triggers::soft, error_triggers::hard, error_triggers::fatal);
+      
         #ifdef MAIN_DEBUG
             Serial.println("Superloop :: Start First Run Conditional");
             Serial.print("Superloop :: exo_data.left_leg.hip.is_used = ");
@@ -450,10 +450,32 @@ void loop()
     #endif                                                                                        
 
     // do exo calculations
-    exo.run();
+    bool ran = exo.run();
 
-    // conditionally calls error handlers
-    error_manager.check();
+
+    // manage system errors
+    static bool new_error{false};
+    static bool active_trial{false};
+    active_trial = (exo_data.status == status_defs::messages::trial_on) || 
+        (exo_data.status == status_defs::messages::fsr_calibration) ||  
+        (exo_data.status == status_defs::messages::fsr_refinement) ||
+        (exo_data.status == status_defs::messages::error);
+    
+    if (active_trial && ran)
+    {
+        new_error = error_manager.check();
+    }
+    
+    if (new_error)
+    {
+        int error_code = error_manager.get_error();
+        Serial.print("Superloop : Error Code : ");
+        Serial.println(error_code);
+
+        exo_data.error_code = error_code;
+        exo_data.status = status_defs::messages::error;
+        UART_command_handlers::get_error_code(uart_handler, &exo_data, UART_msg_t());
+    }
     
     // print the exo_data at a fixed period.
 //    unsigned int data_print_ms = 5000;
@@ -557,6 +579,7 @@ void loop()
     mcu->local_sample();
     mcu->update_UART();
     mcu->update_gui();
+    mcu->handle_errors();
 
     static float then = millis();
     float now = millis();

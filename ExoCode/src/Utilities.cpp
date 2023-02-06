@@ -330,4 +330,19 @@ namespace utils
         }
         return val;
     }
+
+
+    void spin_on_error_with(String message)
+    {
+        for (;;)
+        {
+            Serial.println(message);
+            delay(500);
+        }
+    }
+
+    bool is_close_to(float val1, float val2, float tolerance)
+    {
+        return (abs(val1-val2) < tolerance);
+    }
 }

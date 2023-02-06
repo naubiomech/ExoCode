@@ -9,7 +9,7 @@
 #include "UART_msg_t.h"
 #include "uart_commands.h"
 
-//#define EXO_DEBUG 1
+//#define EXO_DEBUG
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
@@ -43,7 +43,7 @@ Exo::Exo(ExoData* exo_data)
 /* 
  * Run the exo 
  */
-void Exo::run()
+bool Exo::run()
 {
 
     // Check if we are within the system frequency we want.
@@ -57,8 +57,6 @@ void Exo::run()
     // Check if the real time data is ready to be sent.
     static float rt_context = t_helper->generate_new_context();
     static float rt_delta_t = 0;
-
-    static uint8_t should_plot = 0;
 
     static const float lower_bound = (float) 1/LOOP_FREQ_HZ * 1000000 * (1 - LOOP_TIME_TOLERANCE);
     if (delta_t >= (lower_bound))
@@ -104,7 +102,10 @@ void Exo::run()
 
         // send the coms mcu the real time data every _real_time_msg_delay microseconds
         rt_delta_t += t_helper->tick(rt_context);
-        bool correct_status = (data->status == status_defs::messages::trial_on) || (data->status == status_defs::messages::fsr_calibration) || (data->status == status_defs::messages::fsr_refinement);
+        bool correct_status = (data->status == status_defs::messages::trial_on) || 
+            (data->status == status_defs::messages::fsr_calibration) || 
+            (data->status == status_defs::messages::fsr_refinement) ||
+            (data->status == status_defs::messages::error);
         if ((rt_delta_t >= BLE_times::_real_time_msg_delay) && (correct_status))
         {
             #ifdef EXO_DEBUG
@@ -117,36 +118,12 @@ void Exo::run()
             rt_delta_t = 0;
         }
 
+
         delta_t = 0;
+        return true;
     }
 
-    // we didn't hit the time requirements
-    // else if (delta_t > ((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)))
-    // {
-    //     Serial.println("Exo::run:Time_Too_Slow");
-    //     // toggle the synce LED every X times we miss the time requirements
-    //     static uint8_t missed_time_count = 0;
-    //     static const uint8_t missed_time_max = 100;
-    //     missed_time_count++;
-    //     if (missed_time_count >= missed_time_max)
-    //     {
-    //         missed_time_count = 0;
-    //         status_led.toggle();
-    //     }
-
-    //     //data->status = status_defs::messages::error;'
-    //     //Serial.println("Exo::Run:Timeoverflow");
-    //     #ifdef EXO_DEBUG
-    //         if (delta_t >= 4000) {
-    //             Serial.println("Exo::Run:Timeoverflow");
-    //             Serial.println(delta_t);
-    //             Serial.println(((float) 1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
-    //         }
-    //     #endif
-    //     // TODO: Toggle error
-
-    //     delta_t = 0;
-    // }
+    return false;
 };
 
 

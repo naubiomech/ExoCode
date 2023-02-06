@@ -81,6 +81,8 @@ class ExoData
 
         uint8_t* config; /**< pointer to the configuration array */
         uint8_t config_len; /**< len of the configuration array */
+
+        int error_code; /**< current error code for the system */
 };
 
 #endif

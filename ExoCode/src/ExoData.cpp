@@ -1,5 +1,5 @@
 #include "ExoData.h"
-
+#include "error_types.h"
 
 /*
  * Constructor for the exo data.
@@ -20,6 +20,8 @@ ExoData::ExoData(uint8_t* config_to_send)
     this->config_len = ini_config::number_of_keys;
 
     this->mark = 10;  
+
+    this->error_code = NO_ERROR;
 };
 
 void ExoData::reconfigure(uint8_t* config_to_send) 
