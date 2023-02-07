@@ -174,7 +174,7 @@ namespace UART_command_handlers
         tx_msg.command = UART_command_names::update_status;
         tx_msg.joint_id = 0;
         tx_msg.len = (uint8_t)UART_command_enums::status::LENGTH;
-        tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = exo_data->status;
+        tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = exo_data->get_status();
 
         handler->UART_msg(tx_msg);
         //Serial.println("UART_command_handlers::get_status->sent updated status");
@@ -183,7 +183,7 @@ namespace UART_command_handlers
     {
         //Serial.println("UART_command_handlers::update_status->got message: ");
         //UART_msg_t_utils::print_msg(msg);
-        exo_data->status = msg.data[(uint8_t)UART_command_enums::status::STATUS];
+        exo_data->set_status(msg.data[(uint8_t)UART_command_enums::status::STATUS]);
         // TODO: HANDLE STATUS
           
     }

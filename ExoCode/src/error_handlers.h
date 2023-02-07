@@ -20,13 +20,11 @@ namespace error_handlers
     }
     void hard(Exo* exo, ExoData* exo_data, int error_code)
     {
-        // TODO: Change all controllers to zero torque/statis
-        //Serial.println("Hard Handler");
+        exo_data->for_each_joint([](JointData* joint_data, float* args) {if (joint_data->is_used) joint_data->motor.enabled = 0;});
         return;
     }
     void fatal(Exo* exo, ExoData* exo_data, int error_code)
     {
-        // Ensure that the motors are not reenabled
         exo_data->for_each_joint([](JointData* joint_data, float* args) {if (joint_data->is_used) joint_data->motor.enabled = 0;});
         return;
     }

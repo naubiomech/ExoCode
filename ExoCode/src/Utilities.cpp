@@ -345,4 +345,43 @@ namespace utils
     {
         return (abs(val1-val2) < tolerance);
     }
+
+    std::pair<float, float> online_std_dev(std::queue<float> set)
+    {
+        std::queue<float> set_copy = set;
+        // calculate the std dev
+        float mean = 0;
+        float M2 = 0;
+        float delta = 0;
+        float variance = 0;
+        float std_dev = 0;
+        int n = 0;
+        while (!set_copy.empty())
+        {
+            n++;
+            float x = set_copy.front();
+            set_copy.pop();
+            delta = x - mean;
+            mean = mean + delta / n;
+            M2 = M2 + delta * (x - mean);
+        }
+
+        if (n < 2)
+        {
+            variance = 0;
+            std_dev = 0;
+        }
+        else
+        {
+            variance = M2 / (n - 1);
+            std_dev = sqrt(variance);
+        }
+
+        return std::make_pair(mean, std_dev);
+    }
+
+    bool is_outside_range(float val, float min, float max)
+    {
+        return (val < min || val > max);
+    }
 }

@@ -51,7 +51,7 @@ bool Exo::run()
     static Time_Helper* t_helper = Time_Helper::get_instance();
     static float context = t_helper->generate_new_context();
     static float delta_t = 0;
-    static uint16_t prev_status = data->status;
+    static uint16_t prev_status = data->get_status();
     delta_t += t_helper->tick(context);
 
     // Check if the real time data is ready to be sent.
@@ -80,7 +80,7 @@ bool Exo::run()
         right_leg.run_leg();
 
         // update status LED
-        status_led.update(data->status);
+        status_led.update(data->get_status());
         #ifdef EXO_DEBUG
             Serial.println("Exo::Run:Time_OK");
             Serial.println(delta_t);
@@ -102,10 +102,11 @@ bool Exo::run()
 
         // send the coms mcu the real time data every _real_time_msg_delay microseconds
         rt_delta_t += t_helper->tick(rt_context);
-        bool correct_status = (data->status == status_defs::messages::trial_on) || 
-            (data->status == status_defs::messages::fsr_calibration) || 
-            (data->status == status_defs::messages::fsr_refinement) ||
-            (data->status == status_defs::messages::error);
+        uint16_t exo_status = data->get_status();
+        bool correct_status = (exo_status == status_defs::messages::trial_on) || 
+            (exo_status == status_defs::messages::fsr_calibration) || 
+            (exo_status == status_defs::messages::fsr_refinement) ||
+            (exo_status == status_defs::messages::error);
         if ((rt_delta_t >= BLE_times::_real_time_msg_delay) && (correct_status))
         {
             #ifdef EXO_DEBUG

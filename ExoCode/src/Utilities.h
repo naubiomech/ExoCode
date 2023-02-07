@@ -14,7 +14,8 @@
 #include "ParseIni.h"
 #include "Arduino.h"
 #include <stdint.h>
-#include <vector>
+#include <utility> // std::pair
+#include <queue> // std::queue
 
 /**
  * @brief contains general utility functions for the exo
@@ -258,8 +259,12 @@ namespace utils
     void short_fixed_point_bytes_to_float(uint8_t *bytes_to_convert, float *converted_val, uint8_t factor);
     
     /**
-     * @brief 
-     * todo: chance add comment
+     * @brief Exponential Weighted Moving Average. Used to smooth out noisy data
+     * 
+     * @param new_value New value to add to the filter
+     * @param filter_value Previous value of the filter
+     * @param alpha Tuning parameter, 0.0 < alpha < 1.0
+     * @return float 
      */
     float ewma(float new_value, float filter_value, float alpha);
 
@@ -280,8 +285,25 @@ namespace utils
      * @return false 
      */
     bool is_close_to(float val1, float val2, float tolerance);
+
+    /**
+     * @brief Given a set of data and maximum size. Returns the new mean and standard deviation
+     * 
+     * @param set Queue of data to calculate the mean and standard deviation of
+     * @return std::pair<float, float> Mean and standard deviation, respectively
+     */
+    std::pair<float, float> online_std_dev(std::queue<float> set);
     
-    
+    /**
+     * @brief Checks if a value is outside of a range
+     * 
+     * @param val
+     * @param min 
+     * @param max 
+     * @return true 
+     * @return false 
+     */
+    bool is_outside_range(float val, float min, float max);
 }
 
 

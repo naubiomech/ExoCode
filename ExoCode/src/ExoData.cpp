@@ -12,7 +12,7 @@ ExoData::ExoData(uint8_t* config_to_send)
 : left_leg(true, config_to_send)  // using initializer list for member objects.
 , right_leg(false, config_to_send)
 {
-    this->status = status_defs::messages::trial_off;
+    this->_status = status_defs::messages::trial_off;
     this->sync_led_state = false;
     this->estop = false;
 
@@ -101,10 +101,26 @@ JointData* ExoData::get_joint_with(uint8_t id)
     return j_data;
 };
 
+void ExoData::set_status(uint16_t status_to_set)
+{
+    // If the status is already error, don't change it
+    if (this->_status == status_defs::messages::error)
+    {
+        return;
+    }
+    this->_status = status_to_set;
+}
+
+uint16_t ExoData::get_status(void)
+{
+    return this->_status;
+};
+
+
 void ExoData::print()
 {
     Serial.print("\t Status : ");
-    Serial.println(status);
+    Serial.println(_status);
     Serial.print("\t Sync LED : ");
     Serial.println(sync_led_state);
     

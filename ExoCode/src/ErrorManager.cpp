@@ -79,13 +79,14 @@ bool ErrorManager::_new_error(int working_error_code)
 {
     if (ErrorManager::_system_error_code != ErrorManager::_reported_error_code && ErrorManager::_system_error_code != NO_ERROR)
     {
-        Serial.println("ErrorManager::_new_error: System Error");
+        //Serial.println("ErrorManager::_new_error: System Error");
         ErrorManager::_reported_error_code = ErrorManager::_system_error_code;
+        ErrorManager::_system_error_code = NO_ERROR;
         return true;
     }
     if (working_error_code != ErrorManager::_reported_error_code && working_error_code != NO_ERROR)
     {
-        Serial.println("ErrorManager::_new_error: Working Error");
+        //Serial.println("ErrorManager::_new_error: Working Error");
         ErrorManager::_reported_error_code = working_error_code;
         return true;
     }

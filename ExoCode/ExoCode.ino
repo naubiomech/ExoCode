@@ -265,14 +265,14 @@ void loop()
         #ifdef MAIN_DEBUG
           Serial.println("Superloop :: Motor Charging Delay - Please be patient");
         #endif 
-        exo_data.status = status_defs::messages::motor_start_up; 
+        exo_data.set_status(status_defs::messages::motor_start_up); 
         unsigned int motor_start_delay_ms = 10;//60000;
         unsigned int motor_start_time = millis();
         unsigned int dot_print_ms = 1000;
         unsigned int last_dot_time = millis();
         while (millis() - motor_start_time < motor_start_delay_ms)
         {
-            exo.status_led.update(exo_data.status);
+            exo.status_led.update(exo_data.get_status());
             #ifdef MAIN_DEBUG
               if(millis() - last_dot_time > dot_print_ms)
               {
@@ -374,7 +374,7 @@ void loop()
             #endif
             static_calibration_done  = true;
             time_dynamic_calibration_finished = millis();
-            exo_data.status = status_defs::messages::test;
+            exo_data.set_status(status_defs::messages::test);
         }
     
         // pause between static and dynamic calibration so we have time to start walking
@@ -456,10 +456,11 @@ void loop()
     // manage system errors
     static bool new_error{false};
     static bool active_trial{false};
-    active_trial = (exo_data.status == status_defs::messages::trial_on) || 
-        (exo_data.status == status_defs::messages::fsr_calibration) ||  
-        (exo_data.status == status_defs::messages::fsr_refinement) ||
-        (exo_data.status == status_defs::messages::error);
+    uint16_t exo_status = exo_data.get_status();
+    active_trial = (exo_status == status_defs::messages::trial_on) || 
+        (exo_status == status_defs::messages::fsr_calibration) ||
+        (exo_status == status_defs::messages::fsr_refinement) ||
+        (exo_status == status_defs::messages::error);
     
     if (active_trial && ran)
     {
@@ -469,11 +470,9 @@ void loop()
     if (new_error)
     {
         int error_code = error_manager.get_error();
-        Serial.print("Superloop : Error Code : ");
-        Serial.println(error_code);
 
         exo_data.error_code = error_code;
-        exo_data.status = status_defs::messages::error;
+        exo_data.set_status(status_defs::messages::error);
         UART_command_handlers::get_error_code(uart_handler, &exo_data, UART_msg_t());
     }
     

@@ -69,8 +69,21 @@ class ExoData
          * @brief Prints all the exo data
          */
         void print();
+
+        /**
+         * @brief Set the status object
+         * 
+         * @param status_to_set status_defs::messages::status_t
+         */
+        void set_status(uint16_t status_to_set);
+        /**
+         * @brief Get the status object
+         * 
+         * @return uint16_t status_defs::messages::status_t
+         */
+        uint16_t get_status(void);
         
-        uint16_t status; /**< status of the system*/
+        
         bool sync_led_state; /**< state of the sync led */
         bool estop;/**< state of the estop */
         float battery_value; /**<Could be Voltage or SOC, depending on the battery type*/
@@ -83,6 +96,9 @@ class ExoData
         uint8_t config_len; /**< len of the configuration array */
 
         int error_code; /**< current error code for the system */
+
+        private:
+        uint16_t _status; /**< status of the system*/
 };
 
 #endif

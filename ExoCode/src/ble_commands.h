@@ -165,14 +165,14 @@ namespace ble_handlers
         );
 
         // Set the data status to running
-        data->status = status_defs::messages::trial_on;
+        data->set_status(status_defs::messages::trial_on);
 
         // Send status update
         UARTHandler* uart_handler = UARTHandler::get_instance();
         UART_msg_t tx_msg;
         tx_msg.command = UART_command_names::update_status;
         tx_msg.joint_id = 0;
-        tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = data->status;
+        tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = data->get_status();
         tx_msg.len = (uint8_t)UART_command_enums::status::LENGTH;
         uart_handler->UART_msg(tx_msg);
 
@@ -207,14 +207,14 @@ namespace ble_handlers
         );
 
         // Set the data status to off
-        data->status = status_defs::messages::trial_off;
+        data->set_status(status_defs::messages::trial_off);
 
         // Send status update
         UARTHandler* uart_handler = UARTHandler::get_instance();
         UART_msg_t tx_msg;
         tx_msg.command = UART_command_names::update_status;
         tx_msg.joint_id = 0;
-        tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = data->status;
+        tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = data->get_status();
         tx_msg.len = (uint8_t)UART_command_enums::status::LENGTH;
         uart_handler->UART_msg(tx_msg);
 

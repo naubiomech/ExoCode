@@ -113,14 +113,13 @@ void _Joint::check_calibration()
     _joint_data->calibrate_torque_sensor = _torque_sensor.calibrate(_joint_data->calibrate_torque_sensor);
     if(_joint_data->calibrate_torque_sensor)
     {
-        _data->status = status_defs::messages::torque_calibration;
+        _data->set_status(status_defs::messages::torque_calibration);
     }
     //Serial.print("_Joint::check_calibration\n"); 
     if (_joint_data->motor.do_zero)
     {
         _motor->zero();
     }
-    
 };
 
 unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* exo_data)

@@ -16,11 +16,22 @@
 
 namespace error_triggers_state
 {
+    bool triggered_error = false;
+
     // Torque goodies
     const float torque_output_alpha = 0.2;
     const float torque_output_threshold = 45;
     float average_torque_output_left = 0;
     float average_torque_output_right = 0;
+
+    // Torque sensor goodies
+    const int std_dev_multiple = 10;
+    const float window_size = 100;
+    std::queue<float> torque_sensor_queue_left;
+    std::queue<float> torque_sensor_queue_right;
+    int failure_count_left = 0;
+    int failure_count_right = 0;
+    const int failure_count_threshold = 2;
 
     // Tracking goodies
     const float tracking_alpha = 0.1;
@@ -48,120 +59,122 @@ namespace error_triggers
 {
     int soft(Exo* exo, ExoData* exo_data)
     {
+        if (error_triggers_state::triggered_error)
+            return NO_ERROR;
         return NO_ERROR;
     }
+    
     int hard(Exo* exo, ExoData* exo_data)
     {
+        if (error_triggers_state::triggered_error)
+            return NO_ERROR;
         // Check if the legs have been in stance for too long
         error_triggers_state::average_pjmc_state_left = utils::ewma(exo_data->left_leg.toe_stance,
                         error_triggers_state::average_pjmc_state_left, error_triggers_state::pjmc_state_alpha);
         error_triggers_state::average_pjmc_state_right = utils::ewma(exo_data->right_leg.toe_stance,
                         error_triggers_state::average_pjmc_state_right, error_triggers_state::pjmc_state_alpha);
 
-        // static uint32_t hard_error_count = 0;
-        // hard_error_count++;
-        // if (hard_error_count > 250)
-        // {
-        //     hard_error_count = 0;
-        //     Serial.print("Right Raw PJMC State: ");
-        //     Serial.print(exo_data->right_leg.toe_stance);
-        //     Serial.print("\t");
-        //     Serial.print("Right PJMC State: ");
-        //     Serial.print(error_triggers_state::average_pjmc_state_right);
-        //     Serial.print("\t");
-        //     Serial.print("Left Raw PJMC State: ");
-        //     Serial.print(exo_data->left_leg.toe_stance);
-        //     Serial.print("\t");
-        //     Serial.print("Left PJMC State: ");
-        //     Serial.println(error_triggers_state::average_pjmc_state_left);
-        // }
-
         if ((error_triggers_state::average_pjmc_state_left > error_triggers_state::pjmc_state_threshold) ||
             (error_triggers_state::average_pjmc_state_right > error_triggers_state::pjmc_state_threshold))
         {
             //Serial.println("Error: PJMC State too high");
+            error_triggers_state::triggered_error = true;
             return POOR_STATE_VARIANCE;
         }
         
         return NO_ERROR;
     }
+
     int fatal(Exo* exo, ExoData* exo_data)
     {
-        // Check if the torque is too high
-        error_triggers_state::average_torque_output_left = utils::ewma(exo_data->left_leg.ankle.torque_reading,
-                        error_triggers_state::average_torque_output_left, error_triggers_state::torque_output_alpha);
-        error_triggers_state::average_torque_output_right = utils::ewma(exo_data->right_leg.ankle.torque_reading,
-                        error_triggers_state::average_torque_output_right, error_triggers_state::torque_output_alpha);
-        
-        if ((abs(error_triggers_state::average_torque_output_left) > error_triggers_state::torque_output_threshold) ||
-            (abs(error_triggers_state::average_torque_output_right) > error_triggers_state::torque_output_threshold))
-        {
-            return TORQUE_OUT_OF_BOUNDS;
-        }
+        if (error_triggers_state::triggered_error)
+            return NO_ERROR;
 
-        // Ckeck if the tracking error is too high
-        float tracking_error_left = exo_data->left_leg.ankle.torque_reading - exo_data->left_leg.ankle.controller.ff_setpoint;
-        float tracking_error_right = exo_data->right_leg.ankle.torque_reading - exo_data->right_leg.ankle.controller.ff_setpoint;
-        error_triggers_state::average_tracking_error_left = utils::ewma(tracking_error_left,
-                        error_triggers_state::average_tracking_error_left, error_triggers_state::tracking_alpha);
-        error_triggers_state::average_tracking_error_right = utils::ewma(tracking_error_right,
-                        error_triggers_state::average_tracking_error_right, error_triggers_state::tracking_alpha);
-        
-        if ((abs(error_triggers_state::average_tracking_error_left) > error_triggers_state::tracking_threshold) ||
-            (abs(error_triggers_state::average_tracking_error_right) > error_triggers_state::tracking_threshold))
+        // Only run for configurations with torque sensors
+        if (exo_data->config[config_defs::exo_name_idx] == (uint8_t)config_defs::exo_name::bilateral_ankle ||
+            exo_data->config[config_defs::exo_name_idx] == (uint8_t)config_defs::exo_name::bilateral_hip_ankle)
         {
-            //Serial.println("Error: Tracking error too high");
-            return TRACKING_ERROR;
-        }
+            // Check if the torque is too high
+            error_triggers_state::average_torque_output_left = utils::ewma(exo_data->left_leg.ankle.torque_reading,
+                            error_triggers_state::average_torque_output_left, error_triggers_state::torque_output_alpha);
+            error_triggers_state::average_torque_output_right = utils::ewma(exo_data->right_leg.ankle.torque_reading,
+                            error_triggers_state::average_torque_output_right, error_triggers_state::torque_output_alpha);
+            
+            if ((abs(error_triggers_state::average_torque_output_left) > error_triggers_state::torque_output_threshold) ||
+                (abs(error_triggers_state::average_torque_output_right) > error_triggers_state::torque_output_threshold))
+            {
+                error_triggers_state::triggered_error = true;
+                return TORQUE_OUT_OF_BOUNDS;
+            }
 
-        // Check the transmission efficiency. If its too low, the cable may be broken. Must low pass motor current to account for time delay
-        float left_motor_torque = exo_data->left_leg.ankle.motor.i * exo->left_leg.get_Kt_for_joint((uint8_t) config_defs::joint_id::left_ankle);
-        error_triggers_state::average_motor_torque_left = utils::ewma(left_motor_torque,
-                        error_triggers_state::average_motor_torque_left, error_triggers_state::transmission_efficiency_alpha); 
-        float right_motor_torque = exo_data->right_leg.ankle.motor.i * exo->right_leg.get_Kt_for_joint((uint8_t) config_defs::joint_id::right_ankle);
-        error_triggers_state::average_motor_torque_right = utils::ewma(right_motor_torque,
-                        error_triggers_state::average_motor_torque_right, error_triggers_state::transmission_efficiency_alpha);
-        
-        float left_transmission_efficiency = 1;
-        float right_transmission_efficiency = 1;
-        if (!utils::is_close_to(error_triggers_state::average_motor_torque_left, 0, 0.001))
-        {
-            left_transmission_efficiency = exo_data->left_leg.ankle.torque_reading / error_triggers_state::average_motor_torque_left;
-        }
-        if (!utils::is_close_to(error_triggers_state::average_motor_torque_right, 0, 0.001))
-        {
-            right_transmission_efficiency = exo_data->right_leg.ankle.torque_reading / error_triggers_state::average_motor_torque_right;
-        }
+            // Check if the tracking error is too high
+            float tracking_error_left = exo_data->left_leg.ankle.torque_reading - exo_data->left_leg.ankle.controller.ff_setpoint;
+            float tracking_error_right = exo_data->right_leg.ankle.torque_reading - exo_data->right_leg.ankle.controller.ff_setpoint;
+            error_triggers_state::average_tracking_error_left = utils::ewma(tracking_error_left,
+                            error_triggers_state::average_tracking_error_left, error_triggers_state::tracking_alpha);
+            error_triggers_state::average_tracking_error_right = utils::ewma(tracking_error_right,
+                            error_triggers_state::average_tracking_error_right, error_triggers_state::tracking_alpha);
+            
+            if ((abs(error_triggers_state::average_tracking_error_left) > error_triggers_state::tracking_threshold) ||
+                (abs(error_triggers_state::average_tracking_error_right) > error_triggers_state::tracking_threshold))
+            {
+                error_triggers_state::triggered_error = true;
+                return TRACKING_ERROR;
+            }
 
-        // print the transmission efficiency
-        // static uint32_t transmission_efficiency_count = 0;
-        // transmission_efficiency_count++;
-        // if (transmission_efficiency_count > 2000) {
-        //     transmission_efficiency_count = 0;
-        //     Serial.print("Left Ankle Torque: ");
-        //     Serial.print(exo_data->left_leg.ankle.torque_reading);
-        //     Serial.print("\t");
-        //     Serial.print("Left Torque: ");
-        //     Serial.print(left_motor_torque);
-        //     Serial.print("\t");
-        //     Serial.print("Left Transmission Efficiency: ");
-        //     Serial.print(left_transmission_efficiency);
-        //     Serial.print("\t");
-        //     Serial.print("Right Ankle Torque: ");
-        //     Serial.print(exo_data->right_leg.ankle.torque_reading);
-        //     Serial.print("\t");
-        //     Serial.print("Right Torque: ");
-        //     Serial.print(right_motor_torque);
-        //     Serial.print("\t");
-        //     Serial.print("Right Transmission Efficiency: ");
-        //     Serial.println(right_transmission_efficiency);
-        // }
 
-        if ((left_transmission_efficiency < error_triggers_state::transmission_efficiency_threshold) ||
-            (right_transmission_efficiency < error_triggers_state::transmission_efficiency_threshold))
-        {
-            //Serial.println("Error: Transmission efficiency too low");
-            //return POOR_TRANSMISSION_EFFICIENCY;
+            // Check the torque sensor variance, if the variance is too high, then the sensor may be faulty
+            error_triggers_state::torque_sensor_queue_left.push(exo_data->left_leg.ankle.torque_reading);
+            error_triggers_state::torque_sensor_queue_right.push(exo_data->right_leg.ankle.torque_reading);
+            if (error_triggers_state::torque_sensor_queue_left.size() > error_triggers_state::window_size) 
+            {
+                error_triggers_state::torque_sensor_queue_left.pop();
+                error_triggers_state::torque_sensor_queue_right.pop();
+
+                std::pair<float, float> left_population_vals = utils::online_std_dev(error_triggers_state::torque_sensor_queue_left);
+                std::pair<float, float> right_population_vals = utils::online_std_dev(error_triggers_state::torque_sensor_queue_right);
+                std::pair<float, float> left_bounds = std::make_pair(left_population_vals.first - error_triggers_state::std_dev_multiple*left_population_vals.second,
+                                                                    left_population_vals.first + error_triggers_state::std_dev_multiple*left_population_vals.second);
+                std::pair<float, float> right_bounds = std::make_pair(right_population_vals.first - error_triggers_state::std_dev_multiple*right_population_vals.second,
+                                                                    right_population_vals.first + error_triggers_state::std_dev_multiple*right_population_vals.second);
+
+                error_triggers_state::failure_count_left += float(utils::is_outside_range(exo_data->left_leg.ankle.torque_reading, left_bounds.first, left_bounds.second));
+                error_triggers_state::failure_count_right += float(utils::is_outside_range(exo_data->right_leg.ankle.torque_reading, right_bounds.first, right_bounds.second));
+
+                if (error_triggers_state::failure_count_left > error_triggers_state::failure_count_threshold ||
+                    error_triggers_state::failure_count_right > error_triggers_state::failure_count_threshold)
+                {
+                    error_triggers_state::triggered_error = true;
+                    return TORQUE_VARIANCE_ERROR;
+                }
+            }
+            
+
+            // Check the transmission efficiency. If its too low, the cable may be broken. Must low pass motor current to account for time delay
+            // float left_motor_torque = abs(exo_data->left_leg.ankle.motor.i) * exo->left_leg.get_Kt_for_joint((uint8_t) config_defs::joint_id::left_ankle);
+            // error_triggers_state::average_motor_torque_left = utils::ewma(abs(left_motor_torque),
+            //                 error_triggers_state::average_motor_torque_left, error_triggers_state::transmission_efficiency_alpha); 
+            // float right_motor_torque = abs(exo_data->right_leg.ankle.motor.i) * exo->right_leg.get_Kt_for_joint((uint8_t) config_defs::joint_id::right_ankle);
+            // error_triggers_state::average_motor_torque_right = utils::ewma(abs(right_motor_torque),
+            //                 error_triggers_state::average_motor_torque_right, error_triggers_state::transmission_efficiency_alpha);
+            
+            // float left_transmission_efficiency = 1;
+            // float right_transmission_efficiency = 1;
+            // if (!utils::is_close_to(error_triggers_state::average_motor_torque_left, 0, 0.001))
+            // {
+            //     left_transmission_efficiency = exo_data->left_leg.ankle.torque_reading / error_triggers_state::average_motor_torque_left;
+            // }
+            // if (!utils::is_close_to(error_triggers_state::average_motor_torque_right, 0, 0.001))
+            // {
+            //     right_transmission_efficiency = exo_data->right_leg.ankle.torque_reading / error_triggers_state::average_motor_torque_right;
+            // }
+
+            // if ((abs(left_transmission_efficiency) < error_triggers_state::transmission_efficiency_threshold) ||
+            //     (abs(right_transmission_efficiency) < error_triggers_state::transmission_efficiency_threshold))
+            // {
+            //     Serial.println("Error: Transmission efficiency too low");
+            //     return POOR_TRANSMISSION_EFFICIENCY;
+            // }
         }
         
         return NO_ERROR;
