@@ -1917,61 +1917,61 @@ ConstantTorque::ConstantTorque(config_defs::joint_id id, ExoData* exo_data)
     Serial.println("ConstantTorque::Constructor");
 #endif
 
-    current_torque = _controller_data->parameters[controller_defs::constant_torque::upper_idx];
-    counter = 0;
+    //current_torque = _controller_data->parameters[controller_defs::constant_torque::upper_idx];
+    //counter = 0;
 
 };
 
 float ConstantTorque::calc_motor_cmd()
 {
-    if (counter < _controller_data->parameters[controller_defs::constant_torque::iterations_idx])
-    {
-        counter++;
-    }
-    else
-    { 
-        if (current_torque == _controller_data->parameters[controller_defs::constant_torque::upper_idx])
-        {
-            current_torque = _controller_data->parameters[controller_defs::constant_torque::lower_idx];
-        }
-        else if (current_torque == _controller_data->parameters[controller_defs::constant_torque::lower_idx])
-        {
-            current_torque = _controller_data->parameters[controller_defs::constant_torque::upper_idx];
-        }
-        else
-        {
-            current_torque = current_torque;
-        }
-
-        counter = 0;
-    }
-
-    float cmd = current_torque;
-
-    //float cmd = 0;     //Creates the cmd variable and initializes it to 0;
-
-    //    if (_leg_data->do_calibration_toe_fsr || _leg_data->toe_stance == 0)                      //If the FSRs are being calibrated or if the toe fsr is 0, send a command of zero
+    //if (counter < _controller_data->parameters[controller_defs::constant_torque::iterations_idx])
+    //{
+    //    counter++;
+    //}
+    //else
+    //{ 
+    //    if (current_torque == _controller_data->parameters[controller_defs::constant_torque::upper_idx])
     //    {
-    //        cmd = 0;    
+    //        current_torque = _controller_data->parameters[controller_defs::constant_torque::lower_idx];
+    //    }
+    //    else if (current_torque == _controller_data->parameters[controller_defs::constant_torque::lower_idx])
+    //    {
+    //        current_torque = _controller_data->parameters[controller_defs::constant_torque::upper_idx];
     //    }
     //    else
     //    {
-    //        cmd = _controller_data->parameters[controller_defs::constant_torque::amplitude_idx];
-
-    //        if (_controller_data->parameters[controller_defs::constant_torque::direction_idx] == 0)                            //If the user wants to send a PF/Flexion torque
-    //        {
-    //            cmd = 1 * cmd;
-    //        }
-    //        else if (_controller_data->parameters[controller_defs::constant_torque::direction_idx] == 1)                       //If the user wants to send a DF/Extension torque
-    //        {
-    //            cmd = -1 * cmd;
-    //        }
-    //        else
-    //        {
-    //            cmd = cmd;                                                                                                  //If the direction flag is something other than 0 or 1, do nothing to the motor command
-    //        }
+    //        current_torque = current_torque;
     //    }
-    //
+
+    //    counter = 0;
+    //}
+
+    //float cmd = current_torque;
+
+    float cmd = 0;     //Creates the cmd variable and initializes it to 0;
+
+        if (_leg_data->do_calibration_toe_fsr || _leg_data->toe_stance == 1)                      //If the FSRs are being calibrated or if the toe fsr is 0, send a command of zero
+        {
+            cmd = 0;    
+        }
+        else
+        {
+            cmd = _controller_data->parameters[controller_defs::constant_torque::amplitude_idx];
+
+            if (_controller_data->parameters[controller_defs::constant_torque::direction_idx] == 0)                            //If the user wants to send a PF/Flexion torque
+            {
+                cmd = 1 * cmd;
+            }
+            else if (_controller_data->parameters[controller_defs::constant_torque::direction_idx] == 1)                       //If the user wants to send a DF/Extension torque
+            {
+                cmd = -1 * cmd;
+            }
+            else
+            {
+                cmd = cmd;                                                                                                  //If the direction flag is something other than 0 or 1, do nothing to the motor command
+            }
+        }
+    
     return cmd;
 };
 
