@@ -452,7 +452,6 @@ void loop()
     // do exo calculations
     bool ran = exo.run();
 
-
     // manage system errors
     static bool new_error{false};
     static bool active_trial{false};
@@ -470,7 +469,8 @@ void loop()
     if (new_error)
     {
         int error_code = error_manager.get_error();
-
+        Serial.println("Error: " + String(error_code)); 
+        
         exo_data.error_code = error_code;
         exo_data.set_status(status_defs::messages::error);
         UART_command_handlers::get_error_code(uart_handler, &exo_data, UART_msg_t());

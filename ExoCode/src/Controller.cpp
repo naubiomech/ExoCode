@@ -328,7 +328,7 @@ float ProportionalJointMoment::calc_motor_cmd()
             //leg->KF = leg->KF - (leg->Max_Measured_Torque - (leg->MaxPropSetpoint)) / (leg->MaxPropSetpoint)*0.6;
             _controller_data->kf = _controller_data->kf + (_controller_data->prev_max_setpoint/_controller_data->prev_max_measured - 1);
             // Constrain kf
-            _controller_data->kf = min(2, _controller_data->kf);
+            _controller_data->kf = min(1.2, _controller_data->kf);
             _controller_data->kf = max(0.5, _controller_data->kf);
         }
         
@@ -347,6 +347,11 @@ float ProportionalJointMoment::calc_motor_cmd()
     // add the PID contribution to the feed forward command
     float cmd;
     float kf_cmd = (_leg_data->toe_stance == true) ? (_controller_data->kf * cmd_ff) : cmd_ff;
+    // TODO: Remove
+    // if (!_leg_data->is_left)
+    // {
+    //     kf_cmd *= -1;
+    // }
     if (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx])
     {
         cmd = _pid(kf_cmd, _controller_data->filtered_torque_reading, _controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);
@@ -356,7 +361,7 @@ float ProportionalJointMoment::calc_motor_cmd()
         cmd = cmd_ff;
     }
     
-    _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 1);
+    _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 0.5);
     return _controller_data->filtered_cmd;
 };
 

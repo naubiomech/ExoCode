@@ -128,7 +128,10 @@ void _CANMotor::read_data()
         do
         {
             int direction_modifier = _motor_data->flip_direction ? -1 : 1;
-
+            // if (!_motor_data->is_left)
+            // {
+            //     direction_modifier *= -1;
+            // }
             CAN_message_t msg = can->read();
             if (msg.buf[0] == uint32_t(_motor_data->id))
             {
@@ -170,7 +173,10 @@ void _CANMotor::send_data(float torque)
     #endif
 
     int direction_modifier = _motor_data->flip_direction ? -1 : 1;
-
+    // if (!_motor_data->is_left)
+    // {
+    //     direction_modifier *= -1;
+    // }
     _motor_data->t_ff = torque;
     // read data from ExoData object, constraint it, and package it
     float p_sat = constrain(direction_modifier * _motor_data->p_des, -_P_MAX, _P_MAX);
