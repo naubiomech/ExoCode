@@ -23,6 +23,13 @@
         const unsigned int SYNC_START_STOP_HALF_PERIOD_US = 4 * SYNC_HALF_PERIOD_US; // Half blink period for the begining and end of the sequence.  This is usually longer so it is easy to identify.
     }
 
+    namespace fsr_config
+    {
+        const float FSR_UPPER_THRESHOLD = 0.25;
+        const float FSR_LOWER_THRESHOLD = 0.15;
+        const float SCHMITT_DELTA = (FSR_UPPER_THRESHOLD - FSR_LOWER_THRESHOLD)/2;
+    }
+
     namespace analog
     {
         const float RESOLUTION = 12; // The resolution of the analog to digital converter

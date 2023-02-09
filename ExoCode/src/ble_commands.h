@@ -401,9 +401,16 @@ namespace ble_handlers
     }
     inline static void new_fsr(ExoData* data, BleMessage* msg)
     {
-        // Change PJMC fsr threshold parameters
-        // Need to implement PJMC
-
+        // Change contact thresholds for the feet
+        // Send UART message to update FSR thresholds
+        UARTHandler* uart_handler = UARTHandler::get_instance();
+        UART_msg_t tx_msg;
+        tx_msg.command = UART_command_names::update_FSR_thesholds;
+        tx_msg.joint_id = 0;
+        tx_msg.len = (uint8_t)UART_command_enums::FSR_thresholds::LENGTH;
+        tx_msg.data[(uint8_t)UART_command_enums::FSR_thresholds::LEFT_THRESHOLD] = msg->data[0];
+        tx_msg.data[(uint8_t)UART_command_enums::FSR_thresholds::RIGHT_THRESHOLD] = msg->data[1];
+        uart_handler->UART_msg(tx_msg);
     }
 
     inline static void update_param(ExoData* data, BleMessage* msg)

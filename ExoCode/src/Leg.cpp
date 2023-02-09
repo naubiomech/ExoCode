@@ -71,6 +71,7 @@ void Leg::run_leg()
         Serial.print(_is_left ? "Left " : "Right ");
         Serial.println("Leg :: run_leg : reading data");
     #endif
+    _check_thresholds();
     // read all the data before we calculate and send the new motor commands
     read_data();
     #ifdef LEG_DEBUG
@@ -168,6 +169,12 @@ void Leg::check_calibration()
         
     }        
 };
+
+void Leg::_check_thresholds()
+{
+    _toe_fsr.set_contact_thresholds(_leg_data->toe_fsr_lower_threshold, _leg_data->toe_fsr_upper_threshold);
+    _heel_fsr.set_contact_thresholds(_leg_data->heel_fsr_lower_threshold, _leg_data->heel_fsr_upper_threshold);
+}
 
 bool Leg::_check_ground_strike()
 {

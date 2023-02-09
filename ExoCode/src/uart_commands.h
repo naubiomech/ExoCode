@@ -41,6 +41,8 @@ namespace UART_command_names
     static const uint8_t update_controller_param = 0x14;
     static const uint8_t get_error_code = 0x15;
     static const uint8_t update_error_code = 0x16;
+    static const uint8_t get_FSR_thesholds = 0x17;
+    static const uint8_t update_FSR_thesholds = 0x18;
 };
 
 /**
@@ -87,6 +89,15 @@ namespace UART_command_enums
     };
     enum class real_time_data:uint8_t {
         
+    };
+    enum class error_code:uint8_t {
+        ERROR_CODE = 0,
+        LENGTH
+    };
+    enum class FSR_thresholds:uint8_t {
+        LEFT_THRESHOLD = 0,
+        RIGHT_THRESHOLD = 1,
+        LENGTH
     };
 };
 
@@ -446,6 +457,29 @@ namespace UART_command_handlers
         handler->UART_msg(tx_msg);
         // Serial.println("Sent error code");
     }
+
+    inline static void get_FSR_thesholds(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
+    {
+        UART_msg_t tx_msg;
+        tx_msg.command = UART_command_names::update_FSR_thesholds;
+        tx_msg.joint_id = 0;
+        tx_msg.len = (uint8_t)UART_command_enums::FSR_thresholds::LENGTH;
+        tx_msg.data[(uint8_t)UART_command_enums::FSR_thresholds::RIGHT_THRESHOLD] = 
+                    (exo_data->right_leg.toe_fsr_upper_threshold + exo_data->right_leg.toe_fsr_lower_threshold)/2;
+        tx_msg.data[(uint8_t)UART_command_enums::FSR_thresholds::LEFT_THRESHOLD] = 
+                    (exo_data->left_leg.toe_fsr_upper_threshold + exo_data->left_leg.toe_fsr_lower_threshold)/2;
+        handler->UART_msg(tx_msg);
+        // Serial.println("Sent FSR thresholds");
+    }
+    inline static void update_FSR_thesholds(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
+    {
+        // Serial.println("UART_command_handlers::update_FSR_thesholds->got message: ");
+        // UART_msg_t_utils::print_msg(msg);
+        exo_data->right_leg.toe_fsr_upper_threshold = msg.data[(uint8_t)UART_command_enums::FSR_thresholds::RIGHT_THRESHOLD] + fsr_config::SCHMITT_DELTA;
+        exo_data->right_leg.toe_fsr_lower_threshold = msg.data[(uint8_t)UART_command_enums::FSR_thresholds::RIGHT_THRESHOLD] - fsr_config::SCHMITT_DELTA;
+        exo_data->left_leg.toe_fsr_upper_threshold = msg.data[(uint8_t)UART_command_enums::FSR_thresholds::LEFT_THRESHOLD] + fsr_config::SCHMITT_DELTA;
+        exo_data->left_leg.toe_fsr_lower_threshold = msg.data[(uint8_t)UART_command_enums::FSR_thresholds::LEFT_THRESHOLD] - fsr_config::SCHMITT_DELTA;
+    }
 };
 
 
@@ -631,6 +665,13 @@ namespace UART_command_utils
             break;
         case UART_command_names::update_error_code:
             UART_command_handlers::update_error_code(handler, exo_data, msg);
+            break;
+
+        case UART_command_names::get_FSR_thesholds:
+            UART_command_handlers::get_FSR_thesholds(handler, exo_data, msg);
+            break;
+        case UART_command_names::update_FSR_thesholds:
+            UART_command_handlers::update_FSR_thesholds(handler, exo_data, msg);
             break;
 
         
