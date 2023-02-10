@@ -1896,7 +1896,7 @@ float ConstantTorque::calc_motor_cmd()
 
     float cmd = 0;     //Creates the cmd variable and initializes it to 0;
 
-        if (_leg_data->do_calibration_toe_fsr || _leg_data->toe_stance == 1)                      //If the FSRs are being calibrated or if the toe fsr is 0, send a command of zero
+        if (_leg_data->do_calibration_toe_fsr)// || _leg_data->toe_stance == 1)                      //If the FSRs are being calibrated or if the toe fsr is 0, send a command of zero
         {
             cmd = 0;    
         }
