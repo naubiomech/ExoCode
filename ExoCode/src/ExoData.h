@@ -96,6 +96,8 @@ class ExoData
         uint8_t config_len; /**< len of the configuration array */
 
         int error_code; /**< current error code for the system */
+        bool user_paused; /**< if the user has paused the system */
+
 
         private:
         uint16_t _status; /**< status of the system*/

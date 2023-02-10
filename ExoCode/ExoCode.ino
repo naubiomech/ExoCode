@@ -461,15 +461,14 @@ void loop()
         (exo_status == status_defs::messages::fsr_refinement) ||
         (exo_status == status_defs::messages::error);
     
-    if (active_trial && ran)
+    if (active_trial && ran && !exo_data.user_paused)
     {
         new_error = error_manager.check();
     }
     
     if (new_error)
     {
-        int error_code = error_manager.get_error();
-        //Serial.println("Error: " + String(error_code)); 
+        const int error_code = error_manager.get_error();
         
         exo_data.error_code = error_code;
         exo_data.set_status(status_defs::messages::error);

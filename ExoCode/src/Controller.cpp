@@ -235,7 +235,7 @@ float ProportionalJointMoment::calc_motor_cmd()
             float correction = scaling-(scaling*_leg_data->toe_fsr);
 
             // saturate the fsr value
-            float fsr = min(_leg_data->toe_fsr, 1.5);
+            float fsr = min(_leg_data->toe_fsr, 1.2);
 
             // calculate the feed forward command
             cmd_ff = (fsr) * _controller_data->parameters[controller_defs::proportional_joint_moment::stance_max_idx];          
@@ -283,7 +283,7 @@ float ProportionalJointMoment::calc_motor_cmd()
             //leg->KF = leg->KF - (leg->Max_Measured_Torque - (leg->MaxPropSetpoint)) / (leg->MaxPropSetpoint)*0.6;
             _controller_data->kf = _controller_data->kf + ((_controller_data->prev_max_setpoint/_controller_data->prev_max_measured) - 1);
             // Constrain kf
-            _controller_data->kf = min(1.2, _controller_data->kf);
+            _controller_data->kf = min(1.25, _controller_data->kf);
             _controller_data->kf = max(0.75, _controller_data->kf);
         }
     }
@@ -293,7 +293,7 @@ float ProportionalJointMoment::calc_motor_cmd()
 
     // add the PID contribution to the feed forward command
     float cmd;
-    float kf_cmd = (_leg_data->toe_stance == true) ? (_controller_data->kf * cmd_ff) : cmd_ff;
+    float kf_cmd = (_leg_data->toe_stance == true) ? (_controller_data->kf * _controller_data->filtered_setpoint) : _controller_data->filtered_setpoint;
     // if (!_leg_data->is_left)
     // {
     //     kf_cmd *= -1;
@@ -307,7 +307,7 @@ float ProportionalJointMoment::calc_motor_cmd()
         cmd = cmd_ff;
     }
     
-    _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 0.5);
+    _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 1);
     return _controller_data->filtered_cmd;
 };
 

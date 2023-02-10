@@ -3,10 +3,11 @@
 #define Config_h 
 
 #include "Arduino.h"
+    #define FIRMWARE_VERSION 0_1_0
 
-    #define AK_Board_V0_1 1
-    #define AK_Board_V0_3 2
-    #define AK_Board_V0_4 3
+    // #define AK_Board_V0_1 1
+    // #define AK_Board_V0_3 2
+    // #define AK_Board_V0_4 3
 
     // TODO : Incorporate into parse INI
     #define BOARD_VERSION AK_Board_V0_3  
@@ -15,6 +16,10 @@
     #define LOOP_TIME_TOLERANCE 0.1 
     
     //#define USE_SPEED_CHECK 1 
+
+    // MACRO magic to convert a define to a string
+    #define VAL(str) #str
+    #define TOSTRING(str) VAL(str)
     
     namespace sync_time
     {
@@ -53,9 +58,9 @@
     // Update this namespace for future exo updates to display correct information on app
     namespace exo_info
     {
-        const String FirmwareVersion = "<update exo config>"; // string to add to firmware char
-        const String PCBVersion = "<update exo config>"; // string to add to pcb char
-        const String DeviceName = "update exo config"; // string to add to device char
+        const String FirmwareVersion = String(TOSTRING(FIRMWARE_VERSION)); // string to add to firmware char
+        const String PCBVersion = String(TOSTRING(BOARD_VERSION)); // string to add to pcb char
+        const String DeviceName = String("NULL"); // string to add to device char, if you would like the system to set it use "NULL"
     }
 
     namespace UART_times

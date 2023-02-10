@@ -8,7 +8,7 @@ WaistBarometer::WaistBarometer(pressure_unit_t desired_unit)
 {
     _unit = desired_unit;
     if (!BARO.begin()) {
-        Serial.println("Failed to initialize pressure sensor!");
+        //Serial.println("Failed to initialize pressure sensor!");
     }
 }
 

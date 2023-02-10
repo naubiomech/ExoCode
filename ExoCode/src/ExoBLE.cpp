@@ -31,6 +31,20 @@ bool ExoBLE::setup()
     String PCBVersion = exo_info::PCBVersion; // string to add to pcb char
     String DeviceName = exo_info::DeviceName; // string to add to device char
 
+    // Check if the name is null, if it is use the name above, if not check for preamble
+    if (DeviceName == "NULL")
+    {
+        DeviceName = name;
+    }
+    else
+    {
+        // Check if the name has the preamble, if not add it
+        if (!DeviceName.startsWith(NAME_PREAMBLE))
+        {
+            DeviceName = NAME_PREAMBLE + DeviceName;
+        }
+    }
+
     // Initialize char arrays
     char name_char[name.length()];
     char firmware_char[FirmwareVersion.length()];

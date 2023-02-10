@@ -295,6 +295,7 @@ namespace UART_command_handlers
     {
         //Serial.println("UART_command_handlers::update_motor_enable_disable->Got msg");
         exo_data->for_each_joint([](JointData* j_data, float* args) {if (j_data->is_used) j_data->motor.enabled = (bool)args[0];}, msg.data);
+        exo_data->user_paused = !(bool)msg.data[0];
     }
 
     inline static void get_motor_zero(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
