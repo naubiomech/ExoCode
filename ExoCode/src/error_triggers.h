@@ -185,16 +185,6 @@ namespace error_triggers
                 std::pair<float, float> right_bounds = std::make_pair(right_population_vals.first - error_triggers_state::force_std_dev_multiple*right_population_vals.second,
                                                                     right_population_vals.first + error_triggers_state::force_std_dev_multiple*right_population_vals.second);
 
-                static int count = 0;
-                count++;
-                if (count >= 99)
-                {
-                    count = 0;
-                    Serial.print("FSR:"+String(exo_data->right_leg.toe_fsr)+"\t");
-                    Serial.print("U:"+String(right_bounds.second)+"\t");
-                    Serial.print("L:"+String(right_bounds.first)+"\n");
-                }
-
                 error_triggers_state::force_failure_count_left += float(utils::is_outside_range(exo_data->left_leg.toe_fsr, left_bounds.first, left_bounds.second));
                 error_triggers_state::force_failure_count_right += float(utils::is_outside_range(exo_data->right_leg.toe_fsr, right_bounds.first, right_bounds.second));
 

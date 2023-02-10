@@ -469,7 +469,7 @@ void loop()
     if (new_error)
     {
         int error_code = error_manager.get_error();
-        Serial.println("Error: " + String(error_code)); 
+        //Serial.println("Error: " + String(error_code)); 
         
         exo_data.error_code = error_code;
         exo_data.set_status(status_defs::messages::error);

@@ -133,20 +133,6 @@ bool FSR::refine_calibration(bool do_refinement)
             _calibration_refinement_max = static_cast<decltype(_calibration_refinement_max)>(_step_max_sum)/_num_steps;  // casting to the type of _calibration_refinement_max before division 
             _calibration_refinement_min = static_cast<decltype(_calibration_refinement_min)>(_step_min_sum)/_num_steps;
             
-            // Serial.print("FSR::refine_calibration : FSR Cal Done\n");
-            // Serial.println(_pin);
-            // Serial.print("\t _step_count -");
-            // Serial.print(_step_count);
-            // Serial.print("\n");
-            
-            // Serial.print("FSR::refine_calibration : _calibration_refinement_max - ");
-            // Serial.print(_calibration_refinement_max);
-            // Serial.print("\n");
-            // Serial.print("FSR::refine_calibration : _calibration_refinement_min - ");
-            // Serial.print(_calibration_refinement_min);
-            // Serial.print("\n");
-            //delay(1000);
-            
             // refinement is done
             do_refinement = false;
         } 

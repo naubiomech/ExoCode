@@ -145,8 +145,9 @@ void _CANMotor::read_data()
                 _motor_data->i = direction_modifier * _uint_to_float(i_int, -_T_MAX, _T_MAX, 12);
 
                 #ifdef MOTOR_DEBUG
-                    Serial.print("_CANMotor::read_data() : Got data - ");
-                    Serial.print(uint32_t(_motor_data->id));
+                    Serial.print("_CANMotor::read_data():Got data-");
+                    Serial.print("ID:" + String(uint32_t(_motor_data->id)) + ",");
+                    Serial.print("P:"+String(_motor_data->p) + ",V:" + String(_motor_data->v) + ",I:" + String(_motor_data->i));
                     Serial.print("\n");
                 #endif
                 // reset timout_count because we got a valid message
@@ -167,9 +168,9 @@ void _CANMotor::read_data()
 void _CANMotor::send_data(float torque)
 {
     #ifdef MOTOR_DEBUG
-        Serial.print("Sending data: ");
-        Serial.print(uint32_t(_motor_data->id));
-        Serial.print("\n");
+        // Serial.print("Sending data: ");
+        // Serial.print(uint32_t(_motor_data->id));
+        // Serial.print("\n");
     #endif
 
     int direction_modifier = _motor_data->flip_direction ? -1 : 1;
@@ -203,6 +204,7 @@ void _CANMotor::send_data(float torque)
     //Serial.print("_CANMotor::send_data::t_sat:: ");
     //Serial.print(t_sat);
     //Serial.print("\n");
+    //Serial.print("T:"+String(t_sat)+",");
     
     // only send messages if enabled
     if (_motor_data->enabled)
@@ -256,12 +258,12 @@ bool _CANMotor::enable()
 bool _CANMotor::enable(bool overide)
 { 
     #ifdef MOTOR_DEBUG
-     Serial.print(_prev_motor_enabled);
-     Serial.print("\t");
-     Serial.print(_motor_data->enabled);
-     Serial.print("\t");
-     Serial.print(_motor_data->is_on);
-     Serial.print("\n");
+    //  Serial.print(_prev_motor_enabled);
+    //  Serial.print("\t");
+    //  Serial.print(_motor_data->enabled);
+    //  Serial.print("\t");
+    //  Serial.print(_motor_data->is_on);
+    //  Serial.print("\n");
     #endif
     
     // only change the state and send messages if the enabled state has changed.
