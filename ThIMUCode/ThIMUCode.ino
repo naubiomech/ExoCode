@@ -190,12 +190,10 @@ void setup() {
 
 void loop() { 
     static unsigned long previousMillis = 0;
-
     if (millis() - previousMillis >= PERIOD) {
       angles = imu.update();
       logger("\nRoll: ", LOG_DISABLE);
       logger(angles.roll, LOG_DISABLE);
       previousMillis = millis();
     }
-
 }

@@ -45,11 +45,11 @@ Exo::Exo(ExoData* exo_data)
  */
 bool Exo::run()
 {
-
     // Check if we are within the system frequency we want.
     static UARTHandler* handler = UARTHandler::get_instance();
     static Time_Helper* t_helper = Time_Helper::get_instance();
     static float context = t_helper->generate_new_context();
+
     static float delta_t = 0;
     static uint16_t prev_status = data->get_status();
     delta_t += t_helper->tick(context);

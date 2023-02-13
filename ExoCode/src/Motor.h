@@ -191,7 +191,7 @@ class _CANMotor : public _Motor
         float _KD_MIN; /**< Lower limit of the D gain for the motor */
         float _KD_MAX; /**< Upper limit of the D gain for the motor */
         float _P_MAX; /**< Max angle of the motor */
-        float _T_MAX; /**< Max torque of the motor */
+        float _I_MAX; /**< Max current of the motor */
         float _V_MAX; /**< Max velocity of the motor */
         int _timeout_count = 0; /**< Current count of the number of timeouts */
         bool _enable_response; /**< True if the motor responded to an enable command */

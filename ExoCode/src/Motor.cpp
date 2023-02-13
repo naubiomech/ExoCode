@@ -142,7 +142,7 @@ void _CANMotor::read_data()
                 // set data in ExoData object
                 _motor_data->p = direction_modifier * _uint_to_float(p_int, -_P_MAX, _P_MAX, 16);
                 _motor_data->v = direction_modifier * _uint_to_float(v_int, -_V_MAX, _V_MAX, 12);
-                _motor_data->i = direction_modifier * _uint_to_float(i_int, -_T_MAX, _T_MAX, 12);
+                _motor_data->i = direction_modifier * _uint_to_float(i_int, -_I_MAX, _I_MAX, 12);
 
                 #ifdef MOTOR_DEBUG
                     Serial.print("_CANMotor::read_data():Got data-");
@@ -179,17 +179,19 @@ void _CANMotor::send_data(float torque)
     //     direction_modifier *= -1;
     // }
     _motor_data->t_ff = torque;
+    const float current = torque / get_Kt();
+
     // read data from ExoData object, constraint it, and package it
     float p_sat = constrain(direction_modifier * _motor_data->p_des, -_P_MAX, _P_MAX);
     float v_sat = constrain(direction_modifier * _motor_data->v_des, -_V_MAX, _V_MAX);
     float kp_sat = constrain(_motor_data->kp, _KP_MIN, _KP_MAX);
     float kd_sat = constrain(_motor_data->kd, _KD_MIN, _KD_MAX);
-    float t_sat = constrain(direction_modifier * _motor_data->t_ff, -_T_MAX, _T_MAX);
+    float i_sat = constrain(direction_modifier * current, -_I_MAX, _I_MAX);
     uint32_t p_int = _float_to_uint(p_sat, -_P_MAX, _P_MAX, 16);
     uint32_t v_int = _float_to_uint(v_sat, -_V_MAX, _V_MAX, 12);
     uint32_t kp_int = _float_to_uint(kp_sat, _KP_MIN, _KP_MAX, 12);
     uint32_t kd_int = _float_to_uint(kd_sat, _KD_MIN, _KD_MAX, 12);
-    uint32_t t_int = _float_to_uint(t_sat, -_T_MAX, _T_MAX, 12);
+    uint32_t i_int = _float_to_uint(i_sat, -_I_MAX, _I_MAX, 12);
     CAN_message_t msg;
     msg.id = uint32_t(_motor_data->id);
     msg.buf[0] = p_int >> 8;
@@ -198,8 +200,8 @@ void _CANMotor::send_data(float torque)
     msg.buf[3] = ((v_int & 0xF) << 4) | (kp_int >> 8);
     msg.buf[4] = kp_int & 0xFF;
     msg.buf[5] = kd_int >> 4;
-    msg.buf[6] = ((kd_int & 0xF) << 4) | (t_int >> 8);
-    msg.buf[7] = t_int & 0xFF;
+    msg.buf[6] = ((kd_int & 0xF) << 4) | (i_int >> 8);
+    msg.buf[7] = i_int & 0xFF;
 
     //Serial.print("_CANMotor::send_data::t_sat:: ");
     //Serial.print(t_sat);
@@ -396,7 +398,7 @@ float _CANMotor::_uint_to_float(unsigned int x_int, float x_min, float x_max, in
 AK60::AK60(config_defs::joint_id id, ExoData* exo_data, int enable_pin): // constructor: type is the motor type
 _CANMotor(id, exo_data, enable_pin)
 {
-    _T_MAX = 9.0f;
+    _I_MAX = 22.0f;
     _V_MAX = 41.87f;
     set_Kt(0.068 * 6);
 
@@ -413,7 +415,7 @@ _CANMotor(id, exo_data, enable_pin)
 AK60_v1_1::AK60_v1_1(config_defs::joint_id id, ExoData* exo_data, int enable_pin): // constructor: type is the motor type
 _CANMotor(id, exo_data, enable_pin)
 {
-    _T_MAX = 9.0f;
+    _I_MAX = 13.5f;
     _V_MAX = 23.04f;
     set_Kt(0.113 * 6);
 
@@ -430,7 +432,7 @@ _CANMotor(id, exo_data, enable_pin)
 AK80::AK80(config_defs::joint_id id, ExoData* exo_data, int enable_pin): // constructor: type is the motor type
 _CANMotor(id, exo_data, enable_pin)
 {
-    _T_MAX = 18.0f;
+    _I_MAX = 24.0f;
     _V_MAX = 25.65f;
     set_Kt(0.091 * 9);
 
