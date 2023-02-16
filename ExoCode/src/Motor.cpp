@@ -352,6 +352,7 @@ void _CANMotor::_handle_read_failure()
     this->_timeout_count++;
     if (this->_timeout_count >= _timeout_count_max)
     {
+        _data->error_joint_id = (int)this->_motor_data->id;
         ErrorManager::set_system_error(MOTOR_TIMEOUT);
         this->_timeout_count = 0;
 #ifdef MOTOR_DEBUG

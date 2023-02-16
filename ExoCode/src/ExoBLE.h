@@ -72,7 +72,7 @@ class ExoBLE
          * 
          * @param error_code 
          */
-        void send_error(int error_code);
+        void send_error(int error_code, int joint_id);
 
     private:
 

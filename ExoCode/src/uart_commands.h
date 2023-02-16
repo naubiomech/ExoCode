@@ -125,12 +125,12 @@ namespace UART_command_handlers
     inline static void get_controller_params(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
         //Serial.println("UART_command_handlers::update_controller_params->Fetching params with msg: ");
-        UART_msg_t_utils::print_msg(msg);
+        //UART_msg_t_utils::print_msg(msg);
 
         JointData* j_data = exo_data->get_joint_with(msg.joint_id);
         if (j_data == NULL)
         {
-            //Serial.println("UART_command_handlers::update_controller_params->No joint with id =  "); Serial.print(msg.joint_id); Serial.println(" found");
+            Serial.println("UART_command_handlers::get_controller_params->No joint with id =  "); Serial.print(msg.joint_id); Serial.println(" found");
             return;
         }
 
@@ -151,12 +151,12 @@ namespace UART_command_handlers
     {
         //TODO: Error checking (valid controller for joint, and matching param length)
         //Serial.println("UART_command_handlers::update_controller_params->Got new params with msg: ");
-        UART_msg_t_utils::print_msg(msg);
+        //UART_msg_t_utils::print_msg(msg);
 
         JointData* j_data = exo_data->get_joint_with(msg.joint_id);
         if (j_data == NULL)
         {
-            //Serial.println("UART_command_handlers::update_controller_params->No joint with id =  "); Serial.print(msg.joint_id); Serial.println(" found");
+            Serial.println("UART_command_handlers::update_controller_params->No joint with id =  " + String(msg.joint_id) + " found");
             return;
         }
 
@@ -419,7 +419,7 @@ namespace UART_command_handlers
         JointData* j_data = exo_data->get_joint_with(msg.joint_id);
         if (j_data == NULL)
         {
-            Serial.println("UART_command_handlers::update_controller_params->No joint with id =  "); Serial.print(msg.joint_id); Serial.println(" found");
+            Serial.println("UART_command_handlers::update_controller_param->No joint with id =  "); Serial.print(msg.joint_id); Serial.println(" found");
             return;
         }
         // TODO: If the controller is different, set the default controller params. Maybe reset the joint? Should be done with a helper function 
@@ -446,13 +446,14 @@ namespace UART_command_handlers
         
         // Set the error code
         exo_data->error_code = msg.data[0];
+        exo_data->error_joint_id = msg.joint_id;
     }
 
     inline static void get_error_code(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg) 
     {
         UART_msg_t tx_msg;
         tx_msg.command = UART_command_names::update_error_code;
-        tx_msg.joint_id = 0;
+        tx_msg.joint_id = exo_data->error_joint_id;
         tx_msg.len = 1;
         tx_msg.data[0] = exo_data->error_code;
         handler->UART_msg(tx_msg);

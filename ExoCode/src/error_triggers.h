@@ -80,36 +80,37 @@ namespace error_triggers
 {
     int soft(Exo* exo, ExoData* exo_data)
     {
-        if (error_triggers_state::triggered_error)
-            return NO_ERROR;
+        // if (error_triggers_state::triggered_error)
+        //     return NO_ERROR;
         return NO_ERROR;
     }
     
     int hard(Exo* exo, ExoData* exo_data)
     {
-        if (error_triggers_state::triggered_error)
-            return NO_ERROR;
+        // if (error_triggers_state::triggered_error)
+        //     return NO_ERROR;
         // Check if the legs have been in stance for too long
-        error_triggers_state::average_pjmc_state_left = utils::ewma(exo_data->left_leg.toe_stance,
-                        error_triggers_state::average_pjmc_state_left, error_triggers_state::pjmc_state_alpha);
-        error_triggers_state::average_pjmc_state_right = utils::ewma(exo_data->right_leg.toe_stance,
-                        error_triggers_state::average_pjmc_state_right, error_triggers_state::pjmc_state_alpha);
-
-        if ((error_triggers_state::average_pjmc_state_left > error_triggers_state::pjmc_state_threshold) ||
-            (error_triggers_state::average_pjmc_state_right > error_triggers_state::pjmc_state_threshold))
-        {
-            //Serial.println("Error: PJMC State too high");
-            error_triggers_state::triggered_error = true;
-            return POOR_STATE_VARIANCE;
-        }
+        // error_triggers_state::average_pjmc_state_left = utils::ewma(exo_data->left_leg.toe_stance,
+        //                 error_triggers_state::average_pjmc_state_left, error_triggers_state::pjmc_state_alpha);
+        // error_triggers_state::average_pjmc_state_right = utils::ewma(exo_data->right_leg.toe_stance,
+        //                 error_triggers_state::average_pjmc_state_right, error_triggers_state::pjmc_state_alpha);
+        // bool left_stance_error = (error_triggers_state::average_pjmc_state_left > error_triggers_state::pjmc_state_threshold);
+        // bool right_stance_error = (error_triggers_state::average_pjmc_state_right > error_triggers_state::pjmc_state_threshold);
+        // if (left_stance_error || right_stance_error)
+        // {
+        //     //Serial.println("Error: PJMC State too high");
+        //     error_triggers_state::triggered_error = true;
+        //     exo_data->error_joint_id = (left_stance_error) ? (uint8_t)config_defs::joint_id::left_ankle : (uint8_t)config_defs::joint_id::right_ankle;
+        //     return POOR_STATE_VARIANCE;
+        // }
         
         return NO_ERROR;
     }
 
     int fatal(Exo* exo, ExoData* exo_data)
     {
-        if (error_triggers_state::triggered_error)
-            return NO_ERROR;
+        // if (error_triggers_state::triggered_error)
+        //     return NO_ERROR;
 
         // Only run for configurations with torque sensors
         if (exo_data->config[config_defs::exo_name_idx] == (uint8_t)config_defs::exo_name::bilateral_ankle ||
@@ -120,11 +121,13 @@ namespace error_triggers
                             error_triggers_state::average_torque_output_left, error_triggers_state::torque_output_alpha);
             error_triggers_state::average_torque_output_right = utils::ewma(exo_data->right_leg.ankle.torque_reading*-1,
                             error_triggers_state::average_torque_output_right, error_triggers_state::torque_output_alpha);
-            
-            if ((abs(error_triggers_state::average_torque_output_left) > error_triggers_state::torque_output_threshold) ||
-                (abs(error_triggers_state::average_torque_output_right) > error_triggers_state::torque_output_threshold))
+            bool left_torque_error = (abs(error_triggers_state::average_torque_output_left) > error_triggers_state::torque_output_threshold);
+            bool right_torque_error = (abs(error_triggers_state::average_torque_output_right) > error_triggers_state::torque_output_threshold);
+            if (left_torque_error || right_torque_error)
             {
+                //Serial.println("Error: Torque too high");
                 error_triggers_state::triggered_error = true;
+                exo_data->error_joint_id = (left_torque_error) ? (uint8_t)config_defs::joint_id::left_ankle : (uint8_t)config_defs::joint_id::right_ankle;
                 return TORQUE_OUT_OF_BOUNDS;
             }
 
@@ -135,11 +138,13 @@ namespace error_triggers
                             error_triggers_state::average_tracking_error_left, error_triggers_state::tracking_alpha);
             error_triggers_state::average_tracking_error_right = utils::ewma(tracking_error_right,
                             error_triggers_state::average_tracking_error_right, error_triggers_state::tracking_alpha);
-            
-            if ((abs(error_triggers_state::average_tracking_error_left) > error_triggers_state::tracking_threshold) ||
-                (abs(error_triggers_state::average_tracking_error_right) > error_triggers_state::tracking_threshold))
+            bool left_tracking_error = (abs(error_triggers_state::average_tracking_error_left) > error_triggers_state::tracking_threshold);
+            bool right_tracking_error = (abs(error_triggers_state::average_tracking_error_right) > error_triggers_state::tracking_threshold);
+            if (left_tracking_error || right_tracking_error)
             {
+                //Serial.println("Error: Tracking error too high");
                 error_triggers_state::triggered_error = true;
+                exo_data->error_joint_id = (left_tracking_error) ? (uint8_t)config_defs::joint_id::left_ankle : (uint8_t)config_defs::joint_id::right_ankle;
                 return TRACKING_ERROR;
             }
 
@@ -161,11 +166,13 @@ namespace error_triggers
 
                 error_triggers_state::torque_failure_count_left += float(utils::is_outside_range(exo_data->left_leg.ankle.torque_reading, left_bounds.first, left_bounds.second));
                 error_triggers_state::torque_failure_count_right += float(utils::is_outside_range(exo_data->right_leg.ankle.torque_reading*-1, right_bounds.first, right_bounds.second));
-
-                if (error_triggers_state::torque_failure_count_left > error_triggers_state::failure_count_threshold ||
-                    error_triggers_state::torque_failure_count_right > error_triggers_state::failure_count_threshold)
+                bool left_torque_variance_error = (error_triggers_state::torque_failure_count_left > error_triggers_state::failure_count_threshold);
+                bool right_torque_variance_error = (error_triggers_state::torque_failure_count_right > error_triggers_state::failure_count_threshold);
+                if (left_torque_variance_error || right_torque_variance_error)
                 {
+                    //Serial.println("Error: Torque sensor variance too high");
                     error_triggers_state::triggered_error = true;
+                    exo_data->error_joint_id = (left_torque_variance_error) ? (uint8_t)config_defs::joint_id::left_ankle : (uint8_t)config_defs::joint_id::right_ankle;
                     return TORQUE_VARIANCE_ERROR;
                 }
             }
@@ -187,11 +194,13 @@ namespace error_triggers
 
                 error_triggers_state::force_failure_count_left += float(utils::is_outside_range(exo_data->left_leg.toe_fsr, left_bounds.first, left_bounds.second));
                 error_triggers_state::force_failure_count_right += float(utils::is_outside_range(exo_data->right_leg.toe_fsr, right_bounds.first, right_bounds.second));
-
+                bool left_force_outside_range = utils::is_outside_range(exo_data->left_leg.toe_fsr, left_bounds.first, left_bounds.second);
+                bool right_force_outside_range = utils::is_outside_range(exo_data->right_leg.toe_fsr, right_bounds.first, right_bounds.second);
                 if (error_triggers_state::force_failure_count_left > error_triggers_state::failure_count_threshold ||
                     error_triggers_state::force_failure_count_right > error_triggers_state::failure_count_threshold)
                 {
                     error_triggers_state::triggered_error = true;
+                    exo_data->error_joint_id = (left_tracking_error) ? (uint8_t)config_defs::joint_id::left_ankle : (uint8_t)config_defs::joint_id::right_ankle;
                     return FORCE_VARIANCE_ERROR;
                 }
             }

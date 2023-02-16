@@ -22,6 +22,7 @@ ExoData::ExoData(uint8_t* config_to_send)
     this->mark = 10;  
 
     this->error_code = NO_ERROR;
+    this->error_joint_id = 0;
     this->user_paused = false;
 };
 
