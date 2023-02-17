@@ -30,7 +30,7 @@ class GattDb
 
         // Service and CHaracteristics for error reporting
         BLEService ErrorService{"33b65d42-611c-11ed-9b6a-0242ac120002"}; // Service for error reporting
-        BLEIntCharacteristic ErrorChar{"33b65d43-611c-11ed-9b6a-0242ac120002", BLERead | BLENotify}; // Characteristic for error reporting
+        BLECharacteristic ErrorChar{"33b65d43-611c-11ed-9b6a-0242ac120002", BLERead | BLENotify, BUFFER_SIZE, BUFFERS_FIXED_LENGTH}; // Characteristic for error reporting
 };
 
 #endif

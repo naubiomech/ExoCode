@@ -44,8 +44,27 @@ bool ErrorManager::check()
     {   
         _fatal_handler(_exo, _data, fatal_error_code);
     }
-
+    
+    // If _system_error_code != NO_ERROR, check its severity and handle appropriately
+    if (_system_error_code != NO_ERROR)
+    {
+        if (_system_error_code >= FATAL_ERROR)
+        {
+            _fatal_handler(_exo, _data, _system_error_code);
+        }
+        else if (_system_error_code >= HARD_ERROR)
+        {
+            _hard_handler(_exo, _data, _system_error_code);
+        }
+        else if (_system_error_code >= SOFT_ERROR)
+        {
+            _soft_handler(_exo, _data, _system_error_code);
+        }
+    }
+    
+    // Return the highest error code
     int error_code = max(fatal_error_code, max(hard_error_code, soft_error_code));
+    error_code = max(error_code, _system_error_code);
     return _new_error(error_code);
 }
 

@@ -306,4 +306,5 @@ void MotorData::reconfigure(uint8_t* config_to_send)
     kp = 0;
     kd = 0;
     t_ff = 0;
+    last_command = 0;
 };

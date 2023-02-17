@@ -111,6 +111,7 @@ void _CANMotor::transaction(float torque)
     // send data and read response 
     send_data(torque);
     read_data();
+    check_response();
 };
 
 
@@ -119,7 +120,6 @@ void _CANMotor::read_data()
 {
     // read data from motor
     bool searching = true;
-    // uint8_t data[8];
     uint32_t start = micros();
     // only send and receive data if enabled
     if (_motor_data->enabled)
@@ -187,6 +187,7 @@ void _CANMotor::send_data(float torque)
     float kp_sat = constrain(_motor_data->kp, _KP_MIN, _KP_MAX);
     float kd_sat = constrain(_motor_data->kd, _KD_MIN, _KD_MAX);
     float i_sat = constrain(direction_modifier * current, -_I_MAX, _I_MAX);
+    _motor_data->last_command = i_sat;
     uint32_t p_int = _float_to_uint(p_sat, -_P_MAX, _P_MAX, 16);
     uint32_t v_int = _float_to_uint(v_sat, -_V_MAX, _V_MAX, 12);
     uint32_t kp_int = _float_to_uint(kp_sat, _KP_MIN, _KP_MAX, 12);
@@ -217,6 +218,33 @@ void _CANMotor::send_data(float torque)
     }
     return;
 };
+
+void _CANMotor::check_response()
+{
+    // only run if the motor is supposed to be enabled
+    uint16_t exo_status = _data->get_status();
+    bool active_trial = (exo_status == status_defs::messages::trial_on) || 
+        (exo_status == status_defs::messages::fsr_calibration) ||
+        (exo_status == status_defs::messages::fsr_refinement);
+    if (_data->user_paused || !active_trial)
+    {
+        return;
+    }
+
+    // Measured current variance should be non-zero
+    _measured_current.push(_motor_data->i);
+    if (_measured_current.size() > _current_queue_size)
+    {
+        _measured_current.pop();
+        auto pop_vals = utils::online_std_dev(_measured_current);
+        if (pop_vals.second < _variance_threshold)
+        {
+            _motor_data->enabled = true;
+            enable(true);
+            Serial.println("Motor enabled");
+        }
+    }
+}
 
 void _CANMotor::on_off()
 {          
@@ -349,14 +377,15 @@ void _CANMotor::set_Kt(float Kt)
 
 void _CANMotor::_handle_read_failure()
 {
-    this->_timeout_count++;
-    if (this->_timeout_count >= _timeout_count_max)
+    _timeout_count++;
+    if (_timeout_count >= _timeout_count_max)
     {
+        _data->error_joint_id = (int)_motor_data->id;
         ErrorManager::set_system_error(MOTOR_TIMEOUT);
-        this->_timeout_count = 0;
+        _timeout_count = 0;
 #ifdef MOTOR_DEBUG
         Serial.print("_CANMotor::_handle_read_failure() : Timeout: ");
-        Serial.print(uint32_t(this->_motor_data->id));
+        Serial.print(uint32_t(_motor_data->id));
         Serial.print("\n");
 #endif
     }

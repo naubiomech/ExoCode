@@ -116,7 +116,6 @@ namespace config_defs
         right_hip = right|hip,
         right_knee = right|knee,
         right_ankle = right|ankle,
-        
     };
         
     enum class  hip_controllers : uint8_t

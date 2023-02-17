@@ -71,7 +71,7 @@ bool ExoBLE::setup()
     _gatt_db.FirmwareChar.writeValue(firmware_char);
     _gatt_db.PCBChar.writeValue(pcb_char);
     _gatt_db.DeviceChar.writeValue(device_char);
-    _gatt_db.ErrorChar.writeValue(NO_ERROR);
+    send_error(0, 0);
 
     //Configure services and advertising data
     BLE.setAdvertisedService(_gatt_db.UARTService);
@@ -190,7 +190,7 @@ void ExoBLE::send_message(BleMessage &msg)
     _gatt_db.TXChar.writeValue(buffer, bytes_to_send);   
 }
 
-void ExoBLE::send_error(int error_code)
+void ExoBLE::send_error(int error_code, int joint_id)
 {
     if (!this->_connected)
     {
@@ -201,8 +201,19 @@ void ExoBLE::send_error(int error_code)
     Serial.print("Exoble::send_error->Sending: ");
     Serial.println(error_code);
     #endif
-    
-    _gatt_db.ErrorChar.writeValue(error_code);
+    String error_string = String(error_code) + ":" + String(joint_id);
+    Serial.println("Error String: " + error_string);
+    // convert to char array
+    char error_char[error_string.length() + 1];
+    error_string.toCharArray(error_char, error_string.length() + 1);
+    Serial.println("Char Array:");
+    for (char c : error_char)
+    {
+        Serial.print(c);
+        Serial.print(", ");
+    }
+    Serial.println();
+    _gatt_db.ErrorChar.writeValue(error_char);
 }
 
 void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)

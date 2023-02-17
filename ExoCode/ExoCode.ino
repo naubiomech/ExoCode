@@ -453,6 +453,7 @@ void loop()
     bool ran = exo.run();
 
     // manage system errors
+    static bool reported_error{false};
     static bool new_error{false};
     static bool active_trial{false};
     uint16_t exo_status = exo_data.get_status();
@@ -466,8 +467,10 @@ void loop()
         new_error = error_manager.check();
     }
     
-    if (new_error)
+    if (new_error && !reported_error)
     {
+      // Only report the first error
+        reported_error = true;
         const int error_code = error_manager.get_error();
         
         exo_data.error_code = error_code;

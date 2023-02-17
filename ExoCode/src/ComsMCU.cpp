@@ -157,7 +157,7 @@ void ComsMCU::handle_errors()
     if (_data->error_code != error_code)
     {
         error_code = _data->error_code;
-        _exo_ble->send_error(error_code);
+        _exo_ble->send_error(_data->error_code, _data->error_joint_id);
     }
 }
 
