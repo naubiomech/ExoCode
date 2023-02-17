@@ -150,6 +150,7 @@ class _CANMotor : public _Motor
         bool enable(bool overide);
         void zero();
         float get_Kt();
+        void check_response();
         
     protected:
 
@@ -197,6 +198,11 @@ class _CANMotor : public _Motor
         bool _enable_response; /**< True if the motor responded to an enable command */
         const uint32_t _timeout = 500;  /**< Time to wait for response from the motor in micro-seconds */
         const uint32_t _timeout_count_max = 40; /**< Number of timeouts before the motor is disabled */
+
+        std::queue<float> _measured_current; /**< Queue of the measured current values */
+        const int _current_queue_size = 25; /**< Size of the queue of measured current values */
+        const float _variance_threshold = 0.01; /**< Threshold for the variance of the measured current values */
+        
 };
 
 /**

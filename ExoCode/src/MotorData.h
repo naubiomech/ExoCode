@@ -35,6 +35,7 @@ class MotorData
         
         config_defs::joint_id id; /**< motor id, should be the same as the joint id. */ 
         uint8_t motor_type; /**< Type of motor being used. */
+        float last_command; /**< Last command sent to the motor. */
         float p;  /**< Read position. */ 
         float v;  /**< Read velocity. */
         float i;  /**< Read current. */
