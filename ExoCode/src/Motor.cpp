@@ -446,7 +446,7 @@ _CANMotor(id, exo_data, enable_pin)
 {
     _I_MAX = 13.5f;
     _V_MAX = 23.04f;
-    set_Kt(0.113 * 6);
+    set_Kt((1/0.37775));
 
 #ifdef MOTOR_DEBUG
     Serial.println("AK60_v1_1::AK60_v1_1 : Leaving Constructor");
