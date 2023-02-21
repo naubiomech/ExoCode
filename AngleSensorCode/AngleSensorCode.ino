@@ -84,7 +84,7 @@ inline static void led_helper(bool r, bool g, bool b) {
 
 // =============================== App Defines ===============================
 
-#define SAMPLE_PERIOD 1000 // microseconds
+#define SAMPLE_PERIOD 10000 // microseconds
 
 // Address of the slave I2C bus, used to send data to the teensy
 #define SLAVE_ADDRESS 0x04
@@ -92,12 +92,16 @@ inline static void led_helper(bool r, bool g, bool b) {
 // Define the Pins for the Software I2C bus
 #define L_SDA_PIN 2
 #define L_SCL_PIN 3
-#define R_SDA_PIN 4
-#define R_SCL_PIN 5
+#define R_SDA_PIN 9
+#define R_SCL_PIN 10
 
 // Define the I2C addresses of the AS5600 sensor
 #define AS5600_ADDRESS 0x36
 #define AS5600_ANGLE 0x0E
+#define AS5600_STATUS 0x0B
+#define AS5600_STATUS_VALID   0b00000100
+#define AS5600_STATUS_WEAK    0b00001000
+#define AS5600_STATUS_STRONG  0b00010000
 
 // Assume 12 bit resolution
 #define UINT_FLOAT_CONV 360/4096
@@ -109,28 +113,41 @@ static std::pair<SoftwareI2C, SoftwareI2C> sWires = std::make_pair(
 
 // Declare latest angle readings
 static std::pair<float, float> angles = std::make_pair(0, 0);
+static uint8_t left_data[2] = {0, 0};
+static uint8_t right_data[2] = {0, 0};
 
 // Last command received from the master
 static volatile uint8_t working_cmd = 0x00;
 static volatile uint8_t working_bytes = 0x00;
 
 // =============================== Angle Functions ===============================
+void store_data(std::pair<int, int> data, bool is_left) {
+  if (is_left) {
+    left_data[0] = data.first;
+    left_data[1] = data.second;
+  } else {
+    right_data[0] = data.first;
+    right_data[1] = data.second;
+  }
+}
 /**
  * @brief Get the angle data
  * 
  * @param sWire I2C bus
  * @return std::pair<uint8_t, uint8_t> low, high bytes
  */
-std::pair<uint8_t, uint8_t> get_angle_data(SoftwareI2C sWire) {
+std::pair<int, int> get_angle_data(SoftwareI2C sWire, bool is_left) {
     // Read the angle from the AS5600 sensor
     sWire.beginTransmission(AS5600_ADDRESS);
     sWire.write(AS5600_ANGLE);
     sWire.endTransmission();
     sWire.requestFrom(AS5600_ADDRESS, 2);
-    uint8_t data[2];
+    int data[2];
     data[0] = sWire.read();
     data[1] = sWire.read();
-    return std::make_pair(data[0], data[1]);
+    std::pair<int, int> ret_pair = std::make_pair(data[0], data[1]);
+    store_data(ret_pair, is_left);
+    return ret_pair;
 }
 /**
  * @brief Get the angle object from the AS5600 sensor
@@ -138,11 +155,10 @@ std::pair<uint8_t, uint8_t> get_angle_data(SoftwareI2C sWire) {
  * @param sWire SoftwareI2C object
  * @return float angle, converted assuming 12 bit resolution
  */
-float get_angle(SoftwareI2C sWire) {
-    std::pair<uint8_t, uint8_t> data = get_angle_data(sWire);
-    uint8_t data_u[2] = {data.first, data.second};
-    float angle;
-    utils::uint8_to_float(data_u, &angle);
+float get_angle(SoftwareI2C sWire, bool is_left) {
+    std::pair<int, int> data = get_angle_data(sWire, is_left);
+    word combined_data = (data.first << 8) | data.second;
+    float angle = combined_data * 0.087890625;
     return angle;
 }
 /**
@@ -152,7 +168,18 @@ float get_angle(SoftwareI2C sWire) {
  */
 std::pair<float, float> get_angles_pair() {
     // Read the angle from the AS5600 sensor
-    return std::make_pair(get_angle(sWires.first), get_angle(sWires.second));
+    return std::make_pair(get_angle(sWires.first, true), get_angle(sWires.second, false));
+}
+
+/**
+ * @brief Check if the sensor is connected to the I2C bus
+ * 
+ * @param I2C bus
+ * @return bool True if connected
+ */
+bool check_angle_sensor(SoftwareI2C bus) {
+    bus.beginTransmission(AS5600_ADDRESS);
+    return bus.endTransmission() == 0;
 }
 
 
@@ -201,15 +228,13 @@ inline static void on_request() {
             break;
         case L_ANGLE_CMD:
             logger("\nSending left angle: " + String(angles.first), LOG_DEBUG);
-            utils::float_to_uint8(angles.first, bytes);
-            Wire.write(bytes[0]);
-            Wire.write(bytes[1]);
+            Wire.write(left_data[0]);
+            Wire.write(left_data[1]);
             break;
         case R_ANGLE_CMD:
             logger("\nSending right angle: " + String(angles.second), LOG_DEBUG);
-            utils::float_to_uint8(angles.second, bytes);
-            Wire.write(bytes[0]);
-            Wire.write(bytes[1]);
+            Wire.write(right_data[0]);
+            Wire.write(right_data[1]);
             break;
         default:
             logger("\nRequest on invalid command", LOG_WARN);
@@ -237,19 +262,28 @@ void setup() {
     Wire.onReceive(on_receive);
     Wire.onRequest(on_request);
 
-
-    // TODO: Check if the sensors are actually connected, and then initialize them
-
-    // Indicate that the device is on but I2C has not been validated
+    // Check if the sensors are actually connected, and then initialize them
+    logger("\nChecking sensor status", LOG_DEBUG);
+    if (!check_angle_sensor(sWires.first)) {
+      app_error("\nLeft sensor not connected!");
+    }
+    if (!check_angle_sensor(sWires.second)) {
+      app_error("\nRight sensor not connected!");
+    }
+    
+    // Indicate that the device is on but teensy I2C connection has not been validated
     led_helper(1, 1, 0);
     logger("\nFinished init", LOG_DEBUG);
 }
 
 void loop() {
-    static float previous_time= 0;
+    static float previous_time = 0;
     if (micros() - previous_time >= SAMPLE_PERIOD) {
+        float start_us = micros();
         angles = get_angles_pair();
-        //logger("\nLeft: " + String(angles.first) + " Right: " + String(angles.second), LOG_DEBUG);
+        float stop_us = micros();
+        //logger("\nTime to get angles: " + String(stop_us - start_us), LOG_DEBUG);
+        logger("\nLeft: " + String(angles.first) + " Right: " + String(angles.second), LOG_DEBUG);
         previous_time = micros();
     }
 }
