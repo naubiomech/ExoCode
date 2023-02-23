@@ -52,7 +52,14 @@ class JointData {
         
         float position; /**< The position of the joint, this should be motor position with compensated for gearing. */
         float velocity; /**< The velocity of the joint, this should be motor velocity with compensated for gearing. */
-        
+
+
+        float joint_position; /**< The position of the joint, after any transmission */
+        float prev_joint_position; /**< The position of the joint, after any transmission */
+        float joint_velocity;
+        const float joint_position_alpha = 0.1f;
+        const float joint_velocity_alpha = 0.1f;
+
 };
 
 

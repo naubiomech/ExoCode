@@ -23,6 +23,7 @@
 #include "ParseIni.h"
 #include "board.h"
 #include "Joint.h"
+#include "config.h"
 #include "Utilities.h"
 #include "StatusDefs.h"
 
@@ -211,7 +212,7 @@ class KneeJoint : public _Joint
 
 /**
  * @brief class for the ankle joint which contains joint specific controllers.
- */
+ */ 
 class AnkleJoint : public _Joint
 {
     public:

@@ -116,7 +116,7 @@ float _Controller::_pid(float cmd, float measurement, float p_gain, float i_gain
     float de_dt = 0;
     if (time_good)
     {
-       de_dt = -(measurement - _prev_input) * (1000 / LOOP_FREQ_HZ);  // Convert to ms
+       de_dt = -(measurement - _prev_input) * (1000.0f / LOOP_FREQ_HZ);  // Convert to ms
        _prev_de_dt = de_dt;
     }
     else 

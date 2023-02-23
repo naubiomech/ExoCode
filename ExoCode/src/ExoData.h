@@ -99,7 +99,6 @@ class ExoData
         int error_joint_id;
         bool user_paused; /**< if the user has paused the system */
 
-
         private:
         uint16_t _status; /**< status of the system*/
 };

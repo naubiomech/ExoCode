@@ -84,7 +84,7 @@ inline static void led_helper(bool r, bool g, bool b) {
 
 // =============================== App Defines ===============================
 
-#define SAMPLE_PERIOD 10000 // microseconds
+#define SAMPLE_PERIOD 100000 // microseconds
 
 // Address of the slave I2C bus, used to send data to the teensy
 #define SLAVE_ADDRESS 0x04
@@ -102,6 +102,7 @@ inline static void led_helper(bool r, bool g, bool b) {
 #define AS5600_STATUS_VALID   0b00000100
 #define AS5600_STATUS_WEAK    0b00001000
 #define AS5600_STATUS_STRONG  0b00010000
+#define AS5600_CONF 0x07
 
 // Assume 12 bit resolution
 #define UINT_FLOAT_CONV 360/4096
@@ -140,7 +141,7 @@ std::pair<int, int> get_angle_data(SoftwareI2C sWire, bool is_left) {
     // Read the angle from the AS5600 sensor
     sWire.beginTransmission(AS5600_ADDRESS);
     sWire.write(AS5600_ANGLE);
-    sWire.endTransmission();
+    sWire.endTransmission(false);
     sWire.requestFrom(AS5600_ADDRESS, 2);
     int data[2];
     data[0] = sWire.read();
@@ -179,7 +180,28 @@ std::pair<float, float> get_angles_pair() {
  */
 bool check_angle_sensor(SoftwareI2C bus) {
     bus.beginTransmission(AS5600_ADDRESS);
-    return bus.endTransmission() == 0;
+    return bus.endTransmission(false) == 0;
+}
+/**
+ * @brief Set the angle sensor to analog output mode
+ * 
+ * @param I2C bus
+ */
+void set_analog_output(SoftwareI2C bus) {
+  const int CONF_LOW = AS5600_CONF+1;
+  bus.beginTransmission(AS5600_ADDRESS);
+  bus.write(CONF_LOW);
+  const bool register_success = bus.endTransmission(false);
+  bus.requestFrom(AS5600_ADDRESS, 1);
+  delay(100);
+  uint8_t config_status = bus.read();
+  config_status &= 0b11001111;
+  //config_status |= 0b10000;
+  bus.beginTransmission(AS5600_ADDRESS);
+  bus.write(CONF_LOW);
+  bus.write(config_status);
+  const bool set_status_success = bus.endTransmission();
+  logger("\nSet config register: " + String(register_success) + " Set status: " + String(set_status_success), LOG_DEBUG);
 }
 
 
@@ -213,14 +235,13 @@ inline static void on_receive(int bytes) {
 }
 
 inline static void on_request() {
-    logger("\nOn Request with: " + String(working_cmd) + "bytes: " + String(working_bytes), LOG_DEBUG);
+    logger("\nOn Request with: " + String(working_cmd) + " bytes: " + String(working_bytes), LOG_DEBUG);
 
     if (working_cmd == 0) {
       logger("\nWorking command has not been initialized", LOG_WARN);
       return;
     }
     
-    uint8_t bytes[2];
     switch (working_cmd) {
         case ENABLE_CMD:
             logger("\nSending handshake", LOG_DEBUG);
@@ -254,13 +275,8 @@ void setup() {
     // Initialize I2C buses
     logger("\nStarting I2C buses", LOG_DEBUG);
     Wire.begin(SLAVE_ADDRESS);
-    sWires.first.begin();
-    sWires.second.begin();
-
-    // Set up I2C callbacks
-    logger("\nSetting I2C callbacks", LOG_DEBUG);
-    Wire.onReceive(on_receive);
-    Wire.onRequest(on_request);
+    //sWires.first.begin();
+    //sWires.second.begin();
 
     // Check if the sensors are actually connected, and then initialize them
     logger("\nChecking sensor status", LOG_DEBUG);
@@ -270,6 +286,15 @@ void setup() {
     if (!check_angle_sensor(sWires.second)) {
       app_error("\nRight sensor not connected!");
     }
+
+    // Set analog sensors to default mode
+    //set_analog_output(sWires.first);
+    //set_analog_output(sWires.second);
+
+    // Set up I2C callbacks
+    logger("\nSetting I2C callbacks", LOG_DEBUG);
+    Wire.onReceive(on_receive);
+    Wire.onRequest(on_request);
     
     // Indicate that the device is on but teensy I2C connection has not been validated
     led_helper(1, 1, 0);
@@ -279,11 +304,8 @@ void setup() {
 void loop() {
     static float previous_time = 0;
     if (micros() - previous_time >= SAMPLE_PERIOD) {
-        float start_us = micros();
-        angles = get_angles_pair();
-        float stop_us = micros();
-        //logger("\nTime to get angles: " + String(stop_us - start_us), LOG_DEBUG);
-        logger("\nLeft: " + String(angles.first) + " Right: " + String(angles.second), LOG_DEBUG);
+        //angles = get_angles_pair();
+//        logger("\nLeft: " + String(angles.first) + " Right: " + String(angles.second), LOG_DEBUG);
         previous_time = micros();
     }
 }

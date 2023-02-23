@@ -111,6 +111,26 @@ namespace i2c_cmds
             const uint8_t len = 1;
         }
     }
+
+    namespace ankle_angles
+    {
+        const uint8_t addr = 0x04; // Confirm that peripheral MCU has the same address
+        namespace handshake
+        {
+            const uint8_t reg = 0x01;
+            const uint8_t len = 1;
+        }
+        namespace get_left_angle
+        {
+            const uint8_t reg = 0x02;
+            const uint8_t len = 2;
+        }
+        namespace get_right_angle
+        {
+            const uint8_t reg = 0x03;
+            const uint8_t len = 2;
+        }
+    }
 }
 
 // int INA219_ADR = 0x40;        // Address of INA219 for writing defined in 7 bits. The 8th bit is automatically included by Wire.read() or Wire.write()

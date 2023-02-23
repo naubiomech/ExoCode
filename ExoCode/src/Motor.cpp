@@ -241,7 +241,6 @@ void _CANMotor::check_response()
         {
             _motor_data->enabled = true;
             enable(true);
-            Serial.println("Motor enabled");
         }
     }
 }

@@ -36,8 +36,6 @@ Exo::Exo(ExoData* exo_data)
     #ifdef EXO_DEBUG
         Serial.println("Exo :: Constructor : motor_stop_pin Mode set");
     #endif
-
-
 };
 
 /* 
@@ -74,6 +72,7 @@ bool Exo::run()
 
         // check the estop
         data->estop = digitalRead(logic_micro_pins::motor_stop_pin);
+
 
         // Record the leg data and send new commands to the motors.
         left_leg.run_leg();

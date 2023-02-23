@@ -37,7 +37,6 @@
 #include "src\error_triggers.h"
 #include "src\ErrorManager.h"
 
-
 //#include "src\Motor.h"
 
 // Array used to store config information
@@ -497,8 +496,6 @@ void loop()
           last_dot_time = millis();
           Serial.print(".");
         }
-
-       
     #endif 
 }
 

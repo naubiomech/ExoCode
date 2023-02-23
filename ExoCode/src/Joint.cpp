@@ -1,4 +1,6 @@
 #include "Joint.h"
+#include "AnkleAngles.h"
+#include "Time_Helper.h"
 //#define JOINT_DEBUG
 
 
@@ -799,6 +801,25 @@ void AnkleJoint::run_joint()
     _motor->on_off();
     _motor->enable();
 
+    //Serial.println("Run Joint");
+    _joint_data->prev_joint_position = _joint_data->joint_position;
+    const float raw_angle = AnkleAngles::GetInstance()->get(_is_left);
+    const float new_angle = _is_left ? (raw_angle):(1 - raw_angle);
+    _joint_data->joint_position = utils::ewma(
+        new_angle, _joint_data->joint_position, _joint_data->joint_position_alpha);
+    _joint_data->joint_velocity = utils::ewma(
+        (_joint_data->joint_position - _joint_data->prev_joint_position) / (1.0f / LOOP_FREQ_HZ),
+        _joint_data->joint_velocity, 
+        _joint_data->joint_velocity_alpha);
+    // Serial.print(String(_is_left) + "Angle:" + String(_joint_data->joint_position));
+    // Serial.print("\t");
+    // Serial.print(String(_is_left) + "Velocity:" + String(_joint_data->joint_velocity));
+    // if (_is_left) {
+    //     Serial.print("\t");
+    // } else {
+    //     Serial.println();
+    // }
+
     // make sure the correct controller is running.
     set_controller(_joint_data->controller.controller);
     
@@ -811,7 +832,7 @@ void AnkleJoint::run_joint()
     // Use transaction because the motors are call and response
     //_motor->send_data(_joint_data->controller.setpoint / _joint_data->motor.gearing);
     _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
-};  
+}; 
 
 /*
  * reads data for sensors for the joint, torque and motor.
