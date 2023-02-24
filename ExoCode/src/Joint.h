@@ -175,6 +175,7 @@ class HipJoint : public _Joint
         Perturbation _perturbation;    /**< perturbation controller */
         Parabolic _parabolic;    /**< parabolic controller */
         ConstantTorque _constant_torque; /**< constant torque controller*/
+        PtbGeneral _ptb_general; /**< Generalized Perturbation Controller>*/
 };
 
 /**
@@ -207,6 +208,7 @@ class KneeJoint : public _Joint
         Stasis _stasis; /**< stasis controller */
         Perturbation _perturbation;    /**< perturbation controller */
         ConstantTorque _constant_torque; /**< constant torque controller*/
+        ElbowMinMax _elbow_min_max;
 };
 
 /**
@@ -241,6 +243,7 @@ class AnkleJoint : public _Joint
         Stasis _stasis; /**< stasis controller */
         Perturbation _perturbation;    /**< perturbation controller */
         ConstantTorque _constant_torque; /**< constant torque controller*/
+        PtbGeneral _ptb_general; /**< Generalized Perturbation Controller>*/
 };
 
 #endif

@@ -2,5 +2,5 @@
 2,"parameter number, the number of parameters to read per line"
 ,Parameter list for the  Sine controller
 ,Parameter order:
-Ampitude(Nm),"Direction (0 = PF, 1 = DF)"
+Amplitdue,Direction
 0,0

@@ -362,6 +362,7 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 , _perturbation(id, exo_data)
 , _parabolic(id, exo_data)
 , _constant_torque(id, exo_data)
+, _ptb_general(id, exo_data)
 {
 
     //Serial.print("HipJoint::HipJoint\n");
@@ -532,6 +533,9 @@ void HipJoint::set_controller(uint8_t controller_id)
         case (uint8_t)config_defs::hip_controllers::constant_torque:
             _controller = &_constant_torque;
             break;
+        case (uint8_t)config_defs::hip_controllers::ptb_general:
+            _controller = &_ptb_general;
+            break;
         default :
             _controller = nullptr;
             break;
@@ -550,6 +554,7 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
 , _stasis(id, exo_data)
 , _perturbation(id, exo_data)
 , _constant_torque(id, exo_data)
+, _elbow_min_max(id, exo_data)
 {
     // Serial.print("KneeJoint::KneeJoint\n");
     // set _joint_data to point to the data specific to this joint.
@@ -694,6 +699,9 @@ void KneeJoint::set_controller(uint8_t controller_id)  // changes the high level
         case (uint8_t)config_defs::knee_controllers::constant_torque:
             _controller = &_constant_torque;
             break;
+        case (uint8_t)config_defs::knee_controllers::elbow_min_max:
+            _controller = &_elbow_min_max;
+            break;
         default :
             _controller = nullptr;
             break;
@@ -713,6 +721,7 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 , _stasis(id, exo_data)
 , _perturbation(id, exo_data)
 , _constant_torque(id, exo_data)
+, _ptb_general(id, exo_data)
 {
     // Serial.print("AnkleJoint::AnkleJoint\n");
     // set _joint_data to point to the data specific to this joint.
@@ -871,6 +880,9 @@ void AnkleJoint::set_controller(uint8_t controller_id)  // changes the high leve
             break;
         case (uint8_t)config_defs::ankle_controllers::constant_torque:
             _controller = &_constant_torque;
+            break;
+        case (uint8_t)config_defs::ankle_controllers::ptb_general:
+            _controller = &_ptb_general;
             break;
         default :
             _controller = nullptr;

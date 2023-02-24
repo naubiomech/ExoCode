@@ -2,5 +2,5 @@
 2,"parameter number, the number of parameters to read per line"
 ,Parameter list for the  Sine controller
 ,Parameter order:
-Amplitdue,Direction
-0,0
+Mode,Settings
+1,6

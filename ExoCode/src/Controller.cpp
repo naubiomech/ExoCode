@@ -9,6 +9,7 @@
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41) 
 #include <math.h>
+#include <random>
 
 _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
 {
@@ -1942,5 +1943,298 @@ float ConstantTorque::calc_motor_cmd()
     
     return cmd;
 };
+
+//****************************************************
+
+
+ElbowMinMax::ElbowMinMax(config_defs::joint_id id, ExoData* exo_data)
+    : _Controller(id, exo_data)
+{
+#ifdef CONTROLLER_DEBUG
+    Serial.println("ElbowMinMax::Constructor");
+#endif
+
+};
+
+float ElbowMinMax::calc_motor_cmd()
+{
+    float cmd = 0;     //Creates the cmd variable and initializes it to 0;
+    float cmd_toe_elbow = 0;
+    float cmd_heel_elbow = 0;
+
+    // float fsr_toe_current_elbow = _leg_data->toe_fsr;
+    // float fsr_heel_current_elbow = _leg_data->heel_fsr;
+    float fsr_toe_current_elbow = 0.8;
+    float fsr_heel_current_elbow = 2;
+    if (_controller_data->is_first_fsr_reading_elbow) {
+        //fsr_toe_current_elbow = utils::ewma(_leg_data->toe_fsr, _leg_data->toe_fsr, 0.5);
+        //fsr_heel_current_elbow = utils::ewma(_leg_data->heel_fsr, _leg_data->heel_fsr, 0.5);
+        _controller_data->fsr_toe_previous_elbow = _leg_data->toe_fsr;
+        _controller_data->fsr_heel_previous_elbow = _leg_data->heel_fsr;
+        _controller_data->is_first_fsr_reading_elbow = false;
+        Serial.println("First fsr read");
+    }
+    else {
+        //fsr_toe_current_elbow = utils::ewma(_leg_data->toe_fsr, _controller_data->fsr_toe_previous_elbow, 0.5);
+        //fsr_heel_current_elbow = utils::ewma(_leg_data->heel_fsr, _controller_data->fsr_heel_previous_elbow, 0.5);
+        _controller_data->fsr_toe_previous_elbow = fsr_toe_current_elbow;
+        _controller_data->fsr_heel_previous_elbow = fsr_heel_current_elbow;
+    }
+    
+
+    _controller_data->fsr_toe_array_elbow[_controller_data->i_elbow] = fsr_toe_current_elbow;
+    _controller_data->fsr_heel_array_elbow[_controller_data->i_elbow] = fsr_heel_current_elbow;
+    
+    if (_controller_data->is_first_run_elbow) {
+        if (_controller_data->i_elbow == 50) {
+            _controller_data->i_elbow = 0;
+            _controller_data->is_first_run_elbow = false;
+        }
+        else {
+              _controller_data->fsr_toe_sum_elbow += fsr_toe_current_elbow;
+              _controller_data->fsr_heel_sum_elbow += fsr_heel_current_elbow;
+              if (fsr_toe_current_elbow > _controller_data->fsr_toe_max_elbow) {
+                     _controller_data->fsr_toe_max_elbow = fsr_toe_current_elbow;
+              }
+              else if (fsr_toe_current_elbow < _controller_data->fsr_toe_min_elbow) {
+                     _controller_data->fsr_toe_min_elbow = fsr_toe_current_elbow;
+                 }
+              if (fsr_heel_current_elbow > _controller_data->fsr_heel_max_elbow) {
+                     _controller_data->fsr_heel_max_elbow = fsr_heel_current_elbow;
+                 }
+              else if (fsr_heel_current_elbow < _controller_data->fsr_heel_min_elbow) {
+                     _controller_data->fsr_heel_min_elbow = fsr_heel_current_elbow;
+                 }
+        }
+    }
+
+
+    else {
+        if (_controller_data->i_elbow == 50){
+        _controller_data->i_elbow = 0;
+            Serial.println("50 iterations done.");            
+        }
+
+        _controller_data->fsr_toe_sum_elbow -= _controller_data->fsr_toe_array_elbow[0];
+        _controller_data->fsr_toe_sum_elbow += fsr_toe_current_elbow;
+        _controller_data->fsr_heel_sum_elbow -= _controller_data->fsr_heel_array_elbow[0];
+        _controller_data->fsr_heel_sum_elbow += fsr_heel_current_elbow;
+        _controller_data->fsr_toe_array_elbow[_controller_data->i_elbow] = fsr_toe_current_elbow;
+        _controller_data->fsr_heel_array_elbow[_controller_data->i_elbow] = fsr_heel_current_elbow;
+
+    }
+
+    
+    for (int i = 0; i < 50; i++) {
+        if (_controller_data->fsr_toe_array_elbow[_controller_data->i_elbow] > _controller_data->fsr_toe_max_elbow) {
+            _controller_data->fsr_toe_max_elbow = _controller_data->fsr_toe_array_elbow[_controller_data->i_elbow];
+        }
+        else if (_controller_data->fsr_toe_array_elbow[_controller_data->i_elbow] < _controller_data->fsr_toe_min_elbow) {
+            _controller_data->fsr_toe_min_elbow = _controller_data->fsr_toe_array_elbow[_controller_data->i_elbow];
+        }
+        if (_controller_data->fsr_heel_array_elbow[_controller_data->i_elbow] > _controller_data->fsr_heel_max_elbow) {
+            _controller_data->fsr_heel_max_elbow = _controller_data->fsr_heel_array_elbow[_controller_data->i_elbow];
+        }
+        else if (_controller_data->fsr_heel_array_elbow[_controller_data->i_elbow] < _controller_data->fsr_heel_min_elbow) {
+            _controller_data->fsr_heel_min_elbow = _controller_data->fsr_heel_array_elbow[_controller_data->i_elbow];
+        }
+    } 
+    
+
+    _controller_data->i_elbow++;
+
+    // output_limit_elbow = _controller_data->parameters[controller_defs::elbow_min_max::output_limit_elbow];
+    if (_controller_data->fsr_toe_min_elbow != _controller_data->fsr_toe_max_elbow) {
+        _controller_data->fsr_min_max_elbow = (fsr_toe_current_elbow - _controller_data->fsr_toe_min_elbow)/(_controller_data->fsr_toe_max_elbow - _controller_data->fsr_toe_min_elbow);
+        cmd_toe_elbow = _controller_data->output_limit_elbow * _controller_data->fsr_min_max_elbow;      
+        // Serial.print("Toe: Current filtered FSR ");
+        // Serial.print(fsr_toe_current_elbow, 2);
+        // Serial.print(" |Current raw FSR ");
+        // Serial.print(_leg_data->toe_fsr, 2);
+        // Serial.print(" |Min ");
+        // Serial.print(_controller_data->fsr_toe_min_elbow,2);
+        // Serial.print("  |Max ");
+        // Serial.print(_controller_data->fsr_toe_max_elbow,2);
+        // Serial.print(" |Constant ");
+        // Serial.print(_controller_data->output_limit_elbow);
+        // Serial.print(" |Current ratio ");
+        // Serial.print(_controller_data->fsr_min_max_elbow);
+        // Serial.print("\n");
+    }
+    else {
+        cmd_toe_elbow = 0;
+        // Serial.print("Toe fsr readings equal.\n");
+    }
+    if (_controller_data->fsr_heel_min_elbow != _controller_data->fsr_heel_max_elbow) {
+        _controller_data->fsr_min_max_elbow = (fsr_heel_current_elbow - _controller_data->fsr_heel_min_elbow)/(_controller_data->fsr_heel_max_elbow - _controller_data->fsr_heel_min_elbow);
+        cmd_heel_elbow = _controller_data->output_limit_elbow * _controller_data->fsr_min_max_elbow;      
+        // Serial.print("Heel: Min ");
+        // Serial.print(_controller_data->fsr_heel_min_elbow,2);
+        // Serial.print(" Max ");
+        // Serial.print(_controller_data->fsr_heel_max_elbow,2);
+        // Serial.print(" Constant ");
+        // Serial.print(_controller_data->output_limit_elbow);
+        // Serial.print(" Current ratio ");
+        // Serial.print(_controller_data->fsr_min_max_elbow);
+        // Serial.print("\n");
+    }
+    else {
+        cmd_heel_elbow = 0;
+        // Serial.println("Heel fsr readings equal.\n");
+    }
+
+    cmd = cmd_toe_elbow;
+    Serial.print("cmd is ");
+    Serial.print(cmd, 2);
+    Serial.print("\n");
+
+    return cmd;
+};
+//****************************************************
+
+
+PtbGeneral::PtbGeneral(config_defs::joint_id id, ExoData* exo_data)
+    : _Controller(id, exo_data)
+{
+#ifdef CONTROLLER_DEBUG
+    Serial.println("PtbGeneral::Constructor");
+#endif
+
+};
+
+float PtbGeneral::calc_motor_cmd()
+{
+    // if (_controller_data->iTest >= 99) {
+    //     _controller_data->iTest = 0; // _leg_data->percent_gait
+    // }
+    // float fsrToeTest = 0.25; // _leg_data->toe_fsr
+    // float fsrHeelTest = 0.25; // _leg_data->heel_fsr
+    _controller_data->iTest = _leg_data->percent_gait;
+    float fsrToeTest = _leg_data->toe_fsr;
+    float fsrHeelTest = _leg_data->heel_fsr;
+
+    float cmd = 0;
+    Serial.print("\n");
+    Serial.print("Index: ");
+     Serial.print((_controller_data->parameters[controller_defs::ptb_general::ptb_mode_idx]));
+     Serial.print(" | ");
+    switch ((int)_controller_data->parameters[controller_defs::ptb_general::ptb_mode_idx]) {
+       case 1: // constant torque during swing phase; the exact percent gait will be random
+        Serial.print("Is in Mode 1. cmd set to ");
+        Serial.print(_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx]);
+        Serial.print(" ");
+            if (_controller_data->isPerturbing) {
+                if (_controller_data->iTest < _controller_data->ptbHead || _controller_data->iTest > _controller_data->ptbTail) {
+                    _controller_data->isPerturbing = false;
+                    _controller_data->ptbDetermined = false;
+                    _controller_data->ptbApplied = true;
+                }
+            }
+            else {
+                Serial.println("Is not perturbing.");
+                if (_controller_data->ptbDetermined) {
+                   Serial.println("Perturbation is determined.");
+                    if (_controller_data->iTest >= _controller_data->ptbHead && _controller_data->iTest <= _controller_data->ptbTail && fsrToeTest <0.3 && fsrHeelTest < 0.3) {
+                        _controller_data->isPerturbing = true;
+                        
+                    }
+                }
+                else {
+                    Serial.println("Perturbation is NOT determined.");
+                    // if (fsrToeTest <0.3 && fsrHeelTest < 0.3) {
+                        Serial.print("\n Random number updated.\n");
+                        uint8_t RAM1 = 0;
+                        uint8_t RAM2 = 0;
+                        
+                        randomSeed(analogRead(A0));
+                        RAM1 = random(_controller_data->iTest,97);
+                        RAM2 = random(RAM1,99);   
+                        
+                        
+                        
+                        _controller_data->ptbHead = min(RAM1,RAM2);
+                        _controller_data->ptbTail = max(RAM1,RAM2);
+                        // int phase_range_ptb = 100 - iTest;
+                        // std::random_device rd{}; // obtain a random number from hardware
+                        // std::mt19937 gen{rd()}; // seed the generator
+                        // std::uniform_int_distribution<int> distr{_controller_data->iTest, 100}; // define the range
+                        // // uint8_t ptbStart = rand() % phase_range_ptb + iTest;
+                        // _controller_data->ptbHead = distr(gen);
+                        // //std::random_device rd1{}; // obtain a random number from hardware
+                        // //std::mt19937 gen(rd1()); // seed the generator
+                        // std::uniform_int_distribution<> distr(_controller_data->ptbHead, 100); // define the range
+                        // _controller_data->ptbTail = distr(gen);
+                        _controller_data->ptbDetermined = true;
+                        _controller_data->ptbApplied = false;
+                        // delete rd;
+                        // delete rd1;
+                        // delete gen;
+                        // delete gen1;
+                        // delete distr;
+                        // delete distr1;
+                        //Serial.println(_controller_data->ptbHead);
+                        //Serial.println(_controller_data->ptbTail);
+                    // }
+                }
+            }
+            
+                if (_controller_data->isPerturbing && !_controller_data->ptbApplied) {
+                    cmd = _controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
+                    // cmd = 3.14159;
+                }
+                else {
+                cmd = 0;
+                }
+            
+            break;
+            // return;
+
+            case 2:
+            cmd = _controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
+            Serial.print("\n");
+            Serial.print("Is in continuous rotation mode.\n");
+            break;
+
+            default:
+            Serial.print("\n");
+            Serial.print("Is in default mode.\n");
+            _controller_data->isPerturbing = false;
+            _controller_data->ptbApplied = false;
+            _controller_data->ptbDetermined = false;
+            cmd = 0;
+
+    }
+
+    // Uncomment the next paragraph to evaluate code running speed
+    // _controller_data->time_current_ptb = micros();
+    // float run_time_ptb = _controller_data->time_current_ptb - _controller_data->time_previous_ptb;
+    // _controller_data->time_previous_ptb = _controller_data->time_current_ptb;
+
+// if (_controller_data->isPerturbing) {
+//     Serial.print("isPerturbing ");
+//     Serial.print(_controller_data->isPerturbing);
+//     Serial.print(" __ ptbDetermined ");
+//     Serial.print(_controller_data->ptbDetermined);
+//     Serial.print(" __ Start: ");
+//     Serial.print(_controller_data->ptbHead);
+//     Serial.print(" __ End: ");
+//     Serial.print(_controller_data->ptbTail);
+//     Serial.print(" __ percent_gait ");
+//     Serial.print(_controller_data->iTest);
+//     Serial.print("\n");
+//     Serial.print("cmd: ");
+//     Serial.print(cmd);
+//     Serial.print(" | Iteration run time: ");
+//     Serial.print(run_time_ptb);
+//     Serial.print("\n");
+// }
+    
+
+
+    // _controller_data->iTest++;
+
+    // Serial.println(cmd);
+    return cmd;
+}
 
 #endif

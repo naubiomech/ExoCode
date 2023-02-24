@@ -8,3 +8,5 @@ ExoCode/.vscode
 */.vs
 
 
+ExoCode/src/IniFile.cpp
+ExoCode/src/IniFile.h

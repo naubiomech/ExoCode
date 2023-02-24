@@ -19,7 +19,7 @@
 // Common Libraries
 #include "src\Board.h"
 #include "src\ExoData.h"
-#include "src\Exo.h"
+#include "src\Exo.h"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 #include "src\Utilities.h"
 #include "src\StatusDefs.h"
 
@@ -52,10 +52,10 @@ void setup()
   analogReadResolution(12);
   
   Serial.begin(115200);
-//  TODO: Remove serial while for deployed version as this would hang
-//    while (!Serial) {
-//     ; // wait for serial port to connect. Needed for native USB
-//    }
+ // TODO: Remove serial while for deployed version as this would hang
+     //while (!Serial) {
+      //; // wait for serial port to connect. Needed for native USB
+     //}
 
     // get the config information from the SD card.
     ini_parser(config_info::config_to_send);
@@ -453,7 +453,7 @@ void loop()
     exo.run();
 
     // conditionally calls error handlers
-    error_manager.check();
+    // error_manager.check();
     
     // print the exo_data at a fixed period.
 //    unsigned int data_print_ms = 5000;

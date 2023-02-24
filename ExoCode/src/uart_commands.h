@@ -101,6 +101,7 @@ namespace UART_rt_data
     static const uint8_t BILATERAL_HIP_RT_LEN = 8;
     static const uint8_t BILATERAL_HIP_ANKLE_RT_LEN = 8;
     static const uint8_t BILATERAL_ANKLE_RT_LEN = 8;
+    static const uint8_t RIGHT_KNEE = 8;
 
     static uint8_t new_rt_msg = 0; // Flag for new message
 };
@@ -335,10 +336,10 @@ namespace UART_command_handlers
         {
             case (uint8_t)config_defs::exo_name::bilateral_ankle:
                 rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
-                rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading;
+                rx_msg.data[0] = exo_data->right_leg.ankle.torque_reading;
                 rx_msg.data[1] = exo_data->right_leg.ankle.motor.i;//exo_data->right_leg.toe_stance;
                 rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint; 
-                rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_torque_reading; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i;
+                rx_msg.data[3] = exo_data->left_leg.ankle.torque_reading; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i;
                 //TODO: Implement Mark Feature
                 rx_msg.data[4] = exo_data->left_leg.ankle.motor.i;//exo_data->left_leg.toe_stance; //rx_msg.data[4] = exo_data->left_leg.toe_stance; 
                 rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;
@@ -377,7 +378,23 @@ namespace UART_command_handlers
                 rx_msg.data[6] = exo_data->right_leg.toe_fsr;                                       //Red State
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;                                        //Red State
                 break;
+                
+            case (uint8_t)config_defs::exo_name::right_knee:
+                rx_msg.len = (uint8_t)UART_rt_data::RIGHT_KNEE;
+                rx_msg.data[0] = exo_data->right_leg.knee.controller.filtered_torque_reading;
+                rx_msg.data[1] = exo_data->right_leg.knee.motor.i;//exo_data->right_leg.toe_stance;
+                rx_msg.data[2] = exo_data->right_leg.knee.controller.setpoint; 
+                rx_msg.data[3] = exo_data->left_leg.knee.controller.filtered_torque_reading; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i;
+                //TODO: Implement Mark Feature
+                rx_msg.data[4] = exo_data->left_leg.knee.motor.i;//exo_data->left_leg.toe_stance; //rx_msg.data[4] = exo_data->left_leg.toe_stance; 
+                rx_msg.data[5] = exo_data->left_leg.knee.controller.setpoint;
+                //rx_msg.data[6] = exo_data->right_leg.thigh_angle / 100;
+                //rx_msg.data[7] = exo_data->left_leg.thigh_angle / 100;
+                rx_msg.data[6] = exo_data->right_leg.toe_fsr;
+                rx_msg.data[7] = exo_data->left_leg.toe_fsr;                                     //Red State
+                Serial.println("case RIGHT_KNEE");
                 break;
+               
             
             default:
                 rx_msg.len = (uint8_t)UART_rt_data::BILATERAL_ANKLE_RT_LEN;
