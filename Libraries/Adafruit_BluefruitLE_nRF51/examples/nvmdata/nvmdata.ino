@@ -45,7 +45,7 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -70,22 +70,22 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit NVM DATA Example"));
-  Serial.println(F("-------------------------------------"));
+  logger::println(F("Adafruit Bluefruit NVM DATA Example"));
+  logger::println(F("-------------------------------------"));
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   /* Disable command echo from Bluefruit */
 //  ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
 
@@ -95,35 +95,35 @@ void setup(void)
   if ( magic_number != MAGIC_NUMBER )
   {
     /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Magic not found: performing a factory reset: "));
+    logger::println(F("Magic not found: performing a factory reset: "));
     if ( ! ble.factoryReset() ){
       error(F("Couldn't factory reset"));
     }
 
     // Write data to NVM
-    Serial.println( F("Write defined data to NVM") );
+    logger::println( F("Write defined data to NVM") );
     ble.writeNVM(0 , MAGIC_NUMBER);
     ble.writeNVM(16, MAGIC_STRING);
   }else
   {
-    Serial.println(F("Magic found"));
+    logger::println(F("Magic found"));
   }
 
   // Read from NVM and print out
   ble.readNVM(0, &magic_number);
-  Serial.print( F("Magic Number: ") );
-  Serial.println( magic_number );
+  logger::print( F("Magic Number: ") );
+  logger::println( magic_number );
 
   char magic_str[32];
   ble.readNVM(16, magic_str, sizeof(magic_str));
-  Serial.print( F("Magic String: ") );
-  Serial.println( magic_str );
+  logger::print( F("Magic String: ") );
+  logger::println( magic_str );
 
   // Dump the whole NVM section
-  Serial.println();
-  Serial.println("Dumping the whole NVM contents");
+  logger::println();
+  logger::println("Dumping the whole NVM contents");
   ble.atcommand(F("AT+DBGNVMRD"));
-  Serial.println("User NVM data is at offset 0x0640");
+  logger::println("User NVM data is at offset 0x0640");
 }
 
 /**************************************************************************/
@@ -134,7 +134,7 @@ void setup(void)
 void loop(void)
 {
   // Display command prompt
-  Serial.print(F("AT > "));
+  logger::print(F("AT > "));
 
   // Check for user input and echo it back if anything was found
   char command[BUFSIZE+1];

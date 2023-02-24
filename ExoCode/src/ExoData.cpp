@@ -1,5 +1,6 @@
 #include "ExoData.h"
 #include "error_types.h"
+#include "Logger.h"
 
 /*
  * Constructor for the exo data.
@@ -95,9 +96,9 @@ JointData* ExoData::get_joint_with(uint8_t id)
         j_data = &right_leg.ankle;
         break; 
     default:
-        // Serial.print("ExoData::get_joint_with->No joint with ");
-        // Serial.print(id);
-        // Serial.println(" was found.");
+        // logger::print("ExoData::get_joint_with->No joint with ");
+        // logger::print(id);
+        // logger::println(" was found.");
         break;
     }
     return j_data;
@@ -121,209 +122,209 @@ uint16_t ExoData::get_status(void)
 
 void ExoData::print()
 {
-    Serial.print("\t Status : ");
-    Serial.println(_status);
-    Serial.print("\t Sync LED : ");
-    Serial.println(sync_led_state);
+    logger::print("\t Status : ");
+    logger::println(_status);
+    logger::print("\t Sync LED : ");
+    logger::println(sync_led_state);
     
     if (left_leg.is_used)
     {
-        Serial.print("\tLeft :: FSR Calibration : ");
-        Serial.print(left_leg.do_calibration_heel_fsr);
-        Serial.println(left_leg.do_calibration_toe_fsr);
-        Serial.print("\tLeft :: FSR Refinement : ");
-        Serial.print(left_leg.do_calibration_refinement_heel_fsr);
-        Serial.println(left_leg.do_calibration_refinement_toe_fsr);
-        Serial.print("\tLeft :: Percent Gait : ");
-        Serial.println(left_leg.percent_gait);
-        // Serial.print("\tLeft :: Percent Gait Bytes: ");
+        logger::print("\tLeft :: FSR Calibration : ");
+        logger::print(left_leg.do_calibration_heel_fsr);
+        logger::println(left_leg.do_calibration_toe_fsr);
+        logger::print("\tLeft :: FSR Refinement : ");
+        logger::print(left_leg.do_calibration_refinement_heel_fsr);
+        logger::println(left_leg.do_calibration_refinement_toe_fsr);
+        logger::print("\tLeft :: Percent Gait : ");
+        logger::println(left_leg.percent_gait);
+        // logger::print("\tLeft :: Percent Gait Bytes: ");
         // for (unsigned int i = 0; i < sizeof(SPI_DATA_TYPE); i++)
         // {
-            // Serial.print(_peripheral_message[running_idx_cnt + spi_data_idx::leg::percent_gait-spi_data_idx::leg::idx_cnt+i],HEX);
-            // Serial.print("\t");
+            // logger::print(_peripheral_message[running_idx_cnt + spi_data_idx::leg::percent_gait-spi_data_idx::leg::idx_cnt+i],HEX);
+            // logger::print("\t");
         // }
-        // Serial.print("\n");
-        Serial.print("\tLeft :: Heel FSR : ");
-        Serial.println(left_leg.heel_fsr);
-        Serial.print("\tLeft :: Toe FSR : ");
-        Serial.println(left_leg.toe_fsr);
+        // logger::print("\n");
+        logger::print("\tLeft :: Heel FSR : ");
+        logger::println(left_leg.heel_fsr);
+        logger::print("\tLeft :: Toe FSR : ");
+        logger::println(left_leg.toe_fsr);
         
         if(left_leg.hip.is_used)
         {
-            Serial.println("\tLeft :: Hip");
-            Serial.print("\t\tcalibrate_torque_sensor : ");
-            Serial.println(left_leg.hip.calibrate_torque_sensor);
-            Serial.print("\t\ttorque_reading : ");
-            Serial.println(left_leg.hip.torque_reading);
-            Serial.print("\t\tMotor :: p : ");
-            Serial.println(left_leg.hip.motor.p);
-            Serial.print("\t\tMotor :: v : ");
-            Serial.println(left_leg.hip.motor.v);
-            Serial.print("\t\tMotor :: i : ");
-            Serial.println(left_leg.hip.motor.i);
-            Serial.print("\t\tMotor :: p_des : ");
-            Serial.println(left_leg.hip.motor.p_des);
-            Serial.print("\t\tMotor :: v_des : ");
-            Serial.println(left_leg.hip.motor.v_des);
-            Serial.print("\t\tMotor :: t_ff : ");
-            Serial.println(left_leg.hip.motor.t_ff);
-            Serial.print("\t\tController :: controller : ");
-            Serial.println(left_leg.hip.controller.controller);
-            Serial.print("\t\tController :: setpoint : ");
-            Serial.println(left_leg.hip.controller.setpoint);
-            Serial.print("\t\tController :: parameter_set : ");
-            Serial.println(left_leg.hip.controller.parameter_set);
+            logger::println("\tLeft :: Hip");
+            logger::print("\t\tcalibrate_torque_sensor : ");
+            logger::println(left_leg.hip.calibrate_torque_sensor);
+            logger::print("\t\ttorque_reading : ");
+            logger::println(left_leg.hip.torque_reading);
+            logger::print("\t\tMotor :: p : ");
+            logger::println(left_leg.hip.motor.p);
+            logger::print("\t\tMotor :: v : ");
+            logger::println(left_leg.hip.motor.v);
+            logger::print("\t\tMotor :: i : ");
+            logger::println(left_leg.hip.motor.i);
+            logger::print("\t\tMotor :: p_des : ");
+            logger::println(left_leg.hip.motor.p_des);
+            logger::print("\t\tMotor :: v_des : ");
+            logger::println(left_leg.hip.motor.v_des);
+            logger::print("\t\tMotor :: t_ff : ");
+            logger::println(left_leg.hip.motor.t_ff);
+            logger::print("\t\tController :: controller : ");
+            logger::println(left_leg.hip.controller.controller);
+            logger::print("\t\tController :: setpoint : ");
+            logger::println(left_leg.hip.controller.setpoint);
+            logger::print("\t\tController :: parameter_set : ");
+            logger::println(left_leg.hip.controller.parameter_set);
         }
         
         if(left_leg.knee.is_used)
         {
-            Serial.println("\tLeft :: Knee");
-            Serial.print("\t\tcalibrate_torque_sensor : ");
-            Serial.println(left_leg.knee.calibrate_torque_sensor);
-            Serial.print("\t\ttorque_reading : ");
-            Serial.println(left_leg.knee.torque_reading);
-            Serial.print("\t\tMotor :: p : ");
-            Serial.println(left_leg.knee.motor.p);
-            Serial.print("\t\tMotor :: v : ");
-            Serial.println(left_leg.knee.motor.v);
-            Serial.print("\t\tMotor :: i : ");
-            Serial.println(left_leg.knee.motor.i);
-            Serial.print("\t\tMotor :: p_des : ");
-            Serial.println(left_leg.knee.motor.p_des);
-            Serial.print("\t\tMotor :: v_des : ");
-            Serial.println(left_leg.knee.motor.v_des);
-            Serial.print("\t\tMotor :: t_ff : ");
-            Serial.println(left_leg.knee.motor.t_ff);
-            Serial.print("\t\tController :: controller : ");
-            Serial.println(left_leg.knee.controller.controller);
-            Serial.print("\t\tController :: setpoint : ");
-            Serial.println(left_leg.knee.controller.setpoint);
-            Serial.print("\t\tController :: parameter_set : ");
-            Serial.println(left_leg.knee.controller.parameter_set);
+            logger::println("\tLeft :: Knee");
+            logger::print("\t\tcalibrate_torque_sensor : ");
+            logger::println(left_leg.knee.calibrate_torque_sensor);
+            logger::print("\t\ttorque_reading : ");
+            logger::println(left_leg.knee.torque_reading);
+            logger::print("\t\tMotor :: p : ");
+            logger::println(left_leg.knee.motor.p);
+            logger::print("\t\tMotor :: v : ");
+            logger::println(left_leg.knee.motor.v);
+            logger::print("\t\tMotor :: i : ");
+            logger::println(left_leg.knee.motor.i);
+            logger::print("\t\tMotor :: p_des : ");
+            logger::println(left_leg.knee.motor.p_des);
+            logger::print("\t\tMotor :: v_des : ");
+            logger::println(left_leg.knee.motor.v_des);
+            logger::print("\t\tMotor :: t_ff : ");
+            logger::println(left_leg.knee.motor.t_ff);
+            logger::print("\t\tController :: controller : ");
+            logger::println(left_leg.knee.controller.controller);
+            logger::print("\t\tController :: setpoint : ");
+            logger::println(left_leg.knee.controller.setpoint);
+            logger::print("\t\tController :: parameter_set : ");
+            logger::println(left_leg.knee.controller.parameter_set);
         }
         if(left_leg.ankle.is_used)
         {
-            Serial.println("\tLeft :: Ankle");
-            Serial.print("\t\tcalibrate_torque_sensor : ");
-            Serial.println(left_leg.ankle.calibrate_torque_sensor);
-            Serial.print("\t\ttorque_reading : ");
-            Serial.println(left_leg.ankle.torque_reading);
-            Serial.print("\t\tMotor :: p : ");
-            Serial.println(left_leg.ankle.motor.p);
-            Serial.print("\t\tMotor :: v : ");
-            Serial.println(left_leg.ankle.motor.v);
-            Serial.print("\t\tMotor :: i : ");
-            Serial.println(left_leg.ankle.motor.i);
-            Serial.print("\t\tMotor :: p_des : ");
-            Serial.println(left_leg.ankle.motor.p_des);
-            Serial.print("\t\tMotor :: v_des : ");
-            Serial.println(left_leg.ankle.motor.v_des);
-            Serial.print("\t\tMotor :: t_ff : ");
-            Serial.println(left_leg.ankle.motor.t_ff);
-            Serial.print("\t\tController :: controller : ");
-            Serial.println(left_leg.ankle.controller.controller);
-            Serial.print("\t\tController :: setpoint : ");
-            Serial.println(left_leg.ankle.controller.setpoint);
-            Serial.print("\t\tController :: parameter_set : ");
-            Serial.println(left_leg.ankle.controller.parameter_set);
+            logger::println("\tLeft :: Ankle");
+            logger::print("\t\tcalibrate_torque_sensor : ");
+            logger::println(left_leg.ankle.calibrate_torque_sensor);
+            logger::print("\t\ttorque_reading : ");
+            logger::println(left_leg.ankle.torque_reading);
+            logger::print("\t\tMotor :: p : ");
+            logger::println(left_leg.ankle.motor.p);
+            logger::print("\t\tMotor :: v : ");
+            logger::println(left_leg.ankle.motor.v);
+            logger::print("\t\tMotor :: i : ");
+            logger::println(left_leg.ankle.motor.i);
+            logger::print("\t\tMotor :: p_des : ");
+            logger::println(left_leg.ankle.motor.p_des);
+            logger::print("\t\tMotor :: v_des : ");
+            logger::println(left_leg.ankle.motor.v_des);
+            logger::print("\t\tMotor :: t_ff : ");
+            logger::println(left_leg.ankle.motor.t_ff);
+            logger::print("\t\tController :: controller : ");
+            logger::println(left_leg.ankle.controller.controller);
+            logger::print("\t\tController :: setpoint : ");
+            logger::println(left_leg.ankle.controller.setpoint);
+            logger::print("\t\tController :: parameter_set : ");
+            logger::println(left_leg.ankle.controller.parameter_set);
         }
     }
     
     if (left_leg.is_used)
     {
-        Serial.print("\tRight :: FSR Calibration : ");
-        Serial.print(right_leg.do_calibration_heel_fsr);
-        Serial.println(right_leg.do_calibration_toe_fsr);
-        Serial.print("\tRight :: FSR Refinement : ");
-        Serial.print(right_leg.do_calibration_refinement_heel_fsr);
-        Serial.println(right_leg.do_calibration_refinement_toe_fsr);
-        Serial.print("\tRight :: Percent Gait : ");
-        Serial.println(right_leg.percent_gait);
-        Serial.print("\tLeft :: Heel FSR : ");
-        Serial.println(right_leg.heel_fsr);
-        Serial.print("\tLeft :: Toe FSR : ");
-        Serial.println(right_leg.toe_fsr);
+        logger::print("\tRight :: FSR Calibration : ");
+        logger::print(right_leg.do_calibration_heel_fsr);
+        logger::println(right_leg.do_calibration_toe_fsr);
+        logger::print("\tRight :: FSR Refinement : ");
+        logger::print(right_leg.do_calibration_refinement_heel_fsr);
+        logger::println(right_leg.do_calibration_refinement_toe_fsr);
+        logger::print("\tRight :: Percent Gait : ");
+        logger::println(right_leg.percent_gait);
+        logger::print("\tLeft :: Heel FSR : ");
+        logger::println(right_leg.heel_fsr);
+        logger::print("\tLeft :: Toe FSR : ");
+        logger::println(right_leg.toe_fsr);
         
         if(left_leg.hip.is_used)
         {
-            Serial.println("\tRight :: Hip");
-            Serial.print("\t\tcalibrate_torque_sensor : ");
-            Serial.println(right_leg.hip.calibrate_torque_sensor);
-            Serial.print("\t\ttorque_reading : ");
-            Serial.println(right_leg.hip.torque_reading);
-            Serial.print("\t\tMotor :: p : ");
-            Serial.println(right_leg.hip.motor.p);
-            Serial.print("\t\tMotor :: v : ");
-            Serial.println(right_leg.hip.motor.v);
-            Serial.print("\t\tMotor :: i : ");
-            Serial.println(right_leg.hip.motor.i);
-            Serial.print("\t\tMotor :: p_des : ");
-            Serial.println(right_leg.hip.motor.p_des);
-            Serial.print("\t\tMotor :: v_des : ");
-            Serial.println(right_leg.hip.motor.v_des);
-            Serial.print("\t\tMotor :: t_ff : ");
-            Serial.println(right_leg.hip.motor.t_ff);
-            Serial.print("\t\tController :: controller : ");
-            Serial.println(right_leg.hip.controller.controller);
-            Serial.print("\t\tController :: setpoint : ");
-            Serial.println(right_leg.hip.controller.setpoint);
-            Serial.print("\t\tController :: parameter_set : ");
-            Serial.println(right_leg.hip.controller.parameter_set);
+            logger::println("\tRight :: Hip");
+            logger::print("\t\tcalibrate_torque_sensor : ");
+            logger::println(right_leg.hip.calibrate_torque_sensor);
+            logger::print("\t\ttorque_reading : ");
+            logger::println(right_leg.hip.torque_reading);
+            logger::print("\t\tMotor :: p : ");
+            logger::println(right_leg.hip.motor.p);
+            logger::print("\t\tMotor :: v : ");
+            logger::println(right_leg.hip.motor.v);
+            logger::print("\t\tMotor :: i : ");
+            logger::println(right_leg.hip.motor.i);
+            logger::print("\t\tMotor :: p_des : ");
+            logger::println(right_leg.hip.motor.p_des);
+            logger::print("\t\tMotor :: v_des : ");
+            logger::println(right_leg.hip.motor.v_des);
+            logger::print("\t\tMotor :: t_ff : ");
+            logger::println(right_leg.hip.motor.t_ff);
+            logger::print("\t\tController :: controller : ");
+            logger::println(right_leg.hip.controller.controller);
+            logger::print("\t\tController :: setpoint : ");
+            logger::println(right_leg.hip.controller.setpoint);
+            logger::print("\t\tController :: parameter_set : ");
+            logger::println(right_leg.hip.controller.parameter_set);
             
         }
         
         if(left_leg.knee.is_used)
         {
-            Serial.println("\tRight :: Knee");
-            Serial.print("\t\tcalibrate_torque_sensor : ");
-            Serial.println(right_leg.knee.calibrate_torque_sensor);
-            Serial.print("\t\ttorque_reading : ");
-            Serial.println(right_leg.knee.torque_reading);
-            Serial.print("\t\tMotor :: p : ");
-            Serial.println(right_leg.knee.motor.p);
-            Serial.print("\t\tMotor :: v : ");
-            Serial.println(right_leg.knee.motor.v);
-            Serial.print("\t\tMotor :: i : ");
-            Serial.println(right_leg.knee.motor.i);
-            Serial.print("\t\tMotor :: p_des : ");
-            Serial.println(right_leg.knee.motor.p_des);
-            Serial.print("\t\tMotor :: v_des : ");
-            Serial.println(right_leg.knee.motor.v_des);
-            Serial.print("\t\tMotor :: t_ff : ");
-            Serial.println(right_leg.knee.motor.t_ff);
-            Serial.print("\t\tController :: controller : ");
-            Serial.println(right_leg.knee.controller.controller);
-            Serial.print("\t\tController :: setpoint : ");
-            Serial.println(right_leg.knee.controller.setpoint);
-            Serial.print("\t\tController :: parameter_set : ");
-            Serial.println(right_leg.knee.controller.parameter_set);
+            logger::println("\tRight :: Knee");
+            logger::print("\t\tcalibrate_torque_sensor : ");
+            logger::println(right_leg.knee.calibrate_torque_sensor);
+            logger::print("\t\ttorque_reading : ");
+            logger::println(right_leg.knee.torque_reading);
+            logger::print("\t\tMotor :: p : ");
+            logger::println(right_leg.knee.motor.p);
+            logger::print("\t\tMotor :: v : ");
+            logger::println(right_leg.knee.motor.v);
+            logger::print("\t\tMotor :: i : ");
+            logger::println(right_leg.knee.motor.i);
+            logger::print("\t\tMotor :: p_des : ");
+            logger::println(right_leg.knee.motor.p_des);
+            logger::print("\t\tMotor :: v_des : ");
+            logger::println(right_leg.knee.motor.v_des);
+            logger::print("\t\tMotor :: t_ff : ");
+            logger::println(right_leg.knee.motor.t_ff);
+            logger::print("\t\tController :: controller : ");
+            logger::println(right_leg.knee.controller.controller);
+            logger::print("\t\tController :: setpoint : ");
+            logger::println(right_leg.knee.controller.setpoint);
+            logger::print("\t\tController :: parameter_set : ");
+            logger::println(right_leg.knee.controller.parameter_set);
         }
         
         if(left_leg.ankle.is_used)
         {
-            Serial.println("\tRight :: Ankle");
-            Serial.print("\t\tcalibrate_torque_sensor : ");
-            Serial.println(right_leg.ankle.calibrate_torque_sensor);
-            Serial.print("\t\ttorque_reading : ");
-            Serial.println(right_leg.ankle.torque_reading);
-            Serial.print("\t\tMotor :: p : ");
-            Serial.println(right_leg.ankle.motor.p);
-            Serial.print("\t\tMotor :: v : ");
-            Serial.println(right_leg.ankle.motor.v);
-            Serial.print("\t\tMotor :: i : ");
-            Serial.println(right_leg.ankle.motor.i);
-            Serial.print("\t\tMotor :: p_des : ");
-            Serial.println(right_leg.ankle.motor.p_des);
-            Serial.print("\t\tMotor :: v_des : ");
-            Serial.println(right_leg.ankle.motor.v_des);
-            Serial.print("\t\tMotor :: t_ff : ");
-            Serial.println(right_leg.ankle.motor.t_ff);
-            Serial.print("\t\tController :: controller : ");
-            Serial.println(right_leg.ankle.controller.controller);
-            Serial.print("\t\tController :: setpoint : ");
-            Serial.println(right_leg.ankle.controller.setpoint);
-            Serial.print("\t\tController :: parameter_set : ");
-            Serial.println(right_leg.ankle.controller.parameter_set);
+            logger::println("\tRight :: Ankle");
+            logger::print("\t\tcalibrate_torque_sensor : ");
+            logger::println(right_leg.ankle.calibrate_torque_sensor);
+            logger::print("\t\ttorque_reading : ");
+            logger::println(right_leg.ankle.torque_reading);
+            logger::print("\t\tMotor :: p : ");
+            logger::println(right_leg.ankle.motor.p);
+            logger::print("\t\tMotor :: v : ");
+            logger::println(right_leg.ankle.motor.v);
+            logger::print("\t\tMotor :: i : ");
+            logger::println(right_leg.ankle.motor.i);
+            logger::print("\t\tMotor :: p_des : ");
+            logger::println(right_leg.ankle.motor.p_des);
+            logger::print("\t\tMotor :: v_des : ");
+            logger::println(right_leg.ankle.motor.v_des);
+            logger::print("\t\tMotor :: t_ff : ");
+            logger::println(right_leg.ankle.motor.t_ff);
+            logger::print("\t\tController :: controller : ");
+            logger::println(right_leg.ankle.controller.controller);
+            logger::print("\t\tController :: setpoint : ");
+            logger::println(right_leg.ankle.controller.setpoint);
+            logger::print("\t\tController :: parameter_set : ");
+            logger::println(right_leg.ankle.controller.parameter_set);
         }
     }
    

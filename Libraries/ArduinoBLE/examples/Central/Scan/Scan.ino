@@ -19,12 +19,12 @@ void setup() {
 
   // begin initialization
   if (!BLE.begin()) {
-    Serial.println("starting BLE failed!");
+    logger::println("starting BLE failed!");
 
     while (1);
   }
 
-  Serial.println("BLE Central scan");
+  logger::println("BLE Central scan");
 
   // start scanning for peripheral
   BLE.scan();
@@ -36,33 +36,33 @@ void loop() {
 
   if (peripheral) {
     // discovered a peripheral
-    Serial.println("Discovered a peripheral");
-    Serial.println("-----------------------");
+    logger::println("Discovered a peripheral");
+    logger::println("-----------------------");
 
     // print address
-    Serial.print("Address: ");
-    Serial.println(peripheral.address());
+    logger::print("Address: ");
+    logger::println(peripheral.address());
 
     // print the local name, if present
     if (peripheral.hasLocalName()) {
-      Serial.print("Local Name: ");
-      Serial.println(peripheral.localName());
+      logger::print("Local Name: ");
+      logger::println(peripheral.localName());
     }
 
     // print the advertised service UUIDs, if present
     if (peripheral.hasAdvertisedServiceUuid()) {
-      Serial.print("Service UUIDs: ");
+      logger::print("Service UUIDs: ");
       for (int i = 0; i < peripheral.advertisedServiceUuidCount(); i++) {
-        Serial.print(peripheral.advertisedServiceUuid(i));
-        Serial.print(" ");
+        logger::print(peripheral.advertisedServiceUuid(i));
+        logger::print(" ");
       }
-      Serial.println();
+      logger::println();
     }
 
     // print the RSSI
-    Serial.print("RSSI: ");
-    Serial.println(peripheral.rssi());
+    logger::print("RSSI: ");
+    logger::println(peripheral.rssi());
 
-    Serial.println();
+    logger::println();
   }
 }

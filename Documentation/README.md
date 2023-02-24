@@ -529,7 +529,7 @@ switch (utils::get_joint_type(_id))
     {
         case (uint8_t)config_defs::joint_id::hip:
             #ifdef CONTROLLER_DEBUG
-                Serial.print("HIP ");
+                logger::print("HIP ");
             #endif
             if (is_left)
             {
@@ -545,7 +545,7 @@ switch (utils::get_joint_type(_id))
             
         case (uint8_t)config_defs::joint_id::knee:
             #ifdef CONTROLLER_DEBUG
-                Serial.print("KNEE ");
+                logger::print("KNEE ");
             #endif
             if (is_left)
             {
@@ -561,7 +561,7 @@ switch (utils::get_joint_type(_id))
         
         case (uint8_t)config_defs::joint_id::ankle:
             #ifdef CONTROLLER_DEBUG
-                Serial.print("ANKLE ");
+                logger::print("ANKLE ");
             #endif
             if (is_left)
             {
@@ -920,7 +920,7 @@ ZeroTorque::ZeroTorque(config_defs::joint_id id, ExoData* exo_data)
 {
     
     #ifdef CONTROLLER_DEBUG
-        Serial.println("ZeroTorque::Constructor");
+        logger::println("ZeroTorque::Constructor");
     #endif
     
 };
@@ -1395,7 +1395,7 @@ In the top of many of the files you will see a define for debugging like ```#def
 When this is present debug statements will print if they are in an ```#ifdef``` like:
 ```
 #ifdef EXO_DEBUG
-    Serial.println("Exo :: Constructor : _data set");
+    logger::println("Exo :: Constructor : _data set");
 #endif
 ```
 This is because serial printing is a pretty slow process, so you only want to do it if you are actively using it.

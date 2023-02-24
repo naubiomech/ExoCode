@@ -3,6 +3,7 @@
 #define Config_h 
 
 #include "Arduino.h"
+#include "LogLevels.h"
     #define FIRMWARE_VERSION 0_1_0
 
     #define AK_Board_V0_1 1
@@ -21,6 +22,12 @@
     // MACRO magic to convert a define to a string
     #define VAL(str) #str
     #define TOSTRING(str) VAL(str)
+
+    namespace logging
+    {
+        const LogLevel level = LogLevel::Debug;
+        const int baud_rate = 115200;
+    }
     
     namespace sync_time
     {

@@ -35,7 +35,7 @@ void setup() {
 
   // begin initialization
   if (!BLE.begin()) {
-    Serial.println("starting BLE failed!");
+    logger::println("starting BLE failed!");
 
     while (1);
   }
@@ -58,7 +58,7 @@ void setup() {
   // start advertising
   BLE.advertise();
 
-  Serial.println("Bluetooth device active, waiting for connections...");
+  logger::println("Bluetooth device active, waiting for connections...");
 }
 
 void loop() {
@@ -67,9 +67,9 @@ void loop() {
 
   // if a central is connected to the peripheral:
   if (central) {
-    Serial.print("Connected to central: ");
+    logger::print("Connected to central: ");
     // print the central's BT address:
-    Serial.println(central.address());
+    logger::println(central.address());
     // turn on the LED to indicate the connection:
     digitalWrite(LED_BUILTIN, HIGH);
 
@@ -85,8 +85,8 @@ void loop() {
     }
     // when the central disconnects, turn off the LED:
     digitalWrite(LED_BUILTIN, LOW);
-    Serial.print("Disconnected from central: ");
-    Serial.println(central.address());
+    logger::print("Disconnected from central: ");
+    logger::println(central.address());
   }
 }
 
@@ -98,8 +98,8 @@ void updateBatteryLevel() {
   int batteryLevel = map(battery, 0, 1023, 0, 100);
 
   if (batteryLevel != oldBatteryLevel) {      // if the battery level has changed
-    Serial.print("Battery Level % is now: "); // print it
-    Serial.println(batteryLevel);
+    logger::print("Battery Level % is now: "); // print it
+    logger::println(batteryLevel);
     batteryLevelChar.writeValue(batteryLevel);  // and update the battery level characteristic
     oldBatteryLevel = batteryLevel;           // save the level for next comparison
   }

@@ -4,6 +4,7 @@
 */
 
 #include "Controller.h"
+#include "Logger.h"
 //#define CONTROLLER_DEBUG
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
@@ -22,7 +23,7 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
     // we just need to know the side to point at the right data location so it is only for the constructor
     bool is_left = utils::get_is_left(_id);
     #ifdef CONTROLLER_DEBUG
-        Serial.print(is_left ? "Left " : "Right ");
+        logger::print(is_left ? "Left " : "Right ");
     #endif 
     
     _integral_val = 0;
@@ -34,7 +35,7 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
     {
         case (uint8_t)config_defs::joint_id::hip:
             #ifdef CONTROLLER_DEBUG
-                Serial.print("HIP ");
+                logger::print("HIP ");
             #endif
             if (is_left)
             {
@@ -50,7 +51,7 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
             
         case (uint8_t)config_defs::joint_id::knee:
             #ifdef CONTROLLER_DEBUG
-                Serial.print("KNEE ");
+                logger::print("KNEE ");
             #endif
             if (is_left)
             {
@@ -66,7 +67,7 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
         
         case (uint8_t)config_defs::joint_id::ankle:
             #ifdef CONTROLLER_DEBUG
-                Serial.print("ANKLE ");
+                logger::print("ANKLE ");
             #endif
             if (is_left)
             {
@@ -81,7 +82,7 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
             break;
     }
     #ifdef CONTROLLER_DEBUG
-        Serial.print("Controller : \n\t_controller_data set \n\t_joint_data set");
+        logger::print("Controller : \n\t_controller_data set \n\t_joint_data set");
     #endif
     // added a pointer to the leg data as most controllers will need to access info specific to their leg.
     if (is_left)
@@ -93,7 +94,7 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
         _leg_data = &(exo_data->right_leg);
     } 
     #ifdef CONTROLLER_DEBUG
-        Serial.println("\n\t_leg_data set");
+        logger::println("\n\t_leg_data set");
     #endif
     
 };
@@ -138,12 +139,12 @@ float _Controller::_pid(float cmd, float measurement, float p_gain, float i_gain
 void _Controller::reset_integral()
 {
     #ifdef CONTROLLER_DEBUG
-        Serial.println("_Controller::reset_integral : Entered");
+        logger::println("_Controller::reset_integral : Entered");
     #endif
     //this -> _integral_val = 0;
     
     #ifdef CONTROLLER_DEBUG
-        Serial.println("_Controller::reset_integral : Exited");
+        logger::println("_Controller::reset_integral : Exited");
     #endif
     
 };
@@ -155,7 +156,7 @@ ZeroTorque::ZeroTorque(config_defs::joint_id id, ExoData* exo_data)
 {
     
     #ifdef CONTROLLER_DEBUG
-        Serial.println("ZeroTorque::Constructor");
+        logger::println("ZeroTorque::Constructor");
     #endif
     
 };
@@ -174,18 +175,18 @@ float ZeroTorque::calc_motor_cmd()
 
      //if (_joint_data->is_left) 
      //{
-     //    Serial.print("ZeroTorque::calc_motor_cmd : torque_reading = ");
-     //    Serial.print(_joint_data->torque_reading);
-     //    Serial.print("\t");
-     //    Serial.print("ZeroTorque::calc_motor_cmd : cmd = ");
-     //    Serial.println(cmd);
+     //    logger::print("ZeroTorque::calc_motor_cmd : torque_reading = ");
+     //    logger::print(_joint_data->torque_reading);
+     //    logger::print("\t");
+     //    logger::print("ZeroTorque::calc_motor_cmd : cmd = ");
+     //    logger::println(cmd);
      //}
 
     // Print PD gains
-     Serial.print("ZeroTorque::calc_motor_cmd : p_gain = ");
-     Serial.println(_controller_data->parameters[controller_defs::zero_torque::p_gain_idx]);
-    // Serial.print("ZeroTorque::calc_motor_cmd : d_gain = ");
-    // Serial.println(_controller_data->parameters[controller_defs::zero_torque::d_gain_idx]);
+     logger::print("ZeroTorque::calc_motor_cmd : p_gain = ");
+     logger::println(_controller_data->parameters[controller_defs::zero_torque::p_gain_idx]);
+    // logger::print("ZeroTorque::calc_motor_cmd : d_gain = ");
+    // logger::println(_controller_data->parameters[controller_defs::zero_torque::d_gain_idx]);
     return cmd;
 };
 
@@ -196,7 +197,7 @@ Stasis::Stasis(config_defs::joint_id id, ExoData* exo_data)
 {
     
     #ifdef CONTROLLER_DEBUG
-        Serial.println("Stasis::Constructor");
+        logger::println("Stasis::Constructor");
     #endif
     
 };
@@ -215,7 +216,7 @@ ProportionalJointMoment::ProportionalJointMoment(config_defs::joint_id id, ExoDa
 : _Controller(id, exo_data)
 {
     #ifdef CONTROLLER_DEBUG
-        Serial.println("ProportionalJointMoment::Constructor");
+        logger::println("ProportionalJointMoment::Constructor");
     #endif
     
 };
@@ -319,7 +320,7 @@ HeelToe::HeelToe(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
     #ifdef CONTROLLER_DEBUG
-        Serial.println("HeelToe::Constructor");
+        logger::println("HeelToe::Constructor");
     #endif
 
         /**< Initializes variables to 0 upon startup. */
@@ -441,9 +442,9 @@ float HeelToe::calc_motor_cmd()
             }
         }
 
-        Serial.print("HeelToe::calc_motor_cmd : State : ");
-        Serial.print(state);
-        Serial.print("\n");
+        logger::print("HeelToe::calc_motor_cmd : State : ");
+        logger::print(state);
+        logger::print("\n");
 
         /**< Setup for Parabola used in State 4 */
         if (state_4_start != 0 && previous_state_4_duration != 0)       /**< If state_4_start and previous_state_4_duration both have non-zero values, assign values to coordinates. */
@@ -503,9 +504,9 @@ float HeelToe::calc_motor_cmd()
         
     }
 
-    Serial.print("HeelToe::calc_motor_cmd : y1 : ");
-    Serial.print(y1);
-    Serial.print("\n");
+    logger::print("HeelToe::calc_motor_cmd : y1 : ");
+    logger::print(y1);
+    logger::print("\n");
 
     prev_state = state;
     fs_previous = fs;
@@ -526,7 +527,7 @@ ExtensionAngle::ExtensionAngle(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
     #ifdef CONTROLLER_DEBUG
-        Serial.println("ExtensionAngle::Constructor");
+        logger::println("ExtensionAngle::Constructor");
     #endif
     _state = 0; // extension mode originally 
     
@@ -566,18 +567,18 @@ float ExtensionAngle::calc_motor_cmd()
     // int timestamp = millis();
     // if ((timestamp-last_timestamp)>print_time_ms)
     // {
-    //     Serial.print(utils::radians_to_degrees(angle));
-    //     Serial.print(" ");
-    //     Serial.print(utils::radians_to_degrees(_max_angle));
-    //     Serial.print(" ");
-    //     Serial.print(utils::radians_to_degrees(_min_angle));
-    //     Serial.print(" ");
-    //     Serial.print(100);
-    //     Serial.print(" ");
-    //     Serial.print(-100);
-    //     Serial.print(" ");
-    //     Serial.print(normalized_angle*100);
-    //     Serial.print("\n");
+    //     logger::print(utils::radians_to_degrees(angle));
+    //     logger::print(" ");
+    //     logger::print(utils::radians_to_degrees(_max_angle));
+    //     logger::print(" ");
+    //     logger::print(utils::radians_to_degrees(_min_angle));
+    //     logger::print(" ");
+    //     logger::print(100);
+    //     logger::print(" ");
+    //     logger::print(-100);
+    //     logger::print(" ");
+    //     logger::print(normalized_angle*100);
+    //     logger::print("\n");
     // }
     
     _update_state(angle);
@@ -637,10 +638,10 @@ void ExtensionAngle::_update_state(float angle)
     // int timestamp = millis();
     // if ((timestamp-last_timestamp)>print_time_ms)
     // {
-        // Serial.print(angle);
-        // Serial.print(" ");
-        // Serial.print(_controller_data->parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] * _max_angle/100);
-        // Serial.print("\n");
+        // logger::print(angle);
+        // logger::print(" ");
+        // logger::print(_controller_data->parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] * _max_angle/100);
+        // logger::print("\n");
     // }
 }
 
@@ -652,7 +653,7 @@ BangBang::BangBang(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
     #ifdef CONTROLLER_DEBUG
-        Serial.println("BangBang::Constructor");
+        logger::println("BangBang::Constructor");
     #endif
     _state = 0; // extension mode originally 
     
@@ -691,18 +692,18 @@ float BangBang::calc_motor_cmd()
     // int timestamp = millis();
     // if ((timestamp-last_timestamp)>print_time_ms)
     // {
-    //     Serial.print(utils::radians_to_degrees(angle));
-    //     Serial.print(" ");
-    //     Serial.print(utils::radians_to_degrees(_max_angle));
-    //     Serial.print(" ");
-    //     Serial.print(utils::radians_to_degrees(_min_angle));
-    //     Serial.print(" ");
-    //     Serial.print(100);
-    //     Serial.print(" ");
-    //     Serial.print(-100);
-    //     Serial.print(" ");
-    //     Serial.print(normalized_angle*100);
-    //     Serial.print("\n");
+    //     logger::print(utils::radians_to_degrees(angle));
+    //     logger::print(" ");
+    //     logger::print(utils::radians_to_degrees(_max_angle));
+    //     logger::print(" ");
+    //     logger::print(utils::radians_to_degrees(_min_angle));
+    //     logger::print(" ");
+    //     logger::print(100);
+    //     logger::print(" ");
+    //     logger::print(-100);
+    //     logger::print(" ");
+    //     logger::print(normalized_angle*100);
+    //     logger::print("\n");
     // }
     
     _update_state(angle);
@@ -764,10 +765,10 @@ void BangBang::_update_state(float angle)
     // int timestamp = millis();
     // if ((timestamp-last_timestamp)>print_time_ms)
     // {
-        // Serial.print(angle);
-        // Serial.print(" ");
-        // Serial.print(_controller_data->parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] * _max_angle/100);
-        // Serial.print("\n");
+        // logger::print(angle);
+        // logger::print(" ");
+        // logger::print(_controller_data->parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] * _max_angle/100);
+        // logger::print("\n");
     // }
 };
 
@@ -779,7 +780,7 @@ LateStance::LateStance(config_defs::joint_id id, ExoData* exo_data)
     : _Controller(id, exo_data)
 {
 #ifdef CONTROLLER_DEBUG
-    Serial.println("LateStance::Constructor");
+    logger::println("LateStance::Constructor");
 #endif
     _state = 0; // extension mode originally 
 
@@ -866,7 +867,7 @@ GaitPhase::GaitPhase(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
 #ifdef CONTROLLER_DEBUG
-    Serial.println("GaitPhase::Constructor");
+    logger::println("GaitPhase::Constructor");
 #endif
 };
 
@@ -904,21 +905,21 @@ float GaitPhase::calc_motor_cmd()
 
     //Print outs if you need to debug Controller parameter issue
 
-        //Serial.print("GaitPhase::calc_motor_cmd : Flexion_Start_Percentage : ");
-        //Serial.print(_controller_data->parameters[controller_defs::gait_phase::flexion_start_percentage_idx]);
-        //Serial.print("\n");
+        //logger::print("GaitPhase::calc_motor_cmd : Flexion_Start_Percentage : ");
+        //logger::print(_controller_data->parameters[controller_defs::gait_phase::flexion_start_percentage_idx]);
+        //logger::print("\n");
 
-        //Serial.print("GaitPhase::calc_motor_cmd : Flexion_End_Percentage : ");
-        //Serial.print(_controller_data->parameters[controller_defs::gait_phase::flexion_end_percentage_idx]);
-        //Serial.print("\n");
+        //logger::print("GaitPhase::calc_motor_cmd : Flexion_End_Percentage : ");
+        //logger::print(_controller_data->parameters[controller_defs::gait_phase::flexion_end_percentage_idx]);
+        //logger::print("\n");
 
-        //Serial.print("GaitPhase::calc_motor_cmd : Extension_Start_Percentage : ");
-        //Serial.print(_controller_data->parameters[controller_defs::gait_phase::extension_start_percentage_idx]);
-        //Serial.print("\n");
+        //logger::print("GaitPhase::calc_motor_cmd : Extension_Start_Percentage : ");
+        //logger::print(_controller_data->parameters[controller_defs::gait_phase::extension_start_percentage_idx]);
+        //logger::print("\n");
 
-        //Serial.print("GaitPhase::calc_motor_cmd : Extension_End_Percentage : ");
-        //Serial.print(_controller_data->parameters[controller_defs::gait_phase::extension_end_percentage_idx]);
-        //Serial.print("\n");
+        //logger::print("GaitPhase::calc_motor_cmd : Extension_End_Percentage : ");
+        //logger::print(_controller_data->parameters[controller_defs::gait_phase::extension_end_percentage_idx]);
+        //logger::print("\n");
 
 
     if (-1 != percent_gait) //Only runs if a valid calculation of percent gait is present
@@ -933,44 +934,44 @@ float GaitPhase::calc_motor_cmd()
             if (percent_gait == 0 || percent_gait < extension_end - half_width)
             {
                 cmd_ff = extension_torque;
-                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Early : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Extension - Early : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if (percent_gait > extension_end - half_width && percent_gait < flexion_start + half_width)
             {
                 cmd_ff = extension_torque + slope * (percent_gait - extension_end + half_width);
-                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Extension to Flexion : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Transition - Extension to Flexion : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if (percent_gait >= flexion_start + half_width && percent_gait <= flexion_end - half_width)
             {
                 cmd_ff = flexion_torque;
-                //Serial.print("GaitPhase::calc_motor_cmd : Flexion : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Flexion : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if (percent_gait > flexion_end - half_width && percent_gait < flexion_end + half_width)
             {
                 cmd_ff = flexion_torque - slope * (percent_gait - flexion_end + half_width);
-                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Flexion to Extension : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Transition - Flexion to Extension : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if (percent_gait >= extension_start + half_width && percent_gait <= 100)
             {
                 cmd_ff = extension_torque;
-                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Late : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Extension - Late : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else
             {
                 cmd_ff = 0;
-                //Serial.print("GaitPhase::calc_motor_cmd : Unknown Condition : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Unknown Condition : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
 
         }
@@ -981,72 +982,72 @@ float GaitPhase::calc_motor_cmd()
             if (percent_gait == 0 || percent_gait <= extension_end - half_width)
             {
                 cmd_ff = extension_torque;
-                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Early : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Extension - Early : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait > extension_end - half_width && percent_gait < extension_end + half_width)
             {
                 cmd_ff = extension_torque + (slope / 2) * (percent_gait - extension_end + half_width);
-                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Extension to Zero Torque : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Transition - Extension to Zero Torque : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait >= extension_end + half_width && percent_gait <= flexion_start - half_width)
             {
                 cmd_ff = 0;
-                //Serial.print("GaitPhase::calc_motor_cmd : Zero Torque - Early : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Zero Torque - Early : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait > flexion_start - half_width && percent_gait < flexion_start + half_width)
             {
                 cmd_ff = 0 + (slope / 2) * (percent_gait - flexion_start + half_width);
-                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Zero Torque to Flexion : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Transition - Zero Torque to Flexion : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait >= flexion_start + half_width && percent_gait <= flexion_end - half_width)
             {
                 cmd_ff = flexion_torque;
-                //Serial.print("GaitPhase::calc_motor_cmd : Flexion : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Flexion : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait > flexion_end - half_width && percent_gait < flexion_end + half_width)
             {
                 cmd_ff = flexion_torque - (slope / 2) * (percent_gait - flexion_end + half_width);
-                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Flexion to Zero Torque : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Transition - Flexion to Zero Torque : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait >= flexion_end + half_width && percent_gait <= extension_start - half_width)
             {
                 cmd_ff = 0;
-                //Serial.print("GaitPhase::calc_motor_cmd : Zero Torque - Late : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Zero Torque - Late : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait > extension_start - half_width && percent_gait < extension_start + half_width)
             {
                 cmd_ff = 0 - (slope / 2) * (percent_gait - extension_start + half_width);
-                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Zero Torque to Extension : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Transition - Zero Torque to Extension : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait >= extension_start + half_width && percent_gait <= 100)
             {
                 cmd_ff = extension_torque;
-                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Late : ");
-                //Serial.print(percent_gait);
+                //logger::print("GaitPhase::calc_motor_cmd : Extension - Late : ");
+                //logger::print(percent_gait);
                 //Serail.print("\n");
             }
             else
             {
                 cmd_ff = 0;
-                //Serial.print("GaitPhase::calc_motor_cmd : Unknown Condition : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Unknown Condition : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
 
         }
@@ -1057,58 +1058,58 @@ float GaitPhase::calc_motor_cmd()
             if (percent_gait == 0 || percent_gait <= extension_end - half_width)
             {
                 cmd_ff = extension_torque;
-                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Early : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Extension - Early : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait > extension_end - half_width && percent_gait < extension_end + half_width)
             {
                 cmd_ff = extension_torque + (slope / 2) * (percent_gait - extension_end + half_width);
-                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Extension to Zero Torque : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Transition - Extension to Zero Torque : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait >= extension_end + half_width && percent_gait <= flexion_start - half_width)
             {
                 cmd_ff = 0;
-                //Serial.print("GaitPhase::calc_motor_cmd : Zero Torque : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Zero Torque : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait > flexion_start - half_width && percent_gait < flexion_start + half_width)
             {
                 cmd_ff = 0 + (slope / 2) * (percent_gait - flexion_start + half_width);
-                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Zero Torque to Flexion : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Transition - Zero Torque to Flexion : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait >= flexion_start + half_width && percent_gait <= flexion_end - half_width)
             {
                 cmd_ff = flexion_torque;
-                //Serial.print("GaitPhase::calc_motor_cmd : Flexion : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Flexion : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait > flexion_end - half_width && percent_gait < flexion_end + half_width)
             {
                 cmd_ff = flexion_torque - slope * (percent_gait - flexion_end + half_width);
-                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Flexion to Extension : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Transition - Flexion to Extension : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait >= extension_start + half_width && percent_gait <= 100)
             {
                 cmd_ff = extension_torque;
-                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Late : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Extension - Late : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else
             {
                 cmd_ff = 0;
-                //Serial.print("GaitPhase::calc_motor_cmd : Unknown Condition : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Unknown Condition : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
 
         }
@@ -1119,58 +1120,58 @@ float GaitPhase::calc_motor_cmd()
             if (percent_gait == 0 || percent_gait < extension_end)
             {
                 cmd_ff = extension_torque;
-                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Early : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Extension - Early : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait > extension_end - half_width && percent_gait < flexion_start + half_width)
             {
                 cmd_ff = extension_torque + slope * (percent_gait - extension_end + half_width);
-                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Extension to Flexion : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Transition - Extension to Flexion : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait >= flexion_start + half_width && percent_gait <= flexion_end - half_width)
             {
                 cmd_ff = flexion_torque;
-                //Serial.print("GaitPhase::calc_motor_cmd : Flexion : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Flexion : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait > flexion_end - half_width && percent_gait < flexion_end + half_width)
             {
                 cmd_ff = flexion_torque - (slope / 2) * (percent_gait - flexion_end + half_width);
-                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Flexion to Zero Torque : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Transition - Flexion to Zero Torque : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait >= flexion_end + half_width && percent_gait <= extension_start - half_width)
             {
                 cmd_ff = 0;
-                //Serial.print("GaitPhase::calc_motor_cmd : Zero Torque - Late : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Zero Torque - Late : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait > extension_start - half_width && percent_gait < extension_start + half_width)
             {
                 cmd_ff = 0 - (slope / 2) * (percent_gait - extension_start + half_width);
-                //Serial.print("GaitPhase::calc_motor_cmd : Transition - Zero Torque to Extension : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Transition - Zero Torque to Extension : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else if(percent_gait >= extension_start + half_width && percent_gait <= 100)
             {
                 cmd_ff = extension_torque;
-                //Serial.print("GaitPhase::calc_motor_cmd : Extension - Late : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Extension - Late : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
             else
             {
                 cmd_ff = 0;
-                //Serial.print("GaitPhase::calc_motor_cmd : Unknown Condition : ");
-                //Serial.print(percent_gait);
-                //Serial.print("\n");
+                //logger::print("GaitPhase::calc_motor_cmd : Unknown Condition : ");
+                //logger::print(percent_gait);
+                //logger::print("\n");
             }
 
         }
@@ -1218,7 +1219,7 @@ Parabolic::Parabolic(config_defs::joint_id id, ExoData* exo_data)
     : _Controller(id, exo_data)
 {
 #ifdef CONTROLLER_DEBUG
-    Serial.println("Parabolic::Constructor");
+    logger::println("Parabolic::Constructor");
 #endif
 };
 
@@ -1241,21 +1242,21 @@ float Parabolic::calc_motor_cmd()
 
     //Print outs if you need to debug Controller parameter issue
 
-        //Serial.print("GaitPhase::calc_motor_cmd : Flexion_Start_Percentage : ");
-        //Serial.print(_controller_data->parameters[controller_defs::parabolic::flexion_start_percentage_idx]);
-        //Serial.print("\n");
+        //logger::print("GaitPhase::calc_motor_cmd : Flexion_Start_Percentage : ");
+        //logger::print(_controller_data->parameters[controller_defs::parabolic::flexion_start_percentage_idx]);
+        //logger::print("\n");
 
-        //Serial.print("GaitPhase::calc_motor_cmd : Flexion_End_Percentage : ");
-        //Serial.print(_controller_data->parameters[controller_defs::parabolic::flexion_end_percentage_idx]);
-        //Serial.print("\n");
+        //logger::print("GaitPhase::calc_motor_cmd : Flexion_End_Percentage : ");
+        //logger::print(_controller_data->parameters[controller_defs::parabolic::flexion_end_percentage_idx]);
+        //logger::print("\n");
 
-        //Serial.print("GaitPhase::calc_motor_cmd : Extension_Start_Percentage : ");
-        //Serial.print(_controller_data->parameters[controller_defs::parabolic::extension_start_percentage_idx]);
-        //Serial.print("\n");
+        //logger::print("GaitPhase::calc_motor_cmd : Extension_Start_Percentage : ");
+        //logger::print(_controller_data->parameters[controller_defs::parabolic::extension_start_percentage_idx]);
+        //logger::print("\n");
 
-        //Serial.print("GaitPhase::calc_motor_cmd : Extension_End_Percentage : ");
-        //Serial.print(_controller_data->parameters[controller_defs::parabolic::extension_end_percentage_idx]);
-        //Serial.print("\n");
+        //logger::print("GaitPhase::calc_motor_cmd : Extension_End_Percentage : ");
+        //logger::print(_controller_data->parameters[controller_defs::parabolic::extension_end_percentage_idx]);
+        //logger::print("\n");
 
 
     if (-1 != percent_gait) //Only runs if a valid calculation of percent gait is present
@@ -1324,7 +1325,7 @@ ZhangCollins::ZhangCollins(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
     #ifdef CONTROLLER_DEBUG
-        Serial.println("ZhangCollins::Constructor");
+        logger::println("ZhangCollins::Constructor");
     #endif
     _mass = -1;
     _peak_normalized_torque_Nm_kg = -1;
@@ -1409,8 +1410,8 @@ float ZhangCollins::calc_motor_cmd()
             , _controller_data->parameters[controller_defs::zhang_collins::t1_idx]
             , _controller_data->parameters[controller_defs::zhang_collins::t2_idx]
             , _controller_data->parameters[controller_defs::zhang_collins::t3_idx]);
-        // Serial.print("ZhangCollins::calc_motor_cmd : Updated parameters");
-        // Serial.print("\n");
+        // logger::print("ZhangCollins::calc_motor_cmd : Updated parameters");
+        // logger::print("\n");
         // delay(1000);
     
     }
@@ -1424,21 +1425,21 @@ float ZhangCollins::calc_motor_cmd()
     float t3 = _t3;
     float torque_cmd = 0;
     
-    // Serial.print("ZhangCollins::calc_motor_cmd : Percent Gait = ");
-    // Serial.print(percent_gait);
-    // Serial.print("\n");
-    // Serial.print("ZhangCollins::calc_motor_cmd : t0 = ");
-    // Serial.print(t0);
-    // Serial.print("\n");
-    // Serial.print("ZhangCollins::calc_motor_cmd : t1 = ");
-    // Serial.print(t1);
-    // Serial.print("\n");
-    // Serial.print("ZhangCollins::calc_motor_cmd : t2 = ");
-    // Serial.print(t2);
-    //Serial.print("\n");
-    // Serial.print("ZhangCollins::calc_motor_cmd : t3 = ");
-    // Serial.print(t3);
-    //Serial.print("\n\n");
+    // logger::print("ZhangCollins::calc_motor_cmd : Percent Gait = ");
+    // logger::print(percent_gait);
+    // logger::print("\n");
+    // logger::print("ZhangCollins::calc_motor_cmd : t0 = ");
+    // logger::print(t0);
+    // logger::print("\n");
+    // logger::print("ZhangCollins::calc_motor_cmd : t1 = ");
+    // logger::print(t1);
+    // logger::print("\n");
+    // logger::print("ZhangCollins::calc_motor_cmd : t2 = ");
+    // logger::print(t2);
+    //logger::print("\n");
+    // logger::print("ZhangCollins::calc_motor_cmd : t3 = ");
+    // logger::print(t3);
+    //logger::print("\n\n");
     
     
     
@@ -1447,27 +1448,27 @@ float ZhangCollins::calc_motor_cmd()
         if ((percent_gait <= t1) && (0 <= percent_gait))  // torque ramp to ts at t1
         {
             torque_cmd = _ts_Nm / (t1 - t0) * percent_gait - _ts_Nm/(t1 - t0) * t0;  
-            // Serial.print("ZhangCollins::calc_motor_cmd : Ramp");
-            // Serial.print("\n");
+            // logger::print("ZhangCollins::calc_motor_cmd : Ramp");
+            // logger::print("\n");
             
         }
         else if (percent_gait <= t2) // the rising spline
         {
             torque_cmd = _a1 * pow(percent_gait,3) + _b1 * pow(percent_gait,2) + _c1 * percent_gait + _d1;
-            // Serial.print("ZhangCollins::calc_motor_cmd : Rising");
-            // Serial.print("\n");
+            // logger::print("ZhangCollins::calc_motor_cmd : Rising");
+            // logger::print("\n");
         }
         else if (percent_gait <= t3)  // the falling spline
         {
             torque_cmd = _a2 * pow(percent_gait,3) + _b2 * pow(percent_gait,2) + _c2 * percent_gait + _d2;
-            // Serial.print("ZhangCollins::calc_motor_cmd : Falling");
-            // Serial.print("\n");
+            // logger::print("ZhangCollins::calc_motor_cmd : Falling");
+            // logger::print("\n");
         }
         else  // go to the slack position if we aren't commanding a specific value
         {
             torque_cmd = 0;
-            // Serial.print("ZhangCollins::calc_motor_cmd : Swing");
-            // Serial.print("\n");
+            // logger::print("ZhangCollins::calc_motor_cmd : Swing");
+            // logger::print("\n");
         }
     }  
     
@@ -1487,7 +1488,7 @@ FranksCollinsHip::FranksCollinsHip(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
     #ifdef CONTROLLER_DEBUG
-        Serial.println("FranksCollinsHip::Constructor");
+        logger::println("FranksCollinsHip::Constructor");
     #endif
 
     last_percent_gait = -1;
@@ -1511,15 +1512,15 @@ float FranksCollinsHip::calc_motor_cmd()
         last_start_time = millis();
     }
 
-    // Serial.print("Franks::calc_motor_cmd : _last_start_time = ");
-    // Serial.print(_last_start_time);
-    // Serial.print("\n");
-    // Serial.print("Franks::calc_motor_cmd : percent_gait = ");
-    // Serial.print(percent_gait);
-    // Serial.print("\n");
-    // Serial.print("Franks::calc_motor_cmd : _last_percent_gait = ");
-    // Serial.print(_last_percent_gait);
-    // Serial.print("\n");
+    // logger::print("Franks::calc_motor_cmd : _last_start_time = ");
+    // logger::print(_last_start_time);
+    // logger::print("\n");
+    // logger::print("Franks::calc_motor_cmd : percent_gait = ");
+    // logger::print(percent_gait);
+    // logger::print("\n");
+    // logger::print("Franks::calc_motor_cmd : _last_percent_gait = ");
+    // logger::print(_last_percent_gait);
+    // logger::print("\n");
 
     last_percent_gait = percent_gait;
 
@@ -1532,9 +1533,9 @@ float FranksCollinsHip::calc_motor_cmd()
 
     float shifted_percent_gait = (millis() - last_start_time) / expected_duration * 100;
 
-    // Serial.print("Franks::calc_motor_cmd : shifted_percent_gait = ");
-    // Serial.print(shifted_percent_gait);
-    // Serial.print("\n");
+    // logger::print("Franks::calc_motor_cmd : shifted_percent_gait = ");
+    // logger::print(shifted_percent_gait);
+    // logger::print("\n");
 
     float torque_cmd = 0;
 
@@ -1556,17 +1557,17 @@ float FranksCollinsHip::calc_motor_cmd()
     float flexion_rise_percent_gait = flexion_peak_percent_gait - (mid_time_percent_gait + (mid_duration_percent_gait / 2));
     float flexion_fall_percent_gait = _controller_data->parameters[controller_defs::franks_collins_hip::peak_offset_percent_gait_idx];
 
-    //Serial.print("Franks::calc_motor_cmd : flexion_peak_percent_gait = ");
-    //Serial.print(flexion_peak_percent_gait);
-    //Serial.print("\n");
+    //logger::print("Franks::calc_motor_cmd : flexion_peak_percent_gait = ");
+    //logger::print(flexion_peak_percent_gait);
+    //logger::print("\n");
 
-    //Serial.print("Franks::calc_motor_cmd : flexion_rise_percent_gait = ");
-    //Serial.print(flexion_rise_percent_gait);
-    //Serial.print("\n");
+    //logger::print("Franks::calc_motor_cmd : flexion_rise_percent_gait = ");
+    //logger::print(flexion_rise_percent_gait);
+    //logger::print("\n");
 
-    //Serial.print("Franks::calc_motor_cmd : flexion_fall_percent_gait = ");
-    //Serial.print(flexion_fall_percent_gait);
-    //Serial.print("\n");
+    //logger::print("Franks::calc_motor_cmd : flexion_fall_percent_gait = ");
+    //logger::print(flexion_fall_percent_gait);
+    //logger::print("\n");
 
     float extension_node1 = extension_peak_percent_gait - extension_rise_percent_gait;
     float extension_node2 = extension_peak_percent_gait;
@@ -1576,17 +1577,17 @@ float FranksCollinsHip::calc_motor_cmd()
     float flexion_node2 = flexion_peak_percent_gait - (100 - start_percent_gait);
     float flexion_node3 = flexion_peak_percent_gait + flexion_fall_percent_gait - (100 - start_percent_gait); //(100 - flexion_fall_percent_gait - flexion_peak_percent_gait);
 
-     //Serial.print("Franks::calc_motor_cmd : node1 = ");
-     //Serial.print(flexion_node1);
-     //Serial.print("\n");
+     //logger::print("Franks::calc_motor_cmd : node1 = ");
+     //logger::print(flexion_node1);
+     //logger::print("\n");
 
-     //Serial.print("Franks::calc_motor_cmd : node2 = ");
-     //Serial.print(flexion_node2);
-     //Serial.print("\n");
+     //logger::print("Franks::calc_motor_cmd : node2 = ");
+     //logger::print(flexion_node2);
+     //logger::print("\n");
 
-     //Serial.print("Franks::calc_motor_cmd : node3 = ");
-     //Serial.print(flexion_node3);
-     //Serial.print("\n");
+     //logger::print("Franks::calc_motor_cmd : node3 = ");
+     //logger::print(flexion_node3);
+     //logger::print("\n");
 
     torque_cmd = _spline_generation(extension_node1, extension_node2, extension_node3, extension_torque_magnitude_Nm, shifted_percent_gait) + _spline_generation(flexion_node1, flexion_node2, flexion_node3, flexion_torque_magnitude_Nm, percent_gait);
 
@@ -1657,7 +1658,7 @@ float FranksCollinsHip::_spline_generation(float node1, float node2, float node3
 // : _Controller(id, exo_data)
 // {
     // #ifdef CONTROLLER_DEBUG
-        // Serial.println("UserDefined::Constructor");
+        // logger::println("UserDefined::Constructor");
     // #endif
     
     
@@ -1698,7 +1699,7 @@ Sine::Sine(config_defs::joint_id id, ExoData* exo_data)
 : _Controller(id, exo_data)
 {
     #ifdef CONTROLLER_DEBUG
-        Serial.println("Sine::Constructor");
+        logger::println("Sine::Constructor");
     #endif
 };
 
@@ -1722,7 +1723,7 @@ Perturbation::Perturbation(config_defs::joint_id id, ExoData* exo_data)
     : _Controller(id, exo_data)
 {
     #ifdef CONTROLLER_DEBUG
-        Serial.println("Perturbation::Constructor");
+        logger::println("Perturbation::Constructor");
     #endif
     
     start_time = 0;
@@ -1735,21 +1736,21 @@ float Perturbation::calc_motor_cmd()
 {
     float cmd = 0;     //Creates the cmd variable and initializes it to 0;
 
-    //Serial.print("Perturbation::calc_motor_cmd : Pertrub_idx : ");
-    //Serial.print(_controller_data->parameters[controller_defs::perturbation::perturb_idx]);
-    //Serial.print("\n");
+    //logger::print("Perturbation::calc_motor_cmd : Pertrub_idx : ");
+    //logger::print(_controller_data->parameters[controller_defs::perturbation::perturb_idx]);
+    //logger::print("\n");
 
     if (_controller_data->parameters[controller_defs::perturbation::perturb_idx] > 0)  //If the flag is raised (via the button press)
     {
-        //Serial.print("Perturbation::calc_motor_cmd : Perturbation Sent ");
-        //Serial.print("\n");
+        //logger::print("Perturbation::calc_motor_cmd : Perturbation Sent ");
+        //logger::print("\n");
 
         if (_leg_data->do_calibration_toe_fsr || _leg_data->toe_stance == 0)                      //If the FSRs are being calibrated or if the toe fsr is 0, send a command of zero
         {
             cmd = 0;
             _controller_data->parameters[controller_defs::perturbation::perturb_idx] = 0;
-            //Serial.print("Foot is off the floor");
-            //Serial.print("\n");
+            //logger::print("Foot is off the floor");
+            //logger::print("\n");
         }
         else
         {
@@ -1757,40 +1758,40 @@ float Perturbation::calc_motor_cmd()
             if (timer == 0)                                                         //If the timer was previously not in use, mark the timepoint that the perturbation started                                                
             {
                 start_time = millis();
-                //Serial.print("Perturbation::calc_motor_cmd : Start Time : ");
-                //Serial.print(start_time);
-                //Serial.print("\n");
+                //logger::print("Perturbation::calc_motor_cmd : Start Time : ");
+                //logger::print(start_time);
+                //logger::print("\n");
             }
 
             timer = millis();                                                       //Record the current time
 
-            //Serial.print("Perturbation::calc_motor_cmd : timer : ");
-            //Serial.print(timer);
-            //Serial.print("\n");
+            //logger::print("Perturbation::calc_motor_cmd : timer : ");
+            //logger::print(timer);
+            //logger::print("\n");
 
             current_time = timer - start_time;                                      //Calcualtes the current time relative to the start of the controller 
 
-            //Serial.print("Perturbation::calc_motor_cmd : Current Time : ");
-            //Serial.print(current_time);
-            //Serial.print("\n");
+            //logger::print("Perturbation::calc_motor_cmd : Current Time : ");
+            //logger::print(current_time);
+            //logger::print("\n");
 
             if (current_time <= ((_controller_data->parameters[controller_defs::perturbation::duration_idx]) * 1000))       //If the current time is less than or equal to the duration of the perturbation defined by the user
             {
                 cmd = _controller_data->parameters[controller_defs::perturbation::amplitude_idx];                           //Command being sent to the motor is equal to the setpoint defined by the user
-                //Serial.print("Perturbation::calc_motor_cmd : cmd : on: ");
-                //Serial.print(cmd);
-                //Serial.print("\n");
+                //logger::print("Perturbation::calc_motor_cmd : cmd : on: ");
+                //logger::print(cmd);
+                //logger::print("\n");
             }
             else
             {
                 cmd = 0;                                                                                                    //If the current time is greater than the user defined duration than send a motor command of zero
-                //Serial.print("Perturbation::calc_motor_cmd : Exceeded Time Duration : Torque Set to Zero ");
-                //Serial.print("\n");
+                //logger::print("Perturbation::calc_motor_cmd : Exceeded Time Duration : Torque Set to Zero ");
+                //logger::print("\n");
             }
 
-            //Serial.print("Perturbation::calc_motor_cmd : Direction : ");
-            //Serial.print(_controller_data->parameters[controller_defs::perturbation::direction_idx]);
-            //Serial.print("\n");
+            //logger::print("Perturbation::calc_motor_cmd : Direction : ");
+            //logger::print(_controller_data->parameters[controller_defs::perturbation::direction_idx]);
+            //logger::print("\n");
 
             if (_controller_data->parameters[controller_defs::perturbation::direction_idx] == 0)                            //If the user wants to send a PF/Flexion torque
             {
@@ -1811,8 +1812,8 @@ float Perturbation::calc_motor_cmd()
                 current_time = 0;
                 _controller_data->parameters[controller_defs::perturbation::perturb_idx] = 0;
 
-                //Serial.print("Perturbation::calc_motor_cmd : Parameters Rest ");
-                //Serial.print("\n");
+                //logger::print("Perturbation::calc_motor_cmd : Parameters Rest ");
+                //logger::print("\n");
             }
         }
     }
@@ -1824,21 +1825,21 @@ float Perturbation::calc_motor_cmd()
 
     if (n == 0)
     {
-        Serial.print("Perturbation::calc_motor_cmd : Amplitude : ");
-        Serial.print(_controller_data->parameters[controller_defs::perturbation::amplitude_idx]);
-        Serial.print("\n");
+        logger::print("Perturbation::calc_motor_cmd : Amplitude : ");
+        logger::print(_controller_data->parameters[controller_defs::perturbation::amplitude_idx]);
+        logger::print("\n");
 
-        Serial.print("Perturbation::calc_motor_cmd : Duration : ");
-        Serial.print(_controller_data->parameters[controller_defs::perturbation::duration_idx]);
-        Serial.print("\n");
+        logger::print("Perturbation::calc_motor_cmd : Duration : ");
+        logger::print(_controller_data->parameters[controller_defs::perturbation::duration_idx]);
+        logger::print("\n");
 
-        Serial.print("Perturbation::calc_motor_cmd : Direction : ");
-        Serial.print(_controller_data->parameters[controller_defs::perturbation::direction_idx]);
-        Serial.print("\n");
+        logger::print("Perturbation::calc_motor_cmd : Direction : ");
+        logger::print(_controller_data->parameters[controller_defs::perturbation::direction_idx]);
+        logger::print("\n");
 
-        Serial.print("Perturbation::calc_motor_cmd : On-off Flag : ");
-        Serial.print(_controller_data->parameters[controller_defs::perturbation::perturb_idx]);
-        Serial.print("\n");
+        logger::print("Perturbation::calc_motor_cmd : On-off Flag : ");
+        logger::print(_controller_data->parameters[controller_defs::perturbation::perturb_idx]);
+        logger::print("\n");
     }
 
     n = n + 1;
@@ -1860,7 +1861,7 @@ ConstantTorque::ConstantTorque(config_defs::joint_id id, ExoData* exo_data)
     : _Controller(id, exo_data)
 {
 #ifdef CONTROLLER_DEBUG
-    Serial.println("ConstantTorque::Constructor");
+    logger::println("ConstantTorque::Constructor");
 #endif
 
     //current_torque = _controller_data->parameters[controller_defs::constant_torque::upper_idx];

@@ -48,24 +48,24 @@ void printHex(const uint8_t * data, const uint32_t numBytes)
   uint32_t szPos;
   for (szPos=0; szPos < numBytes; szPos++) 
   {
-    Serial.print(F("0x"));
+    logger::print(F("0x"));
     // Append leading 0 for small values
     if (data[szPos] <= 0xF)
     {
-      Serial.print(F("0"));
-      Serial.print(data[szPos] & 0xf, HEX);
+      logger::print(F("0"));
+      logger::print(data[szPos] & 0xf, HEX);
     }
     else
     {
-      Serial.print(data[szPos] & 0xff, HEX);
+      logger::print(data[szPos] & 0xff, HEX);
     }
     // Add a trailing space if appropriate
     if ((numBytes > 1) && (szPos != numBytes - 1))
     {
-      Serial.print(F(" "));
+      logger::print(F(" "));
     }
   }
-  Serial.println();
+  logger::println();
 }
 
 /**************************************************************************/
@@ -129,7 +129,7 @@ uint8_t readPacket(Adafruit_BLE *ble, uint16_t timeout)
   // Throw an error message if the checksum's don't match
   if (xsum != checksum)
   {
-    Serial.print("Checksum mismatch in packet : ");
+    logger::print("Checksum mismatch in packet : ");
     printHex(packetbuffer, replyidx+1);
     return 0;
   }

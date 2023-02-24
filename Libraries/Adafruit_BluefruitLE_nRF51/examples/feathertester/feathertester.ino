@@ -25,7 +25,7 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
 */
 /**************************************************************************/
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -63,7 +63,7 @@ bool display_response(void)
   // Read the response until we get OK or ERROR
   while (ble.readline())
   {
-    Serial.print(ble.buffer);
+    logger::print(ble.buffer);
     if ( strcmp(ble.buffer, "OK") == 0 )
     {
       return false;
@@ -85,16 +85,16 @@ bool display_response(void)
 void display_menu()
 {
   delay(500);  // Short delay for cosmetic reasons
-  Serial.println("");
-  Serial.println("Bluefruit Feather Tester");
-  Serial.println("-------------------------------------------------------------------------------");
-  Serial.println("Select a menu option below:");
-  Serial.println("");
-  Serial.println("[1]  - System Info");
-  Serial.println("[2]  - AT+HELP");
-  Serial.println("");
-  Serial.println("Enter your selection in the Serial Monitor and press <enter>");
-  Serial.println("");
+  logger::println("");
+  logger::println("Bluefruit Feather Tester");
+  logger::println("-------------------------------------------------------------------------------");
+  logger::println("Select a menu option below:");
+  logger::println("");
+  logger::println("[1]  - System Info");
+  logger::println("[2]  - AT+HELP");
+  logger::println("");
+  logger::println("Enter your selection in the Serial Monitor and press <enter>");
+  logger::println("");
 }
 
 /**************************************************************************/
@@ -138,16 +138,16 @@ void loop()
         error = display_response();
         break;
       default:
-        Serial.print("Invalid selection: ");
-        Serial.println(selection);
+        logger::print("Invalid selection: ");
+        logger::println(selection);
         break;
     }
 
     // Catch any error responses here
-    if (error) Serial.println("ERROR!");
+    if (error) logger::println("ERROR!");
 
     // Display the main menu again
-    Serial.println("");
+    logger::println("");
     display_menu();
   }
 }

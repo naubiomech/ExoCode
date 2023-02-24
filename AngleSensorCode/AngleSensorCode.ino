@@ -33,7 +33,7 @@ typedef enum {
 
 void logger(String msg, app_log_level_t level) {
     if (level <= LOG_LEVEL) {
-        Serial.print(msg);
+        logger::print(msg);
     }
 }
 

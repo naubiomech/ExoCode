@@ -82,7 +82,7 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -98,22 +98,22 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit Command Mode Example"));
-  Serial.println(F("---------------------------------------"));
+  logger::println(F("Adafruit Bluefruit Command Mode Example"));
+  logger::println(F("---------------------------------------"));
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   if ( FACTORYRESET_ENABLE )
   {
     /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Performing a factory reset: "));
+    logger::println(F("Performing a factory reset: "));
     if ( ! ble.factoryReset() ){
       error(F("Couldn't factory reset"));
     }
@@ -122,13 +122,13 @@ void setup(void)
   /* Disable command echo from Bluefruit */
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
 
-  Serial.println(F("Please use Adafruit Bluefruit LE app to connect in UART mode"));
-  Serial.println(F("Then Enter characters to send to Bluefruit"));
-  Serial.println();
+  logger::println(F("Please use Adafruit Bluefruit LE app to connect in UART mode"));
+  logger::println(F("Then Enter characters to send to Bluefruit"));
+  logger::println();
 
   ble.verbose(false);  // debug info is a little annoying after this point!
 
@@ -141,10 +141,10 @@ void setup(void)
   if ( ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION) )
   {
     // Change Mode LED Activity
-    Serial.println(F("******************************"));
-    Serial.println(F("Change LED activity to " MODE_LED_BEHAVIOUR));
+    logger::println(F("******************************"));
+    logger::println(F("Change LED activity to " MODE_LED_BEHAVIOUR));
     ble.sendCommandCheckOK("AT+HWModeLED=" MODE_LED_BEHAVIOUR);
-    Serial.println(F("******************************"));
+    logger::println(F("******************************"));
   }
 }
 
@@ -161,15 +161,15 @@ void loop(void)
   if ( getUserInput(inputs, BUFSIZE) )
   {
     // Send characters to Bluefruit
-    Serial.print("[Send] ");
-    Serial.println(inputs);
+    logger::print("[Send] ");
+    logger::println(inputs);
 
     ble.print("AT+BLEUARTTX=");
     ble.println(inputs);
 
     // check response stastus
     if (! ble.waitForOK() ) {
-      Serial.println(F("Failed to send?"));
+      logger::println(F("Failed to send?"));
     }
   }
 
@@ -181,7 +181,7 @@ void loop(void)
     return;
   }
   // Some data was found, its in the buffer
-  Serial.print(F("[Recv] ")); Serial.println(ble.buffer);
+  logger::print(F("[Recv] ")); logger::println(ble.buffer);
   ble.waitForOK();
 }
 

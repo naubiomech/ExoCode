@@ -81,31 +81,31 @@
         
         if (new_measurement)
         {
-            Serial.print("Enter Load kg (value will not show till you hit enter) : ");
+            logger::print("Enter Load kg (value will not show till you hit enter) : ");
             new_measurement = 0;
         }
     
         if (Serial.available() > 0) {
                 String load_str = 0;//Serial.readStringUntil('\n');
                 if (Serial.getReadError()) {
-                    Serial.println("error or timeout waiting");
+                    logger::println("error or timeout waiting");
                 }
                 else
                 {
                     load = load_str.toFloat();
                     // will not show value till 
-//                    Serial.println(load);
+//                    logger::println(load);
     
                     while (reading_count++ < num_readings_to_average)
                     {
                         reading_sum += load_cell.read();
-                        Serial.println(load_cell.read());
+                        logger::println(load_cell.read());
                     }
     
-//                    Serial.print(load);
-//                    Serial.print(" kg gives reading of ");
-//                    Serial.print(reading_sum / num_readings_to_average);  // this will round but should be close enough
-//                    Serial.print("\n");
+//                    logger::print(load);
+//                    logger::print(" kg gives reading of ");
+//                    logger::print(reading_sum / num_readings_to_average);  // this will round but should be close enough
+//                    logger::print("\n");
                     
                     // reset for new reading
                     new_measurement = 1;
@@ -145,10 +145,10 @@
             motor.on_off(motor._motor_data->enabled);
             motor.zero();
 
-            Serial.print("torque_cmd\t");
-            Serial.print("raw_reading\t");
-            Serial.print("calibrated_torque\t");
-            Serial.print("\n");
+            logger::print("torque_cmd\t");
+            logger::print("raw_reading\t");
+            logger::print("calibrated_torque\t");
+            logger::print("\n");
         }
         
         if (state_period_ms <= (current_time - last_transition_time))
@@ -168,13 +168,13 @@
                   float calibrated_load_kg = map(mean_reading, calibration_reading[0], calibration_reading[1], calibration_loads_kg[0], calibration_loads_kg[1]); 
                   float measured_torque = moment_arm_m * calibrated_load_kg * 9.81; 
                   
-                  Serial.print(torque_cmd);
-                  Serial.print("\t");
-                  Serial.print(mean_reading);
-                  Serial.print("\t");
-                  Serial.print(measured_torque);
+                  logger::print(torque_cmd);
+                  logger::print("\t");
+                  logger::print(mean_reading);
+                  logger::print("\t");
+                  logger::print(measured_torque);
                  
-                  Serial.print("\n");
+                  logger::print("\n");
               }
               
               if (is_rising)
@@ -185,17 +185,17 @@
                   {
                       is_rising = false;
                   }
-//                  Serial.print("Superloop: is_rising : ");
-//                  Serial.print(torque_cmd);
-//                  Serial.print("\n");
+//                  logger::print("Superloop: is_rising : ");
+//                  logger::print(torque_cmd);
+//                  logger::print("\n");
               }
               else
               {
-//                  Serial.println("Superloop: NOT is_rising");
+//                  logger::println("Superloop: NOT is_rising");
                   torque_cmd -= torque_step_Nm;
                   if (torque_cmd < 0)
                   {
-//                      Serial.println("Superloop: end sequence");
+//                      logger::println("Superloop: end sequence");
                       sequence_is_running = false;
                       torque_cmd = 0;
                   }
@@ -216,7 +216,7 @@
           reading_count++;
           if (!sequence_is_running)
           {
-//              Serial.println("disabled motor");
+//              logger::println("disabled motor");
               motor._motor_data->enabled = false;
           }
 

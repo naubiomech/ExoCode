@@ -98,7 +98,7 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -114,22 +114,22 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit HID Control Key Example"));
-  Serial.println(F("---------------------------------------"));
+  logger::println(F("Adafruit Bluefruit HID Control Key Example"));
+  logger::println(F("---------------------------------------"));
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   if ( FACTORYRESET_ENABLE )
   {
     /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Performing a factory reset: "));
+    logger::println(F("Performing a factory reset: "));
     if ( ! ble.factoryReset() ){
       error(F("Factory reset failed!"));
     }
@@ -138,7 +138,7 @@ void setup(void)
   /* Disable command echo from Bluefruit */
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
 
@@ -150,28 +150,28 @@ void setup(void)
   }
 
   /* Enable HID Service */
-  Serial.println(F("Enable HID Services (including Control Key): "));
+  logger::println(F("Enable HID Services (including Control Key): "));
   if (! ble.sendCommandCheckOK(F( "AT+BLEHIDEN=On"  ))) {
     error(F("Failed to enable HID (firmware >=0.6.6?)"));
   }
 
   /* Adding or removing services requires a reset */
-  Serial.println(F("Performing a SW reset (service changes require a reset): "));
+  logger::println(F("Performing a SW reset (service changes require a reset): "));
   if (! ble.reset() ) {
     error(F("Couldn't reset??"));
   }
 
-  Serial.println();
-  Serial.println(F("**********************************************************"));
-  Serial.println(F("Go to your phone's Bluetooth settings to pair your device"));
-  Serial.println(F("Some Control Key works system-wide: mute, brightness ..."));
-  Serial.println(F("Some are application specific: Media play/pause"));
-  Serial.println(F("**********************************************************"));
+  logger::println();
+  logger::println(F("**********************************************************"));
+  logger::println(F("Go to your phone's Bluetooth settings to pair your device"));
+  logger::println(F("Some Control Key works system-wide: mute, brightness ..."));
+  logger::println(F("Some are application specific: Media play/pause"));
+  logger::println(F("**********************************************************"));
 
   // Print pre-defined control keys
   printDefinedControlKey();
 
-  Serial.println();
+  logger::println();
 }
 
 /**************************************************************************/
@@ -182,13 +182,13 @@ void setup(void)
 void loop(void)
 {
   // Display prompt
-  Serial.print(F("Control (? for help) > "));
+  logger::print(F("Control (? for help) > "));
 
   // Check for user input and echo it back if anything was found
   char keys[BUFSIZE+1];
   getUserInput(keys, BUFSIZE);
 
-  Serial.println(keys);
+  logger::println(keys);
 
   if ( keys[0] == '?')
   {
@@ -200,12 +200,12 @@ void loop(void)
 
     if( ble.waitForOK() )
     {
-      Serial.println( F("OK!") );
+      logger::println( F("OK!") );
     }else
     {
-      Serial.println( F("FAILED!") );
+      logger::println( F("FAILED!") );
       // Failed, probably pairing is not complete yet
-      Serial.println( F("Please make sure Bluefruit is paired and try again") );
+      logger::println( F("Please make sure Bluefruit is paired and try again") );
     }
   }
 }
@@ -238,12 +238,12 @@ void getUserInput(char buffer[], uint8_t maxSize)
 /**************************************************************************/
 void printDefinedControlKey(void)
 {
-  Serial.println();
-  Serial.println(F("You can send a raw 16-bit (e.g 0x1234) usage key from the USB" "\n"
+  logger::println();
+  logger::println(F("You can send a raw 16-bit (e.g 0x1234) usage key from the USB" "\n"
                     "HID Consumer Control Page or use one of the the following keys:"));
 
-  Serial.println(F("List of pre-defined control keys:"));
-  Serial.print(F(
+  logger::println(F("List of pre-defined control keys:"));
+  logger::print(F(
     "- BRIGHTNESS+" "\n"
     "- BRIGHTNESS-" "\n"
     "- PLAYPAUSE" "\n"

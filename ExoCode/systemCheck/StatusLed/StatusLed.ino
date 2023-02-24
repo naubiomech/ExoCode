@@ -21,25 +21,25 @@
     Serial.begin(115200);
     while (!Serial);
     #if BOARD_VERSION == AK_Board_V0_1
-      Serial.println("Board : AK_Board_V0_1");
+      logger::println("Board : AK_Board_V0_1");
     #elif BOARD_VERSION == AK_Board_V0_3
-      Serial.println("Board : AK_Board_V0_3");
+      logger::println("Board : AK_Board_V0_3");
     #endif
   
     #if defined(ARDUINO_TEENSY36)
-      Serial.println("Teensy 3.6");
+      logger::println("Teensy 3.6");
     #elif defined(ARDUINO_TEENSY41)
-      Serial.println("Teensy 4.1");
+      logger::println("Teensy 4.1");
     #endif
   
     
     
-    Serial.print(logic_micro_pins::status_led_r_pin);
-    Serial.print("\t");
-    Serial.print(logic_micro_pins::status_led_g_pin);
-    Serial.print("\t");
-    Serial.print(logic_micro_pins::status_led_b_pin);
-    Serial.print("\n");
+    logger::print(logic_micro_pins::status_led_r_pin);
+    logger::print("\t");
+    logger::print(logic_micro_pins::status_led_g_pin);
+    logger::print("\t");
+    logger::print(logic_micro_pins::status_led_b_pin);
+    logger::print("\n");
     
   }
   
@@ -61,10 +61,10 @@
       if (current_message >= num_messages)
       {
         current_message = 0;
-        Serial.println("reset");
+        logger::println("reset");
       }
       
-      Serial.println(current_message);
+      logger::println(current_message);
       last_transition_time = current_time;
     }
     status_led.update(current_message);

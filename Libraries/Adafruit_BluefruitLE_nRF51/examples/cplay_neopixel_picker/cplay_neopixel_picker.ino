@@ -55,7 +55,7 @@ Adafruit_BluefruitLE_UART ble(BLUEFRUIT_HWSERIAL_NAME, BLUEFRUIT_UART_MODE_PIN);
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -97,24 +97,24 @@ void setup() {
 
   // Initialize serial output.
   Serial.begin(115200);
-  Serial.println(F("Adafruit Circuit Playground Bluefruit Neopixel Color Picker Example"));
-  Serial.println(F("-------------------------------------------------------------------"));
+  logger::println(F("Adafruit Circuit Playground Bluefruit Neopixel Color Picker Example"));
+  logger::println(F("-------------------------------------------------------------------"));
 
   // Initialise the module
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in DATA mode & check wiring...."));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   if ( FACTORYRESET_ENABLE )
   {
     // Perform a factory reset to make sure everything is in a known state
-    Serial.println(F("Performing a factory reset: "));
+    logger::println(F("Performing a factory reset: "));
     if (!ble.factoryReset()) {
-      Serial.println(F("Couldn't factory reset, making another attempt..."));
+      logger::println(F("Couldn't factory reset, making another attempt..."));
       delay(1000);
       if (!ble.factoryReset()) {
         error(F("Couldn't factory reset!"));
@@ -125,7 +125,7 @@ void setup() {
   // Disable command echo from Bluefruit
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   // Print Bluefruit information
   ble.info();
 
@@ -135,9 +135,9 @@ void setup() {
   ble.println("ATZ");
   delay(100);
 
-  Serial.println(F("Please use Adafruit Bluefruit LE app to connect in Controller mode"));
-  Serial.println(F("Then activate/use the sensors, color picker, game controller, etc!"));
-  Serial.println();
+  logger::println(F("Please use Adafruit Bluefruit LE app to connect in Controller mode"));
+  logger::println(F("Then activate/use the sensors, color picker, game controller, etc!"));
+  logger::println();
 
   ble.verbose(false);  // debug info is a little annoying after this point!
 
@@ -146,13 +146,13 @@ void setup() {
       delay(500);
   }
 
-  Serial.println(F("***********************"));
+  logger::println(F("***********************"));
 
   // Set Bluefruit to DATA mode
-  Serial.println( F("Switching to DATA mode!") );
+  logger::println( F("Switching to DATA mode!") );
   ble.setMode(BLUEFRUIT_MODE_DATA);
 
-  Serial.println(F("***********************"));
+  logger::println(F("***********************"));
 
 }
 

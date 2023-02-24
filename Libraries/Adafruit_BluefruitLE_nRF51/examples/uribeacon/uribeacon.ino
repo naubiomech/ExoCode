@@ -69,7 +69,7 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -85,22 +85,22 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit UriBeacon Example"));
-  Serial.println(F("------------------------------------"));
+  logger::println(F("Adafruit Bluefruit UriBeacon Example"));
+  logger::println(F("------------------------------------"));
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   if ( FACTORYRESET_ENABLE )
   {
     /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Performing a factory reset: "));
+    logger::println(F("Performing a factory reset: "));
     if ( ! ble.factoryReset() ){
       error(F("Couldn't factory reset"));
     }
@@ -109,24 +109,24 @@ void setup(void)
   /* Disable command echo from Bluefruit */
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
 
   // Prompt user to migrate to EddyStone
-  Serial.println(F("Please consider to migrate to EddyStone since Google has retired uribeacon"));
+  logger::println(F("Please consider to migrate to EddyStone since Google has retired uribeacon"));
 
   /* Set EddyStone URL beacon data */
-  Serial.println(F("Setting uri beacon to Adafruit website: "));
+  logger::println(F("Setting uri beacon to Adafruit website: "));
 
   // Older firmware use AT+BLEURIBEACON command
   if (! ble.sendCommandCheckOK(F( "AT+BLEURIBEACON=" URL ))) {
     error(F("Couldnt set, is URL too long !?"));
   }
 
-  Serial.println(F("**************************************************"));
-  Serial.println(F("Please use Google Physical Web application to test"));
-  Serial.println(F("**************************************************"));
+  logger::println(F("**************************************************"));
+  logger::println(F("Please use Google Physical Web application to test"));
+  logger::println(F("**************************************************"));
 }
 
 /**************************************************************************/

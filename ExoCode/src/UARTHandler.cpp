@@ -1,5 +1,6 @@
 #include "UARTHandler.h"
 #include "Utilities.h"
+#include "Logger.h"
 
 #define MAX_NUM_LEGS 2
 #define MAX_NUM_JOINTS_PER_LEG 2 // current PCB can only do 2 motors per leg.
@@ -31,23 +32,23 @@ UARTHandler* UARTHandler::get_instance()
 void UARTHandler::UART_msg(uint8_t msg_id, uint8_t len, uint8_t joint_id, float *buffer)
 {
     uint8_t _packed_len = _get_packed_length(msg_id, len, joint_id, buffer);
-  //  Serial.print("UARTHandler::UART_msg->Packing Bytes: "); Serial.println(_packed_len);
+  //  logger::print("UARTHandler::UART_msg->Packing Bytes: "); logger::println(_packed_len);
     uint8_t _byte_data[_packed_len] = {0};
     _pack(msg_id, len, joint_id, buffer, _byte_data);
-  //  Serial.println("UARTHandler::UART_msg->Packed data:");
+  //  logger::println("UARTHandler::UART_msg->Packed data:");
   //  for (int i=0; i<_packed_len; i++)
   //  {
-  //    Serial.print(_byte_data[i], HEX); Serial.print(", ");
+  //    logger::print(_byte_data[i], HEX); logger::print(", ");
   //  }
-  //  Serial.println();
+  //  logger::println();
     _send_packet(_byte_data, _packed_len);
     MY_SERIAL.flush();
-  //  Serial.println("UARTHandler::UART_msg->Flushed tx buffer");
+  //  logger::println("UARTHandler::UART_msg->Flushed tx buffer");
 }
 
 void UARTHandler::UART_msg(UART_msg_t msg)
 {
-     //Serial.print("UARTHandler::UART_msg->Sending Message");
+     //logger::print("UARTHandler::UART_msg->Sending Message");
      //UART_msg_t_utils::print_msg(msg);
     UART_msg(msg.command, msg.len, msg.joint_id, msg.data);
 }
@@ -59,7 +60,7 @@ UART_msg_t UARTHandler::poll(float timeout_us)
     
     uint32_t _available_bytes = check_for_data();
     if (!_available_bytes) {return empty_msg;}
-    //Serial.print("UARTHandler::poll->Bytes Available: "); Serial.println(_available_bytes);
+    //logger::print("UARTHandler::poll->Bytes Available: "); logger::println(_available_bytes);
 
     uint8_t _msg_buffer[MAX_RX_LEN];
     uint8_t _recv_len = _recv_packet(_msg_buffer, MAX_RX_LEN);
@@ -67,7 +68,7 @@ UART_msg_t UARTHandler::poll(float timeout_us)
     {
       if (_partial_packet_len) 
       {
-      //  Serial.println("UARTHandler::poll->Packet requires shifting");
+      //  logger::println("UARTHandler::poll->Packet requires shifting");
         // this occurs if there was a timeout during _recv_packet and we have a new partial packet
         // shift _msg_buffer _partial_packet_len bytes to fit the previous partial packet using memmove
         memmove(_msg_buffer + _partial_packet_len, _msg_buffer, _recv_len);
@@ -83,7 +84,7 @@ UART_msg_t UARTHandler::poll(float timeout_us)
      }
 
       UART_msg_t msg = _unpack(_msg_buffer, _recv_len);
-      // Serial.print("UARTHandler::poll->Got Message: ");
+      // logger::print("UARTHandler::poll->Got Message: ");
       // UART_msg_t_utils::print_msg(msg);
       //TODO: Implement MSG queue architecture
 
@@ -92,24 +93,24 @@ UART_msg_t UARTHandler::poll(float timeout_us)
 
     if (_recv_len < 0) 
     {
-      //  Serial.println("UARTHandler::poll->Packet requires shifting");
+      //  logger::println("UARTHandler::poll->Packet requires shifting");
        // this only occurs if there was a timeout during the previous _recv_packet and an end flag before any new data
 
-      //  Serial.println("UARTHandler::poll->_msg_buffer after shifting: ");
+      //  logger::println("UARTHandler::poll->_msg_buffer after shifting: ");
       //  for (int i=0; i<(_recv_len + _partial_packet_len); i++)
       //  {
-      //    Serial.print(_msg_buffer[i], HEX); Serial.print(", ");
+      //    logger::print(_msg_buffer[i], HEX); logger::print(", ");
       //  }
-      //  Serial.println();
+      //  logger::println();
        // append the _partial packet to the full message
        memcpy(_msg_buffer, _partial_packet, _partial_packet_len);
        
-      //  Serial.println("UARTHandler::poll->_msg_buffer after copyting _packed_data: ");
+      //  logger::println("UARTHandler::poll->_msg_buffer after copyting _packed_data: ");
       //  for (int i=0; i<(_recv_len + _partial_packet_len); i++)
       //  {
-      //    Serial.print(_msg_buffer[i], HEX); Serial.print(", ");
+      //    logger::print(_msg_buffer[i], HEX); logger::print(", ");
       //  }
-      //  Serial.println();
+      //  logger::println();
        _partial_packet_len = 0;
      }
     return empty_msg;
@@ -174,15 +175,15 @@ uint8_t UARTHandler::_get_packed_length(uint8_t msg_id, uint8_t len, uint8_t joi
 
 void UARTHandler::_send_char(uint8_t val)
 {
-//  Serial.print("UARTHandler::_send_char->Sending: 0x");
-//  Serial.println(val, HEX);
+//  logger::print("UARTHandler::_send_char->Sending: 0x");
+//  logger::println(val, HEX);
   MY_SERIAL.write(val);
 }
 
 uint8_t UARTHandler::_recv_char(void)
 {  
   uint8_t _data = MY_SERIAL.read();
-  // Serial.print("UARTHandler::_recv_char->Read: "); Serial.println(_data, HEX);
+  // logger::print("UARTHandler::_recv_char->Read: "); logger::println(_data, HEX);
 
   return _data;
 }
@@ -223,7 +224,7 @@ void UARTHandler::_send_packet(uint8_t* p, uint8_t len)
       /* otherwise, we just send the character
       */
       default:
-        //Serial.print("UARTHandler::_send_packet->Sending: 0x"); Serial.println(*p, HEX);
+        //logger::print("UARTHandler::_send_packet->Sending: 0x"); logger::println(*p, HEX);
         _send_char(*p);
     }
 
@@ -249,7 +250,7 @@ int UARTHandler::_recv_packet(uint8_t *p, uint8_t len)
   _time_left(1);
   while (_time_left())
   {
-//    Serial.println("UARTHandler::_recv_packet->Loop");
+//    logger::println("UARTHandler::_recv_packet->Loop");
     if (!check_for_data()) 
     {
       continue;
@@ -257,8 +258,8 @@ int UARTHandler::_recv_packet(uint8_t *p, uint8_t len)
 
     c = _recv_char();
 
-//    Serial.print("UARTHandler::_recv_packet->Got char: ");
-//    Serial.println(c);
+//    logger::print("UARTHandler::_recv_packet->Got char: ");
+//    logger::println(c);
 
     // handle bytestuffing if necessary
     switch (c) 
@@ -266,16 +267,16 @@ int UARTHandler::_recv_packet(uint8_t *p, uint8_t len)
 
       // if it's an END character then we're done with the packet
       case END:
-        // Serial.println("UARTHandler::_recv_packet->END CASE");
+        // logger::println("UARTHandler::_recv_packet->END CASE");
         if (received)
         {
-            // Serial.print("UARTHandler::_recv_packet->Returning: ");
-            // Serial.println(received);
+            // logger::print("UARTHandler::_recv_packet->Returning: ");
+            // logger::println(received);
             return received;
         }
         else if (_partial_packet_len)
         {
-            //Serial.print("UARTHandler::_recv_packet->Returning because of _partial_packet: ");
+            //logger::print("UARTHandler::_recv_packet->Returning because of _partial_packet: ");
             return -1;
         }
         else
@@ -288,10 +289,10 @@ int UARTHandler::_recv_packet(uint8_t *p, uint8_t len)
          what to store in the packet based on that.
       */
       case ESC:
-//        Serial.println("UARTHandler::_recv_packet->ESC CASE");
+//        logger::println("UARTHandler::_recv_packet->ESC CASE");
         c = _recv_char();
-//        Serial.print("UARTHandler::_recv_packet->ESC Char: ");
-//        Serial.println(c);
+//        logger::print("UARTHandler::_recv_packet->ESC Char: ");
+//        logger::println(c);
 
         /* if "c" is not one of these two, then we
            have a protocol violation.  The best bet
@@ -301,35 +302,35 @@ int UARTHandler::_recv_packet(uint8_t *p, uint8_t len)
         switch (c) 
         {
           case ESC_END:
-//            Serial.println("UARTHandler::_recv_packet->ESC_END");
+//            logger::println("UARTHandler::_recv_packet->ESC_END");
             c = END;
             break;
           case ESC_ESC:
-//            Serial.println("UARTHandler::_recv_packet->ESC_ESC");
+//            logger::println("UARTHandler::_recv_packet->ESC_ESC");
             c = ESC;
             break;
         }
 
       default:
-//        Serial.println("UARTHandler::_recv_packet->Default CASE");
+//        logger::println("UARTHandler::_recv_packet->Default CASE");
         if (received < len)
         {
-//          Serial.println("UARTHandler::_recv_packet->Added to buffer");
+//          logger::println("UARTHandler::_recv_packet->Added to buffer");
           p[received++] = c;
         }
     }
   }
 
 //  // there was a timeout before a full message was recieved, save the data to be reconstructed later
-  //Serial.println("UARTHandler::_recv_packet->Timeout!");
+  //logger::println("UARTHandler::_recv_packet->Timeout!");
  _partial_packet_len = received;
-//  Serial.print("UARTHandler::_recv_packet->Saved Bytes: "); Serial.println(_partial_packet_len);
+//  logger::print("UARTHandler::_recv_packet->Saved Bytes: "); logger::println(_partial_packet_len);
  for (int i=0; i<_partial_packet_len; i++)
  {
    _partial_packet[i] = p[i];
-  //  Serial.print(_partial_packet[i], HEX); Serial.println(", ");
+  //  logger::print(_partial_packet[i], HEX); logger::println(", ");
  }
-//  Serial.println();
+//  logger::println();
 
   return 0;
 }
@@ -341,12 +342,12 @@ uint8_t UARTHandler::_time_left(uint8_t should_latch)
     if (should_latch)
     {
       _start_time = micros();
-//      Serial.print("UARTHandler::_time_left->Latching on ");
-//      Serial.println(_start_time);
+//      logger::print("UARTHandler::_time_left->Latching on ");
+//      logger::println(_start_time);
     }
     float del_t = micros() - _start_time;
-//    Serial.print("UARTHandler::_time_left->Del_T: ");
-//    Serial.println(micros() - _start_time);
+//    logger::print("UARTHandler::_time_left->Del_T: ");
+//    logger::println(micros() - _start_time);
 
     return (del_t <= _timeout_us);
 }

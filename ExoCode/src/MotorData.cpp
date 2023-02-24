@@ -1,5 +1,6 @@
 #include "MotorData.h"
 #include "ParseIni.h"
+#include "Logger.h"
 
 /*
  * Constructor for the motor data.

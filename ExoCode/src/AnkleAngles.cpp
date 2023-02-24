@@ -1,4 +1,5 @@
 #include "AnkleAngles.h"
+#include "Logger.h"
 
 #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
 

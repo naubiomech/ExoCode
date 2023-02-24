@@ -4,6 +4,7 @@
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
 #include "Arduino.h"
 #include "StatusLed.h"
+#include "Logger.h"
 #include <math.h>
 
 //#define STATUS_LED_DEBUG
@@ -67,9 +68,9 @@ void StatusLed::update(uint16_t message)
         _pattern_start_timestamp = millis();  // restart the timer
         _period_ms = _message_pattern[_msg_idx][1];
         #ifdef STATUS_LED_DEBUG
-            Serial.print("StatusLed::update : Message updated to ");
+            logger::print("StatusLed::update : Message updated to ");
             print_status_message(message);
-            Serial.print("\n");
+            logger::print("\n");
         #endif
     }
     
@@ -80,19 +81,19 @@ void StatusLed::update(uint16_t message)
     // switch (_message_pattern[_msg_idx][0])
     // {
     //     case status_led_defs::patterns::blink :
-    //         Serial.println("Blink");
+    //         logger::println("Blink");
     //         _blink();
     //         break;    
     //     case status_led_defs::patterns::pulse :
-    //         Serial.println("Pulse");
+    //         logger::println("Pulse");
     //         _pulse();
     //         break;
     //     case status_led_defs::patterns::rainbow :
-    //         Serial.println("Rainbow");
+    //         logger::println("Rainbow");
     //         _rainbow_hsv();
     //         break;
     //     default : // solid
-    //         Serial.println("Solid");
+    //         logger::println("Solid");
     //         _solid();
     //         break;
     // }
@@ -106,7 +107,7 @@ void StatusLed::update(uint16_t message)
  */
 void StatusLed::toggle()
 {
-    // Serial.println("StatusLed::toggle");
+    // logger::println("StatusLed::toggle");
     // static bool led_on = false;
     // if (led_on)
     // {
@@ -137,16 +138,16 @@ Protected
 void StatusLed::_set_color(int r_color, int g_color, int b_color)
 {
     
-//   Serial.print(r_color);
-//   Serial.print("\t");
-//   Serial.print(g_color);
-//   Serial.print("\t");
-//   Serial.print(b_color);
-//   Serial.print("\n");
+//   logger::print(r_color);
+//   logger::print("\t");
+//   logger::print(g_color);
+//   logger::print("\t");
+//   logger::print(b_color);
+//   logger::print("\n");
   
   if (status_led_defs::has_pwm)  // using simple digital pins
   {
-    //Serial.println("StatusLed::_set_color : Using PWM");
+    //logger::println("StatusLed::_set_color : Using PWM");
     int r_color_scaled = floor(r_color * _brightness/4095); // scale by brightness
     int g_color_scaled = floor(g_color * _brightness/4095); // scale by brightness
     int b_color_scaled = floor(b_color * _brightness/4095); // scale by brightness
@@ -158,7 +159,7 @@ void StatusLed::_set_color(int r_color, int g_color, int b_color)
   }
   else
   {
-    //Serial.println("StatusLed::_set_color : Using digital pins");
+    //logger::println("StatusLed::_set_color : Using digital pins");
     digitalWrite(_r_pin, (status_led_defs::off_state == 0) ? r_color >= 127 : r_color < 127);  // If the off state is low, LED turns on if color is >127 (1 on, 0 off), else the LED turns on if the >127 but the state is switched (0 on, 1 off)
     digitalWrite(_g_pin, (status_led_defs::off_state == 0) ? g_color >= 127 : g_color < 127);  // If the off state is low, LED turns on if color is >127 (1 on, 0 off), else the LED turns on if the >127 but the state is switched (0 on, 1 off)
     digitalWrite(_b_pin, (status_led_defs::off_state == 0) ? b_color >= 127 : b_color < 127);  // If the off state is low, LED turns on if color is >127 (1 on, 0 off), else the LED turns on if the >127 but the state is switched (0 on, 1 off)
@@ -185,8 +186,8 @@ void StatusLed::_pulse()
         
         float angle_deg = 360.0 * (timestamp - _pattern_start_timestamp) / _period_ms;
         _pattern_brightness_percent = 100 * sin (angle_deg * PI / 180);
-        // Serial.print(angle_deg);
-        // Serial.print("\n");
+        // logger::print(angle_deg);
+        // logger::print("\n");
         
         
         _set_color(_pattern_brightness_percent * _message_colors[_msg_idx][0] / 100, _pattern_brightness_percent * _message_colors[_msg_idx][1]/100, _pattern_brightness_percent * _message_colors[_msg_idx][2]/100);   // Set the LED state

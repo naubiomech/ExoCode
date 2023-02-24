@@ -98,7 +98,7 @@ namespace error_triggers
         // bool right_stance_error = (error_triggers_state::average_pjmc_state_right > error_triggers_state::pjmc_state_threshold);
         // if (left_stance_error || right_stance_error)
         // {
-        //     //Serial.println("Error: PJMC State too high");
+        //     //logger::println("Error: PJMC State too high");
         //     error_triggers_state::triggered_error = true;
         //     exo_data->error_joint_id = (left_stance_error) ? (uint8_t)config_defs::joint_id::left_ankle : (uint8_t)config_defs::joint_id::right_ankle;
         //     return POOR_STATE_VARIANCE;
@@ -125,7 +125,7 @@ namespace error_triggers
             bool right_torque_error = (abs(error_triggers_state::average_torque_output_right) > error_triggers_state::torque_output_threshold);
             if (left_torque_error || right_torque_error)
             {
-                //Serial.println("Error: Torque too high");
+                //logger::println("Error: Torque too high");
                 error_triggers_state::triggered_error = true;
                 exo_data->error_joint_id = (left_torque_error) ? (uint8_t)config_defs::joint_id::left_ankle : (uint8_t)config_defs::joint_id::right_ankle;
                 return TORQUE_OUT_OF_BOUNDS;
@@ -142,7 +142,7 @@ namespace error_triggers
             bool right_tracking_error = (abs(error_triggers_state::average_tracking_error_right) > error_triggers_state::tracking_threshold);
             if (left_tracking_error || right_tracking_error)
             {
-                //Serial.println("Error: Tracking error too high");
+                //logger::println("Error: Tracking error too high");
                 error_triggers_state::triggered_error = true;
                 exo_data->error_joint_id = (left_tracking_error) ? (uint8_t)config_defs::joint_id::left_ankle : (uint8_t)config_defs::joint_id::right_ankle;
                 return TRACKING_ERROR;
@@ -170,7 +170,7 @@ namespace error_triggers
                 bool right_torque_variance_error = (error_triggers_state::torque_failure_count_right > error_triggers_state::failure_count_threshold);
                 if (left_torque_variance_error || right_torque_variance_error)
                 {
-                    //Serial.println("Error: Torque sensor variance too high");
+                    //logger::println("Error: Torque sensor variance too high");
                     error_triggers_state::triggered_error = true;
                     exo_data->error_joint_id = (left_torque_variance_error) ? (uint8_t)config_defs::joint_id::left_ankle : (uint8_t)config_defs::joint_id::right_ankle;
                     return TORQUE_VARIANCE_ERROR;
@@ -216,8 +216,8 @@ namespace error_triggers
             // static int count = 0;
             // if (count++ % 100 == 0)
             // {
-            //     Serial.print("LP:"+String(error_triggers_state::filtered_motor_position_left)+"\t");
-            //     Serial.print("RP:"+String(error_triggers_state::filtered_motor_position_right)+"\n");
+            //     logger::print("LP:"+String(error_triggers_state::filtered_motor_position_left)+"\t");
+            //     logger::print("RP:"+String(error_triggers_state::filtered_motor_position_right)+"\n");
             // }
 
             // bool left_motor_position_error = utils::is_outside_range(error_triggers_state::filtered_motor_position_left, 
@@ -259,12 +259,12 @@ namespace error_triggers
             // if (loop_count >= 99)
             // {
             //     loop_count = 0;
-            //     // Serial.print("LN:"+String(left_motor_torque)+"\t");
-            //     // Serial.print("LD:"+String(left_motor_accel)+"\t");
-            //     //Serial.print("LI:"+String(left_motor_inertia)+"\t");
-            //     Serial.print("RN:"+String(right_motor_torque)+"\t");
-            //     Serial.print("RD:"+String(right_motor_accel)+"\t");
-            //     Serial.print("RI:"+String(right_motor_inertia)+"\n");
+            //     // logger::print("LN:"+String(left_motor_torque)+"\t");
+            //     // logger::print("LD:"+String(left_motor_accel)+"\t");
+            //     //logger::print("LI:"+String(left_motor_inertia)+"\t");
+            //     logger::print("RN:"+String(right_motor_torque)+"\t");
+            //     logger::print("RD:"+String(right_motor_accel)+"\t");
+            //     logger::print("RI:"+String(right_motor_inertia)+"\n");
             // }
 
             // if (left_motor_inertia < error_triggers_state::motor_inertia_threshold ||
@@ -296,7 +296,7 @@ namespace error_triggers
             // if ((abs(left_transmission_efficiency) < error_triggers_state::transmission_efficiency_threshold) ||
             //     (abs(right_transmission_efficiency) < error_triggers_state::transmission_efficiency_threshold))
             // {
-            //     Serial.println("Error: Transmission efficiency too low");
+            //     logger::println("Error: Transmission efficiency too low");
             //     return POOR_TRANSMISSION_EFFICIENCY;
             // }
         }
