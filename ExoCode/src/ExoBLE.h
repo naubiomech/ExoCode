@@ -10,6 +10,7 @@
 
 #ifndef EXOBLE_H
 #define EXOBLE_H
+#if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 
 //#define EXOBLE_DEBUG
 #define MAX_PARSER_CHARACTERS       8
@@ -17,23 +18,15 @@
 #define MAC_ADDRESS_TOTAL_LENGTH    17
 #define MAC_ADDRESS_NAME_LENGTH     6
 
-#if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-    #include <SPI.h>
-    #include "Adafruit_BLE.h"
-    #include "Adafruit_BluefruitLE_SPI.h"
-#elif defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
-    #include "ArduinoBLE.h"
-#endif
+
 
 #include <Arduino.h>
+#include <ArduinoBLE.h>
+
 #include "BleParser.h"
 #include "GattDb.h"
 #include "BleMessage.h"
-#include "ExoData.h"
 #include "BleMessageQueue.h"
-#include "Board.h"
-
-// #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 
 class ExoBLE 
 {
@@ -43,7 +36,7 @@ class ExoBLE
          * 
          * @param data A reference to the ExoData object
          */
-        ExoBLE(ExoData* data);
+        ExoBLE();
         /**
          * @brief Sets GATT DB, device name, and begins advertising. 
          * 
@@ -74,23 +67,20 @@ class ExoBLE
          */
         void send_message(BleMessage &msg);
 
+        /**
+         * @brief Send an error code to the GUI, uses a seperate service and characteristic
+         * 
+         * @param error_code 
+         */
+        void send_error(int error_code, int joint_id);
+
     private:
 
         // BLE connection state
         int _connected = 0;
-
-        // A reference to ExoData
-        ExoData* _data;
         
-
-        #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
-            // The Gatt database which defines the services and characteristics
-            GattDb _gatt_db = GattDb();
-        
-        #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-            // The class to interact with the Adafruit_Bluefruit_SPI_Friend
-            Adafruit_BluefruitLE_SPI _ble;
-        #endif
+        // The Gatt database which defines the services and characteristics
+        GattDb _gatt_db = GattDb();
 
         // The parser used to serialize and deserialize the BLE data
         BleParser _ble_parser = BleParser();
@@ -102,11 +92,7 @@ class ExoBLE
  */
 namespace ble_rx
 {
-    #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
-        void on_rx_recieved(BLEDevice central, BLECharacteristic characteristic);
-    #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-        void on_rx_recieved(char data[], uint16_t len);
-    #endif
+    void on_rx_recieved(BLEDevice central, BLECharacteristic characteristic);
 }
 
 /**
@@ -116,10 +102,9 @@ namespace ble_rx
 namespace connection_callbacks
 {
     static bool is_connected = false;
-    #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-        void connected(void);
-        void disconnected(void);
-    #endif
 }
-// #endif
+
+#endif // defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
+
+
 #endif

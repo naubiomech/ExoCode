@@ -4,6 +4,7 @@
 #include "ble_commands.h"
 #include "Utilities.h"
 #include "BleMessageQueue.h"
+#include "Logger.h"
 #include <vector>
 
 BleParser::BleParser()
@@ -105,7 +106,7 @@ void BleParser::_handle_command(char command)
     {
         // Didnt find command in list
         _working_message.clear();
-        //Serial.println("BleParser::_handle_command->Command is not in list");
+        //logger::println("BleParser::_handle_command->Command is not in list");
     }
     else
     {

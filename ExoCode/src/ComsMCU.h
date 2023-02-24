@@ -57,6 +57,12 @@ class ComsMCU
          * every 1000000/(BLE_time::_status_msg_delay) Hz.
          */
         void update_gui();
+
+        /**
+         * @brief Check for errors and pass to the GUI
+         * 
+         */
+        void handle_errors();
     private:
         /**
          * @brief Private function responsible for calling the correct ble message handler

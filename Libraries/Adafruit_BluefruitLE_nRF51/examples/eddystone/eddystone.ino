@@ -86,7 +86,7 @@ Adafruit_BLEEddystone eddyBeacon(ble);
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -102,22 +102,22 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit EddyStone Example"));
-  Serial.println(F("------------------------------------"));
+  logger::println(F("Adafruit Bluefruit EddyStone Example"));
+  logger::println(F("------------------------------------"));
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   if ( FACTORYRESET_ENABLE )
   {
     /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Performing a factory reset: "));
+    logger::println(F("Performing a factory reset: "));
     if ( ! ble.factoryReset() ){
       error(F("Couldn't factory reset"));
     }
@@ -126,7 +126,7 @@ void setup(void)
   /* Disable command echo from Bluefruit */
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
 
@@ -140,15 +140,15 @@ void setup(void)
   eddyBeacon.begin(true);
 
   /* Set EddyStone URL beacon data */
-  Serial.println(F("Setting EddyStone-url to Adafruit website: "));
+  logger::println(F("Setting EddyStone-url to Adafruit website: "));
 
   if ( !eddyBeacon.setURL(URL) ) {
     error(F("Couldnt set, is URL too long !?"));
   }
 
-  Serial.println(F("**************************************************"));
-  Serial.println(F("Please use Google Physical Web application to test"));
-  Serial.println(F("**************************************************"));
+  logger::println(F("**************************************************"));
+  logger::println(F("Please use Google Physical Web application to test"));
+  logger::println(F("**************************************************"));
 }
 
 /**************************************************************************/
@@ -159,10 +159,10 @@ void setup(void)
 void loop(void)
 {
   // Print user's option
-  Serial.println(F("Please choose:"));
-  Serial.println(F("0 : Stop broadcasting EddyStone URL"));
-  Serial.println(F("1 : Start broadcasting EddyStone URL"));
-  Serial.println(F("2 : Put EddyStone URL to Config Mode"));
+  logger::println(F("Please choose:"));
+  logger::println(F("0 : Stop broadcasting EddyStone URL"));
+  logger::println(F("1 : Start broadcasting EddyStone URL"));
+  logger::println(F("2 : Put EddyStone URL to Config Mode"));
 
   // Get User's input
   char option[BUFSIZE+1];
@@ -180,14 +180,14 @@ void loop(void)
       break;
 
     case 2:
-      Serial.println(F("EddyStone config's mode is enabled for 300 seconds"));
-      Serial.println(F("Please use Physical Web app to edit URL"));
+      logger::println(F("EddyStone config's mode is enabled for 300 seconds"));
+      logger::println(F("Please use Physical Web app to edit URL"));
       eddyBeacon.startConfigMode(300);
       break;
 
     default:
-      Serial.print(F("Invalid input; "));
-      Serial.println(option);
+      logger::print(F("Invalid input; "));
+      logger::println(option);
       break;
   }
 }

@@ -1,4 +1,5 @@
 #include "TorqueSensor.h"
+#include "Logger.h"
 //#define TORQUE_DEBUG 1
 
 
@@ -23,9 +24,9 @@ TorqueSensor::TorqueSensor(unsigned int pin)
     this->_num_calibration_samples = 0;  
 
         
-    // Serial.print("TorqueSensor::TorqueSensor : pin = ");
-    // Serial.print(pin);
-    // Serial.print("\n");
+    // logger::print("TorqueSensor::TorqueSensor : pin = ");
+    // logger::print(pin);
+    // logger::print("\n");
     
     // Configure pin if it is used
     if (this->_is_used)
@@ -34,23 +35,23 @@ TorqueSensor::TorqueSensor(unsigned int pin)
     }
     
     #ifdef TORQUE_DEBUG
-        Serial.print("TorqueSensor :: Constructor : pin ");
-        Serial.print(_pin);
-        Serial.println(" set");
+        logger::print("TorqueSensor :: Constructor : pin ");
+        logger::print(_pin);
+        logger::println(" set");
     #endif
 };
 
 bool TorqueSensor::calibrate(bool do_calibrate)
 {
     #ifdef TORQUE_DEBUG
-        // Serial.print("TorqueSensor::calibrate : do_calibrate = ");
-        // Serial.print(do_calibrate);
-        // Serial.print("\n");
+        // logger::print("TorqueSensor::calibrate : do_calibrate = ");
+        // logger::print(do_calibrate);
+        // logger::print("\n");
     #endif
     if (_is_used)
     {
         #ifdef TORQUE_DEBUG
-        // Serial.print("TorqueSensor::calibrate : _is_used\n");
+        // logger::print("TorqueSensor::calibrate : _is_used\n");
         #endif
         // check for rising edge of do_calibrate, and reset the values
         if (do_calibrate > _last_do_calibrate)
@@ -60,10 +61,10 @@ bool TorqueSensor::calibrate(bool do_calibrate)
             _num_calibration_samples = 0;
 
             #ifdef TORQUE_DEBUG
-                Serial.print("TorqueSensor::calibrate : Starting Cal for pin - ");
-                Serial.println(_pin);
-                Serial.print("TorqueSensor::calibrate : _start_time = ");
-                Serial.println(_start_time);
+                logger::print("TorqueSensor::calibrate : Starting Cal for pin - ");
+                logger::println(_pin);
+                logger::print("TorqueSensor::calibrate : _start_time = ");
+                logger::println(_start_time);
             #endif
         }
         // check if we are within the time window and need to do the calibration
@@ -75,14 +76,14 @@ bool TorqueSensor::calibrate(bool do_calibrate)
             _num_calibration_samples++;
 
             #ifdef TORQUE_DEBUG
-                Serial.print("TorqueSensor::calibrate : Continuing Cal for pin - ");
-                Serial.println(_pin);
-                Serial.print("TorqueSensor::calibrate : current_reading - ");
-                Serial.println(current_reading);
-                Serial.print("TorqueSensor::calibrate : _zero_sum - ");
-                Serial.println(_zero_sum);
-                Serial.print("TorqueSensor::calibrate : _num_calibration_samples - ");
-                Serial.println(_num_calibration_samples);
+                logger::print("TorqueSensor::calibrate : Continuing Cal for pin - ");
+                logger::println(_pin);
+                logger::print("TorqueSensor::calibrate : current_reading - ");
+                logger::println(current_reading);
+                logger::print("TorqueSensor::calibrate : _zero_sum - ");
+                logger::println(_zero_sum);
+                logger::print("TorqueSensor::calibrate : _num_calibration_samples - ");
+                logger::println(_num_calibration_samples);
             #endif
         }
         // The time window ran out so we are done, and should average the values and set the _calibration value.
@@ -93,19 +94,19 @@ bool TorqueSensor::calibrate(bool do_calibrate)
                 _calibration = _zero_sum/(float)_num_calibration_samples;
             }
             #ifdef TORQUE_DEBUG
-            Serial.print("TorqueSensor::calibrate : Torque Cal Done with Calibration = ");
-            Serial.println(_calibration);
+            logger::print("TorqueSensor::calibrate : Torque Cal Done with Calibration = ");
+            logger::println(_calibration);
             #endif
-            // Serial.print("TorqueSensor::calibrate : Torque Cal Done with cal - ");
-            // Serial.print(_pin);
-            // Serial.print("\t");
-            // Serial.println(_calibration);
+            // logger::print("TorqueSensor::calibrate : Torque Cal Done with cal - ");
+            // logger::print(_pin);
+            // logger::print("\t");
+            // logger::println(_calibration);
             do_calibrate = false;
         }
         else 
         {
             #ifdef TORQUE_DEBUG
-            // Serial.print("TorqueSensor::calibrate : Torque Cal Not Done\n");
+            // logger::print("TorqueSensor::calibrate : Torque Cal Not Done\n");
             #endif
         }
         
@@ -119,7 +120,7 @@ bool TorqueSensor::calibrate(bool do_calibrate)
     else
     {
         #ifdef TORQUE_DEBUG
-        Serial.print("TorqueSensor::calibrate : Not _is_used\n");
+        logger::print("TorqueSensor::calibrate : Not _is_used\n");
         #endif
         do_calibrate = false;
     }
@@ -134,23 +135,23 @@ float TorqueSensor::read()
     _calibrated_reading = (((float)_raw_reading*torque_calibration::AI_CNT_TO_V) - _calibration) * torque_calibration::TRQ_V_TO_NM;
 
     #ifdef TORQUE_DEBUG
-        Serial.print("TorqueSensor :: Read : pin ");
-        Serial.print(_pin);
-        Serial.print(" : Calibrated Reading = ");
-        Serial.println(_calibrated_reading, 12);
+        logger::print("TorqueSensor :: Read : pin ");
+        logger::print(_pin);
+        logger::print(" : Calibrated Reading = ");
+        logger::println(_calibrated_reading, 12);
 
-        Serial.print("TorqueSensor :: Read : pin ");
-        Serial.print(_pin);
-        Serial.print(" : Raw Reading = ");
-        Serial.println(_raw_reading);
-        Serial.println(" ");
+        logger::print("TorqueSensor :: Read : pin ");
+        logger::print(_pin);
+        logger::print(" : Raw Reading = ");
+        logger::println(_raw_reading);
+        logger::println(" ");
 
-        Serial.print("_calibration : ");
-        Serial.println(_calibration);
-        Serial.print("torque_calibration::AI_CNT_TO_V : ");
-        Serial.println(torque_calibration::AI_CNT_TO_V, 12);
-        Serial.print("torque_calibration::TRQ_V_TO_NM : ");
-        Serial.println(torque_calibration::TRQ_V_TO_NM);
+        logger::print("_calibration : ");
+        logger::println(_calibration);
+        logger::print("torque_calibration::AI_CNT_TO_V : ");
+        logger::println(torque_calibration::AI_CNT_TO_V, 12);
+        logger::print("torque_calibration::TRQ_V_TO_NM : ");
+        logger::println(torque_calibration::TRQ_V_TO_NM);
     #endif
     
     return _calibrated_reading;

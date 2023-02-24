@@ -1,4 +1,5 @@
 #include "ThIMU.h"
+#include "Logger.h"
 
 #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
 /*
@@ -46,8 +47,8 @@ bool ThIMU::init(float timeout)
     while (!_handshake()) {
         float delta_time = millis() - start_time;
         
-        //Serial.print("Handshake failed: ");
-        //Serial.println(delta_time);
+        //logger::print("Handshake failed: ");
+        //logger::println(delta_time);
         if (delta_time > timeout) {
             return false;
         }
@@ -78,8 +79,8 @@ bool ThIMU::_handshake()
 {
     uint8_t addr = (_is_left) ? i2c_cmds::thigh_imu::left_addr : i2c_cmds::thigh_imu::right_addr;
 
-    //Serial.print("Handshaking with IMU at address: ");
-    //Serial.println(addr);
+    //logger::print("Handshaking with IMU at address: ");
+    //logger::println(addr);
 
     MY_WIRE.beginTransmission(addr);
     MY_WIRE.write(i2c_cmds::thigh_imu::handshake::reg);
@@ -89,8 +90,8 @@ bool ThIMU::_handshake()
     uint8_t val = MY_WIRE.read();
     MY_WIRE.endTransmission();
 
-    //Serial.print("Handshake value: ");
-    //Serial.println(val);
+    //logger::print("Handshake value: ");
+    //logger::println(val);
 
     if (val == 0x01) {
         return true;

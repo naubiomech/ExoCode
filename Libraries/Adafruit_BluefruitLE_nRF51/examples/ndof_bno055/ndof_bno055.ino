@@ -60,7 +60,7 @@ Adafruit_BNO055 bno = Adafruit_BNO055(55);
 /**************************************************************************/
 void error(const __FlashStringHelper*err)
 {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -74,15 +74,15 @@ void displaySensorDetails(void)
 {
   sensor_t sensor;
   bno.getSensor(&sensor);
-  Serial.println("------------------------------------");
-  Serial.print  ("Sensor:       "); Serial.println(sensor.name);
-  Serial.print  ("Driver Ver:   "); Serial.println(sensor.version);
-  Serial.print  ("Unique ID:    "); Serial.println(sensor.sensor_id);
-  Serial.print  ("Max Value:    "); Serial.print(sensor.max_value); Serial.println(" xxx");
-  Serial.print  ("Min Value:    "); Serial.print(sensor.min_value); Serial.println(" xxx");
-  Serial.print  ("Resolution:   "); Serial.print(sensor.resolution); Serial.println(" xxx");
-  Serial.println("------------------------------------");
-  Serial.println("");
+  logger::println("------------------------------------");
+  logger::print  ("Sensor:       "); logger::println(sensor.name);
+  logger::print  ("Driver Ver:   "); logger::println(sensor.version);
+  logger::print  ("Unique ID:    "); logger::println(sensor.sensor_id);
+  logger::print  ("Max Value:    "); logger::print(sensor.max_value); logger::println(" xxx");
+  logger::print  ("Min Value:    "); logger::print(sensor.min_value); logger::println(" xxx");
+  logger::print  ("Resolution:   "); logger::print(sensor.resolution); logger::println(" xxx");
+  logger::println("------------------------------------");
+  logger::println("");
   delay(500);
 }
 
@@ -99,13 +99,13 @@ void displaySensorStatus(void)
   bno.getSystemStatus(&system_status, &self_test_results, &system_error);
 
   // Display the results in the Serial Monitor
-  Serial.print("System Status: 0x");
-  Serial.println(system_status, HEX);
-  Serial.print("Self Test:     0x");
-  Serial.println(self_test_results, HEX);
-  Serial.print("System Error:  0x");
-  Serial.println(system_error, HEX);
-  Serial.println("");
+  logger::print("System Status: 0x");
+  logger::println(system_status, HEX);
+  logger::print("Self Test:     0x");
+  logger::println(self_test_results, HEX);
+  logger::print("System Error:  0x");
+  logger::println(system_error, HEX);
+  logger::println("");
   delay(500);
 }
 
@@ -123,21 +123,21 @@ void displayCalStatus(void)
   bno.getCalibration(&system, &gyro, &accel, &mag);
 
   // The data should be ignored until the system calibration is > 0
-  Serial.print("\t");
+  logger::print("\t");
   if (!system)
   {
-    Serial.print("! ");
+    logger::print("! ");
   }
 
   // Display the individual values
-  Serial.print("Sys:");
-  Serial.print(system, DEC);
-  Serial.print(" G:");
-  Serial.print(gyro, DEC);
-  Serial.print(" A:");
-  Serial.print(accel, DEC);
-  Serial.print(" M:");
-  Serial.print(mag, DEC);
+  logger::print("Sys:");
+  logger::print(system, DEC);
+  logger::print(" G:");
+  logger::print(gyro, DEC);
+  logger::print(" A:");
+  logger::print(accel, DEC);
+  logger::print(" M:");
+  logger::print(mag, DEC);
 }
 
 /**************************************************************************/
@@ -168,7 +168,7 @@ void transmitCalStatus(void)
 
   if (! ble.waitForOK() )
   {
-    Serial.println(F("Failed to send?"));
+    logger::println(F("Failed to send?"));
   }
 }
 
@@ -182,7 +182,7 @@ void initSensor(void)
   if(!bno.begin())
   {
     // There was a problem detecting the BNO055 ... check your connections
-    Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+    logger::print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
     while(1);
   }
 
@@ -209,20 +209,20 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit Command Mode Example"));
-  Serial.println(F("---------------------------------------"));
+  logger::println(F("Adafruit Bluefruit Command Mode Example"));
+  logger::println(F("---------------------------------------"));
 
   // Initialise the module
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   // Perform a factory reset to make sure everything is in a known state
-  Serial.println(F("Performing a factory reset: "));
+  logger::println(F("Performing a factory reset: "));
   if (! ble.factoryReset() ){
        error(F("Couldn't factory reset"));
   }
@@ -230,7 +230,7 @@ void setup(void)
   // Disable command echo from Bluefruit
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   // Print Bluefruit information
   ble.info();
 
@@ -239,15 +239,15 @@ void setup(void)
   // Setup the BNO055 sensor
   initSensor();
 
-  Serial.println("Waiting for a BLE connection to continue ...");
+  logger::println("Waiting for a BLE connection to continue ...");
 
   // Wait for connection to finish
   while (! ble.isConnected()) {
       delay(5000);
   }
 
-  Serial.println(F("CONNECTED!"));
-  Serial.println(F("**********"));
+  logger::println(F("CONNECTED!"));
+  logger::println(F("**********"));
 }
 
 /**************************************************************************/
@@ -267,16 +267,16 @@ void loop(void)
     imu::Quaternion quat = bno.getQuat();
 
     // Display the full data in Serial Monitor
-    Serial.print("qW: ");
-    Serial.print(quat.w(), 4);
-    Serial.print(" qX: ");
-    Serial.print(quat.y(), 4);
-    Serial.print(" qY: ");
-    Serial.print(quat.x(), 4);
-    Serial.print(" qZ: ");
-    Serial.print(quat.z(), 4);
+    logger::print("qW: ");
+    logger::print(quat.w(), 4);
+    logger::print(" qX: ");
+    logger::print(quat.y(), 4);
+    logger::print(" qY: ");
+    logger::print(quat.x(), 4);
+    logger::print(" qZ: ");
+    logger::print(quat.z(), 4);
     displayCalStatus();
-    Serial.println("");
+    logger::println("");
 
     // Send abbreviated integer data out over BLE UART
     ble.print("AT+BLEUARTTX=");
@@ -289,7 +289,7 @@ void loop(void)
     ble.println(quat.z(), 4);
     if (! ble.waitForOK() )
     {
-      Serial.println(F("Failed to send?"));
+      logger::println(F("Failed to send?"));
     }
 
     // Optional: Send the calibration data as well
@@ -299,15 +299,15 @@ void loop(void)
     ble.println("AT+BLEUARTTX=\\r\\n");
     if (! ble.waitForOK() )
     {
-      Serial.println(F("Failed to send?"));
+      logger::println(F("Failed to send?"));
     }
 
     /*
     // Display the buffer size (firmware 0.6.7 and higher only!)
     ble.println("AT+BLEUARTFIFO=TX");
     ble.readline();
-    Serial.print("TX FIFO: ");
-    Serial.println(ble.buffer);
+    logger::print("TX FIFO: ");
+    logger::println(ble.buffer);
     */
 
     // Wait a bit ...
@@ -324,7 +324,7 @@ void loop(void)
       return;
     }
     // Some data was found, its in the buffer
-    Serial.print(F("[Recv] ")); Serial.println(ble.buffer);
+    logger::print(F("[Recv] ")); logger::println(ble.buffer);
     ble.waitForOK();
   }
 }

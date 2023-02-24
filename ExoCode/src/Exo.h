@@ -33,8 +33,11 @@ class Exo
 		
         /**
          * @brief reads motor data from each motor used in the leg and stores the values
+         * 
+         * @return true If the code ran, ie tiiming was satisfied
+         * @return false 
          */
-        void run();  
+        bool run();  
 		
         ExoData *data;  /**< pointer to ExoData that is getting updated by the coms mcu so they share format.*/
         Leg left_leg; /**< right leg object that contains all the joints and sensors for that leg */

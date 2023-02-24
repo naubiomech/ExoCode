@@ -29,33 +29,33 @@
     // enable the estop pullup.
     pinMode(logic_micro_pins::motor_stop_pin,INPUT_PULLUP);
 
-    Serial.print("Left_hip_angle, ");
-    Serial.print("Right_hip_angle, ");
-    Serial.print("Left_hip_setpoint, ");
-    Serial.print("Right_hip_setpoint, ");
-    Serial.print("\n");
+    logger::print("Left_hip_angle, ");
+    logger::print("Right_hip_angle, ");
+    logger::print("Left_hip_setpoint, ");
+    logger::print("Right_hip_setpoint, ");
+    logger::print("\n");
 
     
 //    #if BOARD_VERSION == AK_Board_V0_1
-//      Serial.println("Board : AK_Board_V0_1");
+//      logger::println("Board : AK_Board_V0_1");
 //    #elif BOARD_VERSION == AK_Board_V0_3
-//      Serial.println("Board : AK_Board_V0_3");
+//      logger::println("Board : AK_Board_V0_3");
 //    #endif
 //  
 //    #if defined(ARDUINO_TEENSY36)
-//      Serial.println("Teensy 3.6");
+//      logger::println("Teensy 3.6");
 //    #elif defined(ARDUINO_TEENSY41)
-//      Serial.println("Teensy 4.1");
+//      logger::println("Teensy 4.1");
 //    #endif
 //  
 //    
 //    
-//    Serial.print(logic_micro_pins::status_led_r_pin);
-//    Serial.print("\t");
-//    Serial.print(logic_micro_pins::status_led_g_pin);
-//    Serial.print("\t");
-//    Serial.print(logic_micro_pins::status_led_b_pin);
-//    Serial.print("\n");
+//    logger::print(logic_micro_pins::status_led_r_pin);
+//    logger::print("\t");
+//    logger::print(logic_micro_pins::status_led_g_pin);
+//    logger::print("\t");
+//    logger::print(logic_micro_pins::status_led_b_pin);
+//    logger::print("\n");
     
   }
   
@@ -144,9 +144,9 @@
     if (state_period_ms <= (current_time - last_transition_time))
     {
       int timestamp = millis();
-//      Serial.print("Superloop : time since enable = ");
-//      Serial.print(timestamp - motor_enable_time);
-//      Serial.print("\n");
+//      logger::print("Superloop : time since enable = ");
+//      logger::print(timestamp - motor_enable_time);
+//      logger::print("\n");
 
       if (time_to_stay_on_ms < (timestamp - motor_enable_time))
       {
@@ -198,15 +198,15 @@
       last_transition_time = current_time;
 //      if (left_motor._motor_data->enabled)
 //      {
-//          Serial.print(left_motor._motor_data->p);
-//          Serial.print("\t");
-//          Serial.print(right_motor._motor_data->p);
-//          Serial.print("\t");
-//          Serial.print(left_torque_command);
-//          Serial.print("\t");
-//          Serial.print(right_torque_command);
+//          logger::print(left_motor._motor_data->p);
+//          logger::print("\t");
+//          logger::print(right_motor._motor_data->p);
+//          logger::print("\t");
+//          logger::print(left_torque_command);
+//          logger::print("\t");
+//          logger::print(right_torque_command);
 //         
-//          Serial.print("\n");
+//          logger::print("\n");
 //      }
       
     }

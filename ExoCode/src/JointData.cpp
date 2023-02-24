@@ -1,4 +1,5 @@
 #include "JointData.h"
+#include "Logger.h"
 
 /*
  * Constructor for the Joint data.
@@ -20,6 +21,9 @@ JointData::JointData(config_defs::joint_id id, uint8_t* config_to_send)
     this->position = 0;
     this->velocity = 0;
     this->calibrate_torque_sensor = 0;
+    this->joint_position = 0;
+    this->prev_joint_position = 0;
+    this->joint_velocity = 0;
     
     switch ((uint8_t)this->id & (~(uint8_t)config_defs::joint_id::left & ~(uint8_t)config_defs::joint_id::right))  // use the id with the side masked out.
     {
@@ -29,7 +33,7 @@ JointData::JointData(config_defs::joint_id id, uint8_t* config_to_send)
             is_used = (config_to_send[config_defs::hip_idx] != (uint8_t)config_defs::motor::not_used) && ((static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_to_send[config_defs::exo_side_idx]) 
                 || (((uint8_t)config_defs::exo_side::left == config_to_send[config_defs::exo_side_idx]) && this->is_left)
                 || (((uint8_t)config_defs::exo_side::right == config_to_send[config_defs::exo_side_idx]) && !this->is_left));
-            // Serial.print("Hip\n");
+            // logger::print("Hip\n");
             // check if the direction should be flipped
             if ((config_to_send[config_defs::hip_flip_dir_idx] == (uint8_t)config_defs::flip_dir::both) || ((config_to_send[config_defs::hip_flip_dir_idx] == (uint8_t)config_defs::flip_dir::left) && this->is_left) || ((config_to_send[config_defs::hip_flip_dir_idx] == (uint8_t)config_defs::flip_dir::right) && (!this->is_left)))
             {
@@ -47,7 +51,7 @@ JointData::JointData(config_defs::joint_id id, uint8_t* config_to_send)
             is_used = (config_to_send[config_defs::knee_idx] != (uint8_t)config_defs::motor::not_used) && ((static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_to_send[config_defs::exo_side_idx]) 
                 || (((uint8_t)config_defs::exo_side::left == config_to_send[config_defs::exo_side_idx]) && this->is_left)
                 || (((uint8_t)config_defs::exo_side::right == config_to_send[config_defs::exo_side_idx]) && !this->is_left));
-            // Serial.print("Knee\n");
+            // logger::print("Knee\n");
             // check if the direction should be flipped
             if ((config_to_send[config_defs::knee_flip_dir_idx] == (uint8_t)config_defs::flip_dir::both) || ((config_to_send[config_defs::knee_flip_dir_idx] == (uint8_t)config_defs::flip_dir::left) && this->is_left) || ((config_to_send[config_defs::knee_flip_dir_idx] == (uint8_t)config_defs::flip_dir::right) && (!this->is_left)))
             {
@@ -65,7 +69,7 @@ JointData::JointData(config_defs::joint_id id, uint8_t* config_to_send)
             is_used = (config_to_send[config_defs::ankle_idx] != (uint8_t)config_defs::motor::not_used) && ((static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_to_send[config_defs::exo_side_idx]) 
                 || (((uint8_t)config_defs::exo_side::left == config_to_send[config_defs::exo_side_idx]) && this->is_left)
                 || (((uint8_t)config_defs::exo_side::right == config_to_send[config_defs::exo_side_idx]) && !this->is_left));
-            // Serial.print("Ankle\n");
+            // logger::print("Ankle\n");
             // check if the direction should be flipped
             if ((config_to_send[config_defs::ankle_flip_dir_idx] == (uint8_t)config_defs::flip_dir::both) || ((config_to_send[config_defs::ankle_flip_dir_idx] == (uint8_t)config_defs::flip_dir::left) && this->is_left) || ((config_to_send[config_defs::ankle_flip_dir_idx] == (uint8_t)config_defs::flip_dir::right) && (!this->is_left)))
             {
@@ -92,7 +96,7 @@ void JointData::reconfigure(uint8_t* config_to_send)
             is_used = (config_to_send[config_defs::hip_idx] != (uint8_t)config_defs::motor::not_used) && ((static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_to_send[config_defs::exo_side_idx]) 
                 || (((uint8_t)config_defs::exo_side::left == config_to_send[config_defs::exo_side_idx]) && this->is_left)
                 || (((uint8_t)config_defs::exo_side::right == config_to_send[config_defs::exo_side_idx]) && !this->is_left));
-            // Serial.print("Hip\n");
+            // logger::print("Hip\n");
             // check if the direction should be flipped
             if ((config_to_send[config_defs::hip_flip_dir_idx] == (uint8_t)config_defs::flip_dir::both) || ((config_to_send[config_defs::hip_flip_dir_idx] == (uint8_t)config_defs::flip_dir::left) && this->is_left) || ((config_to_send[config_defs::hip_flip_dir_idx] == (uint8_t)config_defs::flip_dir::right) && (!this->is_left)))
             {
@@ -110,7 +114,7 @@ void JointData::reconfigure(uint8_t* config_to_send)
             is_used = (config_to_send[config_defs::knee_idx] != (uint8_t)config_defs::motor::not_used) && ((static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_to_send[config_defs::exo_side_idx]) 
                 || (((uint8_t)config_defs::exo_side::left == config_to_send[config_defs::exo_side_idx]) && this->is_left)
                 || (((uint8_t)config_defs::exo_side::right == config_to_send[config_defs::exo_side_idx]) && !this->is_left));
-            // Serial.print("Knee\n");
+            // logger::print("Knee\n");
             // check if the direction should be flipped
             if ((config_to_send[config_defs::knee_flip_dir_idx] == (uint8_t)config_defs::flip_dir::both) || ((config_to_send[config_defs::knee_flip_dir_idx] == (uint8_t)config_defs::flip_dir::left) && this->is_left) || ((config_to_send[config_defs::knee_flip_dir_idx] == (uint8_t)config_defs::flip_dir::right) && (!this->is_left)))
             {
@@ -128,7 +132,7 @@ void JointData::reconfigure(uint8_t* config_to_send)
             is_used = (config_to_send[config_defs::ankle_idx] != (uint8_t)config_defs::motor::not_used) && ((static_cast<uint8_t>(config_defs::exo_side::bilateral) == config_to_send[config_defs::exo_side_idx]) 
                 || (((uint8_t)config_defs::exo_side::left == config_to_send[config_defs::exo_side_idx]) && this->is_left)
                 || (((uint8_t)config_defs::exo_side::right == config_to_send[config_defs::exo_side_idx]) && !this->is_left));
-            // Serial.print("Ankle\n");
+            // logger::print("Ankle\n");
             // check if the direction should be flipped
             if ((config_to_send[config_defs::ankle_flip_dir_idx] == (uint8_t)config_defs::flip_dir::both) || ((config_to_send[config_defs::ankle_flip_dir_idx] == (uint8_t)config_defs::flip_dir::left) && this->is_left) || ((config_to_send[config_defs::ankle_flip_dir_idx] == (uint8_t)config_defs::flip_dir::right) && (!this->is_left)))
             {

@@ -23,13 +23,13 @@ void setup() {
 
   // begin initialization
   if (!BLE.begin()) {
-    Serial.println("starting BLE failed!");
+    logger::println("starting BLE failed!");
 
     while (1);
   }
 
-  Serial.println("BLE Central - SensorTag button");
-  Serial.println("Make sure to turn on the device.");
+  logger::println("BLE Central - SensorTag button");
+  logger::println("Make sure to turn on the device.");
 
   // start scanning for peripheral
   BLE.scan();
@@ -41,13 +41,13 @@ void loop() {
 
   if (peripheral) {
     // discovered a peripheral, print out address, local name, and advertised service
-    Serial.print("Found ");
-    Serial.print(peripheral.address());
-    Serial.print(" '");
-    Serial.print(peripheral.localName());
-    Serial.print("' ");
-    Serial.print(peripheral.advertisedServiceUuid());
-    Serial.println();
+    logger::print("Found ");
+    logger::print(peripheral.address());
+    logger::print(" '");
+    logger::print(peripheral.localName());
+    logger::print("' ");
+    logger::print(peripheral.advertisedServiceUuid());
+    logger::println();
 
     // Check if the peripheral is a SensorTag, the local name will be:
     // "CC2650 SensorTag"
@@ -65,20 +65,20 @@ void loop() {
 
 void monitorSensorTagButtons(BLEDevice peripheral) {
   // connect to the peripheral
-  Serial.println("Connecting ...");
+  logger::println("Connecting ...");
   if (peripheral.connect()) {
-    Serial.println("Connected");
+    logger::println("Connected");
   } else {
-    Serial.println("Failed to connect!");
+    logger::println("Failed to connect!");
     return;
   }
 
   // discover peripheral attributes
-  Serial.println("Discovering service 0xffe0 ...");
+  logger::println("Discovering service 0xffe0 ...");
   if (peripheral.discoverService("ffe0")) {
-    Serial.println("Service discovered");
+    logger::println("Service discovered");
   } else {
-    Serial.println("Attribute discovery failed.");
+    logger::println("Attribute discovery failed.");
     peripheral.disconnect();
 
     while (1);
@@ -89,22 +89,22 @@ void monitorSensorTagButtons(BLEDevice peripheral) {
   BLECharacteristic simpleKeyCharacteristic = peripheral.characteristic("ffe1");
 
   // subscribe to the simple key characteristic
-  Serial.println("Subscribing to simple key characteristic ...");
+  logger::println("Subscribing to simple key characteristic ...");
   if (!simpleKeyCharacteristic) {
-    Serial.println("no simple key characteristic found!");
+    logger::println("no simple key characteristic found!");
     peripheral.disconnect();
     return;
   } else if (!simpleKeyCharacteristic.canSubscribe()) {
-    Serial.println("simple key characteristic is not subscribable!");
+    logger::println("simple key characteristic is not subscribable!");
     peripheral.disconnect();
     return;
   } else if (!simpleKeyCharacteristic.subscribe()) {
-    Serial.println("subscription failed!");
+    logger::println("subscription failed!");
     peripheral.disconnect();
     return;
   } else {
-    Serial.println("Subscribed");
-    Serial.println("Press the right and left buttons on your SensorTag.");
+    logger::println("Subscribed");
+    logger::println("Press the right and left buttons on your SensorTag.");
   }
 
   while (peripheral.connected()) {
@@ -119,15 +119,15 @@ void monitorSensorTagButtons(BLEDevice peripheral) {
 
       if (value & 0x01) {
         // first bit corresponds to the right button
-        Serial.println("Right button pressed");
+        logger::println("Right button pressed");
       }
 
       if (value & 0x02) {
         // second bit corresponds to the left button
-        Serial.println("Left button pressed");
+        logger::println("Left button pressed");
       }
     }
   }
 
-  Serial.println("SensorTag disconnected!");
+  logger::println("SensorTag disconnected!");
 }

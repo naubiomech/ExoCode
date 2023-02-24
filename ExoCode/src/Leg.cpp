@@ -1,4 +1,5 @@
 #include "Leg.h"
+#include "Logger.h"
 //#define LEG_DEBUG 1
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
@@ -23,8 +24,8 @@ Leg::Leg(bool is_left, ExoData* exo_data)
     // This data object is set for the specific leg so we don't have to keep checking the side.
     _leg_data = _is_left ? &(_data->left_leg) : &(_data->right_leg);
     #ifdef LEG_DEBUG
-        Serial.print(_is_left ? "Left " : "Right ");
-        Serial.println("Leg :: Constructor : _data set");
+        logger::print(_is_left ? "Left " : "Right ");
+        logger::println("Leg :: Constructor : _data set");
     #endif
     _prev_heel_contact_state = true; // initialized to true so we don't get a strike the first time we read
     _prev_toe_contact_state = true;
@@ -38,8 +39,8 @@ Leg::Leg(bool is_left, ExoData* exo_data)
     _prev_ground_strike_timestamp = 0;
     //_expected_step_duration = 0;
     #ifdef LEG_DEBUG
-        Serial.print(_is_left ? "Left " : "Right ");
-        Serial.println("Leg :: Constructor : Exit");
+        logger::print(_is_left ? "Left " : "Right ");
+        logger::println("Leg :: Constructor : Exit");
     #endif
 
     _heel_fsr.get_contact_thresholds(_leg_data->heel_fsr_lower_threshold, _leg_data->heel_fsr_upper_threshold);
@@ -61,21 +62,22 @@ void Leg::disable_motors()
 void Leg::run_leg()
 {
     #ifdef LEG_DEBUG
-        Serial.print("\nmicros : ");
-        Serial.println(micros());
-        Serial.print(_is_left ? "Left " : "Right ");
-        Serial.println("Leg :: run_leg : checking calibration");
+        logger::print("\nmicros : ");
+        logger::println(micros());
+        logger::print(_is_left ? "Left " : "Right ");
+        logger::println("Leg :: run_leg : checking calibration");
     #endif
     check_calibration();
     #ifdef LEG_DEBUG
-        Serial.print(_is_left ? "Left " : "Right ");
-        Serial.println("Leg :: run_leg : reading data");
+        logger::print(_is_left ? "Left " : "Right ");
+        logger::println("Leg :: run_leg : reading data");
     #endif
+    _check_thresholds();
     // read all the data before we calculate and send the new motor commands
     read_data();
     #ifdef LEG_DEBUG
-        Serial.print(_is_left ? "Left " : "Right ");
-        Serial.println("Leg :: run_leg : updating motor commands");
+        logger::print(_is_left ? "Left " : "Right ");
+        logger::println("Leg :: run_leg : updating motor commands");
     #endif
     // calculates the new motor commands and sends them.
     update_motor_cmds();
@@ -132,23 +134,23 @@ void Leg::check_calibration()
         if (_leg_data->do_calibration_toe_fsr)
         {
             _leg_data->do_calibration_toe_fsr = _toe_fsr.calibrate(_leg_data->do_calibration_toe_fsr);
-            _data->status = status_defs::messages::fsr_calibration;
+            _data->set_status(status_defs::messages::fsr_calibration);
         }
         else if (_leg_data->do_calibration_refinement_toe_fsr) 
         {
             _leg_data->do_calibration_refinement_toe_fsr = _toe_fsr.refine_calibration(_leg_data->do_calibration_refinement_toe_fsr);
-            _data->status = status_defs::messages::fsr_refinement;
+            _data->set_status(status_defs::messages::fsr_refinement);
         }
         
         if (_leg_data->do_calibration_heel_fsr)
         {
             _leg_data->do_calibration_heel_fsr = _heel_fsr.calibrate(_leg_data->do_calibration_heel_fsr);
-            _data->status = status_defs::messages::fsr_calibration;
+            _data->set_status(status_defs::messages::fsr_calibration);
         }
         else if (_leg_data->do_calibration_refinement_heel_fsr) 
         {
             _leg_data->do_calibration_refinement_heel_fsr = _heel_fsr.refine_calibration(_leg_data->do_calibration_refinement_heel_fsr);
-            _data->status = status_defs::messages::fsr_refinement;
+            _data->set_status(status_defs::messages::fsr_refinement);
         }
         
         // check torque sensor calibrations if joint is use
@@ -169,6 +171,12 @@ void Leg::check_calibration()
     }        
 };
 
+void Leg::_check_thresholds()
+{
+    _toe_fsr.set_contact_thresholds(_leg_data->toe_fsr_lower_threshold, _leg_data->toe_fsr_upper_threshold);
+    _heel_fsr.set_contact_thresholds(_leg_data->heel_fsr_lower_threshold, _leg_data->heel_fsr_upper_threshold);
+}
+
 bool Leg::_check_ground_strike()
 {
     _leg_data->prev_heel_stance = _prev_heel_contact_state;  //This might not work, needs to be tested
@@ -182,12 +190,12 @@ bool Leg::_check_ground_strike()
     bool ground_strike = false;
     
     
-    // Serial.print("Leg::_check_ground_strike : _prev_heel_contact_state - ");
-    // Serial.print(_prev_heel_contact_state);
-    // Serial.print("\n");
-    // Serial.print("\t_prev_toe_contact_state - ");
-    // Serial.print(_prev_toe_contact_state);
-    // Serial.print("\n");
+    // logger::print("Leg::_check_ground_strike : _prev_heel_contact_state - ");
+    // logger::print(_prev_heel_contact_state);
+    // logger::print("\n");
+    // logger::print("\t_prev_toe_contact_state - ");
+    // logger::print(_prev_toe_contact_state);
+    // logger::print("\n");
     // only check if in swing
     if(!_prev_heel_contact_state & !_prev_toe_contact_state) //If we were previously in swing
     {
@@ -228,9 +236,9 @@ float Leg::_calc_percent_gait()
     {
         percent_gait = 100 * ((float)timestamp - _ground_strike_timestamp) / _leg_data->expected_step_duration;
         percent_gait = min(percent_gait, 100); // set saturation.
-        // Serial.print("Leg::_calc_percent_gait : percent_gait_x10 = ");
-        // Serial.print(percent_gait_x10);
-        // Serial.print("\n");
+        // logger::print("Leg::_calc_percent_gait : percent_gait_x10 = ");
+        // logger::print(percent_gait_x10);
+        // logger::print("\n");
     }
     return percent_gait;
 };
@@ -264,13 +272,13 @@ float Leg::_update_expected_duration()
         }
         _step_times[0] = step_time;
         
-        // Serial.print("Leg::_update_expected_duration : _step_times not fully initialized- [\t");
+        // logger::print("Leg::_update_expected_duration : _step_times not fully initialized- [\t");
         // for (int i = 0; i<_num_steps_avg; i++)
         // {
-            // Serial.print(_step_times[i]);
-            // Serial.print("\t");
+            // logger::print(_step_times[i]);
+            // logger::print("\t");
         // }
-        // Serial.print("\t]\n");
+        // logger::print("\t]\n");
         
         
     }
@@ -288,9 +296,9 @@ float Leg::_update_expected_duration()
         
         // TODO: Add rate limiter for change in expected duration so it can't make big jumps
         expected_step_duration = sum_step_times/_num_steps_avg;  // Average to the nearest ms
-        // Serial.print("Leg::_update_expected_duration : _expected_step_duration - ");
-        // Serial.print(_expected_step_duration);
-        // Serial.print("\n");
+        // logger::print("Leg::_update_expected_duration : _expected_step_duration - ");
+        // logger::print(_expected_step_duration);
+        // logger::print("\n");
     }
     return expected_step_duration;
 };
@@ -339,9 +347,9 @@ float Leg::get_Kt_for_joint(uint8_t id)
         Kt = _ankle._motor->get_Kt();
         break;
     default:
-        // Serial.print("ExoData::get_joint_with->No joint with ");
-        // Serial.print(id);
-        // Serial.println(" was found.");
+        // logger::print("ExoData::get_joint_with->No joint with ");
+        // logger::print(id);
+        // logger::println(" was found.");
         break;
     }
     return Kt;

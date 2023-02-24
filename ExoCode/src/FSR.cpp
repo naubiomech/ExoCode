@@ -2,6 +2,7 @@
 #include "FSR.h"
 
 #include "Board.h"
+#include "Logger.h"
 //#define FSR_DEBUG 1
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
@@ -32,7 +33,7 @@ FSR::FSR(int pin)
     _calibration_refinement_max = 0;
     
     #ifdef FSR_DEBUG
-        Serial.println("FSR:: Constructor : Exit");
+        logger::println("FSR:: Constructor : Exit");
     #endif
 }
 
@@ -42,8 +43,8 @@ bool FSR::calibrate(bool do_calibrate)
     // check for rising edge of do_calibrate and start the timer
     if (do_calibrate > _last_do_calibrate)
     {
-        // Serial.print("FSR::calibrate : Starting Cal for pin - ");
-        // Serial.println(_pin);
+        // logger::print("FSR::calibrate : Starting Cal for pin - ");
+        // logger::println(_pin);
         _start_time = millis();
         // set the max/min to the current value
         _calibration_max = analogRead(_pin);
@@ -52,12 +53,12 @@ bool FSR::calibrate(bool do_calibrate)
     
     // check if we are within the time window and need to do the calibration
     uint16_t delta = millis()-_start_time;
-    // Serial.print("FSR::calibrate : delta - ");
-    // Serial.println(delta);
+    // logger::print("FSR::calibrate : delta - ");
+    // logger::println(delta);
     if((_cal_time >= (delta)) & do_calibrate)
     {
-        // Serial.print("FSR::calibrate : Continuing Cal for pin - ");
-        // Serial.println(_pin);
+        // logger::print("FSR::calibrate : Continuing Cal for pin - ");
+        // logger::println(_pin);
         uint16_t current_reading = analogRead(_pin);
         // Track the min and max.
         _calibration_max = max(_calibration_max, current_reading);
@@ -66,11 +67,11 @@ bool FSR::calibrate(bool do_calibrate)
     // The time window ran out so we are done.
     else if (do_calibrate)
     {
-        // Serial.print("FSR::calibrate : FSR Cal Done for pin - ");
-        // Serial.println(_pin);
-        // Serial.print("FSR::calibrate : _calibration_max - ");
-        // Serial.print(_calibration_max);
-        // Serial.print("\n");
+        // logger::print("FSR::calibrate : FSR Cal Done for pin - ");
+        // logger::println(_pin);
+        // logger::print("FSR::calibrate : _calibration_max - ");
+        // logger::print(_calibration_max);
+        // logger::print("\n");
         do_calibrate = false;
     }
         
@@ -123,7 +124,7 @@ bool FSR::refine_calibration(bool do_refinement)
                 
                 _step_count++;
                 
-                // Serial.print("FSR::refine_calibration : New Step - ");
+                // logger::print("FSR::refine_calibration : New Step - ");
             }
         }
         else // we are still at do_refinement but the _step_count is at the _num_steps
@@ -132,20 +133,6 @@ bool FSR::refine_calibration(bool do_refinement)
             // average max and min, offset by min and normalize by (max-min), (val-avg_min)/(avg_max-avg_min)
             _calibration_refinement_max = static_cast<decltype(_calibration_refinement_max)>(_step_max_sum)/_num_steps;  // casting to the type of _calibration_refinement_max before division 
             _calibration_refinement_min = static_cast<decltype(_calibration_refinement_min)>(_step_min_sum)/_num_steps;
-            
-            // Serial.print("FSR::refine_calibration : FSR Cal Done\n");
-            // Serial.println(_pin);
-            // Serial.print("\t _step_count -");
-            // Serial.print(_step_count);
-            // Serial.print("\n");
-            
-            // Serial.print("FSR::refine_calibration : _calibration_refinement_max - ");
-            // Serial.print(_calibration_refinement_max);
-            // Serial.print("\n");
-            // Serial.print("FSR::refine_calibration : _calibration_refinement_min - ");
-            // Serial.print(_calibration_refinement_min);
-            // Serial.print("\n");
-            //delay(1000);
             
             // refinement is done
             do_refinement = false;
@@ -219,16 +206,16 @@ bool FSR::_calc_ground_contact()
 
     // // Print counts and state
 
-    // Serial.print("_ground_contact:");
-    //     Serial.print(_ground_contact);
-    //     Serial.print("\n");
-    // Serial.print("\t");
-    // Serial.print("FSR::_calc_ground_contact : ground_contact_count - ");
-    // Serial.print(ground_contact_count);
-    // Serial.print("\t");
-    // Serial.print("FSR::_calc_ground_contact : not_ground_contact_count - ");
-    // Serial.print(not_ground_contact_count);
-    // Serial.print("\n");
+    // logger::print("_ground_contact:");
+    //     logger::print(_ground_contact);
+    //     logger::print("\n");
+    // logger::print("\t");
+    // logger::print("FSR::_calc_ground_contact : ground_contact_count - ");
+    // logger::print(ground_contact_count);
+    // logger::print("\t");
+    // logger::print("FSR::_calc_ground_contact : not_ground_contact_count - ");
+    // logger::print(not_ground_contact_count);
+    // logger::print("\n");
 
     return _ground_contact;
 };
@@ -236,10 +223,10 @@ bool FSR::_calc_ground_contact()
 
 bool FSR::get_ground_contact()
 {
-    // Serial.print("FSR::refine_calibration : FSR pin - ");
-    // Serial.print(_pin);
-    // Serial.print("\t _ground_contact -");
-    // Serial.println(_ground_contact);
+    // logger::print("FSR::refine_calibration : FSR pin - ");
+    // logger::print(_pin);
+    // logger::print("\t _ground_contact -");
+    // logger::println(_ground_contact);
     return _ground_contact;
 };
 

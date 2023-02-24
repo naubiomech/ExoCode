@@ -96,42 +96,42 @@ int32_t charid_number;
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
 void connected(void)
 {
-  Serial.println( F("Connected") );
+  logger::println( F("Connected") );
 }
 
 void disconnected(void)
 {
-  Serial.println( F("Disconnected") );
+  logger::println( F("Disconnected") );
 }
 
 void BleUartRX(char data[], uint16_t len)
 {
-  Serial.print( F("[BLE UART RX]" ) );
+  logger::print( F("[BLE UART RX]" ) );
   Serial.write(data, len);
-  Serial.println();
+  logger::println();
 }
 
 void BleGattRX(int32_t chars_id, uint8_t data[], uint16_t len)
 {
-  Serial.print( F("[BLE GATT RX] (" ) );
-  Serial.print(chars_id);
-  Serial.print(") ");
+  logger::print( F("[BLE GATT RX] (" ) );
+  logger::print(chars_id);
+  logger::print(") ");
   
   if (chars_id == charid_string)
   {  
     Serial.write(data, len);
-    Serial.println();
+    logger::println();
   }else if (chars_id == charid_number)
   {
     int32_t val;
     memcpy(&val, data, len);
-    Serial.println(val);
+    logger::println(val);
   }
 }
 
@@ -147,22 +147,22 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit Callbacks Example"));
-  Serial.println(F("-------------------------------------"));
+  logger::println(F("Adafruit Bluefruit Callbacks Example"));
+  logger::println(F("-------------------------------------"));
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   if ( FACTORYRESET_ENABLE )
   {
     /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Performing a factory reset: "));
+    logger::println(F("Performing a factory reset: "));
     if ( ! ble.factoryReset() ){
       error(F("Couldn't factory reset"));
     }
@@ -173,7 +173,7 @@ void setup(void)
     error( F("Callback requires at least 0.7.0") );
   }
 
-  Serial.println( F("Adding Service 0x1234 with 2 chars 0x2345 & 0x6789") );
+  logger::println( F("Adding Service 0x1234 with 2 chars 0x2345 & 0x6789") );
   ble.sendCommandCheckOK( F("AT+GATTADDSERVICE=uuid=0x1234") );
   ble.sendCommandWithIntReply( F("AT+GATTADDCHAR=UUID=0x2345,PROPERTIES=0x08,MIN_LEN=1,MAX_LEN=6,DATATYPE=string,DESCRIPTION=string,VALUE=abc"), &charid_string);
   ble.sendCommandWithIntReply( F("AT+GATTADDCHAR=UUID=0x6789,PROPERTIES=0x08,MIN_LEN=4,MAX_LEN=4,DATATYPE=INTEGER,DESCRIPTION=number,VALUE=0"), &charid_number);
@@ -183,7 +183,7 @@ void setup(void)
   /* Disable command echo from Bluefruit */
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
   

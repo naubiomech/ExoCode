@@ -106,42 +106,42 @@ volatile boolean irq_event_available = false;
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
 void connected(void)
 {
-  Serial.println( F("Connected") );
+  logger::println( F("Connected") );
 }
 
 void disconnected(void)
 {
-  Serial.println( F("Disconnected") );
+  logger::println( F("Disconnected") );
 }
 
 void BleUartRX(char data[], uint16_t len)
 {
-  Serial.print( F("[BLE UART RX]" ) );
+  logger::print( F("[BLE UART RX]" ) );
   Serial.write(data, len);
-  Serial.println();
+  logger::println();
 }
 
 void BleGattRX(int32_t chars_id, uint8_t data[], uint16_t len)
 {
-  Serial.print( F("[BLE GATT RX] (" ) );
-  Serial.print(chars_id);
-  Serial.print(") ");
+  logger::print( F("[BLE GATT RX] (" ) );
+  logger::print(chars_id);
+  logger::print(") ");
 
   if (chars_id == charid_string)
   {
     Serial.write(data, len);
-    Serial.println();
+    logger::println();
   } else if (chars_id == charid_number)
   {
     int32_t val;
     memcpy(&val, data, len);
-    Serial.println(val);
+    logger::println(val);
   }
 }
 
@@ -163,25 +163,25 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit Callback with DFU IRQ Example"));
-  Serial.println(F("-------------------------------------"));
+  logger::println(F("Adafruit Bluefruit Callback with DFU IRQ Example"));
+  logger::println(F("-------------------------------------"));
 
   pinMode(irq_pin, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(irq_pin), DfuIrqHandle, FALLING);
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   if ( FACTORYRESET_ENABLE )
   {
     /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Performing a factory reset: "));
+    logger::println(F("Performing a factory reset: "));
     if ( ! ble.factoryReset() ) {
       error(F("Couldn't factory reset"));
     }
@@ -192,24 +192,24 @@ void setup(void)
     error( F("Callback with DFU Pin as IRQ requires at least 0.7.1") );
   }
 
-  Serial.println( F("Adding Service 0x1234 with 2 chars 0x2345 & 0x6789") );
+  logger::println( F("Adding Service 0x1234 with 2 chars 0x2345 & 0x6789") );
   gatt.addService(0x1234);
   charid_string = gatt.addCharacteristic(0x2345, GATT_CHARS_PROPERTIES_WRITE, 1, 6, BLE_DATATYPE_STRING, "string");
   charid_number = gatt.addCharacteristic(0x6789, GATT_CHARS_PROPERTIES_WRITE, 4, 4, BLE_DATATYPE_INTEGER, "number");
 
   /* Reset the device for the new service setting changes to take effect */
-  Serial.print(F("Performing a SW reset (service changes require a reset): "));
+  logger::print(F("Performing a SW reset (service changes require a reset): "));
   ble.reset();
 
   /* Disable command echo from Bluefruit */
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
 
   /* Change DFU Pin to IRQ mode */
-  Serial.println( F("Change DFU Pin to IRQ Mode") );
+  logger::println( F("Change DFU Pin to IRQ Mode") );
   ble.sendCommandCheckOK( F("AT+DFUIRQ=on") );
 
   /* Set callbacks */

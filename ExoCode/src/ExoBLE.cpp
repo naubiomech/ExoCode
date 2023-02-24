@@ -1,151 +1,99 @@
+#if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
+
 #include "ExoBLE.h"
 #include "Utilities.h"
 #include "Time_Helper.h"
 #include "ComsLed.h"
 #include "Config.h"
+#include "error_types.h"
+#include "Logger.h"
 
-#if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-#define FACTORYRESET_ENABLE         1
-#define MINIMUM_FIRMWARE_VERSION    "0.7.0"
-#define AT_COMMAND_TIMEOUT          2000   //milliseconds
-#endif
+#define EXOBLE_DEBUG 0
 
-//#define EXOBLE_DEBUG
-
-ExoBLE::ExoBLE(ExoData* data) : _data{data}
-#if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-    , _ble{logic_micro_pins::cs_pin, logic_micro_pins::irq_pin, logic_micro_pins::rst_pin}
-#endif
+ExoBLE::ExoBLE()
 {
    ;
 }
 
 bool ExoBLE::setup() 
 {
-    #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
-        if (BLE.begin())
+    if (!BLE.begin())
+    {
+        utils::spin_on_error_with("BLE.begin() failed");
+        return false;
+    }
+
+    //Setup name and initialize data
+    String name = utils::remove_all_chars(BLE.address(), ':');
+    name.remove(name.length() - MAC_ADDRESS_NAME_LENGTH);
+    name = NAME_PREAMBLE + name;
+        // Using exo_info namespace defined in Config.h
+    String FirmwareVersion = exo_info::FirmwareVersion; // string to add to firmware char
+    String PCBVersion = exo_info::PCBVersion; // string to add to pcb char
+    String DeviceName = exo_info::DeviceName; // string to add to device char
+
+    // Check if the name is null, if it is use the name above, if not check for preamble
+    if (DeviceName == "NULL")
+    {
+        DeviceName = name;
+    }
+    else
+    {
+        // Check if the name has the preamble, if not add it
+        if (!DeviceName.startsWith(NAME_PREAMBLE))
         {
-            //Setup name and initialize data
-            String name = utils::remove_all_chars(BLE.address(), ':');
-            name.remove(name.length() - MAC_ADDRESS_NAME_LENGTH);
-            name = NAME_PREAMBLE + name;
-                // Using exo_info namespace defined in Config.h
-            String FirmwareVersion = exo_info::FirmwareVersion; // string to add to firmware char
-            String PCBVersion = exo_info::PCBVersion; // string to add to pcb char
-            String DeviceName = exo_info::DeviceName; // string to add to device char
-
-            // Initialize char arrays
-            char name_char[name.length()];
-            char firmware_char[FirmwareVersion.length()];
-            char pcb_char[PCBVersion.length()];
-            char device_char[DeviceName.length()];            
-
-            // Add data to array
-            name.toCharArray(name_char, name.length()+1);
-            FirmwareVersion.toCharArray(firmware_char, FirmwareVersion.length()+1);
-            PCBVersion.toCharArray(pcb_char, PCBVersion.length()+1);
-            DeviceName.toCharArray(device_char, DeviceName.length()+1);
-
-            // Create pointer that pointes to array
-            const char* k_name_pointer = name_char;
-            const char* firmware_pointer = firmware_char;
-            const char* pcb_pointer = pcb_char;
-            const char* device_pointer = device_char;
-
-            // Set name for device
-            BLE.setLocalName(k_name_pointer);
-            BLE.setDeviceName(k_name_pointer);
-
-            // Write pointer to characteristic
-            _gatt_db.FirmwareChar.writeValue(firmware_char);
-            _gatt_db.PCBChar.writeValue(pcb_char);
-            _gatt_db.DeviceChar.writeValue(device_char);
-
-            //Configure service and start advertising
-            BLE.setAdvertisedService(_gatt_db.UARTService);
-            _gatt_db.UARTService.addCharacteristic(_gatt_db.TXChar);
-            _gatt_db.UARTService.addCharacteristic(_gatt_db.RXChar);
-            _gatt_db.UARTServiceDeviceInfo.addCharacteristic(_gatt_db.PCBChar);
-            _gatt_db.UARTServiceDeviceInfo.addCharacteristic(_gatt_db.FirmwareChar);
-            _gatt_db.UARTServiceDeviceInfo.addCharacteristic(_gatt_db.DeviceChar);
-            BLE.addService(_gatt_db.UARTService);
-            BLE.addService(_gatt_db.UARTServiceDeviceInfo);
-
-            _gatt_db.RXChar.setEventHandler(BLEWritten, ble_rx::on_rx_recieved);
-            BLE.setConnectionInterval(6, 6);
-            advertising_onoff(true);
-            return true;
+            DeviceName = NAME_PREAMBLE + DeviceName;
         }
-        else
-        {
-            //Serial.println("ExoBLE::setup->Failed to start BLE!");
-            return false;
-        }
-    #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-        if (!_ble.begin(0))
-        {
-            //Serial.println(F("Couldn't find Bluefruit, make sure it's in Command mode & check wiring?"));
-            return false;
-        }
-        //Serial.println( F("OK!") );
-        if (FACTORYRESET_ENABLE)
-        {
-            /* Perform a factory reset to make sure everything is in a known state */
-            //Serial.println(F("Performing a factory reset: "));
-            if ( ! _ble.factoryReset() )
-            {
-                //Serial.println(F("Couldn't factory reset"));
-                return false;
-            }
-        }
+    }
 
-        if ( !_ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION) )
-        {
-            //Serial.println( F("Callback requires at least 0.7.0") );
-            while(true) {;}
-        }
-        
-        /* Disable command echo from Bluefruit */
-        _ble.echo(false);
+    // Initialize char arrays
+    char name_char[name.length()];
+    char firmware_char[FirmwareVersion.length()];
+    char pcb_char[PCBVersion.length()];
+    char device_char[DeviceName.length()];            
 
-        /* Disables the BLE libraries internal print statements */
-        _ble.verbose(false);
+    // Add data to array
+    name.toCharArray(name_char, name.length()+1);
+    FirmwareVersion.toCharArray(firmware_char, FirmwareVersion.length()+1);
+    PCBVersion.toCharArray(pcb_char, PCBVersion.length()+1);
+    DeviceName.toCharArray(device_char, DeviceName.length()+1);
 
-        /* Get MAC Address from BLE Module, this address is static (by default) and is used in the name of the device */
-        char mac_address[MAC_ADDRESS_TOTAL_LENGTH];
-        _ble.atcommandStrReply(F("AT+BLEGETADDR"), mac_address, MAC_ADDRESS_TOTAL_LENGTH, AT_COMMAND_TIMEOUT);
-        String name = utils::remove_all_chars(mac_address, ':');
-        name.remove(name.length() - MAC_ADDRESS_NAME_LENGTH);
-        // /* All Bluetooth names must include the preamble to connect to the GUI */
-        name = NAME_PREAMBLE + name;
-        // /* Package the name into the AT command */
-        String change_name_command = "AT+GAPDEVNAME=" + name;
-        char char_command[change_name_command.length()];
-        change_name_command.toCharArray(char_command, change_name_command.length()+1);
-        const __FlashStringHelper* name_command = reinterpret_cast<__FlashStringHelper*>(char_command);
-        /* Set the name on the module using the packaged string */
-        //Serial.println(name_command);
-        if (!_ble.sendCommandCheckOK(F(name_command))) 
-        {
-            //Serial.println(F("Could not set device name"));
-            return false;
-        }
+    // Create pointer that pointes to array
+    const char* k_name_pointer = name_char;
+    const char* firmware_pointer = firmware_char;
+    const char* pcb_pointer = pcb_char;
+    const char* device_pointer = device_char;
 
-        /* Set event handler(s) */
-        _ble.setConnectCallback(connection_callbacks::connected);
-        _ble.setDisconnectCallback(connection_callbacks::disconnected);
-        _ble.setBleUartRxCallback(ble_rx::on_rx_recieved);
+    // Set name for device
+    BLE.setLocalName(k_name_pointer);
+    BLE.setDeviceName(k_name_pointer);
 
-        _ble.reset();
+    // Initialize GATT DB
+    _gatt_db.FirmwareChar.writeValue(firmware_char);
+    _gatt_db.PCBChar.writeValue(pcb_char);
+    _gatt_db.DeviceChar.writeValue(device_char);
+    send_error(0, 0);
 
-        _ble.setMode(BLUEFRUIT_MODE_DATA);
-        
-        /* Start Advertising */
-        advertising_onoff(true);
-        
-        //Serial.println("Finished Setup and Started Advertising!");
-        return true;
-    #endif
+    //Configure services and advertising data
+    BLE.setAdvertisedService(_gatt_db.UARTService);
+    // UART Chars
+    _gatt_db.UARTService.addCharacteristic(_gatt_db.TXChar);
+    _gatt_db.UARTService.addCharacteristic(_gatt_db.RXChar);
+    // Device Info Chars
+    _gatt_db.UARTServiceDeviceInfo.addCharacteristic(_gatt_db.PCBChar);
+    _gatt_db.UARTServiceDeviceInfo.addCharacteristic(_gatt_db.FirmwareChar);
+    _gatt_db.UARTServiceDeviceInfo.addCharacteristic(_gatt_db.DeviceChar);
+    // Error Char
+    _gatt_db.ErrorService.addCharacteristic(_gatt_db.ErrorChar);
+    
+    BLE.addService(_gatt_db.UARTService);
+    BLE.addService(_gatt_db.UARTServiceDeviceInfo);
+    BLE.addService(_gatt_db.ErrorService);
+
+    _gatt_db.RXChar.setEventHandler(BLEWritten, ble_rx::on_rx_recieved);
+    BLE.setConnectionInterval(6, 6);
+    advertising_onoff(true);
+    return true;
 }
 
 void ExoBLE::advertising_onoff(bool onoff) 
@@ -153,32 +101,25 @@ void ExoBLE::advertising_onoff(bool onoff)
     if (onoff)
     {
         // Start Advertising
-        //Serial.println("Start Advertising");
-        #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
-            BLE.advertise();
-            // turn the blue led off
-            ComsLed* led = ComsLed::get_instance();
-            uint8_t r, g, b;
-            led->get_color(&r, &g, &b);
-            led->set_color(r, g, 0);
-        #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-            _ble.sendCommandCheckOK("AT+GAPSTARTADV");
-        #endif
+        //logger::println("Start Advertising");
+        BLE.advertise();
+
+        // turn the blue led off
+        ComsLed* led = ComsLed::get_instance();
+        uint8_t r, g, b;
+        led->get_color(&r, &g, &b);
+        led->set_color(r, g, 0);
     }
     else
     {
         // Stop Advertising
-        //Serial.println("Stop Advertising");
-        #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
-            BLE.stopAdvertise();
-            // turn the blue led on
-            ComsLed* led = ComsLed::get_instance();
-            uint8_t r, g, b;
-            led->get_color(&r, &g, &b);
-            led->set_color(r, g, 255);
-        #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-            _ble.sendCommandCheckOK("AT+GAPSTOPADV");
-        #endif
+        //logger::println("Stop Advertising");
+         BLE.stopAdvertise();
+        // turn the blue led on
+        ComsLed* led = ComsLed::get_instance();
+        uint8_t r, g, b;
+        led->get_color(&r, &g, &b);
+        led->set_color(r, g, 255);
     }
 }
 
@@ -192,7 +133,7 @@ bool ExoBLE::handle_updates()
     if (del_t > BLE_times::_update_delay)
     {
         del_t = 0;
-        #ifdef EXOBLE_DEBUG
+        #if EXOBLE_DEBUG
         static float poll_context = t_helper->generate_new_context();
         static float poll_time = 0;
         static float connected_context = t_helper->generate_new_context();
@@ -200,38 +141,8 @@ bool ExoBLE::handle_updates()
         #endif
 
         // Poll for updates and check connection status
-        #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
-            BLE.poll(BLE_times::_poll_timeout);
-            int32_t current_status = BLE.connected();
-        #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-            #ifdef EXOBLE_DEBUG
-            t_helper->tick(poll_context);
-            //Serial.println("ExoBLE :: handle_updates : running update");
-            #endif
-            
-            //Serial.println("ExoBLE :: handle_updates : running update");
-            _ble.update(0);
-
-            #ifdef EXOBLE_DEBUG
-
-            poll_time = t_helper->tick(poll_context);
-            if (poll_time > 1000) {
-                //Serial.print("ExoBLE :: handle_updates : poll time: "); Serial.println(poll_time);
-                poll_time = 0;
-            }
-            t_helper->tick(connected_context);
-            #endif
-
-            int32_t current_status = connection_callbacks::is_connected;
-
-            #ifdef EXOBLE_DEBUG
-            connected_time = t_helper->tick(connected_context);
-            if (connected_time > 1000) {
-                //Serial.print("ExoBLE :: handle_updates : connected time: "); Serial.println(connected_time);
-                connected_time = 0;
-            }
-            #endif
-        #endif
+        BLE.poll(BLE_times::_poll_timeout);
+        int32_t current_status = BLE.connected();
         
         if (_connected == current_status) 
         {
@@ -242,15 +153,15 @@ bool ExoBLE::handle_updates()
         if (current_status < _connected)
         {
             // Disconnection
-            #ifdef EXOBLE_DEBUG
-            Serial.println("Disconnection");
+            #if EXOBLE_DEBUG
+            logger::println("Disconnection");
             #endif
         }
         else if (current_status > _connected)
         {
             // Connection
-            #ifdef EXOBLE_DEBUG
-            Serial.println("Connection");
+            #if EXOBLE_DEBUG
+            logger::println("Connection");
             #endif
 
         }
@@ -268,8 +179,8 @@ void ExoBLE::send_message(BleMessage &msg)
     {
         return; /* Don't bother sending anything if no one is listening */
     }
-    #ifdef EXOBLE_DEBUG
-    //Serial.println("Exoble::send_message->Sending:");
+    #if EXOBLE_DEBUG
+    //logger::println("Exoble::send_message->Sending:");
     BleMessage::print(msg);
     #endif
     static const int k_preamble_length = 3;
@@ -277,14 +188,35 @@ void ExoBLE::send_message(BleMessage &msg)
     byte buffer[max_payload_length];
 
     int bytes_to_send = _ble_parser.package_raw_data(buffer, msg);
-    #if (ARDUINO_ARDUINO_NANO33BLE)
-        _gatt_db.TXChar.writeValue(buffer, bytes_to_send);
-    #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-        _ble.writeBLEUart(buffer, bytes_to_send);
-    #endif
+    _gatt_db.TXChar.writeValue(buffer, bytes_to_send);   
 }
 
-#if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
+void ExoBLE::send_error(int error_code, int joint_id)
+{
+    if (!this->_connected)
+    {
+        return; /* Don't bother sending anything if no one is listening */
+    }
+
+    #if EXOBLE_DEBUG
+    logger::print("Exoble::send_error->Sending: ");
+    logger::println(error_code);
+    #endif
+    String error_string = String(error_code) + ":" + String(joint_id);
+    logger::println("Error String: " + error_string);
+    // convert to char array
+    char error_char[error_string.length() + 1];
+    error_string.toCharArray(error_char, error_string.length() + 1);
+    logger::println("Char Array:");
+    for (char c : error_char)
+    {
+        logger::print(c);
+        logger::print(", ");
+    }
+    logger::println();
+    _gatt_db.ErrorChar.writeValue(error_char);
+}
+
 void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
 {
     static BleMessage* empty_msg = new BleMessage();
@@ -298,71 +230,33 @@ void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
     int len = characteristic.valueLength();
     characteristic.readValue(data, len);
 
-        #ifdef EXOBLE_DEBUG
-        Serial.print("On Rx Recieved: ");
+        #if EXOBLE_DEBUG
+        logger::print("On Rx Recieved: ");
         for (int i=0; i<len;i++)
         {
-            Serial.print(data[i]);
-            Serial.print(data[i], HEX);
-            Serial.print(", ");
+            logger::print(data[i]);
+            logger::print(data[i], HEX);
+            logger::print(", ");
         }
-        Serial.println();
+        logger::println();
         #endif
 
     msg = parser->handle_raw_data(data, len);
     if (msg->is_complete)
     {
-        #ifdef EXOBLE_DEBUG
-        Serial.print("on_rx_recieved->Command: ");
-        Serial.println(msg->command);
+        #if EXOBLE_DEBUG
+        logger::print("on_rx_recieved->Command: ");
+        logger::println(msg->command);
         for (int i=0; i<msg->expecting; i++)
         {
-            Serial.print(msg->data[i]);
-            Serial.print(", ");
+            logger::print(msg->data[i]);
+            logger::print(", ");
         }
-        Serial.println();
+        logger::println();
         #endif
 
         ble_queue::push(msg);
     }
 }
 
-#elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
-void ble_rx::on_rx_recieved(char data[], uint16_t len)
-{
-    static BleParser* parser = new BleParser();
-    static BleMessage* msg = new BleMessage();
-
-        #ifdef EXOBLE_DEBUG
-        Serial.print("On Rx Recieved: ");
-        for (int i=0; i<len;i++)
-        {
-            Serial.print(data[i]);
-            Serial.print(data[i], HEX);
-            Serial.print(", ");
-        }
-        Serial.println();
-        #endif
-
-    for (int i=0; i<len; i++)
-    {
-        char working_char = data[i];
-        msg = parser->handle_raw_data(&working_char, 1);
-        if (msg->is_complete)
-        {
-            ble_queue::push(msg);
-            msg->clear();
-        }
-    }
-}
-
-void connection_callbacks::connected(void)
-{
-    connection_callbacks::is_connected = true;
-}
-void connection_callbacks::disconnected(void)
-{
-    connection_callbacks::is_connected = false;
-}
-
-#endif
+#endif // defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)

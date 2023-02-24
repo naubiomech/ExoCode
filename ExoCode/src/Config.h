@@ -3,6 +3,8 @@
 #define Config_h 
 
 #include "Arduino.h"
+#include "LogLevels.h"
+    #define FIRMWARE_VERSION 0_1_0
 
     #define AK_Board_V0_1 1
     #define AK_Board_V0_3 2
@@ -16,12 +18,29 @@
     #define LOOP_TIME_TOLERANCE 0.1 
     
     //#define USE_SPEED_CHECK 1 
+
+    // MACRO magic to convert a define to a string
+    #define VAL(str) #str
+    #define TOSTRING(str) VAL(str)
+
+    namespace logging
+    {
+        const LogLevel level = LogLevel::Debug;
+        const int baud_rate = 115200;
+    }
     
     namespace sync_time
     {
         const unsigned int NUM_START_STOP_BLINKS = 1;  // the number of times to have the LED on during the start stop sequence
         const unsigned int SYNC_HALF_PERIOD_US = 125000;  // half blink period in micro seconds
         const unsigned int SYNC_START_STOP_HALF_PERIOD_US = 4 * SYNC_HALF_PERIOD_US; // Half blink period for the begining and end of the sequence.  This is usually longer so it is easy to identify.
+    }
+
+    namespace fsr_config
+    {
+        const float FSR_UPPER_THRESHOLD = 0.25;
+        const float FSR_LOWER_THRESHOLD = 0.15;
+        const float SCHMITT_DELTA = (FSR_UPPER_THRESHOLD - FSR_LOWER_THRESHOLD)/2;
     }
 
     namespace analog
@@ -47,9 +66,9 @@
     // Update this namespace for future exo updates to display correct information on app
     namespace exo_info
     {
-        const String FirmwareVersion = "<update exo config>"; // string to add to firmware char
-        const String PCBVersion = "<update exo config>"; // string to add to pcb char
-        const String DeviceName = "update exo config"; // string to add to device char
+        const String FirmwareVersion = String(TOSTRING(FIRMWARE_VERSION)); // string to add to firmware char
+        const String PCBVersion = String(TOSTRING(BOARD_VERSION)); // string to add to pcb char
+        const String DeviceName = String("NULL"); // string to add to device char, if you would like the system to set it use "NULL"
     }
 
     namespace UART_times
@@ -59,4 +78,5 @@
         const float CONT_MCU_TIMEOUT = 1000;
         const float CONFIG_TIMEOUT = 5000; // milliseconds
     }
+
 #endif

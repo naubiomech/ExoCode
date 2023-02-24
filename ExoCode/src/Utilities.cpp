@@ -3,6 +3,7 @@
  *
  */
 #include "Utilities.h"
+#include "Logger.h"
  
 namespace utils
 {
@@ -191,7 +192,7 @@ namespace utils
                 return val.b[0] == 0x01;
                 break;
             default:
-                //Serial.println("Utilities :: is_little_endian() : System does not appear to be 32 or 64 bit");    
+                //logger::println("Utilities :: is_little_endian() : System does not appear to be 32 or 64 bit");    
                 break;
         }
         
@@ -202,7 +203,7 @@ namespace utils
         FloatByteUnion val;
         val.f = num_to_convert;
         int idx;
-        // Serial.println(val.f);
+        // logger::println(val.f);
         for(uint8_t i = 0; i<sizeof(float); i++)
         {
             if (is_little_endian())
@@ -213,10 +214,10 @@ namespace utils
             {
                 idx = sizeof(float)-i-1;
             }
-            // Serial.println(idx);
-            // Serial.println(val.b[0],HEX);
+            // logger::println(idx);
+            // logger::println(val.b[0],HEX);
             converted_bytes[i] = val.b[idx];
-            // Serial.println(converted_bytes[i],HEX);
+            // logger::println(converted_bytes[i],HEX);
         }
         return;
     }
@@ -225,7 +226,7 @@ namespace utils
     {
         FloatByteUnion val;
         int idx;
-        // Serial.println(bytes_to_convert[0],HEX);
+        // logger::println(bytes_to_convert[0],HEX);
         
         // flip the idx if not little endian
         for(uint8_t i = 0; i<sizeof(float); i++)
@@ -238,13 +239,13 @@ namespace utils
             {
                 idx = sizeof(float)-i-1;
             }
-            // Serial.println(idx);
+            // logger::println(idx);
             val.b[i] = bytes_to_convert[idx];
-            // Serial.println(val.b[i],HEX);
+            // logger::println(val.b[i],HEX);
         }
         
         *converted_float = val.f;
-        // Serial.println(*converted_float);
+        // logger::println(*converted_float);
         
          
         return;
@@ -255,7 +256,7 @@ namespace utils
         ShortIntByteUnion val;
         val.i = (short int) (num_to_convert * factor);
         int idx;
-        // Serial.println(val.f);
+        // logger::println(val.f);
         for(uint8_t i = 0; i<sizeof(short int); i++)
         {
             if (is_little_endian())
@@ -266,10 +267,10 @@ namespace utils
             {
                 idx = sizeof(short int)-i-1;
             }
-            // Serial.println(idx);
-            // Serial.println(val.b[0],HEX);
+            // logger::println(idx);
+            // logger::println(val.b[0],HEX);
             converted_bytes[i] = val.b[idx];
-            // Serial.println(converted_bytes[i],HEX);
+            // logger::println(converted_bytes[i],HEX);
         }
         return;
     }
@@ -278,7 +279,7 @@ namespace utils
     {
         ShortIntByteUnion val;
         int idx;
-        // Serial.println(bytes_to_convert[0],HEX);
+        // logger::println(bytes_to_convert[0],HEX);
         
         // flip the idx if not little endian
         for(uint8_t i = 0; i<sizeof(short int); i++)
@@ -291,13 +292,13 @@ namespace utils
             {
                 idx = sizeof(short int)-i-1;
             }
-            // Serial.println(idx);
+            // logger::println(idx);
             val.b[i] = bytes_to_convert[idx];
-            // Serial.println(val.b[i],HEX);
+            // logger::println(val.b[i],HEX);
         }
         
         *converted_val = ((float)val.i/factor);
-        // Serial.println(*converted_float);
+        // logger::println(*converted_float);
         
          
         return;
@@ -329,5 +330,59 @@ namespace utils
             return 0xFE;
         }
         return val;
+    }
+
+
+    void spin_on_error_with(String message)
+    {
+        for (;;)
+        {
+            logger::println(message);
+            delay(500);
+        }
+    }
+
+    bool is_close_to(float val1, float val2, float tolerance)
+    {
+        return (abs(val1-val2) < tolerance);
+    }
+
+    std::pair<float, float> online_std_dev(std::queue<float> set)
+    {
+        std::queue<float> set_copy = set;
+        // calculate the std dev
+        float mean = 0;
+        float M2 = 0;
+        float delta = 0;
+        float variance = 0;
+        float std_dev = 0;
+        int n = 0;
+        while (!set_copy.empty())
+        {
+            n++;
+            float x = set_copy.front();
+            set_copy.pop();
+            delta = x - mean;
+            mean = mean + delta / n;
+            M2 = M2 + delta * (x - mean);
+        }
+
+        if (n < 2)
+        {
+            variance = 0;
+            std_dev = 0;
+        }
+        else
+        {
+            variance = M2 / (n - 1);
+            std_dev = sqrt(variance);
+        }
+
+        return std::make_pair(mean, std_dev);
+    }
+
+    bool is_outside_range(float val, float min, float max)
+    {
+        return (val < min || val > max);
     }
 }

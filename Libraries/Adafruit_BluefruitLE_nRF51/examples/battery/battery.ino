@@ -80,7 +80,7 @@ Adafruit_BLEBattery battery(ble);
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -98,22 +98,22 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit AT Command Example"));
-  Serial.println(F("-------------------------------------"));
+  logger::println(F("Adafruit Bluefruit AT Command Example"));
+  logger::println(F("-------------------------------------"));
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   if ( FACTORYRESET_ENABLE )
   {
     /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Performing a factory reset: "));
+    logger::println(F("Performing a factory reset: "));
     if ( ! ble.factoryReset() ){
       error(F("Couldn't factory reset"));
     }
@@ -122,7 +122,7 @@ void setup(void)
   /* Disable command echo from Bluefruit */
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
 
@@ -138,8 +138,8 @@ void setup(void)
 void loop(void)
 {
   // Should get Battery value from LIPO and update
-  Serial.print("Update battery level = ");
-  Serial.println(value);
+  logger::print("Update battery level = ");
+  logger::println(value);
   
   battery.update(value);
   

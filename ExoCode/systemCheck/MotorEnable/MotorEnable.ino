@@ -64,14 +64,14 @@
         L0_pin = _Joint::get_motor_enable_pin(config_defs::joint_id::left_hip, &exo_data);
         L1_pin = _Joint::get_motor_enable_pin(config_defs::joint_id::left_ankle, &exo_data);
     
-        Serial.print("R0 Enable Pin = ");
-        Serial.println(R0_pin);
-        Serial.print("R1 Enable Pin = ");
-        Serial.println(R1_pin);
-        Serial.print("L0 Enable Pin = ");
-        Serial.println(L0_pin);
-        Serial.print("L1 Enable Pin = ");
-        Serial.println(L1_pin);
+        logger::print("R0 Enable Pin = ");
+        logger::println(R0_pin);
+        logger::print("R1 Enable Pin = ");
+        logger::println(R1_pin);
+        logger::print("L0 Enable Pin = ");
+        logger::println(L0_pin);
+        logger::print("L1 Enable Pin = ");
+        logger::println(L1_pin);
     }
 
     // these should be changed to match the ID of the motors.
@@ -102,9 +102,9 @@
     
 
       int timestamp = millis();
-//      Serial.print("Superloop : time since enable = ");
-//      Serial.print(timestamp - motor_enable_time);
-//      Serial.print("\n");
+//      logger::print("Superloop : time since enable = ");
+//      logger::print(timestamp - motor_enable_time);
+//      logger::print("\n");
 
       if (time_to_stay_on_ms < (timestamp - motor_enable_time))
       {

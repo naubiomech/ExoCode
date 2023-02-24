@@ -79,6 +79,11 @@ class Leg
         float get_Kt_for_joint(uint8_t id);
         
 	private:
+        /**
+         * @brief Applies the FSR thresholds set in the data class to the FSRs
+         * 
+         */
+        void _check_thresholds();
 		
         /**
          * @brief Calculates the percent of gait based on the ground contact reading

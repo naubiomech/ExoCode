@@ -123,12 +123,12 @@ SPISlave_T4_FUNC void SPISlave_T4_OPT::SLAVE_ISR() {
     }
     if ( (SLAVE_SR & (1UL << 8)) ) { /* WCF set */
       uint32_t val = SLAVE_RDR;
-      Serial.print(val); Serial.print(" ");
+      logger::print(val); logger::print(" ");
       SLAVE_TDR = val;
       SLAVE_SR = (1UL << 8); /* Clear WCF */
     }
   }
-  Serial.println();
+  logger::println();
   SLAVE_SR = 0x3F00; /* Clear remaining flags on exit */
   asm volatile ("dsb");
 }

@@ -33,7 +33,7 @@ void setup() {
 
   // begin initialization
   if (!BLE.begin()) {
-    Serial.println("starting BLE failed!");
+    logger::println("starting BLE failed!");
 
     while (1);
   }
@@ -61,7 +61,7 @@ void setup() {
   // start advertising
   BLE.advertise();
 
-  Serial.println(("Bluetooth device active, waiting for connections..."));
+  logger::println(("Bluetooth device active, waiting for connections..."));
 }
 
 void loop() {
@@ -71,25 +71,25 @@ void loop() {
 
 void blePeripheralConnectHandler(BLEDevice central) {
   // central connected event handler
-  Serial.print("Connected event, central: ");
-  Serial.println(central.address());
+  logger::print("Connected event, central: ");
+  logger::println(central.address());
 }
 
 void blePeripheralDisconnectHandler(BLEDevice central) {
   // central disconnected event handler
-  Serial.print("Disconnected event, central: ");
-  Serial.println(central.address());
+  logger::print("Disconnected event, central: ");
+  logger::println(central.address());
 }
 
 void switchCharacteristicWritten(BLEDevice central, BLECharacteristic characteristic) {
   // central wrote new value to characteristic, update LED
-  Serial.print("Characteristic event, written: ");
+  logger::print("Characteristic event, written: ");
 
   if (switchCharacteristic.value()) {
-    Serial.println("LED on");
+    logger::println("LED on");
     digitalWrite(ledPin, HIGH);
   } else {
-    Serial.println("LED off");
+    logger::println("LED off");
     digitalWrite(ledPin, LOW);
   }
 }

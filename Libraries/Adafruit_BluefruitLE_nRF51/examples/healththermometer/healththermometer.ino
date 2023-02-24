@@ -55,7 +55,7 @@ Adafruit_BLEGatt gatt(ble);
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -78,22 +78,22 @@ void setup(void)
   boolean success;
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit Health Thermometer Example"));
-  Serial.println(F("--------------------------------------------"));
+  logger::println(F("Adafruit Bluefruit Health Thermometer Example"));
+  logger::println(F("--------------------------------------------"));
 
   randomSeed(micros());
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   /* Perform a factory reset to make sure everything is in a known state */
-  Serial.println(F("Performing a factory reset: "));
+  logger::println(F("Performing a factory reset: "));
   if (! ble.factoryReset() ){
        error(F("Couldn't factory reset"));
   }
@@ -101,7 +101,7 @@ void setup(void)
   /* Disable command echo from Bluefruit */
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
 
@@ -111,7 +111,7 @@ void setup(void)
 
   /* Add the Heart Rate Service definition */
   /* Service ID should be 1 */
-  Serial.println(F("Adding the Health Thermometer Service definition (UUID = 0x1809): "));
+  logger::println(F("Adding the Health Thermometer Service definition (UUID = 0x1809): "));
   htsServiceId = gatt.addService(0x1809);
   if (htsServiceId == 0) {
     error(F("Could not add Thermometer service"));
@@ -120,22 +120,22 @@ void setup(void)
   /* Add the Temperature Measurement characteristic which is composed of
    * 1 byte flags + 4 float */
   /* Chars ID for Measurement should be 1 */
-  Serial.println(F("Adding the Temperature Measurement characteristic (UUID = 0x2A1C): "));
+  logger::println(F("Adding the Temperature Measurement characteristic (UUID = 0x2A1C): "));
   htsMeasureCharId = gatt.addCharacteristic(0x2A1C, GATT_CHARS_PROPERTIES_INDICATE, 5, 5, BLE_DATATYPE_BYTEARRAY);
   if (htsMeasureCharId == 0) {
     error(F("Could not add Temperature characteristic"));
   }
 
   /* Add the Health Thermometer Service to the advertising data (needed for Nordic apps to detect the service) */
-  Serial.print(F("Adding Health Thermometer Service UUID to the advertising payload: "));
+  logger::print(F("Adding Health Thermometer Service UUID to the advertising payload: "));
   uint8_t advdata[] { 0x02, 0x01, 0x06, 0x05, 0x02, 0x09, 0x18, 0x0a, 0x18 };
   ble.setAdvData( advdata, sizeof(advdata) );
 
   /* Reset the device for the new service setting changes to take effect */
-  Serial.print(F("Performing a SW reset (service changes require a reset): "));
+  logger::print(F("Performing a SW reset (service changes require a reset): "));
   ble.reset();
 
-  Serial.println();
+  logger::println();
 }
 
 /** Send randomized heart rate data continuously **/
@@ -143,9 +143,9 @@ void loop(void)
 {
   double temp = random(0, 100) / 10.0;
 
-  Serial.print(F("Updating Temperature value to "));
-  Serial.print(temp);
-  Serial.println(F(" Fahrenheit"));
+  logger::print(F("Updating Temperature value to "));
+  logger::print(temp);
+  logger::println(F(" Fahrenheit"));
 
   // https://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.temperature_measurement.xml
   // Chars value is 1 flag + 4 float value. Tempearature is in Fahrenheit unit

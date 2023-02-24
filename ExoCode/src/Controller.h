@@ -15,7 +15,7 @@
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 #include "ExoData.h"
 #include "Board.h"
@@ -544,6 +544,8 @@ public:
 
     float calc_motor_cmd();
 
+    float current_torque;
+    int counter;
 };
 
 class ElbowMinMax : public _Controller

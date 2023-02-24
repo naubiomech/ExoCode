@@ -83,7 +83,7 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -99,22 +99,22 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit HID Keyboard Example"));
-  Serial.println(F("---------------------------------------"));
+  logger::println(F("Adafruit Bluefruit HID Keyboard Example"));
+  logger::println(F("---------------------------------------"));
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   if ( FACTORYRESET_ENABLE )
   {
     /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Performing a factory reset: "));
+    logger::println(F("Performing a factory reset: "));
     if ( ! ble.factoryReset() ){
       error(F("Couldn't factory reset"));
     }
@@ -123,18 +123,18 @@ void setup(void)
   /* Disable command echo from Bluefruit */
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
 
   /* Change the device name to make it easier to find */
-  Serial.println(F("Setting device name to 'Bluefruit Keyboard': "));
+  logger::println(F("Setting device name to 'Bluefruit Keyboard': "));
   if (! ble.sendCommandCheckOK(F( "AT+GAPDEVNAME=Bluefruit Keyboard" )) ) {
     error(F("Could not set device name?"));
   }
 
   /* Enable HID Service */
-  Serial.println(F("Enable HID Service (including Keyboard): "));
+  logger::println(F("Enable HID Service (including Keyboard): "));
   if ( ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION) )
   {
     if ( !ble.sendCommandCheckOK(F( "AT+BleHIDEn=On" ))) {
@@ -148,23 +148,23 @@ void setup(void)
   }
 
   /* Add or remove service requires a reset */
-  Serial.println(F("Performing a SW reset (service changes require a reset): "));
+  logger::println(F("Performing a SW reset (service changes require a reset): "));
   if (! ble.reset() ) {
     error(F("Couldn't reset??"));
   }
 
-  Serial.println();
-  Serial.println(F("Go to your phone's Bluetooth settings to pair your device"));
-  Serial.println(F("then open an application that accepts keyboard input"));
+  logger::println();
+  logger::println(F("Go to your phone's Bluetooth settings to pair your device"));
+  logger::println(F("then open an application that accepts keyboard input"));
 
-  Serial.println();
-  Serial.println(F("Enter the character(s) to send:"));
-  Serial.println(F("- \\r for Enter"));
-  Serial.println(F("- \\n for newline"));
-  Serial.println(F("- \\t for tab"));
-  Serial.println(F("- \\b for backspace"));
+  logger::println();
+  logger::println(F("Enter the character(s) to send:"));
+  logger::println(F("- \\r for Enter"));
+  logger::println(F("- \\n for newline"));
+  logger::println(F("- \\t for tab"));
+  logger::println(F("- \\b for backspace"));
 
-  Serial.println();
+  logger::println();
 }
 
 /**************************************************************************/
@@ -175,24 +175,24 @@ void setup(void)
 void loop(void)
 {
   // Display prompt
-  Serial.print(F("keyboard > "));
+  logger::print(F("keyboard > "));
 
   // Check for user input and echo it back if anything was found
   char keys[BUFSIZE+1];
   getUserInput(keys, BUFSIZE);
 
-  Serial.print("\nSending ");
-  Serial.println(keys);
+  logger::print("\nSending ");
+  logger::println(keys);
 
   ble.print("AT+BleKeyboard=");
   ble.println(keys);
 
   if( ble.waitForOK() )
   {
-    Serial.println( F("OK!") );
+    logger::println( F("OK!") );
   }else
   {
-    Serial.println( F("FAILED!") );
+    logger::println( F("FAILED!") );
   }
 }
 

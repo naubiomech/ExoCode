@@ -6,6 +6,8 @@
 #include "uart_commands.h"
 #include "UART_msg_t.h"
 #include "Config.h"
+#include "error_types.h"
+#include "Logger.h"
 
 #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 
@@ -20,12 +22,12 @@ ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
         _battery = new RCBattery();
         break;
     default:
-        //Serial.println("ERROR: ComsMCU::ComsMCU->Unrecognized battery type!");
+        //logger::println("ERROR: ComsMCU::ComsMCU->Unrecognized battery type!");
         _battery = new RCBattery();
         break;
     }
     _battery->init();
-    _exo_ble = new ExoBLE(data);
+    _exo_ble = new ExoBLE();
     _exo_ble->setup();
 
 
@@ -46,7 +48,7 @@ ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
             break;
     }
     UART_rt_data::msg_len = rt_data_len;
-    // Serial.print("ComsMCU::ComsMCU->rt_data_len: "); Serial.println(rt_data_len);
+    // logger::print("ComsMCU::ComsMCU->rt_data_len: "); logger::println(rt_data_len);
 }
 
 void ComsMCU::handle_ble()
@@ -82,7 +84,7 @@ void ComsMCU::update_UART()
     static float del_t = 0;
     del_t += t_helper->tick(_context);
     
-    if (true)//(del_t > UART_times::UPDATE_PERIOD)
+    if (true)//(del_t > UART_times::UPDATE_PERIOD) TODO: Inspect this
     {
         UARTHandler* handler = UARTHandler::get_instance();
         UART_msg_t msg = handler->poll(UART_times::COMS_MCU_TIMEOUT);
@@ -107,7 +109,7 @@ void ComsMCU::update_gui()
     {
         // float now = millis();
         // float delta = now - before;
-        // Serial.print("ComsMCU::update_gui->delta: "); Serial.println(delta);
+        // logger::print("ComsMCU::update_gui->delta: "); logger::println(delta);
         // before = now;
 
         UART_rt_data::new_rt_msg = false;
@@ -150,9 +152,19 @@ void ComsMCU::update_gui()
     }
 }
 
+void ComsMCU::handle_errors()
+{
+    static int error_code = NO_ERROR;
+    if (_data->error_code != error_code)
+    {
+        error_code = _data->error_code;
+        _exo_ble->send_error(_data->error_code, _data->error_joint_id);
+    }
+}
+
 void ComsMCU::_process_complete_gui_command(BleMessage* msg) 
 {
-    // Serial.print("ComsMCU::_process_complete_gui_command->Got Command: ");
+    // logger::print("ComsMCU::_process_complete_gui_command->Got Command: ");
     // BleMessage::print(*msg);
 
     switch (msg->command)
@@ -197,7 +209,7 @@ void ComsMCU::_process_complete_gui_command(BleMessage* msg)
         ble_handlers::update_param(_data, msg);
         break;
     default:
-        // Serial.println("ComsMCU::_process_complete_gui_command->No case for command!");
+        logger::println("ComsMCU::_process_complete_gui_command->No case for command!", LogLevel::Error);
         break;
     }
 

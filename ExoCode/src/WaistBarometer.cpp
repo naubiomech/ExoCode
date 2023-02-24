@@ -1,6 +1,7 @@
 #if defined(ARDUINO_ARDUINO_NANO33BLE)
 
 #include "WaistBarometer.h"
+#include "Logger.h"
 #include <Arduino_LPS22HB.h>
 
 
@@ -8,7 +9,7 @@ WaistBarometer::WaistBarometer(pressure_unit_t desired_unit)
 {
     _unit = desired_unit;
     if (!BARO.begin()) {
-        Serial.println("Failed to initialize pressure sensor!");
+        //logger::println("Failed to initialize pressure sensor!");
     }
 }
 

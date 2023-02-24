@@ -52,7 +52,7 @@ int current_note = 60;
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -61,28 +61,28 @@ void connected(void)
 {
   isConnected = true;
 
-  Serial.println(F(" CONNECTED!"));
+  logger::println(F(" CONNECTED!"));
   delay(1000);
 
 }
 
 void disconnected(void)
 {
-  Serial.println("disconnected");
+  logger::println("disconnected");
   isConnected = false;
 }
 
 void BleMidiRX(uint16_t timestamp, uint8_t status, uint8_t byte1, uint8_t byte2)
 {
-  Serial.print("[MIDI ");
-  Serial.print(timestamp);
-  Serial.print(" ] ");
+  logger::print("[MIDI ");
+  logger::print(timestamp);
+  logger::print(" ] ");
 
-  Serial.print(status, HEX); Serial.print(" ");
-  Serial.print(byte1 , HEX); Serial.print(" ");
-  Serial.print(byte2 , HEX); Serial.print(" ");
+  logger::print(status, HEX); logger::print(" ");
+  logger::print(byte1 , HEX); logger::print(" ");
+  logger::print(byte2 , HEX); logger::print(" ");
 
-  Serial.println();
+  logger::println();
 }
 
 void setup(void)
@@ -91,22 +91,22 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit MIDI Example"));
-  Serial.println(F("---------------------------------------"));
+  logger::println(F("Adafruit Bluefruit MIDI Example"));
+  logger::println(F("---------------------------------------"));
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   if ( FACTORYRESET_ENABLE )
   {
     /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Performing a factory reset: "));
+    logger::println(F("Performing a factory reset: "));
     if ( ! ble.factoryReset() ) {
       error(F("Couldn't factory reset"));
     }
@@ -115,7 +115,7 @@ void setup(void)
   //ble.sendCommandCheckOK(F("AT+uartflow=off"));
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
 
@@ -126,14 +126,14 @@ void setup(void)
   // Set MIDI RX callback
   midi.setRxCallback(BleMidiRX);
 
-  Serial.println(F("Enable MIDI: "));
+  logger::println(F("Enable MIDI: "));
   if ( ! midi.begin(true) )
   {
     error(F("Could not enable MIDI"));
   }
 
   ble.verbose(false);
-  Serial.print(F("Waiting for a connection..."));
+  logger::print(F("Waiting for a connection..."));
 }
 
 void loop(void)
@@ -145,8 +145,8 @@ void loop(void)
   if (! isConnected)
     return;
 
-  Serial.print("Sending pitch ");
-  Serial.println(current_note, HEX);
+  logger::print("Sending pitch ");
+  logger::println(current_note, HEX);
 
   // send note on
   midi.send(0x90, current_note, 0x64);

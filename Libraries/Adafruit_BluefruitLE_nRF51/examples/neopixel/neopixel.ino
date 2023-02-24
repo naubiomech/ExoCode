@@ -74,7 +74,7 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -84,7 +84,7 @@ void serial_printf(const char * format, ...) {
   va_start(args, format);
   vsnprintf(buffer, sizeof(buffer), format, args);
   va_end(args);
-  Serial.print(buffer);
+  logger::print(buffer);
 }
 
 
@@ -97,28 +97,28 @@ void serial_printf(const char * format, ...) {
 void setup(void)
 {
   Serial.begin(115200);
-  Serial.println("Adafruit Bluefruit Neopixel Test");
-  Serial.println("--------------------------------");
+  logger::println("Adafruit Bluefruit Neopixel Test");
+  logger::println("--------------------------------");
 
-  Serial.println();
-  Serial.println("Please connect using the Bluefruit Connect LE application");
+  logger::println();
+  logger::println("Please connect using the Bluefruit Connect LE application");
 
   // Config Neopixels
   neopixel.begin();
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   if ( FACTORYRESET_ENABLE )
   {
     /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Performing a factory reset: "));
+    logger::println(F("Performing a factory reset: "));
     if ( ! ble.factoryReset() ){
       error(F("Couldn't factory reset"));
     }
@@ -134,13 +134,13 @@ void setup(void)
       delay(500);
   }
 
-  Serial.println(F("***********************"));
+  logger::println(F("***********************"));
 
   // Set Bluefruit to DATA mode
-  Serial.println( F("Switching to DATA mode!") );
+  logger::println( F("Switching to DATA mode!") );
   ble.setMode(BLUEFRUIT_MODE_DATA);
 
-  Serial.println(F("***********************"));
+  logger::println(F("***********************"));
 
 }
 
@@ -209,12 +209,12 @@ void swapBuffers()
 }
 
 void commandVersion() {
-  Serial.println(F("Command: Version check"));
+  logger::println(F("Command: Version check"));
   sendResponse(NEOPIXEL_VERSION_STRING);
 }
 
 void commandSetup() {
-  Serial.println(F("Command: Setup"));
+  logger::println(F("Command: Setup"));
 
   width = ble.read();
   height = ble.read();
@@ -247,7 +247,7 @@ void commandSetup() {
 }
 
 void commandSetBrightness() {
-  Serial.println(F("Command: SetBrightness"));
+  logger::println(F("Command: SetBrightness"));
 
    // Read value
   uint8_t brightness = ble.read();
@@ -263,7 +263,7 @@ void commandSetBrightness() {
 }
 
 void commandClearColor() {
-  Serial.println(F("Command: ClearColor"));
+  logger::println(F("Command: ClearColor"));
 
   // Read color
   uint8_t color[MAXCOMPONENTS];
@@ -285,7 +285,7 @@ void commandClearColor() {
   }
 
   // Swap buffers
-  Serial.println(F("ClearColor completed"));
+  logger::println(F("ClearColor completed"));
   swapBuffers();
 
 
@@ -301,7 +301,7 @@ void commandClearColor() {
 }
 
 void commandSetPixel() {
-  Serial.println(F("Command: SetPixel"));
+  logger::println(F("Command: SetPixel"));
 
   // Read position
   uint8_t x = ble.read();
@@ -356,13 +356,13 @@ void commandImage() {
 /*
     if (components == 3) {
       uint32_t index = i*components;
-      Serial.printf("\tp%d (%d, %d, %d)\n", i, pixelBuffer[index], pixelBuffer[index+1], pixelBuffer[index+2] );
+      logger::printf("\tp%d (%d, %d, %d)\n", i, pixelBuffer[index], pixelBuffer[index+1], pixelBuffer[index+2] );
     }
     */
   }
 
   // Swap buffers
-  Serial.println(F("Image received"));
+  logger::println(F("Image received"));
   swapBuffers();
 
   // Done

@@ -19,6 +19,7 @@
 #include "UARTHandler.h"
 #include "uart_commands.h"
 #include "UART_msg_t.h"
+#include "Logger.h"
 
 /**
  * @brief Type to associate a command with an ammount of data
@@ -165,14 +166,14 @@ namespace ble_handlers
         );
 
         // Set the data status to running
-        data->status = status_defs::messages::trial_on;
+        data->set_status(status_defs::messages::trial_on);
 
         // Send status update
         UARTHandler* uart_handler = UARTHandler::get_instance();
         UART_msg_t tx_msg;
         tx_msg.command = UART_command_names::update_status;
         tx_msg.joint_id = 0;
-        tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = data->status;
+        tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = data->get_status();
         tx_msg.len = (uint8_t)UART_command_enums::status::LENGTH;
         uart_handler->UART_msg(tx_msg);
 
@@ -207,14 +208,14 @@ namespace ble_handlers
         );
 
         // Set the data status to off
-        data->status = status_defs::messages::trial_off;
+        data->set_status(status_defs::messages::trial_off);
 
         // Send status update
         UARTHandler* uart_handler = UARTHandler::get_instance();
         UART_msg_t tx_msg;
         tx_msg.command = UART_command_names::update_status;
         tx_msg.joint_id = 0;
-        tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = data->status;
+        tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = data->get_status();
         tx_msg.len = (uint8_t)UART_command_enums::status::LENGTH;
         uart_handler->UART_msg(tx_msg);
 
@@ -342,12 +343,12 @@ namespace ble_handlers
     }
     inline static void new_trq(ExoData* data, BleMessage* msg)
     {
-        // Serial.print("Ankle ID: "); Serial.println((uint8_t)data->left_leg.ankle.id);
-        // Serial.println("Got New Trq:");
-        // Serial.print(msg->data[0]); Serial.print("\t");
-        // Serial.print(msg->data[1]); Serial.print("\t");
-        // Serial.print(msg->data[2]); Serial.print("\t");
-        // Serial.print(msg->data[3]); Serial.print("\t\r\n");
+        // logger::print("Ankle ID: "); logger::println((uint8_t)data->left_leg.ankle.id);
+        // logger::println("Got New Trq:");
+        // logger::print(msg->data[0]); logger::print("\t");
+        // logger::print(msg->data[1]); logger::print("\t");
+        // logger::print(msg->data[2]); logger::print("\t");
+        // logger::print(msg->data[3]); logger::print("\t\r\n");
         // (LSP, LDSP, RSP, RDSP) Unpack message data
         config_defs::joint_id joint_id = (config_defs::joint_id)msg->data[0];
         uint8_t controller_id = (uint8_t)msg->data[1];
@@ -364,14 +365,14 @@ namespace ble_handlers
         joint_id = (joint_id==(config_defs::joint_id)6)?(data->right_leg.ankle.id):(joint_id);
 
         if (joint_id == data->left_leg.ankle.id) {
-            //Serial.println("ble_handlers::new_trq() - Left Ankle");
+            //logger::println("ble_handlers::new_trq() - Left Ankle");
             cont_data = &data->left_leg.ankle.controller;
         } else if (joint_id == data->left_leg.knee.id) {
             cont_data = &data->left_leg.knee.controller;
         } else if (joint_id == data->left_leg.hip.id) {
             cont_data = &data->left_leg.hip.controller;
         } else if (joint_id == data->right_leg.ankle.id) {
-            //Serial.println("ble_handlers::new_trq() - Right Ankle");
+            //logger::println("ble_handlers::new_trq() - Right Ankle");
             cont_data = &data->right_leg.ankle.controller;
         } else if (joint_id == data->right_leg.knee.id) {
             cont_data = &data->right_leg.knee.controller;
@@ -379,7 +380,7 @@ namespace ble_handlers
             cont_data = &data->right_leg.hip.controller;
         }
         if (cont_data == NULL) {
-            //Serial.println("cont_data is NULL!");
+            //logger::println("cont_data is NULL!");
         }
         if (cont_data != NULL) {
             cont_data->controller = controller_id;
@@ -396,24 +397,31 @@ namespace ble_handlers
         tx_msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START] = set_num;
         tx_msg.len = 3;
         uart_handler->UART_msg(tx_msg);
-        //Serial.println("ble_handlers::new_trq() - Sent UART message");
+        //logger::println("ble_handlers::new_trq() - Sent UART message");
         UART_msg_t_utils::print_msg(tx_msg);
     }
     inline static void new_fsr(ExoData* data, BleMessage* msg)
     {
-        // Change PJMC fsr threshold parameters
-        // Need to implement PJMC
-
+        // Change contact thresholds for the feet
+        // Send UART message to update FSR thresholds
+        UARTHandler* uart_handler = UARTHandler::get_instance();
+        UART_msg_t tx_msg;
+        tx_msg.command = UART_command_names::update_FSR_thesholds;
+        tx_msg.joint_id = 0;
+        tx_msg.len = (uint8_t)UART_command_enums::FSR_thresholds::LENGTH;
+        tx_msg.data[(uint8_t)UART_command_enums::FSR_thresholds::LEFT_THRESHOLD] = msg->data[0];
+        tx_msg.data[(uint8_t)UART_command_enums::FSR_thresholds::RIGHT_THRESHOLD] = msg->data[1];
+        uart_handler->UART_msg(tx_msg);
     }
 
     inline static void update_param(ExoData* data, BleMessage* msg)
     {
          //Send UART message to update parameter
-         //Serial.println("ble_handlers::update_param() - Got update param message");
-         //Serial.print("ble_handlers::update_param() - Joint ID: "); Serial.println((uint8_t)msg->data[0]);
-         //Serial.print("ble_handlers::update_param() - Controller ID: "); Serial.println((uint8_t)msg->data[1]);
-         //Serial.print("ble_handlers::update_param() - Param Index: "); Serial.println((uint8_t)msg->data[2]);
-         //Serial.print("ble_handlers::update_param() - Param Value: "); Serial.println((uint8_t)msg->data[3]);
+         //logger::println("ble_handlers::update_param() - Got update param message");
+         //logger::print("ble_handlers::update_param() - Joint ID: "); logger::println((uint8_t)msg->data[0]);
+         //logger::print("ble_handlers::update_param() - Controller ID: "); logger::println((uint8_t)msg->data[1]);
+         //logger::print("ble_handlers::update_param() - Param Index: "); logger::println((uint8_t)msg->data[2]);
+         //logger::print("ble_handlers::update_param() - Param Value: "); logger::println((uint8_t)msg->data[3]);
         UARTHandler* uart_handler = UARTHandler::get_instance();
         UART_msg_t tx_msg;
         tx_msg.command = UART_command_names::update_controller_param;
@@ -466,7 +474,7 @@ namespace ble_handlers
         if (((is_hip + is_knee + is_ankle) > 1) || (is_hip + is_knee + is_ankle) == 0)
         {
             // The joint type check failed, abort
-            Serial.println("ble_handlers::perturb()->Failed to reconcile joint type!");
+            logger::println("ble_handlers::perturb()->Failed to reconcile joint type!");
             return;
         }
 
@@ -511,7 +519,7 @@ namespace ble_handlers
             if (((is_hip + is_knee + is_ankle) > 1) || (is_hip + is_knee + is_ankle) == 0)
             {
                 // The joint type check failed, abort
-                Serial.println("ble_handlers::perturb()->Failed to reconcile joint type!");
+                logger::println("ble_handlers::perturb()->Failed to reconcile joint type!");
                 return;
             }
 

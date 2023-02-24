@@ -46,7 +46,7 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -62,29 +62,29 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Factory Reset Example"));
-  Serial.println(F("------------------------------------------------"));
+  logger::println(F("Adafruit Factory Reset Example"));
+  logger::println(F("------------------------------------------------"));
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   /* Perform a factory reset to make sure everything is in a known state */
-  Serial.println(F("Performing a factory reset: "));
+  logger::println(F("Performing a factory reset: "));
   if (! ble.factoryReset() ){
        error(F("Couldn't factory reset"));
   }
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
 
-  Serial.println(F("DONE!"));
+  logger::println(F("DONE!"));
 }
 
 /**************************************************************************/

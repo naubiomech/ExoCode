@@ -234,9 +234,12 @@ namespace controller_defs /**< stores the parameter indexes for different contro
 
     namespace constant_torque
     {
-        const uint8_t amplitude_idx = 0;    // amplitude in Nm
-        const uint8_t direction_idx = 1;     // direction in which the torque will be applied
-        const uint8_t num_parameter = 2;
+        const uint8_t amplitude_idx = 0;
+        const uint8_t direction_idx = 0;
+        //const uint8_t upper_idx = 0;    // amplitude in Nm
+        //const uint8_t lower_idx = 1;
+        //const uint8_t iterations_idx = 2;
+        const uint8_t num_parameter = 3;
         ;
     }
     /*

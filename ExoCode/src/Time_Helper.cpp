@@ -1,4 +1,5 @@
 #include "Time_Helper.h"
+#include "Logger.h"
 #include <Arduino.h>
 
 /* Public */
