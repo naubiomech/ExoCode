@@ -1,32 +1,33 @@
 #include "ParamsFromSD.h"
+#include "Logger.h"
 //#define SD_PARAM_DEBUG 1
 
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
 
     void print_param_error_message(uint8_t error_type)
     {
-        //Serial.print(utils::get_is_left(error_type)? "Left " : "Right ");
+        //logger::print(utils::get_is_left(error_type)? "Left " : "Right ");
         switch (error_type & ((uint8_t)config_defs::joint_id::hip | (uint8_t)config_defs::joint_id::knee | (uint8_t)config_defs::joint_id::ankle))
         {
             case (uint8_t)config_defs::joint_id::hip:
-                //Serial.print("Hip ");    
+                //logger::print("Hip ");    
                 break;
             case (uint8_t)config_defs::joint_id::knee:
-                //Serial.print("Knee ");
+                //logger::print("Knee ");
                 break;
             case (uint8_t)config_defs::joint_id::ankle:
-                //Serial.print("Ankle ");
+                //logger::print("Ankle ");
                 break;
         }
         if (utils::get_bit(error_type, param_error::SD_not_found_idx))
         {
-            //Serial.print("SD Not Found, ");
+            //logger::print("SD Not Found, ");
         }            
         if (utils::get_bit(error_type, param_error::SD_not_found_idx))
         {
-            //Serial.print("File Not Found, ");
+            //logger::print("File Not Found, ");
         } 
-        //Serial.println("File Not Found, ");
+        //logger::println("File Not Found, ");
     }
     
     uint8_t set_controller_params(uint8_t joint_id, uint8_t controller_id, uint8_t set_num, ExoData* exo_data)
@@ -45,18 +46,18 @@
             {
                 
                 #ifdef SD_PARAM_DEBUG
-                    Serial.println("\n\nset_controller_params : Hip");
+                    logger::println("\n\nset_controller_params : Hip");
                 #endif
                 // Connect to SD card
                 SPI.begin();
                 #ifdef SD_PARAM_DEBUG
-                    Serial.println("set_controller_params : SPI Begin");
+                    logger::println("set_controller_params : SPI Begin");
                 #endif
                 if (!SD.begin(SD_SELECT))
                 {
                     error_type = utils::update_bit((uint8_t)config_defs::joint_id::hip, 1, param_error::SD_not_found_idx);
                     #ifdef SD_PARAM_DEBUG
-                        Serial.println("set_controller_params : SD Not Found");
+                        logger::println("set_controller_params : SD Not Found");
                     #endif
                     return error_type;
                 }
@@ -65,15 +66,15 @@
                     // Get filename
                     filename = controller_parameter_filenames::hip[controller_id];
                     #ifdef SD_PARAM_DEBUG
-                        Serial.print("set_controller_params : filename = ");
-                        Serial.println(filename.c_str());
+                        logger::print("set_controller_params : filename = ");
+                        logger::println(filename.c_str());
                     #endif
                     // Open File
                     param_file = SD.open(filename.c_str(), FILE_READ);
                     #ifdef SD_PARAM_DEBUG
-                        Serial.print("set_controller_params : ");
-                        Serial.print(filename.c_str());
-                        Serial.println(" opened");
+                        logger::print("set_controller_params : ");
+                        logger::print(filename.c_str());
+                        logger::println(" opened");
                     #endif
                     // check file exists
                     if (param_file)
@@ -83,8 +84,8 @@
                             // First value should be header size
                             header_size = param_file.parseInt();
                             #ifdef SD_PARAM_DEBUG
-                                Serial.print("set_controller_params : header size ");
-                                Serial.println(header_size);
+                                logger::print("set_controller_params : header size ");
+                                logger::println(header_size);
                             #endif
                             // skip to the line we need
                             line_to_read = header_size + set_num;
@@ -95,8 +96,8 @@
                                 {
                                     param_num_in_file = param_file.parseInt();
                                     #ifdef SD_PARAM_DEBUG
-                                        Serial.print("set_controller_params : Number of parameters in file = ");
-                                        Serial.println(param_num_in_file);
+                                        logger::print("set_controller_params : Number of parameters in file = ");
+                                        logger::println(param_num_in_file);
                                     #endif    
                                 } 
                                 // keep going through the file till the next new line.  This is so it will restart if timeout happens.          
@@ -105,30 +106,30 @@
                                     ;
                                 }
                                 #ifdef SD_PARAM_DEBUG
-                                    Serial.print("set_controller_params : read line ");
-                                    Serial.println(line_being_read);
+                                    logger::print("set_controller_params : read line ");
+                                    logger::println(line_being_read);
                                 #endif
                             }
                             
                             // store the line start value so we can go back here
                             unsigned long line_start = param_file.position();
                             #ifdef SD_PARAM_DEBUG
-                                Serial.print("set_controller_params : parameter set start ");
-                                Serial.println(line_start);
+                                logger::print("set_controller_params : parameter set start ");
+                                logger::println(line_start);
                             #endif
                             
                             // find the end of the line
                             param_file.readStringUntil('\n');
                             unsigned long line_end = param_file.position();
                             #ifdef SD_PARAM_DEBUG
-                                Serial.print("set_controller_params : parameter set end ");
-                                Serial.println(line_end);
+                                logger::print("set_controller_params : parameter set end ");
+                                logger::println(line_end);
                             #endif
                             
                             // reset to the start of the line
                             param_file.seek(line_start);
                             #ifdef SD_PARAM_DEBUG
-                                Serial.println("set_controller_params : reset to line start");
+                                logger::println("set_controller_params : reset to line start");
                             #endif
                             // set the parameters.
                             uint8_t param_num = 0;
@@ -136,7 +137,7 @@
                             if(utils::get_is_left(joint_id))
                             {
                                 #ifdef SD_PARAM_DEBUG
-                                    Serial.println("set_controller_params : is Left ");
+                                    logger::println("set_controller_params : is Left ");
                                 #endif
                                 
                                 // read till the end of the line or all the parameters are full
@@ -146,8 +147,8 @@
                                     {
                                         read_val = param_file.parseFloat();
                                         #ifdef SD_PARAM_DEBUG
-                                            Serial.print("+Value in file :\t");
-                                            Serial.println(read_val,6);
+                                            logger::print("+Value in file :\t");
+                                            logger::println(read_val,6);
                                         #endif
                                         
                                     }
@@ -155,8 +156,8 @@
                                     {
                                         read_val = 0;
                                         #ifdef SD_PARAM_DEBUG
-                                            Serial.print("-File Line Ended :\t");
-                                            Serial.println(read_val,6);
+                                            logger::print("-File Line Ended :\t");
+                                            logger::println(read_val,6);
                                         #endif
                                     }
                                     
@@ -168,7 +169,7 @@
                             else
                             {
                                 #ifdef SD_PARAM_DEBUG
-                                    Serial.println("set_controller_params : is Right ");
+                                    logger::println("set_controller_params : is Right ");
                                 #endif
                                 
                                 // read till the end of the line or all the parameters are full
@@ -178,8 +179,8 @@
                                     {
                                         read_val = param_file.parseFloat();
                                         #ifdef SD_PARAM_DEBUG
-                                            Serial.print("+Value in file :\t");
-                                            Serial.println(read_val,6);
+                                            logger::print("+Value in file :\t");
+                                            logger::println(read_val,6);
                                         #endif
                                         
                                     }
@@ -187,8 +188,8 @@
                                     {
                                         read_val = 0;
                                         #ifdef SD_PARAM_DEBUG
-                                            Serial.print("-File Line Ended :\t");
-                                            Serial.println(read_val,6);
+                                            logger::print("-File Line Ended :\t");
+                                            logger::println(read_val,6);
                                         #endif
                                     }
                                     
@@ -206,12 +207,12 @@
                     { 
                         error_type = utils::update_bit((uint8_t)config_defs::joint_id::hip, 1, param_error::file_not_found_idx);
                         #ifdef SD_PARAM_DEBUG
-                            Serial.println("set_controller_params : File not found");
+                            logger::println("set_controller_params : File not found");
                         #endif
                     }
                     param_file.close();
                     #ifdef SD_PARAM_DEBUG
-                        Serial.println("set_controller_params : File Closed");
+                        logger::println("set_controller_params : File Closed");
                     #endif
                 }
                 break;
@@ -219,18 +220,18 @@
             case (uint8_t)config_defs::joint_id::knee:
             {
                 #ifdef SD_PARAM_DEBUG
-                    Serial.println("\n\nset_controller_params : Knee");
+                    logger::println("\n\nset_controller_params : Knee");
                 #endif
                 // Connect to SD card
                 SPI.begin();
                 #ifdef SD_PARAM_DEBUG
-                    Serial.println("set_controller_params : SPI Begin");
+                    logger::println("set_controller_params : SPI Begin");
                 #endif
                 if (!SD.begin(SD_SELECT))
                 {
                     error_type = utils::update_bit((uint8_t)config_defs::joint_id::knee, 1, param_error::SD_not_found_idx);
                     #ifdef SD_PARAM_DEBUG
-                        Serial.println("set_controller_params : SD Not Found");
+                        logger::println("set_controller_params : SD Not Found");
                     #endif
                     return error_type;
                 }
@@ -239,15 +240,15 @@
                     // Get filename
                     filename = controller_parameter_filenames::knee[controller_id];
                     #ifdef SD_PARAM_DEBUG
-                        Serial.print("set_controller_params : filename = ");
-                        Serial.println(filename.c_str());
+                        logger::print("set_controller_params : filename = ");
+                        logger::println(filename.c_str());
                     #endif
                     // Open File
                     param_file = SD.open(filename.c_str(), FILE_READ);
                     #ifdef SD_PARAM_DEBUG
-                        Serial.print("set_controller_params : ");
-                        Serial.print(filename.c_str());
-                        Serial.println(" opened");
+                        logger::print("set_controller_params : ");
+                        logger::print(filename.c_str());
+                        logger::println(" opened");
                     #endif
                     // check file exists
                     if (param_file)
@@ -257,8 +258,8 @@
                             // First value should be header size
                             header_size = param_file.parseInt();
                             #ifdef SD_PARAM_DEBUG
-                                Serial.print("set_controller_params : header size ");
-                                Serial.println(header_size);
+                                logger::print("set_controller_params : header size ");
+                                logger::println(header_size);
                             #endif
                             // skip to the line we need
                             line_to_read = header_size + set_num;
@@ -269,8 +270,8 @@
                                 {
                                     param_num_in_file = param_file.parseInt();
                                     #ifdef SD_PARAM_DEBUG
-                                        Serial.print("set_controller_params : Number of parameters in file = ");
-                                        Serial.println(param_num_in_file);
+                                        logger::print("set_controller_params : Number of parameters in file = ");
+                                        logger::println(param_num_in_file);
                                     #endif    
                                 } 
                                 // keep going through the file till the next new line.  This is so it will restart if timeout happens.          
@@ -279,30 +280,30 @@
                                     ;
                                 }
                                 #ifdef SD_PARAM_DEBUG
-                                    Serial.print("set_controller_params : read line ");
-                                    Serial.println(line_being_read);
+                                    logger::print("set_controller_params : read line ");
+                                    logger::println(line_being_read);
                                 #endif
                             }
                             
                             // store the line start value so we can go back here
                             unsigned long line_start = param_file.position();
                             #ifdef SD_PARAM_DEBUG
-                                Serial.print("set_controller_params : parameter set start ");
-                                Serial.println(line_start);
+                                logger::print("set_controller_params : parameter set start ");
+                                logger::println(line_start);
                             #endif
                             
                             // find the end of the line
                             param_file.readStringUntil('\n');
                             unsigned long line_end = param_file.position();
                             #ifdef SD_PARAM_DEBUG
-                                Serial.print("set_controller_params : parameter set end ");
-                                Serial.println(line_end);
+                                logger::print("set_controller_params : parameter set end ");
+                                logger::println(line_end);
                             #endif
                             
                             // reset to the start of the line
                             param_file.seek(line_start);
                             #ifdef SD_PARAM_DEBUG
-                                Serial.println("set_controller_params : reset to line start");
+                                logger::println("set_controller_params : reset to line start");
                             #endif
                             // set the parameters.
                             uint8_t param_num = 0;
@@ -310,7 +311,7 @@
                             if(utils::get_is_left(joint_id))
                             {
                                 #ifdef SD_PARAM_DEBUG
-                                    Serial.println("set_controller_params : is Left ");
+                                    logger::println("set_controller_params : is Left ");
                                 #endif
                                 
                                 // read till the end of the line or all the parameters are full
@@ -320,8 +321,8 @@
                                     {
                                         read_val = param_file.parseFloat();
                                         #ifdef SD_PARAM_DEBUG
-                                            Serial.print("+Value in file :\t");
-                                            Serial.println(read_val,6);
+                                            logger::print("+Value in file :\t");
+                                            logger::println(read_val,6);
                                         #endif
                                         
                                     }
@@ -329,8 +330,8 @@
                                     {
                                         read_val = 0;
                                         #ifdef SD_PARAM_DEBUG
-                                            Serial.print("-File Line Ended :\t");
-                                            Serial.println(read_val,6);
+                                            logger::print("-File Line Ended :\t");
+                                            logger::println(read_val,6);
                                         #endif
                                     }
                                     
@@ -342,7 +343,7 @@
                             else
                             {
                                 #ifdef SD_PARAM_DEBUG
-                                    Serial.println("set_controller_params : is Right ");
+                                    logger::println("set_controller_params : is Right ");
                                 #endif
                                 
                                 // read till the end of the line or all the parameters are full
@@ -352,8 +353,8 @@
                                     {
                                         read_val = param_file.parseFloat();
                                         #ifdef SD_PARAM_DEBUG
-                                            Serial.print("+Value in file :\t");
-                                            Serial.println(read_val,6);
+                                            logger::print("+Value in file :\t");
+                                            logger::println(read_val,6);
                                         #endif
                                         
                                     }
@@ -361,8 +362,8 @@
                                     {
                                         read_val = 0;
                                         #ifdef SD_PARAM_DEBUG
-                                            Serial.print("-File Line Ended :\t");
-                                            Serial.println(read_val,6);
+                                            logger::print("-File Line Ended :\t");
+                                            logger::println(read_val,6);
                                         #endif
                                     }
                                     
@@ -380,12 +381,12 @@
                     { 
                         error_type = utils::update_bit((uint8_t)config_defs::joint_id::knee, 1, param_error::file_not_found_idx);
                         #ifdef SD_PARAM_DEBUG
-                            Serial.println("set_controller_params : File not found");
+                            logger::println("set_controller_params : File not found");
                         #endif
                     }
                     param_file.close();
                     #ifdef SD_PARAM_DEBUG
-                        Serial.println("set_controller_params : File Closed");
+                        logger::println("set_controller_params : File Closed");
                     #endif
                 }
                 break;
@@ -393,18 +394,18 @@
             case (uint8_t)config_defs::joint_id::ankle:
             {
                 #ifdef SD_PARAM_DEBUG
-                    Serial.println("\n\nset_controller_params : Ankle");
+                    logger::println("\n\nset_controller_params : Ankle");
                 #endif
                 // Connect to SD card
                 SPI.begin();
                 #ifdef SD_PARAM_DEBUG
-                    Serial.println("set_controller_params : SPI Begin");
+                    logger::println("set_controller_params : SPI Begin");
                 #endif
                 if (!SD.begin(SD_SELECT))
                 {
                     error_type = utils::update_bit((uint8_t)config_defs::joint_id::ankle, 1, param_error::SD_not_found_idx);
                     #ifdef SD_PARAM_DEBUG
-                        Serial.println("set_controller_params : SD Not Found");
+                        logger::println("set_controller_params : SD Not Found");
                     #endif
                     return error_type;
                 }
@@ -413,15 +414,15 @@
                     // Get filename
                     filename = controller_parameter_filenames::ankle[controller_id];
                     #ifdef SD_PARAM_DEBUG
-                        Serial.print("set_controller_params : filename = ");
-                        Serial.println(filename.c_str());
+                        logger::print("set_controller_params : filename = ");
+                        logger::println(filename.c_str());
                     #endif
                     // Open File
                     param_file = SD.open(filename.c_str(), FILE_READ);
                     #ifdef SD_PARAM_DEBUG
-                        Serial.print("set_controller_params : ");
-                        Serial.print(filename.c_str());
-                        Serial.println(" opened");
+                        logger::print("set_controller_params : ");
+                        logger::print(filename.c_str());
+                        logger::println(" opened");
                     #endif
                     // check file exists
                     if (param_file)
@@ -435,8 +436,8 @@
                             // First value should be header size
                             header_size = param_file.parseInt();
                             #ifdef SD_PARAM_DEBUG
-                                Serial.print("set_controller_params : header size ");
-                                Serial.println(header_size);
+                                logger::print("set_controller_params : header size ");
+                                logger::println(header_size);
                             #endif
                             // skip to the line we need
                             line_to_read = header_size + set_num;
@@ -447,8 +448,8 @@
                                 {
                                     param_num_in_file = param_file.parseInt();
                                     #ifdef SD_PARAM_DEBUG
-                                        Serial.print("set_controller_params : Number of parameters in file = ");
-                                        Serial.println(param_num_in_file);
+                                        logger::print("set_controller_params : Number of parameters in file = ");
+                                        logger::println(param_num_in_file);
                                     #endif    
                                 } 
                                 // keep going through the file till the next new line.  This is so it will restart if timeout happens.          
@@ -457,36 +458,36 @@
                                     ;
                                 }
                                 #ifdef SD_PARAM_DEBUG
-                                    Serial.print("set_controller_params : read line ");
-                                    Serial.println(line_being_read);
+                                    logger::print("set_controller_params : read line ");
+                                    logger::println(line_being_read);
                                 #endif
                             }
                             
                             // store the line start value so we can go back here
                             unsigned long line_start = param_file.position();
                             #ifdef SD_PARAM_DEBUG
-                                Serial.print("set_controller_params : parameter set start ");
-                                Serial.println(line_start);
+                                logger::print("set_controller_params : parameter set start ");
+                                logger::println(line_start);
                             #endif
                             
                             // find the end of the line
                             param_file.readStringUntil('\n');
                             unsigned long line_end = param_file.position();
                             #ifdef SD_PARAM_DEBUG
-                                Serial.print("set_controller_params : parameter set end ");
-                                Serial.println(line_end);
+                                logger::print("set_controller_params : parameter set end ");
+                                logger::println(line_end);
                             #endif
                             
                             // reset to the start of the line
                             param_file.seek(line_start);
                             #ifdef SD_PARAM_DEBUG
-                                Serial.println("set_controller_params : reset to line start");
+                                logger::println("set_controller_params : reset to line start");
                             #endif
                             
                             if(utils::get_is_left(joint_id))
                             {
                                 #ifdef SD_PARAM_DEBUG
-                                    Serial.println("set_controller_params : is Left ");
+                                    logger::println("set_controller_params : is Left ");
                                 #endif
                                 
                                 // read till the end of the line or all the parameters are full
@@ -496,8 +497,8 @@
                                     {
                                         read_val = param_file.parseFloat();
                                         #ifdef SD_PARAM_DEBUG
-                                            Serial.print("+Value in file :\t");
-                                            Serial.println(read_val,6);
+                                            logger::print("+Value in file :\t");
+                                            logger::println(read_val,6);
                                         #endif
                                         
                                     }
@@ -505,8 +506,8 @@
                                     {
                                         read_val = 0;
                                         #ifdef SD_PARAM_DEBUG
-                                            Serial.print("-File Line Ended :\t");
-                                            Serial.println(read_val,6);
+                                            logger::print("-File Line Ended :\t");
+                                            logger::println(read_val,6);
                                         #endif
                                     }
                                     
@@ -518,7 +519,7 @@
                             else
                             {
                                 #ifdef SD_PARAM_DEBUG
-                                    Serial.println("set_controller_params : is Right ");
+                                    logger::println("set_controller_params : is Right ");
                                 #endif
                                 
                                 // read till the end of the line or all the parameters are full
@@ -528,8 +529,8 @@
                                     {
                                         read_val = param_file.parseFloat();
                                         #ifdef SD_PARAM_DEBUG
-                                            Serial.print("+Value in file :\t");
-                                            Serial.println(read_val,6);
+                                            logger::print("+Value in file :\t");
+                                            logger::println(read_val,6);
                                         #endif
                                         
                                     }
@@ -537,8 +538,8 @@
                                     {
                                         read_val = 0;
                                         #ifdef SD_PARAM_DEBUG
-                                            Serial.print("-File Line Ended :\t");
-                                            Serial.println(read_val,6);
+                                            logger::print("-File Line Ended :\t");
+                                            logger::println(read_val,6);
                                         #endif
                                     }
                                     
@@ -556,12 +557,12 @@
                     { 
                         error_type = utils::update_bit((uint8_t)config_defs::joint_id::ankle, 1, param_error::file_not_found_idx);
                         #ifdef SD_PARAM_DEBUG
-                            Serial.println("set_controller_params : File not found");
+                            logger::println("set_controller_params : File not found");
                         #endif
                     }
                     param_file.close();
                     #ifdef SD_PARAM_DEBUG
-                        Serial.println("set_controller_params : File Closed");
+                        logger::println("set_controller_params : File Closed");
                     #endif
                 }
                 break;

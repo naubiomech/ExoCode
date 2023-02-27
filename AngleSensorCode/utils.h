@@ -37,7 +37,7 @@ namespace utils
                 return val.b[0] == 0x01;
                 break;
             default:
-                //Serial.println("Utilities :: is_little_endian() : System does not appear to be 32 or 64 bit");    
+                //logger::println("Utilities :: is_little_endian() : System does not appear to be 32 or 64 bit");    
                 break;
         }
         
@@ -48,7 +48,7 @@ namespace utils
         FloatByteUnion val;
         val.f = num_to_convert;
         int idx;
-        // Serial.println(val.f);
+        // logger::println(val.f);
         for(uint8_t i = 0; i<sizeof(float); i++)
         {
             if (is_little_endian())
@@ -59,10 +59,10 @@ namespace utils
             {
                 idx = sizeof(float)-i-1;
             }
-            // Serial.println(idx);
-            // Serial.println(val.b[0],HEX);
+            // logger::println(idx);
+            // logger::println(val.b[0],HEX);
             converted_bytes[i] = val.b[idx];
-            // Serial.println(converted_bytes[i],HEX);
+            // logger::println(converted_bytes[i],HEX);
         }
         return;
     }
@@ -71,7 +71,7 @@ namespace utils
     {
         FloatByteUnion val;
         int idx;
-        // Serial.println(bytes_to_convert[0],HEX);
+        // logger::println(bytes_to_convert[0],HEX);
         
         // flip the idx if not little endian
         for(uint8_t i = 0; i<sizeof(float); i++)
@@ -84,13 +84,13 @@ namespace utils
             {
                 idx = sizeof(float)-i-1;
             }
-            // Serial.println(idx);
+            // logger::println(idx);
             val.b[i] = bytes_to_convert[idx];
-            // Serial.println(val.b[i],HEX);
+            // logger::println(val.b[i],HEX);
         }
         
         *converted_float = val.f;
-        // Serial.println(*converted_float);
+        // logger::println(*converted_float);
         
          
         return;
@@ -101,7 +101,7 @@ namespace utils
         ShortIntByteUnion val;
         val.i = (short int) (num_to_convert * factor);
         int idx;
-        // Serial.println(val.f);
+        // logger::println(val.f);
         for(uint8_t i = 0; i<sizeof(short int); i++)
         {
             if (is_little_endian())
@@ -112,10 +112,10 @@ namespace utils
             {
                 idx = sizeof(short int)-i-1;
             }
-            // Serial.println(idx);
-            // Serial.println(val.b[0],HEX);
+            // logger::println(idx);
+            // logger::println(val.b[0],HEX);
             converted_bytes[i] = val.b[idx];
-            // Serial.println(converted_bytes[i],HEX);
+            // logger::println(converted_bytes[i],HEX);
         }
         return;
     }
@@ -124,7 +124,7 @@ namespace utils
     {
         ShortIntByteUnion val;
         int idx;
-        // Serial.println(bytes_to_convert[0],HEX);
+        // logger::println(bytes_to_convert[0],HEX);
         
         // flip the idx if not little endian
         for(uint8_t i = 0; i<sizeof(short int); i++)
@@ -137,13 +137,13 @@ namespace utils
             {
                 idx = sizeof(short int)-i-1;
             }
-            // Serial.println(idx);
+            // logger::println(idx);
             val.b[i] = bytes_to_convert[idx];
-            // Serial.println(val.b[i],HEX);
+            // logger::println(val.b[i],HEX);
         }
         
         *converted_val = ((float)val.i/factor);
-        // Serial.println(*converted_float);
+        // logger::println(*converted_float);
         
          
         return;

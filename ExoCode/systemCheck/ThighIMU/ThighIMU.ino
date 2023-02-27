@@ -12,7 +12,7 @@ void setup() {
   while(!Serial);
 
   if (!left.init()) {
-    Serial.println("Failed Left Init");
+    logger::println("Failed Left Init");
   }
   
 }
@@ -21,17 +21,17 @@ void loop() {
   //static I2C* i2c = I2C::get_instance();
   static uint8_t data;
 
-//  Serial.print("Reading from I2C device: ");
-//  Serial.print(i2c_cmds::thigh_imu::left_addr);
-//  Serial.print(" at register: ");
-//  Serial.print(i2c_cmds::thigh_imu::get_angle::reg);
-//  Serial.print(" with length: ");
-//  Serial.println(i2c_cmds::thigh_imu::get_angle::len);
+//  logger::print("Reading from I2C device: ");
+//  logger::print(i2c_cmds::thigh_imu::left_addr);
+//  logger::print(" at register: ");
+//  logger::print(i2c_cmds::thigh_imu::get_angle::reg);
+//  logger::print(" with length: ");
+//  logger::println(i2c_cmds::thigh_imu::get_angle::len);
 
   data = left.read_data();
 
-  Serial.print("Got: ");
-  Serial.println(data);
+  logger::print("Got: ");
+  logger::println(data);
   
   
   // Try to read at 100Hz

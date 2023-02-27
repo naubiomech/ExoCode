@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "BleMessage.h"
+#include "Logger.h"
 
 BleMessage::BleMessage() 
 { 
@@ -28,25 +29,25 @@ void BleMessage::copy(BleMessage* n)
 
 void BleMessage::print(BleMessage msg)
 {
-    Serial.print(msg.command);
-    Serial.print("\t");
-    Serial.print(msg.is_complete);
-    Serial.print("\t");
-    Serial.println(msg.expecting);
+    logger::print(msg.command);
+    logger::print("\t");
+    logger::print(msg.is_complete);
+    logger::print("\t");
+    logger::println(msg.expecting);
     if (msg.expecting <= 0) 
     {
         return;
     }
     for (int i=0; i<msg.expecting; i++)
     {
-        Serial.print(msg.data[i]);
+        logger::print(msg.data[i]);
         if (i == (msg.expecting - 1))
         {
             continue;
         }
-        Serial.print(", ");
+        logger::print(", ");
     }
-    Serial.println();
+    logger::println();
 }
 
 // TODO: Overide == operator

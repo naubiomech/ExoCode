@@ -548,5 +548,25 @@ public:
     int counter;
 };
 
+class ElbowMinMax : public _Controller
+{
+public:
+    ElbowMinMax(config_defs::joint_id id, ExoData* exo_data);
+    ~ElbowMinMax() {};
+
+    float calc_motor_cmd();
+    
+};
+
+class PtbGeneral : public _Controller
+{
+public:
+    PtbGeneral(config_defs::joint_id id, ExoData* exo_data);
+    ~PtbGeneral() {};
+
+    float calc_motor_cmd();
+    
+};
+
 #endif
 #endif

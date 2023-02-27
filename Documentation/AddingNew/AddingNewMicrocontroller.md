@@ -1,6 +1,6 @@
 # Adding a new microcontroller
 This file assumes you are still using Arduino.  
-If you are moving away from Arduino you will need to remove Arduino specific items, like Serial.prints, pin defs that use A#.
+If you are moving away from Arduino you will need to remove Arduino specific items, like logger::prints, pin defs that use A#.
 Most of the code should run with little modification but there will be some reformatting to do, but if you are moving the code away from Arduino I am assuming you know enough to do this without my direction.
 
 ## Selecting microcontroller

@@ -36,17 +36,17 @@ static const int led_pins[] = {22, 23, 24};
  */
 inline static void logger(const char *msg, app_log_level_t level) {
     if (level <= LOG_LEVEL) {
-        Serial.print(msg);
+        logger::print(msg);
     }
 }
 inline static void logger(const int msg, app_log_level_t level) {
     if (level <= LOG_LEVEL) {
-        Serial.print(msg);
+        logger::print(msg);
     }
 }
 inline static void logger(const float msg, app_log_level_t level) {
     if (level <= LOG_LEVEL) {
-        Serial.print(msg);
+        logger::print(msg);
     }
 }
 

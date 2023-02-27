@@ -9,6 +9,7 @@
 #include "CAN.h"
 #include "ErrorManager.h"
 #include "error_types.h"
+#include "Logger.h"
 //#define MOTOR_DEBUG
 
 // Arduino compiles everything in the src folder even if not included so it causes and error for the nano if this is not included.
@@ -25,9 +26,9 @@ _Motor::_Motor(config_defs::joint_id id, ExoData* exo_data, int enable_pin)
     _prev_on_state = false;
     
     #ifdef MOTOR_DEBUG
-        Serial.print("_Motor::_Motor : _enable_pin = ");
-        Serial.print(_enable_pin);
-        Serial.print("\n");
+        logger::print("_Motor::_Motor : _enable_pin = ");
+        logger::print(_enable_pin);
+        logger::print("\n");
     #endif
 
     
@@ -70,7 +71,7 @@ _Motor::_Motor(config_defs::joint_id id, ExoData* exo_data, int enable_pin)
             break;
     }
 #ifdef MOTOR_DEBUG
-    Serial.println("_Motor::_Motor : Leaving Constructor");
+    logger::println("_Motor::_Motor : Leaving Constructor");
 #endif
 };
 
@@ -102,7 +103,7 @@ _CANMotor::_CANMotor(config_defs::joint_id id, ExoData* exo_data, int enable_pin
     _enable_response = false;
 
 #ifdef MOTOR_DEBUG
-    Serial.println("_CANMotor::_CANMotor : Leaving Constructor");
+    logger::println("_CANMotor::_CANMotor : Leaving Constructor");
 #endif
 };
 
@@ -145,10 +146,10 @@ void _CANMotor::read_data()
                 _motor_data->i = direction_modifier * _uint_to_float(i_int, -_I_MAX, _I_MAX, 12);
 
                 #ifdef MOTOR_DEBUG
-                    Serial.print("_CANMotor::read_data():Got data-");
-                    Serial.print("ID:" + String(uint32_t(_motor_data->id)) + ",");
-                    Serial.print("P:"+String(_motor_data->p) + ",V:" + String(_motor_data->v) + ",I:" + String(_motor_data->i));
-                    Serial.print("\n");
+                    logger::print("_CANMotor::read_data():Got data-");
+                    logger::print("ID:" + String(uint32_t(_motor_data->id)) + ",");
+                    logger::print("P:"+String(_motor_data->p) + ",V:" + String(_motor_data->v) + ",I:" + String(_motor_data->i));
+                    logger::print("\n");
                 #endif
                 // reset timout_count because we got a valid message
                 this->_timeout_count = 0;
@@ -168,9 +169,9 @@ void _CANMotor::read_data()
 void _CANMotor::send_data(float torque)
 {
     #ifdef MOTOR_DEBUG
-        // Serial.print("Sending data: ");
-        // Serial.print(uint32_t(_motor_data->id));
-        // Serial.print("\n");
+        // logger::print("Sending data: ");
+        // logger::print(uint32_t(_motor_data->id));
+        // logger::print("\n");
     #endif
 
     int direction_modifier = _motor_data->flip_direction ? -1 : 1;
@@ -204,10 +205,10 @@ void _CANMotor::send_data(float torque)
     msg.buf[6] = ((kd_int & 0xF) << 4) | (i_int >> 8);
     msg.buf[7] = i_int & 0xFF;
 
-    //Serial.print("_CANMotor::send_data::t_sat:: ");
-    //Serial.print(t_sat);
-    //Serial.print("\n");
-    //Serial.print("T:"+String(t_sat)+",");
+    //logger::print("_CANMotor::send_data::t_sat:: ");
+    //logger::print(t_sat);
+    //logger::print("\n");
+    //logger::print("T:"+String(t_sat)+",");
     
     // only send messages if enabled
     if (_motor_data->enabled)
@@ -241,7 +242,6 @@ void _CANMotor::check_response()
         {
             _motor_data->enabled = true;
             enable(true);
-            Serial.println("Motor enabled");
         }
     }
 }
@@ -251,25 +251,25 @@ void _CANMotor::on_off()
     if (_data->estop)
     {
         _motor_data->is_on = false;
-        // Serial.print("_CANMotor::on_off(bool is_on) : E-stop pulled - ");
-        // Serial.print(uint32_t(_motor_data->id));
-        // Serial.print("\n");
+        // logger::print("_CANMotor::on_off(bool is_on) : E-stop pulled - ");
+        // logger::print(uint32_t(_motor_data->id));
+        // logger::print("\n");
     }
     if (_prev_on_state != _motor_data->is_on) // if was here to save time, can be removed if making problems, or add overide
     {
         if (_motor_data->is_on)
         {
             digitalWrite(_enable_pin, logic_micro_pins::motor_enable_on_state);
-            // Serial.print("_CANMotor::on_off(bool is_on) : Power on- ");
-            // Serial.print(uint32_t(_motor_data->id));
-            // Serial.print("\n");
+            // logger::print("_CANMotor::on_off(bool is_on) : Power on- ");
+            // logger::print(uint32_t(_motor_data->id));
+            // logger::print("\n");
         }
         else 
         {
             digitalWrite(_enable_pin, logic_micro_pins::motor_enable_off_state);
-            // Serial.print("_CANMotor::on_off(bool is_on) : Power off- ");
-            // Serial.print(uint32_t(_motor_data->id));
-            // Serial.print("\n");
+            // logger::print("_CANMotor::on_off(bool is_on) : Power off- ");
+            // logger::print(uint32_t(_motor_data->id));
+            // logger::print("\n");
         }
     }
     _prev_on_state = _motor_data->is_on;
@@ -288,12 +288,12 @@ bool _CANMotor::enable()
 bool _CANMotor::enable(bool overide)
 { 
     #ifdef MOTOR_DEBUG
-    //  Serial.print(_prev_motor_enabled);
-    //  Serial.print("\t");
-    //  Serial.print(_motor_data->enabled);
-    //  Serial.print("\t");
-    //  Serial.print(_motor_data->is_on);
-    //  Serial.print("\n");
+    //  logger::print(_prev_motor_enabled);
+    //  logger::print("\t");
+    //  logger::print(_motor_data->enabled);
+    //  logger::print("\t");
+    //  logger::print(_motor_data->is_on);
+    //  logger::print("\n");
     #endif
     
     // only change the state and send messages if the enabled state has changed.
@@ -316,18 +316,18 @@ bool _CANMotor::enable(bool overide)
             // !!! A delay check between when turning on power and when timeouts stopped happening gave a delay of 1930 ms rounding to 2000.
             // enable motor
             msg.buf[7] = 0xFC;
-            // Serial.print("_CANMotor::enable(bool is_on) : Enable on- ");
-            // Serial.print(uint32_t(_motor_data->id));
-            // Serial.print("\n");
+            // logger::print("_CANMotor::enable(bool is_on) : Enable on- ");
+            // logger::print(uint32_t(_motor_data->id));
+            // logger::print("\n");
         }
         else 
         {
             _enable_response = false;
             // disable motor, the message after this shouldn't matter as the power is cut, and the send() doesn't send a message if not enabled.
             msg.buf[7] = 0xFD;
-            // Serial.print("_CANMotor::enable(bool is_on) : Enable off - ");
-            // Serial.print(uint32_t(_motor_data->id));
-            // Serial.print("\n");
+            // logger::print("_CANMotor::enable(bool is_on) : Enable off - ");
+            // logger::print(uint32_t(_motor_data->id));
+            // logger::print("\n");
         }
         CAN* can = can->getInstance();
         can->send(msg);
@@ -357,9 +357,9 @@ void _CANMotor::zero()
     CAN* can = can->getInstance();
     can->send(msg);
     
-    // Serial.print("_CANMotor::zero() : Zeroed -  ");
-    // Serial.print(uint32_t(_motor_data->id));
-    // Serial.print("\n");
+    // logger::print("_CANMotor::zero() : Zeroed -  ");
+    // logger::print(uint32_t(_motor_data->id));
+    // logger::print("\n");
     
     read_data();
 };
@@ -384,9 +384,9 @@ void _CANMotor::_handle_read_failure()
         ErrorManager::set_system_error(MOTOR_TIMEOUT);
         _timeout_count = 0;
 #ifdef MOTOR_DEBUG
-        Serial.print("_CANMotor::_handle_read_failure() : Timeout: ");
-        Serial.print(uint32_t(_motor_data->id));
-        Serial.print("\n");
+        logger::print("_CANMotor::_handle_read_failure() : Timeout: ");
+        logger::print(uint32_t(_motor_data->id));
+        logger::print("\n");
 #endif
     }
 };
@@ -432,7 +432,7 @@ _CANMotor(id, exo_data, enable_pin)
     set_Kt(0.068 * 6);
 
 #ifdef MOTOR_DEBUG
-    Serial.println("AK60::AK60 : Leaving Constructor");
+    logger::println("AK60::AK60 : Leaving Constructor");
 #endif
 };
 
@@ -449,7 +449,7 @@ _CANMotor(id, exo_data, enable_pin)
     set_Kt((1/0.37775));
 
 #ifdef MOTOR_DEBUG
-    Serial.println("AK60_v1_1::AK60_v1_1 : Leaving Constructor");
+    logger::println("AK60_v1_1::AK60_v1_1 : Leaving Constructor");
 #endif
 };
 
@@ -466,7 +466,7 @@ _CANMotor(id, exo_data, enable_pin)
     set_Kt(0.091 * 9);
 
 #ifdef MOTOR_DEBUG
-    Serial.println("AK80::AK80 : Leaving Constructor");
+    logger::println("AK80::AK80 : Leaving Constructor");
 #endif
 };
 

@@ -83,7 +83,7 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -108,22 +108,22 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit App Controller Example"));
-  Serial.println(F("-----------------------------------------"));
+  logger::println(F("Adafruit Bluefruit App Controller Example"));
+  logger::println(F("-----------------------------------------"));
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   if ( FACTORYRESET_ENABLE )
   {
     /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Performing a factory reset: "));
+    logger::println(F("Performing a factory reset: "));
     if ( ! ble.factoryReset() ){
       error(F("Couldn't factory reset"));
     }
@@ -133,13 +133,13 @@ void setup(void)
   /* Disable command echo from Bluefruit */
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
 
-  Serial.println(F("Please use Adafruit Bluefruit LE app to connect in Controller mode"));
-  Serial.println(F("Then activate/use the sensors, color picker, game controller, etc!"));
-  Serial.println();
+  logger::println(F("Please use Adafruit Bluefruit LE app to connect in Controller mode"));
+  logger::println(F("Then activate/use the sensors, color picker, game controller, etc!"));
+  logger::println();
 
   ble.verbose(false);  // debug info is a little annoying after this point!
 
@@ -148,21 +148,21 @@ void setup(void)
       delay(500);
   }
 
-  Serial.println(F("******************************"));
+  logger::println(F("******************************"));
 
   // LED Activity command is only supported from 0.6.6
   if ( ble.isVersionAtLeast(MINIMUM_FIRMWARE_VERSION) )
   {
     // Change Mode LED Activity
-    Serial.println(F("Change LED activity to " MODE_LED_BEHAVIOUR));
+    logger::println(F("Change LED activity to " MODE_LED_BEHAVIOUR));
     ble.sendCommandCheckOK("AT+HWModeLED=" MODE_LED_BEHAVIOUR);
   }
 
   // Set Bluefruit to DATA mode
-  Serial.println( F("Switching to DATA mode!") );
+  logger::println( F("Switching to DATA mode!") );
   ble.setMode(BLUEFRUIT_MODE_DATA);
 
-  Serial.println(F("******************************"));
+  logger::println(F("******************************"));
 
 }
 
@@ -185,24 +185,24 @@ void loop(void)
     uint8_t red = packetbuffer[2];
     uint8_t green = packetbuffer[3];
     uint8_t blue = packetbuffer[4];
-    Serial.print ("RGB #");
-    if (red < 0x10) Serial.print("0");
-    Serial.print(red, HEX);
-    if (green < 0x10) Serial.print("0");
-    Serial.print(green, HEX);
-    if (blue < 0x10) Serial.print("0");
-    Serial.println(blue, HEX);
+    logger::print ("RGB #");
+    if (red < 0x10) logger::print("0");
+    logger::print(red, HEX);
+    if (green < 0x10) logger::print("0");
+    logger::print(green, HEX);
+    if (blue < 0x10) logger::print("0");
+    logger::println(blue, HEX);
   }
 
   // Buttons
   if (packetbuffer[1] == 'B') {
     uint8_t buttnum = packetbuffer[2] - '0';
     boolean pressed = packetbuffer[3] - '0';
-    Serial.print ("Button "); Serial.print(buttnum);
+    logger::print ("Button "); logger::print(buttnum);
     if (pressed) {
-      Serial.println(" pressed");
+      logger::println(" pressed");
     } else {
-      Serial.println(" released");
+      logger::println(" released");
     }
   }
 
@@ -212,12 +212,12 @@ void loop(void)
     lat = parsefloat(packetbuffer+2);
     lon = parsefloat(packetbuffer+6);
     alt = parsefloat(packetbuffer+10);
-    Serial.print("GPS Location\t");
-    Serial.print("Lat: "); Serial.print(lat, 4); // 4 digits of precision!
-    Serial.print('\t');
-    Serial.print("Lon: "); Serial.print(lon, 4); // 4 digits of precision!
-    Serial.print('\t');
-    Serial.print(alt, 4); Serial.println(" meters");
+    logger::print("GPS Location\t");
+    logger::print("Lat: "); logger::print(lat, 4); // 4 digits of precision!
+    logger::print('\t');
+    logger::print("Lon: "); logger::print(lon, 4); // 4 digits of precision!
+    logger::print('\t');
+    logger::print(alt, 4); logger::println(" meters");
   }
 
   // Accelerometer
@@ -226,10 +226,10 @@ void loop(void)
     x = parsefloat(packetbuffer+2);
     y = parsefloat(packetbuffer+6);
     z = parsefloat(packetbuffer+10);
-    Serial.print("Accel\t");
-    Serial.print(x); Serial.print('\t');
-    Serial.print(y); Serial.print('\t');
-    Serial.print(z); Serial.println();
+    logger::print("Accel\t");
+    logger::print(x); logger::print('\t');
+    logger::print(y); logger::print('\t');
+    logger::print(z); logger::println();
   }
 
   // Magnetometer
@@ -238,10 +238,10 @@ void loop(void)
     x = parsefloat(packetbuffer+2);
     y = parsefloat(packetbuffer+6);
     z = parsefloat(packetbuffer+10);
-    Serial.print("Mag\t");
-    Serial.print(x); Serial.print('\t');
-    Serial.print(y); Serial.print('\t');
-    Serial.print(z); Serial.println();
+    logger::print("Mag\t");
+    logger::print(x); logger::print('\t');
+    logger::print(y); logger::print('\t');
+    logger::print(z); logger::println();
   }
 
   // Gyroscope
@@ -250,10 +250,10 @@ void loop(void)
     x = parsefloat(packetbuffer+2);
     y = parsefloat(packetbuffer+6);
     z = parsefloat(packetbuffer+10);
-    Serial.print("Gyro\t");
-    Serial.print(x); Serial.print('\t');
-    Serial.print(y); Serial.print('\t');
-    Serial.print(z); Serial.println();
+    logger::print("Gyro\t");
+    logger::print(x); logger::print('\t');
+    logger::print(y); logger::print('\t');
+    logger::print(z); logger::println();
   }
 
   // Quaternions
@@ -263,10 +263,10 @@ void loop(void)
     y = parsefloat(packetbuffer+6);
     z = parsefloat(packetbuffer+10);
     w = parsefloat(packetbuffer+14);
-    Serial.print("Quat\t");
-    Serial.print(x); Serial.print('\t');
-    Serial.print(y); Serial.print('\t');
-    Serial.print(z); Serial.print('\t');
-    Serial.print(w); Serial.println();
+    logger::print("Quat\t");
+    logger::print(x); logger::print('\t');
+    logger::print(y); logger::print('\t');
+    logger::print(z); logger::print('\t');
+    logger::print(w); logger::println();
   }
 }

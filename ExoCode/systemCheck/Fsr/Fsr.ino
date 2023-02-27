@@ -24,32 +24,32 @@
       ;
     }
 
-    Serial.print("heel");
-    Serial.print("\t");
-    Serial.print("toe");
-    Serial.print("\n");
+    logger::print("heel");
+    logger::print("\t");
+    logger::print("toe");
+    logger::print("\n");
 
     
 //    #if BOARD_VERSION == AK_Board_V0_1
-//      Serial.println("Board : AK_Board_V0_1");
+//      logger::println("Board : AK_Board_V0_1");
 //    #elif BOARD_VERSION == AK_Board_V0_3
-//      Serial.println("Board : AK_Board_V0_3");
+//      logger::println("Board : AK_Board_V0_3");
 //    #endif
 //  
 //    #if defined(ARDUINO_TEENSY36)
-//      Serial.println("Teensy 3.6");
+//      logger::println("Teensy 3.6");
 //    #elif defined(ARDUINO_TEENSY41)
-//      Serial.println("Teensy 4.1");
+//      logger::println("Teensy 4.1");
 //    #endif
 //  
 //    
 //    
-//    Serial.print(logic_micro_pins::status_led_r_pin);
-//    Serial.print("\t");
-//    Serial.print(logic_micro_pins::status_led_g_pin);
-//    Serial.print("\t");
-//    Serial.print(logic_micro_pins::status_led_b_pin);
-//    Serial.print("\n");
+//    logger::print(logic_micro_pins::status_led_r_pin);
+//    logger::print("\t");
+//    logger::print(logic_micro_pins::status_led_g_pin);
+//    logger::print("\t");
+//    logger::print(logic_micro_pins::status_led_b_pin);
+//    logger::print("\n");
     
   }
   
@@ -95,10 +95,10 @@
       float toe_val = toe_fsr.read();
       
       last_transition_time = current_time;
-      Serial.print(heel_val);
-      Serial.print("\t");
-      Serial.print(toe_val);
-      Serial.print("\n");
+      logger::print(heel_val);
+      logger::print("\t");
+      logger::print(toe_val);
+      logger::print("\n");
       
     }
     

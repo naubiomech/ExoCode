@@ -46,6 +46,7 @@ namespace config_defs
         zero_one = 1,
         zero_three = 2,
         zero_four = 3,
+        zero_five_one = 4,
     };
     
     enum class battery : uint8_t
@@ -66,6 +67,7 @@ namespace config_defs
         left_hip_ankle = 8,
         right_hip_ankle = 9,
         test = 10,
+        right_knee = 11,
     };
     
     enum class exo_side : uint8_t
@@ -134,6 +136,7 @@ namespace config_defs
         perturbation = 12,
         parabolic = 13,
         constant_torque = 14,
+        ptb_general = 15,
     };
     
     enum class knee_controllers : uint8_t
@@ -145,6 +148,7 @@ namespace config_defs
         stasis = 5,
         perturbation = 6,
         constant_torque = 7,
+        elbow_min_max = 8,
     };
         
     enum class ankle_controllers : uint8_t
@@ -158,6 +162,7 @@ namespace config_defs
         stasis = 7,
         perturbation = 8,
         constant_torque = 9,
+        ptb_general = 10,
     };
     
     enum class flip_dir : uint8_t
@@ -298,6 +303,7 @@ namespace config_defs
             {"leftHipAnkle", (uint8_t)config_defs::exo_name::left_hip_ankle},
             {"rightHipAnkle", (uint8_t)config_defs::exo_name::right_hip_ankle},
             {"test", (uint8_t)config_defs::exo_name::test},
+            {"rightKnee", (uint8_t)config_defs::exo_name::right_knee},
         };
         
         const IniKeyCode exo_side 
@@ -340,6 +346,7 @@ namespace config_defs
             {"perturbation", (uint8_t)config_defs::hip_controllers::perturbation},
             {"parabolic", (uint8_t)config_defs::hip_controllers::parabolic},
             {"constantTorque", (uint8_t)config_defs::hip_controllers::constant_torque},
+            {"ptbGeneral", (uint8_t)config_defs::hip_controllers::ptb_general},
         };
         
         const IniKeyCode knee_controllers 
@@ -351,6 +358,7 @@ namespace config_defs
             {"stasis", (uint8_t)config_defs::knee_controllers::stasis},
             {"perturbation", (uint8_t)config_defs::knee_controllers::perturbation},
             {"constantTorque", (uint8_t)config_defs::knee_controllers::constant_torque},
+            {"elbowMinMax", (uint8_t)config_defs::knee_controllers::elbow_min_max},
         };
         
         const IniKeyCode ankle_controllers 
@@ -364,6 +372,7 @@ namespace config_defs
             {"stasis", (uint8_t)config_defs::ankle_controllers::stasis},
             {"perturbation", (uint8_t)config_defs::ankle_controllers::perturbation},
             {"constantTorque", (uint8_t)config_defs::ankle_controllers::constant_torque},
+            {"ptbGeneral", (uint8_t)config_defs::ankle_controllers::ptb_general},
         };  
         
         const IniKeyCode flip_dir 

@@ -1,4 +1,7 @@
 #include "Joint.h"
+#include "AnkleAngles.h"
+#include "Time_Helper.h"
+#include "Logger.h"
 //#define JOINT_DEBUG
 
 
@@ -21,10 +24,10 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
 : _torque_sensor(_Joint::get_torque_sensor_pin(id, exo_data)) // <-- Initializer list
 //, _controller(id, exo_data)
 {
-    //Serial.print("_Joint::right_torque_sensor_used_count : ");
-   // Serial.println(_Joint::right_torque_sensor_used_count);
+    //logger::print("_Joint::right_torque_sensor_used_count : ");
+   // logger::println(_Joint::right_torque_sensor_used_count);
     #ifdef JOINT_DEBUG
-        Serial.println("_Joint :: Constructor : entered");
+        logger::println("_Joint :: Constructor : entered");
         
     #endif
     _id = id;
@@ -32,29 +35,29 @@ _Joint::_Joint(config_defs::joint_id id, ExoData* exo_data)
         
     _data = exo_data;
     #ifdef JOINT_DEBUG
-        Serial.print(_is_left ? "Left " : "Right ");
+        logger::print(_is_left ? "Left " : "Right ");
         switch (utils::get_joint_type(_id))
         {
             case (uint8_t)config_defs::joint_id::hip:
-                Serial.print("Hip");
+                logger::print("Hip");
                 break;
             case (uint8_t)config_defs::joint_id::knee:
-                Serial.print("Knee");
+                logger::print("Knee");
                 break;
             case (uint8_t)config_defs::joint_id::ankle:
-                Serial.print("Ankle");
+                logger::print("Ankle");
                 break;
             default:
                 break;
         }
-        Serial.println(" :: Constructor : _data set");
+        logger::println(" :: Constructor : _data set");
     #endif
-    // Serial.print(uint8_t(id));
-    // Serial.print("\t");
-    // Serial.print(_is_used);
-    // Serial.print("\t");
-    // Serial.print(uint8_t(_torque_sensor._pin));
-    // Serial.print("\t");
+    // logger::print(uint8_t(id));
+    // logger::print("\t");
+    // logger::print(_is_used);
+    // logger::print("\t");
+    // logger::print(uint8_t(_torque_sensor._pin));
+    // logger::print("\t");
     
     // set _joint_data to point to the data specific to this joint.
     // switch (utils::get_joint_type(_id))
@@ -106,16 +109,16 @@ void _Joint::read_data()
 
 void _Joint::check_calibration()  
 {
-    // Serial.print("id: ");
-    // Serial.print(uint8_t(_id));
-    // Serial.print("\t");
+    // logger::print("id: ");
+    // logger::print(uint8_t(_id));
+    // logger::print("\t");
     // Check if we are doing the calibration on the torque sensor
     _joint_data->calibrate_torque_sensor = _torque_sensor.calibrate(_joint_data->calibrate_torque_sensor);
     if(_joint_data->calibrate_torque_sensor)
     {
         _data->set_status(status_defs::messages::torque_calibration);
     }
-    //Serial.print("_Joint::check_calibration\n"); 
+    //logger::print("_Joint::check_calibration\n"); 
     if (_joint_data->motor.do_zero)
     {
         _motor->zero();
@@ -124,10 +127,10 @@ void _Joint::check_calibration()
 
 unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* exo_data)
 {
-    //Serial.print("utils::get_joint_type(id) : ");
-    //Serial.println(utils::get_joint_type(id));
-    //Serial.print("utils::get_is_left(id) : ");
-    //Serial.println(utils::get_is_left(id));
+    //logger::print("utils::get_joint_type(id) : ");
+    //logger::println(utils::get_joint_type(id));
+    //logger::print("utils::get_is_left(id) : ");
+    //logger::println(utils::get_is_left(id));
     // First check which joint we are looking at.  
     // Then go through and if it is the left or right and if it is used.  
     // If it is set return the appropriate pin and increment the counter.
@@ -210,8 +213,8 @@ unsigned int _Joint::get_torque_sensor_pin(config_defs::joint_id id, ExoData* ex
             {
                 if (_Joint::right_torque_sensor_used_count < logic_micro_pins::num_available_joints) // if we still have available pins send the next one and increment the counter.  If we don't send the not connected pin.
                 {
- /*                   Serial.print("_Joint::right_torque_sensor_used_count : ");
-                    Serial.println(_Joint::right_torque_sensor_used_count);*/
+ /*                   logger::print("_Joint::right_torque_sensor_used_count : ");
+                    logger::println(_Joint::right_torque_sensor_used_count);*/
                     return logic_micro_pins::torque_sensor_right[_Joint::right_torque_sensor_used_count++];
                 }
                 else
@@ -361,9 +364,10 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 , _perturbation(id, exo_data)
 , _parabolic(id, exo_data)
 , _constant_torque(id, exo_data)
+, _ptb_general(id, exo_data)
 {
 
-    //Serial.print("HipJoint::HipJoint\n");
+    //logger::print("HipJoint::HipJoint\n");
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
     {
@@ -374,20 +378,20 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
         _joint_data = &(exo_data->right_leg.hip);
     }
     #ifdef JOINT_DEBUG
-        Serial.print(_is_left ? "Left " : "Right ");
-        Serial.println("Hip : _joint_data set");
+        logger::print(_is_left ? "Left " : "Right ");
+        logger::println("Hip : _joint_data set");
     #endif
-    // Serial.print(uint8_t(id));
-    // Serial.print("\t");
-    // Serial.print(_joint_data->is_used);
-    // Serial.print("\t");
+    // logger::print(uint8_t(id));
+    // logger::print("\t");
+    // logger::print(_joint_data->is_used);
+    // logger::print("\t");
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
     if(_joint_data->is_used)
     {
         #ifdef JOINT_DEBUG
-            Serial.print(_is_left ? "Left " : "Right ");
-            Serial.print("Hip : setting motor to ");
+            logger::print(_is_left ? "Left " : "Right ");
+            logger::print("Hip : setting motor to ");
         #endif
         switch (exo_data->left_leg.hip.motor.motor_type)
         {
@@ -395,41 +399,41 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
             case (uint8_t)config_defs::motor::AK60 :
                 //_motor = new AK60(id, exo_data);
                 #ifdef JOINT_DEBUG
-                    Serial.println("AK60");
+                    logger::println("AK60");
                 #endif
                 HipJoint::set_motor(new AK60(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             case (uint8_t)config_defs::motor::AK80 :
                 //_motor = new AK80(id, exo_data);
                 #ifdef JOINT_DEBUG
-                    Serial.println("AK80");
+                    logger::println("AK80");
                 #endif
                 HipJoint::set_motor(new AK80(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             case (uint8_t)config_defs::motor::AK60_v1_1 :
                 //_motor = new AK60(id, exo_data);
                 #ifdef JOINT_DEBUG
-                    Serial.println("AK60 v1.1");
+                    logger::println("AK60 v1.1");
                 #endif
                 HipJoint::set_motor(new AK60_v1_1(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             default :
                 //_motor = nullptr;
                 #ifdef JOINT_DEBUG
-                    Serial.println("NULL");
+                    logger::println("NULL");
                 #endif
                 HipJoint::set_motor(new NullMotor(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
         }
         delay(5);
         #ifdef JOINT_DEBUG
-            Serial.print(_is_left ? "Left " : "Right ");
-            Serial.println("Hip : Setting Controller");
+            logger::print(_is_left ? "Left " : "Right ");
+            logger::println("Hip : Setting Controller");
         #endif
         set_controller(exo_data->left_leg.hip.controller.controller);
         #ifdef JOINT_DEBUG
-            Serial.print(_is_left ? "Left " : "Right ");
-            Serial.println("Hip : _controller set");
+            logger::print(_is_left ? "Left " : "Right ");
+            logger::println("Hip : _controller set");
         #endif
     }
 };
@@ -446,15 +450,15 @@ void HipJoint::run_joint()
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     // Send the new command to the motor.
-    // Serial.print(_joint_data->controller.setpoint);
-    // Serial.print(" Hip\t");
+    // logger::print(_joint_data->controller.setpoint);
+    // logger::print(" Hip\t");
     // Use transaction because the motors are call and response
     // _motor->transaction(0 / _joint_data->motor.gearing);
     _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
 
-    //Serial.print("HipJoint::run_joint::Motor Command:: ");
-    //Serial.print(_controller->calc_motor_cmd());
-    //Serial.print("\n");
+    //logger::print("HipJoint::run_joint::Motor Command:: ");
+    //logger::print(_controller->calc_motor_cmd());
+    //logger::print("\n");
 
 };  
 
@@ -479,12 +483,12 @@ void HipJoint::read_data()
 void HipJoint::set_controller(uint8_t controller_id)   
 {
     #ifdef JOINT_DEBUG
-        Serial.print(_is_left ? "Left " : "Right ");
-        Serial.println("Hip : set_controller : Entered");
+        logger::print(_is_left ? "Left " : "Right ");
+        logger::println("Hip : set_controller : Entered");
     #endif
     _controller->reset_integral();
     #ifdef JOINT_DEBUG
-        Serial.println("Hip : set_controller : Integral Reset");
+        logger::println("Hip : set_controller : Integral Reset");
     #endif
     switch (controller_id)
     {
@@ -531,6 +535,9 @@ void HipJoint::set_controller(uint8_t controller_id)
         case (uint8_t)config_defs::hip_controllers::constant_torque:
             _controller = &_constant_torque;
             break;
+        case (uint8_t)config_defs::hip_controllers::ptb_general:
+            _controller = &_ptb_general;
+            break;
         default :
             _controller = nullptr;
             break;
@@ -549,8 +556,9 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
 , _stasis(id, exo_data)
 , _perturbation(id, exo_data)
 , _constant_torque(id, exo_data)
+, _elbow_min_max(id, exo_data)
 {
-    // Serial.print("KneeJoint::KneeJoint\n");
+    // logger::print("KneeJoint::KneeJoint\n");
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
     {
@@ -562,59 +570,59 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
     }
     
     #ifdef JOINT_DEBUG
-        Serial.print(_is_left ? "Left " : "Right ");
-        Serial.println("Knee : _joint_data set");
+        logger::print(_is_left ? "Left " : "Right ");
+        logger::println("Knee : _joint_data set");
     #endif
-    // Serial.print(uint8_t(id));
-    // Serial.print("\t");
-    // Serial.print(_joint_data->is_used);
-    // Serial.print("\t");
+    // logger::print(uint8_t(id));
+    // logger::print("\t");
+    // logger::print(_joint_data->is_used);
+    // logger::print("\t");
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
    if(_joint_data->is_used)
    {
         #ifdef JOINT_DEBUG
-            Serial.print(_is_left ? "Left " : "Right ");
-            Serial.print("Knee : setting motor to ");
+            logger::print(_is_left ? "Left " : "Right ");
+            logger::print("Knee : setting motor to ");
         #endif
         switch (_data->left_leg.knee.motor.motor_type)
         {
             // using new so the object of the specific motor type persists.
             case (uint8_t)config_defs::motor::AK60 :
                 #ifdef JOINT_DEBUG
-                    Serial.println("AK60");
+                    logger::println("AK60");
                 #endif
                 KneeJoint::set_motor(new AK60(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             case (uint8_t)config_defs::motor::AK80 :
                 #ifdef JOINT_DEBUG
-                    Serial.println("AK80");
+                    logger::println("AK80");
                 #endif
                 KneeJoint::set_motor(new AK80(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             case (uint8_t)config_defs::motor::AK60_v1_1 :
                 //_motor = new AK60(id, exo_data);
                 #ifdef JOINT_DEBUG
-                    Serial.println("AK60 v1.1");
+                    logger::println("AK60 v1.1");
                 #endif
                 KneeJoint::set_motor(new AK60_v1_1(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             default :
                 #ifdef JOINT_DEBUG
-                    Serial.println("NULL");
+                    logger::println("NULL");
                 #endif
                 KneeJoint::set_motor(new NullMotor(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
         }
         delay(5);
         #ifdef JOINT_DEBUG
-            Serial.print(_is_left ? "Left " : "Right ");
-            Serial.println("Knee : Setting Controller");
+            logger::print(_is_left ? "Left " : "Right ");
+            logger::println("Knee : Setting Controller");
         #endif
         set_controller(exo_data->left_leg.knee.controller.controller);
         #ifdef JOINT_DEBUG
-            Serial.print(_is_left ? "Left " : "Right ");
-            Serial.println("Knee : _controller set");
+            logger::print(_is_left ? "Left " : "Right ");
+            logger::println("Knee : _controller set");
         #endif
    }
 };
@@ -634,8 +642,8 @@ void KneeJoint::run_joint()
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     // Send the new command to the motor.
-    // Serial.print(_joint_data->controller.setpoint);
-    // Serial.print(" Knee\t");
+    // logger::print(_joint_data->controller.setpoint);
+    // logger::print(" Knee\t");
     // Use transaction because the motors are call and response
     // _motor->transaction(0 / _joint_data->motor.gearing);
     _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
@@ -662,12 +670,12 @@ void KneeJoint::read_data() // reads data from motor and sensors
 void KneeJoint::set_controller(uint8_t controller_id)  // changes the high level controller in Controller, and the low level controller in Motor
 {
     #ifdef JOINT_DEBUG
-        Serial.print(_is_left ? "Left " : "Right ");
-        Serial.println("Hip : set_controller : Entered");
+        logger::print(_is_left ? "Left " : "Right ");
+        logger::println("Hip : set_controller : Entered");
     #endif
     _controller->reset_integral();
     #ifdef JOINT_DEBUG
-        Serial.println("Hip : set_controller : Integral Reset");
+        logger::println("Hip : set_controller : Integral Reset");
     #endif
     switch (controller_id)
     {
@@ -693,6 +701,9 @@ void KneeJoint::set_controller(uint8_t controller_id)  // changes the high level
         case (uint8_t)config_defs::knee_controllers::constant_torque:
             _controller = &_constant_torque;
             break;
+        case (uint8_t)config_defs::knee_controllers::elbow_min_max:
+            _controller = &_elbow_min_max;
+            break;
         default :
             _controller = nullptr;
             break;
@@ -712,8 +723,9 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 , _stasis(id, exo_data)
 , _perturbation(id, exo_data)
 , _constant_torque(id, exo_data)
+, _ptb_general(id, exo_data)
 {
-    // Serial.print("AnkleJoint::AnkleJoint\n");
+    // logger::print("AnkleJoint::AnkleJoint\n");
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
     {
@@ -725,67 +737,67 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
     }
     
     #ifdef JOINT_DEBUG
-        Serial.print(_is_left ? "Left " : "Right ");
-        Serial.println("Ankle : _joint_data set");
+        logger::print(_is_left ? "Left " : "Right ");
+        logger::println("Ankle : _joint_data set");
     #endif
-    // Serial.print(uint8_t(id));
-    // Serial.print("\t");
-    // Serial.print(_joint_data->is_used);
-    // Serial.print("\t");
+    // logger::print(uint8_t(id));
+    // logger::print("\t");
+    // logger::print(_joint_data->is_used);
+    // logger::print("\t");
             
     // Don't need to check side as we assume symmetry and create both leg data objects.
     // setup motor from here as it will be easier to check which motor is used
     if(_joint_data->is_used)
     {
         #ifdef JOINT_DEBUG
-            Serial.print(_is_left ? "Left " : "Right ");
-            Serial.print("Ankle : setting motor to ");
+            logger::print(_is_left ? "Left " : "Right ");
+            logger::print("Ankle : setting motor to ");
         #endif
         switch (_data->left_leg.ankle.motor.motor_type)
         {
             // using new so the object of the specific motor type persists.
             case (uint8_t)config_defs::motor::AK60 :
                 #ifdef JOINT_DEBUG
-                    Serial.println("AK60");
+                    logger::println("AK60");
                 #endif
                 AnkleJoint::set_motor(new AK60(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             case (uint8_t)config_defs::motor::AK80 :
                 #ifdef JOINT_DEBUG
-                    Serial.println("AK80");
+                    logger::println("AK80");
                 #endif
                 AnkleJoint::set_motor(new AK80(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             case (uint8_t)config_defs::motor::AK60_v1_1 :
                 #ifdef JOINT_DEBUG
-                    Serial.println("AK60 v1.1");
+                    logger::println("AK60 v1.1");
                 #endif
                 //_motor = new AK60(id, exo_data);
                 AnkleJoint::set_motor(new AK60_v1_1(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             default :
                 #ifdef JOINT_DEBUG
-                    Serial.println("NULL");
+                    logger::println("NULL");
                 #endif
                 AnkleJoint::set_motor(new NullMotor(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
         }
 #ifdef JOINT_DEBUG
-        Serial.println("Before Delay");
+        logger::println("Before Delay");
 #endif
         delay(5);
 #ifdef JOINT_DEBUG
-        Serial.println("After Delay");
+        logger::println("After Delay");
 #endif
         #ifdef JOINT_DEBUG
-            Serial.println("_is_left section");
-            Serial.print(_is_left ? "Left " : "Right ");
-            Serial.println("Ankle : Setting Controller");
+            logger::println("_is_left section");
+            logger::print(_is_left ? "Left " : "Right ");
+            logger::println("Ankle : Setting Controller");
         #endif
         set_controller(exo_data->left_leg.ankle.controller.controller);
         #ifdef JOINT_DEBUG
-            Serial.print(_is_left ? "Left " : "Right ");
-            Serial.println("Ankle : _controller set");
+            logger::print(_is_left ? "Left " : "Right ");
+            logger::println("Ankle : _controller set");
         #endif
     }  
 };
@@ -799,19 +811,38 @@ void AnkleJoint::run_joint()
     _motor->on_off();
     _motor->enable();
 
+    //logger::println("Run Joint");
+    _joint_data->prev_joint_position = _joint_data->joint_position;
+    const float raw_angle = AnkleAngles::GetInstance()->get(_is_left);
+    const float new_angle = _is_left ? (raw_angle):(1 - raw_angle);
+    _joint_data->joint_position = utils::ewma(
+        new_angle, _joint_data->joint_position, _joint_data->joint_position_alpha);
+    _joint_data->joint_velocity = utils::ewma(
+        (_joint_data->joint_position - _joint_data->prev_joint_position) / (1.0f / LOOP_FREQ_HZ),
+        _joint_data->joint_velocity, 
+        _joint_data->joint_velocity_alpha);
+    // logger::print(String(_is_left) + "Angle:" + String(_joint_data->joint_position));
+    // logger::print("\t");
+    // logger::print(String(_is_left) + "Velocity:" + String(_joint_data->joint_velocity));
+    // if (_is_left) {
+    //     logger::print("\t");
+    // } else {
+    //     logger::println();
+    // }
+
     // make sure the correct controller is running.
     set_controller(_joint_data->controller.controller);
     
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     // Send the new command to the motor.
-    // Serial.print("AnkleJoint::run_joint : ");
-    // Serial.println(_joint_data->controller.setpoint);
-    // Serial.print("\t");
+    // logger::print("AnkleJoint::run_joint : ");
+    // logger::println(_joint_data->controller.setpoint);
+    // logger::print("\t");
     // Use transaction because the motors are call and response
     //_motor->send_data(_joint_data->controller.setpoint / _joint_data->motor.gearing);
     _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
-};  
+}; 
 
 /*
  * reads data for sensors for the joint, torque and motor.
@@ -834,12 +865,12 @@ void AnkleJoint::read_data()
 void AnkleJoint::set_controller(uint8_t controller_id)  // changes the high level controller in Controller, and the low level controller in Motor
 {
     #ifdef JOINT_DEBUG
-        Serial.print(_is_left ? "Left " : "Right ");
-        Serial.println("Hip : set_controller : Entered");
+        logger::print(_is_left ? "Left " : "Right ");
+        logger::println("Hip : set_controller : Entered");
     #endif
     _controller->reset_integral();
     #ifdef JOINT_DEBUG
-        Serial.println("Hip : set_controller : Integral Reset");
+        logger::println("Hip : set_controller : Integral Reset");
     #endif
     switch (controller_id)
     {
@@ -870,6 +901,9 @@ void AnkleJoint::set_controller(uint8_t controller_id)  // changes the high leve
             break;
         case (uint8_t)config_defs::ankle_controllers::constant_torque:
             _controller = &_constant_torque;
+            break;
+        case (uint8_t)config_defs::ankle_controllers::ptb_general:
+            _controller = &_ptb_general;
             break;
         default :
             _controller = nullptr;

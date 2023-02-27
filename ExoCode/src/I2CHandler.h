@@ -25,12 +25,12 @@ class I2C
 
         void read_i2c(uint8_t* ret, uint8_t addr, uint8_t reg, uint8_t len)
         {
-            // Serial.print("Reading from I2C device: ");
-            // Serial.print(addr);
-            // Serial.print(" at register: ");
-            // Serial.print(reg);
-            // Serial.print(" with length: ");
-            // Serial.println(len);
+            // logger::print("Reading from I2C device: ");
+            // logger::print(addr);
+            // logger::print(" at register: ");
+            // logger::print(reg);
+            // logger::print(" with length: ");
+            // logger::println(len);
 
             Wire.beginTransmission(addr);
             Wire.write(reg);
@@ -109,6 +109,26 @@ namespace i2c_cmds
         {
             const uint8_t reg = 0x02;
             const uint8_t len = 1;
+        }
+    }
+
+    namespace ankle_angles
+    {
+        const uint8_t addr = 0x04; // Confirm that peripheral MCU has the same address
+        namespace handshake
+        {
+            const uint8_t reg = 0x01;
+            const uint8_t len = 1;
+        }
+        namespace get_left_angle
+        {
+            const uint8_t reg = 0x02;
+            const uint8_t len = 2;
+        }
+        namespace get_right_angle
+        {
+            const uint8_t reg = 0x03;
+            const uint8_t len = 2;
         }
     }
 }

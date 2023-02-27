@@ -8,6 +8,7 @@
 #include "UARTHandler.h"
 #include "UART_msg_t.h"
 #include "uart_commands.h"
+#include "Logger.h"
 
 //#define EXO_DEBUG
 
@@ -30,14 +31,12 @@ Exo::Exo(ExoData* exo_data)
 {
     this->data = exo_data;
     #ifdef EXO_DEBUG
-        Serial.println("Exo :: Constructor : _data set");
+        logger::println("Exo :: Constructor : _data set");
     #endif
     pinMode(logic_micro_pins::motor_stop_pin,INPUT_PULLUP);
     #ifdef EXO_DEBUG
-        Serial.println("Exo :: Constructor : motor_stop_pin Mode set");
+        logger::println("Exo :: Constructor : motor_stop_pin Mode set");
     #endif
-
-
 };
 
 /* 
@@ -63,7 +62,7 @@ bool Exo::run()
     {
         
         #ifdef USE_SPEED_CHECK
-        Serial.println(delta_t);
+        logger::print(String(delta_t) + "\n");
             speed_check.toggle();
         #endif
 
@@ -75,6 +74,7 @@ bool Exo::run()
         // check the estop
         data->estop = digitalRead(logic_micro_pins::motor_stop_pin);
 
+
         // Record the leg data and send new commands to the motors.
         left_leg.run_leg();
         right_leg.run_leg();
@@ -82,9 +82,9 @@ bool Exo::run()
         // update status LED
         status_led.update(data->get_status());
         #ifdef EXO_DEBUG
-            Serial.println("Exo::Run:Time_OK");
-            Serial.println(delta_t);
-            Serial.println(((float)1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
+            logger::println("Exo::Run:Time_OK");
+            logger::println(delta_t);
+            logger::println(((float)1 / LOOP_FREQ_HZ * 1000000 * (1 + LOOP_TIME_TOLERANCE)));
         #endif
 
         // check for incoming uart messages
@@ -92,7 +92,7 @@ bool Exo::run()
         if (msg.command) 
         {
             #ifdef EXO_DEBUG
-                Serial.println("Exo::run->Got message:");
+                logger::println("Exo::run->Got message:");
                 UART_msg_t_utils::print_msg(msg);
             #endif
 
@@ -110,8 +110,8 @@ bool Exo::run()
         if ((rt_delta_t >= BLE_times::_real_time_msg_delay) && (correct_status))
         {
             #ifdef EXO_DEBUG
-                Serial.print("Exo::run->Sending Real Time Message: ");
-                Serial.println(rt_delta_t);
+                logger::print("Exo::run->Sending Real Time Message: ");
+                logger::println(rt_delta_t);
             #endif
             
             UART_msg_t msg;

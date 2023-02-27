@@ -1,4 +1,5 @@
 #include "ErrorManager.h"
+#include "Logger.h"
 #include <Arduino.h>
 #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
 
@@ -72,7 +73,7 @@ void ErrorManager::assign_handlers(error_handler_t soft, error_handler_t hard, e
 {
     if (soft == nullptr || hard == nullptr || fatal == nullptr)
     {
-        Serial.println("ErrorManager::assign_handlers: null pointer passed to function.");
+        logger::println("ErrorManager::assign_handlers: null pointer passed to function.", LogLevel::Error);
         return;
     }
     _soft_handler = soft;
@@ -85,7 +86,7 @@ void ErrorManager::assign_triggers(error_trigger_t soft, error_trigger_t hard, e
 {
     if (soft == nullptr || hard == nullptr || fatal == nullptr)
     {
-        Serial.println("ErrorManager::assign_triggers: null pointer passed to function.");
+        logger::println("ErrorManager::assign_triggers: null pointer passed to function.", LogLevel::Error);
         return;
     }
     _soft_trigger = soft;
@@ -98,14 +99,14 @@ bool ErrorManager::_new_error(int working_error_code)
 {
     if (ErrorManager::_system_error_code != ErrorManager::_reported_error_code && ErrorManager::_system_error_code != NO_ERROR)
     {
-        //Serial.println("ErrorManager::_new_error: System Error");
+        logger::println("ErrorManager::_new_error: System Error", LogLevel::Error);
         ErrorManager::_reported_error_code = ErrorManager::_system_error_code;
         ErrorManager::_system_error_code = NO_ERROR;
         return true;
     }
     if (working_error_code != ErrorManager::_reported_error_code && working_error_code != NO_ERROR)
     {
-        //Serial.println("ErrorManager::_new_error: Working Error");
+        logger::println("ErrorManager::_new_error: Working Error", LogLevel::Error);
         ErrorManager::_reported_error_code = working_error_code;
         return true;
     }

@@ -19,7 +19,7 @@
 // Common Libraries
 #include "src\Board.h"
 #include "src\ExoData.h"
-#include "src\Exo.h"
+#include "src\Exo.h"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 #include "src\Utilities.h"
 #include "src\StatusDefs.h"
 
@@ -37,6 +37,9 @@
 #include "src\error_triggers.h"
 #include "src\ErrorManager.h"
 
+// Logging
+#include "src\Logger.h"
+#include "src\PiLogger.h"
 
 //#include "src\Motor.h"
 
@@ -48,13 +51,14 @@ namespace config_info
 
 void setup()
 {
-    analogReadResolution(12);
+  //analogWriteResolution(12);
+  analogReadResolution(12);
   
-    Serial.begin(115200);
-//  TODO: Remove serial while for deployed version as this would hang
-//   while (!Serial) {
-//    ; // wait for serial port to connect. Needed for native USB
-//   }
+  Serial.begin(115200);
+ // TODO: Remove serial while for deployed version as this would hang
+     //while (!Serial) {
+      //; // wait for serial port to connect. Needed for native USB
+     //}
 
     // get the config information from the SD card.
     ini_parser(config_info::config_to_send);
@@ -66,27 +70,23 @@ void setup()
     #ifdef MAIN_DEBUG
         for (int i = 0; i < ini_config::number_of_keys; i++)
         {
-          Serial.print("[");
-          Serial.print(i);
-          Serial.print("] : ");
-          Serial.print((int)config_info::config_to_send[i]);
-          Serial.print("\n");
+          logger::print("[" + String(i) + "] : " + String((int)config_info::config_to_send[i]) + "\n");
         }
-        Serial.print("\n");
+        logger::print("\n");
     #endif
     
     // labels for the signals if plotting.
     #ifdef MAKE_PLOTS
-          Serial.print("Left_hip_trq_cmd, ");
-          Serial.print("Left_hip_current, ");
-          Serial.print("Right_hip_trq_cmd, ");
-          Serial.print("Right_hip_current, ");
-          Serial.print("Left_ankle_trq_cmd, ");
-          Serial.print("Left_ankle_current, ");
-          Serial.print("Right_ankle_trq_cmd, ");
-          Serial.print("Right_ankle_current, ");
-          Serial.print("Left_ankle_torque_measure, ");
-          Serial.print("\n");
+          logger::print("Left_hip_trq_cmd, ");
+          logger::print("Left_hip_current, ");
+          logger::print("Right_hip_trq_cmd, ");
+          logger::print("Right_hip_current, ");
+          logger::print("Left_ankle_trq_cmd, ");
+          logger::print("Left_ankle_current, ");
+          logger::print("Right_ankle_trq_cmd, ");
+          logger::print("Right_ankle_current, ");
+          logger::print("Left_ankle_torque_measure, ");
+          logger::print("\n");
       #endif
   
 }
@@ -94,15 +94,7 @@ void setup()
 
 
 void loop()
-{
-    // check if the main loop is still running.
-    #ifdef MAIN_DEBUG
-//        static unsigned int loop_counter = 0;
-//        Serial.print("Superloop :: loop counter = ");
-//        Serial.println(loop_counter++);
-    #endif
-
-       
+{       
     static bool first_run = true;
     
     // create the data and exo objects
@@ -111,18 +103,19 @@ void loop()
     #ifdef MAIN_DEBUG
         if (first_run)
         {
-            Serial.println("Superloop :: exo_data created"); 
+            logger::print("Superloop :: exo_data created"); 
         }
     #endif
     static Exo exo(&exo_data);
     #ifdef MAIN_DEBUG
         if (first_run)
         {
-            Serial.println("Superloop :: exo created");
+            logger::print("Superloop :: exo created");
         }
     #endif
 
     static ErrorManager error_manager(&exo, &exo_data);
+    static PiLogger pi_logger(&exo_data);
     static UARTHandler* uart_handler = UARTHandler::get_instance();
 
 
@@ -138,26 +131,26 @@ void loop()
         error_manager.assign_triggers(error_triggers::soft, error_triggers::hard, error_triggers::fatal);
       
         #ifdef MAIN_DEBUG
-            Serial.println("Superloop :: Start First Run Conditional");
-            Serial.print("Superloop :: exo_data.left_leg.hip.is_used = ");
-            Serial.print(exo_data.left_leg.hip.is_used);
-            Serial.print("\n");
-            Serial.print("Superloop :: exo_data.right_leg.hip.is_used = ");
-            Serial.print(exo_data.right_leg.hip.is_used);
-            Serial.print("\n");
-            Serial.print("Superloop :: exo_data.left_leg.knee.is_used = ");
-            Serial.print(exo_data.left_leg.knee.is_used);
-            Serial.print("\n");
-            Serial.print("Superloop :: exo_data.right_leg.knee.is_used = ");
-            Serial.print(exo_data.right_leg.knee.is_used);
-            Serial.print("\n");
-            Serial.print("Superloop :: exo_data.left_leg.ankle.is_used = ");
-            Serial.print(exo_data.left_leg.ankle.is_used);
-            Serial.print("\n");
-            Serial.print("Superloop :: exo_data.right_leg.ankle.is_used = ");
-            Serial.print(exo_data.right_leg.ankle.is_used);
-            Serial.print("\n");
-            Serial.print("\n");
+            logger::print("Superloop :: Start First Run Conditional\n");
+            logger::print("Superloop :: exo_data.left_leg.hip.is_used = ");
+            logger::print(exo_data.left_leg.hip.is_used);
+            logger::print("\n");
+            logger::print("Superloop :: exo_data.right_leg.hip.is_used = ");
+            logger::print(exo_data.right_leg.hip.is_used);
+            logger::print("\n");
+            logger::print("Superloop :: exo_data.left_leg.knee.is_used = ");
+            logger::print(exo_data.left_leg.knee.is_used);
+            logger::print("\n");
+            logger::print("Superloop :: exo_data.right_leg.knee.is_used = ");
+            logger::print(exo_data.right_leg.knee.is_used);
+            logger::print("\n");
+            logger::print("Superloop :: exo_data.left_leg.ankle.is_used = ");
+            logger::print(exo_data.left_leg.ankle.is_used);
+            logger::print("\n");
+            logger::print("Superloop :: exo_data.right_leg.ankle.is_used = ");
+            logger::print(exo_data.right_leg.ankle.is_used);
+            logger::print("\n");
+            logger::print("\n");
         #endif
         
         // debug to check the message is coming through
@@ -175,12 +168,12 @@ void loop()
             #ifdef HEADLESS
                 //exo.left_leg._hip._motor->zero();
                 #ifdef MAIN_DEBUG
-                  Serial.println("Superloop :: Left Hip Zeroed");
+                  logger::print("Superloop :: Left Hip Zeroed");
                 #endif
                 
                 set_controller_params((uint8_t) exo_data.left_leg.hip.id, config_info::config_to_send[config_defs::exo_hip_default_controller_idx], 0, &exo_data); //This function is found in ParamsFromSD
                 #ifdef MAIN_DEBUG
-                  Serial.println("Superloop :: Left Hip Parameters Set");
+                  logger::print("Superloop :: Left Hip Parameters Set");
                 #endif
                 
                 //wait till calibration is done to set actual controller
@@ -198,12 +191,12 @@ void loop()
             #ifdef HEADLESS
                 //exo.right_leg._hip._motor->zero();
                 #ifdef MAIN_DEBUG
-                  Serial.println("Superloop :: Right Hip Zeroed");
+                  logger::print("Superloop :: Right Hip Zeroed");
                 #endif
                 
                 set_controller_params((uint8_t) exo_data.right_leg.hip.id, config_info::config_to_send[config_defs::exo_hip_default_controller_idx], 0, &exo_data);
                 #ifdef MAIN_DEBUG
-                  Serial.println("Superloop :: Right Hip Parameters Set");
+                  logger::print("Superloop :: Right Hip Parameters Set");
                 #endif
                 
                 //wait till calibration is done to set actual controller
@@ -215,7 +208,7 @@ void loop()
         if (exo_data.left_leg.ankle.is_used)
         {
             #ifdef MAIN_DEBUG
-              Serial.println("Superloop :: Left Ankle Used");
+              logger::print("Superloop :: Left Ankle Used");
             #endif
             exo_data.left_leg.ankle.motor.is_on = true;
             //exo.left_leg._ankle._motor->on_off();
@@ -224,12 +217,12 @@ void loop()
             #ifdef HEADLESS
                 //exo.left_leg._ankle._motor->zero();
                 #ifdef MAIN_DEBUG
-                  Serial.println("Superloop :: Left Ankle Zeroed");
+                  logger::print("Superloop :: Left Ankle Zeroed");
                 #endif
                 
                 set_controller_params((uint8_t) exo_data.left_leg.ankle.id, config_info::config_to_send[config_defs::exo_ankle_default_controller_idx], 0, &exo_data);
                 #ifdef MAIN_DEBUG
-                  Serial.println("Superloop :: Left Ankle Parameters Set");
+                  logger::print("Superloop :: Left Ankle Parameters Set");
                 #endif
                 
                 //wait till calibration is done to set actual controller
@@ -247,12 +240,12 @@ void loop()
             #ifdef HEADLESS
                 //exo.right_leg._ankle._motor->zero();
                 #ifdef MAIN_DEBUG
-                  Serial.println("Superloop :: Right Ankle Zeroed");
+                  logger::print("Superloop :: Right Ankle Zeroed");
                 #endif
                 
                 set_controller_params((uint8_t) exo_data.right_leg.ankle.id, config_info::config_to_send[config_defs::exo_ankle_default_controller_idx], 0, &exo_data);
                 #ifdef MAIN_DEBUG
-                  Serial.println("Superloop :: Right Ankle Parameters Set");
+                  logger::print("Superloop :: Right Ankle Parameters Set");
                 #endif
                 
                 //wait till calibration is done to set actual controller
@@ -263,7 +256,7 @@ void loop()
         
         // give the motors time to wake up.  Can eventually be removed when using non damaged motors.
         #ifdef MAIN_DEBUG
-          Serial.println("Superloop :: Motor Charging Delay - Please be patient");
+          logger::print("Superloop :: Motor Charging Delay - Please be patient");
         #endif 
         exo_data.set_status(status_defs::messages::motor_start_up); 
         unsigned int motor_start_delay_ms = 10;//60000;
@@ -277,13 +270,13 @@ void loop()
               if(millis() - last_dot_time > dot_print_ms)
               {
                 last_dot_time = millis();
-                Serial.print(".");
+                logger::print(".");
               }
               
             #endif
         }
         #ifdef MAIN_DEBUG
-          Serial.println();
+          logger::println();
         #endif
 
         // Configure the system if you can't set it with the app
@@ -319,10 +312,10 @@ void loop()
  
         #ifdef MAIN_DEBUG
             #ifdef HEADLESS
-                Serial.println("Superloop :: Motors Enabled");
-                Serial.println("Superloop :: Parameters Set");
+                logger::print("Superloop :: Motors Enabled");
+                logger::print("Superloop :: Parameters Set");
             #endif
-            Serial.println("Superloop :: End First Run Conditional");
+            logger::print("Superloop :: End First Run Conditional");
         #endif
     }
 
@@ -341,24 +334,24 @@ void loop()
         if(new_time - old_time > 10000 && dynamic_calibration_done)
         {
             #ifdef MAKE_PLOTS
-//                Serial.print(exo_data.left_leg.hip.motor.t_ff);
-//                Serial.print(", ");
-//                Serial.print(exo_data.left_leg.hip.motor.i);
-//                Serial.print(", ");
-//                Serial.print(exo_data.right_leg.hip.motor.t_ff);
-//                Serial.print(", ");
-//                Serial.print(exo_data.right_leg.hip.motor.i);
-//                Serial.print(", ");
-//                Serial.print(exo_data.left_leg.ankle.motor.t_ff);
-                //Serial.print(", ");
-                //Serial.print(exo_data.right_leg.hip.motor.i);
-//                Serial.print(", ");
-//                Serial.print(exo_data.right_leg.ankle.motor.t_ff);
-//                Serial.print(", ");
-//                Serial.print(exo_data.right_leg.ankle.motor.i);
-                //Serial.print(", ");
-                //Serial.print(exo_data.right_leg.hip.torque_reading);
-                //Serial.print("\n");
+//                logger::print(exo_data.left_leg.hip.motor.t_ff);
+//                logger::print(", ");
+//                logger::print(exo_data.left_leg.hip.motor.i);
+//                logger::print(", ");
+//                logger::print(exo_data.right_leg.hip.motor.t_ff);
+//                logger::print(", ");
+//                logger::print(exo_data.right_leg.hip.motor.i);
+//                logger::print(", ");
+//                logger::print(exo_data.left_leg.ankle.motor.t_ff);
+                //logger::print(", ");
+                //logger::print(exo_data.right_leg.hip.motor.i);
+//                logger::print(", ");
+//                logger::print(exo_data.right_leg.ankle.motor.t_ff);
+//                logger::print(", ");
+//                logger::print(exo_data.right_leg.ankle.motor.i);
+                //logger::print(", ");
+                //logger::print(exo_data.right_leg.hip.torque_reading);
+                //logger::print("\n");
             #endif
 
             old_time = new_time;
@@ -370,7 +363,7 @@ void loop()
         if ((!static_calibration_done) && (!exo_data.left_leg.ankle.calibrate_torque_sensor && !exo_data.right_leg.ankle.calibrate_torque_sensor))
         {
             #ifdef MAIN_DEBUG
-              Serial.println("Superloop : Static Calibration Done");
+              logger::print("Superloop : Static Calibration Done");
             #endif
             static_calibration_done  = true;
             time_dynamic_calibration_finished = millis();
@@ -381,7 +374,7 @@ void loop()
         if (!pause_between_calibration_done && (static_calibration_done && ((time_dynamic_calibration_finished +  pause_after_static_calibration_ms) < millis() ))) 
         {
             #ifdef MAIN_DEBUG
-              Serial.println("Superloop : Pause Between Calibration Finished");
+              logger::print("Superloop : Pause Between Calibration Finished");
             #endif
             if(exo_data.left_leg.is_used)
             {
@@ -405,7 +398,7 @@ void loop()
         if ((!dynamic_calibration_done) && (pause_between_calibration_done) && (!exo_data.left_leg.do_calibration_toe_fsr && !exo_data.left_leg.do_calibration_refinement_toe_fsr && !exo_data.left_leg.do_calibration_heel_fsr && !exo_data.left_leg.do_calibration_refinement_heel_fsr))
         {
             #ifdef MAIN_DEBUG
-                Serial.println("Superloop : Dynamic Calibration Done");
+                logger::print("Superloop : Dynamic Calibration Done");
             #endif
             
             if (exo_data.left_leg.hip.is_used)
@@ -413,7 +406,7 @@ void loop()
                 exo_data.left_leg.hip.controller.controller = config_info::config_to_send[config_defs::exo_hip_default_controller_idx];
                 exo.left_leg._hip.set_controller(exo_data.left_leg.hip.controller.controller);
                 #ifdef MAIN_DEBUG
-                    Serial.println("Superloop : Left Hip Controller Set");
+                    logger::print("Superloop : Left Hip Controller Set");
                 #endif
             }
             
@@ -422,7 +415,7 @@ void loop()
                 exo_data.right_leg.hip.controller.controller = config_info::config_to_send[config_defs::exo_hip_default_controller_idx];
                 exo.right_leg._hip.set_controller(exo_data.right_leg.hip.controller.controller); 
                 #ifdef MAIN_DEBUG
-                    Serial.println("Superloop : Right Hip Controller Set");
+                    logger::print("Superloop : Right Hip Controller Set");
                 #endif
             }
             
@@ -431,7 +424,7 @@ void loop()
                 exo_data.left_leg.ankle.controller.controller = config_info::config_to_send[config_defs::exo_ankle_default_controller_idx];
                 exo.left_leg._ankle.set_controller(exo_data.left_leg.ankle.controller.controller);
                 #ifdef MAIN_DEBUG
-                    Serial.println("Superloop : Left Ankle Controller Set");
+                    logger::print("Superloop : Left Ankle Controller Set");
                 #endif
             }
       
@@ -440,7 +433,7 @@ void loop()
                 exo_data.right_leg.ankle.controller.controller = config_info::config_to_send[config_defs::exo_ankle_default_controller_idx];
                 exo.right_leg._ankle.set_controller(exo_data.right_leg.ankle.controller.controller);
                 #ifdef MAIN_DEBUG
-                    Serial.println("Superloop : Right Ankle Controller Set");
+                    logger::print("Superloop : Right Ankle Controller Set");
                 #endif
             }
             
@@ -451,6 +444,10 @@ void loop()
 
     // do exo calculations
     bool ran = exo.run();
+    if (ran) 
+    {
+        //pi_logger.sendUpdate();
+    }
 
     // manage system errors
     static bool reported_error{false};
@@ -483,7 +480,7 @@ void loop()
 //    static unsigned int last_data_time = millis();
 //    if(millis() - last_data_time > data_print_ms)
 //    {
-//        Serial.println("\n\n\nSuperloop :: Timed print : ");
+//        logger::print("\n\n\nSuperloop :: Timed print : ");
 //        exo_data.print();
 //        last_data_time = millis();
 //    }
@@ -495,10 +492,8 @@ void loop()
         if(millis() - last_dot_time > dot_print_ms)
         {
           last_dot_time = millis();
-          Serial.print(".");
+          logger::print(".");
         }
-
-       
     #endif 
 }
 
@@ -547,10 +542,10 @@ namespace config_info
 
 void setup()
 {
+    logger::println();
     //delay(1500); // Wait for the Teensy to read the SD card
-    Serial.begin(115200);
 
-//    Serial.println("Setup->Getting config");
+//    logger::print("Setup->Getting config");
     // get the sd card config from the teensy, this has a timeout
     UARTHandler* handler = UARTHandler::get_instance();
     bool timed_out = UART_command_utils::get_config(handler, config_info::config_to_send, (float)UART_times::CONFIG_TIMEOUT);
@@ -559,7 +554,7 @@ void setup()
     if (timed_out)
     {
         // yellow
-//        Serial.println("Setup->Timed Out Getting Config");
+//        logger::print("Setup->Timed Out Getting Config");
         led->set_color(255, 255, 0);
     }
     else
@@ -567,7 +562,7 @@ void setup()
         // green
         led->set_color(0, 255, 0);
     }
-//    Serial.println("Setup->End Setup");
+//    logger::print("Setup->End Setup");
 }
 
 void loop()
@@ -594,13 +589,8 @@ void loop()
 #else // code to use when microcontroller is not recognized.
 void setup()
 {
-  Serial.begin(115200);
-  //TODO: Remove serial while for deployed version as this would hang
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB
-  }
-  Serial.print("Unknown Microcontroller");
-  Serial.print("\n");
+  logger::print("Unknown Microcontroller");
+  logger::print("\n");
 }
 
 void loop()

@@ -6,6 +6,7 @@
 #include "ComsLed.h"
 #include "Config.h"
 #include "error_types.h"
+#include "Logger.h"
 
 #define EXOBLE_DEBUG 0
 
@@ -100,7 +101,7 @@ void ExoBLE::advertising_onoff(bool onoff)
     if (onoff)
     {
         // Start Advertising
-        //Serial.println("Start Advertising");
+        //logger::println("Start Advertising");
         BLE.advertise();
 
         // turn the blue led off
@@ -112,7 +113,7 @@ void ExoBLE::advertising_onoff(bool onoff)
     else
     {
         // Stop Advertising
-        //Serial.println("Stop Advertising");
+        //logger::println("Stop Advertising");
          BLE.stopAdvertise();
         // turn the blue led on
         ComsLed* led = ComsLed::get_instance();
@@ -153,14 +154,14 @@ bool ExoBLE::handle_updates()
         {
             // Disconnection
             #if EXOBLE_DEBUG
-            Serial.println("Disconnection");
+            logger::println("Disconnection");
             #endif
         }
         else if (current_status > _connected)
         {
             // Connection
             #if EXOBLE_DEBUG
-            Serial.println("Connection");
+            logger::println("Connection");
             #endif
 
         }
@@ -179,7 +180,7 @@ void ExoBLE::send_message(BleMessage &msg)
         return; /* Don't bother sending anything if no one is listening */
     }
     #if EXOBLE_DEBUG
-    //Serial.println("Exoble::send_message->Sending:");
+    //logger::println("Exoble::send_message->Sending:");
     BleMessage::print(msg);
     #endif
     static const int k_preamble_length = 3;
@@ -198,21 +199,21 @@ void ExoBLE::send_error(int error_code, int joint_id)
     }
 
     #if EXOBLE_DEBUG
-    Serial.print("Exoble::send_error->Sending: ");
-    Serial.println(error_code);
+    logger::print("Exoble::send_error->Sending: ");
+    logger::println(error_code);
     #endif
     String error_string = String(error_code) + ":" + String(joint_id);
-    Serial.println("Error String: " + error_string);
+    logger::println("Error String: " + error_string);
     // convert to char array
     char error_char[error_string.length() + 1];
     error_string.toCharArray(error_char, error_string.length() + 1);
-    Serial.println("Char Array:");
+    logger::println("Char Array:");
     for (char c : error_char)
     {
-        Serial.print(c);
-        Serial.print(", ");
+        logger::print(c);
+        logger::print(", ");
     }
-    Serial.println();
+    logger::println();
     _gatt_db.ErrorChar.writeValue(error_char);
 }
 
@@ -230,28 +231,28 @@ void ble_rx::on_rx_recieved(BLEDevice central, BLECharacteristic characteristic)
     characteristic.readValue(data, len);
 
         #if EXOBLE_DEBUG
-        Serial.print("On Rx Recieved: ");
+        logger::print("On Rx Recieved: ");
         for (int i=0; i<len;i++)
         {
-            Serial.print(data[i]);
-            Serial.print(data[i], HEX);
-            Serial.print(", ");
+            logger::print(data[i]);
+            logger::print(data[i], HEX);
+            logger::print(", ");
         }
-        Serial.println();
+        logger::println();
         #endif
 
     msg = parser->handle_raw_data(data, len);
     if (msg->is_complete)
     {
         #if EXOBLE_DEBUG
-        Serial.print("on_rx_recieved->Command: ");
-        Serial.println(msg->command);
+        logger::print("on_rx_recieved->Command: ");
+        logger::println(msg->command);
         for (int i=0; i<msg->expecting; i++)
         {
-            Serial.print(msg->data[i]);
-            Serial.print(", ");
+            logger::print(msg->data[i]);
+            logger::print(", ");
         }
-        Serial.println();
+        logger::println();
         #endif
 
         ble_queue::push(msg);

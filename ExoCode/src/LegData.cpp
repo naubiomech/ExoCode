@@ -1,5 +1,5 @@
 #include "LegData.h"
-
+#include "Logger.h"
 /*
  * Constructor for the leg data.
  * Takes if the leg is left, and the array from the INI parser.

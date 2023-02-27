@@ -86,7 +86,7 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -102,22 +102,22 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit HID Mouse Example"));
-  Serial.println(F("---------------------------------------"));
+  logger::println(F("Adafruit Bluefruit HID Mouse Example"));
+  logger::println(F("---------------------------------------"));
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   if ( FACTORYRESET_ENABLE )
   {
     /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Performing a factory reset: "));
+    logger::println(F("Performing a factory reset: "));
     if ( ! ble.factoryReset() ){
       error(F("Couldn't factory reset"));
     }
@@ -126,7 +126,7 @@ void setup(void)
   /* Disable command echo from Bluefruit */
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
 
@@ -137,28 +137,28 @@ void setup(void)
   }
 
   /* Enable HID Service (including Mouse) */
-  Serial.println(F("Enable HID Service (including Mouse): "));
+  logger::println(F("Enable HID Service (including Mouse): "));
   if (! ble.sendCommandCheckOK(F( "AT+BleHIDEn=On"  ))) {
     error(F("Failed to enable HID (firmware >=0.6.6?)"));
   }
 
   /* Add or remove service requires a reset */
-  Serial.println(F("Performing a SW reset (service changes require a reset): "));
+  logger::println(F("Performing a SW reset (service changes require a reset): "));
   if (! ble.reset() ) {
     error(F("Could not reset??"));
   }
 
-  Serial.println();
-  Serial.println(F("Go to your phone's Bluetooth settings to pair your device"));
-  Serial.println(F("then open an application that accepts mouse input"));
-  Serial.println();
+  logger::println();
+  logger::println(F("Go to your phone's Bluetooth settings to pair your device"));
+  logger::println(F("then open an application that accepts mouse input"));
+  logger::println();
 
-  Serial.println(F("The example will try to draw a rectangle using the left mouse button with your input"));
-  Serial.println(F("Parameters are a pair of 8-bit signed numbers (x,y) e.g:"));
-  Serial.println(F("  100,100  : draw toward bottom right corner"));
-  Serial.println(F("  -100,-100: draw toward top left corner"));
+  logger::println(F("The example will try to draw a rectangle using the left mouse button with your input"));
+  logger::println(F("Parameters are a pair of 8-bit signed numbers (x,y) e.g:"));
+  logger::println(F("  100,100  : draw toward bottom right corner"));
+  logger::println(F("  -100,-100: draw toward top left corner"));
 
-  Serial.println();
+  logger::println();
 }
 
 /**************************************************************************/
@@ -168,13 +168,13 @@ void setup(void)
 /**************************************************************************/
 void loop(void)
 {
-  Serial.println(F("x,y = "));
+  logger::println(F("x,y = "));
 
   // Check for user input and echo it back if anything was found
   char input[BUFSIZE+1];
   getUserInput(input, BUFSIZE);
 
-  Serial.println(input);
+  logger::println(input);
 
   // Press (and hold) the Left mouse's button
   if ( ble.sendCommandCheckOK(F("AT+BleHidMouseButton=L,press")) )
@@ -188,14 +188,14 @@ void loop(void)
 
     if( ble.waitForOK() )
     {
-      Serial.println( F("OK!") );
+      logger::println( F("OK!") );
     }else
     {
-      Serial.println( F("FAILED!") );
+      logger::println( F("FAILED!") );
     }
 
     // Way for user to release left button
-    Serial.println( F("Enter anything to release Left Button") );
+    logger::println( F("Enter anything to release Left Button") );
     getUserInput(input, BUFSIZE);
 
     // Release the Left mouse's button
@@ -203,7 +203,7 @@ void loop(void)
   }else
   {
     // Failed, probably pairing is not complete yet
-    Serial.println( F("Please make sure Bluefruit is paired and try again") );
+    logger::println( F("Please make sure Bluefruit is paired and try again") );
   }
 }
 

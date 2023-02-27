@@ -160,16 +160,16 @@ class Adafruit_BLE : public Adafruit_ATParser
 #endif
 
 #if DBG_ENABLE
-  #define DBG_LOCATION()  Serial.printf("%s: %d: \r\n", __PRETTY_FUNCTION__, __LINE__)
-  #define DBG_INT(x)      do { Serial.print(#x " = "); Serial.println(x); } while(0)
-  #define DBG_HEX(x)      do { Serial.print(#x " = "); Serial.println(x, HEX); } while(0)
-  #define DBG_STR(x)      Serial.printf(#x " = %s\r\n", (char*)(x) )
+  #define DBG_LOCATION()  logger::printf("%s: %d: \r\n", __PRETTY_FUNCTION__, __LINE__)
+  #define DBG_INT(x)      do { logger::print(#x " = "); logger::println(x); } while(0)
+  #define DBG_HEX(x)      do { logger::print(#x " = "); logger::println(x, HEX); } while(0)
+  #define DBG_STR(x)      logger::printf(#x " = %s\r\n", (char*)(x) )
   #define DBG_BUFFER(buf, n) \
     do {\
       uint8_t* p8 = (uint8_t*) (buf);\
-      Serial.print(#buf ": ");\
-      for(uint32_t i=0; i<(n); i++) Serial.printf("%02x ", p8[i]);\
-      Serial.print("\r\n");\
+      logger::print(#buf ": ");\
+      for(uint32_t i=0; i<(n); i++) logger::printf("%02x ", p8[i]);\
+      logger::print("\r\n");\
     }while(0)
 #endif
 

@@ -33,7 +33,7 @@ void setup() {
 
   // begin initialization
   if (!BLE.begin()) {
-    Serial.println("starting BLE failed!");
+    logger::println("starting BLE failed!");
 
     while (1);
   }
@@ -54,7 +54,7 @@ void setup() {
   // start advertising
   BLE.advertise();
 
-  Serial.println("BLE LED Peripheral");
+  logger::println("BLE LED Peripheral");
 }
 
 void loop() {
@@ -63,9 +63,9 @@ void loop() {
 
   // if a central is connected to peripheral:
   if (central) {
-    Serial.print("Connected to central: ");
+    logger::print("Connected to central: ");
     // print the central's MAC address:
-    Serial.println(central.address());
+    logger::println(central.address());
 
     // while the central is still connected to peripheral:
     while (central.connected()) {
@@ -73,17 +73,17 @@ void loop() {
       // use the value to control the LED:
       if (switchCharacteristic.written()) {
         if (switchCharacteristic.value()) {   // any value other than 0
-          Serial.println("LED on");
+          logger::println("LED on");
           digitalWrite(ledPin, HIGH);         // will turn the LED on
         } else {                              // a 0 value
-          Serial.println(F("LED off"));
+          logger::println(F("LED off"));
           digitalWrite(ledPin, LOW);          // will turn the LED off
         }
       }
     }
 
     // when the central disconnects, print it out:
-    Serial.print(F("Disconnected from central: "));
-    Serial.println(central.address());
+    logger::print(F("Disconnected from central: "));
+    logger::println(central.address());
   }
 }

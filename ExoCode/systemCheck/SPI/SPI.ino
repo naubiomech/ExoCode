@@ -86,8 +86,8 @@
                         if(0==i)
                         {
                           peripheral_message[1] = message_number;// pack current message num
-                          Serial.print("spi_callback :: message_number : 0x");
-                          Serial.println(message_number++,HEX); // print and increment message num
+                          logger::print("spi_callback :: message_number : 0x");
+                          logger::println(message_number++,HEX); // print and increment message num
                         }
                         if ( j > sizeof(peripheral_message) ) // recieving data beyond message size likely due to error
                         {
@@ -115,11 +115,11 @@
         {
             Serial.begin(115200);
             while (!Serial);
-            Serial.println("\n\nSetup : Serial Started");
+            logger::println("\n\nSetup : Serial Started");
             spi_peripheral::my_spi.begin();
-            Serial.println("Setup :: SPI Begin");
+            logger::println("Setup :: SPI Begin");
             spi_peripheral::my_spi.onReceive(spi_peripheral::spi_callback);
-            Serial.println("Setup :: SPI callback set");
+            logger::println("Setup :: SPI callback set");
             //spi_peripheral::my_spi.popr();// thought this might be needed as the controller does
         }
 
@@ -131,7 +131,7 @@
       
             if (first_run)
             {
-                Serial.println("Superloop :: First Run Start");
+                logger::println("Superloop :: First Run Start");
                 
                 first_run = false;
             }
@@ -139,10 +139,10 @@
             if (spi_peripheral::is_unread_message)
             {
                 spi_peripheral::loop_running = true;
-                Serial.print("\n\n\n\n");  
-                Serial.println("Superloop :: controller_message");
+                logger::print("\n\n\n\n");  
+                logger::println("Superloop :: controller_message");
                 print_message(spi_peripheral::controller_message, spi_peripheral::message_len+1);
-                Serial.println("Superloop :: peripheral_message");
+                logger::println("Superloop :: peripheral_message");
                 print_message(spi_peripheral::peripheral_message, spi_peripheral::message_len+1);
                 spi_peripheral::is_unread_message = false;
                 time_of_last_message = millis();
@@ -150,7 +150,7 @@
       
             if((millis() - time_of_last_message) > 1000)
             {
-                Serial.println("+++++++++++++++++++++++++++++");
+                logger::println("+++++++++++++++++++++++++++++");
                 time_of_last_message = millis();
             }
             
@@ -180,11 +180,11 @@
         Serial.begin(115200);
         while(!Serial);
         //delay(1000);
-        Serial.println("\n\nSetup : Serial Started");
-    //    Serial.print("\tcontroller_message address : 0x");
-    //    Serial.println((long)&(spi_peripheral::controller_message[0]),HEX);
-    //    Serial.print("\tcmd address : 0x");
-    //    Serial.println((long)&spi_peripheral::cmd,HEX);
+        logger::println("\n\nSetup : Serial Started");
+    //    logger::print("\tcontroller_message address : 0x");
+    //    logger::println((long)&(spi_peripheral::controller_message[0]),HEX);
+    //    logger::print("\tcmd address : 0x");
+    //    logger::println((long)&spi_peripheral::cmd,HEX);
         
         
     //    spi_peripheral::my_spi.onReceive(spi_peripheral::spi_callback);
@@ -200,18 +200,18 @@
     
           if (first_run)
           {
-            Serial.println("Superloop :: First Run Start");
+            logger::println("Superloop :: First Run Start");
             spi_peripheral::data = &exo_data;
-            Serial.println("Superloop :: SPI Data pointer updated");
-            Serial.print("\tdata address : 0x");
-            Serial.println((long)spi_peripheral::data,HEX);
+            logger::println("Superloop :: SPI Data pointer updated");
+            logger::print("\tdata address : 0x");
+            logger::println((long)spi_peripheral::data,HEX);
             
             spi_peripheral::my_spi.begin();
-            Serial.println("Superloop :: SPI Begin");
+            logger::println("Superloop :: SPI Begin");
             
            
             spi_peripheral::my_spi.onReceive(spi_peripheral::spi_callback);
-            Serial.println("Superloop :: SPI callback set");
+            logger::println("Superloop :: SPI callback set");
 
             exo_data.right_leg.ankle.motor.t_ff = -100.12;
             exo_data.right_leg.ankle.motor.v = -1;
@@ -226,12 +226,12 @@
               spi_peripheral::is_unread_message = false;
               time_of_last_message = millis();
               static_spi_handler::print_debug(spi_peripheral::debug_location);
-              Serial.println(spi_peripheral::debug_location,BIN);
-//              Serial.print("\n\n\n\n");
+              logger::println(spi_peripheral::debug_location,BIN);
+//              logger::print("\n\n\n\n");
 //              
 //              //uint8_t debug_location = static_spi_handler::peripheral_transaction(spi_peripheral::my_spi, config_info::config_to_send, spi_peripheral::data, &(spi_peripheral::cmd), spi_peripheral::controller_message); 
 //              
-//              //Serial.print("Superloop:: spi_peripheral::cmd = ");
+//              //logger::print("Superloop:: spi_peripheral::cmd = ");
 //    
 //    //            static_spi_handler::read_message(spi_peripheral::my_spi, spi_peripheral::controller_message); 
 //    
@@ -239,21 +239,21 @@
 //    //            for(int i = 0 ; i<static_spi_handler::get_data_len(config_info::config_to_send) ; i++)
 //    //            {
 //    //                //static_spi_handler::send_length(spi_peripheral::my_spi, static_spi_handler::get_data_len(config_info::config_to_send));
-//    ////                Serial.println("Superloop :: sent length");
+//    ////                logger::println("Superloop :: sent length");
 //    //                //static_spi_handler::send_config(spi_peripheral::my_spi, config_info::config_to_send);
-//    ////                Serial.println("Superloop :: sent config");
-//    ////                Serial.print("message num : ");
-//    ////                Serial.print(i);
-//    ////                Serial.print(" = ");
-//    ////                Serial.println(spi_peripheral::controller_message[i]);
+//    ////                logger::println("Superloop :: sent config");
+//    ////                logger::print("message num : ");
+//    ////                logger::print(i);
+//    ////                logger::print(" = ");
+//    ////                logger::println(spi_peripheral::controller_message[i]);
 //    //            }
-//    //            Serial.print("\n");
+//    //            logger::print("\n");
 //    
 //                
 //                //simple_static_spi_handler::print_debug(spi_peripheral::debug_location);
-////                Serial.println("Superloop :: controller_message");
+////                logger::println("Superloop :: controller_message");
 ////                print_message(spi_peripheral::controller_message, spi_peripheral::message_len);
-////                Serial.println("Superloop :: peripheral_message");
+////                logger::println("Superloop :: peripheral_message");
 ////                print_message(spi_peripheral::peripheral_message, spi_peripheral::message_len);
 //                
                 
@@ -266,7 +266,7 @@
     
           if((millis() - time_of_last_message) > 9000)
           {
-              Serial.println("+++++++++++++++++++++++++++++");
+              logger::println("+++++++++++++++++++++++++++++");
               time_of_last_message = millis();
           }
             
@@ -305,13 +305,13 @@
       {
           Serial.begin(115200);
           while(!Serial);
-          Serial.println("Setup : Serial Started");
+          logger::println("Setup : Serial Started");
           pinMode(coms_micro_pins::cs_pin, OUTPUT);
           digitalWrite(coms_micro_pins::cs_pin, HIGH);
           
           SPI.begin();
           SPI.transfer(0);//begin doesn't actually enable the system so send zero to nowhere to enable
-          Serial.println("===========================================================");
+          logger::println("===========================================================");
         
       }
     
@@ -337,9 +337,9 @@
         peripheral_message[4] = 0x00;
 
   
-        Serial.println("Superloop :: Starting Transaction");
-        Serial.print("Superloop :: msg_num : 0x");
-        Serial.println(msg_num++,HEX);// print msg num
+        logger::println("Superloop :: Starting Transaction");
+        logger::print("Superloop :: msg_num : 0x");
+        logger::println(msg_num++,HEX);// print msg num
         SPI.beginTransaction(SPISettings(5000000, MSBFIRST, coms_micro_pins::spi_mode));  // teensy seems limited to 5 MHz
         
         digitalWrite(coms_micro_pins::cs_pin, LOW); // let the peripheral know you are talking to it
@@ -360,12 +360,12 @@
         digitalWrite(coms_micro_pins::cs_pin, HIGH);// tell the other system you are done with it
         SPI.endTransaction();
         
-        Serial.println("Superloop :: controller_message");
+        logger::println("Superloop :: controller_message");
         print_message(controller_message, len+1);
-        Serial.println("Superloop :: peripheral_message");
+        logger::println("Superloop :: peripheral_message");
         print_message(peripheral_message, len+1);
-//        Serial.print("Superloop :: temp : 0x");
-//        Serial.println(temp,HEX);
+//        logger::print("Superloop :: temp : 0x");
+//        logger::println(temp,HEX);
         delay(100);
     }
   #else
@@ -379,13 +379,13 @@
     {
       Serial.begin(115200);
       while(!Serial);
-      Serial.println("Setup : Serial Started");
+      logger::println("Setup : Serial Started");
   //    simple_static_spi_handler::setup();
       pinMode(coms_micro_pins::cs_pin, OUTPUT);
       digitalWrite(coms_micro_pins::cs_pin, HIGH);
       
       SPI.begin();
-      Serial.println("===========================================================");
+      logger::println("===========================================================");
       
     }
     

@@ -81,7 +81,7 @@ Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_
 
 // A small helper
 void error(const __FlashStringHelper*err) {
-  Serial.println(err);
+  logger::println(err);
   while (1);
 }
 
@@ -97,22 +97,22 @@ void setup(void)
   delay(500);
 
   Serial.begin(115200);
-  Serial.println(F("Adafruit Bluefruit Throughput Tester"));
-  Serial.println(F("------------------------------------"));
+  logger::println(F("Adafruit Bluefruit Throughput Tester"));
+  logger::println(F("------------------------------------"));
 
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  logger::print(F("Initialising the Bluefruit LE module: "));
 
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
+  logger::println( F("OK!") );
 
   if ( FACTORYRESET_ENABLE )
   {
     /* Perform a factory reset to make sure everything is in a known state */
-    Serial.println(F("Performing a factory reset: "));
+    logger::println(F("Performing a factory reset: "));
     if ( ! ble.factoryReset() ){
       error(F("Couldn't factory reset"));
     }
@@ -121,15 +121,15 @@ void setup(void)
   /* Disable command echo from Bluefruit */
   ble.echo(false);
 
-  Serial.println("Requesting Bluefruit info:");
+  logger::println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
 
   /* Switch to DATA mode to have a better throughput */
-  Serial.println("Switch to DATA mode to have a better throughput ...");
+  logger::println("Switch to DATA mode to have a better throughput ...");
 
   /* Wait for a connection before starting the test */
-  Serial.println("Waiting for a BLE connection to continue ...");
+  logger::println("Waiting for a BLE connection to continue ...");
   ble.setMode(BLUEFRUIT_MODE_DATA);
 
   ble.verbose(false);  // debug info is a little annoying after this point!
@@ -142,8 +142,8 @@ void setup(void)
   // Wait for the connection to complete
   delay(1000);
 
-  Serial.println(F("CONNECTED!"));
-  Serial.println(F("**********"));
+  logger::println(F("CONNECTED!"));
+  logger::println(F("**********"));
 }
 
 /**************************************************************************/
@@ -160,13 +160,13 @@ void loop(void)
   if (ble.isConnected())
   {
     // Wait for user input before trying again
-    Serial.println("Connected. Send a key and press enter to start test");
+    logger::println("Connected. Send a key and press enter to start test");
     char command[BUFSIZE+1];
     getUserInput(command, BUFSIZE);
 
-    Serial.print("Sending ");
-    Serial.print(remaining);
-    Serial.println(" bytes ...");
+    logger::print("Sending ");
+    logger::print(remaining);
+    logger::println(" bytes ...");
 
     start = millis();
     while (remaining > 0)
@@ -175,7 +175,7 @@ void loop(void)
 //      ble.println(TEST_STRING);
 //      if (! ble.waitForOK() )
 //      {
-//        Serial.println(F("Failed to send?"));
+//        logger::println(F("Failed to send?"));
 //      }
 
       ble.writeBLEUart(TEST_STRING);
@@ -186,8 +186,8 @@ void loop(void)
       // Only print every 1KB sent
       if ( (sent % 2000) == 0 )
       {
-        Serial.print("Sent: "); Serial.print(sent);
-        Serial.print(" Remaining: "); Serial.println(remaining);
+        logger::print("Sent: "); logger::print(sent);
+        logger::print(" Remaining: "); logger::println(remaining);
       }
 
       /* Optional: Test for lost connection every packet */
@@ -195,22 +195,22 @@ void loop(void)
       /*
       if (!ble.isConnected())
       {
-        Serial.println("Connection lost");
+        logger::println("Connection lost");
         remaining = 0;
       }
       */
     }
     stop = millis() - start;
 
-    Serial.print("Sent ");
-    Serial.print(sent);
-    Serial.print(" bytes in ");
-    Serial.print(stop/1000.0F, 2);
-    Serial.println(" seconds.");
+    logger::print("Sent ");
+    logger::print(sent);
+    logger::print(" bytes in ");
+    logger::print(stop/1000.0F, 2);
+    logger::println(" seconds.");
     
-    Serial.println("Speed ");
-    Serial.print( (sent/1000.0F) / (stop/1000.0F), 2);
-    Serial.println(" KB/s.\r\n");
+    logger::println("Speed ");
+    logger::print( (sent/1000.0F) / (stop/1000.0F), 2);
+    logger::println(" KB/s.\r\n");
   }
 }
 

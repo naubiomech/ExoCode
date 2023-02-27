@@ -38,7 +38,7 @@ void setup() {
 
   // begin initialization
   if (!BLE.begin()) {
-    Serial.println("starting BLE failed!");
+    logger::println("starting BLE failed!");
 
     while (1);
   }
@@ -61,7 +61,7 @@ void setup() {
   // start advertising
   BLE.advertise();
 
-  Serial.println("Bluetooth device active, waiting for connections...");
+  logger::println("Bluetooth device active, waiting for connections...");
 }
 
 void loop() {
@@ -83,10 +83,10 @@ void loop() {
   if (ledCharacteristic.written() || buttonChanged) {
     // update LED, either central has written to characteristic or button state has changed
     if (ledCharacteristic.value()) {
-      Serial.println("LED on");
+      logger::println("LED on");
       digitalWrite(ledPin, HIGH);
     } else {
-      Serial.println("LED off");
+      logger::println("LED off");
       digitalWrite(ledPin, LOW);
     }
   }

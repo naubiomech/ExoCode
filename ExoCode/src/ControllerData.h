@@ -249,6 +249,23 @@ namespace controller_defs /**< stores the parameter indexes for different contro
      *
      */
     
+
+    namespace elbow_min_max
+    {
+        //const uint8_t amplitude_idx = 0;    // amplitude in Nm
+        //const uint8_t direction_idx = 1;     // direction in which the torque will be applied
+        //const uint8_t num_parameter = 2;
+        
+        
+    }
+
+
+    namespace ptb_general {
+        const uint8_t ptb_mode_idx = 0;
+        const uint8_t ptb_settings_1_idx = 1;
+        const uint8_t num_parameter = 2;
+        
+    }
     const uint8_t max_parameters = franks_collins_hip::num_parameter;//user_defined::num_parameter;  // this should be the largest of all the num_parameters
 }
 
@@ -293,7 +310,33 @@ class ControllerData {
         float prev_max_setpoint = 0; /**< previous max setpoint value */
         float max_measured = 0; /**< max measured value */
         float max_setpoint = 0; /**< max setpoint value */
-};
 
+        // Variables for the ElbowMinMax Controller
+        float fsr_toe_min_elbow = 0;
+        float fsr_toe_max_elbow = 0;
+        float fsr_heel_min_elbow = 0;
+        float fsr_heel_max_elbow = 0;
+        float fsr_toe_sum_elbow = 0;
+        float fsr_heel_sum_elbow = 0;
+        int i_elbow = 0;
+        int fsr_toe_array_elbow [50] = {0};
+        int fsr_heel_array_elbow [50] = {0};
+        bool is_first_run_elbow = true;
+        float output_limit_elbow = 5;
+        float fsr_min_max_elbow = 0;
+        bool is_first_fsr_reading_elbow = true;
+        float fsr_toe_previous_elbow = 0;
+        float fsr_heel_previous_elbow = 0;
+
+        // Variables for the PtbGeneral Controller
+        bool isPerturbing = false;
+        bool ptbDetermined = false;
+        float time_current_ptb = 0;
+        float time_previous_ptb = 0;
+        uint8_t ptbHead = 0;
+        uint8_t ptbTail = 0;
+        uint8_t iTest= 0;
+        bool ptbApplied = false;
+};
 
 #endif

@@ -2,17 +2,18 @@
 
 #include "InclineDetector.h"
 #include "Utilities.h"
+#include "Logger.h"
 
 #define INCLINE_DETECTOR_DEBUG 0
 
 InclineDetector::InclineDetector(float alpha, float threshold)
 {
     #if INCLINE_DETECTOR_DEBUG
-    Serial.println("InclineDetector::InclineDetector()");
-    Serial.print("alpha: ");
-    Serial.println(alpha);
-    Serial.print("threshold: ");
-    Serial.println(threshold);
+    logger::println("InclineDetector::InclineDetector()");
+    logger::print("alpha: ");
+    logger::println(alpha);
+    logger::print("threshold: ");
+    logger::println(threshold);
     #endif
 
     _alpha = alpha;
@@ -50,14 +51,14 @@ incline_state_t InclineDetector::run(float pressure)
     }
 
     #if INCLINE_DETECTOR_DEBUG
-    Serial.print("Pressure: ");
-    Serial.print(_smooth_demeanedPressure);
-    Serial.print("\t");
-    Serial.print("High: ");
-    Serial.print(_threshold);
-    Serial.print("\t");
-    Serial.print("Low: ");
-    Serial.println(-_threshold);
+    logger::print("Pressure: ");
+    logger::print(_smooth_demeanedPressure);
+    logger::print("\t");
+    logger::print("High: ");
+    logger::print(_threshold);
+    logger::print("\t");
+    logger::print("Low: ");
+    logger::println(-_threshold);
 
     #endif
 

@@ -3,14 +3,16 @@
 #define Config_h 
 
 #include "Arduino.h"
+#include "LogLevels.h"
     #define FIRMWARE_VERSION 0_1_0
 
     #define AK_Board_V0_1 1
     #define AK_Board_V0_3 2
     #define AK_Board_V0_4 3
+    #define AK_Board_V0_5_1 4
 
     // TODO : Incorporate into parse INI
-    #define BOARD_VERSION AK_Board_V0_3
+    #define BOARD_VERSION AK_Board_V0_5_1  
     
     #define LOOP_FREQ_HZ 500
     #define LOOP_TIME_TOLERANCE 0.1 
@@ -20,6 +22,12 @@
     // MACRO magic to convert a define to a string
     #define VAL(str) #str
     #define TOSTRING(str) VAL(str)
+
+    namespace logging
+    {
+        const LogLevel level = LogLevel::Debug;
+        const int baud_rate = 115200;
+    }
     
     namespace sync_time
     {

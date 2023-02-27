@@ -43,7 +43,7 @@ void setup() {
 }
 
 void loop() {
-  Serial.println("===============================================================================================");
+  logger::println("===============================================================================================");
   
   UARTHandler* inst = UARTHandler::get_instance();
 
@@ -52,14 +52,14 @@ void loop() {
     first_run = 0;
     /* Nano needs the config data */
     #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
-    Serial.println("Loop->Getting config");
+    logger::println("Loop->Getting config");
     UART_command_utils::get_config(inst, config_info::config_to_send);
-    Serial.println("Loop->Got config: ");
+    logger::println("Loop->Got config: ");
     for (int i=0; i<ini_config::number_of_keys; i++)
     {
-      Serial.print(config_info::config_to_send[i]); Serial.print(", ");
+      logger::print(config_info::config_to_send[i]); logger::print(", ");
     }
-    Serial.println(k_timeout_us);
+    logger::println(k_timeout_us);
     
     #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
     UART_command_utils::wait_for_get_config(inst, config_info::config_to_send);
@@ -96,7 +96,7 @@ void loop() {
     // Send the message
     inst->UART_msg(tx_msg);
   
-    Serial.println("Loop->Updated controller params");
+    logger::println("Loop->Updated controller params");
     #elif defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
     UART_msg_t tx_msg;
     tx_msg.command = UART_command_names::update_status;
@@ -104,9 +104,9 @@ void loop() {
     tx_msg.data[(uint8_t)UART_command_enums::status::STATUS] = exo_data.status++;
     tx_msg.len = (uint8_t)UART_command_enums::status::LENGTH;
     inst->UART_msg(tx_msg);
-    Serial.println("Loop->Updated status");
+    logger::println("Loop->Updated status");
     #endif
-    Serial.println("===============================================================================================");
+    logger::println("===============================================================================================");
     old_time = now;
   }
 }
