@@ -1896,27 +1896,28 @@ float ConstantTorque::calc_motor_cmd()
 
     float cmd = 0;     //Creates the cmd variable and initializes it to 0;
 
-        if (_leg_data->do_calibration_toe_fsr)// || _leg_data->toe_stance == 1)                      //If the FSRs are being calibrated or if the toe fsr is 0, send a command of zero
+        if (_leg_data->do_calibration_toe_fsr || _leg_data->toe_stance == 1)                      //If the FSRs are being calibrated or if the toe fsr is 0, send a command of zero
         {
             cmd = 0;    
         }
         else
         {
-            cmd = _controller_data->parameters[controller_defs::constant_torque::amplitude_idx];
+            cmd = -1* _controller_data->parameters[controller_defs::constant_torque::amplitude_idx];
 
-            if (_controller_data->parameters[controller_defs::constant_torque::direction_idx] == 0)                            //If the user wants to send a PF/Flexion torque
-            {
-                cmd = 1 * cmd;
+        //    if (_controller_data->parameters[controller_defs::constant_torque::direction_idx] == 0)                            //If the user wants to send a PF/Flexion torque
+        //    {
+        //        cmd = 1 * cmd;
+        //    }
+        //    else if (_controller_data->parameters[controller_defs::constant_torque::direction_idx] == 1)                       //If the user wants to send a DF/Extension torque
+        //    {
+        //        cmd = -1 * cmd;
+        //    }
+        //    else
+        //    {
+        //        cmd = cmd;                                                                                                  //If the direction flag is something other than 0 or 1, do nothing to the motor command
+        //    }
+        //}
             }
-            else if (_controller_data->parameters[controller_defs::constant_torque::direction_idx] == 1)                       //If the user wants to send a DF/Extension torque
-            {
-                cmd = -1 * cmd;
-            }
-            else
-            {
-                cmd = cmd;                                                                                                  //If the direction flag is something other than 0 or 1, do nothing to the motor command
-            }
-        }
     
     return cmd;
 };
