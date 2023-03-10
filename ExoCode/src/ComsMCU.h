@@ -65,6 +65,12 @@ class ComsMCU
         void handle_errors();
     private:
         /**
+         * @brief Pulses the power LED to indicate a valid Real Time connection
+         * 
+         */
+        void _life_pulse();
+        const int k_pulse_count = 10;
+        /**
          * @brief Private function responsible for calling the correct ble message handler
          * 
          * @param msg Complete BLE message
@@ -85,6 +91,7 @@ class ComsMCU
         // Alpha value for the exponentially weighted moving average on the battery data
         const float k_battery_ewma_alpha = 0.1;
         const float k_time_threshold = 5000; //microseconds
+        
 };
 #endif
 #endif

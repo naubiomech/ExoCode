@@ -245,6 +245,7 @@ class AnkleJoint : public _Joint
         Perturbation _perturbation;    /**< perturbation controller */
         ConstantTorque _constant_torque; /**< constant torque controller*/
         PtbGeneral _ptb_general; /**< Generalized Perturbation Controller>*/
+        
 };
 
 #endif

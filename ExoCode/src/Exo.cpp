@@ -103,7 +103,7 @@ bool Exo::run()
         // send the coms mcu the real time data every _real_time_msg_delay microseconds
         rt_delta_t += t_helper->tick(rt_context);
         uint16_t exo_status = data->get_status();
-        bool correct_status = (exo_status == status_defs::messages::trial_on) || 
+        const bool correct_status = (exo_status == status_defs::messages::trial_on) || 
             (exo_status == status_defs::messages::fsr_calibration) || 
             (exo_status == status_defs::messages::fsr_refinement) ||
             (exo_status == status_defs::messages::error);

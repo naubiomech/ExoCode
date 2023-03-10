@@ -219,12 +219,17 @@ ProportionalJointMoment::ProportionalJointMoment(config_defs::joint_id id, ExoDa
     #ifdef CONTROLLER_DEBUG
         logger::println("ProportionalJointMoment::Constructor");
     #endif
-    
+
+    _stance_thresholds_left.first = exo_data->left_leg.toe_fsr_lower_threshold;
+    _stance_thresholds_left.second = exo_data->left_leg.toe_fsr_upper_threshold;
+    _stance_thresholds_right.first = exo_data->right_leg.toe_fsr_lower_threshold;
+    _stance_thresholds_right.second = exo_data->right_leg.toe_fsr_upper_threshold;
 };
 
 float ProportionalJointMoment::calc_motor_cmd()
 {
     float cmd_ff = 0;
+
     // don't calculate command when fsr is calibrating.
     if (!_leg_data->do_calibration_toe_fsr)
     {
@@ -295,11 +300,11 @@ float ProportionalJointMoment::calc_motor_cmd()
 
     // add the PID contribution to the feed forward command
     float cmd;
-    float kf_cmd = (_leg_data->toe_stance == true) ? (_controller_data->kf * _controller_data->filtered_setpoint) : _controller_data->filtered_setpoint;
-    // if (!_leg_data->is_left)
-    // {
-    //     kf_cmd *= -1;
-    // }
+    float kf_cmd = (_leg_data->toe_stance) ? (_controller_data->kf * _controller_data->filtered_setpoint) : _controller_data->filtered_setpoint;
+    if (!_leg_data->is_left)
+    {
+        kf_cmd *= -1;
+    }
     if (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx])
     {
         cmd = _pid(kf_cmd, _controller_data->filtered_torque_reading, _controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);

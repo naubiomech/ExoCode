@@ -27,7 +27,7 @@ LegData::LegData(bool is_left, uint8_t* config_to_send)
     this->expected_duration_window_upper_coeff = 1.75;
     this->expected_duration_window_lower_coeff = 0.25;
 
-    this->thigh_angle = 90;
+    this->inclination = Inclination::Level;
 
     this->PHJM_state = 0;
 

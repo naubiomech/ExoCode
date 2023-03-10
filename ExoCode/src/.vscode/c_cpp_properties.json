@@ -1,0 +1,55 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.17134.0",
+            "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Tools/MSVC/14.15.26726/bin/Hostx64/x64/cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64",
+            "configurationProvider": "nrf-connect"
+        },
+        {
+            "name": "arduino",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:\\Projects\\Exo\\ExoCode\\src\\.",
+                "C:\\Users\\cfc65\\Documents\\Arduino\\libraries\\ArduinoBLE\\src\\.",
+                "C:\\Program Files (x86)\\Arduino\\libraries\\SD\\src\\.",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\libraries\\Wire\\src\\.",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\teensy\\avr\\libraries\\SPI\\.",
+                "C:\\Users\\cfc65\\Documents\\Arduino\\libraries\\.",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino\\.",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\avr\\include\\.",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\teensy\\avr\\cores\\teensy4\\.",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\7.3.0\\include\\.",
+                "C:\\Users\\cfc65\\Documents\\Arduino\\libraries\\IniFile\\.",
+                "C:\\Program Files (x86)\\Arduino\\hardware\\teensy\\avr\\libraries\\FlexCAN_T4\\.",
+                "C:\\Users\\cfc65\\Documents\\Arduino\\libraries\\Adafruit_BluefruitLE_nRF51\\."
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "ARDUINO_ARDUINO_NANO33BLE",
+                "ARDUINO_TEENSY41",
+                "__IMXRT1062__",
+                "USBCON"
+            ],
+            "windowsSdkVersion": "10.0.17134.0",
+            "compilerPath": "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\arm\\bin\\arm-none-eabi-gcc.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "gcc-arm"
+        }
+    ],
+    "version": 4
+}

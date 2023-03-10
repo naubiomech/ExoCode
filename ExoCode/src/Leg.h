@@ -24,6 +24,7 @@
 #include "Utilities.h"
 #include "StatusDefs.h"
 #include "ThIMU.h"
+#include "InclinationDetector.h"
 
 #include <stdint.h>
 #include <algorithm>
@@ -134,7 +135,7 @@ class Leg
 
 		FSR _toe_fsr; /**< toe force sensitive resistor */
 
-        ThIMU* _thimu; /**< thigh IMU */
+        InclinationDetector* inclination_detector;
 
         
         bool _is_left; /**< stores which side the leg is on */

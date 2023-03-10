@@ -5,6 +5,8 @@
 
 #include <Arduino.h>
 
+//TODO: Add angle calibration
+
 /**
  * @brief Class to interface with a microcontroller that samples angle data. Singleton. 
  * 

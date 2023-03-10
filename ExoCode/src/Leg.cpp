@@ -46,9 +46,8 @@ Leg::Leg(bool is_left, ExoData* exo_data)
     _heel_fsr.get_contact_thresholds(_leg_data->heel_fsr_lower_threshold, _leg_data->heel_fsr_upper_threshold);
     _toe_fsr.get_contact_thresholds(_leg_data->toe_fsr_lower_threshold, _leg_data->toe_fsr_upper_threshold);
 
-    _thimu = new ThIMU(_is_left);
+    inclination_detector = new InclinationDetector();
 
-    _thimu->init(100);
 };
 
 void Leg::disable_motors()
@@ -81,7 +80,7 @@ void Leg::run_leg()
     #endif
     // calculates the new motor commands and sends them.
     update_motor_cmds();
-        
+
 }; 
 
 void Leg::read_data()
@@ -94,6 +93,7 @@ void Leg::read_data()
     if (_leg_data->ground_strike)
     {
         _leg_data->expected_step_duration = _update_expected_duration();
+        
     }
 
     _leg_data->toe_off = _check_toe_off();
@@ -101,16 +101,14 @@ void Leg::read_data()
 
     _heel_fsr.get_contact_thresholds(_leg_data->heel_fsr_lower_threshold, _leg_data->heel_fsr_upper_threshold);
     _toe_fsr.get_contact_thresholds(_leg_data->toe_fsr_lower_threshold, _leg_data->toe_fsr_upper_threshold);
-    
-    
-    // Check the thigh IMU at 100Hz
-    static float prev_time = millis();
-    if (millis() - prev_time > 10)
-    {
-        _leg_data->thigh_angle = _thimu->read_data();
-        prev_time = millis();
-    }
 
+    if (!_is_left)
+    {
+        _leg_data->inclination = inclination_detector->check(_leg_data->toe_stance, _leg_data->ankle.joint_position);
+        //logger::print("Got incline: ", LogLevel::Debug); logger::println((uint8_t)_leg_data->inclination, LogLevel::Debug);
+    }
+    
+    
     // Check the joint sensors if the joint is used.
     if (_leg_data->hip.is_used)
     {

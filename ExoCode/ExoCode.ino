@@ -19,7 +19,7 @@
 // Common Libraries
 #include "src\Board.h"
 #include "src\ExoData.h"
-#include "src\Exo.h"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+#include "src\Exo.h"
 #include "src\Utilities.h"
 #include "src\StatusDefs.h"
 
@@ -31,6 +31,7 @@
 #include "src\UARTHandler.h"
 #include "src\uart_commands.h"
 #include "src\UART_msg_t.h"
+#include "src\RealTimeI2C.h"
 
 // Error Handling
 #include "src\error_handlers.h"
@@ -51,14 +52,9 @@ namespace config_info
 
 void setup()
 {
-  //analogWriteResolution(12);
-  analogReadResolution(12);
-  
-  Serial.begin(115200);
- // TODO: Remove serial while for deployed version as this would hang
-     //while (!Serial) {
-      //; // wait for serial port to connect. Needed for native USB
-     //}
+    Serial.begin(logging::baud_rate);
+
+    analogReadResolution(12);
 
     // get the config information from the SD card.
     ini_parser(config_info::config_to_send);
@@ -88,7 +84,10 @@ void setup()
           logger::print("Left_ankle_torque_measure, ");
           logger::print("\n");
       #endif
-  
+
+    #if REAL_TIME_I2C
+      real_time_i2c::init();
+    #endif
 }
 
 
@@ -503,6 +502,7 @@ void loop()
 #include "src/ParseIni.h"
 #include "src/ExoData.h"
 #include "src/ComsMCU.h"
+#include "src/ComsLed.h"
 #include "src/Config.h"
 #include "src/Utilities.h"
 
@@ -510,7 +510,7 @@ void loop()
 #include "src/UARTHandler.h"
 #include "src/uart_commands.h"
 #include "src/UART_msg_t.h"
-#include "src/ComsLed.h"
+#include "src/RealTimeI2C.h"
 
 #include "src/WaistBarometer.h"
 #include "src/InclineDetector.h"
@@ -543,10 +543,7 @@ namespace config_info
 void setup()
 {
     logger::println();
-    //delay(1500); // Wait for the Teensy to read the SD card
 
-//    logger::print("Setup->Getting config");
-    // get the sd card config from the teensy, this has a timeout
     UARTHandler* handler = UARTHandler::get_instance();
     bool timed_out = UART_command_utils::get_config(handler, config_info::config_to_send, (float)UART_times::CONFIG_TIMEOUT);
 
@@ -554,7 +551,6 @@ void setup()
     if (timed_out)
     {
         // yellow
-//        logger::print("Setup->Timed Out Getting Config");
         led->set_color(255, 255, 0);
     }
     else
@@ -562,7 +558,10 @@ void setup()
         // green
         led->set_color(0, 255, 0);
     }
-//    logger::print("Setup->End Setup");
+
+    #if REAL_TIME_I2C
+    real_time_i2c::init();
+    #endif
 }
 
 void loop()
@@ -576,14 +575,6 @@ void loop()
     mcu->update_UART();
     mcu->update_gui();
     mcu->handle_errors();
-
-    static float then = millis();
-    float now = millis();
-    if ((now - then) > INCLINE_DELTA_MS)
-    {
-        then = now;
-        incline_state_t state = incline_detector->run(waist_barometer->getPressure());
-    }
 }
 
 #else // code to use when microcontroller is not recognized.
