@@ -9,6 +9,9 @@
 void SmartBattery::init() {;}
 float SmartBattery::get_parameter()
 {
+    #if REAL_TIME_I2C
+    return 0;
+    #endif
     I2C* instance = I2C::get_instance();
     instance->read_i2c(data, i2c_cmds::smart::get_battery_voltage::addr, i2c_cmds::smart::get_battery_voltage::reg, i2c_cmds::smart::get_battery_voltage::len);
     uint8_t voltage = (data[0] << 8) | data[1];
@@ -18,6 +21,9 @@ float SmartBattery::get_parameter()
 
 void RCBattery::init() 
 {
+    #if REAL_TIME_I2C
+    return;
+    #endif
     Wire.begin();
     Wire.beginTransmission(i2c_cmds::rc::calibrate::addr);
     Wire.write(i2c_cmds::rc::calibrate::reg);
@@ -29,6 +35,9 @@ void RCBattery::init()
 }
 float RCBattery::get_parameter()
 {
+    #if REAL_TIME_I2C
+    return 0;
+    #endif
     // Battery Voltage, could get shunt voltage and calculate current for funsies
     int data[i2c_cmds::rc::get_battery_voltage::len];
     Wire.beginTransmission(i2c_cmds::rc::get_battery_voltage::addr);

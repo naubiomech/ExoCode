@@ -800,6 +800,8 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
             logger::println("Ankle : _controller set");
         #endif
     }  
+
+    
 };
 
 /*
@@ -811,7 +813,7 @@ void AnkleJoint::run_joint()
     _motor->on_off();
     _motor->enable();
 
-    //logger::println("Run Joint");
+    // Angle Sensor data
     _joint_data->prev_joint_position = _joint_data->joint_position;
     const float raw_angle = AnkleAngles::GetInstance()->get(_is_left);
     const float new_angle = _is_left ? (raw_angle):(1 - raw_angle);
@@ -821,14 +823,6 @@ void AnkleJoint::run_joint()
         (_joint_data->joint_position - _joint_data->prev_joint_position) / (1.0f / LOOP_FREQ_HZ),
         _joint_data->joint_velocity, 
         _joint_data->joint_velocity_alpha);
-    // logger::print(String(_is_left) + "Angle:" + String(_joint_data->joint_position));
-    // logger::print("\t");
-    // logger::print(String(_is_left) + "Velocity:" + String(_joint_data->joint_velocity));
-    // if (_is_left) {
-    //     logger::print("\t");
-    // } else {
-    //     logger::println();
-    // }
 
     // make sure the correct controller is running.
     set_controller(_joint_data->controller.controller);

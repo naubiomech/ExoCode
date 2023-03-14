@@ -16,6 +16,7 @@
 #include "JointData.h"
 #include "ParseIni.h"
 #include "Board.h"
+#include "InclinationDetector.h"
 
 #include <stdint.h>
 
@@ -71,7 +72,7 @@ class LegData {
         float expected_duration_window_upper_coeff; /**< factor to multiply by the expected duration to get the upper limit of the window to determine if a ground strike is considered a new step. */
         float expected_duration_window_lower_coeff; /**< factor to multiply by the expected duration to get the lower limit of the window to determine if a ground strike is considered a new step. */
 
-        float thigh_angle; /**< angle of the thigh */
+        Inclination inclination;
 
         float PHJM_state;   /**< state for the PHJM controller, else should be set to 0 (here so it can be plotted) */
 };

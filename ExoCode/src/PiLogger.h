@@ -34,7 +34,12 @@ class PiLogger
 
         _print_tab("Error", _data->error_code);
         _print_tab("ErJID", _data->error_joint_id);
-        _print_tab("Status", _data->get_status());
+        uint16_t exo_status = _data->get_status();
+        bool active_trial = (exo_status == status_defs::messages::trial_on) || 
+        (exo_status == status_defs::messages::fsr_calibration) ||
+        (exo_status == status_defs::messages::fsr_refinement) ||
+        (exo_status == status_defs::messages::error);
+        _print_tab("ActiveTrial", active_trial);
 
         _end();
     }
@@ -49,17 +54,17 @@ class PiLogger
 
     void _print_tab(String name, float value)
     {
-        logger::print(_format(name, value)+"\t");
+        Serial.print(_format(name, value)+"\t");
     }
 
     void _start()
     {
-        logger::println("piLoggerStart");
+        Serial.println("piLoggerStart");
     }
     
     void _end()
     {
-        logger::println("piLoggerEnd");
+        Serial.println("piLoggerEnd");
     }
     
 };

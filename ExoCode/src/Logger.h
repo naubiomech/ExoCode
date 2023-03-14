@@ -24,10 +24,6 @@ namespace logger
         {
             has_started = true;
             Serial.begin(logging::baud_rate);
-            if (logging::level == LogLevel::Debug)
-            {
-                while (!Serial);
-            }
         }
         // Only print if the local log level is lower (more important) or equal to the global log level
         if (level <= logging::level) {

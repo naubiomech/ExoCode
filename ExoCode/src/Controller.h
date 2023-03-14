@@ -25,6 +25,7 @@
 #include "config.h"
 #include "Time_Helper.h"
 #include <algorithm>
+#include <utility>
 
 /**
  * @brief This class defines the interface for controllers.  
@@ -113,6 +114,10 @@ class ProportionalJointMoment : public _Controller
         ~ProportionalJointMoment(){};
         
         float calc_motor_cmd();
+    private:
+        std::pair<float, float> _stance_thresholds_left, _stance_thresholds_right;
+        
+        float _inclination_scaling{1.0f};
 };
 
 

@@ -11,6 +11,8 @@
 
 #if defined(ARDUINO_ARDUINO_NANO33BLE) | defined(ARDUINO_NANO_RP2040_CONNECT)
 
+#define COMSMCU_DEBUG 1
+
 ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
 {
     switch (config_to_send[config_defs::battery_idx])
@@ -35,19 +37,19 @@ ComsMCU::ComsMCU(ExoData* data, uint8_t* config_to_send):_data{data}
     switch (config_to_send[config_defs::exo_name_idx])
     {
         case (uint8_t)config_defs::exo_name::bilateral_ankle:
-            rt_data_len = UART_rt_data::BILATERAL_ANKLE_RT_LEN;
+            rt_data_len = rt_data::BILATERAL_ANKLE_RT_LEN;
             break;
         case (uint8_t)config_defs::exo_name::bilateral_hip:
-            rt_data_len = UART_rt_data::BILATERAL_HIP_RT_LEN;
+            rt_data_len = rt_data::BILATERAL_HIP_RT_LEN;
             break;
         case (uint8_t)config_defs::exo_name::bilateral_hip_ankle:
-            rt_data_len = UART_rt_data::BILATERAL_HIP_ANKLE_RT_LEN;
+            rt_data_len = rt_data::BILATERAL_HIP_ANKLE_RT_LEN;
             break;
         default:
             rt_data_len = 8;
             break;
     }
-    UART_rt_data::msg_len = rt_data_len;
+    //rt_data::msg_len = rt_data_len
     // logger::print("ComsMCU::ComsMCU->rt_data_len: "); logger::println(rt_data_len);
 }
 
@@ -84,7 +86,7 @@ void ComsMCU::update_UART()
     static float del_t = 0;
     del_t += t_helper->tick(_context);
     
-    if (true)//(del_t > UART_times::UPDATE_PERIOD) TODO: Inspect this
+    if (del_t > UART_times::UPDATE_PERIOD) //TODO: Inspect this
     {
         UARTHandler* handler = UARTHandler::get_instance();
         UART_msg_t msg = handler->poll(UART_times::COMS_MCU_TIMEOUT);
@@ -102,37 +104,42 @@ void ComsMCU::update_gui()
 {
     static Time_Helper* t_helper = Time_Helper::get_instance();
     static float my_mark = _data->mark;
+    static float* rt_floats = new float(rt_data::len);
 
-    // static float before = millis();
     // Get real time data from ExoData and send to GUI
-    if (UART_rt_data::new_rt_msg)
+    const bool new_rt_data = real_time_i2c::poll(rt_floats);
+    if (new_rt_data || rt_data::new_rt_msg)
     {
+        _life_pulse();
+        rt_data::new_rt_msg = false;
         // float now = millis();
         // float delta = now - before;
         // logger::print("ComsMCU::update_gui->delta: "); logger::println(delta);
         // before = now;
 
-        UART_rt_data::new_rt_msg = false;
-
         BleMessage rt_data_msg = BleMessage();
         rt_data_msg.command = ble_names::send_real_time_data;
-        if (UART_rt_data::msg.len == UART_rt_data::msg_len) 
-        {
-            rt_data_msg.expecting = UART_rt_data::msg.len;
-            for (int i = 0; i < UART_rt_data::msg.len; i++)
-            {
-                rt_data_msg.data[i] = UART_rt_data::msg.data[i];
-            }
-            //rt_data_msg.data[rt_data_msg.expecting++] = 0;//time_since_last_message/1000.0;
-
-            if (my_mark < _data->mark)
-            {
-                my_mark = _data->mark;
-                rt_data_msg.data[_mark_index] = my_mark;
-            }
-
-            _exo_ble->send_message(rt_data_msg);
+        rt_data_msg.expecting = rt_data::len;
+        Serial.println("Got Data");
+        for (int i = 0; i < rt_data::len; i++)
+        {   
+            #if REAL_TIME_I2C
+            rt_data_msg.data[i] = rt_floats[i];
+            #else
+            rt_data_msg.data[i] = rt_data::float_values[i];
+            #endif
+            //Serial.print(rt_data_msg.data[i]);
         }
+        //Serial.println();
+        //rt_data_msg.data[rt_data_msg.expecting++] = 0;//time_since_last_message/1000.0;
+
+        if (my_mark < _data->mark)
+        {
+            my_mark = _data->mark;
+            rt_data_msg.data[_mark_index] = my_mark;
+        }
+
+        _exo_ble->send_message(rt_data_msg);
     }
 
     // Periodically send status information
@@ -212,7 +219,17 @@ void ComsMCU::_process_complete_gui_command(BleMessage* msg)
         logger::println("ComsMCU::_process_complete_gui_command->No case for command!", LogLevel::Error);
         break;
     }
+}
 
-    //ble_queue::clear();
+
+void ComsMCU::_life_pulse()
+{
+    static int count = 0;
+    count++;
+    if (count > k_pulse_count)
+    {
+        count = 0;
+        digitalWrite(25, !digitalRead(25));
+    }
 }
 #endif
