@@ -12,7 +12,6 @@
     #define AK_Board_V0_5_1 4
 
     // TODO : Incorporate into parse INI
-<<<<<<< HEAD
     #define BOARD_VERSION AK_Board_V0_4  
                
     #define REAL_TIME_I2C 0
