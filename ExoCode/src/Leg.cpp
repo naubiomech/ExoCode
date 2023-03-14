@@ -174,7 +174,7 @@ void Leg::check_calibration()
 void Leg::_check_thresholds()
 {
     _toe_fsr.set_contact_thresholds(_leg_data->toe_fsr_lower_threshold, _leg_data->toe_fsr_upper_threshold);
-    _heel_fsr.set_contact_thresholds(_leg_data->heel_fsr_lower_threshold, _leg_data->heel_fsr_upper_threshold);
+    _heel_fsr.set_contact_thresholds(_leg_data->heel_fsr_lower_threshold+0.05, _leg_data->heel_fsr_upper_threshold+0.05);
 }
 
 bool Leg::_check_ground_strike()

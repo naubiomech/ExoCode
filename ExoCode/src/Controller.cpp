@@ -2127,8 +2127,8 @@ float PtbGeneral::calc_motor_cmd()
                         uint8_t RAM2 = 0;
                         
                         randomSeed(analogRead(A0));
-                        RAM1 = random(_controller_data->iTest,97);
-                        RAM2 = random(RAM1,99);   
+                        RAM1 = random(_controller_data->iTest,80);
+                        RAM2 = random(RAM1,90);   
                         
                         
                         
@@ -2214,7 +2214,7 @@ float PtbGeneral::calc_motor_cmd()
     // _controller_data->iTest++;
 
     // Serial.println(cmd);
-    return cmd;
+    return -1 * cmd;
 }
 
 #endif
