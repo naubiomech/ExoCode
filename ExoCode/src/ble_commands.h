@@ -498,7 +498,7 @@ namespace ble_handlers
         //if (joint->controller.controller)
 
         // Send message over UART
-        UARTHandler* uart_handler = UARTHandler::get_instance();
+   /*     UARTHandler* uart_handler = UARTHandler::get_instance();
         UART_msg_t tx_msg;
         tx_msg.command = UART_command_names::update_controller_param;
         tx_msg.joint_id = used_joints[rand_idx];
@@ -506,7 +506,7 @@ namespace ble_handlers
         tx_msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_INDEX] = (uint8_t)controller_defs::perturbation::perturb_idx;
         tx_msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_VALUE] = (uint8_t)1;
         tx_msg.len = 4;
-        uart_handler->UART_msg(tx_msg);
+        uart_handler->UART_msg(tx_msg);*/
 
         // If Perturb all joints
         /*
