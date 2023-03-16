@@ -263,7 +263,10 @@ namespace controller_defs /**< stores the parameter indexes for different contro
     namespace ptb_general {
         const uint8_t ptb_mode_idx = 0;
         const uint8_t ptb_settings_1_idx = 1;
-        const uint8_t num_parameter = 2;
+        const uint8_t ptb_settings_2_idx = 2;
+        const uint8_t ptb_settings_3_idx = 3;
+        const uint8_t ptb_settings_4_idx = 4;
+        const uint8_t num_parameter = 5;
         
     }
     const uint8_t max_parameters = franks_collins_hip::num_parameter;//user_defined::num_parameter;  // this should be the largest of all the num_parameters
@@ -328,15 +331,25 @@ class ControllerData {
         float fsr_toe_previous_elbow = 0;
         float fsr_heel_previous_elbow = 0;
 
-        // Variables for the PtbGeneral Controller
+        // Variables for the Generalizable Perturbation Controller (ptbGeneral)
         bool isPerturbing = false;
         bool ptbDetermined = false;
         float time_current_ptb = 0;
         float time_previous_ptb = 0;
         uint8_t ptbHead = 0;
         uint8_t ptbTail = 0;
-        uint8_t iTest= 0;
+        uint8_t iPercentGait= 0;
         bool ptbApplied = false;
-};
+        bool ptbRandomIsFirstRun = true;
+        bool ptbWait4ANewStep = true;
+   /*      uint8_t ptbFrequency = 0;
+        uint16_t ptb_iStep = 0;
+		uint16_t ptb_totalSteps = 0;
+		bool ptb_newIsSwing = true;
+		bool ptb_oldIsSwing = true;
+		uint16_t fsrThreshold = 0.3;
+		uint8_t ptb_frequency = 0;
+		uint16_t ptb_iiStep = 0; */
+};      
 
 #endif

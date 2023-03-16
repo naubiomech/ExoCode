@@ -12,13 +12,12 @@
     #define AK_Board_V0_5_1 4
 
     // TODO : Incorporate into parse INI
-    #define BOARD_VERSION AK_Board_V0_4  
-               
-    #define REAL_TIME_I2C 0
+    #define BOARD_VERSION AK_Board_V0_5_1  
+    
     #define LOOP_FREQ_HZ 500
     #define LOOP_TIME_TOLERANCE 0.1 
     
-    //#define USE_SPEED_CHECK 1 
+    #define USE_SPEED_CHECK 1 
 
     // MACRO magic to convert a define to a string
     #define VAL(str) #str
@@ -26,7 +25,7 @@
 
     namespace logging
     {
-        const LogLevel level = LogLevel::Release; // Debug;
+        const LogLevel level = LogLevel::Release;
         const int baud_rate = 115200;
     }
     
@@ -34,7 +33,7 @@
     {
         const unsigned int NUM_START_STOP_BLINKS = 1;  // the number of times to have the LED on during the start stop sequence
         const unsigned int SYNC_HALF_PERIOD_US = 125000;  // half blink period in micro seconds
-        const unsigned int SYNC_START_STOP_HALF_PERIOD_US = 4 * SYNC_HALF_PERIOD_US; // Half blink period for the begining and end of the sequence. This is usually longer so it is easy to identify.
+        const unsigned int SYNC_START_STOP_HALF_PERIOD_US = 4 * SYNC_HALF_PERIOD_US; // Half blink period for the begining and end of the sequence.  This is usually longer so it is easy to identify.
     }
 
     namespace fsr_config
@@ -53,7 +52,7 @@
     namespace torque_calibration
     {
         const float AI_CNT_TO_V = 3.3 / 4096; // conversion from count to voltage
-        const float TRQ_V_TO_NM = 53.70; // conversion from voltage to Nm (Negative do to mismatch in torque sensor and motor torque directions)
+        const float TRQ_V_TO_NM = 42.500; // conversion from voltage to Nm (Negative do to mismatch in torque sensor and motor torque directions)
     }
 
     namespace BLE_times

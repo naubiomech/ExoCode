@@ -6,7 +6,7 @@
 */
 #if defined(ARDUINO_TEENSY36) | defined(ARDUINO_TEENSY41)
 
-#define INCLUDE_FLEXCAN_DEBUG  // used to print CAN Debugging messages for the motors.
+//#define INCLUDE_FLEXCAN_DEBUG  // used to print CAN Debugging messages for the motors.
 //#define MAKE_PLOTS  // Do prints for plotting when uncommented.
 //#define MAIN_DEBUG  // Print Arduino debugging statements when uncommented.
 //#define HEADLESS // used when there is no app access.
@@ -19,7 +19,7 @@
 // Common Libraries
 #include "src\Board.h"
 #include "src\ExoData.h"
-#include "src\Exo.h"
+#include "src\Exo.h"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 #include "src\Utilities.h"
 #include "src\StatusDefs.h"
 
@@ -31,7 +31,6 @@
 #include "src\UARTHandler.h"
 #include "src\uart_commands.h"
 #include "src\UART_msg_t.h"
-#include "src\RealTimeI2C.h"
 
 // Error Handling
 #include "src\error_handlers.h"
@@ -52,9 +51,14 @@ namespace config_info
 
 void setup()
 {
-    Serial.begin(logging::baud_rate);
-
-    analogReadResolution(12);
+  //analogWriteResolution(12);
+  analogReadResolution(12);
+  
+  Serial.begin(115200);
+ // TODO: Remove serial while for deployed version as this would hang
+     //while (!Serial) {
+      //; // wait for serial port to connect. Needed for native USB
+     //}
 
     // get the config information from the SD card.
     ini_parser(config_info::config_to_send);
@@ -84,10 +88,7 @@ void setup()
           logger::print("Left_ankle_torque_measure, ");
           logger::print("\n");
       #endif
-
-    #if REAL_TIME_I2C
-      real_time_i2c::init();
-    #endif
+  
 }
 
 
@@ -460,7 +461,7 @@ void loop()
     
     if (active_trial && ran && !exo_data.user_paused)
     {
-        new_error = error_manager.check();
+        //new_error = error_manager.check();
     }
     
     if (new_error && !reported_error)
@@ -502,7 +503,6 @@ void loop()
 #include "src/ParseIni.h"
 #include "src/ExoData.h"
 #include "src/ComsMCU.h"
-#include "src/ComsLed.h"
 #include "src/Config.h"
 #include "src/Utilities.h"
 
@@ -510,7 +510,7 @@ void loop()
 #include "src/UARTHandler.h"
 #include "src/uart_commands.h"
 #include "src/UART_msg_t.h"
-#include "src/RealTimeI2C.h"
+#include "src/ComsLed.h"
 
 #include "src/WaistBarometer.h"
 #include "src/InclineDetector.h"
@@ -543,7 +543,10 @@ namespace config_info
 void setup()
 {
     logger::println();
+    //delay(1500); // Wait for the Teensy to read the SD card
 
+//    logger::print("Setup->Getting config");
+    // get the sd card config from the teensy, this has a timeout
     UARTHandler* handler = UARTHandler::get_instance();
     bool timed_out = UART_command_utils::get_config(handler, config_info::config_to_send, (float)UART_times::CONFIG_TIMEOUT);
 
@@ -551,6 +554,7 @@ void setup()
     if (timed_out)
     {
         // yellow
+//        logger::print("Setup->Timed Out Getting Config");
         led->set_color(255, 255, 0);
     }
     else
@@ -558,10 +562,7 @@ void setup()
         // green
         led->set_color(0, 255, 0);
     }
-
-    #if REAL_TIME_I2C
-    real_time_i2c::init();
-    #endif
+//    logger::print("Setup->End Setup");
 }
 
 void loop()
@@ -575,6 +576,14 @@ void loop()
     mcu->update_UART();
     mcu->update_gui();
     mcu->handle_errors();
+
+    static float then = millis();
+    float now = millis();
+    if ((now - then) > INCLINE_DELTA_MS)
+    {
+        then = now;
+        incline_state_t state = incline_detector->run(waist_barometer->getPressure());
+    }
 }
 
 #else // code to use when microcontroller is not recognized.

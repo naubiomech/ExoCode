@@ -282,7 +282,8 @@ namespace config_defs
         const IniKeyCode board_version = 
         { 
                     {"0.1", (uint8_t)config_defs::board_version::zero_one},
-                    {"0.3", (uint8_t)config_defs::board_version::zero_three},        
+                    {"0.3", (uint8_t)config_defs::board_version::zero_three},
+                    {"0.5.1", (uint8_t)config_defs::board_version::zero_five_one},
         };
         
         const IniKeyCode battery = 
