@@ -400,42 +400,17 @@ class ZhangCollins: public _Controller
         ~ZhangCollins(){};
         
         float calc_motor_cmd();
+
+        float _spline_generation(float node1, float node2, float node3, float torque_magnitude, float percent_gait);
+
     private:
-        /**
-         * @brief Recalculates the splines for the curve when the parameters change, and sets the member variables.
-         *
-         * @param mass of the user in kg
-         * @param peak torque normalized by user mass
-         * @param percent gait to start ramping up the torque
-         * @param percent gait to start the push off spline
-         * @param percent gait where peak torque occurs
-         * @param percent gait to stop applying torque
-         */
-        void _update_spline_parameters(int mass, float peak_normalized_torque, float t0, float t1, float t2, float t3);
-                
-        // store the parameters so we can check if they change.
-        int _mass; /**< user mass in kg */
-        float _peak_normalized_torque_Nm_kg; /**< peak torque normalized by user mass */
-        float _t0; /**< percent gait to start ramping up the torque */
-        float _t1; /**< percent gait to start the push off spline */
-        float _t2; /**< percent gait where peak torque occurs */
-        float _t3; /**< percent gait to stop applying torque */
-                
-        // peak torque
-        float _tp_Nm; /**< Unnormalied peak torque */
-        // cable tension torque.  Not needed for our design, but used to match the paper.
-        float _ts_Nm; /**< cable tension torque that is ramped up to in early stance.  Not needed for our design, but used to match the paper. */
-        // parameters for rising spline
-        float _a1; /**< parameter for rising spline */
-        float _b1; /**< parameter for rising spline */
-        float _c1; /**< parameter for rising spline */
-        float _d1; /**< parameter for rising spline */
-        
-        // parameters for falling spline
-        float _a2; /**< parameter for falling spline */
-        float _b2; /**< parameter for falling spline */
-        float _c2; /**< parameter for falling spline */
-        float _d2; /**< parameter for falling spline */
+
+        float min_peak_time;
+        float max_peak_time;
+        float min_rise_time;
+        float max_rise_time;
+        float min_fall_time;
+        float max_fall_time;
 };
 
 /**

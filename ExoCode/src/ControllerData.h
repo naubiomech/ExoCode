@@ -158,23 +158,17 @@ namespace controller_defs /**< stores the parameter indexes for different contro
 
     namespace zhang_collins
     {
-        // user mass kg
-        const uint8_t mass_idx = 0;
-        // peak torque divided by user mass 
-        const uint8_t peak_normalized_torque_Nm_kg_idx = 1;
-        // ramp start percent gait x10
-        const uint8_t t0_idx = 2;
-        // torque onset percent gait x10
-        const uint8_t t1_idx = 3;
-        // peak torque point as percent gait x10
-        const uint8_t t2_idx = 4;
-        // offset as percent gait x10
-        const uint8_t t3_idx = 5;
-        const uint8_t use_pid_idx = 6;
-        const uint8_t p_gain_idx = 7;
-        const uint8_t i_gain_idx = 8;
-        const uint8_t d_gain_idx = 9;
-        const uint8_t num_parameter = 10;
+
+        const uint8_t torque_idx = 0;                           //Magnitude of Peak Torque in Nm
+        const uint8_t peak_time_idx = 1;                        //Time when peak torque occurs (% of gait cycle)
+        const uint8_t rise_time_idx = 2;                        //Time from zero torque until peak torque (Expressed as a % of gait cycle)
+        const uint8_t fall_time_idx = 3;                        //Time from peak torque until zero torque (Expressed as a % of gait cycle)
+        const uint8_t direction_idx = 4;                        //Flag to flip torque from PF to DF
+        const uint8_t use_pid_idx = 5;                          //Flag to use PID control
+        const uint8_t p_gain_idx = 6;                           //Value of P Gain for PID control
+        const uint8_t i_gain_idx = 7;                           //Value of I Gain for PID control
+        const uint8_t d_gain_idx = 8;                           //Value of D Gain for PID control 
+        const uint8_t num_parameter = 9;
     }
 
     namespace franks_collins_hip
