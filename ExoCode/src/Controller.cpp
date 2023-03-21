@@ -1328,157 +1328,124 @@ ZhangCollins::ZhangCollins(config_defs::joint_id id, ExoData* exo_data)
     #ifdef CONTROLLER_DEBUG
         logger::println("ZhangCollins::Constructor");
     #endif
-    _mass = -1;
-    _peak_normalized_torque_Nm_kg = -1;
-    _t0 = -1;
-    _t1 = -1;
-    _t2 = -1;
-    _t3 = -1;
-            
-    // peak torque
-    _tp_Nm = -1;
-    // cable tension torque.  Not needed for our design, but used to match the paper.
-    _ts_Nm = -1;
-    // parameters for rising spline
-    _a1 = -1;
-    _b1 = -1;
-    _c1 = -1;
-    _d1 = -1;
-    
-    // parameters for falling spline
-    _a2 = -1;
-    _b2 = -1;
-    _c2 = -1;
-    _d2 = -1;
+
+        min_peak_time = 35;
+        max_peak_time = 55;
+        min_rise_time = 10;
+        max_rise_time = 40;
+        min_fall_time = 5;
+        max_fall_time = 20;
+
 };
 
-
-void ZhangCollins::_update_spline_parameters(int mass, float peak_normalized_torque_Nm_kg, float ramp_start_percent_gait, float onset_percent_gait, float peak_percent_gait, float stop_percent_gait)
-{
-    
-    _mass = mass; // kg
-    _t0 = ramp_start_percent_gait;
-    _t1 = onset_percent_gait;
-    _t2 = peak_percent_gait;
-    _t3 = stop_percent_gait;
-    
-    // todo : add fixed point
-    float t0 = ramp_start_percent_gait;
-    float t1 = onset_percent_gait;
-    float t2 = peak_percent_gait;
-    float t3 = stop_percent_gait;
-    
-    _peak_normalized_torque_Nm_kg = peak_normalized_torque_Nm_kg; // 0.76; // Using a smaller value due to Dephy Exo Limit.
-    
-    // unnormalize the peak torque
-    _tp_Nm = _mass * (float)peak_normalized_torque_Nm_kg;
-    _ts_Nm = 2;
-
-    // calculate the spline parameters
-    _a1 = (2 *(_tp_Nm - _ts_Nm))/pow((t1 - t2),3);
-    _b1 = -((3 *(t1 + t2) *(_tp_Nm - _ts_Nm)) / pow((t1 - t2),3));
-    _c1 = (6* t1 * t2 * (_tp_Nm - _ts_Nm))/pow((t1 - t2),3);
-    _d1 = -((-pow(t1, 3) * _tp_Nm + 3 * pow(t1, 2) * t2 * _tp_Nm - 3 * t1 * pow(t2,2) * _ts_Nm +
-            pow(t2,3) * _ts_Nm)/pow((t1 - t2),3));
-
-    
-    _a2 = -((_tp_Nm - _ts_Nm)/(2* pow((t2 - t3),3)));
-    _b2 = (3 *t3 *(_tp_Nm - _ts_Nm))/(2 *pow((t2 - t3),3));
-    _c2 = (3 *(pow(t2,2) - 2 *t2 *t3) * (_tp_Nm - _ts_Nm))/(2* pow((t2 - t3),3));
-    _d2 = -((3 * pow(t2,2) * t3 * _tp_Nm - 6 * t2 * pow(t3, 2) * _tp_Nm + 2 * pow(t3,3) * _tp_Nm -
-              2 * pow(t2,3) * _ts_Nm + 3 * pow(t2, 2) * t3 * _ts_Nm)/(2 * pow((t2 - t3), 3)));
-
-
-    return;
-};
-
-/*
- *
- */
 float ZhangCollins::calc_motor_cmd()
 {
-    // check if the parameters have changed and update the spline if they have
-    if ((_mass != _controller_data->parameters[controller_defs::zhang_collins::mass_idx])
-        || (_peak_normalized_torque_Nm_kg != _controller_data->parameters[controller_defs::zhang_collins::peak_normalized_torque_Nm_kg_idx])
-        || (_t0 != _controller_data->parameters[controller_defs::zhang_collins::t0_idx])
-        || (_t1 != _controller_data->parameters[controller_defs::zhang_collins::t1_idx])
-        || (_t2 != _controller_data->parameters[controller_defs::zhang_collins::t2_idx])
-        || (_t3 != _controller_data->parameters[controller_defs::zhang_collins::t3_idx]))
-    {
-        _update_spline_parameters(_controller_data->parameters[controller_defs::zhang_collins::mass_idx]
-            , _controller_data->parameters[controller_defs::zhang_collins::peak_normalized_torque_Nm_kg_idx]
-            , _controller_data->parameters[controller_defs::zhang_collins::t0_idx]
-            , _controller_data->parameters[controller_defs::zhang_collins::t1_idx]
-            , _controller_data->parameters[controller_defs::zhang_collins::t2_idx]
-            , _controller_data->parameters[controller_defs::zhang_collins::t3_idx]);
-        // logger::print("ZhangCollins::calc_motor_cmd : Updated parameters");
-        // logger::print("\n");
-        // delay(1000);
     
-    }
-    
-    // based on the percent gait find the torque to apply.
-    // convert to floats so we don't need to modify everywhere in the code.
+    //Define the variables
     float percent_gait = _leg_data->percent_gait;
-    float t0 = _t0;
-    float t1 = _t1;
-    float t2 = _t2;
-    float t3 = _t3;
     float torque_cmd = 0;
-    
-    // logger::print("ZhangCollins::calc_motor_cmd : Percent Gait = ");
-    // logger::print(percent_gait);
-    // logger::print("\n");
-    // logger::print("ZhangCollins::calc_motor_cmd : t0 = ");
-    // logger::print(t0);
-    // logger::print("\n");
-    // logger::print("ZhangCollins::calc_motor_cmd : t1 = ");
-    // logger::print(t1);
-    // logger::print("\n");
-    // logger::print("ZhangCollins::calc_motor_cmd : t2 = ");
-    // logger::print(t2);
-    //logger::print("\n");
-    // logger::print("ZhangCollins::calc_motor_cmd : t3 = ");
-    // logger::print(t3);
-    //logger::print("\n\n");
-    
-    
-    
-    if (-1 != percent_gait) //we have a valid calculation for percent_gait
+
+    //Pull in user defined parameter values
+    float peak_torque_Nm = _controller_data->parameters[controller_defs::zhang_collins::torque_idx];
+    float peak_time = _controller_data->parameters[controller_defs::zhang_collins::peak_time_idx];
+    float rise_time = _controller_data->parameters[controller_defs::zhang_collins::rise_time_idx];
+    float fall_time = _controller_data->parameters[controller_defs::zhang_collins::fall_time_idx];
+
+    //Saftey Check to make sure parameters are within defined range
+    if (peak_time < min_peak_time)
     {
-        if ((percent_gait <= t1) && (0 <= percent_gait))  // torque ramp to ts at t1
-        {
-            torque_cmd = _ts_Nm / (t1 - t0) * percent_gait - _ts_Nm/(t1 - t0) * t0;  
-            // logger::print("ZhangCollins::calc_motor_cmd : Ramp");
-            // logger::print("\n");
-            
-        }
-        else if (percent_gait <= t2) // the rising spline
-        {
-            torque_cmd = _a1 * pow(percent_gait,3) + _b1 * pow(percent_gait,2) + _c1 * percent_gait + _d1;
-            // logger::print("ZhangCollins::calc_motor_cmd : Rising");
-            // logger::print("\n");
-        }
-        else if (percent_gait <= t3)  // the falling spline
-        {
-            torque_cmd = _a2 * pow(percent_gait,3) + _b2 * pow(percent_gait,2) + _c2 * percent_gait + _d2;
-            // logger::print("ZhangCollins::calc_motor_cmd : Falling");
-            // logger::print("\n");
-        }
-        else  // go to the slack position if we aren't commanding a specific value
-        {
-            torque_cmd = 0;
-            // logger::print("ZhangCollins::calc_motor_cmd : Swing");
-            // logger::print("\n");
-        }
-    }  
-    
-    // add the PID contribution to the feed forward command
-    float cmd = torque_cmd + (_controller_data->parameters[controller_defs::zhang_collins::use_pid_idx] 
-                ? _pid(torque_cmd, _joint_data->torque_reading,_controller_data->parameters[controller_defs::zhang_collins::p_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::i_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::d_gain_idx]) 
-                : 0); 
-                
+        peak_time = min_peak_time;
+    }
+
+    if (peak_time > max_peak_time)
+    {
+        peak_time = max_peak_time;
+    }
+
+    if (rise_time < min_rise_time)
+    {
+        rise_time = min_rise_time;
+    }
+
+    if (rise_time > max_rise_time)
+    {
+        rise_time = max_rise_time;
+    }
+
+    if (fall_time < min_fall_time)
+    {
+        fall_time = min_fall_time;
+    }
+
+    if (fall_time > max_fall_time)
+    {
+        fall_time = max_fall_time;
+    }
+
+    if ((peak_time + fall_time) > 65)
+    {
+        fall_time = 65 - peak_time;
+    }
+
+    //Calculates Nodes for Spline Generation
+    float node1 = peak_time - rise_time;
+    float node2 = peak_time;
+    float node3 = peak_time + fall_time;
+
+    //Calculates Torque Command
+    torque_cmd = _spline_generation(node1, node2, node3, peak_torque_Nm, percent_gait);
+
+    //PID Control
+    float cmd = torque_cmd + (_controller_data->parameters[controller_defs::zhang_collins::use_pid_idx]
+        ? _pid(torque_cmd, _joint_data->torque_reading, _controller_data->parameters[controller_defs::zhang_collins::p_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::i_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::d_gain_idx])
+        : 0);
+
+
+    if (_controller_data->parameters[controller_defs::zhang_collins::direction_idx] > 0)
+    {
+        cmd = -1 * cmd;
+    }
+
     return cmd;
+};
+
+float ZhangCollins::_spline_generation(float node1, float node2, float node3, float torque_magnitude, float percent_gait)
+{
+    float u;
+
+    float x[3] = { node1, node2, node3 };
+    float y[3] = { 0, torque_magnitude, 0 };
+
+    float h[2] = { (x[1] - x[0]), (x[2] - x[1]) };
+    float delta[2] = { ((y[1] - y[0]) / h[0]), ((y[2] - y[1]) / h[1]) };
+
+    float dy[3] = { 0, 0, ((3 * delta[1]) / 2) };
+
+    if (percent_gait < x[0] || percent_gait > x[2])
+    {
+        u = 0;
+    }
+    else
+    {
+        int k = -1;
+        if (percent_gait >= x[0] && percent_gait < (x[1]))
+        {
+            k = 0;
+        }
+        else if (percent_gait >= x[1] && percent_gait < x[2])
+        {
+            k = 1;
+        }
+
+        float a = delta[k];
+        float b = (a - dy[k]) / h[k];
+        float c = (dy[k + 1] - a) / h[k];
+        float d = (c - b) / h[k];
+
+        u = y[k] + (percent_gait - x[k]) * (dy[k] + (percent_gait - x[k]) * (b + (percent_gait - x[k + 1]) * d));
+    }
+
+    return u;
 };
 
 
@@ -1727,130 +1694,27 @@ Perturbation::Perturbation(config_defs::joint_id id, ExoData* exo_data)
         logger::println("Perturbation::Constructor");
     #endif
     
-    start_time = 0;
-    timer = 0;
-    current_time = 0;
-    n = 0;
 };
 
 float Perturbation::calc_motor_cmd()
 {
     float cmd = 0;     //Creates the cmd variable and initializes it to 0;
 
-    //logger::print("Perturbation::calc_motor_cmd : Pertrub_idx : ");
-    //logger::print(_controller_data->parameters[controller_defs::perturbation::perturb_idx]);
-    //logger::print("\n");
+    float percent_gait = _leg_data->percent_gait;           //Calculates the percentage of the gait cycle
 
-    if (_controller_data->parameters[controller_defs::perturbation::perturb_idx] > 0)  //If the flag is raised (via the button press)
+    if (percent_gait >= _controller_data->parameters[controller_defs::perturbation::threshold_start_idx] && percent_gait <= _controller_data->parameters[controller_defs::perturbation::threshold_end_idx])
     {
-        //logger::print("Perturbation::calc_motor_cmd : Perturbation Sent ");
-        //logger::print("\n");
-
-        if (_leg_data->do_calibration_toe_fsr || _leg_data->toe_stance == 0)                      //If the FSRs are being calibrated or if the toe fsr is 0, send a command of zero
+        if (_controller_data->parameters[controller_defs::perturbation::direction_idx] > 0)
         {
-            cmd = 0;
-            _controller_data->parameters[controller_defs::perturbation::perturb_idx] = 0;
-            //logger::print("Foot is off the floor");
-            //logger::print("\n");
-        }
-        else
-        {
-
-            if (timer == 0)                                                         //If the timer was previously not in use, mark the timepoint that the perturbation started                                                
-            {
-                start_time = millis();
-                //logger::print("Perturbation::calc_motor_cmd : Start Time : ");
-                //logger::print(start_time);
-                //logger::print("\n");
-            }
-
-            timer = millis();                                                       //Record the current time
-
-            //logger::print("Perturbation::calc_motor_cmd : timer : ");
-            //logger::print(timer);
-            //logger::print("\n");
-
-            current_time = timer - start_time;                                      //Calcualtes the current time relative to the start of the controller 
-
-            //logger::print("Perturbation::calc_motor_cmd : Current Time : ");
-            //logger::print(current_time);
-            //logger::print("\n");
-
-            if (current_time <= ((_controller_data->parameters[controller_defs::perturbation::duration_idx]) * 1000))       //If the current time is less than or equal to the duration of the perturbation defined by the user
-            {
-                cmd = _controller_data->parameters[controller_defs::perturbation::amplitude_idx];                           //Command being sent to the motor is equal to the setpoint defined by the user
-                //logger::print("Perturbation::calc_motor_cmd : cmd : on: ");
-                //logger::print(cmd);
-                //logger::print("\n");
-            }
-            else
-            {
-                cmd = 0;                                                                                                    //If the current time is greater than the user defined duration than send a motor command of zero
-                //logger::print("Perturbation::calc_motor_cmd : Exceeded Time Duration : Torque Set to Zero ");
-                //logger::print("\n");
-            }
-
-            //logger::print("Perturbation::calc_motor_cmd : Direction : ");
-            //logger::print(_controller_data->parameters[controller_defs::perturbation::direction_idx]);
-            //logger::print("\n");
-
-            if (_controller_data->parameters[controller_defs::perturbation::direction_idx] == 0)                            //If the user wants to send a PF/Flexion torque
-            {
-                cmd = 1 * cmd;
-            }
-            else if (_controller_data->parameters[controller_defs::perturbation::direction_idx] == 1)                       //If the user wants to send a DF/Extension torque
-            {
-                cmd = -1 * cmd;
-            }
-            else
-            {
-                cmd = cmd;                                                                                                  //If the direction flag is something other than 0 or 1, do nothing to the motor command
-            }
-
-            if (current_time > ((_controller_data->parameters[controller_defs::perturbation::duration_idx]) * 1000))        //If the current time exceeds the desired perturbation time, reset values to 0 and exit the controller
-            {
-                timer = 0;
-                current_time = 0;
-                _controller_data->parameters[controller_defs::perturbation::perturb_idx] = 0;
-
-                //logger::print("Perturbation::calc_motor_cmd : Parameters Rest ");
-                //logger::print("\n");
-            }
+            cmd = -1 * _controller_data->parameters[controller_defs::perturbation::amplitude_idx];
         }
     }
     else
     {
-        cmd = 0;            //If the flag is set to 0 (the button hasn't been pushed) then send a 0 torque command to the motor
+        cmd = 0;
     }
-
-
-    if (n == 0)
-    {
-        logger::print("Perturbation::calc_motor_cmd : Amplitude : ");
-        logger::print(_controller_data->parameters[controller_defs::perturbation::amplitude_idx]);
-        logger::print("\n");
-
-        logger::print("Perturbation::calc_motor_cmd : Duration : ");
-        logger::print(_controller_data->parameters[controller_defs::perturbation::duration_idx]);
-        logger::print("\n");
-
-        logger::print("Perturbation::calc_motor_cmd : Direction : ");
-        logger::print(_controller_data->parameters[controller_defs::perturbation::direction_idx]);
-        logger::print("\n");
-
-        logger::print("Perturbation::calc_motor_cmd : On-off Flag : ");
-        logger::print(_controller_data->parameters[controller_defs::perturbation::perturb_idx]);
-        logger::print("\n");
-    }
-
-    n = n + 1;
-
-    if (n >= 150)
-    {
-        n = 0;
-    }
-
-    return cmd;
+ 
+    return -1*cmd;
 };
 
 
