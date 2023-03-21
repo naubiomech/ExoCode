@@ -2083,14 +2083,10 @@ PtbGeneral::PtbGeneral(config_defs::joint_id id, ExoData* exo_data)
 
 float PtbGeneral::calc_motor_cmd()
 {
-    // if (_controller_data->iPercentGait >= 99) {
-    //     _controller_data->iPercentGait = 0; // _leg_data->percent_gait
-    // }
-    // float fsrToeTest = 0.25; // _leg_data->toe_fsr
-    // float fsrHeelTest = 0.25; // _leg_data->heel_fsr
-    _controller_data->iPercentGait = _leg_data->percent_gait;
-    float fsrToeTest = _leg_data->toe_fsr;
-    float fsrHeelTest = _leg_data->heel_fsr;
+    // float ptb_fsrToe = 0.25; // _leg_data->toe_fsr
+    // float ptb_fsrHeel = 0.25; // _leg_data->heel_fsr
+    float ptb_fsrToe = _leg_data->toe_fsr;
+    float ptb_fsrHeel = _leg_data->heel_fsr;
 
     float cmd = 0;
     //Serial.print("\n");
@@ -2098,241 +2094,123 @@ float PtbGeneral::calc_motor_cmd()
      //Serial.print((_controller_data->parameters[controller_defs::ptb_general::ptb_mode_idx]));
      //Serial.print(" | ");
     switch ((int)_controller_data->parameters[controller_defs::ptb_general::ptb_mode_idx]) {
-       case 1: // constant torque during swing phase; the exact percent gait will be random
-        Serial.print("Is in Mode 1. cmd set to ");
+		case 1: // constant torque during swing phase; the exact percent gait will be random
+        Serial.print("\nIs in Mode 1 (continuous rotation). idx: 1 |  ");
         Serial.print(_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx]);
-        Serial.print(" ");
-            if (_controller_data->isPerturbing) {
-                if (_controller_data->iPercentGait < _controller_data->ptbHead || _controller_data->iPercentGait > _controller_data->ptbTail) {
-                    _controller_data->isPerturbing = false;
-                    _controller_data->ptbDetermined = false;
-                    _controller_data->ptbApplied = true;
-                }
-            }
-            else {
-                Serial.println("Is not perturbing.");
-                if (_controller_data->ptbDetermined) {
-                   Serial.println("Perturbation is determined.");
-                    if (_controller_data->iPercentGait >= _controller_data->ptbHead && _controller_data->iPercentGait <= _controller_data->ptbTail && fsrToeTest <0.3 && fsrHeelTest < 0.3) {
-                        _controller_data->isPerturbing = true;
-                        
-                    }
-                }
-                else {
-                    Serial.println("Perturbation is NOT determined.");
-                    // if (fsrToeTest <0.3 && fsrHeelTest < 0.3) {
-                        Serial.print("\n Random number updated.\n");
-                        uint8_t RAM1 = 0;
-                        uint8_t RAM2 = 0;
-                        
-                        randomSeed(analogRead(A0));
-                        RAM1 = random(_controller_data->iPercentGait,97);
-                        RAM2 = random(RAM1,99);   
-                        
-                        
-                        
-                        _controller_data->ptbHead = min(RAM1,RAM2);
-                        _controller_data->ptbTail = max(RAM1,RAM2);
-                        // int phase_range_ptb = 100 - iTest;
-                        // std::random_device rd{}; // obtain a random number from hardware
-                        // std::mt19937 gen{rd()}; // seed the generator
-                        // std::uniform_int_distribution<int> distr{_controller_data->iPercentGait, 100}; // define the range
-                        // // uint8_t ptbStart = rand() % phase_range_ptb + iTest;
-                        // _controller_data->ptbHead = distr(gen);
-                        // //std::random_device rd1{}; // obtain a random number from hardware
-                        // //std::mt19937 gen(rd1()); // seed the generator
-                        // std::uniform_int_distribution<> distr(_controller_data->ptbHead, 100); // define the range
-                        // _controller_data->ptbTail = distr(gen);
-                        _controller_data->ptbDetermined = true;
-                        _controller_data->ptbApplied = false;
-                        // delete rd;
-                        // delete rd1;
-                        // delete gen;
-                        // delete gen1;
-                        // delete distr;
-                        // delete distr1;
-                        //Serial.println(_controller_data->ptbHead);
-                        //Serial.println(_controller_data->ptbTail);
-                    // }
-                }
-            }
-            
-                if (_controller_data->isPerturbing && !_controller_data->ptbApplied) {
-                    cmd = _controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
-                    // cmd = 3.14159;
-                }
-                else {
-                cmd = 0;
-                }
-            
-            break;
-            // return;
-
-            case 2:
-            cmd = -1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
-            Serial.print("\n");
-            Serial.print("Is in continuous rotation mode.\n");
-            break;
+        Serial.print(" | ");
+		Serial.print(_controller_data->parameters[controller_defs::ptb_general::ptb_settings_2_idx]);
+		Serial.print(" | ");
+		Serial.print(_controller_data->parameters[controller_defs::ptb_general::ptb_settings_3_idx]);
+		Serial.print(" | ");
+		Serial.print(_controller_data->parameters[controller_defs::ptb_general::ptb_settings_4_idx]);
+        cmd = -1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
+        break;
 			
-			/* case 3:
-			_controller_data->ptb_iiStep++;
-			if (_controller_data->ptbRandomIsFirstRun) {
-                randomSeed(analogRead(A16));
-                _controller_data->ptbRandomIsFirstRun = false;
-            }
-			_controller_data->ptb_oldIsSwing = _controller_data->ptb_newIsSwing;
-			//if ((fsrToeTest > _controller_data->fsrThreshold)&&(!_joint_data->is_left)) {
-			//if (_leg_data->toe_stance&&(!_joint_data->is_left)) {
-			if (_leg_data->toe_stance) {
-				
-				_controller_data->ptb_newIsSwing = false;
-			}
-			//else if (!_joint_data->is_left) {
-			else {
-				_controller_data->ptb_newIsSwing = true;
-			}
-			if ((_controller_data->ptb_oldIsSwing == false) && (_controller_data->ptb_newIsSwing == true)) {
-				_controller_data->ptb_iStep++;
-				_controller_data->ptb_totalSteps++;
-				if (_joint_data->is_left) {
-				Serial.print("\niStep: ");
-				Serial.print(_controller_data->ptb_iStep);
-				Serial.print(" | ");
-				Serial.print(_controller_data->ptb_frequency);
-				}
-				_controller_data->ptb_iiStep = 0;
-			}
+		case 3://iteration oriented
+		_controller_data->ptb_iiStep++;
+		if (_controller_data->ptbRandomIsFirstRun) {
+			randomSeed(analogRead(A16));
+			_controller_data->ptbRandomIsFirstRun = false;
+		}
+		_controller_data->ptb_oldIsSwing = _controller_data->ptb_newIsSwing;
+		if (_leg_data->toe_stance) {
 			
-			
-			
-			
-			
-			
-			
-			if (_controller_data->ptb_iStep == _controller_data->ptb_frequency) {
-				//Serial.println("_controller_data->ptb_iStep == _controller_data->ptb_frequency");
-				
-				
-				// if (!_joint_data->is_left) {
-				// Serial.print("\n---------iStep: ");
-				// Serial.print(_controller_data->ptb_iStep);
-				// Serial.print(" | ");
-				// Serial.print(_controller_data->ptb_frequency);
-				// Serial.print(" | iiStep: ");
-				// Serial.print(_controller_data->ptb_iiStep);
-				// Serial.print(" ---------| Head: ");
-				// Serial.print(100*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_2_idx]);
-				// Serial.print(" ---------| Tail: ");
-				// Serial.print(100*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_3_idx]);
-				// }
-				
-				
-				if ((_controller_data->ptb_iiStep > 100*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_2_idx]) && (_controller_data->ptb_iiStep < 100*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_3_idx])){
-				cmd = -1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
-				if (_joint_data->is_left) {
-				Serial.println("Generating torque...");
-				}
-				}
-				else {
-					cmd = 0;
-				}
+			_controller_data->ptb_newIsSwing = false;
+		}
+		else {
+			_controller_data->ptb_newIsSwing = true;
+		}
+		if ((_controller_data->ptb_oldIsSwing == false) && (_controller_data->ptb_newIsSwing == true)) {
+			_controller_data->ptb_iStep++;
+			//_controller_data->ptb_totalSteps++;
+/* 				if (_joint_data->is_left) {
+			Serial.print("\niStep: ");
+			Serial.print(_controller_data->ptb_iStep);
+			Serial.print(" | ");
+			Serial.print(_controller_data->ptb_frequency);
+			} */
+			_controller_data->ptb_iiStep = 0;
+		}		
+		if (_controller_data->ptb_iStep == _controller_data->ptb_frequency) {
+			if ((_controller_data->ptb_iiStep > 100*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_2_idx]) && (_controller_data->ptb_iiStep < 100*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_3_idx])){
+			cmd = -1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
 			}
 			else {
 				cmd = 0;
 			}
-			if (_controller_data->ptb_iStep > _controller_data->ptb_frequency) {
-				_controller_data->ptb_iStep = 0;
-				_controller_data->ptb_frequency = random(_controller_data->parameters[controller_defs::ptb_general::ptb_settings_4_idx]);
+		}
+		else {
+			cmd = 0;
+		}
+		if (_controller_data->ptb_iStep > _controller_data->ptb_frequency) {
+			_controller_data->ptb_iStep = 0;
+			_controller_data->ptb_frequency = random(_controller_data->parameters[controller_defs::ptb_general::ptb_settings_4_idx]);
+		}
+		break;
+		
+
+		case 4://percent gait oriented
+		_controller_data->ptb_iiStep++;
+		if (_controller_data->ptbRandomIsFirstRun) {
+			randomSeed(analogRead(A16));
+			_controller_data->ptbRandomIsFirstRun = false;
+		}
+		_controller_data->ptb_oldIsSwing = _controller_data->ptb_newIsSwing;
+		if (_leg_data->toe_stance) {
+			
+			_controller_data->ptb_newIsSwing = false;
+		}
+		else {
+			_controller_data->ptb_newIsSwing = true;
+		}
+		if ((_controller_data->ptb_oldIsSwing == false) && (_controller_data->ptb_newIsSwing == true)) {
+			_controller_data->ptb_iStep++;
+			_controller_data->ptb_iiStep = 0;
+		}
+		if (_controller_data->ptb_iStep == _controller_data->ptb_frequency) {
+			if ((_leg_data->percent_gait > _controller_data->parameters[controller_defs::ptb_general::ptb_settings_2_idx]) && (_leg_data->percent_gait < _controller_data->parameters[controller_defs::ptb_general::ptb_settings_3_idx])){
+			cmd = -1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
 			}
-			break; */
-/* 			
+			else {
+				cmd = 0;
+			}
+		}
+		else {
+			cmd = 0;
+		}
+		if (_controller_data->ptb_iStep > _controller_data->ptb_frequency) {
+			_controller_data->ptb_iStep = 0;
+			_controller_data->ptb_frequency = random(_controller_data->parameters[controller_defs::ptb_general::ptb_settings_4_idx]);
+		}
+		break;
 
-            case 4:
-            // cmd = _controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
-            // Serial.print("\n");
-            // Serial.print("Is in Mode 4.\n");
-            _controller_data->ptbFrequency= _controller_data->parameters[controller_defs::ptb_general::ptb_settings_4_idx];
-            if (_controller_data->ptbRandomIsFirstRun) {
-                randomSeed(analogRead(A16));
-                _controller_data->ptbRandomIsFirstRun = false;
-            }
-            if (_controller_data->iPercentGait >= _controller_data->parameters[controller_defs::ptb_general::ptb_settings_2_idx] && _controller_data->iPercentGait <= _controller_data->parameters[controller_defs::ptb_general::ptb_settings_3_idx]) {
-                if (_controller_data->ptbWait4ANewStep) {
-                    _controller_data->ptb_iStep ++;
-					_controller_data->ptb_totalSteps ++;
-                    _controller_data->ptbWait4ANewStep = false;
-					if (!_joint_data->is_left) {
-                    //Serial.print("\nThat is one more step. " + _controller_data->ptb_totalSteps);
-					Serial.println(_controller_data->ptb_totalSteps);
-					}
-                }
-                
-            }
-            else {
-                    _controller_data->ptbWait4ANewStep = true;
-					if (!_joint_data->is_left) {
-                    //Serial.print("... waiting ...");
-					}
-                }
-            if (!_controller_data->ptbDetermined) {
-                _controller_data->ptbFrequency = random(_controller_data->parameters[controller_defs::ptb_general::ptb_settings_2_idx],_controller_data->iPercentGait <= _controller_data->parameters[controller_defs::ptb_general::ptb_settings_3_idx]);
-                _controller_data->ptbDetermined = true;
-                cmd = 0;
-            }
-            else {
-                if (_controller_data->ptb_iStep = _controller_data->ptbFrequency) {
-                    if (_controller_data->iPercentGait >= _controller_data->parameters[controller_defs::ptb_general::ptb_settings_2_idx] && _controller_data->iPercentGait <= _controller_data->parameters[controller_defs::ptb_general::ptb_settings_3_idx]) {
-                        cmd = _controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
-                    }
-                    else if (_controller_data->iPercentGait > _controller_data->parameters[controller_defs::ptb_general::ptb_settings_3_idx]) {
-                        _controller_data->ptb_iStep = 0;
-                        _controller_data->ptbDetermined = false;
-                        cmd = 0;
-                    }
-                }
-            }
-            break; */
-
-            default:
-            Serial.print("\n");
-            Serial.print("Is in default mode. Toe FSR: ");
-			Serial.print(fsrToeTest);
-            _controller_data->isPerturbing = false;
-            _controller_data->ptbApplied = false;
-            _controller_data->ptbDetermined = false;
-            cmd = 0;
+		default:
+		Serial.print("\n");
+		Serial.print("Is in default mode. Toe FSR: ");
+		Serial.print(ptb_fsrToe);
+		_controller_data->isPerturbing = false;
+		_controller_data->ptbApplied = false;
+		_controller_data->ptbDetermined = false;
+		cmd = 0;
 
     }
 
     // Uncomment the next paragraph to evaluate code running speed
-    _controller_data->time_current_ptb = micros();
+/*     _controller_data->time_current_ptb = micros();
     float run_time_ptb = _controller_data->time_current_ptb - _controller_data->time_previous_ptb;
     _controller_data->time_previous_ptb = _controller_data->time_current_ptb;
-
-// if (_controller_data->isPerturbing) {
-//     Serial.print("isPerturbing ");
-//     Serial.print(_controller_data->isPerturbing);
-//     Serial.print(" __ ptbDetermined ");
-//     Serial.print(_controller_data->ptbDetermined);
-//     Serial.print(" __ Start: ");
-//     Serial.print(_controller_data->ptbHead);
-//     Serial.print(" __ End: ");
-//     Serial.print(_controller_data->ptbTail);
-//     Serial.print(" __ percent_gait ");
-//     Serial.print(_controller_data->iPercentGait);
-//     Serial.print("\n");
-//     Serial.print("cmd: ");
-//     Serial.print(cmd);
     Serial.print("\n | Iteration run time: ");
-    Serial.print(run_time_ptb);
-//     Serial.print("\n");
-// }
-    
-
-
-    // _controller_data->iPercentGait++;
-
-    // Serial.println(cmd);
+    Serial.print(run_time_ptb); */
+	
+	if ((_joint_data->is_left)&&(cmd != 0 )) {
+		Serial.print("\n Percent gait (left side): ");
+		Serial.print(_leg_data->percent_gait);
+	}
+	Serial.print("\ncmd: ");
+	Serial.print(cmd);
+	cmd = _pid(cmd, _joint_data->torque_reading,1,0,0);
+	Serial.print(" | cmd_pid: ");
+	Serial.print(cmd);
     return cmd;
 }
 

@@ -336,20 +336,20 @@ class ControllerData {
         bool ptbDetermined = false;
         float time_current_ptb = 0;
         float time_previous_ptb = 0;
-        uint8_t ptbHead = 0;
-        uint8_t ptbTail = 0;
-        uint8_t iPercentGait= 0;
+        //uint8_t ptbHead = 0;
+        //uint8_t ptbTail = 0;
+        //uint8_t iPercentGait= 0;
         bool ptbApplied = false;
         bool ptbRandomIsFirstRun = true;
-        bool ptbWait4ANewStep = true;
-   /*      uint8_t ptbFrequency = 0;
+        //bool ptbWait4ANewStep = true;
+        //uint8_t ptbFrequency = 0;
         uint16_t ptb_iStep = 0;
-		uint16_t ptb_totalSteps = 0;
+		//uint16_t ptb_totalSteps = 0;
 		bool ptb_newIsSwing = true;
 		bool ptb_oldIsSwing = true;
-		uint16_t fsrThreshold = 0.3;
+		//uint16_t fsrThreshold = 0.3;
 		uint8_t ptb_frequency = 0;
-		uint16_t ptb_iiStep = 0; */
+		uint16_t ptb_iiStep = 0;
 };      
 
 #endif
