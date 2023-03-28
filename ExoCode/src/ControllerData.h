@@ -261,7 +261,11 @@ namespace controller_defs /**< stores the parameter indexes for different contro
         const uint8_t ptb_settings_2_idx = 2;
         const uint8_t ptb_settings_3_idx = 3;
         const uint8_t ptb_settings_4_idx = 4;
-        const uint8_t num_parameter = 5;
+        const uint8_t use_pid_idx = 5;
+        const uint8_t p_gain_idx = 6;
+        const uint8_t i_gain_idx = 7;
+        const uint8_t d_gain_idx = 8;
+        const uint8_t num_parameter = 9;
         
     }
     const uint8_t max_parameters = franks_collins_hip::num_parameter;//user_defined::num_parameter;  // this should be the largest of all the num_parameters

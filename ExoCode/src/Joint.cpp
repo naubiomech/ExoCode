@@ -417,6 +417,13 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
                 #endif
                 HipJoint::set_motor(new AK60_v1_1(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
+            case (uint8_t)config_defs::motor::AK60_v1_1_T:
+                //_motor = new AK60(id, exo_data);
+                #ifdef JOINT_DEBUG
+                    logger::println("AK60 v1.1T");
+                #endif
+                HipJoint::set_motor(new AK60_v1_1_T(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
+                break;
             default :
                 //_motor = nullptr;
                 #ifdef JOINT_DEBUG
@@ -607,6 +614,13 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
                 #endif
                 KneeJoint::set_motor(new AK60_v1_1(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
+            case (uint8_t)config_defs::motor::AK60_v1_1_T:
+                //_motor = new AK60(id, exo_data);
+                #ifdef JOINT_DEBUG
+                    logger::println("AK60 v1.1T");
+                #endif
+                KneeJoint::set_motor(new AK60_v1_1_T(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
+                break;
             default :
                 #ifdef JOINT_DEBUG
                     logger::println("NULL");
@@ -774,6 +788,13 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
                 #endif
                 //_motor = new AK60(id, exo_data);
                 AnkleJoint::set_motor(new AK60_v1_1(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
+                break;
+            case (uint8_t)config_defs::motor::AK60_v1_1_T:
+                //_motor = new AK60(id, exo_data);
+                #ifdef JOINT_DEBUG
+                    logger::println("AK60 v1.1T");
+                #endif
+                AnkleJoint::set_motor(new AK60_v1_1_T(id, exo_data, _Joint::get_motor_enable_pin(id, exo_data)));
                 break;
             default :
                 #ifdef JOINT_DEBUG

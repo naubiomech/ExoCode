@@ -216,13 +216,23 @@ class AK60 : public _CANMotor
 };
 
 /**
- * @brief Class for AK60 V1.1 motor
+ * @brief Class for AK60 V1.1 motor - Takes Current for Input
  */
 class AK60_v1_1 : public _CANMotor
 {
     public:
         AK60_v1_1(config_defs::joint_id id, ExoData* exo_data, int enable_pin); // constructor: type is the motor type
 		~AK60_v1_1(){};
+};
+
+/**
+ * @brief Class for AK60 V1.1 motor - Takes Torque for Input
+ */
+class AK60_v1_1_T : public _CANMotor
+{
+public:
+    AK60_v1_1_T(config_defs::joint_id id, ExoData* exo_data, int enable_pin); // constructor: type is the motor type
+    ~AK60_v1_1_T() {};
 };
 
 /**

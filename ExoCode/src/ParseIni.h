@@ -90,6 +90,7 @@ namespace config_defs
         AK60 = 2, 
         AK80 = 3,
         AK60_v1_1 = 4,
+        AK60_v1_1_T = 5,
     };
     
     enum class gearing : uint8_t
@@ -319,7 +320,8 @@ namespace config_defs
             {"0", (uint8_t)config_defs::motor::not_used}, 
             {"AK60", (uint8_t)config_defs::motor::AK60}, 
             {"AK80", (uint8_t)config_defs::motor::AK80},
-            {"AK60v1.1", (uint8_t)config_defs::motor::AK60_v1_1}, 
+            {"AK60v1.1", (uint8_t)config_defs::motor::AK60_v1_1},
+            {"AK60v1.1T", (uint8_t)config_defs::motor::AK60_v1_1_T},
         };
         
         const IniKeyCode gearing 

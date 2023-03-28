@@ -389,11 +389,6 @@ float HeelToe::calc_motor_cmd()
             fs = -1;
         }
 
-        //if (fs > 3 * fs_previous || fs < 0.25 * fs_previous)
-        //{
-        //    fs = fs_previous;
-        //}
-
         /**< State Machine to determine which state, and thus which motor command, is appropriate. */
         if (fs > 0 && fs > fs_previous)             /**< If fs is positive and its derivative is positive, we are in state 1. */
         {
@@ -421,7 +416,6 @@ float HeelToe::calc_motor_cmd()
         else if (percent_gait - swing_start >= 0.3 * swing_duration)    /**< If we are in swing and greater than 30% of the swing duration then we are in state 5. */
         {
             state = 5;
-            //m = ((0.6 * extension_torque) + (0.5 * flexion_torque)) / (0.7 * swing_duration);
 
             if (state_4_end == 0)                                       /**< If this is the first time in state 5, record the previous percent_gait as the end of state 4 and calculate the duration of state 4. */
             {
@@ -518,7 +512,7 @@ float HeelToe::calc_motor_cmd()
 
     _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 1);
                          
-    return y1;
+    return cmd;
 };
 
 //****************************************************
@@ -1698,6 +1692,7 @@ Perturbation::Perturbation(config_defs::joint_id id, ExoData* exo_data)
 
 float Perturbation::calc_motor_cmd()
 {
+
     float cmd = 0;     //Creates the cmd variable and initializes it to 0;
 
     float percent_gait = _leg_data->percent_gait;           //Calculates the percentage of the gait cycle
@@ -1952,7 +1947,7 @@ float PtbGeneral::calc_motor_cmd()
     float ptb_fsrToe = _leg_data->toe_fsr;
     float ptb_fsrHeel = _leg_data->heel_fsr;
 
-    float cmd = 0;
+    float cmd_ff = 0;
     //Serial.print("\n");
     //Serial.print("Index: ");
      //Serial.print((_controller_data->parameters[controller_defs::ptb_general::ptb_mode_idx]));
@@ -1967,7 +1962,7 @@ float PtbGeneral::calc_motor_cmd()
 		Serial.print(_controller_data->parameters[controller_defs::ptb_general::ptb_settings_3_idx]);
 		Serial.print(" | ");
 		Serial.print(_controller_data->parameters[controller_defs::ptb_general::ptb_settings_4_idx]);
-        cmd = -1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
+        cmd_ff = -1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
         break;
 			
 		case 3://iteration oriented
@@ -1997,14 +1992,14 @@ float PtbGeneral::calc_motor_cmd()
 		}		
 		if (_controller_data->ptb_iStep == _controller_data->ptb_frequency) {
 			if ((_controller_data->ptb_iiStep > 100*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_2_idx]) && (_controller_data->ptb_iiStep < 100*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_3_idx])){
-			cmd = -1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
+			cmd_ff = -1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
 			}
 			else {
-				cmd = 0;
+				cmd_ff = 0;
 			}
 		}
 		else {
-			cmd = 0;
+			cmd_ff = 0;
 		}
 		if (_controller_data->ptb_iStep > _controller_data->ptb_frequency) {
 			_controller_data->ptb_iStep = 0;
@@ -2033,14 +2028,14 @@ float PtbGeneral::calc_motor_cmd()
 		}
 		if (_controller_data->ptb_iStep == _controller_data->ptb_frequency) {
 			if ((_leg_data->percent_gait > _controller_data->parameters[controller_defs::ptb_general::ptb_settings_2_idx]) && (_leg_data->percent_gait < _controller_data->parameters[controller_defs::ptb_general::ptb_settings_3_idx])){
-			cmd = -1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
+			cmd_ff = -1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
 			}
 			else {
-				cmd = 0;
+				cmd_ff = 0;
 			}
 		}
 		else {
-			cmd = 0;
+			cmd_ff = 0;
 		}
 		if (_controller_data->ptb_iStep > _controller_data->ptb_frequency) {
 			_controller_data->ptb_iStep = 0;
@@ -2055,7 +2050,7 @@ float PtbGeneral::calc_motor_cmd()
 		_controller_data->isPerturbing = false;
 		_controller_data->ptbApplied = false;
 		_controller_data->ptbDetermined = false;
-		cmd = 0;
+		cmd_ff = 0;
 
     }
 
@@ -2066,13 +2061,17 @@ float PtbGeneral::calc_motor_cmd()
     Serial.print("\n | Iteration run time: ");
     Serial.print(run_time_ptb); */
 	
-	if ((_joint_data->is_left)&&(cmd != 0 )) {
+	if ((_joint_data->is_left)&&(cmd_ff != 0 )) {
 		Serial.print("\n Percent gait (left side): ");
 		Serial.print(_leg_data->percent_gait);
 	}
 	Serial.print("\ncmd: ");
-	Serial.print(cmd);
-	cmd = _pid(cmd, _joint_data->torque_reading,1,0,0);
+	Serial.print(cmd_ff);
+
+    float cmd = cmd_ff + (_controller_data->parameters[controller_defs::ptb_general::use_pid_idx]
+        ? _pid(cmd_ff, _joint_data->torque_reading, _controller_data->parameters[controller_defs::ptb_general::p_gain_idx], _controller_data->parameters[controller_defs::ptb_general::i_gain_idx], _controller_data->parameters[controller_defs::ptb_general::d_gain_idx])
+        : 0);
+
 	Serial.print(" | cmd_pid: ");
 	Serial.print(cmd);
     return cmd;

@@ -458,6 +458,23 @@ _CANMotor(id, exo_data, enable_pin)
  * Takes the joint id and a pointer to the exo_data
  * Only stores the id, exo_data pointer, and if it is left (for easy access)
  */
+AK60_v1_1_T::AK60_v1_1_T(config_defs::joint_id id, ExoData* exo_data, int enable_pin) : // constructor: type is the motor type
+    _CANMotor(id, exo_data, enable_pin)
+{
+    _I_MAX = 9.0f;      //This is actually the maximum torque not current, but functions the same way
+    _V_MAX = 23.04f;
+    set_Kt(1);          //Just made KT one so that code still works as intended (i.e., so you don't have to switch from dividing by KT each time you change out motors)
+
+#ifdef MOTOR_DEBUG
+    logger::println("AK60_v1_1::AK60_v1_1 : Leaving Constructor");
+#endif
+};
+
+/*
+ * Constructor for the motor
+ * Takes the joint id and a pointer to the exo_data
+ * Only stores the id, exo_data pointer, and if it is left (for easy access)
+ */
 AK80::AK80(config_defs::joint_id id, ExoData* exo_data, int enable_pin): // constructor: type is the motor type
 _CANMotor(id, exo_data, enable_pin)
 {
