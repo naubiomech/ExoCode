@@ -1389,9 +1389,12 @@ float ZhangCollins::calc_motor_cmd()
     //Calculates Torque Command
     torque_cmd = _spline_generation(node1, node2, node3, peak_torque_Nm, percent_gait);
 
+    //Low Pass Filter for Torque Sensor
+    _controller_data->filtered_torque_reading = utils::ewma(_joint_data->torque_reading,_controller_data->filtered_torque_reading,0.5);
+
     //PID Control
     float cmd = torque_cmd + (_controller_data->parameters[controller_defs::zhang_collins::use_pid_idx]
-        ? _pid(torque_cmd, _joint_data->torque_reading, _controller_data->parameters[controller_defs::zhang_collins::p_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::i_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::d_gain_idx])
+        ? _pid(torque_cmd, _controller_data->filtered_torque_reading, _controller_data->parameters[controller_defs::zhang_collins::p_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::i_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::d_gain_idx])
         : 0);
 
 
@@ -1400,7 +1403,9 @@ float ZhangCollins::calc_motor_cmd()
         cmd = -1 * cmd;
     }
 
-    return cmd;
+    _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 1);
+    return _controller_data->filtered_cmd;
+
 };
 
 float ZhangCollins::_spline_generation(float node1, float node2, float node3, float torque_magnitude, float percent_gait)
@@ -2068,13 +2073,19 @@ float PtbGeneral::calc_motor_cmd()
 	Serial.print("\ncmd: ");
 	Serial.print(cmd_ff);
 
+    //Low Pass Filter for Torque Sensor
+    _controller_data->filtered_torque_reading = utils::ewma(_joint_data->torque_reading, _controller_data->filtered_torque_reading, 0.5);
+
+    //PID Control
     float cmd = cmd_ff + (_controller_data->parameters[controller_defs::ptb_general::use_pid_idx]
-        ? _pid(cmd_ff, _joint_data->torque_reading, _controller_data->parameters[controller_defs::ptb_general::p_gain_idx], _controller_data->parameters[controller_defs::ptb_general::i_gain_idx], _controller_data->parameters[controller_defs::ptb_general::d_gain_idx])
+        ? _pid(cmd_ff, _controller_data->filtered_torque_reading, _controller_data->parameters[controller_defs::ptb_general::p_gain_idx], _controller_data->parameters[controller_defs::ptb_general::i_gain_idx], _controller_data->parameters[controller_defs::ptb_general::d_gain_idx])
         : 0);
 
 	Serial.print(" | cmd_pid: ");
 	Serial.print(cmd);
-    return cmd;
+
+    _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 1);
+    return _controller_data->filtered_cmd;
 }
 
 #endif
