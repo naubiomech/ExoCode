@@ -22,6 +22,7 @@ JointData::JointData(config_defs::joint_id id, uint8_t* config_to_send)
     this->velocity = 0;
     this->calibrate_torque_sensor = 0;
     this->joint_position = 0;
+    this->joint_global_angle = 0;
     this->prev_joint_position = 0;
     this->joint_velocity = 0;
     

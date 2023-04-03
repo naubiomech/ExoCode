@@ -1,6 +1,7 @@
 #include "ExoData.h"
 #include "error_types.h"
 #include "Logger.h"
+#include "ParamsFromSD.h"
 
 /*
  * Constructor for the exo data.
@@ -31,26 +32,6 @@ void ExoData::reconfigure(uint8_t* config_to_send)
 {
     left_leg.reconfigure(config_to_send);
     right_leg.reconfigure(config_to_send);
-};
-
-void ExoData::for_each_joint(for_each_joint_function_t function, float* args)
-{
-    function(&left_leg.hip, args);
-    function(&left_leg.knee, args);
-    function(&left_leg.ankle, args);
-    function(&right_leg.hip, args);
-    function(&right_leg.knee, args);
-    function(&right_leg.ankle, args);
-};
-
-void ExoData::for_each_joint(for_each_joint_function_t function)
-{
-    function(&left_leg.hip, NULL);
-    function(&left_leg.knee, NULL);
-    function(&left_leg.ankle, NULL);
-    function(&right_leg.hip, NULL);
-    function(&right_leg.knee, NULL);
-    function(&right_leg.ankle, NULL);
 };
 
 uint8_t ExoData::get_used_joints(uint8_t* used_joints)
@@ -118,6 +99,19 @@ uint16_t ExoData::get_status(void)
 {
     return this->_status;
 };
+
+void ExoData::set_default_parameters()
+{
+    #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
+    this->for_each_joint([this](JointData* j_data, float* args) 
+    {
+        if (j_data->is_used)
+        {
+            set_controller_params((uint8_t)j_data->id, j_data->controller.controller, 0, this);
+        }
+    });
+    #endif
+}
 
 
 void ExoData::print()

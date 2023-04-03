@@ -96,7 +96,16 @@ class _Controller
         float _pid(float cmd, float measurement, float p_gain, float i_gain, float d_gain);
         
         
-}; 
+};
+
+class PropulsiveAssistive : public _Controller
+{
+    public:
+        PropulsiveAssistive(config_defs::joint_id id, ExoData* exo_data);
+        ~PropulsiveAssistive(){};
+
+        float calc_motor_cmd();
+};
 
 /**
  * @brief Proportional Joint Moment Controller

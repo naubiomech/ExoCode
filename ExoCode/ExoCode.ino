@@ -3,7 +3,8 @@
   
   
    P. Stegall Jan 2022
-*/
+*/  
+
 #if defined(ARDUINO_TEENSY36) | defined(ARDUINO_TEENSY41)
 
 //#define INCLUDE_FLEXCAN_DEBUG  // used to print CAN Debugging messages for the motors.
@@ -115,10 +116,7 @@ void loop()
     #endif
 
     static ErrorManager error_manager(&exo, &exo_data);
-    static PiLogger pi_logger(&exo_data);
     static UARTHandler* uart_handler = UARTHandler::get_instance();
-
-
     
     if (first_run)
     {
@@ -466,7 +464,7 @@ void loop()
     
     if (new_error && !reported_error)
     {
-      // Only report the first error
+        // Only report the first error
         reported_error = true;
         const int error_code = error_manager.get_error();
         

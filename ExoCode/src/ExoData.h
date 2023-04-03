@@ -51,8 +51,26 @@ class ExoData
          * 
          * @param pointer to the function that should be done for each used joint
          */
-        void for_each_joint(for_each_joint_function_t function);
-        void for_each_joint(for_each_joint_function_t function, float* args);
+        template <typename F>
+        void for_each_joint(F &&func)
+        {
+                func(&left_leg.hip, NULL);
+                func(&left_leg.knee, NULL);
+                func(&left_leg.ankle, NULL);
+                func(&right_leg.hip, NULL);
+                func(&right_leg.knee, NULL);
+                func(&right_leg.ankle, NULL);
+        }
+        template <typename F>
+        void for_each_joint(F &&func, float* args)
+        {
+                func(&left_leg.hip, args);
+                func(&left_leg.knee, args);
+                func(&left_leg.ankle, args);
+                func(&right_leg.hip, args);
+                func(&right_leg.knee, args);
+                func(&right_leg.ankle, args);
+        }
 
         // Returns a list of all of the joint IDs that are currently being used
         uint8_t get_used_joints(uint8_t* used_joints);
@@ -82,6 +100,12 @@ class ExoData
          * @return uint16_t status_defs::messages::status_t
          */
         uint16_t get_status(void);
+
+        /**
+         * @brief Set the default controller parameters for the current controller. These are the first row in the controller csv file
+         * 
+         */
+        void set_default_parameters();
         
         
         bool sync_led_state; /**< state of the sync led */

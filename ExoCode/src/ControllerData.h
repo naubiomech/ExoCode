@@ -268,6 +268,21 @@ namespace controller_defs /**< stores the parameter indexes for different contro
         const uint8_t num_parameter = 9;
         
     }
+
+    namespace propulsive_assistive 
+    {
+        const uint8_t plantar_scaling = 0;
+        const uint8_t dorsi_scaling = 1;
+        const uint8_t timing_threshold = 2;
+        const uint8_t spring_stiffness = 3;
+        const uint8_t neutral_angle = 4;
+        const uint8_t damping = 5;
+        const uint8_t kp = 6;
+        const uint8_t kd = 7;
+        const uint8_t torque_alpha = 8;
+        const uint8_t num_parameter = 9;
+    }
+
     const uint8_t max_parameters = franks_collins_hip::num_parameter;//user_defined::num_parameter;  // this should be the largest of all the num_parameters
 }
 

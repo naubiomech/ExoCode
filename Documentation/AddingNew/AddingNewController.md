@@ -30,6 +30,7 @@
     2. In set_controller(), add the controller to the switch case, referencing the joint controller namespace in the config_defs namespace.  
         - Use the existing controllers for the template
         - This changes which controller object the _controller pointer is using.
+        - Don't forget to add the 'break;' at the end of the switch case!
 	- Note: The switch case references the config_defs name and the value passed to _controller references the object created in Joint.h
 
 # Till we get the new features added to the app

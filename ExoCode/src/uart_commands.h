@@ -150,21 +150,11 @@ namespace UART_command_handlers
             return;
         }
 
-        // j_data->controller.controller = msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID];
-        // for (uint8_t i=0; i<msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_LENGTH]; i++)
-        // {
-        //     logger::print("UART_command_handlers::update_controller_params->packing ");
-        //     logger::print(msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START + i]);
-        //     logger::print(" at index ");
-        //     logger::println(i);
-        //     j_data->controller.parameters[i] = msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START + i];
-        // }
-        #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
-        set_controller_params(msg.joint_id, (uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID], (uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START], exo_data);
-        
-        // get joint_data  from id
+        #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
         j_data->controller.controller = (uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID];
+        set_controller_params(msg.joint_id, (uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID], (uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START], exo_data);
 
+        Serial.println("Updating Controller Params: " + String(msg.joint_id) + ", " + String((uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START]) + ", " + String(j_data->controller.controller));
         #endif
     }
 
@@ -180,13 +170,18 @@ namespace UART_command_handlers
         handler->UART_msg(tx_msg);
         //logger::println("UART_command_handlers::get_status->sent updated status");
     }
+
     inline static void update_status(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-        //logger::println("UART_command_handlers::update_status->got message: ");
-        //UART_msg_t_utils::print_msg(msg);
         exo_data->set_status(msg.data[(uint8_t)UART_command_enums::status::STATUS]);
-        // TODO: HANDLE STATUS
-          
+        #if defined(ARDUINO_TEENSY36)  || defined(ARDUINO_TEENSY41)
+        if (msg.data[(uint8_t)UART_command_enums::status::STATUS] == status_defs::messages::trial_on) 
+        {
+            // Set default parameters for each used joint
+            Serial.println("Set default parameters!");
+            exo_data->set_default_parameters();
+        }
+        #endif
     }
 
     inline static void get_config(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
@@ -256,7 +251,7 @@ namespace UART_command_handlers
     inline static void update_cal_fsr(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
         //logger::println("UART_command_handlers::update_cal_fsr->Got msg");
-        exo_data->right_leg.do_calibration_toe_fsr = 1;    
+        exo_data->right_leg.do_calibration_toe_fsr = 1;
         exo_data->right_leg.do_calibration_heel_fsr = 1;
         exo_data->left_leg.do_calibration_toe_fsr = 1;
         exo_data->left_leg.do_calibration_heel_fsr = 1;
@@ -312,18 +307,14 @@ namespace UART_command_handlers
         {
             case (uint8_t)config_defs::exo_name::bilateral_ankle:
                 rx_msg.len = (uint8_t)rt_data::BILATERAL_ANKLE_RT_LEN;
-                rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading; //motor.i; //filtered_torque_reading *-1;
+                rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_setpoint;//exo_data->right_leg.ankle.controller.filtered_torque_reading;
                 rx_msg.data[1] = exo_data->right_leg.toe_stance;//exo_data->right_leg.ankle.motor.i;
-                rx_msg.data[2] = exo_data->right_leg.ankle.controller.setpoint;
-                rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_torque_reading; // filtered_torque_reading; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i
-                rx_msg.data[4] = exo_data->left_leg.toe_stance; //(uint8_t) exo_data->right_leg.inclination; //exo_data->left_leg.toe_stance; //exo_data->left_leg.ankle.motor.i;
-                rx_msg.data[5] = exo_data->left_leg.ankle.controller.setpoint;
-                rx_msg.data[6] = exo_data->right_leg.toe_fsr; //ankle.joint_position;
+                rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint; 
+                rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_setpoint;//exo_data->left_leg.ankle.controller.filtered_torque_reading; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i
+                rx_msg.data[4] = exo_data->left_leg.toe_stance; //exo_data->left_leg.ankle.motor.i;
+                rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;
+                rx_msg.data[6] = exo_data->right_leg.toe_fsr;
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;
-                //rx_msg.data[8] = 12.2;
-                //rx_msg.data[9] = 10.2;
-                //rx_msg.data[10] = 8.4;
-                //rx_msg.data[11] = 125;
                 break;
 
             case (uint8_t)config_defs::exo_name::bilateral_hip:
@@ -350,7 +341,7 @@ namespace UART_command_handlers
                 rx_msg.data[6] = exo_data->right_leg.toe_fsr;                                       //Red State
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;                                        //Red State
                 break;
-                
+  
             case (uint8_t)config_defs::exo_name::right_knee:
                 rx_msg.len = (uint8_t)rt_data::RIGHT_KNEE;
                 rx_msg.data[0] = exo_data->right_leg.knee.controller.filtered_torque_reading;
@@ -366,7 +357,6 @@ namespace UART_command_handlers
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;                                     //Red State
                 break;
                
-            
             default:
                 rx_msg.len = (uint8_t)rt_data::BILATERAL_ANKLE_RT_LEN;
                 rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading;
@@ -383,11 +373,6 @@ namespace UART_command_handlers
 
         
         #if REAL_TIME_I2C
-        for (float val : rx_msg.data) {
-            Serial.print("\tRxMsg");
-            Serial.print(val);
-        }
-        Serial.println();
         real_time_i2c::msg(rx_msg.data, rx_msg.len);
         #else 
         handler->UART_msg(rx_msg);

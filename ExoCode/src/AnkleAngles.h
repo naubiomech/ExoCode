@@ -8,19 +8,16 @@
 //TODO: Add angle calibration
 
 /**
- * @brief Class to interface with a microcontroller that samples angle data. Singleton. 
+ * @brief Class to interface with a microcontroller that samples angle data.
  * 
  */
 class AnkleAngles
 {
-    protected:
-    AnkleAngles() {}
-    static AnkleAngles* _instance;
-
     public:
-    AnkleAngles(AnkleAngles& other) = delete;
-    void operator=(const AnkleAngles&) = delete;
-    static AnkleAngles* GetInstance();
+    AnkleAngles() {}
+    // AnkleAngles(AnkleAngles& other) = delete;
+    // void operator=(const AnkleAngles&) = delete;
+    // static AnkleAngles* GetInstance();
     /**
      * @brief Initialize the ankle sensor, and perform a handshake.
      * 
@@ -28,15 +25,24 @@ class AnkleAngles
      * @return true 
      * @return false 
      */
-    bool init();
+    bool init(bool is_left);
     /**
      * @brief Get the left or right angle. Returns a ratiometric value [0, 1]
      * 
-     * @return float angle
+     * @param return_normalized true to return normalized angle data, based on moving peak detection
+     * @return float 
      */
-    float get(bool left);
+    float get(bool return_normalized = false);
 
     private:
+    float _update_population_statistics(const float new_value);
+    float _max_average = 0.01;
+    float _min_average = 0.99;
+    float _mean = 0;
+    const float _ema_alpha = 0.0001;
+    const float _max_min_delta = 0.00001;
+
+    bool _left = false;
     /**
      * @brief Check if the ankle sensor is initialized.
      * 

@@ -120,7 +120,7 @@ void ComsMCU::update_gui()
         BleMessage rt_data_msg = BleMessage();
         rt_data_msg.command = ble_names::send_real_time_data;
         rt_data_msg.expecting = rt_data::len;
-        Serial.println("Got Data");
+        //Serial.println("Got Data");
         for (int i = 0; i < rt_data::len; i++)
         {   
             #if REAL_TIME_I2C

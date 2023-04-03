@@ -98,7 +98,7 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
         logger::println("\n\t_leg_data set");
     #endif
     
-};
+}
  
 float _Controller::_pid(float cmd, float measurement, float p_gain, float i_gain, float d_gain)
 {
@@ -135,7 +135,7 @@ float _Controller::_pid(float cmd, float measurement, float p_gain, float i_gain
     float d = d_gain * de_dt; 
     
     return p + d;
-};
+}
 
 void _Controller::reset_integral()
 {
@@ -148,7 +148,7 @@ void _Controller::reset_integral()
         logger::println("_Controller::reset_integral : Exited");
     #endif
     
-};
+}
 
 //****************************************************
 
@@ -160,7 +160,7 @@ ZeroTorque::ZeroTorque(config_defs::joint_id id, ExoData* exo_data)
         logger::println("ZeroTorque::Constructor");
     #endif
     
-};
+}
 
 float ZeroTorque::calc_motor_cmd()
 {
@@ -189,7 +189,7 @@ float ZeroTorque::calc_motor_cmd()
     // logger::print("ZeroTorque::calc_motor_cmd : d_gain = ");
     // logger::println(_controller_data->parameters[controller_defs::zero_torque::d_gain_idx]);
     return cmd;
-};
+}
 
 //****************************************************
 
@@ -201,14 +201,98 @@ Stasis::Stasis(config_defs::joint_id id, ExoData* exo_data)
         logger::println("Stasis::Constructor");
     #endif
     
-};
+}
 
 float Stasis::calc_motor_cmd()
 {
     float cmd = 0;
     return cmd;
-};
+}
 
+
+//****************************************************
+PropulsiveAssistive::PropulsiveAssistive(config_defs::joint_id id, ExoData* exo_data)
+: _Controller(id, exo_data)
+{
+    #ifdef CONTROLLER_DEBUG
+        logger::println("PropulsiveAssistive::Constructor");
+    #endif
+}
+
+float PropulsiveAssistive::calc_motor_cmd()
+{
+    #ifdef CONTROLLER_DEBUG
+    logger::println("PropulsiveAssistive::calc_motor_cmd : start");
+    #endif
+    static const float sigmoid_exp_scalar{50.0f};
+    static const float sigmoid_exp_offset{-0.1f};
+
+    // Calculate Propulsive Contribution
+    const float plantar_setpoint = _controller_data->parameters[controller_defs::propulsive_assistive::plantar_scaling];
+    const float dorsi_setpoint = -_controller_data->parameters[controller_defs::propulsive_assistive::dorsi_scaling];
+    const float threshold = _controller_data->parameters[controller_defs::propulsive_assistive::timing_threshold]/100;
+    const float percent_ground_reaction = min(_leg_data->toe_fsr, 1);
+    const float slope = (plantar_setpoint - dorsi_setpoint)/(1 - threshold);
+    const float propulsive = max(((slope*(percent_ground_reaction - threshold)) + dorsi_setpoint), dorsi_setpoint);
+    // Supportive Contribution
+    const float k = _controller_data->parameters[controller_defs::propulsive_assistive::spring_stiffness];
+    const float b = _controller_data->parameters[controller_defs::propulsive_assistive::damping];
+    const float equilibrium_angle_offset = _controller_data->parameters[controller_defs::propulsive_assistive::neutral_angle]/100;
+    const float delta = _leg_data->ankle_angle_at_ground_strike - equilibrium_angle_offset - _leg_data->ankle.joint_position;
+    const float supportive = max(k*delta - b*_leg_data->ankle.joint_velocity + 1, 0);
+    // Use a tuned sigmoid to squelch the spring output during the 'swing' phase
+    const float grf_squelch_multiplier = (exp(sigmoid_exp_scalar*(percent_ground_reaction+sigmoid_exp_offset))) / 
+            (exp(sigmoid_exp_scalar*(percent_ground_reaction+sigmoid_exp_offset))+1);
+    const float squelched_supportive_term = supportive*grf_squelch_multiplier;
+    const float cmd_ff = squelched_supportive_term+propulsive;
+
+    // low pass filter on torque_reading
+    const float torque = _joint_data->torque_reading * (_leg_data->is_left ? 1 : -1);
+    const float alpha = (_controller_data->parameters[controller_defs::propulsive_assistive::torque_alpha] != 0) ? 
+            _controller_data->parameters[controller_defs::propulsive_assistive::torque_alpha] : 0.5;
+    _controller_data->filtered_torque_reading = utils::ewma(torque, 
+            _controller_data->filtered_torque_reading, alpha);
+
+    // close the loop
+    const float cmd = _pid(cmd_ff, _controller_data->filtered_torque_reading,
+            _controller_data->parameters[controller_defs::propulsive_assistive::kp],
+            0, 
+            _controller_data->parameters[controller_defs::propulsive_assistive::kd]);
+
+    // update plotting variables
+    _controller_data->ff_setpoint = propulsive;
+    _controller_data->filtered_setpoint = squelched_supportive_term;
+
+    // static float cnt = 0;
+    // cnt++;
+    if (!_leg_data->is_left)
+    {
+    //     cnt = 0;
+    //     Serial.print("PSP:" + String(plantar_setpoint) + "\t");
+    //     Serial.print("DSP:" + String(dorsi_setpoint) + "\t");
+    //     Serial.print("THRS:" + String(threshold) + "\t");
+    //     Serial.print("GRF:" + String(percent_ground_reaction) + "\t");
+    //     Serial.print("K:" + String(k) + "\t");
+    //     Serial.print("Theta_N:" + String(equilibrium_angle) + "\t");
+    //     Serial.print("Damp:" + String(b) + "\t");
+    //     Serial.print("KP:" + String(_controller_data->parameters[controller_defs::propulsive_assistive::kp]) + "\t");
+    //     Serial.print("KD:" + String(_controller_data->parameters[controller_defs::propulsive_assistive::kd]) + "\n");
+        // Serial.print("Theta:" + String(_leg_data->ankle.joint_position) + "\t");
+        // Serial.print("GSAngle: " + String(_leg_data->ankle_angle_at_ground_strike) + "\t");
+        // Serial.print("Theta_d:" + String(delta) + "\t");
+        // Serial.print("GRF:" + String(percent_ground_reaction) + "\t");
+        // Serial.print("Squelch:" + String(grf_squelch_multiplier) + "\t");
+        // Serial.print("Supportive:" + String(squelched_supportive_term) + "\t");
+        // Serial.print("Propulsive:" + String(propulsive) + "\t");
+        // Serial.print("FF:" + String(cmd_ff) + "\n");
+    }
+    
+
+    #ifdef CONTROLLER_DEBUG
+    logger::println("PropulsiveAssistive::calc_motor_cmd : stop");
+    #endif
+    return cmd;
+}
 
 //****************************************************
 
@@ -219,15 +303,25 @@ ProportionalJointMoment::ProportionalJointMoment(config_defs::joint_id id, ExoDa
     #ifdef CONTROLLER_DEBUG
         logger::println("ProportionalJointMoment::Constructor");
     #endif
-    
-};
+
+    _stance_thresholds_left.first = exo_data->left_leg.toe_fsr_lower_threshold;
+    _stance_thresholds_left.second = exo_data->left_leg.toe_fsr_upper_threshold;
+    _stance_thresholds_right.first = exo_data->right_leg.toe_fsr_lower_threshold;
+    _stance_thresholds_right.second = exo_data->right_leg.toe_fsr_upper_threshold;
+}
 
 float ProportionalJointMoment::calc_motor_cmd()
 {
+    #ifdef CONTROLLER_DEBUG
+        logger::println("ProportionalJointMoment::calc_motor_cmd : start");
+    #endif
+
     float cmd_ff = 0;
     // don't calculate command when fsr is calibrating.
     if (!_leg_data->do_calibration_toe_fsr)
     {
+        
+
         // calculate the feed forward command
         if (_leg_data->toe_stance) 
         {
@@ -254,10 +348,11 @@ float ProportionalJointMoment::calc_motor_cmd()
     }
 
     // low pass filter on torque_reading
-    _controller_data->filtered_torque_reading = utils::ewma(_joint_data->torque_reading, 
-            _controller_data->filtered_torque_reading, 
-            (_controller_data->parameters[controller_defs::proportional_joint_moment::torque_alpha_idx] != 0) ? _controller_data->parameters[controller_defs::proportional_joint_moment::torque_alpha_idx] : 0.5);
-
+    const float torque = _joint_data->torque_reading * (_leg_data->is_left ? 1 : -1);
+    const float alpha = (_controller_data->parameters[controller_defs::proportional_joint_moment::torque_alpha_idx] != 0) ? 
+            _controller_data->parameters[controller_defs::proportional_joint_moment::torque_alpha_idx] : 0.5;
+    _controller_data->filtered_torque_reading = utils::ewma(torque, 
+            _controller_data->filtered_torque_reading, alpha);
 
     // find max measured and max setpoint during stance
     if (_leg_data->toe_stance) 
@@ -294,12 +389,13 @@ float ProportionalJointMoment::calc_motor_cmd()
     _controller_data->ff_setpoint = _controller_data->filtered_setpoint;
 
     // add the PID contribution to the feed forward command
-    float cmd;
-    float kf_cmd = (_leg_data->toe_stance == true) ? (_controller_data->kf * _controller_data->filtered_setpoint) : _controller_data->filtered_setpoint;
+    float cmd = 0;
+    float kf_cmd = (_leg_data->toe_stance) ? (_controller_data->kf * _controller_data->filtered_setpoint) : _controller_data->filtered_setpoint;
     // if (!_leg_data->is_left)
     // {
     //     kf_cmd *= -1;
     // }
+
     if (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx])
     {
         cmd = _pid(kf_cmd, _controller_data->filtered_torque_reading, _controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);
@@ -310,8 +406,12 @@ float ProportionalJointMoment::calc_motor_cmd()
     }
     
     _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 1);
+
+    #ifdef CONTROLLER_DEBUG
+        logger::println("ProportionalJointMoment::calc_motor_cmd : end");
+    #endif
     return _controller_data->filtered_cmd;
-};
+}
 
 
 //****************************************************
@@ -343,7 +443,7 @@ HeelToe::HeelToe(config_defs::joint_id id, ExoData* exo_data)
         A = 0;
         B = 0;
         C = 0;
-};
+}
 
 float HeelToe::calc_motor_cmd()
 {
@@ -529,7 +629,7 @@ ExtensionAngle::ExtensionAngle(config_defs::joint_id id, ExoData* exo_data)
     _reset_angles();
     
     
-};
+}
 
 float ExtensionAngle::calc_motor_cmd()
 {
@@ -596,14 +696,14 @@ float ExtensionAngle::calc_motor_cmd()
                 : 0);
     
     return cmd;
-};
+}
 
 
 void ExtensionAngle::_reset_angles()
 {
     _max_angle = _initial_max_angle;
     _min_angle = _initial_min_angle;
-};
+}
 
 
 void ExtensionAngle::_update_state(float angle)
@@ -654,7 +754,7 @@ BangBang::BangBang(config_defs::joint_id id, ExoData* exo_data)
     
     _reset_angles();
     
-};
+}
 
 float BangBang::calc_motor_cmd()
 {
@@ -722,14 +822,14 @@ float BangBang::calc_motor_cmd()
                 : 0);
     
     return ((_controller_data->parameters[controller_defs::bang_bang::is_assitance_idx] ? 1:-1) * cmd);
-};
+}
 
 
 void BangBang::_reset_angles()
 {
     _max_angle = _initial_max_angle;
     _min_angle = _initial_min_angle;
-};
+}
 
 
 
@@ -765,7 +865,7 @@ void BangBang::_update_state(float angle)
         // logger::print(_controller_data->parameters[controller_defs::extension_angle::target_flexion_percent_max_idx] * _max_angle/100);
         // logger::print("\n");
     // }
-};
+}
 
 
 //****************************************************
@@ -781,7 +881,7 @@ LateStance::LateStance(config_defs::joint_id id, ExoData* exo_data)
 
     _reset_angles();
 
-};
+}
 
 float LateStance::calc_motor_cmd()
 {
@@ -816,7 +916,7 @@ float LateStance::calc_motor_cmd()
         : 0);
 
     return cmd;
-};
+}
 
 /*
  * Used to reset the range of motion to the starting values.
@@ -826,7 +926,7 @@ void LateStance::_reset_angles()
 {
     _max_angle = _initial_max_angle;
     _min_angle = _initial_min_angle;
-};
+}
 
 
 /*
@@ -852,7 +952,7 @@ void LateStance::_update_state(float angle)
 
 
     }
-};
+}
 
 
 //****************************************************
@@ -864,7 +964,7 @@ GaitPhase::GaitPhase(config_defs::joint_id id, ExoData* exo_data)
 #ifdef CONTROLLER_DEBUG
     logger::println("GaitPhase::Constructor");
 #endif
-};
+}
 
 float GaitPhase::calc_motor_cmd()
 {
@@ -1204,7 +1304,7 @@ float GaitPhase::calc_motor_cmd()
     }
 
     return cmd;
-};
+}
 
 
 //****************************************************
@@ -1216,7 +1316,7 @@ Parabolic::Parabolic(config_defs::joint_id id, ExoData* exo_data)
 #ifdef CONTROLLER_DEBUG
     logger::println("Parabolic::Constructor");
 #endif
-};
+}
 
 float Parabolic::calc_motor_cmd()
 {
@@ -1306,7 +1406,7 @@ float Parabolic::calc_motor_cmd()
     float cmd = cmd_ff;
 
     return cmd;
-};
+}
 
 //****************************************************
 
@@ -1461,7 +1561,7 @@ FranksCollinsHip::FranksCollinsHip(config_defs::joint_id id, ExoData* exo_data)
     last_percent_gait = -1;
     last_start_time = -1;
 
-};
+}
 
 float FranksCollinsHip::calc_motor_cmd()
 {
@@ -1577,7 +1677,7 @@ float FranksCollinsHip::calc_motor_cmd()
         : 0);
 
     return cmd;
-};
+}
 
 float FranksCollinsHip::_spline_generation(float node1, float node2, float node3, float torque_magnitude, float shifted_percent_gait)
 {
@@ -1616,7 +1716,7 @@ float FranksCollinsHip::_spline_generation(float node1, float node2, float node3
     }
 
     return u;
-};
+}
 
 //****************************************************
 // 
@@ -1634,7 +1734,7 @@ float FranksCollinsHip::_spline_generation(float node1, float node2, float node3
     // {
         // _percent_x[i] = i * _step_size;
     // } 
-// };
+// }
 
 // float UserDefined::calc_motor_cmd()
 // {
@@ -1656,7 +1756,7 @@ float FranksCollinsHip::_spline_generation(float node1, float node2, float node3
                 // : 0);
     
     // return 0;
-// };
+// }
 
 
 //****************************************************
@@ -1668,7 +1768,7 @@ Sine::Sine(config_defs::joint_id id, ExoData* exo_data)
     #ifdef CONTROLLER_DEBUG
         logger::println("Sine::Constructor");
     #endif
-};
+}
 
 float Sine::calc_motor_cmd()
 {
@@ -1680,7 +1780,7 @@ float Sine::calc_motor_cmd()
         ? _pid(cmd_ff, _joint_data->torque_reading, _controller_data->parameters[controller_defs::sine::p_gain_idx], _controller_data->parameters[controller_defs::sine::i_gain_idx], _controller_data->parameters[controller_defs::sine::d_gain_idx])
         : 0);
     return cmd;
-};
+}
 
 
 //****************************************************
@@ -1732,7 +1832,7 @@ ConstantTorque::ConstantTorque(config_defs::joint_id id, ExoData* exo_data)
     //current_torque = _controller_data->parameters[controller_defs::constant_torque::upper_idx];
     //counter = 0;
 
-};
+}
 
 float ConstantTorque::calc_motor_cmd()
 {
@@ -1785,7 +1885,7 @@ float ConstantTorque::calc_motor_cmd()
         }
     
     return cmd;
-};
+}
 
 //****************************************************
 
@@ -1797,7 +1897,7 @@ ElbowMinMax::ElbowMinMax(config_defs::joint_id id, ExoData* exo_data)
     Serial.println("ElbowMinMax::Constructor");
 #endif
 
-};
+}
 
 float ElbowMinMax::calc_motor_cmd()
 {
@@ -1932,7 +2032,7 @@ float ElbowMinMax::calc_motor_cmd()
     Serial.print("\n");
 
     return cmd;
-};
+}
 //****************************************************
 
 
@@ -1943,7 +2043,7 @@ PtbGeneral::PtbGeneral(config_defs::joint_id id, ExoData* exo_data)
     Serial.println("PtbGeneral::Constructor");
 #endif
 
-};
+}
 
 float PtbGeneral::calc_motor_cmd()
 {
