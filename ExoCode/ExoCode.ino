@@ -509,6 +509,7 @@ void loop()
 #include "src/uart_commands.h"
 #include "src/UART_msg_t.h"
 #include "src/ComsLed.h"
+#include "src/RealTimeI2C.h"
 
 #include "src/WaistBarometer.h"
 #include "src/InclineDetector.h"
@@ -541,9 +542,8 @@ namespace config_info
 void setup()
 {
     logger::println();
-    //delay(1500); // Wait for the Teensy to read the SD card
 
-//    logger::print("Setup->Getting config");
+    logger::print("Setup->Getting config");
     // get the sd card config from the teensy, this has a timeout
     UARTHandler* handler = UARTHandler::get_instance();
     bool timed_out = UART_command_utils::get_config(handler, config_info::config_to_send, (float)UART_times::CONFIG_TIMEOUT);
@@ -552,7 +552,7 @@ void setup()
     if (timed_out)
     {
         // yellow
-//        logger::print("Setup->Timed Out Getting Config");
+        logger::print("Setup->Timed Out Getting Config", LogLevel::Warn);
         led->set_color(255, 255, 0);
     }
     else
@@ -560,7 +560,11 @@ void setup()
         // green
         led->set_color(0, 255, 0);
     }
-//    logger::print("Setup->End Setup");
+
+    #if REAL_TIME_I2C
+      real_time_i2c::init();
+    #endif
+    logger::print("Setup->End Setup");
 }
 
 void loop()

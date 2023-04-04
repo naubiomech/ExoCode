@@ -94,10 +94,6 @@ void Leg::read_data()
     {
         _leg_data->expected_step_duration = _update_expected_duration();
     }
-    if (_leg_data->toe_strike)
-    {
-        _leg_data->ankle_angle_at_ground_strike = _leg_data->ankle.joint_position;
-    }
 
     _leg_data->toe_off = _check_toe_off();
     _leg_data->percent_gait = _calc_percent_gait();

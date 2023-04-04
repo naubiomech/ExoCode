@@ -76,7 +76,7 @@
         const float UPDATE_PERIOD = 1000; //microseconds, time between updating data over uart
         const float COMS_MCU_TIMEOUT = 5000; //microseconds
         const float CONT_MCU_TIMEOUT = 1000;
-        const float CONFIG_TIMEOUT = 5000; // milliseconds
+        const float CONFIG_TIMEOUT = 8000; // milliseconds
     }
 
 #endif

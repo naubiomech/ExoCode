@@ -179,15 +179,26 @@ void ExoBLE::send_message(BleMessage &msg)
     {
         return; /* Don't bother sending anything if no one is listening */
     }
+
     #if EXOBLE_DEBUG
-    //logger::println("Exoble::send_message->Sending:");
     BleMessage::print(msg);
     #endif
+
     static const int k_preamble_length = 3;
     int max_payload_length = ((k_preamble_length + msg.expecting) * (MAX_PARSER_CHARACTERS + 1));
     byte buffer[max_payload_length];
 
     int bytes_to_send = _ble_parser.package_raw_data(buffer, msg);
+    
+    // print the bytes to send
+    // Serial.println("Bytes to send: " + String(bytes_to_send));
+    // for (int i = 0; i < bytes_to_send; i++)
+    // {
+    //     Serial.print(buffer[i]);
+    //     Serial.print(" ");
+    // }
+    // Serial.println();
+
     _gatt_db.TXChar.writeValue(buffer, bytes_to_send);   
 }
 

@@ -328,6 +328,11 @@ class ControllerData {
         float max_measured = 0; /**< max measured value */
         float max_setpoint = 0; /**< max setpoint value */
 
+        // Variables for GAsP Controller
+        float reference_angle = 0; /**< reference angle for the spring term */
+        bool reference_angle_updated = false; /**< flag to indicate if the reference angle was updated this step */
+        float filtered_squelched_supportive_term = 0; /**< low pass on final spring output */
+
         // Variables for the ElbowMinMax Controller
         float fsr_toe_min_elbow = 0;
         float fsr_toe_max_elbow = 0;

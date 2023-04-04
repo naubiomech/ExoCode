@@ -154,7 +154,7 @@ namespace UART_command_handlers
         j_data->controller.controller = (uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID];
         set_controller_params(msg.joint_id, (uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID], (uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START], exo_data);
 
-        Serial.println("Updating Controller Params: " + String(msg.joint_id) + ", " + String((uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START]) + ", " + String(j_data->controller.controller));
+        //Serial.println("Updating Controller Params: " + String(msg.joint_id) + ", " + String((uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::PARAM_START]) + ", " + String(j_data->controller.controller));
         #endif
     }
 
@@ -178,7 +178,6 @@ namespace UART_command_handlers
         if (msg.data[(uint8_t)UART_command_enums::status::STATUS] == status_defs::messages::trial_on) 
         {
             // Set default parameters for each used joint
-            Serial.println("Set default parameters!");
             exo_data->set_default_parameters();
         }
         #endif
@@ -307,14 +306,16 @@ namespace UART_command_handlers
         {
             case (uint8_t)config_defs::exo_name::bilateral_ankle:
                 rx_msg.len = (uint8_t)rt_data::BILATERAL_ANKLE_RT_LEN;
-                rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_setpoint;//exo_data->right_leg.ankle.controller.filtered_torque_reading;
+                Serial.println("BILATERAL_ANKLE_RT_LEN");
+                rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading;
                 rx_msg.data[1] = exo_data->right_leg.toe_stance;//exo_data->right_leg.ankle.motor.i;
                 rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint; 
-                rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_setpoint;//exo_data->left_leg.ankle.controller.filtered_torque_reading; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i
-                rx_msg.data[4] = exo_data->left_leg.toe_stance; //exo_data->left_leg.ankle.motor.i;
+                rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_torque_reading; //rx_msg.data[3] = exo_data->right_leg.ankle.motor.i
+                rx_msg.data[4] = exo_data->left_leg.ankle.joint_position;//exo_data->left_leg.toe_stance; //exo_data->left_leg.ankle.motor.i;
                 rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;
                 rx_msg.data[6] = exo_data->right_leg.toe_fsr;
                 rx_msg.data[7] = exo_data->left_leg.toe_fsr;
+                Serial.println("Data[4]: " + String(rx_msg.data[4]));
                 break;
 
             case (uint8_t)config_defs::exo_name::bilateral_hip:
@@ -359,6 +360,7 @@ namespace UART_command_handlers
                
             default:
                 rx_msg.len = (uint8_t)rt_data::BILATERAL_ANKLE_RT_LEN;
+                Serial.println("Default Case");
                 rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading;
                 rx_msg.data[1] = exo_data->right_leg.toe_stance;
                 rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint;
@@ -415,8 +417,6 @@ namespace UART_command_handlers
 
     inline static void update_controller_param(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)
     {
-         //logger::println("UART_command_handlers::update_controller_param->got message: ");
-         //UART_msg_t_utils::print_msg(msg);
         // Get the joint
         JointData* j_data = exo_data->get_joint_with(msg.joint_id);
         if (j_data == NULL)
@@ -424,21 +424,20 @@ namespace UART_command_handlers
             logger::println("UART_command_handlers::update_controller_param->No joint with id =  "); logger::print(msg.joint_id); logger::println(" found");
             return;
         }
-        // TODO: If the controller is different, set the default controller params. Maybe reset the joint? Should be done with a helper function 
-        // Set the controller
-        j_data->controller.controller = msg.data[(uint8_t)UART_command_enums::controller_param::CONTROLLER_ID];
 
-        //logger::print("UART_command_handlers::update_controller_param:: j_data->controller.controller:  ");
-        //logger::print(j_data->controller.controller);
-        //logger::print("\n");
+        // Set the controller
+        if (msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID] != j_data->controller.controller)
+        {
+            j_data->controller.controller = (uint8_t)msg.data[(uint8_t)UART_command_enums::controller_params::CONTROLLER_ID];
+            exo_data->set_default_parameters();
+        }
 
         // Set the parameter
         j_data->controller.parameters[(uint8_t)msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_INDEX]] = msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_VALUE];
-
-        //logger::print("UART_command_handlers::update_controller_param:: j_data->controller.parameters:  ");
-        //logger::print((uint8_t)msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_INDEX]);
-        //logger::print(" : ");
-        //logger::print(j_data->controller.parameters[(uint8_t)msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_INDEX]]);
+        // Serial.println("Updating Controller Params: " + String(msg.joint_id) + ", " 
+        // + String((uint8_t)msg.data[(uint8_t)UART_command_enums::controller_param::CONTROLLER_ID]) + ", " 
+        // + String((uint8_t)msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_INDEX]) + ", "
+        // + String((uint8_t)msg.data[(uint8_t)UART_command_enums::controller_param::PARAM_VALUE]) + ", ");
     }
 
     inline static void update_error_code(UARTHandler* handler, ExoData* exo_data, UART_msg_t msg)

@@ -57,7 +57,13 @@ void real_time_i2c::msg(float* data, int len)
     const uint8_t packed_len = _packed_len(len);
     uint8_t bytes[packed_len];
     _pack((uint8_t)RT_I2C_REG, len, data, bytes);
-
+    // print packed bytes
+    // for (int i=0; i<packed_len; i++)
+    // {
+    //     Serial.print(bytes[i]);
+    //     Serial.print(" ");
+    // }
+    // Serial.println();
     #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
     MY_WIRE.beginTransmission(RT_I2C_ADDR);
     MY_WIRE.send(bytes, packed_len);

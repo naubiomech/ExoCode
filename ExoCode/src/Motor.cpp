@@ -174,6 +174,7 @@ void _CANMotor::send_data(float torque)
 
     int direction_modifier = _motor_data->flip_direction ? -1 : 1;
     //direction_modifier *= -1;
+
     // if (_motor_data->is_left)
     // {
     //     direction_modifier *= -1;
