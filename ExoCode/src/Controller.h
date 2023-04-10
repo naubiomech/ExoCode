@@ -403,14 +403,7 @@ class ZhangCollins: public _Controller
 
         float _spline_generation(float node1, float node2, float node3, float torque_magnitude, float percent_gait);
 
-    private:
-
-        float min_peak_time;
-        float max_peak_time;
-        float min_rise_time;
-        float max_rise_time;
-        float min_fall_time;
-        float max_fall_time;
+        float torque_cmd;
 };
 
 /**

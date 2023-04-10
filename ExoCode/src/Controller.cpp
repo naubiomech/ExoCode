@@ -1323,12 +1323,7 @@ ZhangCollins::ZhangCollins(config_defs::joint_id id, ExoData* exo_data)
         logger::println("ZhangCollins::Constructor");
     #endif
 
-        min_peak_time = 35;
-        max_peak_time = 55;
-        min_rise_time = 10;
-        max_rise_time = 40;
-        min_fall_time = 5;
-        max_fall_time = 20;
+        torque_cmd = 0;
 
 };
 
@@ -1337,49 +1332,12 @@ float ZhangCollins::calc_motor_cmd()
     
     //Define the variables
     float percent_gait = _leg_data->percent_gait;
-    float torque_cmd = 0;
 
     //Pull in user defined parameter values
     float peak_torque_Nm = _controller_data->parameters[controller_defs::zhang_collins::torque_idx];
     float peak_time = _controller_data->parameters[controller_defs::zhang_collins::peak_time_idx];
     float rise_time = _controller_data->parameters[controller_defs::zhang_collins::rise_time_idx];
     float fall_time = _controller_data->parameters[controller_defs::zhang_collins::fall_time_idx];
-
-    //Saftey Check to make sure parameters are within defined range
-    if (peak_time < min_peak_time)
-    {
-        peak_time = min_peak_time;
-    }
-
-    if (peak_time > max_peak_time)
-    {
-        peak_time = max_peak_time;
-    }
-
-    if (rise_time < min_rise_time)
-    {
-        rise_time = min_rise_time;
-    }
-
-    if (rise_time > max_rise_time)
-    {
-        rise_time = max_rise_time;
-    }
-
-    if (fall_time < min_fall_time)
-    {
-        fall_time = min_fall_time;
-    }
-
-    if (fall_time > max_fall_time)
-    {
-        fall_time = max_fall_time;
-    }
-
-    if ((peak_time + fall_time) > 65)
-    {
-        fall_time = 65 - peak_time;
-    }
 
     //Calculates Nodes for Spline Generation
     float node1 = peak_time - rise_time;
@@ -1388,6 +1346,7 @@ float ZhangCollins::calc_motor_cmd()
 
     //Calculates Torque Command
     torque_cmd = _spline_generation(node1, node2, node3, peak_torque_Nm, percent_gait);
+    _controller_data->ff_setpoint = torque_cmd;
 
     //Low Pass Filter for Torque Sensor
     _controller_data->filtered_torque_reading = utils::ewma(_joint_data->torque_reading,_controller_data->filtered_torque_reading,0.5);
@@ -1397,14 +1356,13 @@ float ZhangCollins::calc_motor_cmd()
         ? _pid(torque_cmd, _controller_data->filtered_torque_reading, _controller_data->parameters[controller_defs::zhang_collins::p_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::i_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::d_gain_idx])
         : 0);
 
-
+    //Flag to Flip Direction
     if (_controller_data->parameters[controller_defs::zhang_collins::direction_idx] > 0)
     {
         cmd = -1 * cmd;
     }
 
-    _controller_data->filtered_cmd = utils::ewma(cmd, _controller_data->filtered_cmd, 1);
-    return _controller_data->filtered_cmd;
+    return -1 * cmd;
 
 };
 
@@ -2072,6 +2030,9 @@ float PtbGeneral::calc_motor_cmd()
 	}
 	Serial.print("\ncmd: ");
 	Serial.print(cmd_ff);
+
+    _controller_data->filtered_setpoint = utils::ewma(cmd_ff, _controller_data->filtered_setpoint, 0.1);
+    _controller_data->ff_setpoint = _controller_data->filtered_setpoint;
 
     //Low Pass Filter for Torque Sensor
     _controller_data->filtered_torque_reading = utils::ewma(_joint_data->torque_reading, _controller_data->filtered_torque_reading, 0.5);
