@@ -34,18 +34,19 @@ float AnkleIMU::get_global_angle()
         return 0;
     }
 
-    // // get raw data
-    // uint8_t raw_data[2];
-    // IMU_WIRE.beginTransmission(_addr);
-    // IMU_WIRE.write(BNO055_EULER_R_LSB_ADDR);
-    // IMU_WIRE.endTransmission();
-    // IMU_WIRE.requestFrom(_addr, 2, false);
-    // raw_data[0] = IMU_WIRE.read();
-    // raw_data[1] = IMU_WIRE.read();
-    // IMU_WIRE.endTransmission();
-    // // get float data
-    // const int16_t int_data = ((int16_t)raw_data[0]) | (((int16_t)raw_data[1]) << 8);
-    // const float y_angle = ((float)int_data) / 16.0f;
-    // return y_angle;
-    return 0;
+    // get raw data
+    uint8_t raw_data[2];
+    IMU_WIRE.beginTransmission(_addr);
+    IMU_WIRE.write(BNO055_EULER_R_LSB_ADDR);
+    IMU_WIRE.endTransmission();
+    IMU_WIRE.requestFrom(_addr, 2, false);
+    raw_data[0] = IMU_WIRE.read();
+    raw_data[1] = IMU_WIRE.read();
+    IMU_WIRE.endTransmission();
+    // get float data
+    const int16_t int_data = ((int16_t)raw_data[0]) | (((int16_t)raw_data[1]) << 8);
+    const float y_angle = ((float)int_data) / 16.0f;
+    return y_angle;
+    // imu::Vector<3> euler = _imu.getVector(Adafruit_BNO055::VECTOR_EULER);
+    // return euler.y();
 }

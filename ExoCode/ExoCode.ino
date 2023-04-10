@@ -538,7 +538,6 @@ namespace config_info
           };
 }
 
-
 void setup()
 {
     logger::println();

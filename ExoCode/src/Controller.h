@@ -95,7 +95,18 @@ class _Controller
          */
         float _pid(float cmd, float measurement, float p_gain, float i_gain, float d_gain);
         
+        // Values for the Compact Form Model Free Adaptive Controller
+        std::pair<float, float> measurements;
+        std::pair<float, float> outputs;
+        std::pair<float, float> phi; /**< psuedo partial derivative */
+        float rho; /**< penalty factor (0,1) */
+        float lamda; /**< weighting factor limits delta u */
+        float etta; /**< step size constant (0, 1] */
+        float mu; /**< weighting factor that limits the variance of u */
+        float upsilon; /**< a sufficiently small integer ~10^-5 */
+        float phi_1; /**< initial/reset condition for estimation of psuedo partial derivitave */
         
+        float _cf_mfac(float reference, float current_measurement);
 };
 
 class PropulsiveAssistive : public _Controller
@@ -106,8 +117,7 @@ class PropulsiveAssistive : public _Controller
 
         float calc_motor_cmd();
     private:
-        void _update_reference_angle(LegData* leg_data, ControllerData* controller_data, float percent_grf);
-        float _get_reference_angle(ControllerData* controller_data);
+        void _update_reference_angles(LegData* leg_data, ControllerData* controller_data, float percent_grf);
 };
 
 /**

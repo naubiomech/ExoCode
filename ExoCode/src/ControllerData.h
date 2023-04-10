@@ -277,9 +277,9 @@ namespace controller_defs /**< stores the parameter indexes for different contro
         const uint8_t spring_stiffness = 3;
         const uint8_t neutral_angle = 4;
         const uint8_t damping = 5;
-        const uint8_t kp = 6;
-        const uint8_t kd = 7;
-        const uint8_t torque_alpha = 8;
+        const uint8_t propulsive_gain = 6;
+        const uint8_t kp = 7;
+        const uint8_t kd = 8;
         const uint8_t num_parameter = 9;
     }
 
@@ -330,6 +330,7 @@ class ControllerData {
 
         // Variables for GAsP Controller
         float reference_angle = 0; /**< reference angle for the spring term */
+        float reference_angle_offset = 0; /**< offset for the reference angle */
         bool reference_angle_updated = false; /**< flag to indicate if the reference angle was updated this step */
         float filtered_squelched_supportive_term = 0; /**< low pass on final spring output */
 

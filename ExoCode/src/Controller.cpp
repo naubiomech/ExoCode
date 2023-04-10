@@ -98,6 +98,46 @@ _Controller::_Controller(config_defs::joint_id id, ExoData* exo_data)
         logger::println("\n\t_leg_data set");
     #endif
     
+    // Set the parameters for cf mfac
+    measurements.first = -1;
+    measurements.second = 1;
+    outputs.first = 0;
+    outputs.second = 0;
+    phi.first = 2;
+    phi.second = 0;
+    rho = 0.5;
+    lamda = 2;
+    etta = 1;
+    mu = 1;
+    upsilon = 1 / (pow(10, 5));
+    phi_1 = phi.first;
+}
+
+float _Controller::_cf_mfac(float reference, float current_measurement)
+{
+    // calculate k-1 (k_0) delta
+    const float du_k0 = outputs.second - outputs.first;
+
+    // prime the state
+    measurements.first = measurements.second;
+    outputs.first = outputs.second;
+    phi.first = phi.second;
+    measurements.second = current_measurement;
+
+    // calculate k delta
+    const float dy_k = measurements.second - measurements.first;
+
+    // calculate the new psuedo partial derivative
+    const float phi_numerator = etta * du_k0 * (dy_k - (phi.first*du_k0));
+    const float phi_denominator = mu + (du_k0*du_k0);
+    phi.second = phi.first + (phi_numerator/phi_denominator);
+
+    // calculate the new output
+    const float error = reference - measurements.second;
+    const float u_numerator = rho * phi.second * error;
+    const float u_denominator = lamda + (abs(phi.second) * abs(phi.second));
+    outputs.second = outputs.first + (u_numerator/u_denominator);
+    return outputs.second;
 }
  
 float _Controller::_pid(float cmd, float measurement, float p_gain, float i_gain, float d_gain)
@@ -219,12 +259,7 @@ PropulsiveAssistive::PropulsiveAssistive(config_defs::joint_id id, ExoData* exo_
     #endif
 }
 
-float PropulsiveAssistive::_get_reference_angle(ControllerData* controller_data)
-{
-    return controller_data->reference_angle;
-}
-
-void PropulsiveAssistive::_update_reference_angle(LegData* leg_data, ControllerData* controller_data, float percent_grf)
+void PropulsiveAssistive::_update_reference_angles(LegData* leg_data, ControllerData* controller_data, float percent_grf)
 {
     const float threshold = controller_data->parameters[controller_defs::propulsive_assistive::timing_threshold]/100;
     // When the percent_grf passes the threshold, update the reference angle
@@ -233,6 +268,7 @@ void PropulsiveAssistive::_update_reference_angle(LegData* leg_data, ControllerD
     {
         controller_data->reference_angle_updated = true;
         controller_data->reference_angle = leg_data->ankle.joint_position;
+        controller_data->reference_angle_offset = leg_data->ankle.joint_global_angle;
     }
 
     // When the percent_grf drops below the threshold, reset the reference angle updated flag and expire the reference angle
@@ -241,6 +277,7 @@ void PropulsiveAssistive::_update_reference_angle(LegData* leg_data, ControllerD
     {
         controller_data->reference_angle_updated = false;
         controller_data->reference_angle = 0;
+        controller_data->reference_angle_offset = 0;
     }
 }
 
@@ -251,35 +288,46 @@ float PropulsiveAssistive::calc_motor_cmd()
     #endif
     static const float sigmoid_exp_scalar{50.0f};
 
-    // Calculate Propulsive Contribution
+    // Calculate Generic Contribution
     const float plantar_setpoint = _controller_data->parameters[controller_defs::propulsive_assistive::plantar_scaling];
     const float dorsi_setpoint = -_controller_data->parameters[controller_defs::propulsive_assistive::dorsi_scaling];
     const float threshold = _controller_data->parameters[controller_defs::propulsive_assistive::timing_threshold]/100;
     const float percent_grf = min(_leg_data->toe_fsr, 1);
     const float slope = (plantar_setpoint - dorsi_setpoint)/(1 - threshold);
-    const float propulsive = max(((slope*(percent_grf - threshold)) + dorsi_setpoint), dorsi_setpoint);
-    // Supportive Contribution
-    _update_reference_angle(_leg_data, _controller_data, percent_grf);
+    const float generic = max(((slope*(percent_grf - threshold)) + dorsi_setpoint), dorsi_setpoint);
+
+    // Assistive Contribution
+    _update_reference_angles(_leg_data, _controller_data, percent_grf);
     const float k = _controller_data->parameters[controller_defs::propulsive_assistive::spring_stiffness];
     const float b = _controller_data->parameters[controller_defs::propulsive_assistive::damping];
     const float equilibrium_angle_offset = _controller_data->parameters[controller_defs::propulsive_assistive::neutral_angle]/100;
-    const float delta = _get_reference_angle(_controller_data) + equilibrium_angle_offset - _leg_data->ankle.joint_position;
-    const float supportive = max(k*delta - b*_leg_data->ankle.joint_velocity + 1, 0);
+    const float delta = _controller_data->reference_angle + equilibrium_angle_offset - _leg_data->ankle.joint_position;
+    const float assistive = max(k*delta - b*_leg_data->ankle.joint_velocity + 1, 0);
     // Use a tuned sigmoid to squelch the spring output during the 'swing' phase
     const float squelch_offset = -(1.5*threshold); // 1.5 ensures that the spring activates after the new angle is captured
     const float grf_squelch_multiplier = (exp(sigmoid_exp_scalar*(percent_grf+squelch_offset))) / 
             (exp(sigmoid_exp_scalar*(percent_grf+squelch_offset))+1);
-    const float squelched_supportive_term = supportive*grf_squelch_multiplier;
+    const float squelched_supportive_term = assistive*grf_squelch_multiplier;
     // low pass the squelched supportive term
     _controller_data->filtered_squelched_supportive_term = utils::ewma(squelched_supportive_term, 
             _controller_data->filtered_squelched_supportive_term, 0.075);
-    const float cmd_ff = _controller_data->filtered_squelched_supportive_term+propulsive;
+
+    // Propulsive Contribution
+    const float kProp = _controller_data->parameters[controller_defs::propulsive_assistive::propulsive_gain];
+    const float saturated_velocity = _leg_data->ankle.joint_velocity > 0 ? _leg_data->ankle.joint_velocity:0;
+    const float propulsive = kProp*saturated_velocity;
+    // Use a symmetric sigmoid to squelch the propulsive term
+    const float propulsive_squelch_offset = -1.1 + threshold;
+    const float propulsive_grf_squelch_multiplier = (exp(sigmoid_exp_scalar*(percent_grf+propulsive_squelch_offset))) / 
+            (exp(sigmoid_exp_scalar*(percent_grf+propulsive_squelch_offset))+1);
+    const float squelched_propulsive_term = propulsive*propulsive_grf_squelch_multiplier;
+    
+    // Sum for ff
+    const float cmd_ff = _controller_data->filtered_squelched_supportive_term+generic+squelched_propulsive_term;
 
     // low pass filter on torque_reading
     const float torque = _joint_data->torque_reading * (_leg_data->is_left ? 1 : -1);
-    const float alpha = (_controller_data->parameters[controller_defs::propulsive_assistive::torque_alpha] != 0) ? 
-            _controller_data->parameters[controller_defs::propulsive_assistive::torque_alpha] : 0.5;
-    
+    const float alpha = 0.5;
     _controller_data->filtered_torque_reading = utils::ewma(torque, 
             _controller_data->filtered_torque_reading, alpha);
 
@@ -291,42 +339,17 @@ float PropulsiveAssistive::calc_motor_cmd()
 
     // update plotting variables
     _controller_data->ff_setpoint = cmd_ff;
-    _controller_data->filtered_setpoint = _controller_data->filtered_squelched_supportive_term;
-    //_controller_data->filtered_setpoint = squelched_supportive_term;
+    _controller_data->filtered_setpoint = squelched_propulsive_term;
 
-    // static float cnt = 0;
-    // cnt++;
-    // if (cnt > 1000)
-    // {
-    //     Serial.print("ID:" + String(_leg_data->is_left) + "\t");
-    //     Serial.print("CID:"+String(_controller_data->controller)+"\t");
-    //     for (int i=0; i<controller_defs::propulsive_assistive::num_parameter; i++)
-    //     {
-    //         Serial.print(String(i) + ":" + String(_controller_data->parameters[i]) + "\t");
-    //     }
-    //     Serial.print("\n");
-    //     cnt = 0;
-    // }
-    //     cnt = 0;
-    //     Serial.print("PSP:" + String(plantar_setpoint) + "\t");
-    //     Serial.print("DSP:" + String(dorsi_setpoint) + "\t");
-    //     Serial.print("THRS:" + String(threshold) + "\t");
-    //     Serial.print("GRF:" + String(percent_grf) + "\t");
-    //     Serial.print("K:" + String(k) + "\t");
-    //     Serial.print("Theta_N:" + String(equilibrium_angle) + "\t");
-    //     Serial.print("Damp:" + String(b) + "\t");
-    //     Serial.print("KP:" + String(_controller_data->parameters[controller_defs::propulsive_assistive::kp]) + "\t");
-    //     Serial.print("KD:" + String(_controller_data->parameters[controller_defs::propulsive_assistive::kd]) + "\n");
-        // Serial.print("Theta:" + String(_leg_data->ankle.joint_position) + "\t");
-        // Serial.print("GSAngle: " + String(_leg_data->ankle_angle_at_ground_strike) + "\t");
-        // Serial.print("Theta_d:" + String(delta) + "\t");
-        // Serial.print("GRF:" + String(percent_grf) + "\t");
-        // Serial.print("Squelch:" + String(grf_squelch_multiplier) + "\t");
-        // Serial.print("Supportive:" + String(squelched_supportive_term) + "\t");
-        // Serial.print("Propulsive:" + String(propulsive) + "\t");
-        // Serial.print("FF:" + String(cmd_ff) + "\n");
-    //}
-    
+    // Print the propulsive terms for the right leg
+    if (!_leg_data->is_left)
+    {
+        Serial.print("Vel:" + String(_leg_data->ankle.joint_velocity) + "\t");
+        Serial.print("kProp:" + String(kProp) + "\t");
+        Serial.print("SQPM:" + String(propulsive_grf_squelch_multiplier) + "\t");
+        Serial.print("SQP:" + String(squelched_propulsive_term) + "\n");
+        
+    }
 
     #ifdef CONTROLLER_DEBUG
     logger::println("PropulsiveAssistive::calc_motor_cmd : stop");

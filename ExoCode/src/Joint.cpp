@@ -873,13 +873,13 @@ void AnkleJoint::run_joint()
 
 
     // IMU Sensor Data
-    const float current_us = micros();
-    if ((current_us - _previous_sample_us) >= _imu_sample_rate_us)
-    {
-        _previous_sample_us = current_us;    
-        const float raw_global_angle = _imu.get_global_angle();
-        _joint_data->joint_global_angle = (_is_left ? (raw_global_angle):(-1*raw_global_angle));
-    }
+    // const float current_us = micros();
+    // if ((current_us - _previous_sample_us) >= _imu_sample_rate_us)
+    // {
+    //     _previous_sample_us = current_us;    
+    //     const float raw_global_angle = _imu.get_global_angle();
+    //     _joint_data->joint_global_angle = (_is_left ? (raw_global_angle):(-1*raw_global_angle));
+    // }
 
     // make sure the correct controller is running.
     set_controller(_joint_data->controller.controller);
