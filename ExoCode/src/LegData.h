@@ -56,6 +56,7 @@ class LegData {
 
         
         bool ground_strike;  /**< Trigger when we go from swing to one FSR making contact. */
+        bool toe_strike;
         bool toe_off; /**< Trigger when we go from one FSR making contact to swing. */
         bool heel_stance;  /**< High when the heel FSR is in ground contact */
         bool toe_stance;  /**< High when the toe FSR is in ground contact */
@@ -68,7 +69,8 @@ class LegData {
         bool do_calibration_refinement_toe_fsr;  /**< flag for if the toe calibration refinement should be done */
         bool do_calibration_heel_fsr;  /**< flag for if the heel calibration should be done */
         bool do_calibration_refinement_heel_fsr;  /**< flag for if the heel calibration refinement should be done */
-        
+
+        float ankle_angle_at_ground_strike;
         float expected_duration_window_upper_coeff; /**< factor to multiply by the expected duration to get the upper limit of the window to determine if a ground strike is considered a new step. */
         float expected_duration_window_lower_coeff; /**< factor to multiply by the expected duration to get the lower limit of the window to determine if a ground strike is considered a new step. */
 

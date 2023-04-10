@@ -86,7 +86,7 @@ void ComsMCU::update_UART()
     static float del_t = 0;
     del_t += t_helper->tick(_context);
     
-    if (del_t > UART_times::UPDATE_PERIOD) //TODO: Inspect this
+    if (del_t > UART_times::UPDATE_PERIOD)
     {
         UARTHandler* handler = UARTHandler::get_instance();
         UART_msg_t msg = handler->poll(UART_times::COMS_MCU_TIMEOUT);
@@ -120,7 +120,7 @@ void ComsMCU::update_gui()
         BleMessage rt_data_msg = BleMessage();
         rt_data_msg.command = ble_names::send_real_time_data;
         rt_data_msg.expecting = rt_data::len;
-        Serial.println("Got Data");
+
         for (int i = 0; i < rt_data::len; i++)
         {   
             #if REAL_TIME_I2C
@@ -128,9 +128,8 @@ void ComsMCU::update_gui()
             #else
             rt_data_msg.data[i] = rt_data::float_values[i];
             #endif
-            //Serial.print(rt_data_msg.data[i]);
         }
-        //Serial.println();
+
         //rt_data_msg.data[rt_data_msg.expecting++] = 0;//time_since_last_message/1000.0;
 
         if (my_mark < _data->mark)

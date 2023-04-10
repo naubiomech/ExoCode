@@ -55,6 +55,7 @@ class JointData {
 
 
         float joint_position; /**< The position of the joint, after any transmission */
+        float joint_global_angle; /**< The angle of the joint relative to the ground */
         float prev_joint_position; /**< The position of the joint, after any transmission */
         float joint_velocity;
         const float joint_position_alpha = 0.1f;

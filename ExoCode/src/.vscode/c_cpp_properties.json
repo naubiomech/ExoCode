@@ -41,6 +41,7 @@
                 "_UNICODE",
                 "ARDUINO_ARDUINO_NANO33BLE",
                 "ARDUINO_TEENSY41",
+                "ARDUINO_TEENSY36",
                 "__IMXRT1062__",
                 "USBCON"
             ],

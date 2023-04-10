@@ -132,22 +132,22 @@ namespace error_triggers
             }
 
             // Check if the tracking error is too high
-            float tracking_error_left = exo_data->left_leg.ankle.torque_reading - exo_data->left_leg.ankle.controller.ff_setpoint;
-            float tracking_error_right = (exo_data->right_leg.ankle.torque_reading*-1) - exo_data->right_leg.ankle.controller.ff_setpoint;
-            error_triggers_state::average_tracking_error_left = utils::ewma(tracking_error_left,
-                            error_triggers_state::average_tracking_error_left, error_triggers_state::tracking_alpha);
-            error_triggers_state::average_tracking_error_right = utils::ewma(tracking_error_right,
-                            error_triggers_state::average_tracking_error_right, error_triggers_state::tracking_alpha);
-            bool left_tracking_error = (abs(error_triggers_state::average_tracking_error_left) > error_triggers_state::tracking_threshold);
-            bool right_tracking_error = (abs(error_triggers_state::average_tracking_error_right) > error_triggers_state::tracking_threshold);
-            if (left_tracking_error || right_tracking_error)
-            {
-                //logger::println("Error: Tracking error too high");
-                error_triggers_state::triggered_error = true;
-                exo_data->error_joint_id = (left_tracking_error) ? (uint8_t)config_defs::joint_id::left_ankle : (uint8_t)config_defs::joint_id::right_ankle;
-                return TRACKING_ERROR;
-            }
-
+            // float tracking_error_left = exo_data->left_leg.ankle.torque_reading - exo_data->left_leg.ankle.controller.ff_setpoint;
+            // float tracking_error_right = (exo_data->right_leg.ankle.torque_reading*-1) - exo_data->right_leg.ankle.controller.ff_setpoint;
+            // error_triggers_state::average_tracking_error_left = utils::ewma(tracking_error_left,
+            //                 error_triggers_state::average_tracking_error_left, error_triggers_state::tracking_alpha);
+            // error_triggers_state::average_tracking_error_right = utils::ewma(tracking_error_right,
+            //                 error_triggers_state::average_tracking_error_right, error_triggers_state::tracking_alpha);
+            // bool left_tracking_error = (abs(error_triggers_state::average_tracking_error_left) > error_triggers_state::tracking_threshold);
+            // bool right_tracking_error = (abs(error_triggers_state::average_tracking_error_right) > error_triggers_state::tracking_threshold);
+            // if (left_tracking_error || right_tracking_error)
+            // {
+            //     //logger::println("Error: Tracking error too high");
+            //     error_triggers_state::triggered_error = true;
+            //     exo_data->error_joint_id = (left_tracking_error) ? (uint8_t)config_defs::joint_id::left_ankle : (uint8_t)config_defs::joint_id::right_ankle;
+            //     return TRACKING_ERROR;
+            // }
+  
 
             // Check the torque sensor variance, if the variance is too high, then the sensor may be faulty
             error_triggers_state::torque_sensor_queue_left.push(exo_data->left_leg.ankle.torque_reading);
@@ -200,7 +200,7 @@ namespace error_triggers
                     error_triggers_state::force_failure_count_right > error_triggers_state::failure_count_threshold)
                 {
                     error_triggers_state::triggered_error = true;
-                    exo_data->error_joint_id = (left_tracking_error) ? (uint8_t)config_defs::joint_id::left_ankle : (uint8_t)config_defs::joint_id::right_ankle;
+                    exo_data->error_joint_id = (left_force_outside_range) ? (uint8_t)config_defs::joint_id::left_ankle : (uint8_t)config_defs::joint_id::right_ankle;
                     return FORCE_VARIANCE_ERROR;
                 }
             }

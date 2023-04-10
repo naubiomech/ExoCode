@@ -39,6 +39,7 @@
         uint8_t param_num_in_file; // number of parameters to pull in
         uint8_t line_to_read; // line to read the parameters from
         uint8_t error_type = 0; // error message holder
+
        
         switch(utils::get_joint_type(joint_id))
         {
@@ -148,7 +149,7 @@
                                         read_val = param_file.parseFloat();
                                         #ifdef SD_PARAM_DEBUG
                                             logger::print("+Value in file :\t");
-                                            logger::println(read_val,6);
+                                            logger::println(read_val);
                                         #endif
                                         
                                     }
@@ -157,7 +158,7 @@
                                         read_val = 0;
                                         #ifdef SD_PARAM_DEBUG
                                             logger::print("-File Line Ended :\t");
-                                            logger::println(read_val,6);
+                                            logger::println(read_val);
                                         #endif
                                     }
                                     
@@ -180,7 +181,7 @@
                                         read_val = param_file.parseFloat();
                                         #ifdef SD_PARAM_DEBUG
                                             logger::print("+Value in file :\t");
-                                            logger::println(read_val,6);
+                                            logger::println(read_val);
                                         #endif
                                         
                                     }
@@ -189,7 +190,7 @@
                                         read_val = 0;
                                         #ifdef SD_PARAM_DEBUG
                                             logger::print("-File Line Ended :\t");
-                                            logger::println(read_val,6);
+                                            logger::println(read_val);
                                         #endif
                                     }
                                     
@@ -322,7 +323,7 @@
                                         read_val = param_file.parseFloat();
                                         #ifdef SD_PARAM_DEBUG
                                             logger::print("+Value in file :\t");
-                                            logger::println(read_val,6);
+                                            logger::println(read_val);
                                         #endif
                                         
                                     }
@@ -331,7 +332,7 @@
                                         read_val = 0;
                                         #ifdef SD_PARAM_DEBUG
                                             logger::print("-File Line Ended :\t");
-                                            logger::println(read_val,6);
+                                            logger::println(read_val);
                                         #endif
                                     }
                                     
@@ -354,7 +355,7 @@
                                         read_val = param_file.parseFloat();
                                         #ifdef SD_PARAM_DEBUG
                                             logger::print("+Value in file :\t");
-                                            logger::println(read_val,6);
+                                            logger::println(read_val);
                                         #endif
                                         
                                     }
@@ -363,7 +364,7 @@
                                         read_val = 0;
                                         #ifdef SD_PARAM_DEBUG
                                             logger::print("-File Line Ended :\t");
-                                            logger::println(read_val,6);
+                                            logger::println(read_val);
                                         #endif
                                     }
                                     
@@ -498,7 +499,7 @@
                                         read_val = param_file.parseFloat();
                                         #ifdef SD_PARAM_DEBUG
                                             logger::print("+Value in file :\t");
-                                            logger::println(read_val,6);
+                                            logger::println(read_val);
                                         #endif
                                         
                                     }
@@ -507,7 +508,7 @@
                                         read_val = 0;
                                         #ifdef SD_PARAM_DEBUG
                                             logger::print("-File Line Ended :\t");
-                                            logger::println(read_val,6);
+                                            logger::println(read_val);
                                         #endif
                                     }
                                     
@@ -530,7 +531,7 @@
                                         read_val = param_file.parseFloat();
                                         #ifdef SD_PARAM_DEBUG
                                             logger::print("+Value in file :\t");
-                                            logger::println(read_val,6);
+                                            logger::println(read_val);
                                         #endif
                                         
                                     }
@@ -539,7 +540,7 @@
                                         read_val = 0;
                                         #ifdef SD_PARAM_DEBUG
                                             logger::print("-File Line Ended :\t");
-                                            logger::println(read_val,6);
+                                            logger::println(read_val);
                                         #endif
                                     }
                                     
@@ -569,6 +570,9 @@
             }
             
         }
+        #ifdef SD_PARAM_DEBUG
+            logger::println("set_controller_params : Never Entered Switch case");
+        #endif
         return error_type;
     }
 

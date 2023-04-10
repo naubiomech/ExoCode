@@ -164,6 +164,7 @@ namespace config_defs
         perturbation = 8,
         constant_torque = 9,
         ptb_general = 10,
+        gasp = 11,
     };
     
     enum class flip_dir : uint8_t
@@ -376,6 +377,7 @@ namespace config_defs
             {"perturbation", (uint8_t)config_defs::ankle_controllers::perturbation},
             {"constantTorque", (uint8_t)config_defs::ankle_controllers::constant_torque},
             {"ptbGeneral", (uint8_t)config_defs::ankle_controllers::ptb_general},
+            {"GAsP", (uint8_t)config_defs::ankle_controllers::gasp},
         };  
         
         const IniKeyCode flip_dir 

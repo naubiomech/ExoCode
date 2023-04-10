@@ -1,5 +1,4 @@
 #include "Joint.h"
-#include "AnkleAngles.h"
 #include "Time_Helper.h"
 #include "Logger.h"
 //#define JOINT_DEBUG
@@ -366,7 +365,10 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 , _constant_torque(id, exo_data)
 , _ptb_general(id, exo_data)
 {
-
+    #ifdef JOINT_DEBUG
+        logger::print(_is_left ? "Left " : "Right ");
+        logger::println("Hip : Hip Constructor");
+    #endif
     //logger::print("HipJoint::HipJoint\n");
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
@@ -447,6 +449,10 @@ HipJoint::HipJoint(config_defs::joint_id id, ExoData* exo_data)
 
 void HipJoint::run_joint()
 {
+    #ifdef JOINT_DEBUG
+        logger::print("HipJoint::run_joint::Start");
+    #endif
+
     // enable or disable the motor.
     _motor->on_off(); 
     _motor->enable();
@@ -457,15 +463,13 @@ void HipJoint::run_joint()
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     // Send the new command to the motor.
-    // logger::print(_joint_data->controller.setpoint);
-    // logger::print(" Hip\t");
-    // Use transaction because the motors are call and response
-    // _motor->transaction(0 / _joint_data->motor.gearing);
     _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
 
-    //logger::print("HipJoint::run_joint::Motor Command:: ");
-    //logger::print(_controller->calc_motor_cmd());
-    //logger::print("\n");
+    #ifdef JOINT_DEBUG
+        logger::print("HipJoint::run_joint::Motor Command:: ");
+        logger::print(_controller->calc_motor_cmd());
+        logger::print("\n");
+    #endif
 
 };  
 
@@ -492,11 +496,10 @@ void HipJoint::set_controller(uint8_t controller_id)
     #ifdef JOINT_DEBUG
         logger::print(_is_left ? "Left " : "Right ");
         logger::println("Hip : set_controller : Entered");
+        logger::print("Hip : set_controller : Controller ID : ");
+        logger::println(controller_id);
     #endif
-    _controller->reset_integral();
-    #ifdef JOINT_DEBUG
-        logger::println("Hip : set_controller : Integral Reset");
-    #endif
+
     switch (controller_id)
     {
         case (uint8_t)config_defs::hip_controllers::disabled :
@@ -546,11 +549,13 @@ void HipJoint::set_controller(uint8_t controller_id)
             _controller = &_ptb_general;
             break;
         default :
-            _controller = nullptr;
+            logger::print("Unkown Controller!\n", LogLevel::Error);
+            _controller = &_stasis;
             break;
     } 
-    
-    _controller->reset_integral();
+    #ifdef JOINT_DEBUG
+        logger::println("Hip : set_controller : End");
+    #endif
 };
 
 //================================================================
@@ -565,6 +570,10 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
 , _constant_torque(id, exo_data)
 , _elbow_min_max(id, exo_data)
 {
+    #ifdef JOINT_DEBUG
+        logger::print(_is_left ? "Left " : "Right ");
+        logger::println("Knee : Knee Constructor");
+    #endif
     // logger::print("KneeJoint::KneeJoint\n");
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
@@ -646,6 +655,9 @@ KneeJoint::KneeJoint(config_defs::joint_id id, ExoData* exo_data)
  */
 void KneeJoint::run_joint()
 {
+    #ifdef JOINT_DEBUG
+        logger::print("KneeJoint::run_joint::Start");
+    #endif
     // enable or disable the motor.
     _motor->on_off(); 
     _motor->enable();
@@ -661,6 +673,12 @@ void KneeJoint::run_joint()
     // Use transaction because the motors are call and response
     // _motor->transaction(0 / _joint_data->motor.gearing);
     _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
+
+        #ifdef JOINT_DEBUG
+        logger::print("KneeJoint::run_joint::Motor Command:: ");
+        logger::print(_controller->calc_motor_cmd());
+        logger::print("\n");
+    #endif
 };  
 
 /*
@@ -683,13 +701,11 @@ void KneeJoint::read_data() // reads data from motor and sensors
  */
 void KneeJoint::set_controller(uint8_t controller_id)  // changes the high level controller in Controller, and the low level controller in Motor
 {
-    #ifdef JOINT_DEBUG
+        #ifdef JOINT_DEBUG
         logger::print(_is_left ? "Left " : "Right ");
-        logger::println("Hip : set_controller : Entered");
-    #endif
-    _controller->reset_integral();
-    #ifdef JOINT_DEBUG
-        logger::println("Hip : set_controller : Integral Reset");
+        logger::println("Knee : set_controller : Entered");
+        logger::print("Knee : set_controller : Controller ID : ");
+        logger::println(controller_id);
     #endif
     switch (controller_id)
     {
@@ -719,16 +735,16 @@ void KneeJoint::set_controller(uint8_t controller_id)  // changes the high level
             _controller = &_elbow_min_max;
             break;
         default :
-            _controller = nullptr;
+            logger::print("Unkown Controller!\n", LogLevel::Error);
+            _controller = &_stasis;
             break;
     } 
-    
-    _controller->reset_integral();
 };
 
 //=================================================================
 AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 : _Joint(id, exo_data) // <-- Initializer list
+, _imu(_is_left)
 , _zero_torque(id, exo_data)
 , _proportional_joint_moment(id, exo_data)
 , _zhang_collins(id, exo_data)
@@ -738,8 +754,15 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
 , _perturbation(id, exo_data)
 , _constant_torque(id, exo_data)
 , _ptb_general(id, exo_data)
+, _propulsive_assistive(id, exo_data)
 {
-    // logger::print("AnkleJoint::AnkleJoint\n");
+    #ifdef JOINT_DEBUG
+        logger::print(_is_left ? "Left " : "Right ");
+        logger::println("Ankle : Ankle Constructor");
+    #endif
+
+    _ankle_angle.init(_is_left);
+    //_imu = AnkleIMU(_is_left);
     // set _joint_data to point to the data specific to this joint.
     if (_is_left)
     {
@@ -830,13 +853,16 @@ AnkleJoint::AnkleJoint(config_defs::joint_id id, ExoData* exo_data)
  */
 void AnkleJoint::run_joint()
 {
+    #ifdef JOINT_DEBUG
+        logger::print("AnkleJoint::run_joint::Start");
+    #endif
     // enable or disable the motor.
     _motor->on_off();
     _motor->enable();
 
     // Angle Sensor data
     _joint_data->prev_joint_position = _joint_data->joint_position;
-    const float raw_angle = AnkleAngles::GetInstance()->get(_is_left);
+    const float raw_angle = _ankle_angle.get();
     const float new_angle = _is_left ? (raw_angle):(1 - raw_angle);
     _joint_data->joint_position = utils::ewma(
         new_angle, _joint_data->joint_position, _joint_data->joint_position_alpha);
@@ -845,18 +871,28 @@ void AnkleJoint::run_joint()
         _joint_data->joint_velocity, 
         _joint_data->joint_velocity_alpha);
 
+
+    // IMU Sensor Data
+    // const float current_us = micros();
+    // if ((current_us - _previous_sample_us) >= _imu_sample_rate_us)
+    // {
+    //     _previous_sample_us = current_us;    
+    //     const float raw_global_angle = _imu.get_global_angle();
+    //     _joint_data->joint_global_angle = (_is_left ? (raw_global_angle):(-1*raw_global_angle));
+    // }
+
     // make sure the correct controller is running.
     set_controller(_joint_data->controller.controller);
-    
     // Calculate the motor command
     _joint_data->controller.setpoint = _controller->calc_motor_cmd();
     // Send the new command to the motor.
-    // logger::print("AnkleJoint::run_joint : ");
-    // logger::println(_joint_data->controller.setpoint);
-    // logger::print("\t");
-    // Use transaction because the motors are call and response
-    //_motor->send_data(_joint_data->controller.setpoint / _joint_data->motor.gearing);
     _motor->transaction(_joint_data->controller.setpoint / _joint_data->motor.gearing);
+
+    #ifdef JOINT_DEBUG
+        logger::print("Ankle::run_joint::Motor Command:: ");
+        logger::print(_controller->calc_motor_cmd());
+        logger::print("\n");
+    #endif
 }; 
 
 /*
@@ -879,13 +915,11 @@ void AnkleJoint::read_data()
  */
 void AnkleJoint::set_controller(uint8_t controller_id)  // changes the high level controller in Controller, and the low level controller in Motor
 {
-    #ifdef JOINT_DEBUG
+        #ifdef JOINT_DEBUG
         logger::print(_is_left ? "Left " : "Right ");
-        logger::println("Hip : set_controller : Entered");
-    #endif
-    _controller->reset_integral();
-    #ifdef JOINT_DEBUG
-        logger::println("Hip : set_controller : Integral Reset");
+        logger::println("Ankle : set_controller : Entered");
+        logger::print("Ankle : set_controller : Controller ID : ");
+        logger::println(controller_id);
     #endif
     switch (controller_id)
     {
@@ -920,11 +954,15 @@ void AnkleJoint::set_controller(uint8_t controller_id)  // changes the high leve
         case (uint8_t)config_defs::ankle_controllers::ptb_general:
             _controller = &_ptb_general;
             break;
+        case (uint8_t)config_defs::ankle_controllers::gasp:
+            _controller = &_propulsive_assistive;
+            break;
         default :
-            _controller = nullptr;
+            logger::print("Unkown Controller!\n", LogLevel::Error);
+            _controller = &_stasis;
             break;
     } 
     
-    _controller->reset_integral();
+    //_controller->reset_integral();
 };
 #endif

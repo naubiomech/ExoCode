@@ -93,7 +93,6 @@ void Leg::read_data()
     if (_leg_data->ground_strike)
     {
         _leg_data->expected_step_duration = _update_expected_duration();
-        
     }
 
     _leg_data->toe_off = _check_toe_off();
@@ -101,13 +100,10 @@ void Leg::read_data()
 
     _heel_fsr.get_contact_thresholds(_leg_data->heel_fsr_lower_threshold, _leg_data->heel_fsr_upper_threshold);
     _toe_fsr.get_contact_thresholds(_leg_data->toe_fsr_lower_threshold, _leg_data->toe_fsr_upper_threshold);
-
-    if (!_is_left)
-    {
-        _leg_data->inclination = inclination_detector->check(_leg_data->toe_stance, _leg_data->ankle.joint_position);
-        //logger::print("Got incline: ", LogLevel::Debug); logger::println((uint8_t)_leg_data->inclination, LogLevel::Debug);
-    }
-    
+    //if (!_is_left) {Serial.println("Checking with angle: " + String(_leg_data->ankle.joint_position));}
+    _leg_data->inclination = inclination_detector->check(_leg_data->toe_stance, 
+        _leg_data->do_calibration_refinement_toe_fsr, _leg_data->ankle.joint_position);
+    //if (!_is_left) {logger::print("Got incline: ", LogLevel::Debug); logger::println((uint8_t)_leg_data->inclination, LogLevel::Debug);}
     
     // Check the joint sensors if the joint is used.
     if (_leg_data->hip.is_used)
@@ -195,6 +191,7 @@ bool Leg::_check_ground_strike()
     // logger::print(_prev_toe_contact_state);
     // logger::print("\n");
     // only check if in swing
+    _leg_data->toe_strike = toe_contact_state > _prev_toe_contact_state;
     if(!_prev_heel_contact_state & !_prev_toe_contact_state) //If we were previously in swing
     {
         //check for rising edge on heel and toe, toe is to account for flat foot landings
@@ -205,6 +202,7 @@ bool Leg::_check_ground_strike()
             _ground_strike_timestamp = millis();
         }
     }
+
     _prev_heel_contact_state = heel_contact_state;
     _prev_toe_contact_state = toe_contact_state;
     

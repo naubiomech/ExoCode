@@ -10,39 +10,39 @@
         {
             switch (e) {
             case IniFile::errorNoError:
-                //logger::print("no error");
+                logger::print("no error");
                 break;
             case IniFile::errorFileNotFound:
-               // logger::print("file not found");
+                logger::print("file not found");
                 break;
             case IniFile::errorFileNotOpen:
-                //logger::print("file not open");
+                logger::print("file not open");
                 break;
             case IniFile::errorBufferTooSmall:
-                //logger::print("buffer too small");
+                logger::print("buffer too small");
                 break;
             case IniFile::errorSeekError:
-                //logger::print("seek error");
+                logger::print("seek error");
                 break;
             case IniFile::errorSectionNotFound:
-                //logger::print("section not found");
+                logger::print("section not found");
                 break;
             case IniFile::errorKeyNotFound:
-                //logger::print("key not found");
+                logger::print("key not found");
                 break;
             case IniFile::errorEndOfFile:
-                //logger::print("end of file");
+                logger::print("end of file");
                 break;
             case IniFile::errorUnknownError:
-                //logger::print("unknown error");
+                logger::print("unknown error");
                 break;
             default:
-                //logger::print("unknown error value");
+                logger::print("unknown error value");
                 break;
             }
             if (eol)
             {
-                //logger::print("\n");
+                logger::print("\n");
             }
         }
     }
@@ -74,8 +74,8 @@
             while (1)
             if(Serial)
             {
-                //logger::print("SD.begin() failed");
-                //logger::print("\n");
+                logger::print("SD.begin() failed");
+                logger::print("\n");
             }
 
         // Check the for the ini file
@@ -83,18 +83,18 @@
         if (!ini.open()) {
             if(Serial)
             {
-                //logger::print("Ini file ");
-                //logger::print(filename);
-                //logger::print(" does not exist");
-                //logger::print("\n");
+                logger::print("Ini file ");
+                logger::print(filename);
+                logger::print(" does not exist");
+                logger::print("\n");
             }
         // Cannot do anything else
             while (1);
         }
         if(Serial)
         {
-            //logger::print("Ini file exists");
-            //logger::print("\n");
+            logger::print("Ini file exists");
+            logger::print("\n");
         }
        
 
@@ -103,9 +103,9 @@
         if (!ini.validate(buffer, buffer_len)) {
             if(Serial)
             {
-                //logger::print("ini file ");
-                //logger::print(ini.getFilename());
-                //logger::print(" not valid: ");
+                logger::print("ini file ");
+                logger::print(ini.getFilename());
+                logger::print(" not valid: ");
                 ini_print_error_message(ini.getError());
             }
             // Cannot do anything else
@@ -284,11 +284,11 @@
         else {
             if(Serial)
             {
-                //logger::print("Could not read '");
-                //logger::print(key);
-                //logger::print("' from section '");
-                //logger::print(section);
-                //logger::print("' , error was ");
+                logger::print("Could not read '");
+                logger::print(key);
+                logger::print("' from section '");
+                logger::print(section);
+                logger::print("' , error was ");
                 ini_print_error_message(ini.getError());
             }
         }

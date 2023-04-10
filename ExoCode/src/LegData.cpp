@@ -23,9 +23,11 @@ LegData::LegData(bool is_left, uint8_t* config_to_send)
     this->do_calibration_refinement_heel_fsr = false; 
     this->ground_strike = false; 
     this->toe_off = false;
+    this->toe_strike = false;
     
     this->expected_duration_window_upper_coeff = 1.75;
     this->expected_duration_window_lower_coeff = 0.25;
+    this->ankle_angle_at_ground_strike = 0.5;
 
     this->inclination = Inclination::Level;
 

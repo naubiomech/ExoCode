@@ -26,6 +26,8 @@
 #include "config.h"
 #include "Utilities.h"
 #include "StatusDefs.h"
+#include "AnkleAngles.h"
+#include "AnkleIMU.h"
 
 #include <stdint.h>
 
@@ -235,6 +237,10 @@ class AnkleJoint : public _Joint
         void set_controller(uint8_t);  // See _Joint
 		
     protected:
+        AnkleIMU _imu;
+        const float _imu_sample_rate_us{15000.0f};
+        float _previous_sample_us{0.0f};
+        AnkleAngles _ankle_angle;
         // Objects for joint specific controllers
         ZeroTorque _zero_torque;  /**< zero torque controller */
         ProportionalJointMoment _proportional_joint_moment;/**< Proportional joint moment controller */
@@ -245,6 +251,7 @@ class AnkleJoint : public _Joint
         Perturbation _perturbation;    /**< perturbation controller */
         ConstantTorque _constant_torque; /**< constant torque controller*/
         PtbGeneral _ptb_general; /**< Generalized Perturbation Controller>*/
+        PropulsiveAssistive _propulsive_assistive; /**< Propulsive Assistive */
         
 };
 
