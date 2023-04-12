@@ -153,6 +153,9 @@
                 
                 
                 const unsigned int speed_check_pin = 33;
+
+                const unsigned int left_ankle_angle_pin = A16;
+                const unsigned int right_ankle_angle_pin = A17;
                 
                 // I2C 
                 // SDA 18
