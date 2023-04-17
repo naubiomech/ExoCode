@@ -461,8 +461,14 @@ float ProportionalJointMoment::calc_motor_cmd()
 
     if (_controller_data->parameters[controller_defs::proportional_joint_moment::use_pid_idx])
     {
-        cmd = _pid(cmd_ff, _controller_data->filtered_torque_reading, _controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);
-    }
+		if (_leg_data->is_left) {
+        cmd = _pid(cmd_ff, -1*_controller_data->filtered_torque_reading, _controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);
+		}
+		else {
+			cmd = _pid(cmd_ff, _controller_data->filtered_torque_reading, _controller_data->parameters[controller_defs::proportional_joint_moment::p_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::i_gain_idx], _controller_data->parameters[controller_defs::proportional_joint_moment::d_gain_idx]);
+		}
+		
+	}
     else
     {
         cmd = cmd_ff;
@@ -1937,14 +1943,37 @@ ElbowMinMax::ElbowMinMax(config_defs::joint_id id, ExoData* exo_data)
 
 float ElbowMinMax::calc_motor_cmd()
 {
+	// Serial.print("\n ElbowMinMax selected... ");
+	// Serial.print("  |  1st Level Toe fsr: ");
+	// Serial.print(_leg_data->toe_fsr);
+	// Serial.print("  |  2nd Level Heel fsr: ");
+	// Serial.print(_leg_data->heel_fsr);
     float cmd = 0;     //Creates the cmd variable and initializes it to 0;
-    float cmd_toe_elbow = 0;
-    float cmd_heel_elbow = 0;
-
-    // float fsr_toe_current_elbow = _leg_data->toe_fsr;
-    // float fsr_heel_current_elbow = _leg_data->heel_fsr;
-    float fsr_toe_current_elbow = 0.8;
-    float fsr_heel_current_elbow = 2;
+    // float cmd_toe_elbow = 0;
+    // float cmd_heel_elbow = 0;
+	
+	if ((_leg_data->toe_fsr > _leg_data->heel_fsr) && (_leg_data->toe_fsr > 0.1*_controller_data->parameters[controller_defs::elbow_min_max::fsr_threshold_idx])) {
+		cmd = _controller_data->parameters[controller_defs::elbow_min_max::amplitude_idx];
+	}
+	else if ((_leg_data->heel_fsr > _leg_data->toe_fsr) && (_leg_data->heel_fsr > 0.1*_controller_data->parameters[controller_defs::elbow_min_max::fsr_threshold_idx])) {
+		cmd = -1*_controller_data->parameters[controller_defs::elbow_min_max::amplitude_idx];
+	}
+	else {
+		cmd = 0;
+	}
+	if (!_joint_data->is_left) {
+		Serial.print("\nToe fsr: ");
+		Serial.print(_leg_data->toe_fsr);
+		Serial.print("  |  Heel fsr: ");
+		Serial.print(_leg_data->heel_fsr);
+		Serial.print("  |  cmd is set to: ");
+		Serial.print(cmd);
+	}
+	
+    /* float fsr_toe_current_elbow = _leg_data->toe_fsr;
+    float fsr_heel_current_elbow = _leg_data->heel_fsr;
+    // float fsr_toe_current_elbow = 0.8;
+    // float fsr_heel_current_elbow = 2;
     if (_controller_data->is_first_fsr_reading_elbow) {
         //fsr_toe_current_elbow = utils::ewma(_leg_data->toe_fsr, _leg_data->toe_fsr, 0.5);
         //fsr_heel_current_elbow = utils::ewma(_leg_data->heel_fsr, _leg_data->heel_fsr, 0.5);
@@ -2063,10 +2092,18 @@ float ElbowMinMax::calc_motor_cmd()
     }
 
     cmd = cmd_toe_elbow;
-    Serial.print("cmd is ");
-    Serial.print(cmd, 2);
-    Serial.print("\n");
-
+	cmd = 0;
+    // Serial.print("cmd is ");
+    // Serial.print(cmd, 2);
+    // Serial.print("\n"); */
+	
+	Serial.print("\n Pre PID cmd: ");
+	Serial.print(cmd);
+	
+	//cmd = _pid(cmd, -1*_joint_data->torque_reading,10,0,200);
+	Serial.print("  |  Post PID cmd: ");
+	Serial.print(cmd);
+	_controller_data->elbow_cmd = cmd;
     return cmd;
 }
 //****************************************************
@@ -2105,6 +2142,55 @@ float PtbGeneral::calc_motor_cmd()
 		Serial.print(_controller_data->parameters[controller_defs::ptb_general::ptb_settings_4_idx]);
         cmd_ff = -1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
         break;
+		
+		case 2: //FSR triggered
+		_controller_data->ptb_iiStep++;
+		if (_controller_data->ptbRandomIsFirstRun) {
+			randomSeed(analogRead(A16));
+			_controller_data->ptbRandomIsFirstRun = false;
+		}
+		_controller_data->ptb_oldIsSwing = _controller_data->ptb_newIsSwing;
+		if (_leg_data->toe_stance) {
+			_controller_data->ptb_newIsSwing = false;
+		}
+		else {
+			_controller_data->ptb_newIsSwing = true;
+		}
+		if ((_controller_data->ptb_oldIsSwing == false) && (_controller_data->ptb_newIsSwing == true)) {
+			_controller_data->ptb_iStep++;
+			_controller_data->ptb_iiStep = 0;
+		}
+		if ((_controller_data->ptb_oldIsSwing)&&(_leg_data->toe_stance)) {//new stance started
+		_controller_data->ptb_fsrGotHigh = false;//reset the HighFSR cursor
+		}
+		
+		if (_leg_data->toe_fsr >= 0.1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_9_idx]) {//FSR has reached high in the current step
+			_controller_data->ptb_fsrGotHigh = true;
+		}
+		
+		
+		if (_controller_data->ptb_iStep == _controller_data->ptb_frequency) {
+			if ((_controller_data->ptb_fsrGotHigh) && (_leg_data->toe_stance < 0.1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_2_idx]) && (_controller_data->ptb_iiStep < 100*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_3_idx])) {
+			cmd_ff = -1*_controller_data->parameters[controller_defs::ptb_general::ptb_settings_1_idx];
+			}
+			else {
+				cmd_ff = 0;
+				if (!_leg_data->toe_stance) {
+				cmd_ff = 2;
+			}
+			}
+		}
+		else {
+			cmd_ff = 0;
+			if (!_leg_data->toe_stance) {
+				cmd_ff = 2;
+			}
+		}
+		if (_controller_data->ptb_iStep > _controller_data->ptb_frequency) {
+			_controller_data->ptb_iStep = 0;
+			_controller_data->ptb_frequency = random(_controller_data->parameters[controller_defs::ptb_general::ptb_settings_4_idx]);
+		}
+		break;		
 			
 		case 3://iteration oriented
 		_controller_data->ptb_iiStep++;
