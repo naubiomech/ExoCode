@@ -322,15 +322,14 @@ namespace UART_command_handlers
                 //rx_msg.data[11] = 125;
 
                 //Chance Plot
-                //rx_msg.data[0] = exo_data->right_leg.ankle.controller.filtered_torque_reading;
+                //rx_msg.data[0] = exo_data->right_leg.ankle.joint_velocity;//exo_data->right_leg.ankle.controller.filtered_torque_reading;
                 //rx_msg.data[1] = exo_data->right_leg.toe_stance;//exo_data->right_leg.ankle.motor.i;
-                //rx_msg.data[2] = exo_data->right_leg.ankle.controller.ff_setpoint; 
-                //rx_msg.data[3] = exo_data->left_leg.ankle.controller.filtered_torque_reading; //exo_data->right_leg.ankle.motor.i
+                //rx_msg.data[2] = exo_data->right_leg.ankle.controller.filtered_torque_reading; 
+                //rx_msg.data[3] = exo_data->left_leg.ankle.joint_velocity; //exo_data->left_leg.ankle.controller.filtered_torque_reading; //exo_data->right_leg.ankle.motor.i
                 //rx_msg.data[4] = exo_data->left_leg.toe_stance; //exo_data->left_leg.ankle.motor.i;
-                //rx_msg.data[5] = exo_data->left_leg.ankle.controller.ff_setpoint;
-                //rx_msg.data[6] = exo_data->right_leg.toe_fsr;
-                //rx_msg.data[7] = exo_data->left_leg.toe_fsr;
-
+                //rx_msg.data[5] = exo_data->left_leg.ankle.controller.filtered_torque_reading; //exo_data->left_leg.ankle.motor.i
+                //rx_msg.data[6] = exo_data->right_leg.ankle.motor.v;//exo_data->right_leg.toe_fsr;
+                //rx_msg.data[7] = exo_data->left_leg.ankle.motor.v;//exo_data->left_leg.toe_fsr;
                 break;
 
             case (uint8_t)config_defs::exo_name::bilateral_hip:

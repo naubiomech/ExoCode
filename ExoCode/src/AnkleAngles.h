@@ -4,6 +4,7 @@
 #if defined(ARDUINO_TEENSY36) || defined(ARDUINO_TEENSY41)
 
 #include <Arduino.h>
+#include "Board.h"
 
 //TODO: Add angle calibration
 
@@ -52,12 +53,12 @@ class AnkleAngles
      * @brief Right analog pin
      * 
      */
-    const int _right_pin = A17;
+    const int _right_pin = logic_micro_pins::right_ankle_angle_pin;
     /**
      * @brief Left analog pin
      * 
      */
-    const int _left_pin = A16;
+    const int _left_pin = logic_micro_pins::left_ankle_angle_pin;
 };
 
 
