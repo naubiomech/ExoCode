@@ -3,9 +3,10 @@
 #include <utility/imumaths.h>
 #include "Logger.h"
 
-#if BOARD_VERSION == AK_Board_V0_3 
 #define IMU_WIRE Wire1
-#endif
+//#if BOARD_VERSION == AK_Board_V0_3 
+//#define IMU_WIRE Wire1
+//#endif
 static const int left_address = 0x29;
 static const int right_address = 0x28;
 static const int BNO055_EULER_R_LSB_ADDR = 0X1C;

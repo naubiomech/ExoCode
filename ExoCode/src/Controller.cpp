@@ -1509,7 +1509,7 @@ float ZhangCollins::calc_motor_cmd()
 {
     
     //Define the variables
-    float percent_gait = _leg_data->percent_gait;
+    float percent_gait = _leg_data->percent_stance;
 
     //Pull in user defined parameter values
     float peak_torque_Nm = _controller_data->parameters[controller_defs::zhang_collins::torque_idx];
@@ -1525,22 +1525,22 @@ float ZhangCollins::calc_motor_cmd()
     //Calculates Torque Command
     torque_cmd = _spline_generation(node1, node2, node3, peak_torque_Nm, percent_gait);
     _controller_data->ff_setpoint = torque_cmd;
+    
+    _controller_data->filtered_torque_reading = utils::ewma(_joint_data->torque_reading, _controller_data->filtered_torque_reading, 0.5);
 
     //Low Pass Filter for Torque Sensor
-    _controller_data->filtered_torque_reading = utils::ewma(_joint_data->torque_reading,_controller_data->filtered_torque_reading,0.5);
+    if (_joint_data->is_left == 0)
+    {
+        _controller_data->filtered_torque_reading = -1 * _controller_data->filtered_torque_reading;
+    }
+
 
     //PID Control
     float cmd = torque_cmd + (_controller_data->parameters[controller_defs::zhang_collins::use_pid_idx]
         ? _pid(torque_cmd, _controller_data->filtered_torque_reading, _controller_data->parameters[controller_defs::zhang_collins::p_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::i_gain_idx], _controller_data->parameters[controller_defs::zhang_collins::d_gain_idx])
         : 0);
 
-    //Flag to Flip Direction
-    if (_controller_data->parameters[controller_defs::zhang_collins::direction_idx] > 0)
-    {
-        cmd = -1 * cmd;
-    }
-
-    return -1 * cmd;
+    return cmd;
 
 };
 
