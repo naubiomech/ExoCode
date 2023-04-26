@@ -316,6 +316,11 @@ namespace UART_command_handlers
                 rx_msg.data[5] = exo_data->left_leg.toe_fsr; // ankle.controller.ff_setpoint;
                 rx_msg.data[6] = exo_data->right_leg.ankle.controller.ff_setpoint; //toe_fsr; //ankle.joint_position;
                 rx_msg.data[7] = exo_data->left_leg.ankle.controller.ff_setpoint; //toe_fsr;
+				
+/* 				rx_msg.data[0] = exo_data->right_leg.heel_fsr;
+                rx_msg.data[3] = exo_data->left_leg.heel_fsr; 
+				 */
+	
                 //rx_msg.data[8] = 12.2;
                 //rx_msg.data[9] = 10.2;
                 //rx_msg.data[10] = 8.4;

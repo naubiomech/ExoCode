@@ -4,4 +4,5 @@
 ,Parameter order:,,,,,,,
 Torque (Nm),Peak Time (% Gait),Rise Time (% Gait),Fall Time (% Gait),"Direciton (0 = PF, >0 = DF)",use_pid,p_gain,i_gain,d_gain
 0,0,0,0,0,0,0,0,0
-15,30,25,15,0,1,10,0,30
+5,73.7,73.7,26.3,0,1,18,0,150
+15,73.7,73.7,26.3,0,1,18,0,150
